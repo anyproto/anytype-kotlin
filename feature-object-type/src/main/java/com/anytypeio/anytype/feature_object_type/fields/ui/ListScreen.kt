@@ -36,7 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -69,6 +71,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
@@ -119,18 +122,20 @@ fun FieldsMainScreen(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
             .background(
-                color = colorResource(id = R.color.widget_background),
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                color = colorResource(id = R.color.background_primary)
             )
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.transparent_black),
-        contentColor = colorResource(id = R.color.widget_background),
+        contentColor = colorResource(id = R.color.background_primary),
         topBar = {
             TopBar(
                 modifier = Modifier.fillMaxWidth(),
                 uiTitleState = uiTitleState,
                 uiIconState = uiIconState,
-                withDragger = withDragger
+                withDragger = withDragger,
+                onBackClick = {
+                    fieldEvent(OnBackClick)
+                }
             )
         },
         content = { paddingValues ->
@@ -281,6 +286,7 @@ private fun TopBar(
     withDragger: Boolean = true,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
+    onBackClick: () -> Unit = {}
 ) {
     val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
         modifier.windowInsetsPadding(WindowInsets.statusBars)
@@ -290,8 +296,7 @@ private fun TopBar(
     Column(
         modifier = modifier
             .background(
-                color = colorResource(id = R.color.widget_background),
-                shape = RoundedCornerShape(16.dp, 16.dp, 0.dp, 0.dp)
+                color = colorResource(id = R.color.background_primary),
             )
     ) {
         if (withDragger) {
@@ -306,6 +311,25 @@ private fun TopBar(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
+            if (!withDragger) {
+                Box(
+                    modifier = Modifier
+                        .width(56.dp)
+                        .height(48.dp)
+                        .align(Alignment.CenterStart)
+                        .noRippleThrottledClickable {
+                            onBackClick()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.wrapContentSize(),
+                        painter = painterResource(R.drawable.ic_default_top_back),
+                        contentDescription = stringResource(R.string.content_desc_back_button)
+                    )
+                }
+            }
+
             Text(
                 modifier = Modifier
                     .wrapContentSize()
@@ -526,6 +550,8 @@ private fun LazyItemScope.FieldItemDraggable(
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
 
+    val haptic = LocalHapticFeedback.current
+
     ReorderableItem(
         state = reorderingState,
         key = item.id,
@@ -554,6 +580,7 @@ private fun LazyItemScope.FieldItemDraggable(
                             fieldEvent(OnFieldItemClick(item = item))
                         },
                         onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             // show your menu, only if NOT dragging
                             if (item.isPossibleToUnlinkFromType) {
                                 isMenuExpanded.value = true

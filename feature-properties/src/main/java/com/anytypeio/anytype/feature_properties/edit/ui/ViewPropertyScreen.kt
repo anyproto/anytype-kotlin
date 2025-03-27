@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_properties.edit.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -102,6 +103,10 @@ fun PropertyViewScreen(
                         shape = RoundedCornerShape(size = 10.dp),
                         containerColor = colorResource(id = R.color.background_primary),
                         shadowElevation = 5.dp,
+                        border = BorderStroke(
+                            width = 0.5.dp,
+                            color = colorResource(id = R.color.background_secondary)
+                        )
                     ) {
                         DropdownMenuItem(
                             modifier = Modifier.height(44.dp),

@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -62,7 +64,8 @@ fun IconAndTitleWidget(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            uiTitleState = uiTitleState,
+            initialName = uiTitleState.title,
+            enabled = uiTitleState.isEditable,
             onTypeEvent = onTypeEvent,
         )
     }
@@ -71,28 +74,35 @@ fun IconAndTitleWidget(
 @Composable
 fun NameField(
     modifier: Modifier,
-    uiTitleState: UiTitleState,
+    initialName: String,
+    enabled: Boolean,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
-    var innerValue by remember(uiTitleState.title) { mutableStateOf(uiTitleState.title) }
+
+    var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(
+            TextFieldValue(initialName)
+        )
+    }
+
     val focusManager = LocalFocusManager.current
 
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     BasicTextField(
-        value = innerValue,
-        onValueChange = {
-            innerValue = it
+        value = textFieldValue,
+        onValueChange = { newValue ->
+            textFieldValue = newValue
             onTypeEvent.invoke(
                 TypeEvent.OnObjectTypeTitleUpdate(
-                    title = innerValue
+                    title = textFieldValue.text
                 )
             )
         },
         textStyle = HeadlineTitle.copy(color = colorResource(id = R.color.text_primary)),
         singleLine = false,
-        enabled = uiTitleState.isEditable,
+        enabled = enabled,
         cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
         modifier = modifier
             .padding(start = 12.dp, end = 20.dp)
@@ -105,7 +115,7 @@ fun NameField(
             focusManager.clearFocus()
             onTypeEvent.invoke(
                 TypeEvent.OnObjectTypeTitleUpdate(
-                    title = innerValue
+                    title = textFieldValue.text
                 )
             )
         },
@@ -116,7 +126,7 @@ fun NameField(
                     .height(32.dp),
                 contentAlignment = Alignment.CenterStart
             ) {
-                if (innerValue.isEmpty()) {
+                if (textFieldValue.text.isEmpty()) {
                     Text(
                         modifier = Modifier.wrapContentSize(),
                         text = stringResource(id = R.string.untitled),

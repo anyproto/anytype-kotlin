@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.objects
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -103,7 +104,11 @@ fun ObjectsHeader(
                     onDismissRequest = { isMenuExpanded = false },
                     shape = RoundedCornerShape(size = 16.dp),
                     containerColor = colorResource(id = R.color.background_primary),
-                    shadowElevation = 5.dp
+                    shadowElevation = 5.dp,
+                    border = BorderStroke(
+                        width = 0.5.dp,
+                        color = colorResource(id = R.color.background_secondary)
+                    )
                 ) {
                     when (val item = uiObjectsMenuState.objSetItem) {
                         UiMenuSetItem.CreateSet -> {

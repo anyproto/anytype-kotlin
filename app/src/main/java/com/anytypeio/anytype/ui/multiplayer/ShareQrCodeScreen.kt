@@ -38,9 +38,7 @@ fun ShareQrCodeScreen(link: String) {
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Dragger(Modifier.padding(vertical = 6.dp))
@@ -69,6 +67,7 @@ fun ShareQrCodeScreen(link: String) {
                         successToast = context.getString(R.string.space_invite_link_copied)
                     )
                 }
+                .padding(horizontal = 20.dp)
         ) {
             Image(
                 modifier = Modifier.align(Alignment.CenterStart),
@@ -77,7 +76,7 @@ fun ShareQrCodeScreen(link: String) {
             )
             Text(
                 modifier = Modifier
-                    .padding(start = 36.dp, end = 20.dp)
+                    .padding(start = 36.dp)
                     .fillMaxWidth()
                     .align(Alignment.CenterStart)
                 ,
@@ -88,7 +87,5 @@ fun ShareQrCodeScreen(link: String) {
                 overflow = TextOverflow.Ellipsis
             )
         }
-        // Adding footer
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }

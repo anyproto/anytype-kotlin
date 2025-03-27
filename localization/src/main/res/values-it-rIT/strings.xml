@@ -1694,7 +1694,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Modifica foto</string>
     <string name="space_settings_save_button">Salva</string>
     <string name="object_type_add_property_screen_title">Aggiungi proprietà</string>
-    <string name="object_type_add_property_screen_create">Crea proprietà \'%1$s\'</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Formati delle proprietà</string>
     <string name="object_type_add_property_screen_section_existing">Proprietà esistenti</string>
     <string name="object_type_add_property_screen_search_hint">Cerca o crea una nuova</string>

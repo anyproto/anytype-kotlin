@@ -134,7 +134,7 @@ fun FieldsMainScreen(
                 uiIconState = uiIconState,
                 withDragger = withDragger,
                 onBackClick = {
-                    fieldEvent(FieldEvent.OnBackClick)
+                    fieldEvent(OnBackClick)
                 }
             )
         },
@@ -311,21 +311,23 @@ private fun TopBar(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .width(56.dp)
-                    .height(48.dp)
-                    .align(Alignment.CenterStart)
-                    .noRippleThrottledClickable {
-                        onBackClick()
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    modifier = Modifier.wrapContentSize(),
-                    painter = painterResource(R.drawable.ic_default_top_back),
-                    contentDescription = stringResource(R.string.content_desc_back_button)
-                )
+            if (!withDragger) {
+                Box(
+                    modifier = Modifier
+                        .width(56.dp)
+                        .height(48.dp)
+                        .align(Alignment.CenterStart)
+                        .noRippleThrottledClickable {
+                            onBackClick()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        modifier = Modifier.wrapContentSize(),
+                        painter = painterResource(R.drawable.ic_default_top_back),
+                        contentDescription = stringResource(R.string.content_desc_back_button)
+                    )
+                }
             }
 
             Text(

@@ -19,11 +19,15 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
@@ -31,6 +35,7 @@ import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
@@ -73,7 +78,8 @@ class SpaceSettingsViewModel(
     private val setDefaultObjectType: SetDefaultObjectType,
     private val observeWallpaper: ObserveWallpaper,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val getSpaceInviteLink: GetSpaceInviteLink
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -117,6 +123,7 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
+
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
                 .getOrNull()
@@ -174,46 +181,70 @@ class SpaceSettingsViewModel(
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty()
                 )
 
-                UiSpaceSettingsState.SpaceSettings(
-                    spaceTechInfo = spaceTechInfo,
-                    items = listOf(
+                // TODO In the next PR : show different settings for viewer
+
+                val items = buildList<UiSpaceSettingsItem> {
+                    add(
                         UiSpaceSettingsItem.Icon(
                             icon = spaceView.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = gradientProvider
                             )
-                        ),
-                        Spacer(height = 16),
+                        )
+                    )
+                    add(Spacer(height = 24))
+                    add(
                         UiSpaceSettingsItem.Name(
                             name = spaceView.name.orEmpty()
-                        ),
-                        Spacer(height = 12),
+                        )
+                    )
+                    add(
+                        Spacer(height = 8),
+                    )
+                    add(
                         UiSpaceSettingsItem.Description(
                             description = spaceView.description.orEmpty()
-                        ),
-                        Spacer(height = 12),
-                        UiSpaceSettingsItem.Multiplayer,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Section.Collaboration,
-                        UiSpaceSettingsItem.Members(count = spaceMemberCount),
-                        UiSpaceSettingsItem.Section.ContentModel,
-                        UiSpaceSettingsItem.ObjectTypes,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Fields,
-                        UiSpaceSettingsItem.Section.Preferences,
-                        defaultObjectTypeSettingItem,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Wallpapers(current = wallpaper),
-                        UiSpaceSettingsItem.Section.DataManagement,
-                        UiSpaceSettingsItem.RemoteStorage,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Bin,
-                        UiSpaceSettingsItem.Section.Misc,
-                        UiSpaceSettingsItem.SpaceInfo,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.DeleteSpace,
-                        Spacer(height = 32)
-                    ),
+                        )
+                    )
+
+                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
+                        add(Spacer(height = 8))
+                        add(UiSpaceSettingsItem.Multiplayer)
+                    }
+
+                    add(UiSpaceSettingsItem.Section.Collaboration)
+
+                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
+                        add(UiSpaceSettingsItem.Members(count = spaceMemberCount))
+                    } else {
+                        add(UiSpaceSettingsItem.InviteMembers)
+                    }
+
+                    add(UiSpaceSettingsItem.Section.ContentModel)
+                    add(UiSpaceSettingsItem.ObjectTypes)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Fields)
+
+                    add(UiSpaceSettingsItem.Section.Preferences)
+                    add(defaultObjectTypeSettingItem)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
+
+                    add(UiSpaceSettingsItem.Section.DataManagement)
+                    add(UiSpaceSettingsItem.RemoteStorage)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Bin)
+
+                    add(UiSpaceSettingsItem.Section.Misc)
+                    add(UiSpaceSettingsItem.SpaceInfo)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.DeleteSpace)
+                    add(Spacer(height = 32))
+                }
+
+                UiSpaceSettingsState.SpaceSettings(
+                    spaceTechInfo = spaceTechInfo,
+                    items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true
                 )
 
@@ -233,11 +264,10 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                viewModelScope.launch {
-                    commands.emit(
-                        Command.ShowDeleteSpaceWarning
-                    )
-                }
+                viewModelScope.launch { commands.emit(Command.ShowDeleteSpaceWarning) }
+            }
+            UiEvent.OnLeaveSpaceClicked -> {
+                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
             }
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
@@ -250,13 +280,30 @@ class SpaceSettingsViewModel(
                 }
             }
             UiEvent.OnInviteClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.ManageSharedSpace(vmParams.space)
+                    )
+                }
             }
             UiEvent.OnPersonalizationClicked -> {
                 sendToast("Coming soon")
             }
             UiEvent.OnQrCodeClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    getSpaceInviteLink
+                        .async(vmParams.space)
+                        .onFailure {
+                            commands.emit(
+                                Command.ManageSharedSpace(vmParams.space)
+                            )
+                        }
+                        .onSuccess { link ->
+                            commands.emit(
+                                Command.ShowInviteLinkQrCode(link.scheme)
+                            )
+                        }
+                }
             }
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
@@ -401,26 +448,22 @@ class SpaceSettingsViewModel(
             }
     }
 
-    private fun proceedWithSpaceDebug() {
-        viewModelScope.launch {
-            debugSpaceShareDownloader
-                .stream(Unit)
-                .collect { result ->
-                    result.fold(
-                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
-                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
-                    )
-                }
-        }
-    }
+    // What is below is candidate to legacy. Might be deleted soon.
 
-    fun onManageSharedSpaceClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                Command.ManageSharedSpace(vmParams.space)
-            )
-        }
-    }
+    // TODO add debug functionality
+
+//    private fun proceedWithSpaceDebug() {
+//        viewModelScope.launch {
+//            debugSpaceShareDownloader
+//                .stream(Unit)
+//                .collect { result ->
+//                    result.fold(
+//                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
+//                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
+//                    )
+//                }
+//        }
+//    }
 
 //    fun onSharePrivateSpaceClicked() {
 //        viewModelScope.launch {
@@ -459,9 +502,9 @@ class SpaceSettingsViewModel(
 //        }
 //    }
 
-    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
-        return spaceView.spaceAccessType != null
-    }
+//    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
+//        return spaceView.spaceAccessType != null
+//    }
 
 //    fun onAddMoreSpacesClicked() {
 //        viewModelScope.launch {
@@ -624,6 +667,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data class ShowInviteLinkQrCode(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
         data object ExitToVault : Command()
@@ -656,7 +700,8 @@ class SpaceSettingsViewModel(
         private val setDefaultObjectType: SetDefaultObjectType,
         private val observeWallpaper: ObserveWallpaper,
         private val appActionManager: AppActionManager,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val getSpaceInviteLink: GetSpaceInviteLink
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -681,7 +726,8 @@ class SpaceSettingsViewModel(
             setDefaultObjectType = setDefaultObjectType,
             observeWallpaper = observeWallpaper,
             appActionManager = appActionManager,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getSpaceInviteLink = getSpaceInviteLink
         ) as T
     }
 

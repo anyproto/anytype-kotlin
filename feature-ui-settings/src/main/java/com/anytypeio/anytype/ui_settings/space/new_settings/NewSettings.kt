@@ -22,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,6 +35,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -229,7 +231,21 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
+                        is UiSpaceSettingsItem.InviteMembers -> {
+                            item {
+                                BaseButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            uiEvent(UiEvent.OnInviteClicked)
+                                        },
+                                    title = stringResource(id = R.string.space_settings_invite_members),
+                                    icon = R.drawable.ic_space_settings_invite_members
+                                )
+                            }
+                        }
                         UiSpaceSettingsItem.ObjectTypes -> {
                             item {
                                 ObjectTypesItem(
@@ -335,6 +351,8 @@ fun NewSpaceSettingsScreen(
 
     if (showEditDescription) {
         ModalBottomSheet(
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditDescription = false
@@ -357,6 +375,8 @@ fun NewSpaceSettingsScreen(
     }
     if (showEditTitle) {
         ModalBottomSheet(
+            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+            modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditTitle = false

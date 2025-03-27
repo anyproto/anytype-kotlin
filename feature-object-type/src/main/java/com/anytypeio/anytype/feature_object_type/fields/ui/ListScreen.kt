@@ -36,7 +36,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -546,6 +548,8 @@ private fun LazyItemScope.FieldItemDraggable(
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
 
+    val haptic = LocalHapticFeedback.current
+
     ReorderableItem(
         state = reorderingState,
         key = item.id,
@@ -574,6 +578,7 @@ private fun LazyItemScope.FieldItemDraggable(
                             fieldEvent(OnFieldItemClick(item = item))
                         },
                         onLongClick = {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             // show your menu, only if NOT dragging
                             if (item.isPossibleToUnlinkFromType) {
                                 isMenuExpanded.value = true

@@ -20,11 +20,14 @@ import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
@@ -32,6 +35,7 @@ import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
@@ -74,7 +78,8 @@ class SpaceSettingsViewModel(
     private val setDefaultObjectType: SetDefaultObjectType,
     private val observeWallpaper: ObserveWallpaper,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val getSpaceInviteLink: GetSpaceInviteLink
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -273,18 +278,29 @@ class SpaceSettingsViewModel(
                 }
             }
             UiEvent.OnInviteClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.ManageSharedSpace(vmParams.space)
+                    )
+                }
             }
             UiEvent.OnPersonalizationClicked -> {
                 sendToast("Coming soon")
             }
             UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    commands.emit(
-                        Command.ShowInviteLinkQrCode(
-                            "test"
-                        )
-                    )
+                    getSpaceInviteLink
+                        .async(vmParams.space)
+                        .onFailure {
+                            commands.emit(
+                                Command.ManageSharedSpace(vmParams.space)
+                            )
+                        }
+                        .onSuccess { link ->
+                            commands.emit(
+                                Command.ShowInviteLinkQrCode(link.scheme)
+                            )
+                        }
                 }
             }
             is UiEvent.OnSaveDescriptionClicked -> {
@@ -686,7 +702,8 @@ class SpaceSettingsViewModel(
         private val setDefaultObjectType: SetDefaultObjectType,
         private val observeWallpaper: ObserveWallpaper,
         private val appActionManager: AppActionManager,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val getSpaceInviteLink: GetSpaceInviteLink
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -711,7 +728,8 @@ class SpaceSettingsViewModel(
             setDefaultObjectType = setDefaultObjectType,
             observeWallpaper = observeWallpaper,
             appActionManager = appActionManager,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getSpaceInviteLink = getSpaceInviteLink
         ) as T
     }
 

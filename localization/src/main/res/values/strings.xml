@@ -2004,5 +2004,6 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title">Change icon</string>
     <string name="object_type_icon_remove">Remove</string>
     <string name="object_type_icon_change_title_search_hint">Search..."</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 
 </resources>

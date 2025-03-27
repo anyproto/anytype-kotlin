@@ -238,7 +238,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            // TODO
+                                            uiEvent(UiEvent.OnInviteClicked)
                                         },
                                     title = stringResource(id = R.string.space_settings_invite_members),
                                     icon = R.drawable.ic_space_settings_invite_members

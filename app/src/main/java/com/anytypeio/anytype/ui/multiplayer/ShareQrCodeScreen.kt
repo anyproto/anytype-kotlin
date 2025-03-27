@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.multiplayer
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,19 +13,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.lightspark.composeqr.QrCodeView
 
 @DefaultPreviews
@@ -35,6 +35,8 @@ fun ShareQrCodeScreenPreview() {
 
 @Composable
 fun ShareQrCodeScreen(link: String) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -60,6 +62,13 @@ fun ShareQrCodeScreen(link: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
+                .clickable {
+                    context.copyPlainTextToClipboard(
+                        plainText = link,
+                        label = "Space invite link",
+                        successToast = context.getString(R.string.space_invite_link_copied)
+                    )
+                }
         ) {
             Image(
                 modifier = Modifier.align(Alignment.CenterStart),
@@ -79,5 +88,7 @@ fun ShareQrCodeScreen(link: String) {
                 overflow = TextOverflow.Ellipsis
             )
         }
+        // Adding footer
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }

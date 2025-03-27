@@ -1693,10 +1693,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="object_type_add_property_screen_title">Eigenschaft hinzufügen</string>
-    <string name="object_type_add_property_screen_create">Eigenschaft ‚%1$s‘ erstellen</string>
-    <string name="object_type_add_property_screen_section_types">Properties formats\"</string>
-    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
-    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_section_types">Formate der Eigenschaften</string>
+    <string name="object_type_add_property_screen_section_existing">Vorhandene Eigenschaften</string>
+    <string name="object_type_add_property_screen_search_hint">Suchen oder neu erstellen</string>
     <string name="new_property_hint">Neue Eigenschaft</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>

@@ -1681,6 +1681,7 @@ En concreto,
     <string name="space_settings_section_data_management">Gestión de datos</string>
     <string name="space_settings_section_misc">Varios</string>
     <string name="space_settings_invite">Invitar</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">Código QR</string>
     <string name="space_settings_members_button_members">Miembros</string>
     <string name="space_settings_types_button">Object Types</string>
@@ -1722,4 +1723,5 @@ En concreto,
     <string name="object_type_icon_change_title">Cambiar icono</string>
     <string name="object_type_icon_remove">Borrar</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 </resources>

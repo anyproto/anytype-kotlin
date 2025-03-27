@@ -123,6 +123,7 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
+
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
                 .getOrNull()

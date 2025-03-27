@@ -350,6 +350,7 @@ fun NewSpaceSettingsScreen(
 
     if (showEditDescription) {
         ModalBottomSheet(
+            modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditDescription = false
@@ -372,6 +373,7 @@ fun NewSpaceSettingsScreen(
     }
     if (showEditTitle) {
         ModalBottomSheet(
+            modifier = Modifier.padding(top = 48.dp),
             containerColor = colorResource(R.color.background_secondary),
             onDismissRequest = {
                 showEditTitle = false

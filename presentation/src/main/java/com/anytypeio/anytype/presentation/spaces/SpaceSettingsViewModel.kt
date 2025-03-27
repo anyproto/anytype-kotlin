@@ -450,6 +450,8 @@ class SpaceSettingsViewModel(
 
     // What is below is candidate to legacy. Might be deleted soon.
 
+    // TODO add debug functionality
+
 //    private fun proceedWithSpaceDebug() {
 //        viewModelScope.launch {
 //            debugSpaceShareDownloader

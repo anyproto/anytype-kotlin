@@ -215,9 +215,6 @@ fun FieldsMainScreen(
                                     isReorderable = false
                                 )
                             }
-
-                            is Section.LibraryFields -> TODO()
-                            is Section.SpaceFields -> TODO()
                         }
                     }
                 )
@@ -262,8 +259,6 @@ private fun getContentType(item: UiFieldsListItem): String {
         is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
         is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
         is Section.File -> FieldsItemsContentType.SECTION_FILE
-        is Section.LibraryFields -> "content_type_section_library_fields"
-        is Section.SpaceFields -> "content_type_section_space_fields"
     }
 }
 
@@ -404,11 +399,9 @@ private fun LazyItemScope.SectionItem(
         )
 
         is Section.Local -> stringResource(R.string.object_type_fields_section_local_fields) to colorResource(
-            id = R.color.text_primary
+            id = R.color.text_secondary
         )
 
-        is Section.LibraryFields -> TODO()
-        is Section.SpaceFields -> TODO()
         is Section.File -> stringResource(R.string.object_type_fields_section_file) to colorResource(
             id = R.color.text_secondary
         )

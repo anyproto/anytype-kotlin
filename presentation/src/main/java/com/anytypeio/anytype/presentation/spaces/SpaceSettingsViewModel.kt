@@ -279,7 +279,13 @@ class SpaceSettingsViewModel(
                 sendToast("Coming soon")
             }
             UiEvent.OnQrCodeClicked -> {
-                sendToast("Coming soon")
+                viewModelScope.launch {
+                    commands.emit(
+                        Command.ShowInviteLinkQrCode(
+                            "test"
+                        )
+                    )
+                }
             }
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
@@ -647,6 +653,7 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
+        data class ShowInviteLinkQrCode(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
         data object ExitToVault : Command()

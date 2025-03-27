@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -174,46 +175,68 @@ class SpaceSettingsViewModel(
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty()
                 )
 
-                UiSpaceSettingsState.SpaceSettings(
-                    spaceTechInfo = spaceTechInfo,
-                    items = listOf(
+                val items = buildList<UiSpaceSettingsItem> {
+                    add(
                         UiSpaceSettingsItem.Icon(
                             icon = spaceView.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = gradientProvider
                             )
-                        ),
-                        Spacer(height = 16),
+                        )
+                    )
+                    add(Spacer(height = 24))
+                    add(
                         UiSpaceSettingsItem.Name(
                             name = spaceView.name.orEmpty()
-                        ),
-                        Spacer(height = 12),
+                        )
+                    )
+                    add(
+                        Spacer(height = 8),
+                    )
+                    add(
                         UiSpaceSettingsItem.Description(
                             description = spaceView.description.orEmpty()
-                        ),
-                        Spacer(height = 12),
-                        UiSpaceSettingsItem.Multiplayer,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Section.Collaboration,
-                        UiSpaceSettingsItem.Members(count = spaceMemberCount),
-                        UiSpaceSettingsItem.Section.ContentModel,
-                        UiSpaceSettingsItem.ObjectTypes,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Fields,
-                        UiSpaceSettingsItem.Section.Preferences,
-                        defaultObjectTypeSettingItem,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Wallpapers(current = wallpaper),
-                        UiSpaceSettingsItem.Section.DataManagement,
-                        UiSpaceSettingsItem.RemoteStorage,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.Bin,
-                        UiSpaceSettingsItem.Section.Misc,
-                        UiSpaceSettingsItem.SpaceInfo,
-                        Spacer(height = 8),
-                        UiSpaceSettingsItem.DeleteSpace,
-                        Spacer(height = 32)
-                    ),
+                        )
+                    )
+
+                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
+                        add(Spacer(height = 8))
+                        add(UiSpaceSettingsItem.Multiplayer)
+                    }
+
+                    add(UiSpaceSettingsItem.Section.Collaboration)
+
+                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
+                        add(UiSpaceSettingsItem.Members(count = spaceMemberCount))
+                    } else {
+                        add(UiSpaceSettingsItem.InviteMembers)
+                    }
+
+                    add(UiSpaceSettingsItem.Section.ContentModel)
+                    add(UiSpaceSettingsItem.ObjectTypes)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Fields)
+
+                    add(UiSpaceSettingsItem.Section.Preferences)
+                    add(defaultObjectTypeSettingItem)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
+
+                    add(UiSpaceSettingsItem.Section.DataManagement)
+                    add(UiSpaceSettingsItem.RemoteStorage)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Bin)
+
+                    add(UiSpaceSettingsItem.Section.Misc)
+                    add(UiSpaceSettingsItem.SpaceInfo)
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.DeleteSpace)
+                    add(Spacer(height = 32))
+                }
+
+                UiSpaceSettingsState.SpaceSettings(
+                    spaceTechInfo = spaceTechInfo,
+                    items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true
                 )
 

@@ -243,6 +243,7 @@ fun RemoteStorageItem(
     BaseButton(
         modifier = modifier,
         title = stringResource(id = R.string.remote_storage),
+        icon = R.drawable.ic_remote_storage_24
     )
 }
 

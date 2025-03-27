@@ -34,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -229,7 +230,21 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
+                        is UiSpaceSettingsItem.InviteMembers -> {
+                            item {
+                                BaseButton(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            // TODO
+                                        },
+                                    title = stringResource(id = R.string.space_settings_invite_members),
+                                    icon = R.drawable.ic_space_settings_invite_members
+                                )
+                            }
+                        }
                         UiSpaceSettingsItem.ObjectTypes -> {
                             item {
                                 ObjectTypesItem(

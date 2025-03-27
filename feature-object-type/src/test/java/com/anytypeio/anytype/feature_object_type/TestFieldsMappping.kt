@@ -181,10 +181,10 @@ class TestFieldsMappping {
             merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
         }
 
-        val parsedFields = fieldParser.getObjectTypeParsedFields(
+        val parsedFields = fieldParser.getObjectTypeParsedProperties(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            objectTypeConflictingFieldsIds = listOf()
+            objectTypeConflictingPropertiesIds = listOf()
         )
 
         assertEquals(
@@ -204,10 +204,10 @@ class TestFieldsMappping {
             merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
         }
 
-        val parsedFields = fieldParser.getObjectTypeParsedFields(
+        val parsedFields = fieldParser.getObjectTypeParsedProperties(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            objectTypeConflictingFieldsIds = listOf()
+            objectTypeConflictingPropertiesIds = listOf()
         )
 
         assertEquals(
@@ -235,10 +235,10 @@ class TestFieldsMappping {
             merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
         }
 
-        val parsedFields = fieldParser.getObjectTypeParsedFields(
+        val parsedFields = fieldParser.getObjectTypeParsedProperties(
             objectType = testObjectType,
             storeOfRelations = storeOfRelations,
-            objectTypeConflictingFieldsIds = listOf()
+            objectTypeConflictingPropertiesIds = listOf()
         )
 
         assertEquals(

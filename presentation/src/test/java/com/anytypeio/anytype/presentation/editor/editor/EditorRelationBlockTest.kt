@@ -161,11 +161,16 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             val title = MockTypicalDocumentFactory.title
             val header = MockTypicalDocumentFactory.header
             val block = MockTypicalDocumentFactory.a
+
+            val missedProperty = StubRelationObject(
+                format = Relation.Format.LONG_TEXT
+            )
+
             val relationBlock = Block(
                 id = MockDataFactory.randomUuid(),
                 fields = Block.Fields.empty(),
                 children = emptyList(),
-                content = Block.Content.RelationBlock(key = MockDataFactory.randomString())
+                content = Block.Content.RelationBlock(key = missedProperty.key)
             )
 
             val page = Block(
@@ -177,18 +182,9 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
             val doc = listOf(page, header, title, block, relationBlock)
 
-            val objectTypeId = MockDataFactory.randomString()
-            val objectTypeName = MockDataFactory.randomString()
-            val objectTypeDescription = MockDataFactory.randomString()
-
             val r1 = MockTypicalDocumentFactory.relationObject("Ad")
             val r2 = MockTypicalDocumentFactory.relationObject("De")
             val r3 = MockTypicalDocumentFactory.relationObject("HJ")
-            val relationObjectType = StubRelationObject(
-                key = Block.Fields.TYPE_KEY,
-                name = "Object Type",
-                format = Relation.Format.OBJECT
-            )
 
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
@@ -198,19 +194,14 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     r1.key to value1,
                     r2.key to value2,
                     r3.key to value3,
-                    relationObjectType.key to objectTypeId
-                )
-
-            val objectTypeFields =
-                mapOf(
-                    Relations.NAME to objectTypeName,
-                    Relations.DESCRIPTION to objectTypeDescription
+                    missedProperty.key to "Some Text",
+                    Relations.ID to root,
+                    Relations.TYPE to listOf(objType.id)
                 )
 
             val customDetails = ObjectViewDetails(
                 mapOf(
                     root to objectFields,
-                    objectTypeId to objectTypeFields
                 )
             )
 
@@ -223,7 +214,7 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
             )
 
             storeOfRelations.merge(
-                listOf(r1, r2, r3, relationObjectType)
+                listOf(r1, r2, r3)
             )
 
             val vm = buildViewModel()

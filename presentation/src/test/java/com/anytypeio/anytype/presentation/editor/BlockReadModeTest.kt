@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.editor
 import android.os.Build
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
@@ -141,7 +143,13 @@ class BlockReadModeTest : EditorViewModelTest() {
                 Event.Command.ShowObject(
                     root = root,
                     blocks = page,
-                    context = root
+                    context = root,
+                    details = mapOf(
+                        root to mapOf(
+                            Relations.ID to root,
+                            Relations.TYPE to listOf(objType.id)
+                        )
+                    )
                 )
             )
         )

@@ -171,7 +171,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                         Relations.ID to mentionHash,
                         Relations.LAYOUT to Layout.BASIC.code.toDouble(),
                         Relations.NAME to mentionText
-                    )
+                    ),
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.TYPE to listOf(objType.id)
+                    ),
                 )
             )
         )
@@ -862,7 +866,11 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                                     mentionTarget to mapOf(
                                         Relations.ID to mentionTarget,
                                         Relations.NAME to ""
-                                    )
+                                    ),
+                                    root to mapOf(
+                                        Relations.ID to root,
+                                        Relations.TYPE to listOf(objType.id)
+                                    ),
                                 ),
                                 objectRestrictions = emptyList()
                             ),
@@ -1001,6 +1009,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
+            root to mapOf(
+                Relations.ID to root,
+                Relations.TYPE to listOf(objType.id)
+            ),
         )
 
         val document = listOf(page, header, title, a)
@@ -1286,6 +1298,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
+            root to mapOf(
+                Relations.ID to root,
+                Relations.TYPE to listOf(objType.id)
+            ),
         )
 
         val document = listOf(page, header, title, a)
@@ -1443,6 +1459,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         val detailsAmend = mapOf(
             mentionTarget to fieldsUpdated1,
+            root to mapOf(
+                Relations.ID to root,
+                Relations.TYPE to listOf(objType.id)
+            ),
         )
 
         val document = listOf(page, header, title, a)

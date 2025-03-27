@@ -108,6 +108,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(it, "Error while opening edit object type properties screen")
                     }
                 }
+
+                ObjectTypeCommand.CloseFieldsScreen -> {
+                    navComposeController.popBackStack()
+                }
             }
         }
     }

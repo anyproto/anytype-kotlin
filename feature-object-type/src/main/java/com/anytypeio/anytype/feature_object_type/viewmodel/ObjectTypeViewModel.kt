@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.*
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
@@ -698,7 +699,7 @@ class ObjectTypeViewModel(
             FieldEvent.Section.OnAddToSidebarIconClick -> {
                 viewModelScope.launch {
                     commands.emit(
-                        ObjectTypeCommand.OpenEditTypePropertiesScreen(
+                        OpenEditTypePropertiesScreen(
                             typeId = vmParams.objectId,
                             space = vmParams.spaceId.id,
                         )
@@ -747,6 +748,11 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
+            FieldEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.CloseFieldsScreen)
+                }
+            }
         }
     }
 

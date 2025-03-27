@@ -1693,7 +1693,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_icon_title">Bewerk afbeelding</string>
     <string name="space_settings_save_button">Sla op</string>
     <string name="object_type_add_property_screen_title">Voeg eigenschap toe</string>
-    <string name="object_type_add_property_screen_create">Maak eigenschap \'%1$s\'\"</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Eigenschappen formaten</string>
     <string name="object_type_add_property_screen_section_existing">Bestaande eigenschappen</string>
     <string name="object_type_add_property_screen_search_hint">Zoek of maak nieuwe</string>

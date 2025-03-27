@@ -1678,6 +1678,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_section_data_management">Gestion de données</string>
     <string name="space_settings_section_misc">Divers</string>
     <string name="space_settings_invite">Inviter</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">Code QR</string>
     <string name="space_settings_members_button_members">Membres</string>
     <string name="space_settings_types_button">Types d\'objets</string>
@@ -1719,4 +1720,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_icon_change_title">Changer d\'icône</string>
     <string name="object_type_icon_remove">Supprimer</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 </resources>

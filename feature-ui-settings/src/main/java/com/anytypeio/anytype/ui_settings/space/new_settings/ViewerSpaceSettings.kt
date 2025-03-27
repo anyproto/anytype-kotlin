@@ -154,15 +154,9 @@ fun ViewerSpaceSettings(
     if (showTechInfo) {
         ModalBottomSheet(
             containerColor = colorResource(R.color.background_secondary),
-            onDismissRequest = {
-                showTechInfo = false
-            },
-            dragHandle = {
-                // Nothing.
-            },
-            content = {
-                SpaceInfoScreen(spaceTechInfo = info)
-            }
+            onDismissRequest = { showTechInfo = false },
+            dragHandle = null,
+            content = { SpaceInfoScreen(spaceTechInfo = info) }
         )
     }
 }

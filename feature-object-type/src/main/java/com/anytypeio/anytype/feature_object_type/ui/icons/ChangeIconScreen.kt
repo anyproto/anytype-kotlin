@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.icons
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
@@ -237,6 +238,10 @@ private fun IconPreviews(
         shape = RoundedCornerShape(size = 20.dp),
         containerColor = colorResource(id = R.color.background_primary),
         shadowElevation = 5.dp,
+        border = BorderStroke(
+            width = 0.5.dp,
+            color = colorResource(id = R.color.background_secondary)
+        )
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),

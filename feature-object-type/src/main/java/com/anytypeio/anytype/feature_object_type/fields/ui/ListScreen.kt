@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import android.os.Build
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -649,6 +650,10 @@ fun ItemDropDownMenu(
         },
         shape = RoundedCornerShape(10.dp),
         containerColor = colorResource(id = R.color.background_secondary),
+        border = BorderStroke(
+            width = 0.5.dp,
+            color = colorResource(id = R.color.background_secondary)
+        )
     ) {
         when (item) {
             is UiFieldsListItem.Item.Draggable -> {

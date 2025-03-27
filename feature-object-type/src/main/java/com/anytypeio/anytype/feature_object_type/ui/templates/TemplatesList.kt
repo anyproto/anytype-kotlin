@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.templates
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -107,6 +108,10 @@ fun TemplatesList(
                         offset = DpOffset(
                             x = 20.dp,
                             y = (-300).dp
+                        ),
+                        border = BorderStroke(
+                            width = 0.5.dp,
+                            color = colorResource(id = R.color.background_secondary)
                         )
                     ) {
                         if (!item.isDefault) {

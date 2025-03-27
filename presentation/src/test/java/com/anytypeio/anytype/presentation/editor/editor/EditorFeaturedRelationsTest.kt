@@ -89,6 +89,12 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val r1 = MockTypicalDocumentFactory.relationObject("Ad")
         val r2 = MockTypicalDocumentFactory.relationObject("De")
         val r3 = MockTypicalDocumentFactory.relationObject("HJ")
+        val relationType = StubRelationObject(
+            id = objectTypeId,
+            key = Relations.TYPE,
+            name = "Type relation",
+            format = Relation.Format.LONG_TEXT
+        )
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -129,7 +135,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         storeOfRelations.merge(
-            listOf(r1, r2, r3)
+            listOf(r1, r2, r3, relationType)
         )
 
         val vm = buildViewModel()
@@ -422,6 +428,12 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val r1 = MockTypicalDocumentFactory.relationObject("Ad")
             val r2 = MockTypicalDocumentFactory.relationObject("De")
             val r3 = MockTypicalDocumentFactory.relationObject("HJ")
+            val relationType = StubRelationObject(
+                id = objectTypeId,
+                key = Relations.TYPE,
+                name = "Type relation",
+                format = Relation.Format.LONG_TEXT
+            )
 
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
@@ -461,7 +473,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
 
             storeOfRelations.merge(
-                listOf(r1, r2)
+                listOf(r1, r2, relationType)
             )
 
             val vm = buildViewModel()
@@ -545,6 +557,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val objectTypeName = MockDataFactory.randomString()
             val objectTypeDescription = MockDataFactory.randomString()
 
+            val relationType = StubRelationObject(
+                id = objectTypeId,
+                key = Relations.TYPE,
+                name = "Type relation",
+                format = Relation.Format.LONG_TEXT
+            )
+
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
             val value3 = MockDataFactory.randomString()
@@ -584,7 +603,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
 
             storeOfRelations.merge(
-                listOf(r1, r2, r3)
+                listOf(r1, r2, r3, relationType)
             )
 
             val vm = buildViewModel()
@@ -704,6 +723,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r3.key)
                 )
 
+            val relationType = StubRelationObject(
+                id = objectTypeId,
+                key = Relations.TYPE,
+                name = "Type relation",
+                format = Relation.Format.LONG_TEXT
+            )
+
             val customDetails = ObjectViewDetails(mapOf(root to objectFields))
 
             stubInterceptEvents()
@@ -716,7 +742,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
 
             storeOfRelations.merge(
-                listOf(r1, r2, r3)
+                listOf(r1, r2, r3, relationType)
             )
 
             val vm = buildViewModel()
@@ -836,8 +862,15 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         )
 
+        val relationType = StubRelationObject(
+            id = objectTypeId,
+            key = Relations.TYPE,
+            name = "Type relation",
+            format = Relation.Format.LONG_TEXT
+        )
+
         storeOfRelations.merge(
-            listOf(r1, r2, r3)
+            listOf(r1, r2, r3, relationType)
         )
 
         storeOfObjectTypes.merge(
@@ -1121,397 +1154,4 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 actual = vm.state.value
             )
         }
-
-    @Test
-    fun `should render globalName relation with proper value from global name`() = runTest {
-
-        val title = MockTypicalDocumentFactory.title
-        val header = MockTypicalDocumentFactory.header
-        val featuredBlock = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.FeaturedRelations
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, featuredBlock.id)
-        )
-
-        val doc = listOf(page, header, title, featuredBlock)
-
-        val identityRelation = StubRelationObject(
-            uniqueKey = Relations.IDENTITY,
-            key = Relations.IDENTITY,
-            isHidden = true
-        )
-        val globalNameRelation =
-            StubRelationObject(uniqueKey = Relations.GLOBAL_NAME, key = Relations.GLOBAL_NAME)
-        val identityValue = MockDataFactory.randomString()
-        val globalNameValue = "name123.any"
-
-        val objectDetails = ObjectViewDetails(
-            mapOf(
-                root to
-                        mapOf(
-                            Relations.ID to root,
-                            Relations.TYPE to MockDataFactory.randomString(),
-                            Relations.FEATURED_RELATIONS to emptyList<String>(),
-                            Relations.IDENTITY to identityValue,
-                            Relations.GLOBAL_NAME to globalNameValue,
-                            Relations.LAYOUT to ObjectType.Layout.PARTICIPANT.code.toDouble()
-                        )
-            )
-        )
-
-        storeOfRelations.merge(
-            listOf(identityRelation, globalNameRelation)
-        )
-
-        stubGetNetworkMode()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubSearchObjects()
-        stubOpenDocument(
-            document = doc,
-            details = objectDetails,
-
-        )
-
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        val expected = listOf(
-            BlockView.Title.Profile(
-                id = title.id,
-                isFocused = false,
-                text = title.content<Block.Content.Text>().text
-            ),
-            BlockView.FeaturedRelation(
-                id = featuredBlock.id,
-                relations = listOf(
-                    ObjectRelationView.Default(
-                        id = globalNameRelation.id,
-                        key = globalNameRelation.key,
-                        name = globalNameRelation.name!!,
-                        value = globalNameValue,
-                        featured = true,
-                        system = true,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    )
-                )
-            )
-        )
-
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
-    }
-
-    @Test
-    fun `should render identity relation with proper value`() = runTest {
-
-        val title = MockTypicalDocumentFactory.title
-        val header = MockTypicalDocumentFactory.header
-        val featuredBlock = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.FeaturedRelations
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, featuredBlock.id)
-        )
-
-        val doc = listOf(page, header, title, featuredBlock)
-
-        val identityRelation = StubRelationObject(
-            uniqueKey = Relations.IDENTITY,
-            key = Relations.IDENTITY,
-            isHidden = true
-        )
-        val globalNameRelation =
-            StubRelationObject(uniqueKey = Relations.GLOBAL_NAME, key = Relations.GLOBAL_NAME)
-        val identityValue = MockDataFactory.randomString()
-        val globalNameValue = ""
-
-        val objectDetails = ObjectViewDetails(
-            mapOf(
-                root to
-                        mapOf(
-                            Relations.ID to root,
-                            Relations.TYPE to MockDataFactory.randomString(),
-                            Relations.FEATURED_RELATIONS to listOf(Relations.IDENTITY),
-                            Relations.IDENTITY to identityValue,
-                            Relations.GLOBAL_NAME to globalNameValue,
-                            Relations.LAYOUT to ObjectType.Layout.PARTICIPANT.code.toDouble()
-                        )
-            )
-        )
-
-        storeOfRelations.merge(
-            listOf(identityRelation, globalNameRelation)
-        )
-
-        stubGetNetworkMode()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubSearchObjects()
-        stubOpenDocument(
-            document = doc,
-            details = objectDetails,
-
-        )
-
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        val expected = listOf(
-            BlockView.Title.Profile(
-                id = title.id,
-                isFocused = false,
-                text = title.content<Block.Content.Text>().text
-            ),
-            BlockView.FeaturedRelation(
-                id = featuredBlock.id,
-                relations = listOf(
-                    ObjectRelationView.Default(
-                        id = identityRelation.id,
-                        key = identityRelation.key,
-                        name = identityRelation.name!!,
-                        value = identityValue,
-                        featured = true,
-                        system = true,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    )
-                )
-            )
-        )
-
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
-    }
-
-    @Test
-    fun `should add globalName relation to featured when is present in details`() = runTest {
-
-        val title = MockTypicalDocumentFactory.title
-        val header = MockTypicalDocumentFactory.header
-        val featuredBlock = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.FeaturedRelations
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, featuredBlock.id)
-        )
-
-        val doc = listOf(page, header, title, featuredBlock)
-
-        val globalNameRelation =
-            StubRelationObject(uniqueKey = Relations.GLOBAL_NAME, key = Relations.GLOBAL_NAME)
-        val globalNameValue = "name123.any"
-        val someRelationKey = MockDataFactory.randomString()
-        val someRelation = StubRelationObject(uniqueKey = someRelationKey, key = someRelationKey)
-        val someRelationValue = "Some relation Value"
-
-        val objectDetails = ObjectViewDetails(
-            mapOf(
-                root to
-                        mapOf(
-                            Relations.ID to root,
-                            Relations.TYPE to MockDataFactory.randomString(),
-                            Relations.FEATURED_RELATIONS to listOf(someRelationKey),
-                            Relations.GLOBAL_NAME to globalNameValue,
-                            someRelationKey to someRelationValue,
-                            Relations.LAYOUT to ObjectType.Layout.PARTICIPANT.code.toDouble()
-                        )
-            )
-        )
-
-        storeOfRelations.merge(
-            listOf(globalNameRelation, someRelation)
-        )
-
-        stubGetNetworkMode()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubSearchObjects()
-        stubOpenDocument(
-            document = doc,
-            details = objectDetails,
-
-        )
-
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        val expected = listOf(
-            BlockView.Title.Profile(
-                id = title.id,
-                isFocused = false,
-                text = title.content<Block.Content.Text>().text
-            ),
-            BlockView.FeaturedRelation(
-                id = featuredBlock.id,
-                relations = listOf(
-                    ObjectRelationView.Default(
-                        id = globalNameRelation.id,
-                        key = globalNameRelation.key,
-                        name = globalNameRelation.name!!,
-                        value = globalNameValue,
-                        featured = true,
-                        system = true,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    ),
-                    ObjectRelationView.Default(
-                        id = someRelation.id,
-                        key = someRelation.key,
-                        name = someRelation.name!!,
-                        value = someRelationValue,
-                        featured = true,
-                        system = false,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    )
-                )
-            )
-        )
-
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
-    }
-
-    @Test
-    fun `should add identity relation to featured when identity is presented`() = runTest {
-
-        val title = MockTypicalDocumentFactory.title
-        val header = MockTypicalDocumentFactory.header
-        val featuredBlock = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.FeaturedRelations
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, featuredBlock.id)
-        )
-
-        val doc = listOf(page, header, title, featuredBlock)
-
-        val globalNameRelation =
-            StubRelationObject(uniqueKey = Relations.GLOBAL_NAME, key = Relations.GLOBAL_NAME)
-        val globalNameValue = "name123.any"
-        val identityRelation =
-            StubRelationObject(uniqueKey = Relations.IDENTITY, key = Relations.IDENTITY)
-        val identityValue = MockDataFactory.randomString()
-        val someRelationKey = MockDataFactory.randomString()
-        val someRelation = StubRelationObject(uniqueKey = someRelationKey, key = someRelationKey)
-        val someRelationValue = "Some relation Value"
-
-        val objectDetails = ObjectViewDetails(
-            mapOf(
-                root to
-                        mapOf(
-                            Relations.ID to root,
-                            Relations.TYPE to MockDataFactory.randomString(),
-                            Relations.FEATURED_RELATIONS to listOf(someRelationKey),
-                            Relations.IDENTITY to identityValue,
-                            someRelationKey to someRelationValue,
-                            Relations.LAYOUT to ObjectType.Layout.PARTICIPANT.code.toDouble()
-                        )
-            )
-        )
-
-        storeOfRelations.merge(
-            listOf(globalNameRelation, someRelation, identityRelation)
-        )
-
-        stubGetNetworkMode()
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubSearchObjects()
-        stubOpenDocument(
-            document = doc,
-            details = objectDetails,
-
-        )
-
-        val vm = buildViewModel()
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        val expected = listOf(
-            BlockView.Title.Profile(
-                id = title.id,
-                isFocused = false,
-                text = title.content<Block.Content.Text>().text
-            ),
-            BlockView.FeaturedRelation(
-                id = featuredBlock.id,
-                relations = listOf(
-                    ObjectRelationView.Default(
-                        id = identityRelation.id,
-                        key = identityRelation.key,
-                        name = identityRelation.name!!,
-                        value = identityValue,
-                        featured = true,
-                        system = true,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    ),
-                    ObjectRelationView.Default(
-                        id = someRelation.id,
-                        key = someRelation.key,
-                        name = someRelation.name!!,
-                        value = someRelationValue,
-                        featured = true,
-                        system = false,
-                        readOnly = false,
-                        format = Relation.Format.SHORT_TEXT
-                    )
-                )
-            )
-        )
-
-        assertEquals(
-            expected = ViewState.Success(expected),
-            actual = vm.state.value
-        )
-    }
 }

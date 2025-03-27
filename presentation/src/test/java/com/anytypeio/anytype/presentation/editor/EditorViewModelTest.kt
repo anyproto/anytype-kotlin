@@ -414,7 +414,8 @@ open class EditorViewModelTest {
             root to mapOf(
                 Relations.ID to root,
                 Relations.TYPE to listOf(objType.id)
-            )
+            ),
+            objType.id to objType.map
         )
     )
 
@@ -468,18 +469,18 @@ open class EditorViewModelTest {
         stubUpdateBlocksMark()
         stubOpenPage(root, emptyList())
         stubUpdateText()
-//        openPage.stub {
-//            onBlocking {
-//                async(any())
-//            } doReturn Resultat.success(
-//                Result.Success(
-//                    Payload(
-//                        context = root,
-//                        events = emptyList()
-//                    )
-//                )
-//            )
-//        }
+        openPage.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.success(
+                Result.Success(
+                    Payload(
+                        context = root,
+                        events = emptyList()
+                    )
+                )
+            )
+        }
     }
 
     fun stubParsedProperties() {
@@ -2137,15 +2138,14 @@ open class EditorViewModelTest {
         )
 
         val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
             emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
+        stubInterceptThreadStatus()
         stubOpenPage(context = root)
         stubCreateBlock(root)
         stubUnlinkBlocks(root)
-        stubInterceptThreadStatus()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)

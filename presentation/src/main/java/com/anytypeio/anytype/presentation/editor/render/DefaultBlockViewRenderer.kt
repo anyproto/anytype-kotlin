@@ -2128,6 +2128,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             objectFeaturedPropertiesKeys.mapNotNull { key ->
                 storeOfRelations.getByKey(key)
             }
+                .sortedByDescending { it.key == Relations.TYPE }
         } else {
             currentObject.getFeaturedPropertiesIds(
                 storeOfRelations = storeOfRelations,

@@ -128,7 +128,6 @@ class DefaultBlockViewRendererTest {
             restrictions = restrictions,
             selection = emptySet(),
             parentScheme = schema,
-            featurePropertiesKeys = emptyList()
         )
     }
 

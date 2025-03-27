@@ -1681,6 +1681,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_section_data_management">Gegevensbeheer</string>
     <string name="space_settings_section_misc">Overig</string>
     <string name="space_settings_invite">Nodig uit</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR-code</string>
     <string name="space_settings_members_button_members">Leden</string>
     <string name="space_settings_types_button">Objecttypes</string>
@@ -1722,4 +1723,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_icon_change_title">Wijzig icoon</string>
     <string name="object_type_icon_remove">Verwijder</string>
     <string name="object_type_icon_change_title_search_hint">Zoek...</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 </resources>

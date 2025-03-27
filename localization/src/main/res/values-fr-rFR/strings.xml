@@ -1690,10 +1690,10 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_icon_title">Modifier l\'image</string>
     <string name="space_settings_save_button">Sauvegarder</string>
     <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'\"</string>
-    <string name="object_type_add_property_screen_section_types">Formats des propriétés »</string>
-    <string name="object_type_add_property_screen_section_existing">Existing properties\"</string>
-    <string name="object_type_add_property_screen_search_hint">Search or create new\"</string>
+    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_section_types">Properties formats</string>
+    <string name="object_type_add_property_screen_section_existing">Existing properties</string>
+    <string name="object_type_add_property_screen_search_hint">Rechercher ou créer un nouveau</string>
     <string name="new_property_hint">New property</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>

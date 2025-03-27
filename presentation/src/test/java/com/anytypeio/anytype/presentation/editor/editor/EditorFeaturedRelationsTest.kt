@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
@@ -1132,6 +1133,290 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     text = title.content<Block.Content.Text>().text,
                     emoji = null
+                ),
+                BlockView.Text.Numbered(
+                    isFocused = false,
+                    id = block.id,
+                    marks = emptyList(),
+                    background = block.parseThemeBackgroundColor(),
+                    text = block.content<Block.Content.Text>().text,
+                    alignment = block.content<Block.Content.Text>().align?.toView(),
+                    number = 1,
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                )
+            )
+
+            assertEquals(
+                expected = ViewState.Success(expected),
+                actual = vm.state.value
+            )
+        }
+
+    @Test
+    fun `should use Featured Properties Ids from Object Type when object featured ids are empty `() =
+        runTest {
+
+            val title = MockTypicalDocumentFactory.title
+            val header = MockTypicalDocumentFactory.header
+            val block = MockTypicalDocumentFactory.a
+            val featuredBlock = Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                children = emptyList(),
+                content = Block.Content.FeaturedRelations
+            )
+
+            val page = Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart,
+                children = listOf(header.id, featuredBlock.id, block.id)
+            )
+
+            val doc = listOf(page, header, title, block, featuredBlock)
+
+            val property1 = StubRelationObject(
+                key = "property1-key",
+                name = "Property 1",
+                format = Relation.Format.SHORT_TEXT
+            )
+            val property2 = StubRelationObject(
+                key = "property2-key",
+                name = "Property 2",
+                format = Relation.Format.SHORT_TEXT
+            )
+
+            val currentObjectType = StubObjectType(
+                id = MockDataFactory.randomString(),
+                recommendedFeaturedRelations = listOf(property1.id, property2.id)
+            )
+
+            val currObject = StubObject(
+                id = root,
+                objectType = currentObjectType.id,
+                space = defaultSpace,
+                extraFields = mapOf(
+                    property1.key to "value111",
+                    property2.key to "value222"
+                )
+            )
+
+            val objectDetails = ObjectViewDetails(
+                mapOf(
+                    root to currObject.map,
+                    currentObjectType.id to currentObjectType.map
+                )
+            )
+
+            storeOfRelations.merge(
+                listOf(property1, property2)
+            )
+
+            storeOfObjectTypes.merge(
+                types = listOf(currentObjectType)
+            )
+
+            stubGetNetworkMode()
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubSearchObjects()
+            stubOpenDocument(
+                document = doc,
+                details = objectDetails
+            )
+
+            val vm = buildViewModel()
+
+            vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
+
+            val expected = listOf(
+                BlockView.Title.Basic(
+                    id = title.id,
+                    isFocused = false,
+                    text = title.content<Block.Content.Text>().text,
+                    emoji = null
+                ),
+                BlockView.FeaturedRelation(
+                    id = featuredBlock.id,
+                    relations = listOf(
+                        ObjectRelationView.Default(
+                            id = property1.id,
+                            key = property1.key,
+                            name = property1.name.orEmpty(),
+                            value = "value111",
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        ),
+                        ObjectRelationView.Default(
+                            id = property2.id,
+                            key = property2.key,
+                            name = property2.name.orEmpty(),
+                            value = "value222",
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        )
+                    )
+                ),
+                BlockView.Text.Numbered(
+                    isFocused = false,
+                    id = block.id,
+                    marks = emptyList(),
+                    background = block.parseThemeBackgroundColor(),
+                    text = block.content<Block.Content.Text>().text,
+                    alignment = block.content<Block.Content.Text>().align?.toView(),
+                    number = 1,
+                    decorations = listOf(
+                        BlockView.Decoration(
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                )
+            )
+
+            assertEquals(
+                expected = ViewState.Success(expected),
+                actual = vm.state.value
+            )
+        }
+
+    @Test
+    fun `should use Featured Properties Ids from TargetObjectTypeId when object is Template and his FeatureRelations are empty`() =
+        runTest {
+
+            val title = MockTypicalDocumentFactory.title
+            val header = MockTypicalDocumentFactory.header
+            val block = MockTypicalDocumentFactory.a
+            val featuredBlock = Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                children = emptyList(),
+                content = Block.Content.FeaturedRelations
+            )
+
+            val page = Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart,
+                children = listOf(header.id, featuredBlock.id, block.id)
+            )
+
+            val doc = listOf(page, header, title, block, featuredBlock)
+
+            val property1 = StubRelationObject(
+                key = "property1-key",
+                name = "Property 1",
+                format = Relation.Format.SHORT_TEXT
+            )
+            val property2 = StubRelationObject(
+                key = "property2-key",
+                name = "Property 2",
+                format = Relation.Format.SHORT_TEXT
+            )
+
+            val property3 = StubRelationObject(
+                key = "property3-key",
+                name = "Property 3",
+                format = Relation.Format.SHORT_TEXT
+            )
+            val property4 = StubRelationObject(
+                key = "property4-key",
+                name = "Property 4",
+                format = Relation.Format.SHORT_TEXT
+            )
+
+            val templateObjType = StubObjectType(
+                id = MockDataFactory.randomString(),
+                uniqueKey = ObjectTypeIds.TEMPLATE,
+                layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                recommendedFeaturedRelations = listOf(property1.id, property2.id)
+            )
+
+            val targetObjectType = StubObjectType(
+                id = MockDataFactory.randomString(),
+                layout = ObjectType.Layout.BASIC.code.toDouble(),
+                recommendedFeaturedRelations = listOf(property3.id, property4.id)
+            )
+
+            val currObject = StubObject(
+                id = root,
+                objectType = templateObjType.id,
+                space = defaultSpace,
+                extraFields = mapOf(
+                    property1.key to "value111",
+                    property2.key to "value222",
+                    property3.key to "value333",
+                    property4.key to "value444",
+                    Relations.TARGET_OBJECT_TYPE to targetObjectType.id
+                )
+            )
+
+            val objectDetails = ObjectViewDetails(
+                mapOf(
+                    root to currObject.map,
+                    templateObjType.id to templateObjType.map
+                )
+            )
+
+            storeOfRelations.merge(
+                listOf(property1, property2, property3, property4)
+            )
+
+            storeOfObjectTypes.merge(
+                types = listOf(templateObjType, targetObjectType)
+            )
+
+            stubGetNetworkMode()
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubSearchObjects()
+            stubOpenDocument(
+                document = doc,
+                details = objectDetails
+            )
+
+            val vm = buildViewModel()
+
+            vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
+
+            val expected = listOf(
+                BlockView.Title.Basic(
+                    id = title.id,
+                    isFocused = false,
+                    text = title.content<Block.Content.Text>().text,
+                    emoji = null
+                ),
+                BlockView.FeaturedRelation(
+                    id = featuredBlock.id,
+                    relations = listOf(
+                        ObjectRelationView.Default(
+                            id = property3.id,
+                            key = property3.key,
+                            name = property3.name.orEmpty(),
+                            value = "value333",
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        ),
+                        ObjectRelationView.Default(
+                            id = property4.id,
+                            key = property4.key,
+                            name = property4.name.orEmpty(),
+                            value = "value444",
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        )
+                    )
                 ),
                 BlockView.Text.Numbered(
                     isFocused = false,

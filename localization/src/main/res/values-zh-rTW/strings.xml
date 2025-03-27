@@ -1668,6 +1668,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Invite</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">成員</string>
     <string name="space_settings_types_button">Object Types</string>
@@ -1709,4 +1710,5 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title">更改圖示</string>
     <string name="object_type_icon_remove">移除</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 </resources>

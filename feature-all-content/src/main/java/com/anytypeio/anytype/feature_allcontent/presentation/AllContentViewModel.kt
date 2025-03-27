@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -27,6 +30,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
@@ -112,7 +116,8 @@ class AllContentViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val createObjectType: CreateObjectType
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -833,7 +838,39 @@ class AllContentViewModel(
         when (item) {
             UiContentItem.NewType -> {
                 viewModelScope.launch {
-                    commands.emit(Command.OpenTypeCreation)
+                    createObjectType.execute(
+                        CreateObjectType.Params(
+                            space = vmParams.spaceId.id,
+                            name = ""
+                        )
+                    ).fold(
+                        onSuccess = { newType ->
+                            val spaceParams = provideParams(vmParams.spaceId.id)
+                            viewModelScope.sendEvent(
+                                analytics = analytics,
+                                eventName = libraryCreateType,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.permissions to spaceParams.permission,
+                                        EventsPropertiesKey.spaceType to spaceParams.spaceType
+                                    )
+                                )
+                            )
+                            if (newType == null) {
+                                Timber.e("Error while creating type")
+                                return@fold
+                            }
+                            commands.emit(
+                                NavigateToObjectType(
+                                    id = newType.id,
+                                    space = vmParams.spaceId.id
+                                )
+                            )
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while creating type")
+                        }
+                    )
                 }
             }
             is UiContentItem.Type -> {

@@ -1681,6 +1681,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_section_data_management">Veri Yönetimi</string>
     <string name="space_settings_section_misc">Diğer</string>
     <string name="space_settings_invite">Davet et</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">Karekod</string>
     <string name="space_settings_members_button_members">Üyeler</string>
     <string name="space_settings_types_button">Nesne Türleri</string>
@@ -1722,4 +1723,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_icon_change_title">Simgeyi değiştir</string>
     <string name="object_type_icon_remove">Kaldır</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 </resources>

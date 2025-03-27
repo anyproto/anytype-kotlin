@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <MotionScene xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:motion="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="urn:oasis:names:tc:xliff:document:1.2">
 
     <Transition
         motion:constraintSetEnd="@+id/end"
@@ -13,6 +14,17 @@
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
+        <Constraint
+            android:id="@+id/topToolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            app:visibilityMode="ignore"
+            motion:visibilityMode="ignore">
+            <PropertySet android:visibility="gone" />
+        </Constraint>
         <Constraint
             android:id="@+id/objectHeader"
             android:layout_width="0dp"
@@ -106,6 +118,17 @@
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
+        <Constraint
+            android:id="@+id/topToolbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toTopOf="parent"
+            app:visibilityMode="ignore"
+            motion:visibilityMode="ignore">
+            <PropertySet android:visibility="gone" />
+        </Constraint>
         <Constraint
             android:id="@+id/objectHeader"
             android:layout_width="0dp"

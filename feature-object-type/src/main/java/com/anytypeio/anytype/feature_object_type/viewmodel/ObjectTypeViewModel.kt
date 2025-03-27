@@ -457,6 +457,7 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnObjectTypeTitleUpdate -> {
+                uiTitleState.value = uiTitleState.value.copy(title = event.title)
                 updateTitle(event.title)
             }
 

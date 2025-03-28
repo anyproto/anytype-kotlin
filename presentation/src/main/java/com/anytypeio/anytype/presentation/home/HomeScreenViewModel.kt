@@ -2319,7 +2319,7 @@ class HomeScreenViewModel(
                     Timber.e(it, "Error while deleting / leaving space")
                 }
                 .onSuccess {
-                    // Forcing return to the vault even if space has hat.
+                    // Forcing return to the vault even if space has chat.
                     proceedWithExiting(
                         isSpaceRoot = true
                     )

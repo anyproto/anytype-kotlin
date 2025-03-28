@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -313,37 +314,29 @@ fun FieldListScreen(
 private fun SectionLocal(
     onLocalInfoIconClicked: () -> Unit = {}
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .padding(top = 23.dp)
+            .height(22.dp).
+        noRippleThrottledClickable{
+            onLocalInfoIconClicked()
+        },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier
-                .padding(bottom = 7.dp, start = 20.dp)
-                .align(Alignment.BottomStart),
+            modifier = Modifier.padding(start = 20.dp).weight(1.0f),
             text = stringResource(id = R.string.object_properties_section_local),
             style = BodyCalloutMedium,
             color = colorResource(R.color.text_primary),
         )
-        Box(
+        Image(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .height(37.dp)
-                .width(44.dp)
-                .noRippleThrottledClickable {
-                    onLocalInfoIconClicked()
-                }
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(bottom = 9.dp, end = 20.dp)
-                    .wrapContentSize()
-                    .align(Alignment.BottomEnd),
-                painter = painterResource(R.drawable.ic_section_local_fields),
-                contentDescription = "Section local fields info"
-            )
-        }
+                .wrapContentSize()
+                .padding(end = 14.dp),
+            painter = painterResource(R.drawable.ic_section_local_fields),
+            contentDescription = "Section local fields info"
+        )
     }
 }
 
@@ -450,7 +443,18 @@ fun FieldListScreenPreview() {
                     ),
                 )
             ),
-            Model.Section.Local
+            Model.Section.Local,
+            Model.Item(
+                view = ObjectRelationView.Default(
+                    id = "id55",
+                    system = false,
+                    key = "key55",
+                    name = "Local 55",
+                    value = "Valu55",
+                    format = RelationFormat.OBJECT
+                ),
+                isLocal = false
+            ),
         ),
         onRelationClicked = {},
         onLocalInfoIconClicked = {},

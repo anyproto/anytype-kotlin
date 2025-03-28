@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -2235,24 +2236,31 @@ class HomeScreenViewModel(
     fun onSpaceSettingsClicked(space: SpaceId) {
         viewModelScope.launch {
             val permission = userPermissions.value
-            if (permission?.isOwnerOrEditor() == true) {
+            if (permission?.isOwnerOrEditor() == false) {
                 navigation(Navigation.OpenOwnerOrEditorSpaceSettings(space = space.id))
             } else {
                 val targetSpaceView = spaceViewSubscriptionContainer.get(space)
                 if (targetSpaceView != null) {
                     val config = spaceManager.getConfig(space)
                     val creatorId = targetSpaceView.creator.orEmpty()
-                    val store = spaceMembers.get(space)
-                    val createdByScreenName = when(store) {
-                        is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
-                            store.members
-                                .find { m -> m.id == creatorId }
-                                ?.let { it.globalName ?: it.identity }
-                                ?: creatorId
+                    val createdByScreenName : String
+                    if (creatorId.isNotEmpty()) {
+                        val store = spaceMembers.get(space)
+                        createdByScreenName = when(store) {
+                            is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
+                                store.members
+                                    .find { m -> m.id == creatorId }
+                                    ?.let { it.globalName ?: it.identity }
+                                    ?.ifEmpty { null }
+                                    ?: creatorId
+                            }
+                            ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
+                                creatorId
+                            }
                         }
-                        ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
-                            creatorId
-                        }
+                    } else {
+                        Timber.w("Creator ID was empty")
+                        createdByScreenName = EMPTY_STRING_VALUE
                     }
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),

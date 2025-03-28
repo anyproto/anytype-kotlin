@@ -1648,7 +1648,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_this_shouldn_t_take_long">Bu işlem biraz zaman alabilir. Lütfen işlem tamamlanana kadar uygulamayı kapatmayın.</string>
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen biraz yer açın ve işlemi tekrarlayın.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Özellikler</string>
     <string name="field_text_title">Metin</string>
     <string name="field_text_empty">Giriş</string>

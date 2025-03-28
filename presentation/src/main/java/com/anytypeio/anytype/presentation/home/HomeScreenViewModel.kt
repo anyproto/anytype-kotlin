@@ -2313,17 +2313,22 @@ class HomeScreenViewModel(
 
     fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
         viewModelScope.launch {
-            leaveSpace
-                .async(space)
-                .onFailure {
-                    Timber.e(it, "Error while deleting / leaving space")
-                }
-                .onSuccess {
-                    // Forcing return to the vault even if space has chat.
-                    proceedWithExiting(
-                        isSpaceRoot = true
-                    )
-                }
+            val permission = userPermissionProvider.get(space)
+            if (permission != null && permission != SpaceMemberPermissions.OWNER) {
+                leaveSpace
+                    .async(space)
+                    .onFailure {
+                        Timber.e(it, "Error while deleting / leaving space")
+                    }
+                    .onSuccess {
+                        // Forcing return to the vault even if space has chat.
+                        proceedWithExiting(
+                            isSpaceRoot = true
+                        )
+                    }
+            } else {
+                Timber.e("Unexpected permission when trying to leave space: $permission")
+            }
         }
     }
 

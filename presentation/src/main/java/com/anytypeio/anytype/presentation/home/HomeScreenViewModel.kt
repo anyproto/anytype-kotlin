@@ -2289,15 +2289,9 @@ class HomeScreenViewModel(
                 viewModelScope.launch {
                     getSpaceInviteLink
                         .async(space)
-                        .onFailure {
-                            commands.emit(
-                                Command.ShareSpace(space)
-                            )
-                        }
+                        .onFailure { commands.emit(Command.ShareSpace(space)) }
                         .onSuccess { link ->
-                            commands.emit(
-                                Command.ShowInviteLinkQrCode(link.scheme)
-                            )
+                            commands.emit(Command.ShowInviteLinkQrCode(link.scheme))
                         }
                 }
             }

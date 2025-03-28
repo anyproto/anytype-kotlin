@@ -1645,7 +1645,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="migration_this_shouldn_t_take_long">Cela peut prendre un certain temps. Veuillez ne pas fermer l\'application avant que le processus soit terminé.</string>
     <string name="migration_error_try_again">Essayez de nouveau</string>
     <string name="migration_migration_failed">Échec de la migration</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Veuillez libérer de l\'espace et exécuter le processus à nouveau.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Propriétés</string>
     <string name="field_text_title">Texte</string>
     <string name="field_text_empty">Enter</string>

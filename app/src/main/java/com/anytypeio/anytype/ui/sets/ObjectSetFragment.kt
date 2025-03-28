@@ -244,6 +244,8 @@ open class ObjectSetFragment :
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
     private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
 
+    lateinit var titleTextWatcher: DefaultTextWatcher
+
     @Inject
     lateinit var factory: ObjectSetViewModelFactory
     private val vm: ObjectSetViewModel by viewModels { factory }
@@ -251,6 +253,7 @@ open class ObjectSetFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupOnBackPressedDispatcher()
+        titleTextWatcher = DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -362,10 +365,6 @@ open class ObjectSetFragment :
         binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
-
-        title.addTextChangedListener(
-            DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
-        )
 
         title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             vm.onTitleFocusChanged(hasFocus)
@@ -1368,6 +1367,8 @@ open class ObjectSetFragment :
     override fun onStart() {
         super.onStart()
 
+        title.addTextChangedListener(titleTextWatcher)
+
         vm.navPanelState.onEach {
             if (hasBinding) {
                 binding.bottomToolbar.setState(it)
@@ -1423,6 +1424,7 @@ open class ObjectSetFragment :
 
     override fun onStop() {
         super.onStop()
+        title.removeTextChangedListener(titleTextWatcher)
         vm.onStop()
     }
 

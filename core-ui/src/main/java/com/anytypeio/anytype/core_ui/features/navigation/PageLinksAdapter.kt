@@ -185,26 +185,24 @@ class BundledWidgetSourceHolder(
                     tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_favorites,
+                            R.drawable.ic_widget_system_favorites,
                             null
                         )
                     )
                 }
             }
-
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
                     tvSubtitle.gone()
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_recently_edited,
+                            R.drawable.ic_widget_system_recently_edited,
                             null
                         )
                     )
                 }
             }
-
             BundledWidgetSourceView.RecentLocal -> {
                 with(binding) {
                     tvTitle.setText(R.string.recently_opened)
@@ -212,13 +210,13 @@ class BundledWidgetSourceHolder(
                     tvSubtitle.setText(R.string.on_this_device)
                     ivIcon.setImageDrawable(
                         drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_recently_opened,
+                            R.drawable.ic_widget_system_recently_opened,
                             null
                         )
                     )
                 }
             }
-
+            // TODO remove this
             BundledWidgetSourceView.Sets -> {
                 with(binding) {
                     tvTitle.setText(R.string.sets)
@@ -231,6 +229,7 @@ class BundledWidgetSourceHolder(
                     )
                 }
             }
+            // TODO remove this
             BundledWidgetSourceView.Collections -> {
                 with(binding) {
                     tvTitle.setText(R.string.collections)

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
@@ -162,6 +163,6 @@ private fun taskIcon(isChecked: Boolean): ObjectIcon {
 }
 
 fun ObjectWrapper.Basic.getFileUrl(urlBuilder: UrlBuilder): String? {
-    val fileId = getValue<String>("fileId") ?: return null
+    val fileId = getValue<String>(Relations.FILE_ID) ?: return null
     return urlBuilder.file(fileId)
 }

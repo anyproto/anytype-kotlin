@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
+import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -37,7 +39,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
@@ -45,6 +46,7 @@ import com.bumptech.glide.request.target.Target
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -170,6 +172,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
     }
+
     open fun setImage(item: BlockView.Title) {
         Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
@@ -596,8 +599,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
-    class File(val binding: ItemBlockTitleFileBinding) : Title(binding.root),
-        LifecycleEventObserver {
+    class File(val binding: ItemBlockTitleFileBinding) : Title(binding.root) {
 
         override val icon: ObjectIconWidget = binding.objectIconWidget
         override val image: ImageView = binding.cover
@@ -605,67 +607,113 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
 
+        init {
+            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
+                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
+                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
+            }
+        }
+
+        fun bind(
+            item: BlockView.Title.File,
+        ) {
+            super.bind(
+                item = item,
+                onCoverClicked = {},
+                click = {}
+            )
+            icon.setIcon(item.icon)
+        }
+
+        override fun applyTextColor(item: BlockView.Title) {
+            //do nothing
+        }
+
+        override fun applyBackground(item: BlockView.Title) {
+            //do nothing
+        }
+    }
+
+
+    class Video(
+        private val videoBinding: ItemBlockTitleVideoBinding,
+        lifecycle: Lifecycle
+    ) : Title(videoBinding.root), LifecycleEventObserver {
+
+        override val icon: ObjectIconWidget = videoBinding.objectIconWidget
+        override val image: ImageView = videoBinding.cover
+        override val content: TextInputWidget = videoBinding.title
+        override val selectionView: View = itemView
+
         private var player: ExoPlayer? = null
         private var videoUrl: String? = null
 
-        fun bind(item: BlockView.Title.File, lifecycle: Lifecycle) {
-            super.bind(item, onCoverClicked = {}, click = {})
+        private val playerView: StyledPlayerView = videoBinding.playerView
+        private val playButton: ImageView = videoBinding.playButton
+
+        init {
             lifecycle.addObserver(this)
+        }
+
+        fun bind(item: BlockView.Title.Video) {
+            super.bind(
+                item = item,
+                onCoverClicked = {},
+                click = {}
+            )
             content.setText(item.text)
+            setupPreview(item)
+        }
 
-            if (item.icon is ObjectIcon.File && (item.icon as ObjectIcon.File).isVideo()) {
-                videoUrl = item.url
-                setupVideoPreview()
-            } else {
-                setupDefaultFileIcon(item.icon)
+        private fun setupPreview(item: BlockView.Title.Video) {
+            videoUrl = item.videoUrl
+            with(videoBinding) {
+                objectIconWidget.gone()
+                playerView.visible()
+                playButton.visible()
+                playButton.setOnClickListener { togglePlayback() }
             }
         }
 
-        private fun setupVideoPreview() {
-            binding.objectIconWidget.gone()
-            binding.cover.gone()
-            binding.playerView.visible()
-            binding.playButton.visible()
-            binding.playButton.setOnClickListener {
-                videoUrl?.let {
-                    playVideo(videoUrl!!)
-                }
+        private fun togglePlayback() {
+            videoUrl?.let { url ->
+                if (player?.isPlaying == true) pause() else play(url)
             }
         }
 
-        private fun setupDefaultFileIcon(fileIcon: ObjectIcon) {
-            binding.objectIconWidget.visible()
-            binding.cover.visible()
-            icon.setIcon(fileIcon)
-        }
-
-        private fun playVideo(url: String) {
+        fun play(url: String) {
             release()
-
-            val loadControl = DefaultLoadControl.Builder()
-                .setBufferDurationsMs(600, 1000, 250, 500)
-                .build()
-
             player = ExoPlayer.Builder(itemView.context)
-                .setLoadControl(loadControl)
-                .build().also { player ->
-                    binding.playerView.player = player
-
-                    player.setMediaItem(MediaItem.fromUri(url))
-                    player.prepare()
-                    player.playWhenReady = true
+                .setLoadControl(
+                    DefaultLoadControl.Builder()
+                        .setBufferDurationsMs(600, 1000, 250, 500)
+                        .build()
+                )
+                .build()
+                .apply {
+                    playerView.player = this
+                    setMediaItem(MediaItem.fromUri(url))
+                    prepare()
+                    playWhenReady = true
                 }
-
-            binding.playButton.gone()
+            playButton.gone()
         }
 
         fun pause() {
             player?.pause()
+            videoBinding.playButton.visible()
         }
 
         fun release() {
             player?.release()
             player = null
+        }
+
+
+        override fun applyTextColor(item: BlockView.Title) {
+        }
+
+        override fun applyBackground(item: BlockView.Title) {
         }
 
         override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
@@ -675,8 +723,5 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 else -> {}
             }
         }
-
-        override fun applyTextColor(item: BlockView.Title) {}
-        override fun applyBackground(item: BlockView.Title) {}
     }
 }

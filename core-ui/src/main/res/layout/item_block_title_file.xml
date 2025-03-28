@@ -6,80 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <LinearLayout
-        android:id="@+id/mediaContainer"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/cover"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"/>
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/playerContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="20dp"
-            app:cardCornerRadius="4dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/shape_tertiary"
-            app:strokeWidth="1dp">
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="200dp">
-
-                <ImageView
-                    android:id="@+id/videoThumbnail"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone" />
-
-                <com.google.android.exoplayer2.ui.StyledPlayerView
-                    android:id="@+id/playerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="gone"
-                    app:resize_mode="fit"
-                    app:use_controller="true" />
-
-                <ImageView
-                    android:id="@+id/playButton"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/play"
-                    android:visibility="gone"/>
-
-            </FrameLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <ImageView
-            android:id="@+id/cover"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone" />
-
-        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-            android:id="@+id/objectIconWidget"
-            android:layout_width="64dp"
-            android:layout_height="80dp"
-            android:layout_gravity="bottom"
-            android:layout_marginStart="28dp"
-            android:layout_marginTop="80dp"
-            android:background="@drawable/bg_title_file_icon"
-            android:clickable="true"
-            android:focusable="true"
-            android:transitionName="@string/logo_transition"
-            app:imageSize="80dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_mime_pdf" />
-
-    </LinearLayout>
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIconWidget"
+        android:layout_width="64dp"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="80dp"
+        app:imageSize="80dp"
+        android:clickable="true"
+        android:focusable="true"
+        tools:src="@drawable/ic_mime_pdf"
+        android:background="@drawable/bg_title_file_icon"
+        android:transitionName="@string/logo_transition"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -93,9 +43,9 @@
         app:ignoreDragAndDrop="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/mediaContainer"
-        app:layout_goneMarginTop="@dimen/dp_80"
+        app:layout_constraintTop_toBottomOf="@+id/objectIconWidget"
         app:onlyPasteAsPlaneText="true"
+        app:layout_goneMarginTop="@dimen/dp_80"
         tools:text="Check new Android version multiline"
         tools:visibility="visible" />
 

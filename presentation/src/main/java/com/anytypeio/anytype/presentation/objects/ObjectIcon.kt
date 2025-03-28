@@ -36,14 +36,7 @@ sealed class ObjectIcon {
         val mime: String?,
         val fileName: String?,
         val extensions: String? = null
-    ) : ObjectIcon(){
-        fun isVideo(): Boolean {
-            val videoExtensions = setOf("mp4", "mov", "avi", "mkv", "webm", "flv", "wmv")
-
-            return mime?.startsWith("video/") == true ||
-                    (extensions?.lowercase() in videoExtensions)
-        }
-    }
+    ) : ObjectIcon()
 
     data object Deleted : ObjectIcon()
 

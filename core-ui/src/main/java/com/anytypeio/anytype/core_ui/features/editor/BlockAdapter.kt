@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
@@ -194,6 +195,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -271,7 +273,7 @@ class BlockAdapter(
             is Video -> {
                 holder.recycle()
             }
-            is Title.File -> {
+            is Title.Video -> {
                 holder.release()
             }
         }
@@ -373,6 +375,11 @@ class BlockAdapter(
                     ItemBlockTitleFileBinding.inflate(inflater, parent, false)
                 )
             }
+            HOLDER_VIDEO_TITLE -> Title.Video(
+                ItemBlockTitleVideoBinding.inflate(inflater, parent, false),
+                lifecycle
+            )
+
             HOLDER_TODO_TITLE -> {
                 Title.Todo(
                     ItemBlockTitleTodoBinding.inflate(inflater, parent, false)
@@ -1029,6 +1036,13 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Title.File
                         )
                     }
+                    is Title.Video -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title.Video
+                        )
+                    }
+
                     is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1393,7 +1407,13 @@ class BlockAdapter(
             }
             is Title.File -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.File, lifecycle)
+                    bind(item = blocks[position] as BlockView.Title.File)
+                }
+            }
+
+            is Title.Video -> {
+                holder.apply {
+                    bind(item = blocks[position] as BlockView.Title.Video)
                 }
             }
             is Code -> {

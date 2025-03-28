@@ -1494,8 +1494,24 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
+            ObjectType.Layout.VIDEO -> {
+                BlockView.Title.Video(
+                    mode = Mode.READ,
+                    id = block.id,
+                    text = fieldParser.getObjectName(currentObject),
+                    videoUrl = currentObject.getFileUrl(urlBuilder),
+                    icon = currentObject.objectIcon(builder = urlBuilder),
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor()
+                )
+            }
+
             ObjectType.Layout.FILE,
-            ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
                 BlockView.Title.File(

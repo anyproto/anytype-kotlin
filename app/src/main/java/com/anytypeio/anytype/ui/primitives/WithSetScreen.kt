@@ -23,6 +23,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.compose.AndroidFragment
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
@@ -187,6 +188,7 @@ private fun MainContentSet(
                 space = space
             )
         ) { fragment ->
+            fragment.view?.findViewById<View>(R.id.topToolbar)?.gone()
             fragment.view?.findViewById<View>(R.id.objectHeader)?.visibility =
                 View.GONE
         }

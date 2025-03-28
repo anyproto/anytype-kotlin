@@ -10,18 +10,23 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import javax.inject.Inject
 import kotlin.getValue
+import timber.log.Timber
 
 class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
 
@@ -54,6 +59,27 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        subscribe(vm.commands) { command ->
+            Timber.d("Received command: $command")
+            when (command) {
+                is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.editTypePropertiesScreen,
+                            EditTypePropertiesFragment.args(
+                                objectId = command.typeId,
+                                space = command.space
+                            )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening edit object type properties screen")
+                    }
+                }
+                else -> {
+                    // do nothing
+                }
+            }
+        }
     }
 
     override fun onStart() {

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
@@ -142,6 +143,14 @@ object AllContentModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo, dispatchers)
+
+    @Provides
+    @PerScreen
+    @JvmStatic
+    fun createObjectType(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObjectType = CreateObjectType(repo, dispatchers)
 
     @Module
     interface Declarations {

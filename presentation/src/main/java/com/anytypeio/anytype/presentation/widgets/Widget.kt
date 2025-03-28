@@ -98,7 +98,7 @@ sealed class Widget {
             }
 
             data object Bin : Bundled() {
-                override val id: Id = BundledWidgetSourceIds.RECENT_LOCAL
+                override val id: Id = BundledWidgetSourceIds.BIN
                 override val type: Id? = null
             }
         }

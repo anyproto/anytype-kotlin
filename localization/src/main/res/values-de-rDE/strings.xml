@@ -1648,7 +1648,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte gib Speicherplatz frei und führe den Vorgang erneut aus.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Eigenschaften</string>
     <string name="field_text_title">Text</string>
     <string name="field_text_empty">Eingeben</string>

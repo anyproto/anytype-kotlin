@@ -84,7 +84,7 @@ fun ViewerSpaceSettings(
                     showTechInfo = true
                 },
                 onLeaveSpaceClicked = {
-                    // TODO
+                    uiEvent(UiEvent.OnLeaveSpaceClicked)
                 }
             )
         }

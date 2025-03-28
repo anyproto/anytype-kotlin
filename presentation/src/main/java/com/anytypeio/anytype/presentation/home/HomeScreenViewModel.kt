@@ -69,6 +69,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -102,6 +103,7 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -220,7 +222,8 @@ class HomeScreenViewModel(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    private val getSpaceInviteLink: GetSpaceInviteLink
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val leaveSpace: DeleteSpace
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1836,6 +1839,10 @@ class HomeScreenViewModel(
     }
 
     fun onBackClicked(isSpaceRoot: Boolean) {
+        proceedWithExiting(isSpaceRoot)
+    }
+
+    private fun proceedWithExiting(isSpaceRoot: Boolean) {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -2276,6 +2283,9 @@ class HomeScreenViewModel(
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch { commands.emit(Command.ShareSpace(space)) }
             }
+            UiEvent.OnLeaveSpaceClicked -> {
+                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+            }
             else -> {
                 Timber.w("Unexpected UI event: $uiEvent")
             }
@@ -2284,6 +2294,22 @@ class HomeScreenViewModel(
 
     fun onDismissViewerSpaceSettings() {
         viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Hidden
+    }
+
+    fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
+        viewModelScope.launch {
+            leaveSpace
+                .async(space)
+                .onFailure {
+                    Timber.e(it, "Error while deleting / leaving space")
+                }
+                .onSuccess {
+                    // Forcing return to the vault even if space has hat.
+                    proceedWithExiting(
+                        isSpaceRoot = true
+                    )
+                }
+        }
     }
 
     sealed class Navigation {
@@ -2363,7 +2389,8 @@ class HomeScreenViewModel(
         private val spaceInviteResolver: SpaceInviteResolver,
         private val exitToVaultDelegate: ExitToVaultDelegate,
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        private val getSpaceInviteLink: GetSpaceInviteLink
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val deleteSpace: DeleteSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2418,7 +2445,8 @@ class HomeScreenViewModel(
             spaceInviteResolver = spaceInviteResolver,
             exitToVaultDelegate = exitToVaultDelegate,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            getSpaceInviteLink = getSpaceInviteLink
+            getSpaceInviteLink = getSpaceInviteLink,
+            leaveSpace = deleteSpace
         ) as T
     }
 
@@ -2527,6 +2555,8 @@ sealed class Command {
     }
 
     data class ShowInviteLinkQrCode(val link: String) : Command()
+
+    data object ShowLeaveSpaceWarning : Command()
 }
 
 /**

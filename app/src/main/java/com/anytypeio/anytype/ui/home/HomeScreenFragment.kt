@@ -50,6 +50,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
+import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -367,6 +368,14 @@ class HomeScreenFragment : BaseComposeFragment(),
                 }.onFailure {
                     Timber.w(it, "Error while showing invite QR code from space settings in widgets")
                 }
+            }
+            is Command.ShowLeaveSpaceWarning -> {
+                val dialog = LeaveSpaceWarning.new()
+                dialog.onLeaveSpaceAccepted = {
+                    dialog.dismiss()
+                    vm.onLeaveSpaceAcceptedClicked(SpaceId(space))
+                }
+                dialog.show(childFragmentManager, null)
             }
             is Command.CreateSourceForNewWidget -> {
                 val dialog = WidgetSourceTypeFragment.new(

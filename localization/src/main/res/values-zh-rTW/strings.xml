@@ -1635,7 +1635,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">請再試一次</string>
     <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">屬性</string>
     <string name="field_text_title">文字</string>
     <string name="field_text_empty">輸入</string>

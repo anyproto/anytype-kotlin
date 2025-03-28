@@ -2038,8 +2038,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)

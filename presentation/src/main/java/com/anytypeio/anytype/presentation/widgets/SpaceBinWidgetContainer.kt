@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 
+@Deprecated("To be deleted in favor of system bin widget.")
 class SpaceBinWidgetContainer @Inject constructor(
     private val manager: SpaceManager,
     private val container: StorelessSubscriptionContainer

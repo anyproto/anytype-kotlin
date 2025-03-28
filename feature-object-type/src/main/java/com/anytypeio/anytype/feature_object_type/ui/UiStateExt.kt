@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -67,7 +68,8 @@ suspend fun buildUiPropertiesList(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     objectTypeConflictingPropertiesIds: List<Id>,
-    showHiddenProperty: Boolean
+    showHiddenProperty: Boolean,
+    objectPermissions: ObjectPermissions
 ): List<UiFieldsListItem> {
 
     val parsedProperties = fieldParser.getObjectTypeParsedProperties(
@@ -133,7 +135,7 @@ suspend fun buildUiPropertiesList(
         add(Section.Header(canAdd = false))
         addAll(headerItems)
 
-        add(Section.SideBar(canAdd = true))
+        add(Section.SideBar(canAdd = objectPermissions.canEditRelationsList))
         addAll(sidebarItems)
 
         //todo file fields are off for now

@@ -60,6 +60,7 @@ data class ObjectPermissions(
     val canChangeRecommendedLayoutForThisType: Boolean = false,
     val canCreateTemplatesForThisType: Boolean = false,
     val participantCanEdit: Boolean = false,
+    val canUnlinkPropertyFromType: Boolean = false
 )
 
 /**
@@ -161,13 +162,20 @@ fun ObjectWrapper.Type.toObjectPermissionsForTypes(
             && possibleToChangeLayoutLayouts.contains(recommendedLayout)
             && uniqueKey != ObjectTypeIds.TEMPLATE
 
+    val canUnlinkPropertyFromType = canEdit && !restrictions.contains(ObjectRestriction.DETAILS)
+            && !restrictions.contains(ObjectRestriction.RELATIONS)
+
     return ObjectPermissions(
         canDelete = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE),
         canEditDetails = canEditDetails && canEdit,
         canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
         canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
         canChangeRecommendedLayoutForThisType = canChangeRecommendedLayoutForObjectsThisType,
-        participantCanEdit = canEdit
+        participantCanEdit = canEdit,
+        canEditRelationsList = canEdit &&
+                canEditDetails &&
+                !restrictions.contains(ObjectRestriction.RELATIONS),
+        canUnlinkPropertyFromType = canUnlinkPropertyFromType
     )
 }
 

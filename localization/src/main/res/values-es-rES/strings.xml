@@ -1648,7 +1648,7 @@ En concreto,
     <string name="migration_this_shouldn_t_take_long">Esto puede llevar algún tiempo. No cierres la aplicación hasta que termine el proceso.</string>
     <string name="migration_error_try_again">Inténtalo de nuevo</string>
     <string name="migration_migration_failed">La migración ha fallado</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Libera unos %1$s MB de espacio y vuelve a ejecutar el proceso</string>
     <string name="fields_screen_title">Propiedades</string>
     <string name="field_text_title">Texto</string>
     <string name="field_text_empty">Entrar</string>

@@ -5,5 +5,5 @@ class NeedToUpdateApplicationException: Exception()
 class AccountMigrationNeededException: Exception()
 
 sealed class MigrationFailedException : Exception() {
-    data class NotEnoughSpace(val requiredSpace: Long) : MigrationFailedException()
+    data class NotEnoughSpace(val requiredSpaceInBytes: Long) : MigrationFailedException()
 }

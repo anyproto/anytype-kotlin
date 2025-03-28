@@ -304,7 +304,7 @@ fun MigrationFailedScreen(
 ) {
     val description = when(state) {
         is MigrationHelperDelegate.State.Failed.NotEnoughSpace -> {
-            stringResource(R.string.migration_error_please_free_up_space_and_run_the_process_again, state.requiredSpace)
+            stringResource(R.string.migration_error_please_free_up_space_and_run_the_process_again, state.requiredSpaceInMegabytes)
         }
         is MigrationHelperDelegate.State.Failed.UnknownError -> {
             state.error.message ?: stringResource(R.string.unknown_error)

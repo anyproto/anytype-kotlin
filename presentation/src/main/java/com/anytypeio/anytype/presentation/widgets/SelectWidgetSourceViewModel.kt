@@ -74,15 +74,13 @@ class SelectWidgetSourceViewModel(
                         stateData.postValue(
                             ObjectSearchView.Success(
                                 buildList {
-                                    add(NewObject)
                                     add(ObjectSearchSection.SelectWidgetSource.DefaultLists)
                                     addAll(
                                         listOf(
                                             BundledWidgetSourceView.Favorites,
-                                            BundledWidgetSourceView.Sets,
-                                            BundledWidgetSourceView.Collections,
                                             BundledWidgetSourceView.Recent,
                                             BundledWidgetSourceView.RecentLocal,
+                                            BundledWidgetSourceView.Bin
                                         )
                                     )
                                     add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSearchNewObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -177,30 +178,24 @@ class BundledWidgetSourceHolder(
     private val binding: ItemListObjectBinding
 ) : DefaultObjectViewAdapter.ObjectViewHolder(binding.root) {
 
+    init {
+        binding.ivIcon.binding.emojiContainer.invisible()
+    }
+
     fun bind(item: BundledWidgetSourceView) {
         when (item) {
             BundledWidgetSourceView.Favorites -> {
                 with(binding) {
                     tvTitle.setText(R.string.favorites)
                     tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_system_favorites,
-                            null
-                        )
-                    )
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_favorites)
                 }
             }
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
                     tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_system_recently_edited,
-                            null
-                        )
-                    )
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_recently_edited,)
                 }
             }
             BundledWidgetSourceView.RecentLocal -> {
@@ -208,12 +203,14 @@ class BundledWidgetSourceHolder(
                     tvTitle.setText(R.string.recently_opened)
                     tvSubtitle.visible()
                     tvSubtitle.setText(R.string.on_this_device)
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_system_recently_opened,
-                            null
-                        )
-                    )
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_recently_opened)
+                }
+            }
+            BundledWidgetSourceView.Bin -> {
+                with(binding) {
+                    tvTitle.setText(R.string.bin)
+                    tvSubtitle.gone()
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_bin)
                 }
             }
             // TODO remove this

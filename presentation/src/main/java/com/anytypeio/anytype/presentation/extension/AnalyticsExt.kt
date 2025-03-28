@@ -1563,6 +1563,9 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     BundledWidgetSourceView.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
+                    BundledWidgetSourceView.Bin -> {
+                        // TODO add analytics
+                    }
                 }
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)

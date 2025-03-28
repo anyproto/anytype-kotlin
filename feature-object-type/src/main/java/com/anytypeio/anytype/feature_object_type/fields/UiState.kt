@@ -115,24 +115,6 @@ sealed class UiFieldsListItem {
                 const val ID = "section_file_recommended"
             }
         }
-
-        data class SpaceFields(
-            override val id: Id = ID,
-            override val canAdd: Boolean = false
-        ) : Section() {
-            companion object {
-                const val ID = "section_space_fields"
-            }
-        }
-
-        data class LibraryFields(
-            override val id: Id = ID,
-            override val canAdd: Boolean = false
-        ) : Section() {
-            companion object {
-                const val ID = "section_library_fields"
-            }
-        }
     }
 }
 //endregion

@@ -1631,7 +1631,7 @@
     <string name="migration_this_shouldn_t_take_long">这可能需要一些时间。不要关闭本软件，直至更新完成。</string>
     <string name="migration_error_try_again">请再试一次</string>
     <string name="migration_migration_failed">迁移失败</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">请清理一些空间，然后再次运行该流程。</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">属性</string>
     <string name="field_text_title">正文</string>
     <string name="field_text_empty">输入</string>

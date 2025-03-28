@@ -1635,7 +1635,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">Ini mungkin perlu beberapa waktu. Mohon tidak menutup aplikasi hingga proses selesai.</string>
     <string name="migration_error_try_again">Coba lagi</string>
     <string name="migration_migration_failed">Migrasi gagal</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Bersihkan ruang penyimpanan lalu coba lagi.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Properti</string>
     <string name="field_text_title">Teks</string>
     <string name="field_text_empty">Masukkan</string>

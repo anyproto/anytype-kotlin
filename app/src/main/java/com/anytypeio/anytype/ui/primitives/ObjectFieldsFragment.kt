@@ -85,7 +85,8 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                         vm.onTypeIconClicked()
                     },
                     onRemoveFromObjectClicked = vm::onRemoveFromObjectClicked,
-                    onAddToTypeClicked = vm::onAddToTypeClicked
+                    onAddToTypeClicked = vm::onAddToTypeClicked,
+                    onHiddenToggle = vm::onHiddenToggle
                 )
                 val showLocalFieldExplanationScreen = vm.showLocalInfo.collectAsStateWithLifecycle().value
                 if (showLocalFieldExplanationScreen) {

@@ -134,6 +134,19 @@ class RelationListViewModel(
             Model.Item(it, isLocal = false)
         }
 
+        val hiddenFields = parsedFields.hidden.mapNotNull {
+            if (it.key == Relations.DESCRIPTION) return@mapNotNull null
+            it.view(
+                details = details,
+                values = details.getObject(ctx)?.map.orEmpty(),
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }.map {
+            Model.Item(it, isLocal = false)
+        }
+
         val sidebarFields = parsedFields.sidebar.mapNotNull {
             if (it.key == Relations.DESCRIPTION) return@mapNotNull null
             it.view(
@@ -175,22 +188,37 @@ class RelationListViewModel(
         }
 
         return buildList {
-            if (headerFields.isNotEmpty()) {
-                add(Model.Section.Header)
-                addAll(headerFields)
-            }
+            //DROID-3505 - temporarily disable header fields
+//            if (headerFields.isNotEmpty()) {
+//                add(Model.Section.Header)
+//                addAll(headerFields)
+//            }
 
             //todo file fields are off for now
             if (false) {
                 if (sidebarFields.isNotEmpty() || filesFields.isNotEmpty()) {
-                    add(Model.Section.SideBar)
                     addAll(sidebarFields + filesFields)
                 }
             } else {
                 if (sidebarFields.isNotEmpty()) {
-                    add(Model.Section.SideBar)
                     addAll(sidebarFields)
                 }
+            }
+
+            val currentHiddenState = views.value.firstOrNull { it is Model.Section.Hidden }
+            if (currentHiddenState is Model.Section.Hidden.Shown) {
+                add(
+                    Model.Section.Hidden.Shown(
+                        hiddenFields
+                    )
+                )
+                addAll(hiddenFields)
+            } else {
+                add(
+                    Model.Section.Hidden.Unshown(
+                        hiddenFields
+                    )
+                )
             }
 
             if (localFields.isNotEmpty()) {
@@ -298,6 +326,33 @@ class RelationListViewModel(
                 )
             }
         }
+    }
+
+    fun onHiddenToggle(item: Model.Section.Hidden) {
+        val currentList = views.value
+
+        val index = currentList.indexOfFirst {
+            it is Model.Section.Hidden
+        }
+        if (index == -1) return
+
+        val newList = currentList.toMutableList()
+
+        when (item) {
+            is Model.Section.Hidden.Shown -> {
+                newList[index] = Model.Section.Hidden.Unshown(item.items)
+                repeat(item.items.size) {
+                    if (newList.size > index + 1) {
+                        newList.removeAt(index + 1)
+                    }
+                }
+            }
+            is Model.Section.Hidden.Unshown -> {
+                newList[index] = Model.Section.Hidden.Shown(item.items)
+                newList.addAll(index + 1, item.items)
+            }
+        }
+        views.value = newList
     }
 
     fun onRemoveFromObjectClicked(item: Model.Item) {
@@ -685,6 +740,20 @@ class RelationListViewModel(
 
             data object Local : Section() {
                 override val identifier: String get() = "Section_Local"
+            }
+
+            sealed class Hidden : Section() {
+                data class Shown(
+                    val items: List<Model.Item>
+                ) : Hidden() {
+                    override val identifier: String get() = "Section_Hidden_Shown"
+                }
+
+                data class Unshown(
+                    val items: List<Model.Item>
+                ) : Hidden() {
+                    override val identifier: String get() = "Section_Hidden_Unshown"
+                }
             }
         }
 

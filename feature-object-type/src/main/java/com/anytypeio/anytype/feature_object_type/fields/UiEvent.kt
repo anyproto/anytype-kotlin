@@ -6,6 +6,8 @@ sealed class FieldEvent {
 
     data object OnEditPropertyScreenDismiss : FieldEvent()
 
+    data object OnBackClick : FieldEvent()
+
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
     sealed class FieldItemMenu : FieldEvent() {
@@ -30,5 +32,7 @@ sealed class FieldEvent {
     sealed class EditProperty : FieldEvent() {
         data class OnPropertyNameUpdate(val name: String) : EditProperty()
         data object OnSaveButtonClicked : EditProperty()
+        data object OnLimitTypesClick : EditProperty()
+        data object OnLimitTypesDismiss : EditProperty()
     }
 }

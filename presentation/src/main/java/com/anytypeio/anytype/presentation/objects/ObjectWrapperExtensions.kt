@@ -4,12 +4,16 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MAX_SNIPPET_SIZE
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
@@ -24,7 +28,8 @@ suspend fun ObjectWrapper.Basic.values(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectRelationValueView> {
     val values = mutableListOf<DefaultObjectRelationValueView>()
     relations.forEach { relation ->
@@ -199,7 +204,8 @@ suspend fun ObjectWrapper.Basic.values(
                     relation = relation.key,
                     urlBuilder = urlBuilder,
                     storeOfObjects = storeOfObjects,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
                 val value = if (objects.isEmpty()) {
                     DefaultObjectRelationValueView.Empty(
@@ -229,14 +235,16 @@ suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     settings: List<DVViewerRelation>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectRelationValueView> {
     return values(
         relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
         urlBuilder = urlBuilder,
         storeOfObjects = storeOfObjects,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 }
 
@@ -362,4 +370,41 @@ private fun updateObjectIcon(obj: ObjectView): ObjectView {
         is ObjectView.Default -> obj.copy(icon = ObjectIcon.None)
         is ObjectView.Deleted -> obj
     }
+}
+
+/**
+ * Retrieves the list of featured header property IDs for the current [ObjectWrapper.Basic] object.
+ *
+ * All objects have an associated type which can be obtained from [StoreOfObjectTypes]. In the case that the object's
+ * type is a Template (i.e. its unique key equals [ObjectTypeIds.TEMPLATE]), the target object type is resolved using
+ * the [targetObjectType] property. Once the effective object type is determined, the function uses [FieldParser] to
+ * obtain parsed properties and returns the header IDs.
+ *
+ * @param storeOfObjectTypes The store that provides object types.
+ * @param storeOfRelations The store that provides relations between objects.
+ * @param fieldParser The parser used to extract parsed properties from an object.
+ * @return A list of header property IDs, or an empty list if the necessary object type is not found.
+ */
+suspend fun ObjectWrapper.Basic.getFeaturedPropertiesIds(
+    storeOfObjectTypes: StoreOfObjectTypes,
+    storeOfRelations: StoreOfRelations,
+    fieldParser: FieldParser,
+): List<Id> {
+    // Retrieve the object's current type.
+    val currentObjType = storeOfObjectTypes.getTypeOfObject(this) ?: return emptyList()
+
+    // Determine the effective object type. If the type is TEMPLATE, use the target object type.
+    val effectiveType = if (currentObjType.uniqueKey == ObjectTypeIds.TEMPLATE) {
+        this.targetObjectType?.let { storeOfObjectTypes.get(it) } ?: return emptyList()
+    } else {
+        currentObjType
+    }
+
+    // Parse the object's properties using the effective type.
+    val parsedProperties = fieldParser.getObjectParsedProperties(
+        objectType = effectiveType,
+        objPropertiesKeys = this.map.keys.toList(),
+        storeOfRelations = storeOfRelations
+    )
+    return parsedProperties.header.map { it.id }
 }

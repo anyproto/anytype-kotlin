@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signin
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,23 +26,14 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
-import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -57,6 +47,7 @@ import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLog
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
 import com.anytypeio.anytype.ui.update.MigrationFailedScreen
 import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
+import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import kotlin.Unit
 
 @Composable
@@ -75,7 +66,8 @@ fun RecoveryScreenWrapper(
         onDebugAccountTraceClicked = {
             vm.onAccountThraceButtonClicked()
         },
-        onRetryMigrationClicked = vm::onRetryMigrationClicked
+        onRetryMigrationClicked = vm::onRetryMigrationClicked,
+        onStartMigrationClicked = vm::onStartMigrationClicked
     )
 }
 
@@ -88,7 +80,8 @@ fun RecoveryScreen(
     state: SetupState,
     onEnterMyVaultClicked: () -> Unit,
     onDebugAccountTraceClicked: () -> Unit,
-    onRetryMigrationClicked: (Id) -> Unit
+    onRetryMigrationClicked: (Id) -> Unit,
+    onStartMigrationClicked: (Id) -> Unit
 ) {
     val focus = LocalFocusManager.current
     val context = LocalContext.current
@@ -223,84 +216,30 @@ fun RecoveryScreen(
                 }
             }
         )
-        if (state is SetupState.Migration.InProgress) {
-            MigrationInProgressScreen()
-        } else if(state is SetupState.Migration.Failed) {
-            MigrationFailedScreen(
-                state = state.state,
-                onRetryClicked = {
-                    onRetryMigrationClicked(state.account)
+
+        if (state is SetupState.Migration) {
+            when(state) {
+                is SetupState.Migration.Failed -> {
+                    MigrationFailedScreen(
+                        state = state.state,
+                        onRetryClicked = {
+                            onRetryMigrationClicked(state.account)
+                        }
+                    )
                 }
-            )
+                is SetupState.Migration.InProgress -> {
+                    MigrationInProgressScreen()
+                }
+                is SetupState.Migration.AwaitingStart -> {
+                    MigrationStartScreen(
+                        onStartUpdate = {
+                            onStartMigrationClicked(state.account)
+                        }
+                    )
+                }
+            }
         }
     }
 }
 
 typealias Mnemonic = String
-
-object MnemonicPhraseFormatter : VisualTransformation {
-
-    override fun filter(text: AnnotatedString): TransformedText {
-        val transformed = buildAnnotatedString {
-            var colorIndex = 0
-            var isPreviousLetterOrDigit = false
-            text.forEachIndexed { index, char ->
-                if (char.isLetterOrDigit()) {
-                    withStyle(
-                        style = SpanStyle(
-                            color = MnemonicPhrasePaletteColors[colorIndex]
-                        )
-                    ) {
-                        append(char)
-                    }
-                    isPreviousLetterOrDigit = true
-                } else {
-                    if (isPreviousLetterOrDigit) {
-                        colorIndex = colorIndex.inc()
-                        isPreviousLetterOrDigit = false
-                    }
-                    append(char)
-                }
-                if (colorIndex > MnemonicPhrasePaletteColors.lastIndex) {
-                    colorIndex = 0
-                }
-            }
-        }
-        return TransformedText(
-            transformed,
-            OffsetMapping.Identity
-        )
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-@Composable
-fun RecoveryScreenPreview() {
-    RecoveryScreen(
-        onBackClicked = {},
-        onNextClicked = {},
-        onActionDoneClicked = {},
-        onScanQrClicked = {},
-        state = SetupState.Idle,
-        onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {},
-        onRetryMigrationClicked = {}
-    )
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-@Composable
-fun RecoveryScreenLoadingPreview() {
-    RecoveryScreen(
-        onBackClicked = {},
-        onNextClicked = {},
-        onActionDoneClicked = {},
-        onScanQrClicked = {},
-        state = SetupState.InProgress,
-        onEnterMyVaultClicked = {},
-        onDebugAccountTraceClicked = {},
-        onRetryMigrationClicked = {}
-    )
-}

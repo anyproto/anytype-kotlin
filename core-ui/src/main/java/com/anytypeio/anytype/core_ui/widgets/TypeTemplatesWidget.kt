@@ -78,7 +78,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
@@ -953,44 +953,26 @@ fun ObjectTypesList(
                                 },
                             contentAlignment = Alignment.Center
                         ) {
-                            val typeIcon = item.type.iconEmoji
-                            val (rowPaddingStart, textPaddingStart) = if (typeIcon != null) {
-                                14.dp to 8.dp
-                            } else {
-                                16.dp to 0.dp
-                            }
+                            val (rowPaddingStart, textPaddingStart) = 14.dp to 8.dp
                             Row(
                                 modifier = Modifier.padding(
-                                    start = rowPaddingStart,
+                                    start = 14.dp,
                                     end = 16.dp
                                 ),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (typeIcon != null) {
-                                    Box(
-                                        modifier = Modifier.wrapContentSize()
-                                    ) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(
-                                                Emojifier.safeUri(
-                                                    typeIcon
-                                                )
-                                            ),
-                                            contentDescription = "Type's icon",
-                                            modifier = Modifier
-                                                .size(18.dp)
-                                                .align(Alignment.Center),
-                                            alignment = Alignment.Center
-                                        )
-                                    }
-                                }
+                                ListWidgetObjectIcon(
+                                    modifier = Modifier.size(20.dp),
+                                    icon = item.icon
+                                )
                                 Text(
                                     text = item.type.name.orEmpty(),
                                     style = BodyCalloutMedium.copy(
                                         color = colorResource(id = R.color.text_primary)
                                     ),
+                                    textAlign = TextAlign.Center,
                                     modifier = Modifier
-                                        .padding(start = textPaddingStart)
+                                        .padding(start = 8.dp)
                                         .widthIn(max = 100.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis

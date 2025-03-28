@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**
@@ -34,7 +35,7 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
     isWithBookmark: Boolean = false,
     excludeTypes: List<String> = emptyList(),
     selectedTypes: List<String> = emptyList(),
-    useCustomComparator: Boolean = true
+    useCustomComparator: Boolean = true,
 ): List<ObjectTypeView> {
     val result = mutableListOf<ObjectTypeView>()
     forEach { obj ->

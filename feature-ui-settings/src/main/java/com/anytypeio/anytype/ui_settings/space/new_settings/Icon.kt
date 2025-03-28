@@ -75,17 +75,20 @@ fun NewSpaceIcon(
                 }
             }
         )
-        Text(
-            modifier = Modifier
-                .padding(top = 8.dp)
-                .noRippleThrottledClickable {
-                    if (isEditEnabled) {
-                        isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
-                    }
-                },
-            text = stringResource(R.string.space_settings_icon_title),
-            style = Caption1Medium
-        )
+        if (isEditEnabled) {
+            Text(
+                modifier = Modifier
+                    .padding(top = 8.dp)
+                    .noRippleThrottledClickable {
+                        if (isEditEnabled) {
+                            isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+                        }
+                    },
+                text = stringResource(R.string.space_settings_icon_title),
+                style = Caption1Medium,
+                color = colorResource(R.color.text_secondary)
+            )
+        }
         MaterialTheme(
             shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
         ) {

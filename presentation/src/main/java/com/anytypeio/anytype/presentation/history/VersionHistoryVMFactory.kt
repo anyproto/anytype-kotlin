@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.history.SetVersion
 import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
@@ -26,7 +27,8 @@ class VersionHistoryVMFactory @Inject constructor(
     private val setVersion: SetVersion,
     private val renderer: DefaultBlockViewRenderer,
     private val setStateReducer: ObjectStateReducer,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -42,7 +44,8 @@ class VersionHistoryVMFactory @Inject constructor(
             renderer = renderer,
             setVersion = setVersion,
             setStateReducer = setStateReducer,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }
 }

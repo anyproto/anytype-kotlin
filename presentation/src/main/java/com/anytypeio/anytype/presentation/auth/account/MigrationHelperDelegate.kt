@@ -5,9 +5,7 @@ import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
@@ -26,8 +24,11 @@ interface MigrationHelperDelegate {
                 .map { result ->
                     when(result) {
                         is Resultat.Failure -> {
-                            if (result.exception is MigrationFailedException.NotEnoughSpace) {
-                                State.Failed.NotEnoughSpace
+                            val exception = result.exception
+                            if (exception is MigrationFailedException.NotEnoughSpace) {
+                                State.Failed.NotEnoughSpace(
+                                    requiredSpaceInMegabytes = (exception.requiredSpaceInBytes / 1_048_576)
+                                )
                             } else {
                                 State.Failed.UnknownError(result.exception)
                             }
@@ -45,7 +46,7 @@ interface MigrationHelperDelegate {
         data object InProgress : State()
         sealed class Failed : State() {
             data class UnknownError(val error: Throwable) : Failed()
-            data object NotEnoughSpace : Failed()
+            data class NotEnoughSpace(val requiredSpaceInMegabytes: Long) : Failed()
         }
         data object Migrated : State()
     }

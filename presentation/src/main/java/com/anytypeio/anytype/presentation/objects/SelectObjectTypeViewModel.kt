@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -57,7 +59,8 @@ class SelectObjectTypeViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
     private val analytics: Analytics,
-    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
@@ -133,7 +136,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty(),
+                                        icon = type.objectIcon(),
                                         isPinned = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
@@ -152,7 +155,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty(),
+                                        icon = type.objectIcon(),
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinnable = true,
@@ -172,7 +175,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty(),
+                                        icon = type.objectIcon(),
                                         isPinnable = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
@@ -190,7 +193,7 @@ class SelectObjectTypeViewModel(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty(),
+                                        icon = type.objectIcon(),
                                         isFromLibrary = true,
                                         isPinned = false,
                                         isPinnable = false,
@@ -464,7 +467,8 @@ class SelectObjectTypeViewModel(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
         private val analytics: Analytics,
-        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -480,7 +484,8 @@ class SelectObjectTypeViewModel(
             createBookmarkObject = createBookmarkObject,
             createPrefilledNote = createPrefilledNote,
             analytics = analytics,
-            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            urlBuilder = urlBuilder
         ) as T
     }
 
@@ -515,7 +520,7 @@ sealed class SelectTypeView {
         val id: Id,
         val typeKey: Key,
         val name: String,
-        val icon: String,
+        val icon: ObjectIcon,
         val isFromLibrary: Boolean = false,
         val isPinned: Boolean = false,
         val isFirstInSection: Boolean = false,

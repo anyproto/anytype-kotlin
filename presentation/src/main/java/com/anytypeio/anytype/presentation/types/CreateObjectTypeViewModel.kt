@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("Before Primitives, to delete")
 class CreateObjectTypeViewModel(
     private val createObjectType: CreateObjectType,
     private val urlBuilder: UrlBuilder,

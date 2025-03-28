@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.core.os.bundleOf
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -16,7 +15,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -27,30 +25,19 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
-import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
-import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
-import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_NAME
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY_TYPE
-import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_UNINSTALL_TYPE
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ICON
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ID
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -62,35 +49,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     private val vm by viewModels<AllContentViewModel> { factory }
 
     private val space get() = argString(ARG_SPACE)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setFragmentResultListener(REQUEST_KEY_UNINSTALL_TYPE) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_NAME))
-            vm.uninstallObject(id, AllContentTab.TYPES, name)
-        }
-        setFragmentResultListener(REQUEST_KEY_MODIFY_TYPE) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_NAME))
-            val icon = requireNotNull(bundle.getString(REQUEST_UNINSTALL_TYPE_ARG_ICON))
-            vm.updateObject(id, name, icon)
-        }
-        setFragmentResultListener(REQUEST_KEY_UNINSTALL_RELATION) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_NAME))
-            vm.uninstallObject(id, AllContentTab.RELATIONS, name)
-        }
-        setFragmentResultListener(REQUEST_KEY_MODIFY_RELATION) { _, bundle ->
-            val id = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_ID))
-            val name = requireNotNull(bundle.getString(REQUEST_UNINSTALL_RELATION_ARG_NAME))
-            vm.updateObject(
-                id = id,
-                name = name,
-                icon = null
-            )
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -140,6 +98,16 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     }.onFailure {
                         toast("Failed to open document")
                         Timber.e(it, "Failed to open document from all content")
+                    }
+                }
+                is AllContentViewModel.Command.NavigateToObjectType -> {
+                    runCatching {
+                        navigation().openObjectType(
+                            objectId = command.id,
+                            space = command.space
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to open object type object from all content")
                     }
                 }
                 is AllContentViewModel.Command.OpenChat -> {
@@ -218,14 +186,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 }
 
                 is AllContentViewModel.Command.OpenTypeCreation -> {
-                    runCatching {
-                        navigation().openTypeCreationScreen(
-                            name = ""
-                        )
-                    }.onFailure {
-                        toast("Failed to open type creation screen")
-                        Timber.e(it, "Failed to open type creation screen from all content")
-                    }
+                    //todo: implement new screen logic
                 }
 
                 is AllContentViewModel.Command.OpenRelationCreation -> {
@@ -242,17 +203,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 }
 
                 is AllContentViewModel.Command.OpenRelationEditing -> {
-                    runCatching {
-                        navigation().openRelationEditingScreen(
-                            typeName = command.typeName,
-                            id = command.id,
-                            iconUnicode = command.iconUnicode,
-                            readOnly = command.readOnly
-                        )
-                    }.onFailure {
-                        toast("Failed to open relation editing screen")
-                        Timber.e(it, "Failed to open relation editing screen from all content")
-                    }
+                    //todo: implement new screen logic
                 }
                 is AllContentViewModel.Command.NavigateToDateObject -> {
                     runCatching {
@@ -365,7 +316,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             // Do nothing.
         } else {
             super.onApplyWindowRootInsets(view)

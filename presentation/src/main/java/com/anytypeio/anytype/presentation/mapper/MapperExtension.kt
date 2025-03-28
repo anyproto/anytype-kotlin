@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMarkup
@@ -597,7 +598,8 @@ suspend fun List<Id>.toGridRecordRows(
     columns: List<ColumnView>,
     builder: UrlBuilder,
     store: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): List<Viewer.GridView.Row> {
     val rows = mutableListOf<Viewer.GridView.Row>()
     forEach { id ->
@@ -608,7 +610,8 @@ suspend fun List<Id>.toGridRecordRows(
                 obj = record,
                 store = store,
                 builder = builder,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
             rows.add(row)
         } else {
@@ -724,23 +727,26 @@ fun ColumnView.Format.toRelationFormat(): RelationFormat = when (this) {
     ColumnView.Format.UNDEFINED -> RelationFormat.UNDEFINED
 }
 
-fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
+fun ObjectWrapper.Type.toObjectTypeView(
+    selectedSources: List<Id> = emptyList()
+): ObjectTypeView =
     ObjectTypeView(
         id = id,
         key = uniqueKey,
         name = name.orEmpty(),
-        emoji = iconEmoji,
         description = description,
         isSelected = selectedSources.contains(id),
         defaultTemplate = defaultTemplateId,
-        sourceObject = sourceObject
+        sourceObject = sourceObject,
+        icon = objectIcon()
     )
 
 fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id): List<TemplateObjectTypeView.Item> {
-    return map {
+    return map { objType ->
         TemplateObjectTypeView.Item(
-            type = it,
-            isSelected = it.id == selectedType
+            type = objType,
+            isSelected = objType.id == selectedType,
+            icon = objType.objectIcon()
         )
     }
 }

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -47,7 +48,8 @@ open class ObjectSearchViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
@@ -79,7 +81,8 @@ open class ObjectSearchViewModel(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
                             objectTypes = listOfTypes.getOrThrow(),
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                     )
                 }

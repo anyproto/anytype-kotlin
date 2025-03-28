@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.templates
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -203,6 +204,10 @@ private fun LazyItemScope.ItemContent(
             shape = RoundedCornerShape(size = 10.dp),
             containerColor = colorResource(id = R.color.background_primary),
             shadowElevation = 5.dp,
+            border = BorderStroke(
+                width = 0.5.dp,
+                color = colorResource(id = R.color.background_secondary)
+            )
         ) {
             if (!item.isDefault) {
                 DropdownMenuItem(

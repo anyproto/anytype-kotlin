@@ -347,7 +347,12 @@ class CollectionViewModel(
             }
 
             val views = filteredResults
-                .toViews(urlBuilder = urlBuilder, objectTypes = types, fieldParser = fieldParser)
+                .toViews(
+                    urlBuilder = urlBuilder,
+                    objectTypes = types,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
                 .map { ObjectView(it) }
                 .tryAddSections()
 
@@ -416,7 +421,7 @@ class CollectionViewModel(
             Timber.e(it, "Error in favorites subscription flow")
         }
 
-    private fun prepareFavorites(
+    private suspend fun prepareFavorites(
         favoritesObj: CoreObjectView,
         objs: List<ObjectWrapper.Basic>,
         query: String,
@@ -430,7 +435,7 @@ class CollectionViewModel(
             val name = fieldParser.getObjectName(obj)
             name.lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types, fieldParser)
+            .toViews(urlBuilder, types, fieldParser, storeOfObjectTypes)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 
@@ -929,7 +934,7 @@ class CollectionViewModel(
         when (val navigation = obj.navigation()) {
             is OpenObjectNavigation.OpenDataView -> {
                 commands.emit(
-                    Command.LaunchObjectSet(
+                    LaunchObjectSet(
                         target = navigation.target,
                         space = navigation.space
                     )
@@ -937,7 +942,7 @@ class CollectionViewModel(
             }
             is OpenObjectNavigation.OpenEditor -> {
                 commands.emit(
-                    Command.LaunchDocument(
+                    LaunchDocument(
                         target = navigation.target,
                         space = navigation.space
                     )
@@ -945,7 +950,7 @@ class CollectionViewModel(
             }
             is OpenObjectNavigation.OpenChat -> {
                 commands.emit(
-                    Command.OpenChat(
+                    OpenChat(
                         target = navigation.target,
                         space = navigation.space
                     )
@@ -960,6 +965,14 @@ class CollectionViewModel(
             is OpenObjectNavigation.OpenDateObject -> {
                 commands.emit(
                     OpenDateObject(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
+            is OpenObjectNavigation.OpenType -> {
+                commands.emit(
+                    OpenTypeObject(
                         target = navigation.target,
                         space = navigation.space
                     )
@@ -1077,6 +1090,7 @@ class CollectionViewModel(
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class OpenDateObject(val target: Id, val space: Id) : Command()
+        data class OpenTypeObject(val target: Id, val space: Id) : Command()
         data class OpenParticipant(val target: Id, val space: Id) : Command()
         data class OpenShareScreen(val space: SpaceId) : Command()
 

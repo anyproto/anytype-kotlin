@@ -20,15 +20,12 @@ import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
-import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
-import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
-import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import timber.log.Timber
 
@@ -286,27 +283,6 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openTypeEditingScreen(id: Id, name: String, icon: String, readOnly: Boolean) {
-        navController?.navigate(
-            resId = R.id.openTypeEditingScreen,
-            args = TypeEditFragment.args(
-                typeName = name,
-                id = id,
-                iconUnicode = icon,
-                readOnly = readOnly
-            )
-        )
-    }
-
-    override fun openTypeCreationScreen(name: String) {
-        navController?.navigate(
-            resId = R.id.openTypeCreationScreen,
-            args = CreateObjectTypeFragment.args(
-                typeName = name
-            )
-        )
-    }
-
     override fun openRelationCreationScreen(id: Id, name: String, space: Id) {
         navController?.navigate(
             resId = R.id.openRelationCreationScreen,
@@ -314,23 +290,6 @@ class Navigator : AppNavigation {
                 ctx = id,
                 query = name,
                 space = space
-            )
-        )
-    }
-
-    override fun openRelationEditingScreen(
-        typeName: String,
-        id: Id,
-        iconUnicode: Int,
-        readOnly: Boolean
-    ) {
-        navController?.navigate(
-            resId = R.id.openRelationEditingScreen,
-            args = RelationEditFragment.args(
-                typeName = typeName,
-                id = id,
-                iconUnicode = iconUnicode,
-                readOnly = readOnly
             )
         )
     }

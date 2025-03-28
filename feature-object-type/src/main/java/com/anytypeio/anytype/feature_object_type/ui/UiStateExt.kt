@@ -16,9 +16,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Item
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
-import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -27,7 +25,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 fun ObjectWrapper.Basic.toTemplateView(
     objType: ObjectWrapper.Type,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider,
+    coverImageHashProvider: CoverImageHashProvider
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
@@ -52,7 +50,7 @@ fun ObjectWrapper.Basic.toTemplateView(
 //endregion
 
 /**
- * Extension function to safely get a name for the relation.
+ * Extension function to safely get a name for the property.
  * If the name is blank, returns a default untitled title.
  */
 fun ObjectWrapper.Relation.getName(stringResourceProvider: StringResourceProvider): String =
@@ -62,78 +60,71 @@ fun ObjectWrapper.Relation.getName(stringResourceProvider: StringResourceProvide
         name!!
     }
 
-suspend fun buildUiFieldsList(
+suspend fun buildUiPropertiesList(
     objType: ObjectWrapper.Type,
     stringResourceProvider: StringResourceProvider,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
-    objTypeConflictingFields: List<Id>,
-    showHiddenFields: Boolean
+    objectTypeConflictingPropertiesIds: List<Id>,
+    showHiddenProperty: Boolean
 ): List<UiFieldsListItem> {
 
-    val parsedFields = fieldParser.getObjectTypeParsedFields(
+    val parsedProperties = fieldParser.getObjectTypeParsedProperties(
         objectType = objType,
         storeOfRelations = storeOfRelations,
-        objectTypeConflictingFieldsIds = objTypeConflictingFields
+        objectTypeConflictingPropertiesIds = objectTypeConflictingPropertiesIds
     )
 
     // The mapping functions already skip the Relations.DESCRIPTION key.
-    val headerItems = parsedFields.header.mapNotNull {
-        mapToUiFieldsDraggableListItem(
-            field = it,
+    val headerItems = parsedProperties.header.mapNotNull {
+        mapToUiPropertiesDraggableListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
-    val sidebarItems = parsedFields.sidebar.mapNotNull {
-        mapToUiFieldsDraggableListItem(
-            field = it,
+    val sidebarItems = parsedProperties.sidebar.mapNotNull {
+        mapToUiPropertiesDraggableListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
-    val hiddenItems = parsedFields.hidden.mapNotNull {
-        mapToUiFieldsDraggableListItem(
-            field = it,
+    val hiddenItems = parsedProperties.hidden.mapNotNull {
+        mapToUiPropertiesDraggableListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
-    val conflictedItems = parsedFields.localWithoutSystem.mapNotNull {
-        mapToUiFieldsLocalListItem(
-            field = it,
+    val conflictedItems = parsedProperties.localWithoutSystem.mapNotNull {
+        mapToUiPropertiesLocalListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
 
     //this items goes to the Hidden section as draggable items
-    val conflictedSystemItems = parsedFields.localSystem.mapNotNull {
-        mapToUiFieldsDraggableListItem(
-            field = it,
+    val conflictedSystemItems = parsedProperties.localSystem.mapNotNull {
+        mapToUiPropertiesDraggableListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
 
-    val fileRecommendedFields = parsedFields.file.mapNotNull {
-        mapToUiFieldsDraggableListItem(
-            field = it,
+    val fileRecommendedFields = parsedProperties.file.mapNotNull {
+        mapToUiPropertiesDraggableListItem(
+            property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
     }
@@ -151,7 +142,7 @@ suspend fun buildUiFieldsList(
 //            addAll(fileRecommendedFields)
 //        }
 
-        if (showHiddenFields) {
+        if (showHiddenProperty) {
             add(Section.Hidden(canAdd = false))
             addAll(hiddenItems)
             addAll(conflictedSystemItems)
@@ -165,23 +156,20 @@ suspend fun buildUiFieldsList(
 }
 
 /**
- * Shared helper to build the limit object types for a field.
+ * Shared helper to build the limit object types for a property.
  */
 private suspend fun mapLimitObjectTypes(
-    relation: ObjectWrapper.Relation,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
-): List<UiPropertyLimitTypeItem> {
-    return if (relation.format == RelationFormat.OBJECT && relation.relationFormatObjectTypes.isNotEmpty()) {
-        relation.relationFormatObjectTypes.mapNotNull { key ->
-            storeOfObjectTypes.getByKey(key)?.let { objType ->
-                UiPropertyLimitTypeItem(
-                    id = objType.id,
-                    key = objType.uniqueKey,
-                    title = fieldParser.getObjectName(objType),
-                    icon = objType.objectIcon(urlBuilder)
-                )
+    property: ObjectWrapper.Relation,
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Id> {
+    return if (property.format == RelationFormat.OBJECT && property.relationFormatObjectTypes.isNotEmpty()) {
+        property.relationFormatObjectTypes.mapNotNull { id ->
+            storeOfObjectTypes.get(id)?.let { objType ->
+                if (objType.isValid) {
+                    objType.id
+                } else {
+                    null
+                }
             }
         }
     } else {
@@ -190,51 +178,53 @@ private suspend fun mapLimitObjectTypes(
 }
 
 /**
- * Maps a field to a draggable UI list item.
- * Returns null if the field key equals DESCRIPTION.
+ * Maps a property to a draggable UI list item.
+ * Returns null if the property key equals DESCRIPTION.
  */
-private suspend fun mapToUiFieldsDraggableListItem(
-    field: ObjectWrapper.Relation,
+private suspend fun mapToUiPropertiesDraggableListItem(
+    property: ObjectWrapper.Relation,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
+    fieldParser: FieldParser
 ): UiFieldsListItem? {
-    if (field.key == Relations.DESCRIPTION) return null
+    if (property.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Draggable(
-        id = field.id,
-        fieldKey = field.key,
-        fieldTitle = field.getName(stringResourceProvider),
-        format = field.format,
-        limitObjectTypes = limitObjectTypes,
-        isEditableField = fieldParser.isFieldEditable(field),
-        isPossibleToUnlinkFromType = fieldParser.isFieldCanBeDeletedFromType(field)
+        id = property.id,
+        fieldKey = property.key,
+        fieldTitle = property.getName(stringResourceProvider),
+        format = property.format,
+        limitObjectTypes = mapLimitObjectTypes(
+            property = property,
+            storeOfObjectTypes = storeOfObjectTypes
+        ),
+        isEditableField = fieldParser.isPropertyEditable(property),
+        isPossibleToUnlinkFromType = fieldParser.isPropertyCanBeDeletedFromType(property)
     )
 }
 
 /**
- * Maps a field to a local UI list item.
- * Returns null if the field key equals DESCRIPTION.
+ * Maps a property to a local UI list item.
+ * Returns null if the property key equals DESCRIPTION.
  */
-private suspend fun mapToUiFieldsLocalListItem(
-    field: ObjectWrapper.Relation,
+private suspend fun mapToUiPropertiesLocalListItem(
+    property: ObjectWrapper.Relation,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
     fieldParser: FieldParser,
-    urlBuilder: UrlBuilder
 ): UiFieldsListItem? {
-    if (field.key == Relations.DESCRIPTION) return null
+    if (property.key == Relations.DESCRIPTION) return null
 
-    val limitObjectTypes = mapLimitObjectTypes(field, storeOfObjectTypes, fieldParser, urlBuilder)
     return Item.Local(
-        id = field.id,
-        fieldKey = field.key,
-        fieldTitle = field.getName(stringResourceProvider),
-        format = field.format,
-        limitObjectTypes = limitObjectTypes,
-        isEditableField = fieldParser.isFieldEditable(field)
+        id = property.id,
+        fieldKey = property.key,
+        fieldTitle = property.getName(stringResourceProvider),
+        format = property.format,
+        limitObjectTypes = mapLimitObjectTypes(
+            property = property,
+            storeOfObjectTypes = storeOfObjectTypes
+        ),
+        isEditableField = fieldParser.isPropertyEditable(property)
     )
 }
 

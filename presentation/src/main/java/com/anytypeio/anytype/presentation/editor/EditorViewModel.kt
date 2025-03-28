@@ -4532,6 +4532,16 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenType -> {
+                navigate(
+                    EventWrapper(
+                        OpenTypeObject(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -5297,14 +5307,16 @@ class EditorViewModel(
                 ctx = vmParams.ctx,
                 urlBuilder = urlBuilder,
                 storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
 
             val recommendedRelationViews = objectViewDetails.getRecommendedRelations(
                 ctx = vmParams.ctx,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
             )
             val update =
                 (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
@@ -6277,7 +6289,8 @@ class EditorViewModel(
                             .toViews(
                                 urlBuilder = urlBuilder,
                                 objectTypes = storeOfObjectTypes.getAll(),
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
 
                         controlPanelInteractor.onEvent(
@@ -6417,7 +6430,7 @@ class EditorViewModel(
                             objects.getObjectTypeViewsForSBPage(
                                 isWithCollection = true,
                                 isWithBookmark = false,
-                                excludeTypes = excludeTypes
+                                excludeTypes = excludeTypes,
                             ).filter {
                                 !excludeTypes.contains(it.key)
                             }.map {

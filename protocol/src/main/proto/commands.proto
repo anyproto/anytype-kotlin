@@ -151,6 +151,11 @@ message Rpc {
         message InviteGenerate {
             message Request {
                 string spaceId = 1;
+                InviteType inviteType = 2;
+                enum InviteType {
+                    Member = 0;
+                    Guest = 1;
+                }
             }
 
             message Response {
@@ -228,6 +233,32 @@ message Rpc {
             }
         }
 
+        message InviteGetGuest {
+            message Request {
+                string spaceId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string inviteCid = 2;
+                string inviteFileKey = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        INVALID_SPACE_TYPE = 101;
+                    }
+                }
+            }
+        }
+
+
         message InviteRevoke {
             message Request {
                 string spaceId = 1;
@@ -267,6 +298,7 @@ message Rpc {
                 string spaceName = 3;
                 string spaceIconCid = 4;
                 string creatorName = 5;
+                bool   isGuestUserInvite = 6;
 
                 message Error {
                     Code code = 1;
@@ -706,6 +738,7 @@ message Rpc {
                 string networkCustomConfigFilePath = 7; // config path for the custom network mode            }
                 bool preferYamuxTransport = 8; // optional, default is false, recommended in case of problems with QUIC transport
                 string jsonApiListenAddr = 9; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
+                string joinStreamUrl = 10; // anytype:// schema URL to join an embed stream
             }
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
@@ -827,6 +860,7 @@ message Rpc {
                 message Error {
                     Code code = 1;
                     string description = 2;
+                    int64 requiredSpace = 3;
 
                     enum Code {
                         NULL = 0; // No error
@@ -878,6 +912,7 @@ message Rpc {
                 bool preferYamuxTransport = 6; // optional, default is false, recommended in case of problems with QUIC transport
                 string jsonApiListenAddr = 7; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
                 string fulltextPrimaryLanguage = 8; // optional, default fts language
+                string joinStreamURL = 9; // anytype:// schema URL to join an embed stream
             }
 
             /**
@@ -3040,6 +3075,7 @@ message Rpc {
                     NONE = 0;
                     GET_STARTED = 1;
                     EMPTY = 2;
+                    GUIDE_ONLY = 3; // only the guide without other tables
                 }
             }
 
@@ -4073,6 +4109,188 @@ message Rpc {
                     }
                 }
             }
+        }
+    }
+
+    message AI {
+        message WritingTools {
+            message Request {
+                ProviderConfig config = 1;
+                WritingMode mode = 2;
+                Language language = 3;
+                string text = 4;
+
+                enum WritingMode {
+                    DEFAULT = 0;
+                    SUMMARIZE = 1;
+                    GRAMMAR = 2;
+                    SHORTEN = 3;
+                    EXPAND = 4;
+                    BULLET = 5;
+                    TABLE = 6;
+                    CASUAL = 7;
+                    FUNNY = 8;
+                    CONFIDENT = 9;
+                    STRAIGHTFORWARD = 10;
+                    PROFESSIONAL = 11;
+                    TRANSLATE = 12;
+                    // ...
+                }
+
+                enum Language {
+                    EN = 0;
+                    ES = 1;
+                    FR = 2;
+                    DE = 3;
+                    IT = 4;
+                    PT = 5;
+                    HI = 6;
+                    TH = 7;
+                    // ...
+                }
+            }
+
+            message Response {
+                Error error = 1;
+                string text = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        LANGUAGE_NOT_SUPPORTED = 104;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Autofill {
+            message Request {
+                ProviderConfig config = 1;
+                AutofillMode mode = 2;
+                repeated string options = 3;
+                repeated string context = 4;
+
+                enum AutofillMode {
+                    TAG = 0;
+                    RELATION = 1;
+                    TYPE = 2;
+                    TITLE = 3;
+                    DESCRIPTION = 4;
+                    // ...
+                }
+            }
+
+            message Response {
+                Error error = 1;
+                string text = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ListSummary {
+            message Request {
+                ProviderConfig config = 1;
+                string spaceId = 2;
+                repeated string objectIds = 3;
+                string prompt = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ObjectCreateFromUrl {
+            message Request {
+                ProviderConfig config = 1;
+                string spaceId = 2;
+                string url = 3;
+                google.protobuf.Struct details = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+                google.protobuf.Struct details = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ProviderConfig {
+            Provider provider = 1;
+            string endpoint = 2;
+            string model = 3;
+            string token = 4;
+            float temperature = 5;
+        }
+
+        enum Provider {
+            OLLAMA = 0;
+            OPENAI = 1;
+            LMSTUDIO = 2;
+            LLAMACPP = 3;
+            // ...
         }
     }
 
@@ -6044,6 +6262,30 @@ message Rpc {
             }
         }
         message Relation {
+            message Set {
+                message Request {
+                    string contextId = 1;
+                    string blockId = 2; // id of dataview block to set relation
+                    repeated string relationKeys = 3;
+                }
+
+                message Response {
+                    Error error = 1;
+                    ResponseEvent event = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                        }
+                    }
+                }
+            }
+
             message Add {
                 message Request {
                     string contextId = 1;
@@ -7905,12 +8147,13 @@ message Rpc {
                 string afterOrderId = 4; // OrderId of the message after which to get messages
                 string beforeOrderId = 2; // OrderId of the message before which to get messages
                 int32 limit = 3;
+                bool includeBoundary = 5; // If true, include a message at the boundary (afterOrderId or beforeOrderId)
             }
 
             message Response {
                 Error error = 1;
                 repeated model.ChatMessage messages = 2;
-
+                model.ChatState chatState = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -7960,7 +8203,7 @@ message Rpc {
                 Error error = 1;
                 repeated model.ChatMessage messages = 2;  // List of messages
                 int32 numMessagesBefore = 3;  // Number of messages before the returned messages
-
+                model.ChatState chatState = 4;  // Chat state
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -8013,6 +8256,80 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message UnsubscribeFromMessagePreviews {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message ReadMessages {
+            enum ReadType {
+                messages = 0;
+                replies = 1;
+            }
+            message Request {
+                ReadType type = 1;
+                string chatObjectId = 2; // id of the chat object
+                string afterOrderId = 3; // read from this orderId; if empty - read from the beginning of the chat
+                string beforeOrderId = 4; // read til this orderId
+                int64 lastDbTimestamp = 5; // dbTimestamp from the last processed ChatState event(or GetMessages). Used to prevent race conditions
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        MESSAGES_NOT_FOUND = 100; // chat is empty or invalid beforeOrderId/lastDbState
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message Unread {
+            message Request {
+                string chatObjectId = 2; // id of the chat object
+                string afterOrderId = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }

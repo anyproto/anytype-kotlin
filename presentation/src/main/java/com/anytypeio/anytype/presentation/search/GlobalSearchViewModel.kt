@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
@@ -559,7 +560,10 @@ suspend fun Command.SearchWithMeta.Result.view(
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
-        icon = wrapper.objectIcon(urlBuilder),
+        icon = wrapper.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+        ),
         links = wrapper.links,
         backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),

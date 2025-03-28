@@ -105,6 +105,9 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -145,6 +148,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
@@ -395,6 +399,26 @@ open class EditorViewModelTest {
 
     val delegator = Delegator.Default<Action>()
 
+    val objTypeUniqueKey = "objTypeUniqueKey-${MockDataFactory.randomString()}"
+
+    val objType = StubObjectType(
+        id = MockDataFactory.randomUuid(),
+        uniqueKey = objTypeUniqueKey,
+    )
+
+    fun showObjectEvent(blocks: List<Block>) = Event.Command.ShowObject(
+        root = root,
+        blocks = blocks,
+        context = root,
+        details = mapOf(
+            root to mapOf(
+                Relations.ID to root,
+                Relations.TYPE to listOf(objType.id)
+            ),
+            objType.id to objType.map
+        )
+    )
+
     val title = Block(
         id = MockDataFactory.randomUuid(),
         content = Block.Content.Text(
@@ -425,6 +449,12 @@ open class EditorViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
+        runBlocking {
+            storeOfObjectTypes.merge(
+                types = listOf(objType)
+            )
+        }
+        stubParsedProperties()
         stubNetworkMode()
         stubObserveEvents()
         stubInterceptEvents()
@@ -450,6 +480,18 @@ open class EditorViewModelTest {
                     )
                 )
             )
+        }
+    }
+
+    fun stubParsedProperties() {
+        fieldParser.stub {
+            onBlocking {
+                getObjectParsedProperties(
+                    objectType = any(),
+                    objPropertiesKeys = any(),
+                    storeOfRelations = any()
+                )
+            } doReturn ParsedProperties()
         }
     }
 
@@ -503,13 +545,7 @@ open class EditorViewModelTest {
 
         stubOpenPage(
             context = root,
-            events = listOf(
-                Event.Command.ShowObject(
-                    root = root,
-                    blocks = page,
-                    context = root
-                )
-            )
+            events = listOf(showObjectEvent(page))
         )
 
         stubInterceptEvents()
@@ -684,13 +720,7 @@ open class EditorViewModelTest {
             flow {
                 delay(100)
                 emit(
-                    listOf(
-                        Event.Command.ShowObject(
-                            root = root,
-                            blocks = page,
-                            context = root
-                        )
-                    )
+                    listOf(showObjectEvent(page))
                 )
                 delay(100)
                 emit(
@@ -779,13 +809,8 @@ open class EditorViewModelTest {
 
         stubOpenPage(
             context = root,
-            events = listOf(
-                Event.Command.ShowObject(
-                    context = root,
-                    blocks = listOf(smart, header, title, paragraph),
-                    root = root
-                )
-            )
+            events =
+            listOf(showObjectEvent(listOf(smart, header, title, paragraph)))
         )
 
         stubCreateBlock(root)
@@ -830,11 +855,7 @@ open class EditorViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowObject(
-                            root = root,
-                            blocks = page,
-                            context = root
-                        )
+                        showObjectEvent(page)
                     )
                 )
                 delay(100)
@@ -939,11 +960,7 @@ open class EditorViewModelTest {
                 delay(100)
                 emit(
                     listOf(
-                        Event.Command.ShowObject(
-                            root = root,
-                            blocks = blocks,
-                            context = root
-                        )
+                        showObjectEvent(blocks)
                     )
                 )
             }
@@ -1089,15 +1106,7 @@ open class EditorViewModelTest {
 
         val events = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = blocks,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(blocks)))
         }
 
         stubObserveEvents(events)
@@ -1236,15 +1245,7 @@ open class EditorViewModelTest {
 
         val events = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = blocks,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(blocks)))
         }
 
         stubObserveEvents(events)
@@ -1313,15 +1314,7 @@ open class EditorViewModelTest {
 
         val events = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = blocks,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(blocks)))
         }
 
         stubObserveEvents(events)
@@ -1412,15 +1405,7 @@ open class EditorViewModelTest {
 
         val events = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = blocks,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(blocks)))
         }
 
         stubObserveEvents(events)
@@ -1501,15 +1486,7 @@ open class EditorViewModelTest {
         interceptEvents.stub {
             onBlocking { build() } doReturn flow {
                 delay(100)
-                emit(
-                    listOf(
-                        Event.Command.ShowObject(
-                            root = root,
-                            blocks = blocks,
-                            context = root
-                        )
-                    )
-                )
+                emit(listOf(showObjectEvent(blocks)))
             }
         }
 
@@ -1566,15 +1543,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(1000)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(page)))
         }
 
         stubObserveEvents(flow)
@@ -1620,15 +1589,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event>> = flow {
             delay(500)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = listOf(page, header, title, paragraph),
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent(listOf(page, header, title, paragraph))))
             delay(500)
             emit(
                 listOf(
@@ -1728,15 +1689,7 @@ open class EditorViewModelTest {
 
         val events: Flow<List<Event.Command>> = flow {
             delay(1000)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubOpenPage()
@@ -1798,15 +1751,7 @@ open class EditorViewModelTest {
         val doc = listOf(page, header, title, child)
 
         val events: Flow<List<Event.Command>> = flow {
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = doc,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((doc))))
         }
 
         stubOpenPage()
@@ -1868,15 +1813,7 @@ open class EditorViewModelTest {
 
         val events: Flow<List<Event.Command>> = flow {
             delay(pageOpenedDelay)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = doc,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((doc))))
             delay(blockDeletedEventDelay)
             emit(
                 listOf(
@@ -1995,15 +1932,7 @@ open class EditorViewModelTest {
 
         val events: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = doc,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((doc))))
         }
 
         stubOpenPage()
@@ -2054,15 +1983,7 @@ open class EditorViewModelTest {
 
         val events: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubOpenPage()
@@ -2110,15 +2031,7 @@ open class EditorViewModelTest {
 
         val events: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubOpenPage()
@@ -2162,15 +2075,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2233,23 +2138,14 @@ open class EditorViewModelTest {
         )
 
         val flow: Flow<List<Event.Command>> = flow {
-            delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
+        stubInterceptThreadStatus()
         stubOpenPage(context = root)
         stubCreateBlock(root)
         stubUnlinkBlocks(root)
-        stubInterceptThreadStatus()
         givenViewModel()
 
         vm.onStart(id = root, space = defaultSpace)
@@ -2303,15 +2199,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2372,15 +2260,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2474,15 +2354,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2651,15 +2523,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2716,15 +2580,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2780,15 +2636,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2830,15 +2678,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2900,15 +2740,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -2973,15 +2805,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -3033,15 +2857,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -3132,15 +2948,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -3303,15 +3111,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -3588,7 +3388,14 @@ open class EditorViewModelTest {
 
     private fun givenOpenDocument(
         document: List<Block> = emptyList(),
-        details: ObjectViewDetails = ObjectViewDetails.EMPTY,
+        details: ObjectViewDetails = ObjectViewDetails(
+            details = mapOf(
+                root to mapOf(
+                    Relations.ID to root,
+                    Relations.TYPE to listOf(objType.id)
+                )
+            )
+        ),
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
@@ -3957,15 +3764,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -4060,15 +3859,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -4165,15 +3956,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)
@@ -4306,15 +4089,7 @@ open class EditorViewModelTest {
 
         val flow: Flow<List<Event.Command>> = flow {
             delay(100)
-            emit(
-                listOf(
-                    Event.Command.ShowObject(
-                        root = root,
-                        blocks = page,
-                        context = root
-                    )
-                )
-            )
+            emit(listOf(showObjectEvent((page))))
         }
 
         stubObserveEvents(flow)

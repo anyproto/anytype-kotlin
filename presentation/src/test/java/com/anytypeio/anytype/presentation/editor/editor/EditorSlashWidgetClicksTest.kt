@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -14,7 +15,9 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.number.NumberParser
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -367,8 +370,12 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     id = type1.id,
                     key = type1.uniqueKey,
                     name = type1.name.orEmpty(),
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type1.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                     description = type1.description,
-                        emoji = type1.iconEmoji
                 )
             ),
             SlashItem.ObjectType(
@@ -377,7 +384,11 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     key = type2.uniqueKey,
                     name = type2.name.orEmpty(),
                     description = type2.description,
-                    emoji = type2.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type2.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             ),
             SlashItem.ObjectType(
@@ -386,7 +397,11 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
                     key = type3.uniqueKey,
                     name = type3.name.orEmpty(),
                     description = type3.description,
-                    emoji = type3.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type3.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             )
         )

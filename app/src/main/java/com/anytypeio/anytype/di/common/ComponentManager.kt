@@ -70,7 +70,6 @@ import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemon
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
 import com.anytypeio.anytype.di.feature.participant.DaggerParticipantComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
-import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewModule
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectModule
@@ -96,9 +95,6 @@ import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
-import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
-import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
-import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent
@@ -132,8 +128,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
-import com.anytypeio.anytype.ui.relations.RelationEditParameters
-import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 import timber.log.Timber
 
@@ -800,36 +794,6 @@ class ComponentManager(
             .withParams(vmParams)
             .withDependencies(findComponentDependencies())
             .build()
-    }
-
-    val createObjectTypeComponent = Component {
-        DaggerCreateObjectTypeComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
-    val typeEditComponent = ComponentWithParams { params: TypeEditParameters ->
-        DaggerTypeEditComponent.builder()
-            .withId(params.id)
-            .withName(params.name)
-            .withIcon(params.icon)
-            .withDependencies(findComponentDependencies())
-            .build()
-    }
-
-    val relationEditComponent = ComponentWithParams { params: RelationEditParameters ->
-        DaggerRelationEditComponent.builder()
-            .withId(params.id)
-            .withName(params.name)
-            .withIcon(params.icon)
-            .withDependencies(findComponentDependencies())
-            .build()
-    }
-
-    val typeIconPickComponent = Component {
-        DaggerTypeIconPickComponent
-            .factory()
-            .create(findComponentDependencies())
     }
 
     val relationCreationFromLibraryComponent = Component {

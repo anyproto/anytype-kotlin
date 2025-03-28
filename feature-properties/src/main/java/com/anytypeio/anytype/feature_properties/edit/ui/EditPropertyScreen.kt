@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_properties.edit.ui
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.ui.limit_types.PropertyLimitTypesPreviewScreen
 
 @Composable
 fun PropertyEditScreen(
@@ -49,7 +51,8 @@ fun PropertyEditScreen(
     onFormatClick: () -> Unit,
     onLimitTypesClick: () -> Unit,
     onPropertyNameUpdate: (String) -> Unit,
-    onMenuUnlinkClick: (Id) -> Unit
+    onMenuUnlinkClick: (Id) -> Unit,
+    onDismissLimitTypes: () -> Unit
 ) {
 
     var innerValue by remember(uiState.name) { mutableStateOf(uiState.name) }
@@ -109,6 +112,10 @@ fun PropertyEditScreen(
                         shape = RoundedCornerShape(size = 10.dp),
                         containerColor = colorResource(id = R.color.background_primary),
                         shadowElevation = 5.dp,
+                        border = BorderStroke(
+                            width = 0.5.dp,
+                            color = colorResource(id = R.color.background_secondary)
+                        )
                     ) {
                         DropdownMenuItem(
                             modifier = Modifier.height(44.dp),
@@ -144,9 +151,9 @@ fun PropertyEditScreen(
         Divider()
 
         if (uiState.format == RelationFormat.OBJECT) {
-            PropertyLimitTypesEditSection(
+            PropertyLimitTypesViewSection(
                 limit = uiState.limitObjectTypes.size,
-                onLimitTypesClick = { onLimitTypesClick() }
+                onLimitTypesClick = onLimitTypesClick
             )
             Divider()
         }
@@ -167,6 +174,13 @@ fun PropertyEditScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
     }
+
+    if (uiState.showLimitTypes) {
+        PropertyLimitTypesPreviewScreen(
+            items = uiState.limitObjectTypes,
+            onDismissRequest = onDismissLimitTypes,
+        )
+    }
 }
 
 @DefaultPreviews
@@ -182,12 +196,14 @@ fun EditPropertyPreview() {
             formatIcon = R.drawable.ic_relation_format_date_small,
             limitObjectTypes = emptyList(),
             format = RelationFormat.OBJECT,
-            isPossibleToUnlinkFromType = true
+            isPossibleToUnlinkFromType = true,
+            showLimitTypes = false
         ),
         onSaveButtonClicked = {},
         onFormatClick = {},
         onLimitTypesClick = {},
         onPropertyNameUpdate = {},
-        onMenuUnlinkClick = {}
+        onMenuUnlinkClick = {},
+        onDismissLimitTypes = {}
     )
 }

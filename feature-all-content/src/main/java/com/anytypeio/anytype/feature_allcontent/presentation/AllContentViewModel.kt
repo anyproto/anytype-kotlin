@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -27,6 +30,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
@@ -112,7 +116,8 @@ class AllContentViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val createObjectType: CreateObjectType
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -316,10 +321,12 @@ class AllContentViewModel(
         val isOwnerOrEditor = permission.value?.isOwnerOrEditor() == true
         return when (activeTab) {
             AllContentTab.TYPES -> {
-                val items = objectWrappers.toUiContentTypes(
-                    urlBuilder = urlBuilder,
-                    isOwnerOrEditor = isOwnerOrEditor
-                )
+                val items = objectWrappers
+                    .map { ObjectWrapper.Type(it.map) }
+                    .toUiContentTypes(
+                        urlBuilder = urlBuilder,
+                        isOwnerOrEditor = isOwnerOrEditor
+                    )
                 buildList {
                     if (isOwnerOrEditor) add(UiContentItem.NewType)
                     addAll(items)
@@ -341,16 +348,25 @@ class AllContentViewModel(
                         urlBuilder = urlBuilder,
                         isOwnerOrEditor = isOwnerOrEditor,
                         fieldParser = fieldParser,
-                        objectTypes = storeOfObjectTypes.getAll()
+                        objectTypes = storeOfObjectTypes.getAll(),
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
                 }
                 val result = when (activeSort) {
                     is ObjectsListSort.ByDateCreated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = true, activeSort = activeSort)
+                        groupItemsByDate(
+                            items = items,
+                            isSortByDateCreated = true,
+                            activeSort = activeSort
+                        )
                     }
 
                     is ObjectsListSort.ByDateUpdated -> {
-                        groupItemsByDate(items = items, isSortByDateCreated = false, activeSort = activeSort)
+                        groupItemsByDate(
+                            items = items,
+                            isSortByDateCreated = false,
+                            activeSort = activeSort
+                        )
                     }
 
                     is ObjectsListSort.ByName -> {
@@ -741,6 +757,14 @@ class AllContentViewModel(
                         )
                     )
                 }
+                is OpenObjectNavigation.OpenType -> {
+                    commands.emit(
+                        NavigateToObjectType(
+                            id = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                }
             }
         }
     }
@@ -814,7 +838,39 @@ class AllContentViewModel(
         when (item) {
             UiContentItem.NewType -> {
                 viewModelScope.launch {
-                    commands.emit(Command.OpenTypeCreation)
+                    createObjectType.execute(
+                        CreateObjectType.Params(
+                            space = vmParams.spaceId.id,
+                            name = ""
+                        )
+                    ).fold(
+                        onSuccess = { newType ->
+                            val spaceParams = provideParams(vmParams.spaceId.id)
+                            viewModelScope.sendEvent(
+                                analytics = analytics,
+                                eventName = libraryCreateType,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.permissions to spaceParams.permission,
+                                        EventsPropertiesKey.spaceType to spaceParams.spaceType
+                                    )
+                                )
+                            )
+                            if (newType == null) {
+                                Timber.e("Error while creating type")
+                                return@fold
+                            }
+                            commands.emit(
+                                NavigateToObjectType(
+                                    id = newType.id,
+                                    space = vmParams.spaceId.id
+                                )
+                            )
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while creating type")
+                        }
+                    )
                 }
             }
             is UiContentItem.Type -> {
@@ -1017,6 +1073,7 @@ class AllContentViewModel(
     sealed class Command {
         data class OpenChat(val target: Id, val space: Id) : Command()
         data class NavigateToEditor(val id: Id, val space: Id) : Command()
+        data class NavigateToObjectType(val id: Id, val space: Id) : Command()
         data class NavigateToSetOrCollection(val id: Id, val space: Id) : Command()
         data class NavigateToBin(val space: Id) : Command()
         data class NavigateToParticipant(val objectId: Id, val space: Id) : Command()

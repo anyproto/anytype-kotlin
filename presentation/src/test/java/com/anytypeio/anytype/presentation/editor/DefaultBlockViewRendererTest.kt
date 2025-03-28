@@ -37,7 +37,6 @@ import com.anytypeio.anytype.presentation.MockBlockFactory.link
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.Markup.Companion.NON_EXISTENT_OBJECT_MENTION_NAME
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
@@ -51,7 +50,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import net.lachlanmckee.timberjunit.TimberTestRule
@@ -64,31 +62,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
 class DefaultBlockViewRendererTest {
-
-    class BlockViewRenderWrapper(
-        private val blocks: Map<Id, List<Block>>,
-        private val renderer: BlockViewRenderer,
-        private val restrictions: List<ObjectRestriction> = emptyList()
-    ) : BlockViewRenderer by renderer {
-        suspend fun render(
-            root: Block,
-            anchor: Id,
-            focus: Editor.Focus,
-            indent: Int,
-            details: ObjectViewDetails,
-            schema: NestedDecorationData = emptyList()
-        ): List<BlockView> = blocks.render(
-            context = root.id,
-            root = root,
-            focus = focus,
-            anchor = anchor,
-            indent = indent,
-            details = details,
-            restrictions = restrictions,
-            selection = emptySet(),
-            parentScheme = schema
-        )
-    }
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -119,7 +92,7 @@ class DefaultBlockViewRendererTest {
 
     private lateinit var wrapper: BlockViewRenderWrapper
 
-    private var storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    val storeOfRelations = DefaultStoreOfRelations()
 
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
@@ -131,6 +104,32 @@ class DefaultBlockViewRendererTest {
 
     @Mock
     lateinit var stringResourceProvider: StringResourceProvider
+
+    class BlockViewRenderWrapper(
+        private val blocks: Map<Id, List<Block>>,
+        private val renderer: BlockViewRenderer,
+        private val restrictions: List<ObjectRestriction> = emptyList(),
+        private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
+    ) : BlockViewRenderer by renderer {
+        suspend fun render(
+            root: Block,
+            anchor: Id,
+            focus: Editor.Focus,
+            indent: Int,
+            details: ObjectViewDetails,
+            schema: NestedDecorationData = emptyList()
+        ): List<BlockView> = blocks.render(
+            context = root.id,
+            root = root,
+            focus = focus,
+            anchor = anchor,
+            indent = indent,
+            details = details,
+            restrictions = restrictions,
+            selection = emptySet(),
+            parentScheme = schema,
+        )
+    }
 
     @Before
     fun setup() {

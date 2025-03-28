@@ -505,7 +505,8 @@ class HomeScreenViewModel(
                                             && view.source == widget.source
                                 } as? WidgetView.Tree
                             },
-                            fieldParser = fieldParser
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -524,7 +525,8 @@ class HomeScreenViewModel(
                                                 && view.source == widget.source
                                     } as? WidgetView.ListOfObjects
                                 },
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -544,7 +546,8 @@ class HomeScreenViewModel(
                                     } as? WidgetView.SetOfObjects
                                 },
                                 storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         }
                         is Widget.View -> {
@@ -566,7 +569,8 @@ class HomeScreenViewModel(
                                     } as? WidgetView.SetOfObjects
                                 },
                                 storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
                             )
                         }
                     }
@@ -1484,6 +1488,14 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenType -> {
+                navigate(
+                    Navigation.OpenType(
+                        target = navigation.target,
+                        space = navigation.space
+                    )
+                )
+            }
         }
     }
 
@@ -2211,6 +2223,7 @@ class HomeScreenViewModel(
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
+        data class OpenType(val target: Id, val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(
@@ -2445,6 +2458,7 @@ sealed class OpenObjectNavigation {
     data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
@@ -2504,6 +2518,12 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
                 space = requireNotNull(spaceId)
             )
         }
+        ObjectType.Layout.OBJECT_TYPE -> {
+            OpenObjectNavigation.OpenType(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
+        }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(layout)
         }
@@ -2557,6 +2577,12 @@ fun ObjectType.Layout.navigation(
         }
         ObjectType.Layout.PARTICIPANT -> {
             OpenObjectNavigation.OpenParticipant(
+                target = target,
+                space = space
+            )
+        }
+        ObjectType.Layout.OBJECT_TYPE -> {
+            OpenObjectNavigation.OpenType(
                 target = target,
                 space = space
             )

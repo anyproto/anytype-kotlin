@@ -29,9 +29,9 @@ sealed class ObjectTypeCommand {
         val spaceId: Id
     ) : ObjectTypeCommand()
 
-    data object OpenEmojiPicker : ObjectTypeCommand()
-
     data object OpenFieldsScreen : ObjectTypeCommand()
+
+    data object CloseFieldsScreen : ObjectTypeCommand()
 
     data class OpenEditTypePropertiesScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
 }
@@ -230,4 +230,12 @@ sealed class UiSyncStatusBadgeState {
     data object Hidden : UiSyncStatusBadgeState()
     data class Visible(val status: SpaceSyncAndP2PStatusState) : UiSyncStatusBadgeState()
 }
+//endregion
+
+//region Type icon screen
+sealed class UiIconsPickerState {
+    data object Hidden : UiIconsPickerState()
+    data object Visible : UiIconsPickerState()
+}
+
 //endregion

@@ -70,10 +70,7 @@ interface AppNavigation {
     fun openTemplatesModal(typeId: Id)
 
     fun openAllContent(space: Id)
-    fun openTypeEditingScreen(id: Id, name: String, icon: String, readOnly: Boolean)
-    fun openTypeCreationScreen(name: String)
     fun openRelationCreationScreen(id: Id, name: String, space: Id)
-    fun openRelationEditingScreen(typeName: String, id: Id, iconUnicode: Int, readOnly: Boolean)
 
     sealed class Command {
 
@@ -109,6 +106,12 @@ interface AppNavigation {
 
         data class OpenDateObject(
             val objectId: Id,
+            val space: Id
+        ) : Command()
+
+
+        data class OpenTypeObject(
+            val target: Id,
             val space: Id
         ) : Command()
 

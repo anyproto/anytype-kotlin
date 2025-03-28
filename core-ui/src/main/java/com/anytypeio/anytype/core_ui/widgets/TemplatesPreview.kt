@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
@@ -50,7 +51,8 @@ fun TypeTemplatesWidgetPreview() {
             TemplateObjectTypeView.Item(
                 type = ObjectWrapper.Type(
                     map = mapOf(Relations.ID to "123", Relations.NAME to "Page"),
-                )
+                ),
+                icon = ObjectIcon.TypeIcon.Default.DEFAULT
             )
         ),
         viewerId = "",

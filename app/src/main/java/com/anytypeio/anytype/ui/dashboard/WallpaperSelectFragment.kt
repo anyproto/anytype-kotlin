@@ -74,6 +74,10 @@ class WallpaperSelectFragment : BaseBottomSheetFragment<FragmentWallpaperSelectB
             subscribe(vm.state) { wallpaperSelectAdapter.update(it) }
             subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         }
+
+        skipCollapsed()
+        expand()
+
     }
 
     override fun injectDependencies() {

@@ -19,7 +19,9 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -470,7 +472,11 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     key = type1.uniqueKey,
                     name = type1.name.orEmpty(),
                     description = type1.description,
-                    emoji = type1.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type1.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             ),
             SlashItem.ObjectType(
@@ -479,7 +485,11 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     key = type2.uniqueKey,
                     name = type2.name.orEmpty(),
                     description = type2.description,
-                    emoji = type2.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type2.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             )
         )
@@ -1508,7 +1518,11 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     key = type1.uniqueKey.orEmpty(),
                     name = type1.name.orEmpty(),
                     description = type1.description,
-                    emoji = type1.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type1.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             ),
             SlashItem.ObjectType(
@@ -1517,7 +1531,11 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     key = type2.uniqueKey.orEmpty(),
                     name = type2.name.orEmpty(),
                     description = type2.description,
-                    emoji = type2.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type2.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             ),
             SlashItem.ObjectType(
@@ -1526,7 +1544,11 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
                     key = type3.uniqueKey.orEmpty(),
                     name = type3.name.orEmpty(),
                     description = type3.description,
-                    emoji = type3.iconEmoji
+                    icon = ObjectIcon.TypeIcon.Emoji(
+                        unicode = type3.iconEmoji.orEmpty(),
+                        rawValue = "",
+                        color = CustomIconColor.DEFAULT
+                    ),
                 )
             )
         )

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
@@ -82,7 +83,8 @@ suspend fun DVViewer.render(
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
     storeOfRelations: StoreOfRelations,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -92,7 +94,8 @@ suspend fun DVViewer.render(
                 builder = builder,
                 store = store,
                 objectOrderIds = objectOrderIds,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }
         DVViewerType.GALLERY -> {
@@ -106,12 +109,14 @@ suspend fun DVViewer.render(
                     objectStore = store,
                     objectOrderIds = objectOrderIds,
                     storeOfRelations = storeOfRelations,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 ),
                 title = name,
                 largeCards = cardSize == DVViewerCardSize.LARGE
             )
         }
+
         DVViewerType.LIST -> {
             val vmap = viewerRelations.associateBy { it.key }
             val visibleRelations = dataViewRelations.filter { relation ->
@@ -126,11 +131,13 @@ suspend fun DVViewer.render(
                     urlBuilder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 ),
                 title = name
             )
         }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -139,16 +146,26 @@ suspend fun DVViewer.render(
                     builder = builder,
                     store = store,
                     objectOrderIds = objectOrderIds,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             } else {
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    type = if (type == DVViewerType.BOARD)
-                        Viewer.Unsupported.TYPE_KANBAN
-                    else
-                        Viewer.Unsupported.TYPE_CALENDAR
+                    type = when (type) {
+                        DVViewerType.BOARD -> Viewer.Unsupported.TYPE_KANBAN
+                        DVViewerType.CALENDAR -> {
+                            Viewer.Unsupported.TYPE_CALENDAR
+                        }
+                        DVViewerType.GRAPH -> {
+                            Viewer.Unsupported.TYPE_GRAPH
+                        }
+                        else -> {
+                            Viewer.Unsupported.TYPE_UNKNOWN
+                        }
+                    }
+
                 )
             }
         }
@@ -166,7 +183,8 @@ private suspend fun DVViewer.buildGridView(
     builder: UrlBuilder,
     store: ObjectStore,
     objectOrderIds: List<Id>,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): Viewer {
     val vmap = viewerRelations.associateBy { it.key }
     val visibleRelations = dataViewRelations.filter { relation ->
@@ -184,7 +202,8 @@ private suspend fun DVViewer.buildGridView(
                 columns = columns,
                 builder = builder,
                 store = store,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         )
     }
@@ -453,7 +472,7 @@ suspend fun ObjectWrapper.Relation.toStatus(
     value: Any?,
     store: ObjectStore
 ): StatusView? {
-    val filter : Id? = value.values<Id>().firstOrNull()
+    val filter: Id? = value.values<Id>().firstOrNull()
     return if (filter != null) {
         val option = store.get(filter)?.let { ObjectWrapper.Option(it.map) }
         if (option != null && option.isDeleted != true) {
@@ -475,7 +494,8 @@ suspend fun DVFilter.toView(
     relation: ObjectWrapper.Relation,
     isInEditMode: Boolean,
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
 ): FilterView.Expression = when (relation.format) {
     Relation.Format.SHORT_TEXT -> {
         FilterView.Expression.TextShort(
@@ -490,6 +510,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.LONG_TEXT -> {
         FilterView.Expression.Text(
             id = id,
@@ -503,6 +524,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.URL -> {
         FilterView.Expression.Url(
             id = id,
@@ -516,6 +538,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.EMAIL -> {
         FilterView.Expression.Email(
             id = id,
@@ -529,6 +552,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.PHONE -> {
         FilterView.Expression.Phone(
             id = id,
@@ -542,6 +566,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.NUMBER -> {
         FilterView.Expression.Number(
             id = id,
@@ -555,6 +580,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.DATE -> {
         val fieldDate = fieldParser.toDate(any = value)
         FilterView.Expression.Date(
@@ -571,6 +597,7 @@ suspend fun DVFilter.toView(
             relativeDate = fieldDate?.relativeDate
         )
     }
+
     Relation.Format.STATUS -> {
         val updatedFilterValue = relation.toStatus(
             value = value,
@@ -588,6 +615,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.TAG -> {
         FilterView.Expression.Tag(
             id = id,
@@ -606,6 +634,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.OBJECT, Relation.Format.FILE -> {
         FilterView.Expression.Object(
             id = id,
@@ -618,7 +647,8 @@ suspend fun DVFilter.toView(
                     value = value,
                     store = store,
                     urlBuilder = urlBuilder,
-                    fieldParser = fieldParser
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
                 )
             ),
             format = relation.format.toView(),
@@ -626,6 +656,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     Relation.Format.CHECKBOX -> {
         FilterView.Expression.Checkbox(
             id = id,
@@ -639,6 +670,7 @@ suspend fun DVFilter.toView(
             isInEditMode = isInEditMode
         )
     }
+
     else -> throw UnsupportedOperationException("Unsupported relation format:${relation.format}")
 }
 
@@ -646,7 +678,8 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
     value: Any?,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    storeOfObjectTypes : StoreOfObjectTypes
 ): FilterValue = when (this.format) {
     Relation.Format.SHORT_TEXT -> FilterValue.TextShort(toText(value))
     Relation.Format.LONG_TEXT -> FilterValue.Text(toText(value))
@@ -657,12 +690,14 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
             store = store
         )
     )
+
     Relation.Format.TAG -> FilterValue.Tag(
         toTags(
             value = value,
             store = store
         )
     )
+
     Relation.Format.DATE -> FilterValue.Date(DateParser.parse(value))
     Relation.Format.URL -> FilterValue.Url(toText(value))
     Relation.Format.EMAIL -> FilterValue.Email(toText(value))
@@ -672,10 +707,12 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
             value = value,
             store = store,
             urlBuilder = urlBuilder,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
         )
         FilterValue.Object(obj)
     }
+
     Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
     else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
 }

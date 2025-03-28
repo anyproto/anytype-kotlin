@@ -116,7 +116,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         if (error != null && error.code != Rpc.Account.Migrate.Response.Error.Code.NULL) {
             when(error.code) {
                 Rpc.Account.Migrate.Response.Error.Code.NOT_ENOUGH_FREE_SPACE -> {
-                    throw MigrationFailedException.NotEnoughSpace()
+                    throw MigrationFailedException.NotEnoughSpace(error.requiredSpace)
                 }
                 else -> throw Exception(error.description)
             }

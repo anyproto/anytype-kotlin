@@ -818,7 +818,7 @@
     <string name="exiting_please_wait">正在退出... 请稍等</string>
     <string name="loading_please_wait">正在加载……请稍等</string>
     <string name="personal">默认</string>
-    <string name="create_space">Create a space</string>
+    <string name="create_space">创建空间</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>
@@ -1107,7 +1107,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">看板视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
     <string name="error_calendar_view_not_supported">日历视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
-    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_graph_view_not_supported">图表视图暂时不能在手机上使用。\n更改视图类型（设置 -&gt; 视图）或创建新视图以访问您的数据。</string>
     <string name="error_generic_view_not_supported">此视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
     <string name="create_object_section_pinned">固定</string>
     <string name="any_object_creation_menu_pin_on_top">置顶</string>
@@ -1562,7 +1562,7 @@
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
-    <string name="write_a_message">Write a message...</string>
+    <string name="write_a_message">写点什么...</string>
     <string name="date_layout_mentioned_in">提及</string>
     <string name="date_layout_empty_items">此日期暂无任何内容</string>
     <string name="date_layout_alert_date_out_of_range">被选中的日期超过了有效范围（年 %1$d 到 %2$d）。请选择一个在此范围内的日期。</string>
@@ -1583,10 +1583,10 @@
     <string name="object_type_templates_menu_duplicate">生成副本</string>
     <string name="object_type_templates_menu_delete">删除</string>
     <string name="object_type_fields_section_header">标题</string>
-    <string name="object_type_fields_section_fields_menu">Properties panel</string>
+    <string name="object_type_fields_section_fields_menu">属性面板</string>
     <string name="object_type_fields_section_hidden">已隐藏</string>
     <string name="object_type_fields_section_file">文件</string>
-    <string name="object_type_fields_section_local_fields">Found in objects </string>
+    <string name="object_type_fields_section_local_fields">在对象中找到 </string>
     <string name="object_type_fields_title">属性</string>
     <string name="object_type_fields_info_text">您正在编辑类型</string>
     <string name="object_type_fields_edit_field">编辑字段</string>
@@ -1596,14 +1596,14 @@
     <string name="object_type_fields_menu_delete">从类型取消链接</string>
     <string name="object_type_fields_menu_add_to_type">添加到当前类型</string>
     <string name="object_type_fields_menu_remove">移除</string>
-    <string name="object_type_fields_local_info_title">Found in objects</string>
-    <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
+    <string name="object_type_fields_local_info_title">在对象中找到</string>
+    <string name="object_type_fields_local_info_description">这些属性仅存在于某些对象中，不是其类型的一部分。添加后可供在此类型的所有对象中使用。</string>
     <string name="object_type_fields_local_info_button">明白了</string>
     <string name="object_type_templates_empty">此类型没有任何模板</string>
     <string name="object_properties_section_local">本地属性</string>
     <string name="object_properties_section_hidden">已隐藏</string>
     <string name="object_properties_local_info_title">本地属性</string>
-    <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_local_info_description">这些属性仅存在于该对象中，不是其类型的一部分。添加到该类型可供在所有对象中使用，或者移除.</string>
     <string name="object_type_open_type_error">打开当前对象类型出错</string>
     <string name="day_of_week_monday">星期一</string>
     <string name="day_of_week_tuesday">星期二</string>
@@ -1635,7 +1635,7 @@
     <string name="migration_this_shouldn_t_take_long">这可能需要一些时间。不要关闭本软件，直至更新完成。</string>
     <string name="migration_error_try_again">请再试一次</string>
     <string name="migration_migration_failed">迁移失败</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">请清除大约 %1$s MB 空间后重试</string>
     <string name="fields_screen_title">属性</string>
     <string name="field_text_title">正文</string>
     <string name="field_text_empty">输入</string>
@@ -1668,7 +1668,7 @@
     <string name="space_settings_section_data_management">数据管理</string>
     <string name="space_settings_section_misc">其他</string>
     <string name="space_settings_invite">邀请</string>
-    <string name="space_settings_invite_members">Invite members</string>
+    <string name="space_settings_invite_members">邀请成员</string>
     <string name="space_settings_qrcode">二维码</string>
     <string name="space_settings_members_button_members">参与的人</string>
     <string name="space_settings_types_button">对象类型</string>
@@ -1680,13 +1680,13 @@
     <string name="space_settings_icon_title">编辑图片</string>
     <string name="space_settings_save_button">保存</string>
     <string name="object_type_add_property_screen_title">添加属性</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
-    <string name="object_type_add_property_screen_section_types">Properties formats</string>
-    <string name="object_type_add_property_screen_section_existing">Existing properties</string>
+    <string name="object_type_add_property_screen_create">创建属性“%1$s”</string>
+    <string name="object_type_add_property_screen_section_types">属性格式</string>
+    <string name="object_type_add_property_screen_section_existing">现有属性</string>
     <string name="object_type_add_property_screen_search_hint">搜索或新建</string>
     <string name="new_property_hint">新建属性</string>
     <string name="edit_property_limit_objects">将对象限制为</string>
-    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_objects_all">限制对象</string>
     <string name="edit_property_limit_all">所有</string>
     <string name="add_property_error_create_new">创建新属性时出错</string>
     <string name="add_property_error_update">更新属性时出错</string>
@@ -1694,8 +1694,8 @@
     <string name="property_select_format_title">选择属性格式</string>
     <string name="property_edit_menu_delete">从空格中删除</string>
     <string name="property_edit_menu_unlink">从类型取消链接</string>
-    <string name="property_limit_objects_title">Limit objects</string>
-    <string name="property_include_time_section">Include time</string>
+    <string name="property_limit_objects_title">限制对象</string>
+    <string name="property_include_time_section">包含时间</string>
     <string name="delete_space_checkbox_text">我已阅读并且想要删除这个空间</string>
     <string name="migration_screen_new_version_update">有新版本可用</string>
     <string name="migration_screen_description_1">我们正在为我们的新聊天奠定基础。包括计数器、通知和其他顺利聊天体验所需的功能。</string>

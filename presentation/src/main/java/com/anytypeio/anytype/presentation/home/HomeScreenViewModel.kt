@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -103,7 +104,6 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -223,7 +223,8 @@ class HomeScreenViewModel(
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val leaveSpace: DeleteSpace
+    private val leaveSpace: DeleteSpace,
+    private val spaceMembers: ActiveSpaceMemberSubscriptionContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -2240,7 +2241,19 @@ class HomeScreenViewModel(
                 val targetSpaceView = spaceViewSubscriptionContainer.get(space)
                 if (targetSpaceView != null) {
                     val config = spaceManager.getConfig(space)
-                    // TODO map creator
+                    val creatorId = targetSpaceView.creator.orEmpty()
+                    val store = spaceMembers.get(space)
+                    val createdByScreenName = when(store) {
+                        is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
+                            store.members
+                                .find { m -> m.id == creatorId }
+                                ?.let { it.globalName ?: it.identity }
+                                ?: creatorId
+                        }
+                        ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
+                            creatorId
+                        }
+                    }
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),
                         description = targetSpaceView.description.orEmpty(),
@@ -2254,7 +2267,7 @@ class HomeScreenViewModel(
                             creationDateInMillis = targetSpaceView
                                 .getValue<Double?>(Relations.CREATED_DATE)
                                 ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                            createdBy = targetSpaceView.creator.orEmpty()
+                            createdBy = createdByScreenName
                         )
                     )
                 }
@@ -2390,7 +2403,8 @@ class HomeScreenViewModel(
         private val exitToVaultDelegate: ExitToVaultDelegate,
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val getSpaceInviteLink: GetSpaceInviteLink,
-        private val deleteSpace: DeleteSpace
+        private val deleteSpace: DeleteSpace,
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2446,7 +2460,8 @@ class HomeScreenViewModel(
             exitToVaultDelegate = exitToVaultDelegate,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             getSpaceInviteLink = getSpaceInviteLink,
-            leaveSpace = deleteSpace
+            leaveSpace = deleteSpace,
+            spaceMembers = activeSpaceMemberSubscriptionContainer
         ) as T
     }
 

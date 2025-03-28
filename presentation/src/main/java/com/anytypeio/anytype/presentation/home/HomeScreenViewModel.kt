@@ -2317,9 +2317,7 @@ class HomeScreenViewModel(
             if (permission != null && permission != SpaceMemberPermissions.OWNER) {
                 leaveSpace
                     .async(space)
-                    .onFailure {
-                        Timber.e(it, "Error while deleting / leaving space")
-                    }
+                    .onFailure { Timber.e(it, "Error while leaving space") }
                     .onSuccess {
                         // Forcing return to the vault even if space has chat.
                         proceedWithExiting(

@@ -1677,7 +1677,7 @@
     <string name="migration_this_shouldn_t_take_long">Это может занять некоторое время. Пожалуйста, не закрывайте приложение, пока процесс не завершится.</string>
     <string name="migration_error_try_again">Попробуйте еще раз</string>
     <string name="migration_migration_failed">Сбой миграции</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Пожалуйста, освободите пространство и запустите процесс снова.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Свойства</string>
     <string name="field_text_title">Текст</string>
     <string name="field_text_empty">Войти</string>

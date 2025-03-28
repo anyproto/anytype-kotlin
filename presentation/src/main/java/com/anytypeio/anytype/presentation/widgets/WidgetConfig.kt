@@ -79,5 +79,5 @@ object BundledWidgetSourceIds {
     const val SETS = "set"
     const val BIN = "bin"
     const val COLLECTIONS = "collection"
-    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, SETS, COLLECTIONS)
+    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, SETS, COLLECTIONS, BIN)
 }

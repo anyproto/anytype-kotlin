@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -74,7 +73,7 @@ class SelectWidgetSourceViewModel(
                         stateData.postValue(
                             ObjectSearchView.Success(
                                 buildList {
-                                    add(ObjectSearchSection.SelectWidgetSource.DefaultLists)
+                                    add(ObjectSearchSection.SelectWidgetSource.System)
                                     addAll(
                                         listOf(
                                             BundledWidgetSourceView.Favorites,

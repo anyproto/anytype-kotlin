@@ -1039,6 +1039,9 @@ class HomeScreenViewModel(
                     sendToast("Open bin to restore your archived object")
                 }
             }
+            is Widget.Source.Bundled.Bin -> {
+                // TODO navigate to BIN
+            }
         }
     }
 

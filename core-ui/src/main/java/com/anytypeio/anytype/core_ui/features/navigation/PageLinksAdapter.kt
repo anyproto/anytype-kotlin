@@ -91,8 +91,8 @@ class DefaultObjectViewAdapter(
                     ObjectSearchSection.SelectWidgetSource.FromMyObjects -> {
                         holder.title.setText(R.string.your_objects)
                     }
-                    ObjectSearchSection.SelectWidgetSource.DefaultLists -> {
-                        holder.title.setText(R.string.widget_source_default_lists)
+                    ObjectSearchSection.SelectWidgetSource.System -> {
+                        holder.title.setText(R.string.widget_source_system)
                     }
                 }
             }
@@ -244,7 +244,7 @@ class BundledWidgetSourceHolder(
 }
 
 class NewObjectViewHolder(
-    private val binding: ItemSearchNewObjectBinding
+    binding: ItemSearchNewObjectBinding
 ) :  DefaultObjectViewAdapter.ObjectViewHolder(binding.root)
 
 private const val TYPE_ITEM = 0

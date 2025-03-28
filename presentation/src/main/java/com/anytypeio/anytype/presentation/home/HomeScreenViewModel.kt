@@ -2236,7 +2236,7 @@ class HomeScreenViewModel(
     fun onSpaceSettingsClicked(space: SpaceId) {
         viewModelScope.launch {
             val permission = userPermissions.value
-            if (permission?.isOwnerOrEditor() == false) {
+            if (permission?.isOwnerOrEditor() == true) {
                 navigation(Navigation.OpenOwnerOrEditorSpaceSettings(space = space.id))
             } else {
                 val targetSpaceView = spaceViewSubscriptionContainer.get(space)

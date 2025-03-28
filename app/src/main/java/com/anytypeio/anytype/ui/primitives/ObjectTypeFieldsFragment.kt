@@ -19,7 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
+import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainModalScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
@@ -45,7 +45,7 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
         savedInstanceState: Bundle?
     ) = content {
         MaterialTheme {
-            FieldsMainScreen(
+            FieldsMainModalScreen(
                 uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
                 uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                 uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,

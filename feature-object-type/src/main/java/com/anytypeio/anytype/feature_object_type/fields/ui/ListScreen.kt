@@ -9,6 +9,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -24,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
@@ -71,10 +73,8 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem.Section
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
-import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
-import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -91,7 +91,6 @@ fun FieldsMainScreen(
     uiIconState: UiIconState,
     uiFieldLocalInfoState: UiLocalsFieldsInfoState,
     uiEditPropertyState: UiEditPropertyState,
-    withDragger: Boolean = true,
     fieldEvent: (FieldEvent) -> Unit
 ) {
 
@@ -132,99 +131,20 @@ fun FieldsMainScreen(
                 modifier = Modifier.fillMaxWidth(),
                 uiTitleState = uiTitleState,
                 uiIconState = uiIconState,
-                withDragger = withDragger,
                 onBackClick = {
                     fieldEvent(OnBackClick)
                 }
             )
         },
         content = { paddingValues ->
-            val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .fillMaxSize()
-                    .padding(top = paddingValues.calculateTopPadding())
-            } else {
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-            }
-            LazyColumn(
-                modifier = contentModifier,
-                state = lazyListState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    count = uiFieldsListState.items.size,
-                    key = { index -> uiFieldsListState.items[index].id },
-                    contentType = { index -> getContentType(uiFieldsListState.items[index]) },
-                    itemContent = { index ->
-                        val item = uiFieldsListState.items[index]
-                        when (item) {
-                            is UiFieldsListItem.Item.Draggable -> {
-                                FieldItemDraggable(
-                                    modifier = commonItemModifier(),
-                                    item = item,
-                                    reorderingState = reorderableLazyColumnState,
-                                    fieldEvent = fieldEvent,
-                                    hapticFeedback = hapticFeedback
-                                )
-                            }
-
-                            is UiFieldsListItem.Item.Local -> {
-                                FieldItemLocal(
-                                    modifier = commonItemModifier(),
-                                    item = item,
-                                    fieldEvent = fieldEvent
-                                )
-                            }
-
-                            is Section.SideBar -> {
-                                SectionItem(
-                                    item = item,
-                                    reorderingState = reorderableLazyColumnState,
-                                    fieldEvent = fieldEvent,
-                                    isReorderable = true,
-                                    onAddIconClick = {
-                                        fieldEvent(FieldEvent.Section.OnAddToSidebarIconClick)
-                                    }
-                                )
-                            }
-                            is Section.Hidden -> {
-                                SectionItem(
-                                    item = item,
-                                    reorderingState = reorderableLazyColumnState,
-                                    fieldEvent = fieldEvent,
-                                    isReorderable = true
-                                )
-                            }
-                            is Section.Header -> {
-                                SectionItem(
-                                    item = item,
-                                    reorderingState = reorderableLazyColumnState,
-                                    fieldEvent = fieldEvent,
-                                    isReorderable = false
-                                )
-                            }
-                            is Section.Local,
-                            is Section.File -> {
-                                SectionItem(
-                                    item = item,
-                                    reorderingState = reorderableLazyColumnState,
-                                    fieldEvent = fieldEvent,
-                                    isReorderable = false
-                                )
-                            }
-
-                            is Section.LibraryFields -> TODO()
-                            is Section.SpaceFields -> TODO()
-                        }
-                    }
-                )
-                item {
-                    Spacer(modifier = Modifier.height(60.dp))
-                }
-            }
+            Items(
+                uiFieldsListState = uiFieldsListState,
+                lazyListState = lazyListState,
+                reorderableLazyColumnState = reorderableLazyColumnState,
+                hapticFeedback = hapticFeedback,
+                paddingValues = paddingValues,
+                fieldEvent = fieldEvent
+            )
         }
     )
 
@@ -252,6 +172,203 @@ fun FieldsMainScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun FieldsMainModalScreen(
+    uiFieldsListState: UiFieldsListState,
+    uiTitleState: UiTitleState,
+    uiIconState: UiIconState,
+    uiFieldLocalInfoState: UiLocalsFieldsInfoState,
+    uiEditPropertyState: UiEditPropertyState,
+    fieldEvent: (FieldEvent) -> Unit
+) {
+
+    val hapticFeedback = rememberReorderHapticFeedback()
+
+    val lazyListState = rememberLazyListState()
+
+    val reorderableLazyColumnState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        fieldEvent(DragEvent.OnMove(from.key as String, to.key as String))
+        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+    }
+
+    var isDragging by remember { mutableStateOf(false) }
+
+    LaunchedEffect(reorderableLazyColumnState.isAnyItemDragging) {
+        if (reorderableLazyColumnState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
+            fieldEvent(DragEvent.OnDragEnd)
+            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+    ) {
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.Center),
+                text = stringResource(R.string.object_type_fields_title),
+                style = Title1,
+                color = colorResource(R.color.text_primary)
+            )
+        }
+        InfoBar(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(36.dp)
+                .background(color = colorResource(R.color.shape_transparent_secondary)),
+            uiTitleState = uiTitleState,
+            uiIconState = uiIconState
+        )
+        Items(
+            uiFieldsListState = uiFieldsListState,
+            lazyListState = lazyListState,
+            reorderableLazyColumnState = reorderableLazyColumnState,
+            hapticFeedback = hapticFeedback,
+            paddingValues = PaddingValues(0.dp),
+            fieldEvent = fieldEvent
+        )
+    }
+
+    if (uiEditPropertyState is UiEditPropertyState.Visible) {
+        PropertyScreen(
+            modifier = Modifier.fillMaxWidth(),
+            uiState = uiEditPropertyState,
+            onDismissRequest = { fieldEvent(OnEditPropertyScreenDismiss) },
+            onFormatClick = {},
+            onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
+            onCreateNewButtonClicked = {},
+            onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
+            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) },
+            onLimitTypesClick = { fieldEvent(OnLimitTypesClick) },
+            onDismissLimitTypes = { fieldEvent(OnLimitTypesDismiss) },
+        )
+    }
+
+    if (uiFieldLocalInfoState is UiLocalsFieldsInfoState.Visible) {
+        SectionLocalFieldsInfo(
+            modifier = Modifier.fillMaxWidth(),
+            state = uiFieldLocalInfoState,
+            fieldEvent = fieldEvent
+        )
+    }
+}
+
+@Composable
+private fun Items(
+    lazyListState: LazyListState,
+    reorderableLazyColumnState: ReorderableLazyListState,
+    uiFieldsListState: UiFieldsListState,
+    paddingValues: PaddingValues,
+    hapticFeedback: ReorderHapticFeedback,
+    fieldEvent: (FieldEvent) -> Unit,
+) {
+    val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        Modifier
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .fillMaxSize()
+            .padding(top = paddingValues.calculateTopPadding())
+    } else {
+        Modifier
+            .fillMaxSize()
+            .padding(paddingValues)
+    }
+    LazyColumn(
+        modifier = contentModifier,
+        state = lazyListState,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(
+            count = uiFieldsListState.items.size,
+            key = { index -> uiFieldsListState.items[index].id },
+            contentType = { index -> getContentType(uiFieldsListState.items[index]) },
+            itemContent = { index ->
+                val item = uiFieldsListState.items[index]
+                when (item) {
+                    is UiFieldsListItem.Item.Draggable -> {
+                        FieldItemDraggable(
+                            modifier = commonItemModifier(),
+                            item = item,
+                            reorderingState = reorderableLazyColumnState,
+                            fieldEvent = fieldEvent,
+                            hapticFeedback = hapticFeedback
+                        )
+                    }
+
+                    is UiFieldsListItem.Item.Local -> {
+                        FieldItemLocal(
+                            modifier = commonItemModifier(),
+                            item = item,
+                            fieldEvent = fieldEvent
+                        )
+                    }
+
+                    is Section.SideBar -> {
+                        SectionItem(
+                            item = item,
+                            reorderingState = reorderableLazyColumnState,
+                            fieldEvent = fieldEvent,
+                            isReorderable = true,
+                            onAddIconClick = {
+                                fieldEvent(FieldEvent.Section.OnAddToSidebarIconClick)
+                            }
+                        )
+                    }
+                    is Section.Hidden -> {
+                        SectionItem(
+                            item = item,
+                            reorderingState = reorderableLazyColumnState,
+                            fieldEvent = fieldEvent,
+                            isReorderable = true
+                        )
+                    }
+                    is Section.Header -> {
+                        SectionItem(
+                            item = item,
+                            reorderingState = reorderableLazyColumnState,
+                            fieldEvent = fieldEvent,
+                            isReorderable = false
+                        )
+                    }
+                    is Section.Local,
+                    is Section.File -> {
+                        SectionItem(
+                            item = item,
+                            reorderingState = reorderableLazyColumnState,
+                            fieldEvent = fieldEvent,
+                            isReorderable = false
+                        )
+                    }
+                }
+            }
+        )
+        item {
+            Spacer(modifier = Modifier.height(60.dp))
+        }
+    }
+}
+
 /** Returns a content type string based on the item type. **/
 private fun getContentType(item: UiFieldsListItem): String {
     return when (item) {
@@ -262,8 +379,6 @@ private fun getContentType(item: UiFieldsListItem): String {
         is Section.Hidden -> FieldsItemsContentType.SECTION_HIDDEN
         is Section.Local -> FieldsItemsContentType.SECTION_LOCAL
         is Section.File -> FieldsItemsContentType.SECTION_FILE
-        is Section.LibraryFields -> "content_type_section_library_fields"
-        is Section.SpaceFields -> "content_type_section_space_fields"
     }
 }
 
@@ -283,7 +398,6 @@ fun LazyItemScope.commonItemModifier() = Modifier
 @Composable
 private fun TopBar(
     modifier: Modifier,
-    withDragger: Boolean = true,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
     onBackClick: () -> Unit = {}
@@ -299,35 +413,26 @@ private fun TopBar(
                 color = colorResource(id = R.color.background_primary),
             )
     ) {
-        if (withDragger) {
-            Dragger(
-                modifier = Modifier
-                    .padding(vertical = 6.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            if (!withDragger) {
-                Box(
-                    modifier = Modifier
-                        .width(56.dp)
-                        .height(48.dp)
-                        .align(Alignment.CenterStart)
-                        .noRippleThrottledClickable {
-                            onBackClick()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        modifier = Modifier.wrapContentSize(),
-                        painter = painterResource(R.drawable.ic_default_top_back),
-                        contentDescription = stringResource(R.string.content_desc_back_button)
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(48.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleThrottledClickable {
+                        onBackClick()
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.wrapContentSize(),
+                    painter = painterResource(R.drawable.ic_default_top_back),
+                    contentDescription = stringResource(R.string.content_desc_back_button)
+                )
             }
 
             Text(
@@ -362,16 +467,16 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
         )
+        Spacer(modifier = Modifier.width(4.dp))
         ListWidgetObjectIcon(
-            modifier = Modifier
-
-                .padding(start = 4.dp)
-                .size(18.dp),
+            modifier = Modifier,
             icon = uiIconState.icon,
-            backgroundColor = R.color.transparent_black
+            backgroundColor = R.color.transparent_black,
+            iconSize = 16.dp
         )
+        Spacer(modifier = Modifier.width(2.dp))
         Text(
-            modifier = Modifier.padding(start = 4.dp),
+            modifier = Modifier,
             text = uiTitleState.title,
             style = Caption1Medium,
             maxLines = 1,
@@ -404,11 +509,9 @@ private fun LazyItemScope.SectionItem(
         )
 
         is Section.Local -> stringResource(R.string.object_type_fields_section_local_fields) to colorResource(
-            id = R.color.text_primary
+            id = R.color.text_secondary
         )
 
-        is Section.LibraryFields -> TODO()
-        is Section.SpaceFields -> TODO()
         is Section.File -> stringResource(R.string.object_type_fields_section_file) to colorResource(
             id = R.color.text_secondary
         )

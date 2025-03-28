@@ -44,8 +44,8 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
@@ -134,9 +134,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                 }
             }
 
-            val showViewerSpaceSettings = vm.viewerSpaceSettingsState.collectAsStateWithLifecycle().value
+            val spaceSettingsState = vm.viewerSpaceSettingsState.collectAsStateWithLifecycle().value
 
-            if (showViewerSpaceSettings is HomeScreenViewModel.ViewerSpaceSettingsState.Visible) {
+            if (spaceSettingsState is ViewerSpaceSettingsState.Visible) {
                 ModalBottomSheet(
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
@@ -145,10 +145,10 @@ class HomeScreenFragment : BaseComposeFragment(),
                     dragHandle = null,
                     content = {
                         ViewerSpaceSettings(
-                            title = showViewerSpaceSettings.name,
-                            icon = showViewerSpaceSettings.icon,
-                            description = showViewerSpaceSettings.description,
-                            info = showViewerSpaceSettings.techInfo,
+                            title = spaceSettingsState.name,
+                            icon = spaceSettingsState.icon,
+                            description = spaceSettingsState.description,
+                            info = spaceSettingsState.techInfo,
                             uiEvent = {
                                 vm.onViewerSpaceSettingsUiEvent(
                                     space = SpaceId(space),

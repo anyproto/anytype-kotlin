@@ -194,6 +194,7 @@ class ListWidgetContainer(
         BundledWidgetSourceIds.SETS -> WidgetView.ListOfObjects.Type.Sets
         BundledWidgetSourceIds.FAVORITE -> WidgetView.ListOfObjects.Type.Favorites
         BundledWidgetSourceIds.COLLECTIONS -> WidgetView.ListOfObjects.Type.Collections
+        BundledWidgetSourceIds.BIN -> WidgetView.ListOfObjects.Type.Bin
         else -> throw IllegalStateException("Unexpected subscription: $subscription")
     }
 
@@ -280,7 +281,7 @@ class ListWidgetContainer(
                 )
             }
 
-            Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+            BundledWidgetSourceIds.BIN, Subscriptions.SUBSCRIPTION_BIN -> {
                 StoreSearchParams(
                     space = SpaceId(space),
                     subscription = subscription,

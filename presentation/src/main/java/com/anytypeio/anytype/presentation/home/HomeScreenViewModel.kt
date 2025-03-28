@@ -1098,7 +1098,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                Subscriptions.SUBSCRIPTION_BIN -> {
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Bin,

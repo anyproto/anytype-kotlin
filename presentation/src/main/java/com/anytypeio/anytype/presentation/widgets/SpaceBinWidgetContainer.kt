@@ -26,7 +26,7 @@ class SpaceBinWidgetContainer @Inject constructor(
                 container.subscribe(
                     searchParams = StoreSearchParams(
                         space = SpaceId(config.space),
-                        subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        subscription = Subscriptions.SUBSCRIPTION_BIN,
                         filters = ObjectSearchConstants.filterTabArchive(),
                         sorts = emptyList(),
                         limit = 1,
@@ -34,7 +34,7 @@ class SpaceBinWidgetContainer @Inject constructor(
                     )
                 ).map { result ->
                     WidgetView.Bin(
-                        id = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        id = Subscriptions.SUBSCRIPTION_BIN,
                         isEmpty = result.isEmpty(),
                         isLoading = false
                     )
@@ -42,7 +42,7 @@ class SpaceBinWidgetContainer @Inject constructor(
             }.onStart {
                 emit(
                     WidgetView.Bin(
-                        id = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        id = Subscriptions.SUBSCRIPTION_BIN,
                         isEmpty = true,
                         isLoading = true
                     )

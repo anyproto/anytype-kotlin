@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -82,7 +81,6 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -407,7 +405,7 @@ class HomeScreenViewModelTest {
                 details = emptyMap()
             )
 
-            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
@@ -1262,7 +1260,7 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -2039,7 +2037,7 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -2997,7 +2995,7 @@ class HomeScreenViewModelTest {
                 subscribe(
                     searchParams = StoreSearchParams(
                         space = SpaceId(defaultSpaceConfig.space),
-                        subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        subscription = Subscriptions.SUBSCRIPTION_BIN,
                         filters = ObjectSearchConstants.filterTabArchive(),
                         sorts = emptyList(),
                         limit = 1,

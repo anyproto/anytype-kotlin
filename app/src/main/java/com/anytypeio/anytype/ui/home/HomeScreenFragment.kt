@@ -118,7 +118,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                        onSpaceIconClicked = vm::onSpaceWidgetClicked,
+                        onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
                         membersCount = view?.membersCount ?: 0,
                         name = view?.space?.name.orEmpty(),
                         onBackButtonClicked = {

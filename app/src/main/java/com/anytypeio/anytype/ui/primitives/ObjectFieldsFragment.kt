@@ -96,7 +96,9 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
                     LocalInfoScreen(
                         modifier = Modifier.fillMaxWidth(),
                         bottomSheetState = bottomSheetState,
-                        onDismiss = { vm.onDismissLocalInfo() }
+                        onDismiss = { vm.onDismissLocalInfo() },
+                        title = R.string.object_properties_local_info_title,
+                        description = R.string.object_properties_local_info_description
                     )
                 }
             }

@@ -102,7 +102,6 @@ import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -2227,25 +2226,31 @@ class HomeScreenViewModel(
 
     fun onSpaceSettingsClicked(space: SpaceId) {
         viewModelScope.launch {
-            val targetSpaceView = spaceViewSubscriptionContainer.get(space)
-            if (targetSpaceView != null) {
-                val config = spaceManager.getConfig(space)
-                viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
-                    name = targetSpaceView.name.orEmpty(),
-                    description = targetSpaceView.description.orEmpty(),
-                    icon = targetSpaceView.spaceIcon(
-                        builder = urlBuilder,
-                        spaceGradientProvider = SpaceGradientProvider.Default
-                    ),
-                    techInfo = SpaceTechInfo(
-                        spaceId = space,
-                        networkId = config?.network.orEmpty(),
-                        creationDateInMillis = targetSpaceView
-                            .getValue<Double?>(Relations.CREATED_DATE)
-                            ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                        createdBy = targetSpaceView.creator.orEmpty()
+            val permission = userPermissions.value
+            if (permission?.isOwnerOrEditor() == true) {
+                navigation(Navigation.OpenOwnerOrEditorSpaceSettings(space = space.id))
+            } else {
+                val targetSpaceView = spaceViewSubscriptionContainer.get(space)
+                if (targetSpaceView != null) {
+                    val config = spaceManager.getConfig(space)
+                    // TODO map creator
+                    viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
+                        name = targetSpaceView.name.orEmpty(),
+                        description = targetSpaceView.description.orEmpty(),
+                        icon = targetSpaceView.spaceIcon(
+                            builder = urlBuilder,
+                            spaceGradientProvider = SpaceGradientProvider.Default
+                        ),
+                        techInfo = SpaceTechInfo(
+                            spaceId = space,
+                            networkId = config?.network.orEmpty(),
+                            creationDateInMillis = targetSpaceView
+                                .getValue<Double?>(Relations.CREATED_DATE)
+                                ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
+                            createdBy = targetSpaceView.creator.orEmpty()
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -2291,6 +2296,7 @@ class HomeScreenViewModel(
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
         data class OpenType(val target: Id, val space: Id) : Navigation()
+        data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
     }
 
     sealed class ViewerSpaceSettingsState {

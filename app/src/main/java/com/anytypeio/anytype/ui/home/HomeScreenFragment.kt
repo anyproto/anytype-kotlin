@@ -125,20 +125,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                                 isSpaceRoot = isSpaceRootScreen()
                             )
                         },
-                        onSettingsClicked = {
-//                            runCatching {
-//                                findNavController()
-//                                    .navigate(
-//                                        R.id.spaceSettingsScreen,
-//                                        SpaceSettingsFragment.args(
-//                                            space = SpaceId(space)
-//                                        )
-//                                    )
-//                            }.onFailure {
-//                                Timber.e(it, "Error while opening space settings")
-//                            }
-                            vm.onSpaceSettingsClicked(space = SpaceId(space))
-                        }
+                        onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
                     )
                     PageWithWidgets(
                         modifier = Modifier.padding(top = 52.dp),
@@ -504,6 +491,19 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening participant from widgets")
+                }
+            }
+            is Navigation.OpenOwnerOrEditorSpaceSettings -> {
+                runCatching {
+                    findNavController()
+                        .navigate(
+                            R.id.spaceSettingsScreen,
+                            SpaceSettingsFragment.args(
+                                space = SpaceId(space)
+                            )
+                        )
+                }.onFailure {
+                    Timber.e(it, "Error while opening space settings")
                 }
             }
         }

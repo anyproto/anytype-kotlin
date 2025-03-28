@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -224,7 +223,7 @@ class HomeScreenViewModel(
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val leaveSpace: DeleteSpace,
+    private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
@@ -2315,7 +2314,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val permission = userPermissionProvider.get(space)
             if (permission != null && permission != SpaceMemberPermissions.OWNER) {
-                leaveSpace
+                deleteSpace
                     .async(space)
                     .onFailure { Timber.e(it, "Error while leaving space") }
                     .onSuccess {
@@ -2465,7 +2464,7 @@ class HomeScreenViewModel(
             exitToVaultDelegate = exitToVaultDelegate,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             getSpaceInviteLink = getSpaceInviteLink,
-            leaveSpace = deleteSpace,
+            deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer
         ) as T
     }

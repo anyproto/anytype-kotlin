@@ -38,6 +38,7 @@ fun ObjectWrapper.Basic.spaceIcon(
     )
 }
 
+// TODO delete provider
 fun ObjectWrapper.SpaceView.spaceIcon(
     builder: UrlBuilder,
     spaceGradientProvider: SpaceGradientProvider,

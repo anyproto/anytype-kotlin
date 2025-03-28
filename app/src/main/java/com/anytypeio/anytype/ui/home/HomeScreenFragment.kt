@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -44,11 +45,13 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
@@ -61,6 +64,7 @@ import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
+import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -95,6 +99,7 @@ class HomeScreenFragment : BaseComposeFragment(),
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
+
             MaterialTheme(
                 typography = typography,
                 shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
@@ -121,17 +126,18 @@ class HomeScreenFragment : BaseComposeFragment(),
                             )
                         },
                         onSettingsClicked = {
-                            runCatching {
-                                findNavController()
-                                    .navigate(
-                                        R.id.spaceSettingsScreen,
-                                        SpaceSettingsFragment.args(
-                                            space = SpaceId(space)
-                                        )
-                                    )
-                            }.onFailure {
-                                Timber.e(it, "Error while opening space settings")
-                            }
+//                            runCatching {
+//                                findNavController()
+//                                    .navigate(
+//                                        R.id.spaceSettingsScreen,
+//                                        SpaceSettingsFragment.args(
+//                                            space = SpaceId(space)
+//                                        )
+//                                    )
+//                            }.onFailure {
+//                                Timber.e(it, "Error while opening space settings")
+//                            }
+                            vm.onSpaceSettingsClicked(space = SpaceId(space))
                         }
                     )
                     PageWithWidgets(
@@ -140,6 +146,33 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }
             }
+
+            val showViewerSpaceSettings = vm.viewerSpaceSettingsState.collectAsStateWithLifecycle().value
+
+            if (showViewerSpaceSettings is HomeScreenViewModel.ViewerSpaceSettingsState.Visible) {
+                ModalBottomSheet(
+                    shape = RoundedCornerShape(20.dp),
+                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
+                    containerColor = colorResource(R.color.background_secondary),
+                    onDismissRequest = vm::onDismissViewerSpaceSettings,
+                    dragHandle = null,
+                    content = {
+                        ViewerSpaceSettings(
+                            title = showViewerSpaceSettings.name,
+                            icon = showViewerSpaceSettings.icon,
+                            description = showViewerSpaceSettings.description,
+                            info = showViewerSpaceSettings.techInfo,
+                            uiEvent = {
+                                vm.onViewerSpaceSettingsUiEvent(
+                                    space = SpaceId(space),
+                                    uiEvent = it
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+
             BackHandler {
                 vm.onBackClicked(
                     isSpaceRoot = isSpaceRootScreen()
@@ -336,6 +369,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening share screen")
+                }
+            }
+            is Command.ShowInviteLinkQrCode -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.shareSpaceInviteQrCodeScreen,
+                        ShareQrCodeSpaceInviteFragment.args(link = command.link)
+                    )
+                }.onFailure {
+                    Timber.w(it, "Error while showing invite QR code from space settings in widgets")
                 }
             }
             is Command.CreateSourceForNewWidget -> {

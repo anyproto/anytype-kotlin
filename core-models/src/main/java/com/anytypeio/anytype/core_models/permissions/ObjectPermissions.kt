@@ -170,8 +170,7 @@ fun ObjectWrapper.Type.toObjectPermissionsForTypes(
 
     // Permission to change the recommended layout requires several conditions to be met
     val canChangeRecommendedLayoutForThisType = !isTemplate &&
-                possibleToChangeLayoutLayouts.contains(recommendedLayout) &&
-                !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE)
+                possibleToChangeLayoutLayouts.contains(recommendedLayout)
 
     return ObjectPermissions(
         canDelete = !restrictions.contains(ObjectRestriction.DELETE),

@@ -209,7 +209,8 @@ private suspend fun mapToUiPropertiesDraggableListItem(
         isEditableField = fieldParser.isPropertyEditable(property),
         isPossibleToUnlinkFromType =
         objectPermissions.canUnlinkPropertyFromType &&
-                fieldParser.isPropertyCanBeDeletedFromType(property)
+                fieldParser.isPropertyCanBeDeletedFromType(property),
+        isPossibleToDrag = objectPermissions.canEditRelationsList
     )
 }
 

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -54,7 +55,10 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -67,6 +71,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -99,6 +104,10 @@ import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObje
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
+import com.anytypeio.anytype.presentation.spaces.UiEvent
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
@@ -212,7 +221,11 @@ class HomeScreenViewModel(
     private val featureToggles: FeatureToggles,
     private val fieldParser: FieldParser,
     private val spaceInviteResolver: SpaceInviteResolver,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val deleteSpace: DeleteSpace,
+    private val spaceMembers: ActiveSpaceMemberSubscriptionContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -253,6 +266,8 @@ class HomeScreenViewModel(
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
 
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
+
+    val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -1826,6 +1841,10 @@ class HomeScreenViewModel(
     }
 
     fun onBackClicked(isSpaceRoot: Boolean) {
+        proceedWithExiting(isSpaceRoot)
+    }
+
+    private fun proceedWithExiting(isSpaceRoot: Boolean) {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -2214,6 +2233,103 @@ class HomeScreenViewModel(
         )
     }
 
+    fun onSpaceSettingsClicked(space: SpaceId) {
+        viewModelScope.launch {
+            val permission = userPermissions.value
+            if (permission?.isOwnerOrEditor() == true) {
+                navigation(Navigation.OpenOwnerOrEditorSpaceSettings(space = space.id))
+            } else {
+                val targetSpaceView = spaceViewSubscriptionContainer.get(space)
+                if (targetSpaceView != null) {
+                    val config = spaceManager.getConfig(space)
+                    val creatorId = targetSpaceView.creator.orEmpty()
+                    val createdByScreenName : String
+                    if (creatorId.isNotEmpty()) {
+                        val store = spaceMembers.get(space)
+                        createdByScreenName = when(store) {
+                            is ActiveSpaceMemberSubscriptionContainer.Store.Data -> {
+                                store.members
+                                    .find { m -> m.id == creatorId }
+                                    ?.let { it.globalName ?: it.identity }
+                                    ?.ifEmpty { null }
+                                    ?: creatorId
+                            }
+                            ActiveSpaceMemberSubscriptionContainer.Store.Empty -> {
+                                creatorId
+                            }
+                        }
+                    } else {
+                        Timber.w("Creator ID was empty")
+                        createdByScreenName = EMPTY_STRING_VALUE
+                    }
+                    viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
+                        name = targetSpaceView.name.orEmpty(),
+                        description = targetSpaceView.description.orEmpty(),
+                        icon = targetSpaceView.spaceIcon(
+                            builder = urlBuilder,
+                            spaceGradientProvider = SpaceGradientProvider.Default
+                        ),
+                        techInfo = SpaceTechInfo(
+                            spaceId = space,
+                            networkId = config?.network.orEmpty(),
+                            creationDateInMillis = targetSpaceView
+                                .getValue<Double?>(Relations.CREATED_DATE)
+                                ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
+                            createdBy = createdByScreenName
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
+        when(uiEvent) {
+            UiEvent.OnQrCodeClicked -> {
+                viewModelScope.launch {
+                    getSpaceInviteLink
+                        .async(space)
+                        .onFailure { commands.emit(Command.ShareSpace(space)) }
+                        .onSuccess { link ->
+                            commands.emit(Command.ShowInviteLinkQrCode(link.scheme))
+                        }
+                }
+            }
+            UiEvent.OnInviteClicked -> {
+                viewModelScope.launch { commands.emit(Command.ShareSpace(space)) }
+            }
+            UiEvent.OnLeaveSpaceClicked -> {
+                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+            }
+            else -> {
+                Timber.w("Unexpected UI event: $uiEvent")
+            }
+        }
+    }
+
+    fun onDismissViewerSpaceSettings() {
+        viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Hidden
+    }
+
+    fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
+        viewModelScope.launch {
+            val permission = userPermissionProvider.get(space)
+            if (permission != null && permission != SpaceMemberPermissions.OWNER) {
+                deleteSpace
+                    .async(space)
+                    .onFailure { Timber.e(it, "Error while leaving space") }
+                    .onSuccess {
+                        // Forcing return to the vault even if space has chat.
+                        proceedWithExiting(
+                            isSpaceRoot = true
+                        )
+                    }
+            } else {
+                Timber.e("Unexpected permission when trying to leave space: $permission")
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
@@ -2224,6 +2340,18 @@ class HomeScreenViewModel(
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
         data class OpenType(val target: Id, val space: Id) : Navigation()
+        data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
+    }
+
+    sealed class ViewerSpaceSettingsState {
+        data object Init : ViewerSpaceSettingsState()
+        data object Hidden: ViewerSpaceSettingsState()
+        data class Visible(
+            val name: String,
+            val description: String,
+            val icon: SpaceIconView,
+            val techInfo: SpaceTechInfo
+        ) : ViewerSpaceSettingsState()
     }
 
     class Factory @Inject constructor(
@@ -2278,6 +2406,10 @@ class HomeScreenViewModel(
         private val fieldParser: FieldParser,
         private val spaceInviteResolver: SpaceInviteResolver,
         private val exitToVaultDelegate: ExitToVaultDelegate,
+        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val deleteSpace: DeleteSpace,
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2330,7 +2462,11 @@ class HomeScreenViewModel(
             featureToggles = featureToggles,
             fieldParser = fieldParser,
             spaceInviteResolver = spaceInviteResolver,
-            exitToVaultDelegate = exitToVaultDelegate
+            exitToVaultDelegate = exitToVaultDelegate,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            getSpaceInviteLink = getSpaceInviteLink,
+            deleteSpace = this@Factory.deleteSpace,
+            spaceMembers = activeSpaceMemberSubscriptionContainer
         ) as T
     }
 
@@ -2437,6 +2573,10 @@ sealed class Command {
         ) : Deeplink()
         data class MembershipScreen(val tierId: String?) : Deeplink()
     }
+
+    data class ShowInviteLinkQrCode(val link: String) : Command()
+
+    data object ShowLeaveSpaceWarning : Command()
 }
 
 /**

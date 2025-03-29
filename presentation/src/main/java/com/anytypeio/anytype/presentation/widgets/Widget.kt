@@ -96,6 +96,11 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.RECENT_LOCAL
                 override val type: Id? = null
             }
+
+            data object Bin : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.BIN
+                override val type: Id? = null
+            }
         }
     }
 }
@@ -212,6 +217,7 @@ fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.SETS -> Widget.Source.Bundled.Sets
     BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
+    BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
     else -> throw IllegalStateException("Widget bundled id can't be $this")
 }
 

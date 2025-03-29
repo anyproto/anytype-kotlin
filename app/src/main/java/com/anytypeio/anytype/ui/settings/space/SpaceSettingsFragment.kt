@@ -182,7 +182,7 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                         findNavController().navigate(
                             R.id.homeScreenWidgets,
                             CollectionFragment.args(
-                                subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                                subscription = Subscriptions.SUBSCRIPTION_BIN,
                                 space = space
                             )
                         )

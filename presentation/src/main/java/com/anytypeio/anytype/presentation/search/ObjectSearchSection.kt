@@ -7,6 +7,6 @@ sealed class ObjectSearchSection : DefaultSearchItem {
     sealed class SelectWidgetSource : ObjectSearchSection() {
         data object FromMyObjects: SelectWidgetSource()
         data object FromLibrary: SelectWidgetSource()
-        data object DefaultLists: SelectWidgetSource()
+        data object System: SelectWidgetSource()
     }
 }

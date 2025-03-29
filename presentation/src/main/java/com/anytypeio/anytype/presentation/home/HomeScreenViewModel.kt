@@ -589,7 +589,7 @@ class HomeScreenViewModel(
                             )
                         }
                     }
-                } + listOf(spaceBinWidgetContainer)
+                }
             }.collect {
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
@@ -966,6 +966,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(source: Widget.Source) {
+        Timber.d("onWidgetSourceClicked: $source")
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendSelectHomeTabEvent(
@@ -1054,6 +1055,16 @@ class HomeScreenViewModel(
                     sendToast("Open bin to restore your archived object")
                 }
             }
+            is Widget.Source.Bundled.Bin -> {
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Bin,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -1081,6 +1092,7 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
+        Timber.d("onBundledWidgetClicked: $widget")
         viewModelScope.launch {
             // TODO DROID-2341 get space from widget views for better consistency
             val space = spaceManager.get()
@@ -1101,7 +1113,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                Subscriptions.SUBSCRIPTION_BIN -> {
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Bin,

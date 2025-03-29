@@ -417,7 +417,7 @@ class HomeScreenViewModelTest {
                 details = emptyMap()
             )
 
-            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
@@ -1272,7 +1272,7 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -2048,8 +2048,6 @@ class HomeScreenViewModelTest {
                 sourceObject.id to sourceObject.map
             )
         )
-
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
@@ -3007,7 +3005,7 @@ class HomeScreenViewModelTest {
                 subscribe(
                     searchParams = StoreSearchParams(
                         space = SpaceId(defaultSpaceConfig.space),
-                        subscription = Subscriptions.SUBSCRIPTION_ARCHIVED,
+                        subscription = Subscriptions.SUBSCRIPTION_BIN,
                         filters = ObjectSearchConstants.filterTabArchive(),
                         sorts = emptyList(),
                         limit = 1,

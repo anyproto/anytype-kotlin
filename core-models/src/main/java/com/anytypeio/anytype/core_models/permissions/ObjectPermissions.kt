@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import kotlin.collections.contains
-import kotlin.collections.get
 
 /**
  * Represents a set of user permissions for a given object.
@@ -61,7 +60,11 @@ data class ObjectPermissions(
     val canCreateTemplatesForThisType: Boolean = false,
     val participantCanEdit: Boolean = false,
     val canUnlinkPropertyFromType: Boolean = false
-)
+) {
+    companion object {
+        val NOT_EDITABLE = ObjectPermissions()
+    }
+}
 
 /**
  * Converts this [ObjectView] instance into an [ObjectPermissions] by inspecting
@@ -150,29 +153,35 @@ fun ObjectWrapper.Type.toObjectPermissionsForTypes(
     participantCanEdit: Boolean
 ): ObjectPermissions {
 
-    val isArchived = getSingleValue<Boolean>(Relations.IS_ARCHIVED) == true
-    val canEdit = !isArchived && participantCanEdit
+    if (!participantCanEdit) return ObjectPermissions.NOT_EDITABLE
 
+    val isArchived = getSingleValue<Boolean>(Relations.IS_ARCHIVED) == true
+
+    if (isArchived) return ObjectPermissions.NOT_EDITABLE
+
+    val isTemplate = uniqueKey == ObjectTypeIds.TEMPLATE
+
+    // General details edit permission: allowed if the DETAILS restriction is not present
     val canEditDetails = !restrictions.contains(ObjectRestriction.DETAILS)
 
-    val canCreateTemplatesForObjectsThisType = layoutsWithTemplates.contains(recommendedLayout)
-            && uniqueKey != ObjectTypeIds.TEMPLATE
+    // Permission to create templates (only for non-template types and if a template layout exists)
+    val canCreateTemplatesForThisType =
+        !isTemplate && layoutsWithTemplates.contains(recommendedLayout)
 
-    val canChangeRecommendedLayoutForObjectsThisType = participantCanEdit
-            && possibleToChangeLayoutLayouts.contains(recommendedLayout)
-            && uniqueKey != ObjectTypeIds.TEMPLATE
+    // Permission to change the recommended layout requires several conditions to be met
+    val canChangeRecommendedLayoutForThisType = !isTemplate &&
+                possibleToChangeLayoutLayouts.contains(recommendedLayout) &&
+                !restrictions.contains(ObjectRestriction.LAYOUT_CHANGE)
 
     return ObjectPermissions(
-        canDelete = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE),
-        canEditDetails = canEditDetails && canEdit,
-        canCreateTemplatesForThisType = canCreateTemplatesForObjectsThisType,
-        canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && participantCanEdit,
-        canChangeRecommendedLayoutForThisType = canChangeRecommendedLayoutForObjectsThisType,
-        participantCanEdit = canEdit,
-        canEditRelationsList = canEdit && canEditDetails &&
-                !restrictions.contains(ObjectRestriction.RELATIONS),
-        canUnlinkPropertyFromType = canEdit && canEditDetails &&
-                !restrictions.contains(ObjectRestriction.RELATIONS)
+        canDelete = !restrictions.contains(ObjectRestriction.DELETE),
+        canEditDetails = canEditDetails,
+        canCreateTemplatesForThisType = canCreateTemplatesForThisType,
+        canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE),
+        canChangeRecommendedLayoutForThisType = canChangeRecommendedLayoutForThisType,
+        participantCanEdit = true,
+        canEditRelationsList = canEditDetails && !restrictions.contains(ObjectRestriction.RELATIONS),
+        canUnlinkPropertyFromType = canEditDetails && !restrictions.contains(ObjectRestriction.RELATIONS)
     )
 }
 

@@ -12,6 +12,9 @@ import android.widget.TextView
 import androidx.compose.ui.platform.ComposeView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -20,6 +23,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -41,6 +45,10 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.google.android.exoplayer2.DefaultLoadControl
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.ui.StyledPlayerView
 import com.bumptech.glide.request.transition.Transition
 import timber.log.Timber
 
@@ -643,6 +651,97 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
         override fun applyBackground(item: BlockView.Title) {
             //do nothing
+        }
+    }
+
+
+    class Video(
+        private val videoBinding: ItemBlockTitleVideoBinding,
+        lifecycle: Lifecycle
+    ) : Title(videoBinding.root), LifecycleEventObserver {
+
+        override val icon: ObjectIconWidget = videoBinding.objectIconWidget
+        override val image: ImageView = videoBinding.cover
+        override val content: TextInputWidget = videoBinding.title
+        override val selectionView: View = itemView
+
+        private var player: ExoPlayer? = null
+        private var videoUrl: String? = null
+
+        private val playerView: StyledPlayerView = videoBinding.playerView
+        private val playButton: ImageView = videoBinding.playButton
+
+        init {
+            lifecycle.addObserver(this)
+        }
+
+        fun bind(item: BlockView.Title.Video) {
+            super.bind(
+                item = item,
+                onCoverClicked = {},
+                click = {}
+            )
+            content.setText(item.text)
+            setupPreview(item)
+        }
+
+        private fun setupPreview(item: BlockView.Title.Video) {
+            videoUrl = item.videoUrl
+            with(videoBinding) {
+                objectIconWidget.gone()
+                playerView.visible()
+                playButton.visible()
+                playButton.setOnClickListener { togglePlayback() }
+            }
+        }
+
+        private fun togglePlayback() {
+            videoUrl?.let { url ->
+                if (player?.isPlaying == true) pause() else play(url)
+            }
+        }
+
+        fun play(url: String) {
+            release()
+            player = ExoPlayer.Builder(itemView.context)
+                .setLoadControl(
+                    DefaultLoadControl.Builder()
+                        .setBufferDurationsMs(600, 1000, 250, 500)
+                        .build()
+                )
+                .build()
+                .apply {
+                    playerView.player = this
+                    setMediaItem(MediaItem.fromUri(url))
+                    prepare()
+                    playWhenReady = true
+                }
+            playButton.gone()
+        }
+
+        fun pause() {
+            player?.pause()
+            videoBinding.playButton.visible()
+        }
+
+        fun release() {
+            player?.release()
+            player = null
+        }
+
+
+        override fun applyTextColor(item: BlockView.Title) {
+        }
+
+        override fun applyBackground(item: BlockView.Title) {
+        }
+
+        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+            when (event) {
+                Lifecycle.Event.ON_PAUSE -> pause()
+                Lifecycle.Event.ON_DESTROY -> release()
+                else -> {}
+            }
         }
     }
 }

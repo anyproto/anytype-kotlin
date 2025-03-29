@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/playerContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="20dp"
+    android:layout_marginTop="16dp"
+    app:cardElevation="0dp"
+    android:layout_marginEnd="20dp"
+
+    app:cardPreventCornerOverlap="false">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/videoContainer"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="@dimen/dp_48"
+            app:cardCornerRadius="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cover"
+            app:strokeColor="@color/shape_tertiary"
+            app:strokeWidth="1dp">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="1dp">
+
+                <com.google.android.exoplayer2.ui.StyledPlayerView
+                    android:id="@+id/playerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    app:resize_mode="fit"
+                    app:use_controller="true" />
+
+                <ImageView
+                    android:id="@+id/playButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/play"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/objectIconWidget"
+            android:layout_width="64dp"
+            android:layout_height="80dp"
+            android:layout_marginStart="28dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/bg_title_file_icon"
+            android:clickable="true"
+            android:focusable="true"
+            android:transitionName="@string/logo_transition"
+            app:imageSize="80dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/videoContainer"
+            tools:src="@drawable/ic_mime_pdf" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/title"
+            style="@style/BlockTitleContentStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/untitled"
+            android:paddingTop="0dp"
+            app:ignoreDragAndDrop="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/objectIconWidget"
+            app:onlyPasteAsPlaneText="true"
+            tools:text="Check new Android version multiline"
+            tools:visibility="visible" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

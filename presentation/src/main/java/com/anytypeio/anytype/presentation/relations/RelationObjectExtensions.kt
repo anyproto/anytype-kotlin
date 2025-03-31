@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getOptionObject
-import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.objects.buildRelationValueObjectViews
@@ -222,33 +221,6 @@ fun tagRelation(
         tags = tagViews,
         system = relationDetails.key.isSystemKey()
     )
-}
-
-fun ObjectViewDetails.objectTypeRelation(
-    relationKey: Key,
-    isFeatured: Boolean,
-    objectTypeId: Id
-): ObjectRelationView {
-    val objectType = getTypeObject(objectTypeId)
-    return if (objectType == null || objectType.isDeleted == true) {
-        ObjectRelationView.ObjectType.Deleted(
-            id = objectTypeId,
-            key = relationKey,
-            featured = isFeatured,
-            readOnly = false,
-            system = relationKey.isSystemKey()
-        )
-    } else {
-        ObjectRelationView.ObjectType.Base(
-            id = objectTypeId,
-            key = relationKey,
-            name = objectType.name.orEmpty(),
-            featured = isFeatured,
-            readOnly = false,
-            type = objectTypeId,
-            system = relationKey.isSystemKey()
-        )
-    }
 }
 
 fun ObjectViewDetails.linksFeaturedRelation(

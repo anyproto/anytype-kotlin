@@ -2010,4 +2010,6 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title_search_hint">Search..."</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
 
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_create_plural_title">Plural Name</string>
 </resources>

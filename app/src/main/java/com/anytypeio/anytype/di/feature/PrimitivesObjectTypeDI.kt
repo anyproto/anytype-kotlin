@@ -27,7 +27,9 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
+import com.anytypeio.anytype.feature_object_type.viewmodel.SpaceTypesVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
@@ -164,3 +166,68 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
 }
+
+//region Space Types Screen
+@Component(
+    dependencies = [SpaceTypesDependencies::class],
+    modules = [
+        SpaceTypesModule::class,
+        SpaceTypesModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpaceTypesComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: SpaceTypesDependencies): SpaceTypesComponent
+    }
+}
+
+@Module
+object SpaceTypesModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: SpaceTypesVMFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface SpaceTypesDependencies : ObjectTypeDependencies
+
+//endregion
+
+//region Create Type Screen
+@Component(
+    dependencies = [CreateObjectTypeDependencies::class],
+    modules = [
+        CreateObjectTypeModule::class,
+        CreateObjectTypeModule.Declarations::class
+    ]
+)
+@PerScreen
+interface CreateObjectTypeComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: CreateObjectTypeDependencies): CreateObjectTypeComponent
+    }
+}
+
+@Module
+object CreateObjectTypeModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: CreateObjectTypeVMFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface CreateObjectTypeDependencies : ObjectTypeDependencies
+//endregion Screen

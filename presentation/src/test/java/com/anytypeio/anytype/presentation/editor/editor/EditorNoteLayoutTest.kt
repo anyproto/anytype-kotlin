@@ -131,6 +131,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val expected = listOf(
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
+                hasFeaturePropertiesConflict = true,
+                allowChangingObjectType = false,
                 relations = listOf(
                     ObjectRelationView.Default(
                         id = r1.id,
@@ -231,6 +233,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val expected = listOf(
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
+                allowChangingObjectType = false,
+                hasFeaturePropertiesConflict = true,
                 relations = listOf(
                     ObjectRelationView.Default(
                         id = r1.id,

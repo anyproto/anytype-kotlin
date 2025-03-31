@@ -154,6 +154,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             ),
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
+                hasFeaturePropertiesConflict = true,
                 relations = listOf(
                     ObjectRelationView.ObjectType.Base(
                         id = objectTypeId,
@@ -161,7 +162,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                         name = objectTypeName,
                         featured = true,
                         type = objectTypeId,
-                        system = true
+                        system = false
                     ),
                     ObjectRelationView.Default(
                         id = r3.id,
@@ -195,7 +196,10 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val first = test.awaitValue()
         val second = test.awaitValue()
 
-        second.assertValue(ViewState.Success(expected))
+        assertEquals(
+            expected = ViewState.Success(expected),
+            actual = second.value()
+        )
     }
 
     @Test
@@ -492,6 +496,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
+                    hasFeaturePropertiesConflict = true,
                     relations = listOf(
                         ObjectRelationView.ObjectType.Base(
                             id = objectTypeId,
@@ -499,7 +504,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             name = objectTypeName,
                             featured = true,
                             type = objectTypeId,
-                            system = true
+                            system = false
                         )
                     )
                 ),
@@ -622,6 +627,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
+                    hasFeaturePropertiesConflict = true,
                     relations = listOf(
                         ObjectRelationView.ObjectType.Base(
                             id = objectTypeId,
@@ -629,7 +635,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             name = objectTypeName,
                             featured = true,
                             type = objectTypeId,
-                            system = true
+                            system = false
                         ),
                         ObjectRelationView.Default(
                             id = r1.id,
@@ -761,12 +767,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
+                    hasFeaturePropertiesConflict = true,
                     relations = listOf(
                         ObjectRelationView.ObjectType.Deleted(
                             id = objectTypeId,
                             key = Relations.TYPE,
                             featured = true,
-                            system = true
+                            system = false
                         ),
                         ObjectRelationView.Default(
                             id = r3.id,
@@ -893,12 +900,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             ),
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
+                hasFeaturePropertiesConflict = true,
                 relations = listOf(
                     ObjectRelationView.ObjectType.Deleted(
                         id = objectTypeId,
                         key = Relations.TYPE,
                         featured = true,
-                        system = true
+                        system = false
                     ),
                     ObjectRelationView.Default(
                         id = r3.id,
@@ -1023,6 +1031,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             ),
             BlockView.FeaturedRelation(
                 id = featuredBlock.id,
+                hasFeaturePropertiesConflict = true,
                 relations = listOf(
                     ObjectRelationView.Links.Backlinks(
                         id = backlinksRelation.id,
@@ -1157,7 +1166,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         }
 
     @Test
-    fun `should use Featured Properties Ids from Object Type when object featured ids are empty `() =
+    fun `should use Featured Properties Ids from Object Type when Type is not the Template`() =
         runTest {
 
             val title = MockTypicalDocumentFactory.title
@@ -1244,6 +1253,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
+                    //no conflict, because object featured properties are empty
+                    hasFeaturePropertiesConflict = false,
                     relations = listOf(
                         ObjectRelationView.Default(
                             id = property1.id,
@@ -1288,7 +1299,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         }
 
     @Test
-    fun `should use Featured Properties Ids from TargetObjectTypeId when object is Template and his FeatureRelations are empty`() =
+    fun `should use Recommended Featured Properties Ids from TargetObjectTypeId when object is Template`() =
         runTest {
 
             val title = MockTypicalDocumentFactory.title
@@ -1336,7 +1347,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 id = MockDataFactory.randomString(),
                 uniqueKey = ObjectTypeIds.TEMPLATE,
                 layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
-                recommendedFeaturedRelations = listOf(property1.id, property2.id)
+                recommendedFeaturedRelations = listOf(property2.id)
             )
 
             val targetObjectType = StubObjectType(
@@ -1397,6 +1408,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
+                    hasFeaturePropertiesConflict = false,
                     relations = listOf(
                         ObjectRelationView.Default(
                             id = property3.id,

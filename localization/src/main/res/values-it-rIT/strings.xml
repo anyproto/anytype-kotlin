@@ -1601,10 +1601,10 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_templates_menu_duplicate">Duplica</string>
     <string name="object_type_templates_menu_delete">Elimina</string>
     <string name="object_type_fields_section_header">Intestazione</string>
-    <string name="object_type_fields_section_fields_menu">Properties panel</string>
+    <string name="object_type_fields_section_fields_menu">Pannello delle proprietà</string>
     <string name="object_type_fields_section_hidden">Nascosto</string>
     <string name="object_type_fields_section_file">File</string>
-    <string name="object_type_fields_section_local_fields">Found in objects </string>
+    <string name="object_type_fields_section_local_fields">Trovato in oggetti </string>
     <string name="object_type_fields_title">Proprietà</string>
     <string name="object_type_fields_info_text">Stai modificando il tipo</string>
     <string name="object_type_fields_edit_field">Modifica del campo</string>
@@ -1614,14 +1614,14 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_menu_delete">Scollega dal tipo</string>
     <string name="object_type_fields_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="object_type_fields_menu_remove">Rimuovi</string>
-    <string name="object_type_fields_local_info_title">Found in objects</string>
-    <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
+    <string name="object_type_fields_local_info_title">Trovato in oggetti</string>
+    <string name="object_type_fields_local_info_description">Queste proprietà esistono in alcuni oggetti, ma non fanno parte del Tipo. Aggiungerle per farle apparire in tutti gli oggetti di questo Tipo.</string>
     <string name="object_type_fields_local_info_button">Capito</string>
     <string name="object_type_templates_empty">Questo Tipo non ha modelli</string>
     <string name="object_properties_section_local">Local properties</string>
     <string name="object_properties_section_hidden">Nascosto</string>
     <string name="object_properties_local_info_title">Local properties</string>
-    <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
     <string name="object_type_open_type_error">Errore nell\'apertura del tipo di oggetto corrente</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
@@ -1653,7 +1653,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">Questo potrebbe richiedere un po \'di tempo. Si prega di non chiudere l\'app fino a quando il processo è completato.</string>
     <string name="migration_error_try_again">Riprova</string>
     <string name="migration_migration_failed">Migrazione fallita</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Si prega di liberare ≈ %1$s MB di spazio ed eseguire nuovamente il processo.</string>
     <string name="fields_screen_title">Proprietà</string>
     <string name="field_text_title">Testo</string>
     <string name="field_text_empty">Enter</string>
@@ -1686,7 +1686,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_section_data_management">Gestione Dati</string>
     <string name="space_settings_section_misc">Varie</string>
     <string name="space_settings_invite">Invita</string>
-    <string name="space_settings_invite_members">Invite members</string>
+    <string name="space_settings_invite_members">Invita membri</string>
     <string name="space_settings_qrcode">Codice QR</string>
     <string name="space_settings_members_button_members">Membri</string>
     <string name="space_settings_types_button">Tipi di Oggetto</string>
@@ -1698,7 +1698,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Modifica foto</string>
     <string name="space_settings_save_button">Salva</string>
     <string name="object_type_add_property_screen_title">Aggiungi proprietà</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_create">Crea proprietà \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Formati delle proprietà</string>
     <string name="object_type_add_property_screen_section_existing">Proprietà esistenti</string>
     <string name="object_type_add_property_screen_search_hint">Cerca o crea una nuova</string>
@@ -1728,5 +1728,5 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title">Cambia icona</string>
     <string name="object_type_icon_remove">Rimuovi</string>
     <string name="object_type_icon_change_title_search_hint">Cerca...</string>
-    <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="space_invite_link_copied">Il link dell\'invito allo spazio è stato copiato!</string>
 </resources>

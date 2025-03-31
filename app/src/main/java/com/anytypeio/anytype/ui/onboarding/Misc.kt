@@ -213,7 +213,8 @@ fun OnboardingMnemonicInput(
         modifier = modifier,
         textStyle = UXBody
             .copy(
-                lineHeight = 34.sp
+                lineHeight = 34.sp,
+                color = colorResource(R.color.palette_system_pink)
             )
         ,
         value = text.value,
@@ -234,8 +235,7 @@ fun OnboardingMnemonicInput(
         },
         singleLine = singleLine,
         keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions,
-        visualTransformation = MnemonicPhraseFormatter
+        keyboardOptions = keyboardOptions
     )
 }
 

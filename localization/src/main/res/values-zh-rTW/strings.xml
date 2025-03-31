@@ -500,6 +500,7 @@
     <string name="object_search_recently_opened_section_title">最近開啟</string>
     <string name="widget_source_anytype_library">Anytype 資料庫</string>
     <string name="widget_source_default_lists">Default lists</string>
+    <string name="widget_source_system">跟隨系統</string>
     <string name="your_favorite_objects">您的最愛物件</string>
     <string name="on_this_device">在此裝置上</string>
     <string name="sets_of_objects">工作區中的物件集合</string>
@@ -1513,7 +1514,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_all_content">所有物件</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">查看垃圾桶</string>
+    <string name="all_content_view_bin">View Bin</string>
     <string name="all_content_title_tab_pages">Pages</string>
     <string name="all_content_title_tab_lists">列表</string>
     <string name="all_content_title_tab_media">媒體</string>
@@ -1719,4 +1720,5 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
+    <string name="widget_source_suggested">Suggested</string>
 </resources>

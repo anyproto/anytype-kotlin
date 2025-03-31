@@ -456,18 +456,14 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                if (list.isNotEmpty()) {
-                    combine(
-                        flows = buildList<Flow<WidgetView>> {
-                            add(spaceWidgetView)
-                            add(allContentWidget.view)
-                            addAll(list.map { m -> m.view })
-                        }
-                    ) { array ->
-                        array.toList()
+                combine(
+                    flows = buildList<Flow<WidgetView>> {
+                        add(spaceWidgetView)
+                        add(allContentWidget.view)
+                        addAll(list.map { m -> m.view })
                     }
-                } else {
-                    spaceWidgetView.map { view -> listOf(view) }
+                ) { array ->
+                    array.toList()
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
                 buildListOfWidgets(hasEditAccess, widgets)

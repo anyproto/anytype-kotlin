@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
@@ -25,6 +27,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
+import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreen
+import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreenPreview
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
@@ -78,6 +82,16 @@ abstract class ObjectMenuBaseFragment :
                 )
             )
         }
+        binding.objectLayoutConflictScreen.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ConflictScreen(
+                    showScreen = vm.showLayoutConflictScreen.collectAsStateWithLifecycle().value,
+                    onResetClick = { },
+                    onDismiss = { vm.onHideConflictScreen() }
+                )
+            }
+        }
     }
 
     override fun onStart() {
@@ -88,6 +102,7 @@ abstract class ObjectMenuBaseFragment :
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
+        click(binding.objectLayoutConflict) { vm.onShowConflictScreen(objectId = ctx, space = space) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
@@ -162,11 +177,15 @@ abstract class ObjectMenuBaseFragment :
                 snackbar.anchorView = binding.anchor
                 snackbar.show()
             }
+
             is ObjectMenuViewModelBase.Command.ShareDeeplinkToObject -> {
                 val intent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(Intent.EXTRA_TEXT, command.link)
-                    putExtra(Intent.EXTRA_TITLE, getString(R.string.multiplayer_deeplink_to_your_object))
+                    putExtra(
+                        Intent.EXTRA_TITLE,
+                        getString(R.string.multiplayer_deeplink_to_your_object)
+                    )
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))

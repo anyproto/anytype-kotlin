@@ -19,7 +19,7 @@ class GetSuggestedWidgetTypes @Inject constructor(
 
     override suspend fun doWork(params: Params): List<ObjectWrapper.Type> {
 
-        // TODO open widget object preview and filter out existing object types
+        // TODO DROID-3438 open widget object preview and filter out existing object types
 
         val types = repo.searchObjects(
             space = params.space,

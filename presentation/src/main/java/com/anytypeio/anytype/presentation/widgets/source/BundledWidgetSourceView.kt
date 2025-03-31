@@ -14,10 +14,12 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
         override val id: Id get() = BundledWidgetSourceIds.FAVORITE
     }
 
+    @Deprecated("To be deleted. Migrating to widget source by suggested types")
     data object Sets : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.SETS
     }
 
+    @Deprecated("To be deleted. Migrating to widget source by suggested types")
     data object Collections : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.COLLECTIONS
     }
@@ -28,5 +30,9 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
 
     data object RecentLocal : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.RECENT_LOCAL
+    }
+
+    data object Bin : BundledWidgetSourceView() {
+        override val id: Id get() = BundledWidgetSourceIds.BIN
     }
 }

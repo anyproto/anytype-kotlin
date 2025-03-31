@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.widgets.GetSuggestedWidgetTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -182,7 +183,8 @@ class SelectWidgetSourceViewModel(
                 suggested.value = types.map { type ->
                     SuggestWidgetObjectType(
                         id = type.id,
-                        name = type.name.orEmpty()
+                        name = type.name.orEmpty(),
+                        objectIcon = type.objectIcon()
                     )
                 }
             }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets.source
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 
 /**
@@ -39,5 +40,6 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
 
 data class SuggestWidgetObjectType(
     val id: Id,
-    val name: String
+    val name: String,
+    val objectIcon: ObjectIcon
 ) : DefaultSearchItem

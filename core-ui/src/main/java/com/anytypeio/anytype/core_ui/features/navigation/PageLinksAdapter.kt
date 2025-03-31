@@ -274,10 +274,12 @@ class SuggestWidgetObjectTypeViewHolder(
 
     init {
         binding.ivIcon.binding.emojiContainer.invisible()
+        binding.tvSubtitle.gone()
     }
 
     fun bind(source: SuggestWidgetObjectType) {
         binding.tvTitle.text = source.name
+        binding.ivIcon.setIcon(source.objectIcon)
     }
 }
 

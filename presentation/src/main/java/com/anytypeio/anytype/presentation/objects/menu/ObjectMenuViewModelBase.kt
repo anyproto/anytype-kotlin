@@ -96,6 +96,8 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onDescriptionClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
 
+    val showLayoutConflictScreen = MutableStateFlow(false)
+
     fun onHistoryClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
             commands.emit(Command.OpenHistoryScreen(ctx, space))
@@ -475,6 +477,18 @@ abstract class ObjectMenuViewModelBase(
                 obj = ctx,
                 space = space
             )
+        }
+    }
+
+    fun onShowConflictScreen(objectId: Id, space: Id) {
+        viewModelScope.launch {
+            showLayoutConflictScreen.value = true
+        }
+    }
+
+    fun onHideConflictScreen() {
+        viewModelScope.launch {
+            showLayoutConflictScreen.value = false
         }
     }
 

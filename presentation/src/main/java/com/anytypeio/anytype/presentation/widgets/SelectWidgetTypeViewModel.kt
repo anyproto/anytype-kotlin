@@ -29,11 +29,8 @@ class SelectWidgetTypeViewModel(
     private val analytics: Analytics
 ) : BaseViewModel() {
 
-    val views = MutableStateFlow(
-        listOf(
-            WidgetTypeView.Tree(isSelected = false),
-            WidgetTypeView.Link(isSelected = false)
-        )
+    val views = MutableStateFlow<List<WidgetTypeView>>(
+        listOf(WidgetTypeView.Link(isSelected = false))
     )
 
     val isDismissed = MutableStateFlow(false)
@@ -94,6 +91,14 @@ class SelectWidgetTypeViewModel(
                         WidgetTypeView.Link()
                     )
 
+                    objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
+                        listOf(
+                            WidgetTypeView.CompactList(),
+                            WidgetTypeView.List(),
+                            WidgetTypeView.Link()
+                        )
+                    }
+
                     // For other layouts, update existing views with the selected state
                     else -> views.value
                 }.map { it.setIsSelected(currentType) }
@@ -147,6 +152,14 @@ class SelectWidgetTypeViewModel(
                             objectLayout == ObjectType.Layout.DATE -> listOf(
                         WidgetTypeView.Link(isSelected = true)
                     )
+
+                    objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
+                        listOf(
+                            WidgetTypeView.CompactList(),
+                            WidgetTypeView.List(),
+                            WidgetTypeView.Link()
+                        )
+                    }
 
                     // For other layouts, provide Tree and Link widgets (not selected)
                     else -> listOf(

@@ -82,6 +82,9 @@ class SelectWidgetSourceViewModel(
                                             BundledWidgetSourceView.Bin
                                         )
                                     )
+
+                                    // TODO in the next PR: add suggested types
+
                                     add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
                                     addAll(views)
                                 }

@@ -8,5 +8,6 @@ sealed class ObjectSearchSection : DefaultSearchItem {
         data object FromMyObjects: SelectWidgetSource()
         data object FromLibrary: SelectWidgetSource()
         data object System: SelectWidgetSource()
+        data object Suggested: SelectWidgetSource()
     }
 }

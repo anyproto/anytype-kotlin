@@ -94,6 +94,9 @@ class DefaultObjectViewAdapter(
                     ObjectSearchSection.SelectWidgetSource.System -> {
                         holder.title.setText(R.string.widget_source_system)
                     }
+                    ObjectSearchSection.SelectWidgetSource.Suggested -> {
+                        holder.title.setText(R.string.widget_source_suggested)
+                    }
                 }
             }
             is BundledWidgetSourceHolder -> {

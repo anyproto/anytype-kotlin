@@ -249,6 +249,7 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -809,6 +810,7 @@ class EditorViewModel(
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
+                updateLayoutConflictState(currentObj, doc)
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()
                 } else {
@@ -828,6 +830,31 @@ class EditorViewModel(
                 proceedWithCheckingInternalFlags()
             }
             .launchIn(viewModelScope)
+    }
+
+    private suspend fun updateLayoutConflictState(
+        currentObject: ObjectWrapper.Basic?,
+        newBlocks: List<BlockView>
+    ) {
+
+        if (currentObject == null) {
+            orchestrator.stores.hasLayoutOrRelationConflict.update(false)
+            return
+        }
+
+        val featuredBlock = newBlocks.firstOrNull { it is BlockView.FeaturedRelation }
+        val hasFeaturedPropertiesConflict =
+            (featuredBlock as? BlockView.FeaturedRelation)?.hasFeaturePropertiesConflict == true
+        val currentObjectType = storeOfObjectTypes.getTypeOfObject(currentObject)
+
+        val objectLayout = currentObject.layout
+        val hasObjectLayoutConflict = objectLayout != null
+                && objectLayout != currentObjectType?.recommendedLayout
+
+        orchestrator.stores.hasLayoutOrRelationConflict.update(
+            hasObjectLayoutConflict
+                    || hasFeaturedPropertiesConflict
+        )
     }
 
     private fun refreshTableToolbar() {

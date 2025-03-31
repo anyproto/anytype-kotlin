@@ -1711,4 +1711,8 @@
     <string name="object_type_icon_remove">移除</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_conflict_screen_title">解决布局冲突</string>
+    <string name="object_conflict_screen_description">此布局不同于该类型的默认值。重置为相符的？</string>
+    <string name="object_conflict_screen_action_button">重置为默认值</string>
+    <string name="object_conflict_menu_item_title">解决布局冲突</string>
 </resources>

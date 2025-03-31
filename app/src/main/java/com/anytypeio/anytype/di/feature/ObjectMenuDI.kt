@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -128,7 +129,8 @@ object ObjectMenuModule {
         getSpaceInviteLink: GetSpaceInviteLink,
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-        userPermissionProvider: UserPermissionProvider
+        userPermissionProvider: UserPermissionProvider,
+        deleteRelationFromObject: DeleteRelationFromObject
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -156,7 +158,19 @@ object ObjectMenuModule {
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         addToFeaturedRelations = addToFeaturedRelations,
         removeFromFeaturedRelations = removeFromFeaturedRelations,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        deleteRelationFromObject = deleteRelationFromObject
+    )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideDeleteRelationFromObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteRelationFromObject = DeleteRelationFromObject(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -174,7 +188,7 @@ object ObjectMenuModule {
     private fun createMenuOptionsProvider(storage: Editor.Storage): ObjectMenuOptionsProvider =
         ObjectMenuOptionsProviderImpl(
             objectViewDetailsFlow = storage.details.stream(),
-            restrictions = storage.objectRestrictions.stream()
+            hasObjectLayoutConflict = storage.hasLayoutOrRelationConflict.stream()
         )
 
     @JvmStatic
@@ -243,6 +257,13 @@ object ObjectSetMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
+    fun provideUpdateFieldsUseCase(
+        repo: BlockRepository
+    ): UpdateFields = UpdateFields(repo)
+
+    @JvmStatic
+    @Provides
+    @PerDialog
     fun provideViewModelFactory(
         addBackLinkToObject: AddBackLinkToObject,
         duplicateObject: DuplicateObject,
@@ -250,6 +271,7 @@ object ObjectSetMenuModule {
         urlBuilder: UrlBuilder,
         analytics: Analytics,
         state: MutableStateFlow<ObjectState>,
+        updateFields: UpdateFields,
         featureToggles: FeatureToggles,
         dispatcher: Dispatcher<Payload>,
         addObjectToCollection: AddObjectToCollection,
@@ -266,7 +288,9 @@ object ObjectSetMenuModule {
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-        userPermissionProvider: UserPermissionProvider
+        userPermissionProvider: UserPermissionProvider,
+        deleteRelationFromObject: DeleteRelationFromObject,
+        setObjectDetails: SetObjectDetails
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -290,7 +314,21 @@ object ObjectSetMenuModule {
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         addToFeaturedRelations = addToFeaturedRelations,
         removeFromFeaturedRelations = removeFromFeaturedRelations,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        deleteRelationFromObject = deleteRelationFromObject,
+        updateFields = updateFields,
+        setObjectDetails = setObjectDetails
+    )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideDeleteRelationFromObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteRelationFromObject = DeleteRelationFromObject(
+        repo = repo,
+        dispatchers = dispatchers
     )
 
     @JvmStatic
@@ -352,14 +390,26 @@ object ObjectSetMenuModule {
         return when (val currentState = state.value) {
             is ObjectState.DataView -> ObjectMenuOptionsProviderImpl(
                 objectViewDetailsFlow = state.map { currentState.details }.distinctUntilChanged(),
-                restrictions = state.map { currentState.objectRestrictions }.distinctUntilChanged(),
+                hasObjectLayoutConflict = state.map { currentState.hasObjectLayoutConflict }
+                    .distinctUntilChanged()
             )
             else -> ObjectMenuOptionsProviderImpl(
                 objectViewDetailsFlow = emptyFlow(),
-                restrictions = emptyFlow(),
+                hasObjectLayoutConflict = emptyFlow()
             )
         }
     }
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideSetObjectDetails(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectDetails = SetObjectDetails(
+        repo,
+        dispatchers
+    )
 
     @JvmStatic
     @Provides

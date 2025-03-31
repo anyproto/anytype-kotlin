@@ -475,14 +475,13 @@ class RelationListViewModel(
 
     fun onDeleteClicked(ctx: Id, view: ObjectRelationView) {
         viewModelScope.launch {
-            deleteRelationFromObject(
-                DeleteRelationFromObject.Params(
-                    ctx = ctx,
-                    relation = view.key
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while deleting relation") },
-                success = {
+            val params = DeleteRelationFromObject.Params(
+                ctx = ctx,
+                relations = listOf(view.key)
+            )
+            deleteRelationFromObject.async(params).fold(
+                onFailure = { Timber.e(it, "Error while deleting relation") },
+                onSuccess = {
                     dispatcher.send(it)
                     analytics.sendAnalyticsRelationEvent(
                         eventName = EventsDictionary.relationDelete,

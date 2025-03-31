@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -17,10 +20,12 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -62,7 +67,10 @@ class ObjectSetMenuViewModel(
     getSpaceInviteLink: GetSpaceInviteLink,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val deleteRelationFromObject: DeleteRelationFromObject,
+    private val updateFields: UpdateFields,
+    private val setObjectDetails: SetObjectDetails
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -113,7 +121,10 @@ class ObjectSetMenuViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val addToFeaturedRelations: AddToFeaturedRelations,
         private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val deleteRelationFromObject: DeleteRelationFromObject,
+        private val updateFields: UpdateFields,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -139,7 +150,10 @@ class ObjectSetMenuViewModel(
                 getSpaceInviteLink = getSpaceInviteLink,
                 addToFeaturedRelations = addToFeaturedRelations,
                 removeFromFeaturedRelations = removeFromFeaturedRelations,
-                userPermissionProvider = userPermissionProvider
+                userPermissionProvider = userPermissionProvider,
+                deleteRelationFromObject = deleteRelationFromObject,
+                updateFields = updateFields,
+                setObjectDetails = setObjectDetails
             ) as T
         }
     }
@@ -306,6 +320,37 @@ class ObjectSetMenuViewModel(
             ObjectAction.DOWNLOAD_FILE -> {
                 //do nothing
             }
+        }
+    }
+
+    override fun onResetToDefaultLayout(
+        ctx: Id,
+        space: Id
+    ) {
+        showLayoutConflictScreen.value = false
+
+        val state = objectState.value.dataViewState() ?: return
+
+        val currentObject = state.details.getObject(ctx)
+        val featuredRelations = currentObject?.featuredRelations ?: emptyList()
+
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = ctx,
+                details = mapOf(
+                    Relations.FEATURED_RELATIONS to featuredRelations.filter {
+                        it != Relations.DESCRIPTION
+                    }
+                )
+            )
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    dispatcher.send(it)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while resetting layout to default")
+                }
+            )
         }
     }
 }

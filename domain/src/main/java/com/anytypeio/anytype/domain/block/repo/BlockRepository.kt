@@ -232,7 +232,7 @@ interface BlockRepository {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?
-    suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
+    suspend fun deleteRelationFromObject(ctx: Id, relations: List<Key>): Payload
 
     suspend fun debugSpace(space: SpaceId): String
 

@@ -27,7 +27,8 @@ class DefaultObjectViewAdapter(
     private val onDefaultObjectClicked: (DefaultObjectView) -> Unit,
     private val onBundledWidgetSourceClicked: (BundledWidgetSourceView) -> Unit = {},
     private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> },
-    private val onCreateNewObject: () -> Unit = {}
+    private val onCreateNewObject: () -> Unit = {},
+    private val onSuggestedWidgetObjectTypeClicked: (SuggestWidgetObjectType) -> Unit = {}
 ) : ListAdapter<DefaultSearchItem, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
@@ -74,7 +75,17 @@ class DefaultObjectViewAdapter(
             ItemListObjectBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
-        )
+        ).apply {
+            itemView.setOnThrottleClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = getItem(pos)
+                    if (item is SuggestWidgetObjectType) {
+                        onSuggestedWidgetObjectTypeClicked(item)
+                    }
+                }
+            }
+        }
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 

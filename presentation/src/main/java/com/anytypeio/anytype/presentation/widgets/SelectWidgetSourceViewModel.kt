@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.widgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.map
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
@@ -61,7 +60,7 @@ class SelectWidgetSourceViewModel(
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
 
-    val sources = combine(
+    val viewState = combine(
         stateData
             .asFlow(),
         suggested
@@ -228,6 +227,42 @@ class SelectWidgetSourceViewModel(
                             isForNewWidget = false,
                             isInEditMode = curr.isInEditMode
                         )
+                    }
+                    isDismissed.value = true
+                }
+            }
+            Config.None -> {
+                Timber.w("Missing config for widget source")
+            }
+        }
+    }
+
+    fun onSuggestedWidgetObjectTypeClicked(view: SuggestWidgetObjectType) {
+        Timber.d("onSuggestedWidgetObjectTypeClicked, view:[$view]")
+        when (val curr = config) {
+            is Config.NewWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourcePicked.Bundled(
+                            source = view.id,
+                            target = curr.target
+                        )
+                    ).also {
+                        // TODO send analytics
+                    }
+                }
+            }
+            is Config.ExistingWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourceChanged(
+                            ctx = curr.ctx,
+                            widget = curr.widget,
+                            source = view.id,
+                            type = curr.type
+                        )
+                    ).also {
+                        // TODO send analytics
                     }
                     isDismissed.value = true
                 }

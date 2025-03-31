@@ -66,7 +66,8 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         DefaultObjectViewAdapter(
             onDefaultObjectClicked = vm::onObjectClicked,
             onBundledWidgetSourceClicked = vm::onBundledWidgetSourceClicked,
-            onCreateNewObject = vm::onCreateNewObjectClicked
+            onCreateNewObject = vm::onCreateNewObjectClicked,
+            onSuggestedWidgetObjectTypeClicked = vm::onSuggestedWidgetObjectTypeClicked
         )
     }
 
@@ -81,11 +82,8 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         ).apply()
 
 
-        subscribe(vm.sources) {
-            observe(it)
-        }
+        subscribe(vm.viewState) { setViewState(it) }
 
-//        vm.state.observe(viewLifecycleOwner) { observe(it) }
         clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
         filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
@@ -134,7 +132,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
         vm.onStop()
     }
 
-    private fun observe(state: ObjectSearchView) {
+    private fun setViewState(state: ObjectSearchView) {
         when (state) {
             ObjectSearchView.Loading -> {
                 with(binding) {

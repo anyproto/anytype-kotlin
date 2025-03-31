@@ -80,7 +80,12 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             dialogCancelListener = this
         ).apply()
 
-        vm.state.observe(viewLifecycleOwner) { observe(it) }
+
+        subscribe(vm.sources) {
+            observe(it)
+        }
+
+//        vm.state.observe(viewLifecycleOwner) { observe(it) }
         clearSearchText = binding.searchView.root.findViewById(R.id.clearSearchText)
         filterInputField = binding.searchView.root.findViewById(R.id.filterInputField)
         filterInputField.setHint(R.string.search)
@@ -110,6 +115,7 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
             )
         } else {
             vm.onStartWithNewWidget(
+                ctx = ctx,
                 target = target,
                 isInEditMode = isInEditMode
             )
@@ -284,10 +290,12 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
          * Flow for selecting source for new widget.
          */
         fun args(
+            ctx: Id,
             target: Id?,
             isInEditMode: Boolean,
             spaceId: Id
         ) = bundleOf(
+            CTX_KEY to ctx,
             TARGET_KEY to target,
             IS_IN_EDIT_MODE_KEY to isInEditMode,
             SPACE_KEY to spaceId

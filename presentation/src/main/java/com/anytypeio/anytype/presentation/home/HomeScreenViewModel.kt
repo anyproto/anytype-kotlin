@@ -898,16 +898,20 @@ class HomeScreenViewModel(
 
     fun onCreateWidgetClicked() {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -1171,17 +1175,21 @@ class HomeScreenViewModel(
 
     private fun proceedWithAddingWidgetBelow(widget: Id) {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    target = widget,
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        target = widget,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -2514,6 +2522,7 @@ sealed class Command {
      * [target] optional target, below which new widget will be created
      */
     data class SelectWidgetSource(
+        val ctx: Id,
         val target: Id? = null,
         val isInEditMode: Boolean,
         val space: Id

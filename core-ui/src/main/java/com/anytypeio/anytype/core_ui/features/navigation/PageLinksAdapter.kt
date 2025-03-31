@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import com.anytypeio.anytype.presentation.widgets.source.SuggestWidgetObjectType
 
 class DefaultObjectViewAdapter(
     private val onDefaultObjectClicked: (DefaultObjectView) -> Unit,
@@ -69,6 +70,11 @@ class DefaultObjectViewAdapter(
                 onCreateNewObject()
             }
         }
+        TYPE_SUGGESTED_WIDGET_OBJECT_TYPE -> SuggestWidgetObjectTypeViewHolder(
+            ItemListObjectBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        )
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
@@ -103,6 +109,10 @@ class DefaultObjectViewAdapter(
                 check(item is BundledWidgetSourceView)
                 holder.bind(item)
             }
+            is SuggestWidgetObjectTypeViewHolder -> {
+                check(item is SuggestWidgetObjectType)
+                holder.bind(item)
+            }
         }
     }
 
@@ -111,6 +121,7 @@ class DefaultObjectViewAdapter(
         is ObjectSearchSection -> TYPE_SECTION
         is BundledWidgetSourceView -> TYPE_BUNDLED_WIDGET_SOURCE
         is NewObject -> TYPE_NEW_OBJECT
+        is SuggestWidgetObjectType -> TYPE_SUGGESTED_WIDGET_OBJECT_TYPE
         else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
     }
 
@@ -246,6 +257,19 @@ class BundledWidgetSourceHolder(
     }
 }
 
+class SuggestWidgetObjectTypeViewHolder(
+    private val binding: ItemListObjectBinding
+) : DefaultObjectViewAdapter.ObjectViewHolder(binding.root) {
+
+    init {
+        binding.ivIcon.binding.emojiContainer.invisible()
+    }
+
+    fun bind(source: SuggestWidgetObjectType) {
+        binding.tvTitle.text = source.name
+    }
+}
+
 class NewObjectViewHolder(
     binding: ItemSearchNewObjectBinding
 ) :  DefaultObjectViewAdapter.ObjectViewHolder(binding.root)
@@ -254,3 +278,4 @@ private const val TYPE_ITEM = 0
 private const val TYPE_SECTION = 1
 private const val TYPE_BUNDLED_WIDGET_SOURCE = 2
 private const val TYPE_NEW_OBJECT = 3
+private const val TYPE_SUGGESTED_WIDGET_OBJECT_TYPE = 4

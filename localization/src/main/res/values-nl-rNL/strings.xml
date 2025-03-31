@@ -209,7 +209,7 @@
     <string name="action_bar_turn_into">Verander in</string>
     <string name="action_bar_turn_into_page">Zet om naar pagina</string>
     <string name="action_bar_delete">Verwijder</string>
-    <string name="action_bar_to_bin">Naar Prullenbak</string>
+    <string name="action_bar_to_bin">Naar prullenmand</string>
     <string name="action_bar_duplicate">Dupliceer</string>
     <string name="action_bar_move_to">Verplaats naar</string>
     <string name="action_bar_style">Stijl</string>
@@ -1662,7 +1662,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="field_date_title">Datum</string>
     <string name="field_date_empty">Waarde</string>
     <string name="field_url_title">URL</string>
-    <string name="field_url_empty">Voeg toe</string>
+    <string name="field_url_empty">Toevoegen</string>
     <string name="field_email_title">E-mailadres</string>
     <string name="field_email_empty">Voer in</string>
     <string name="field_phone_title">Telefoonnummer</string>
@@ -1672,9 +1672,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="field_multiselect_title">Meervoudige selectie</string>
     <string name="field_multiselect_empty">Selecteer</string>
     <string name="field_object_title">Object</string>
-    <string name="field_object_empty">Voeg toe</string>
+    <string name="field_object_empty">Toevoegen</string>
     <string name="field_file_and_media_title">Bestand &amp; Media</string>
-    <string name="field_file_and_media_empty">Voeg toe</string>
+    <string name="field_file_and_media_empty">Toevoegen</string>
     <string name="field_checkbox_title">Selecteer</string>
     <string name="field_menu_add_to_type">Voeg toe aan het huidige type</string>
     <string name="field_menu_remove_from_object">Verwijder uit het object</string>

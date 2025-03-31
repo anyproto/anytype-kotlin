@@ -807,7 +807,7 @@ class EditorViewModel(
                     details = objectViewDetails,
                     participantCanEdit = permission?.isOwnerOrEditor() == true,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
-                    selection = currentSelection(),
+                    selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()

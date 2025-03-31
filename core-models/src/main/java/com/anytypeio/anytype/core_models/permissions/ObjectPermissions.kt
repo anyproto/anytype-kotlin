@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import kotlin.collections.contains
+import kotlin.collections.get
 
 /**
  * Represents a set of user permissions for a given object.

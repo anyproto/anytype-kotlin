@@ -74,12 +74,11 @@ suspend fun toFeaturedPropertiesViews(
             //object not found or not valid, do not render featured properties
             return null
         }
-        val currType = details.getTypeForObject(objectId)
-
         val objectFeaturedProperties = storeOfRelations.getByKeys(
             keys = currentObject.featuredRelations
         )
 
+        val currType = details.getTypeForObject(objectId)
         // Determine the effective object type. If the type is TEMPLATE, use the target object type.
         val effectiveType = if (currType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
             currentObject.targetObjectType?.let { storeOfObjectTypes.get(it) }

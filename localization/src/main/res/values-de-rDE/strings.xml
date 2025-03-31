@@ -501,6 +501,7 @@
     <string name="object_search_recently_opened_section_title">Zuletzt geöffnet</string>
     <string name="widget_source_anytype_library">Anytype-Bibliothek</string>
     <string name="widget_source_default_lists">Standardlisten</string>
+    <string name="widget_source_system">System</string>
     <string name="your_favorite_objects">Deine Lieblingsobjekte</string>
     <string name="on_this_device">Auf diesem Gerät</string>
     <string name="sets_of_objects">Sets von Objekten aus deinem Arbeitsbereich</string>
@@ -1524,9 +1525,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">My Spaces</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
-    <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
-    <string name="all_content_title_only_unlinked_description"></string>
-    <string name="all_content_view_bin">Papierkorb ansehen</string>
+    <string name="all_content_title_only_unlinked">Only unlinked</string>
+    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_view_bin">View Bin</string>
     <string name="all_content_title_tab_pages">Seiten</string>
     <string name="all_content_title_tab_lists">Gruppen</string>
     <string name="all_content_title_tab_media">Medien</string>
@@ -1537,10 +1538,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_sort_by">Sortiere nach</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Neueste zuerst</string>
-    <string name="all_content_sort_date_asc">Älteste zuerst</string>
-    <string name="all_content_sort_date_updated">Aktualisierungsdatum</string>
-    <string name="all_content_sort_date_created">Erstellungsdatum</string>
+    <string name="all_content_sort_date_desc">Newest first</string>
+    <string name="all_content_sort_date_asc">Oldest first</string>
+    <string name="all_content_sort_date_updated">Date updated</string>
+    <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Datum der letzten Verwendung</string>
     <string name="all_content_sort_name">Name</string>
     <string name="all_content">Alle Objekte</string>
@@ -1567,7 +1568,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_toast_archived">Objekt archiviert</string>
     <string name="all_content_new_relation">Neue Relation</string>
     <string name="all_content_new_type">Neuer Typ</string>
-    <string name="all_content_unlinked_description"></string>
+    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">in den  Papierkorb verschoben</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
@@ -1732,4 +1733,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Auf Standardeinstellung zurücksetzen</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
+    <string name="widget_source_suggested">Vorgeschlagen</string>
 </resources>

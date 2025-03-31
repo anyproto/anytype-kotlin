@@ -6,6 +6,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -245,9 +246,10 @@ class SelectWidgetSourceViewModel(
             is Config.NewWidget -> {
                 viewModelScope.launch {
                     dispatcher.send(
-                        WidgetDispatchEvent.SourcePicked.Bundled(
+                        WidgetDispatchEvent.SourcePicked.Default(
                             source = view.id,
-                            target = curr.target
+                            target = curr.target,
+                            sourceLayout = ObjectType.Layout.OBJECT_TYPE.code
                         )
                     ).also {
                         // TODO send analytics

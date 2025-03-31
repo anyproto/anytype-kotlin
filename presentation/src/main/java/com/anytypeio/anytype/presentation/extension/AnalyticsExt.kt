@@ -1563,6 +1563,9 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     BundledWidgetSourceView.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
+                    BundledWidgetSourceView.Bin -> {
+                        // TODO add analytics
+                    }
                 }
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
@@ -1656,6 +1659,9 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
@@ -1695,6 +1701,9 @@ fun CoroutineScope.sendSelectHomeTabEvent(
 
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
                 }
             }
@@ -1769,6 +1778,9 @@ fun CoroutineScope.sendReorderWidgetEvent(
 
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
                 }
             }

@@ -561,6 +561,7 @@
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
     <string name="widget_source_default_lists">Default lists</string>
+    <string name="widget_source_system">System</string>
     <string name="your_favorite_objects">Your favorite objects</string>
     <string name="on_this_device">On this device</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -2015,5 +2016,6 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>
 
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
+    <string name="widget_source_suggested">Suggested</string>
 
 </resources>

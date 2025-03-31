@@ -21,16 +21,25 @@ import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.view
 import kotlin.collections.mapNotNull
 
+enum class ConflictResolutionStrategy {
+    MERGE,
+    OBJECT_ONLY
+}
+
 /**
  * Converts an object's featured properties into a [BlockView.FeaturedRelation] view.
  *
- * Retrieves the current object and its type from [details] using [objectId]. If the object's type is
- * TEMPLATE, its target object type is used as the effective type. The method then obtains the featured
- * properties from the object (via keys) and parses the recommended featured property IDs from the effective
- * type using [fieldParser]. It fetches the corresponding properties from [storeOfRelations] and checks for
- * conflicts (any property key not equal to [Relations.DESCRIPTION]). In case of a conflict, the two sets are
- * merged with type properties taking precedence. Finally, permissions are computed and the featured relation
- * view is returned.
+ * Retrieves the current object and its type from [details] using [objectId]. If the object's type is TEMPLATE,
+ * its target type is used as the effective type. The method then obtains the featured properties from the object
+ * (via keys) and parses the recommended featured property IDs from the effective type using [fieldParser]. It fetches
+ * the corresponding properties from [storeOfRelations] and checks for conflicts (i.e. any property key not equal
+ * to [Relations.DESCRIPTION]).
+ *
+ * In case of a conflict, the [conflictResolution] strategy is applied:
+ * - [ConflictResolutionStrategy.MERGE]: Merges the type and object properties, giving precedence to type properties.
+ * - [ConflictResolutionStrategy.OBJECT_ONLY] (default): Uses only the object properties.
+ *
+ * Finally, permissions are computed and the featured relation view is returned.
  *
  * @param objectId The object's ID.
  * @param blocks The list of blocks; the featured relations block is used.
@@ -40,6 +49,7 @@ import kotlin.collections.mapNotNull
  * @param storeOfRelations Store for relation properties.
  * @param details Provides object view context.
  * @param participantCanEdit Indicates if the participant has edit permissions.
+ * @param conflictResolution Determines which strategy to use when a conflict is detected.
  *
  * @return The [BlockView.FeaturedRelation] view, or `null` if no valid featured block or object is found.
  */
@@ -52,6 +62,7 @@ suspend fun toFeaturedPropertiesViews(
     storeOfRelations: StoreOfRelations,
     details: ObjectViewDetails,
     participantCanEdit: Boolean,
+    conflictResolutionStrategy: ConflictResolutionStrategy = ConflictResolutionStrategy.OBJECT_ONLY
 ): BlockView.FeaturedRelation? {
 
     val block = blocks.find { it.content is Block.Content.FeaturedRelations }
@@ -94,9 +105,9 @@ suspend fun toFeaturedPropertiesViews(
 
         val hasConflict = objectFeaturedProperties.any { property -> property.key != Relations.DESCRIPTION } == true
 
-        if (!hasConflict) {
 
-            val featuredViews =  typeRecommendedFeaturedProperties.mapNotNull { property ->
+        if (!hasConflict) {
+            val featuredViews = typeRecommendedFeaturedProperties.mapNotNull { property ->
                 property.toView(
                     currentObject = currentObject,
                     typeOfCurrentObject = currType,
@@ -109,30 +120,43 @@ suspend fun toFeaturedPropertiesViews(
             }
             views.addAll(featuredViews)
         } else {
-
-            val displayPropertiesMap = LinkedHashMap<String, ObjectWrapper.Relation>()
-
-            for (prop in typeRecommendedFeaturedProperties) {
-                displayPropertiesMap[prop.id] = prop
+            when (conflictResolutionStrategy) {
+                ConflictResolutionStrategy.MERGE -> {
+                    val displayPropertiesMap = LinkedHashMap<String, ObjectWrapper.Relation>()
+                    for (prop in typeRecommendedFeaturedProperties) {
+                        displayPropertiesMap[prop.id] = prop
+                    }
+                    for (prop in objectFeaturedProperties) {
+                        displayPropertiesMap.putIfAbsent(prop.id, prop)
+                    }
+                    val featuredViews = displayPropertiesMap.values.mapNotNull { property ->
+                        property.toView(
+                            currentObject = currentObject,
+                            typeOfCurrentObject = currType,
+                            details = details,
+                            urlBuilder = urlBuilder,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            fieldParser = fieldParser,
+                            storeOfRelations = storeOfRelations
+                        )
+                    }
+                    views.addAll(featuredViews)
+                }
+                ConflictResolutionStrategy.OBJECT_ONLY -> {
+                    val featuredViews = objectFeaturedProperties.mapNotNull { property ->
+                        property.toView(
+                            currentObject = currentObject,
+                            typeOfCurrentObject = currType,
+                            details = details,
+                            urlBuilder = urlBuilder,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            fieldParser = fieldParser,
+                            storeOfRelations = storeOfRelations
+                        )
+                    }
+                    views.addAll(featuredViews)
+                }
             }
-
-            for (prop in objectFeaturedProperties) {
-                displayPropertiesMap.putIfAbsent(prop.id, prop)
-            }
-
-            val featuredViews = displayPropertiesMap.values.mapNotNull { property ->
-                property.toView(
-                    currentObject = currentObject,
-                    typeOfCurrentObject = currType,
-                    details = details,
-                    urlBuilder = urlBuilder,
-                    storeOfObjectTypes = storeOfObjectTypes,
-                    fieldParser = fieldParser,
-                    storeOfRelations = storeOfRelations
-                )
-            }
-
-            views.addAll(featuredViews)
         }
 
         val canChangeType = currType?.toObjectPermissionsForTypes(participantCanEdit)?.canChangeType == true

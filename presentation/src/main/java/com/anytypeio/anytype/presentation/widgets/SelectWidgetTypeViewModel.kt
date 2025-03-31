@@ -153,6 +153,14 @@ class SelectWidgetTypeViewModel(
                         WidgetTypeView.Link(isSelected = true)
                     )
 
+                    objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
+                        listOf(
+                            WidgetTypeView.CompactList(),
+                            WidgetTypeView.List(),
+                            WidgetTypeView.Link()
+                        )
+                    }
+
                     // For other layouts, provide Tree and Link widgets (not selected)
                     else -> listOf(
                         WidgetTypeView.Tree(isSelected = false),

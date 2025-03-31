@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -23,11 +24,13 @@ import kotlin.collections.mapNotNull
 /**
  * Converts an object's featured properties into a [BlockView.FeaturedRelation] view.
  *
- * Retrieves the current object and its type from [details] using [objectId]. It then gets the featured
- * properties from both the object (via keys) and its type (via recommended IDs) from [storeOfRelations].
- * If any object property key differs from [Relations.DESCRIPTION], it treats this as a conflict and merges
- * the two sets (with type properties taking precedence). Finally, it computes permissions and returns
- * the featured relation view.
+ * Retrieves the current object and its type from [details] using [objectId]. If the object's type is
+ * TEMPLATE, its target object type is used as the effective type. The method then obtains the featured
+ * properties from the object (via keys) and parses the recommended featured property IDs from the effective
+ * type using [fieldParser]. It fetches the corresponding properties from [storeOfRelations] and checks for
+ * conflicts (any property key not equal to [Relations.DESCRIPTION]). In case of a conflict, the two sets are
+ * merged with type properties taking precedence. Finally, permissions are computed and the featured relation
+ * view is returned.
  *
  * @param objectId The object's ID.
  * @param blocks The list of blocks; the featured relations block is used.
@@ -35,8 +38,8 @@ import kotlin.collections.mapNotNull
  * @param fieldParser Parses fields for view rendering.
  * @param storeOfObjectTypes Store for object type information.
  * @param storeOfRelations Store for relation properties.
- * @param details Contains object view details.
- * @param participantCanEdit Flag indicating if the participant can edit.
+ * @param details Provides object view context.
+ * @param participantCanEdit Indicates if the participant has edit permissions.
  *
  * @return The [BlockView.FeaturedRelation] view, or `null` if no valid featured block or object is found.
  */
@@ -66,8 +69,27 @@ suspend fun toFeaturedPropertiesViews(
             keys = currentObject.featuredRelations
         )
 
+        // Determine the effective object type. If the type is TEMPLATE, use the target object type.
+        val effectiveType = if (currType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+            currentObject.targetObjectType?.let { storeOfObjectTypes.get(it) }
+        } else {
+            currType
+        }
+
+        val typeRecommendedFeaturedPropertiesIds = if (effectiveType != null) {
+            // Parse the object's properties using the effective type.
+            val parsedProperties = fieldParser.getObjectParsedProperties(
+                objectType = effectiveType,
+                objPropertiesKeys = currentObject.map.keys.toList(),
+                storeOfRelations = storeOfRelations
+            )
+            parsedProperties.header.map { it.id }
+        } else {
+            emptyList()
+        }
+
         val typeRecommendedFeaturedProperties = storeOfRelations.getById(
-            ids = currType?.recommendedFeaturedRelations.orEmpty()
+            ids = typeRecommendedFeaturedPropertiesIds
         )
 
         val hasConflict = objectFeaturedProperties.any { property -> property.key != Relations.DESCRIPTION } == true

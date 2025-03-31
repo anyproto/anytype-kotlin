@@ -82,6 +82,7 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -244,12 +245,15 @@ class ObjectSetViewModel(
                     state to permission
                 }
                 .collectLatest { (state, permission) ->
-                    featured.value = state.featuredRelations(
-                        ctx = vmParams.ctx,
+                    featured.value = toFeaturedPropertiesViews(
+                        objectId = vmParams.ctx,
                         urlBuilder = urlBuilder,
-                        relations = storeOfRelations.getAll(),
                         fieldParser = fieldParser,
-                        storeOfObjectTypes = storeOfObjectTypes
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        storeOfRelations = storeOfRelations,
+                        blocks = state.blocks,
+                        details = state.details,
+                        participantCanEdit = permission?.isOwnerOrEditor() == true
                     )
                     _header.value = state.header(
                         ctx = vmParams.ctx,

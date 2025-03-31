@@ -1288,7 +1288,8 @@ sealed class BlockView : ViewType {
         override val id: String,
         val relations: List<ObjectRelationView>,
         val allowChangingObjectType: Boolean = true,
-        val isTodoLayout: Boolean = false
+        val isTodoLayout: Boolean = false,
+        val hasFeaturePropertiesConflict: Boolean = false,
     ) : BlockView() {
         override fun getViewType(): Int = HOLDER_FEATURED_RELATION
     }

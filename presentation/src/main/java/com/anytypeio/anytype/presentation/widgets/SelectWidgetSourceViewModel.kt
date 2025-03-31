@@ -77,15 +77,23 @@ class SelectWidgetSourceViewModel(
                 is ObjectSearchView.Success -> {
                     state.copy(
                         objects = buildList {
-                            state.objects.forEach { item ->
-                                if (item is ObjectSearchSection.SelectWidgetSource.FromMyObjects) {
-                                    add(ObjectSearchSection.SelectWidgetSource.Suggested)
-                                    addAll(suggested)
-                                    add(item)
-                                } else {
-                                    add(item)
-                                }
+
+                            // System widgets
+                            add(ObjectSearchSection.SelectWidgetSource.System)
+                            add(BundledWidgetSourceView.Favorites)
+                            add(BundledWidgetSourceView.Recent)
+                            add(BundledWidgetSourceView.RecentLocal)
+                            add(BundledWidgetSourceView.Bin)
+
+                            // Suggested widgets (aka object type widgets)
+                            if (suggested.isNotEmpty()) {
+                                add(ObjectSearchSection.SelectWidgetSource.Suggested)
+                                addAll(suggested)
                             }
+
+                            // Widgets from existing objects
+                            add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
+                            addAll(state.objects)
                         }
                     )
                 }
@@ -114,27 +122,7 @@ class SelectWidgetSourceViewModel(
                     if (views.isEmpty()) {
                         stateData.postValue(ObjectSearchView.NoResults(userInput.value))
                     } else {
-                        if (userInput.value.isEmpty()) {
-                            stateData.postValue(
-                                ObjectSearchView.Success(
-                                    buildList {
-                                        add(ObjectSearchSection.SelectWidgetSource.System)
-                                        addAll(
-                                            listOf(
-                                                BundledWidgetSourceView.Favorites,
-                                                BundledWidgetSourceView.Recent,
-                                                BundledWidgetSourceView.RecentLocal,
-                                                BundledWidgetSourceView.Bin
-                                            )
-                                        )
-                                        add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
-                                        addAll(views)
-                                    }
-                                )
-                            )
-                        } else {
-                            stateData.postValue(ObjectSearchView.Success(views))
-                        }
+                        stateData.postValue(ObjectSearchView.Success(views))
                     }
                 },
                 onLoading = {

@@ -4,14 +4,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
-import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import kotlin.collections.contains
-import kotlin.collections.get
 
 /**
  * Represents a set of user permissions for a given object.
@@ -142,72 +140,6 @@ fun ObjectView.toObjectPermissions(
         canEditDetails = canEditDetails && canEdit,
         editBlocks = editBlocksPermission,
         canCreateObjectThisType = !objectRestrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && canApplyUneditableActions,
-        participantCanEdit = participantCanEdit
-    )
-}
-
-fun ObjectWrapper.Basic.toObjectPermissions(
-    details: ObjectViewDetails,
-    participantCanEdit: Boolean
-): ObjectPermissions {
-    val isArchived = this.isArchived == true
-
-    val objTypeId = map.getSingleValue<String>(Relations.TYPE)
-    val typeUniqueKey = if (objTypeId != null) {
-        details.details[objTypeId]?.getSingleValue<Id>(Relations.TYPE_UNIQUE_KEY)
-    } else {
-        null
-    }
-    val isTemplateObject = (typeUniqueKey == ObjectTypeIds.TEMPLATE)
-
-    val canEditRelations = !isArchived && participantCanEdit
-    val canEdit = canEditRelations && !SupportedLayouts.isFileLayout(layout)
-    val canApplyUneditableActions = !isArchived && participantCanEdit
-    val isProfileOwnerIdentity =
-        map.getSingleValue<String>(Relations.PROFILE_OWNER_IDENTITY)
-    val canEditDetails = !restrictions.contains(ObjectRestriction.DETAILS)
-
-    val editBlocksPermission = when {
-        isArchived -> EditBlocksPermission.ReadOnly
-        !participantCanEdit -> EditBlocksPermission.ReadOnly
-        restrictions.contains(ObjectRestriction.BLOCKS) -> EditBlocksPermission.ReadOnly
-
-        else -> EditBlocksPermission.Edit
-    }
-
-    return ObjectPermissions(
-        canArchive = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE) && !isArchived,
-        canDelete = participantCanEdit && !restrictions.contains(ObjectRestriction.DELETE),
-        canChangeType = canEdit &&
-                !isTemplateObject &&
-                !restrictions.contains(ObjectRestriction.TYPE_CHANGE),
-        canTemplateSetAsDefault = canEdit && isTemplateObject,
-        canApplyTemplates = canEdit && !isTemplateObject,
-        canMakeAsTemplate = templatesAllowedLayouts.contains(layout) &&
-                !isTemplateObject &&
-                isProfileOwnerIdentity.isNullOrEmpty() &&
-                !restrictions.contains(ObjectRestriction.TEMPLATE) &&
-                canApplyUneditableActions,
-        canDuplicate = canApplyUneditableActions && !restrictions.contains(ObjectRestriction.DUPLICATE),
-        canUndoRedo = canEdit && undoRedoLayouts.contains(layout),
-        canFavorite = canApplyUneditableActions && !isTemplateObject,
-        canLinkItself = canApplyUneditableActions && !isTemplateObject,
-        canLock = lockLayouts.contains(layout) &&
-                canApplyUneditableActions &&
-                !isTemplateObject,
-        canChangeIcon = canEditDetails && layoutsWithIcon.contains(layout) && canEdit,
-        canChangeCover = canEditDetails && layoutsWithCover.contains(layout) && canEdit,
-        canChangeLayout = canEditDetails &&
-                possibleToChangeLayoutLayouts.contains(layout) &&
-                canEdit,
-        canEditRelationValues = canEditRelations && canEditDetails,
-        canEditRelationsList = canEditRelations &&
-                canEditDetails &&
-                !restrictions.contains(ObjectRestriction.RELATIONS),
-        canEditBlocks = (editBlocksPermission == EditBlocksPermission.Edit),
-        canEditDetails = canEditDetails && canEdit,
-        editBlocks = editBlocksPermission,
-        canCreateObjectThisType = !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) && canApplyUneditableActions,
         participantCanEdit = participantCanEdit
     )
 }

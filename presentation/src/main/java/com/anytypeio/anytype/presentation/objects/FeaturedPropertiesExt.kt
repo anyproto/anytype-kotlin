@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.permissions.toObjectPermissions
+import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -135,14 +135,11 @@ suspend fun toFeaturedPropertiesViews(
             views.addAll(featuredViews)
         }
 
-        val objectPermissions = currentObject.toObjectPermissions(
-            details = details,
-            participantCanEdit = participantCanEdit
-        )
+        val canChangeType = currType?.toObjectPermissionsForTypes(participantCanEdit)?.canChangeType == true
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,
-            allowChangingObjectType = objectPermissions.canChangeType == true,
+            allowChangingObjectType = canChangeType,
             isTodoLayout = currType?.recommendedLayout == ObjectType.Layout.TODO,
             hasFeaturePropertiesConflict = hasConflict
         )

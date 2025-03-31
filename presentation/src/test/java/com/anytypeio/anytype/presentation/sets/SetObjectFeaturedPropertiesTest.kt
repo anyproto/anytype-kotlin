@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.objects.ConflictResolutionStrategy
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlin.test.Test
@@ -164,7 +165,7 @@ class SetObjectFeaturedPropertiesTest {
     }
 
     @Test
-    fun `case when with conflict`() = runTest {
+    fun `case when with conflict, using default Strategy - OBJECT_ONLY`() = runTest {
 
         val propertyObjectType = StubRelationObject(
             id = "propertyObjectType_id",
@@ -255,6 +256,109 @@ class SetObjectFeaturedPropertiesTest {
             details = objectState.details,
             blocks = objectState.blocks,
             participantCanEdit = true
+        )
+
+        assertEquals(
+            expected = listOf(
+                propertyBacklinks.key,
+                propertyAuthor.key
+            ),
+            actual = featuredPropertiesBlock!!.relations.map { it.key })
+    }
+
+    @Test
+    fun `case when with conflict, using Strategy - MERGE`() = runTest {
+
+        val propertyObjectType = StubRelationObject(
+            id = "propertyObjectType_id",
+            name = "Object type",
+            key = Relations.TYPE
+        )
+        val propertyTag = StubRelationObject(
+            id = "propertyTag_id",
+            name = "Tag",
+            key = "key-tag"
+        )
+        val propertyBacklinks = StubRelationObject(
+            id = "propertyBacklinks_id",
+            name = "Backlinks",
+            key = "key-backlinks"
+        )
+        val propertyDescription = StubRelationObject(
+            id = "propertyDescription_id",
+            name = "Description",
+            key = Relations.DESCRIPTION
+        )
+
+        val propertyAuthor = StubRelationObject(
+            id = "propertyAuthor_id",
+            name = "Author",
+            key = "key-author"
+        )
+
+        storeOfRelations.merge(
+            relations = listOf(
+                propertyObjectType,
+                propertyTag,
+                propertyBacklinks,
+                propertyDescription,
+                propertyAuthor
+            )
+        )
+
+        val objType = StubObjectType(
+            name = "Query",
+            uniqueKey = ObjectTypeIds.SET,
+            recommendedLayout = ObjectType.Layout.SET.code.toDouble(),
+            recommendedFeaturedRelations = listOf(
+                propertyObjectType.id,
+                propertyTag.id,
+                propertyBacklinks.id,
+                propertyDescription.id
+            )
+        )
+
+        storeOfObjectTypes.merge(
+            types = listOf(objType)
+        )
+
+        val objectSet = StubObject(
+            id = "id",
+            name = "Pages",
+            description = "This the description of Pages Set",
+            objectType = objType.id,
+            extraFields = mapOf(
+                Relations.FEATURED_RELATIONS to listOf(
+                    propertyBacklinks.key,
+                    propertyAuthor.key,
+                    propertyDescription.key
+                )
+            )
+        )
+
+        val featuredBlock = StubFeatured()
+
+        val objectState = ObjectState.DataView.Set(
+            root = objectSet.id,
+            blocks = listOf(featuredBlock),
+            details = ObjectViewDetails(
+                details = mapOf(
+                    objectSet.id to objectSet.map,
+                    objType.id to objType.map,
+                )
+            )
+        )
+
+        val featuredPropertiesBlock = toFeaturedPropertiesViews(
+            objectId = objectSet.id,
+            storeOfRelations = storeOfRelations,
+            storeOfObjectTypes = storeOfObjectTypes,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            details = objectState.details,
+            blocks = objectState.blocks,
+            participantCanEdit = true,
+            conflictResolutionStrategy = ConflictResolutionStrategy.MERGE
         )
 
         assertEquals(

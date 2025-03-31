@@ -1365,8 +1365,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     property2.key to "value222",
                     property3.key to "value333",
                     property4.key to "value444",
-                    Relations.TARGET_OBJECT_TYPE to targetObjectType.id,
-                    Relations.FEATURED_RELATIONS to listOf(property1.key)
+                    Relations.TARGET_OBJECT_TYPE to targetObjectType.id
                 )
             )
 
@@ -1409,7 +1408,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 ),
                 BlockView.FeaturedRelation(
                     id = featuredBlock.id,
-                    hasFeaturePropertiesConflict = true,
+                    hasFeaturePropertiesConflict = false,
                     relations = listOf(
                         ObjectRelationView.Default(
                             id = property3.id,
@@ -1425,15 +1424,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             key = property4.key,
                             name = property4.name.orEmpty(),
                             value = "value444",
-                            featured = true,
-                            format = Relation.Format.SHORT_TEXT,
-                            system = false
-                        ),
-                        ObjectRelationView.Default(
-                            id = property1.id,
-                            key = property1.key,
-                            name = property1.name.orEmpty(),
-                            value = "value111",
                             featured = true,
                             format = Relation.Format.SHORT_TEXT,
                             system = false

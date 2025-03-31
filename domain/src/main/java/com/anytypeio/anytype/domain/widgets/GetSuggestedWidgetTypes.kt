@@ -20,7 +20,7 @@ class GetSuggestedWidgetTypes @Inject constructor(
 
         val types = repo.searchObjects(
             space = params.space,
-            limit = 0,
+            limit = DEFAULT_LIMIT,
             filters = params.objectTypeFilters,
             keys = params.objectTypeKeys
         ).map { result ->
@@ -35,4 +35,8 @@ class GetSuggestedWidgetTypes @Inject constructor(
         val objectTypeFilters: List<DVFilter>,
         val objectTypeKeys: List<Id>
     )
+    
+    companion object {
+        const val DEFAULT_LIMIT = 5
+    }
 }

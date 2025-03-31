@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -38,22 +37,13 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
-import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.getProperType
-import com.anytypeio.anytype.presentation.objects.toObjectViewDefault
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
-import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.getCover
-import com.anytypeio.anytype.presentation.relations.isSystemKey
-import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
-import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -62,38 +52,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber
-
-suspend fun ObjectState.DataView.featuredRelations(
-    ctx: Id,
-    urlBuilder: UrlBuilder,
-    relations: List<ObjectWrapper.Relation>,
-    fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes,
-): BlockView.FeaturedRelation? {
-    val block = blocks.find { it.content is Block.Content.FeaturedRelations }
-    if (block != null) {
-        val views = mutableListOf<ObjectRelationView>()
-        val currentObject = details.getObject(ctx)
-        val ids = currentObject?.featuredRelations
-        views.addAll(
-            mapFeaturedRelations(
-                ctx = ctx,
-                keys = ids,
-                details = details,
-                relations = relations,
-                urlBuilder = urlBuilder,
-                fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-        )
-        return BlockView.FeaturedRelation(
-            id = block.id,
-            relations = views
-        )
-    } else {
-        return null
-    }
-}
 
 fun ObjectState.DataView.header(
     ctx: Id,
@@ -125,113 +83,6 @@ fun ObjectState.DataView.header(
     } else {
         return SetOrCollectionHeaderState.None
     }
-}
-
-private suspend fun ObjectState.DataView.mapFeaturedRelations(
-    ctx: Id,
-    keys: List<String>?,
-    details: ObjectViewDetails,
-    relations: List<ObjectWrapper.Relation>,
-    urlBuilder: UrlBuilder,
-    fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes,
-): List<ObjectRelationView> {
-    val currentObject = details.getObject(ctx) ?: return emptyList()
-    val featuredRelationsIds = currentObject.featuredRelations
-    return featuredRelationsIds.mapNotNull { key ->
-        when (key) {
-            Relations.DESCRIPTION -> null
-            Relations.TYPE -> {
-                val currentObjectType = currentObject.getProperType()
-                if (currentObjectType != null) {
-                    val wrapper = details.getTypeObject(currentObjectType)
-                    if (wrapper != null) {
-                        val isDeleted = wrapper.isDeleted == true
-                        if (isDeleted) {
-                            ObjectRelationView.ObjectType.Deleted(
-                                id = wrapper.id,
-                                key = key,
-                                featured = true,
-                                readOnly = false,
-                                system = key.isSystemKey()
-                            )
-                        } else {
-                            ObjectRelationView.ObjectType.Base(
-                                id = wrapper.id,
-                                key = key,
-                                name = wrapper.name.orEmpty(),
-                                featured = true,
-                                readOnly = false,
-                                type = wrapper.id,
-                                system = key.isSystemKey()
-                            )
-                        }
-                    } else {
-                        null
-                    }
-                } else {
-                    null
-                }
-            }
-            Relations.SET_OF -> {
-
-                val source = currentObject.setOf.firstOrNull()
-
-                val wrapper = if (source != null) {
-                    details.getObject(source)
-                } else {
-                    null
-                }
-
-                val isValid = wrapper?.isValid == true
-                val isDeleted = wrapper?.isDeleted == true
-                val isReadOnly = wrapper?.relationReadonlyValue == true
-
-                val sources = if (isValid && !isDeleted) {
-                    listOf(
-                        wrapper.toObjectViewDefault(
-                            urlBuilder = urlBuilder,
-                            fieldParser = fieldParser,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                    )
-                } else {
-                    emptyList()
-                }
-
-                ObjectRelationView.Source(
-                    id = currentObject.id,
-                    key = key,
-                    name = Relations.RELATION_NAME_EMPTY,
-                    featured = true,
-                    readOnly = isReadOnly,
-                    sources = sources,
-                    system = key.isSystemKey()
-                )
-            }
-            Relations.BACKLINKS, Relations.LINKS -> {
-                details.linksFeaturedRelation(
-                    relations = relations,
-                    ctx = ctx,
-                    relationKey = key,
-                    isFeatured = true
-                )
-            }
-            else -> {
-                val relation = relations.firstOrNull { it.key == key }
-                relation?.view(
-                    details = details,
-                    values = currentObject.map,
-                    urlBuilder = urlBuilder,
-                    isFeatured = true,
-                    fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
-                )
-            }
-        }
-    }
-        .sortedByDescending { it.key == Relations.SET_OF }
-        .sortedByDescending { it.key == Relations.TYPE }
 }
 
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {

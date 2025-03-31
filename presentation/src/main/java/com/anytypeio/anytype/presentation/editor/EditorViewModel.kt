@@ -805,6 +805,7 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
+                    participantCanEdit = permission?.isOwnerOrEditor() == true,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }

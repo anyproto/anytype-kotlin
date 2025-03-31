@@ -238,32 +238,6 @@ class BundledWidgetSourceHolder(
                     ivIcon.setBackgroundResource(R.drawable.ic_widget_system_bin)
                 }
             }
-            // TODO remove this
-            BundledWidgetSourceView.Sets -> {
-                with(binding) {
-                    tvTitle.setText(R.string.sets)
-                    tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_sets,
-                            null
-                        )
-                    )
-                }
-            }
-            // TODO remove this
-            BundledWidgetSourceView.Collections -> {
-                with(binding) {
-                    tvTitle.setText(R.string.collections)
-                    tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_collection,
-                            null
-                        )
-                    )
-                }
-            }
         }
     }
 }

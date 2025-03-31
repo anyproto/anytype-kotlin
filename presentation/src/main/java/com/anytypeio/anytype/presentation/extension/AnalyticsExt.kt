@@ -1544,10 +1544,6 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
         props = Props(
             buildMap {
                 when (view) {
-                    BundledWidgetSourceView.Collections -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
-                    }
-
                     BundledWidgetSourceView.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
@@ -1560,11 +1556,8 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
                     }
 
-                    BundledWidgetSourceView.Sets -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
-                    }
                     BundledWidgetSourceView.Bin -> {
-                        // TODO add analytics
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
                 }
                 if (isForNewWidget)

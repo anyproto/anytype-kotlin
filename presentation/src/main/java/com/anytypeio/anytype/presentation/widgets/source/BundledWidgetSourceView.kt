@@ -14,17 +14,6 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
     data object Favorites : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.FAVORITE
     }
-
-    @Deprecated("To be deleted. Migrating to widget source by suggested types")
-    data object Sets : BundledWidgetSourceView() {
-        override val id: Id get() = BundledWidgetSourceIds.SETS
-    }
-
-    @Deprecated("To be deleted. Migrating to widget source by suggested types")
-    data object Collections : BundledWidgetSourceView() {
-        override val id: Id get() = BundledWidgetSourceIds.COLLECTIONS
-    }
-
     data object Recent : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.RECENT
     }

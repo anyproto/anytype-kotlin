@@ -104,8 +104,7 @@ suspend fun toFeaturedPropertiesViews(
         )
 
         val hasConflict = objectFeaturedProperties.any { property -> property.key != Relations.DESCRIPTION } == true
-
-
+        
         if (!hasConflict) {
             val featuredViews = typeRecommendedFeaturedProperties.mapNotNull { property ->
                 property.toView(

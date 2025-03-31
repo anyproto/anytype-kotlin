@@ -29,6 +29,7 @@ import com.anytypeio.anytype.feature_object_type.R
 @Composable
 fun ConflictScreen(
     modifier: Modifier = Modifier,
+    showScreen: Boolean,
     onResetClick: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -36,66 +37,68 @@ fun ConflictScreen(
         skipPartiallyExpanded = true
     )
 
-    ModalBottomSheet(
-        modifier = modifier,
-        dragHandle = {
-            Column {
-                Spacer(modifier = Modifier.height(6.dp))
-                Dragger()
-                Spacer(modifier = Modifier.height(6.dp))
-            }
-        },
-        scrimColor = colorResource(id = R.color.modal_screen_outside_background),
-        containerColor = colorResource(id = R.color.background_secondary),
-        shape = RoundedCornerShape(16.dp),
-        sheetState = bottomSheetState,
-        onDismissRequest = {
-            onDismiss()
-        }
-    ) {
-        Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            textAlign = TextAlign.Center,
-            style = HeadlineSubheading,
-            color = colorResource(id = R.color.text_primary),
-            text = stringResource(id = R.string.object_conflict_screen_title)
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            textAlign = TextAlign.Center,
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            text = stringResource(id = R.string.object_conflict_screen_description)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
-        ButtonPrimary(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = stringResource(R.string.object_conflict_screen_action_button),
-            size = ButtonSize.LargeSecondary,
-            onClick = {
-                onResetClick()
-            }
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        ButtonSecondary(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
-            text = stringResource(R.string.cancel),
-            size = ButtonSize.LargeSecondary,
-            onClick = {
+    if (showScreen) {
+        ModalBottomSheet(
+            modifier = modifier,
+            dragHandle = {
+                Column {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Dragger()
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+            },
+            scrimColor = colorResource(id = R.color.modal_screen_outside_background),
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(16.dp),
+            sheetState = bottomSheetState,
+            onDismissRequest = {
                 onDismiss()
             }
-        )
-        Spacer(modifier = Modifier.height(10.dp))
+        ) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                textAlign = TextAlign.Center,
+                style = HeadlineSubheading,
+                color = colorResource(id = R.color.text_primary),
+                text = stringResource(id = R.string.object_conflict_screen_title)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                textAlign = TextAlign.Center,
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_primary),
+                text = stringResource(id = R.string.object_conflict_screen_description)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+            ButtonPrimary(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                text = stringResource(R.string.object_conflict_screen_action_button),
+                size = ButtonSize.LargeSecondary,
+                onClick = {
+                    onResetClick()
+                }
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            ButtonSecondary(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp),
+                text = stringResource(R.string.cancel),
+                size = ButtonSize.LargeSecondary,
+                onClick = {
+                    onDismiss()
+                }
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+        }
     }
 }
 
@@ -103,6 +106,7 @@ fun ConflictScreen(
 @Composable
 fun ConflictScreenPreview() {
     ConflictScreen(
+        showScreen = true,
         onResetClick = {},
         onDismiss = {}
     )

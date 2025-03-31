@@ -5,8 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Block.Content.DataView.Filter
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -21,6 +25,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -178,7 +183,18 @@ class SelectWidgetSourceViewModel(
         viewModelScope.launch {
             getSuggestedWidgetTypes.async(
                 params = GetSuggestedWidgetTypes.Params(
-                    space = vmParams.space
+                    space = vmParams.space,
+                    objectTypeFilters = buildList {
+                        add(
+                            DVFilter(
+                                relation = Relations.SPACE_ID,
+                                condition = DVFilterCondition.EQUAL,
+                                value = vmParams.space.id
+                            )
+                        )
+                        addAll(ObjectSearchConstants.filterTypes())
+                    },
+                    objectTypeKeys = ObjectSearchConstants.defaultKeysObjectType
                 )
             ).onSuccess { types ->
                 suggested.value = types.map { type ->

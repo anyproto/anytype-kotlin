@@ -270,6 +270,7 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -837,24 +838,13 @@ class EditorViewModel(
         newBlocks: List<BlockView>
     ) {
 
-        if (currentObject == null) {
-            orchestrator.stores.hasLayoutOrRelationConflict.update(false)
-            return
-        }
-
-        val featuredBlock = newBlocks.firstOrNull { it is BlockView.FeaturedRelation }
-        val hasFeaturedPropertiesConflict =
-            (featuredBlock as? BlockView.FeaturedRelation)?.hasFeaturePropertiesConflict == true
-        val currentObjectType = storeOfObjectTypes.getTypeOfObject(currentObject)
-
-        val objectLayout = currentObject.layout
-        val hasObjectLayoutConflict = objectLayout != null
-                && objectLayout != currentObjectType?.recommendedLayout
-
-        orchestrator.stores.hasLayoutOrRelationConflict.update(
-            hasObjectLayoutConflict
-                    || hasFeaturedPropertiesConflict
+        val hasConflict = hasLayoutConflict(
+            currentObject = currentObject,
+            blocks = newBlocks,
+            storeOfObjectTypes = storeOfObjectTypes
         )
+
+        orchestrator.stores.hasLayoutOrRelationConflict.update(hasConflict)
     }
 
     private fun refreshTableToolbar() {

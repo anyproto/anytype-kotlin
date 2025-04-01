@@ -420,10 +420,10 @@ class BlockMiddleware(
 
     override suspend fun deleteRelationFromObject(
         ctx: Id,
-        relation: Id
+        relations: List<Key>
     ): Payload = middleware.objectRelationDelete(
         ctx = ctx,
-        relation = relation
+        relations = relations
     )
 
     override suspend fun debugSpace(space: SpaceId): String = middleware.debugSpaceSummary(space)

@@ -1171,10 +1171,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectRelationDelete(ctx: Id, relation: Key): Payload {
+    fun objectRelationDelete(ctx: Id, relations: List<Key>): Payload {
         val request = Rpc.ObjectRelation.Delete.Request(
             contextId = ctx,
-            relationKeys = listOf(relation)
+            relationKeys = relations
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectRelationDelete(request) }

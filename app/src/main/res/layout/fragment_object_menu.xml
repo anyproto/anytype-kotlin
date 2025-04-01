@@ -173,7 +173,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/default_ripple"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:icon="@drawable/ic_attention_24"
                     app:showArrow="false"
                     app:title="@string/object_conflict_menu_item_title"

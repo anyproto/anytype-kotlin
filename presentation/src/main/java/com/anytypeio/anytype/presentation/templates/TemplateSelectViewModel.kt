@@ -68,13 +68,14 @@ class TemplateSelectViewModel(
         templates: List<ObjectWrapper.Basic>
     ) {
         val templateViews = buildList {
-            add(
-                TemplateSelectView.Blank(
-                    typeId = objType.id,
-                    typeName = objType.name.orEmpty(),
-                    layout = objType.recommendedLayout?.code ?: 0
-                )
-            )
+            //turned off for now DROID-3340
+//            add(
+//                TemplateSelectView.Blank(
+//                    typeId = objType.id,
+//                    typeName = objType.name.orEmpty(),
+//                    layout = objType.recommendedLayout?.code ?: 0
+//                )
+//            )
             addAll(templates.map {
                 TemplateSelectView.Template(
                     id = it.id,

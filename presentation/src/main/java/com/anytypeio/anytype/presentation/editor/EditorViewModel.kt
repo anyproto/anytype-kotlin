@@ -6831,9 +6831,9 @@ class EditorViewModel(
                 )
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->
-                    if (templates.isNotEmpty()) {
+                    if (templates.size > 1) {
                         selectTemplateViewState.value = SelectTemplateViewState.Active(
-                            count = templates.size + 1,
+                            count = templates.size,
                             typeId = objType.id
                         )
                     } else {

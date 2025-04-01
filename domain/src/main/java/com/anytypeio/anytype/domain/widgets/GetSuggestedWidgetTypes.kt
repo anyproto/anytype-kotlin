@@ -14,15 +14,11 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.debugging.Logger
-import com.sun.swing.internal.plaf.basic.resources.basic_ko
 import javax.inject.Inject
-import kotlin.math.log
 
 class GetSuggestedWidgetTypes @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository,
-    private val logger: Logger
 ) : ResultInteractor<GetSuggestedWidgetTypes.Params, List<ObjectWrapper.Type>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<ObjectWrapper.Type> {

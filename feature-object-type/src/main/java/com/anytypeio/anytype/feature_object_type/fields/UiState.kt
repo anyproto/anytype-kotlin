@@ -54,7 +54,8 @@ sealed class UiFieldsListItem {
             override val format: RelationFormat,
             override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean,
-            override val isEditableField: Boolean
+            override val isEditableField: Boolean,
+            val isPossibleToDrag: Boolean
         ) : Item()
 
         data class Local(

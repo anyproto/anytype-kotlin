@@ -336,7 +336,8 @@ class ObjectTypeViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectTypeConflictingPropertiesIds = conflictingFields,
-            showHiddenProperty = vmParams.showHiddenFields
+            showHiddenProperty = vmParams.showHiddenFields,
+            objectPermissions = objectPermissions
         )
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(

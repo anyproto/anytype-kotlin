@@ -704,21 +704,23 @@ private fun LazyItemScope.FieldItemDraggable(
                 )
             }
 
-            Image(
-                modifier = Modifier
-                    .padding(end = 14.dp)
-                    .size(24.dp)
-                    .draggableHandle(
-                        onDragStarted = {
-                            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
-                        },
-                        onDragStopped = {
-                            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
-                        }
-                    ),
-                painter = painterResource(R.drawable.ic_dnd),
-                contentDescription = "Icon drag"
-            )
+            if (item.isPossibleToDrag) {
+                Image(
+                    modifier = Modifier
+                        .padding(end = 14.dp)
+                        .size(24.dp)
+                        .draggableHandle(
+                            onDragStarted = {
+                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                            },
+                            onDragStopped = {
+                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                            }
+                        ),
+                    painter = painterResource(R.drawable.ic_dnd),
+                    contentDescription = "Icon drag"
+                )
+            }
 
             ItemDropDownMenu(
                 item = item,
@@ -815,7 +817,8 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.STATUS,
                     isPossibleToUnlinkFromType = true,
                     isEditableField = true,
-                    limitObjectTypes = listOf()
+                    limitObjectTypes = listOf(),
+                    isPossibleToDrag = false
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id2",
@@ -824,7 +827,8 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.LONG_TEXT,
                     isPossibleToUnlinkFromType = true,
                     isEditableField = true,
-                    limitObjectTypes = listOf()
+                    limitObjectTypes = listOf(),
+                    isPossibleToDrag = true
                 ),
                 UiFieldsListItem.Section.SideBar(
                     canAdd = true
@@ -836,7 +840,8 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.URL,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
-                    limitObjectTypes = listOf()
+                    limitObjectTypes = listOf(),
+                    isPossibleToDrag = true
                 ),
                 UiFieldsListItem.Item.Draggable(
                     id = "id4",
@@ -845,7 +850,8 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.DATE,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
-                    limitObjectTypes = listOf()
+                    limitObjectTypes = listOf(),
+                    isPossibleToDrag = false
                 ),
                 UiFieldsListItem.Section.Hidden(),
                 UiFieldsListItem.Item.Draggable(
@@ -855,7 +861,8 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.LONG_TEXT,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
-                    limitObjectTypes = listOf()
+                    limitObjectTypes = listOf(),
+                    isPossibleToDrag = true
                 ),
                 UiFieldsListItem.Section.Local(),
                 UiFieldsListItem.Item.Local(

@@ -26,12 +26,15 @@ sealed class ObjectState {
         abstract val dataViewBlock: Block
         abstract val viewers: List<DVViewer>
 
+        abstract val hasObjectLayoutConflict: Boolean
+
         data class Set(
             override val root: Id,
             override val blocks: List<Block> = emptyList(),
             override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
+            override val hasObjectLayoutConflict: Boolean = false,
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }
@@ -46,6 +49,7 @@ sealed class ObjectState {
             override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
+            override val hasObjectLayoutConflict: Boolean = false,
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }
@@ -60,6 +64,7 @@ sealed class ObjectState {
             override val details: ObjectViewDetails = ObjectViewDetails.EMPTY,
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
+            override val hasObjectLayoutConflict: Boolean = false,
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }

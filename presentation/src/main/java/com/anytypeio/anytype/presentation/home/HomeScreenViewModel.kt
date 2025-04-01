@@ -456,18 +456,14 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                if (list.isNotEmpty()) {
-                    combine(
-                        flows = buildList<Flow<WidgetView>> {
-                            add(spaceWidgetView)
-                            add(allContentWidget.view)
-                            addAll(list.map { m -> m.view })
-                        }
-                    ) { array ->
-                        array.toList()
+                combine(
+                    flows = buildList<Flow<WidgetView>> {
+                        add(spaceWidgetView)
+                        add(allContentWidget.view)
+                        addAll(list.map { m -> m.view })
                     }
-                } else {
-                    spaceWidgetView.map { view -> listOf(view) }
+                ) { array ->
+                    array.toList()
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
                 buildListOfWidgets(hasEditAccess, widgets)
@@ -589,7 +585,7 @@ class HomeScreenViewModel(
                             )
                         }
                     }
-                } + listOf(spaceBinWidgetContainer)
+                }
             }.collect {
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
@@ -902,16 +898,20 @@ class HomeScreenViewModel(
 
     fun onCreateWidgetClicked() {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -966,6 +966,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(source: Widget.Source) {
+        Timber.d("onWidgetSourceClicked: $source")
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendSelectHomeTabEvent(
@@ -1054,6 +1055,16 @@ class HomeScreenViewModel(
                     sendToast("Open bin to restore your archived object")
                 }
             }
+            is Widget.Source.Bundled.Bin -> {
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Bin,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -1081,6 +1092,7 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
+        Timber.d("onBundledWidgetClicked: $widget")
         viewModelScope.launch {
             // TODO DROID-2341 get space from widget views for better consistency
             val space = spaceManager.get()
@@ -1101,7 +1113,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                Subscriptions.SUBSCRIPTION_BIN -> {
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Bin,
@@ -1163,17 +1175,21 @@ class HomeScreenViewModel(
 
     private fun proceedWithAddingWidgetBelow(widget: Id) {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    target = widget,
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        target = widget,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -2506,6 +2522,7 @@ sealed class Command {
      * [target] optional target, below which new widget will be created
      */
     data class SelectWidgetSource(
+        val ctx: Id,
         val target: Id? = null,
         val isInEditMode: Boolean,
         val space: Id

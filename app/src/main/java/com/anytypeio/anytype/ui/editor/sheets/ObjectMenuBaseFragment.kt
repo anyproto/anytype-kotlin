@@ -87,7 +87,12 @@ abstract class ObjectMenuBaseFragment :
             setContent {
                 ConflictScreen(
                     showScreen = vm.showLayoutConflictScreen.collectAsStateWithLifecycle().value,
-                    onResetClick = { },
+                    onResetClick = {
+                        vm.onResetToDefaultLayout(
+                            ctx = ctx,
+                            space = space
+                        )
+                    },
                     onDismiss = { vm.onHideConflictScreen() }
                 )
             }
@@ -133,6 +138,7 @@ abstract class ObjectMenuBaseFragment :
         val relationsVisibility = options.hasRelations.toVisibility()
         val historyVisibility = options.hasHistory.toVisibility()
         val objectDiagnosticsVisibility = options.hasDiagnosticsVisibility.toVisibility()
+        val objectLayoutConflictVisibility = options.hasObjectLayoutConflict.toVisibility()
 
         if (options.hasDescriptionShow) {
             binding.optionDescription.setAction(setAsHide = false)
@@ -150,6 +156,7 @@ abstract class ObjectMenuBaseFragment :
         binding.historyDivider.visibility = historyVisibility
         binding.objectDiagnostics.visibility = objectDiagnosticsVisibility
         binding.objectDiagnosticsDivider.visibility = objectDiagnosticsVisibility
+        binding.objectLayoutConflict.visibility = objectLayoutConflictVisibility
     }
 
     private fun execute(command: ObjectMenuViewModelBase.Command) {

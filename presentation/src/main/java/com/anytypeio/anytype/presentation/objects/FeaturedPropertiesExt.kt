@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -265,4 +266,28 @@ private suspend fun ObjectWrapper.Relation.toView(
             )
         }
     }
+}
+
+suspend fun hasLayoutConflict(
+    blocks: List<BlockView>,
+    currentObject: ObjectWrapper.Basic?,
+    storeOfObjectTypes: StoreOfObjectTypes,
+): Boolean {
+
+    val featuredBlock = blocks.firstOrNull { it is BlockView.FeaturedRelation }
+
+    if (currentObject == null) {
+        return false
+    }
+
+    val hasFeaturedPropertiesConflict =
+        (featuredBlock as? BlockView.FeaturedRelation)?.hasFeaturePropertiesConflict == true
+    val currentObjectType = storeOfObjectTypes.getTypeOfObject(currentObject)
+
+    val objectLayout = currentObject.layout
+    val hasObjectLayoutConflict =
+        objectLayout != null && currentObjectType != null && currentObjectType.isValid
+                && objectLayout != currentObjectType.recommendedLayout
+
+    return hasObjectLayoutConflict || hasFeaturedPropertiesConflict
 }

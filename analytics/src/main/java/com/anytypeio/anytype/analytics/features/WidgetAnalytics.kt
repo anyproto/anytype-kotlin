@@ -28,6 +28,7 @@ object WidgetAnalytics {
     const val WIDGET_SOURCE_RECENT = "Recent"
     const val WIDGET_SOURCE_RECENT_LOCAL = "RecentLocal"
     const val WIDGET_SOURCE_SETS = "Sets"
+    const val WIDGET_SOURCE_BIN = "Bin"
     const val WIDGET_SOURCE_COLLECTIONS = "Sets"
 
     const val CUSTOM_OBJECT_TYPE = "custom"

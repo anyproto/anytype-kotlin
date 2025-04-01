@@ -103,6 +103,8 @@ object Relations {
 
     const val SHARED_SPACES_LIMIT = "sharedSpacesLimit"
 
+    const val LAYOUT_ALIGN = "layoutAlign"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

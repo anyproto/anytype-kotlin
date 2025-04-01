@@ -33,7 +33,7 @@ sealed class Subscription(
     )
 
     data object Bin : Subscription(
-        Subscriptions.SUBSCRIPTION_ARCHIVED,
+        Subscriptions.SUBSCRIPTION_BIN,
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
@@ -92,7 +92,7 @@ class SubscriptionMapper {
         return when (id) {
             Subscriptions.SUBSCRIPTION_RECENT -> Subscription.Recent
             Subscriptions.SUBSCRIPTION_RECENT_LOCAL -> Subscription.RecentLocal
-            Subscriptions.SUBSCRIPTION_ARCHIVED -> Subscription.Bin
+            Subscriptions.SUBSCRIPTION_BIN -> Subscription.Bin
             Subscriptions.SUBSCRIPTION_SETS -> Subscription.Sets
             Subscriptions.SUBSCRIPTION_FAVORITES -> Subscription.Favorites
             Subscriptions.SUBSCRIPTION_COLLECTIONS -> Subscription.Collections

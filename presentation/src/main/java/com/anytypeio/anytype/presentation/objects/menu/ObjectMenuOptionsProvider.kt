@@ -11,7 +11,8 @@ interface ObjectMenuOptionsProvider {
         val hasRelations: Boolean,
         val hasDiagnosticsVisibility: Boolean,
         val hasHistory: Boolean,
-        val hasDescriptionShow: Boolean
+        val hasDescriptionShow: Boolean,
+        val hasObjectLayoutConflict: Boolean
     ) {
         companion object {
             val ALL = Options(
@@ -20,7 +21,8 @@ interface ObjectMenuOptionsProvider {
                 hasRelations = true,
                 hasDiagnosticsVisibility = true,
                 hasHistory = true,
-                hasDescriptionShow = true
+                hasDescriptionShow = true,
+                hasObjectLayoutConflict = false
             )
             val NONE = Options(
                 hasIcon = false,
@@ -28,7 +30,8 @@ interface ObjectMenuOptionsProvider {
                 hasRelations = false,
                 hasDiagnosticsVisibility = false,
                 hasHistory = false,
-                hasDescriptionShow = false
+                hasDescriptionShow = false,
+                hasObjectLayoutConflict = false
             )
         }
     }

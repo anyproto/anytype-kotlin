@@ -285,8 +285,9 @@ suspend fun hasLayoutConflict(
     val currentObjectType = storeOfObjectTypes.getTypeOfObject(currentObject)
 
     val objectLayout = currentObject.layout
-    val hasObjectLayoutConflict = objectLayout != null
-            && objectLayout != currentObjectType?.recommendedLayout
+    val hasObjectLayoutConflict =
+        objectLayout != null && currentObjectType != null && currentObjectType.isValid
+                && objectLayout != currentObjectType.recommendedLayout
 
     return hasObjectLayoutConflict || hasFeaturedPropertiesConflict
 }

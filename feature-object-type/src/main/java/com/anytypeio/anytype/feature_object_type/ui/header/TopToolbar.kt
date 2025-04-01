@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
@@ -42,10 +43,10 @@ import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.feature_object_type.R
+import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
-import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +64,8 @@ fun TopToolbar(
     }
 
     CenterAlignedTopAppBar(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth()
+            .padding(horizontal = 0.dp),
         expandedHeight = 48.dp,
         scrollBehavior = topBarScrollBehavior,
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
@@ -94,10 +96,12 @@ fun TopToolbar(
                     .noRippleThrottledClickable {
                         onTypeEvent(TypeEvent.OnBackClick)
                     },
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.CenterStart
             ) {
                 Image(
-                    modifier = Modifier.wrapContentSize(),
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .wrapContentSize(),
                     painter = painterResource(R.drawable.ic_default_top_back),
                     contentDescription = stringResource(R.string.content_desc_back_button)
                 )

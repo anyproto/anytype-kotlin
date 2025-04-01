@@ -21,12 +21,14 @@ import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import com.anytypeio.anytype.presentation.widgets.source.SuggestWidgetObjectType
 
 class DefaultObjectViewAdapter(
     private val onDefaultObjectClicked: (DefaultObjectView) -> Unit,
     private val onBundledWidgetSourceClicked: (BundledWidgetSourceView) -> Unit = {},
     private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> },
-    private val onCreateNewObject: () -> Unit = {}
+    private val onCreateNewObject: () -> Unit = {},
+    private val onSuggestedWidgetObjectTypeClicked: (SuggestWidgetObjectType) -> Unit = {}
 ) : ListAdapter<DefaultSearchItem, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
@@ -69,6 +71,21 @@ class DefaultObjectViewAdapter(
                 onCreateNewObject()
             }
         }
+        TYPE_SUGGESTED_WIDGET_OBJECT_TYPE -> SuggestWidgetObjectTypeViewHolder(
+            ItemListObjectBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
+            )
+        ).apply {
+            itemView.setOnThrottleClickListener {
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = getItem(pos)
+                    if (item is SuggestWidgetObjectType) {
+                        onSuggestedWidgetObjectTypeClicked(item)
+                    }
+                }
+            }
+        }
         else -> throw IllegalStateException("Unexpected view type: $viewType")
     }
 
@@ -103,6 +120,10 @@ class DefaultObjectViewAdapter(
                 check(item is BundledWidgetSourceView)
                 holder.bind(item)
             }
+            is SuggestWidgetObjectTypeViewHolder -> {
+                check(item is SuggestWidgetObjectType)
+                holder.bind(item)
+            }
         }
     }
 
@@ -111,6 +132,7 @@ class DefaultObjectViewAdapter(
         is ObjectSearchSection -> TYPE_SECTION
         is BundledWidgetSourceView -> TYPE_BUNDLED_WIDGET_SOURCE
         is NewObject -> TYPE_NEW_OBJECT
+        is SuggestWidgetObjectType -> TYPE_SUGGESTED_WIDGET_OBJECT_TYPE
         else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
     }
 
@@ -216,33 +238,22 @@ class BundledWidgetSourceHolder(
                     ivIcon.setBackgroundResource(R.drawable.ic_widget_system_bin)
                 }
             }
-            // TODO remove this
-            BundledWidgetSourceView.Sets -> {
-                with(binding) {
-                    tvTitle.setText(R.string.sets)
-                    tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_sets,
-                            null
-                        )
-                    )
-                }
-            }
-            // TODO remove this
-            BundledWidgetSourceView.Collections -> {
-                with(binding) {
-                    tvTitle.setText(R.string.collections)
-                    tvSubtitle.gone()
-                    ivIcon.setImageDrawable(
-                        drawable = binding.root.context.resources.getDrawable(
-                            R.drawable.ic_widget_bundled_source_collection,
-                            null
-                        )
-                    )
-                }
-            }
         }
+    }
+}
+
+class SuggestWidgetObjectTypeViewHolder(
+    private val binding: ItemListObjectBinding
+) : DefaultObjectViewAdapter.ObjectViewHolder(binding.root) {
+
+    init {
+        binding.ivIcon.binding.emojiContainer.invisible()
+        binding.tvSubtitle.gone()
+    }
+
+    fun bind(source: SuggestWidgetObjectType) {
+        binding.tvTitle.text = source.name
+        binding.ivIcon.setIcon(source.objectIcon)
     }
 }
 
@@ -254,3 +265,4 @@ private const val TYPE_ITEM = 0
 private const val TYPE_SECTION = 1
 private const val TYPE_BUNDLED_WIDGET_SOURCE = 2
 private const val TYPE_NEW_OBJECT = 3
+private const val TYPE_SUGGESTED_WIDGET_OBJECT_TYPE = 4

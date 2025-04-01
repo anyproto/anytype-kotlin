@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets.source
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 
 /**
@@ -13,17 +14,6 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
     data object Favorites : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.FAVORITE
     }
-
-    @Deprecated("To be deleted. Migrating to widget source by suggested types")
-    data object Sets : BundledWidgetSourceView() {
-        override val id: Id get() = BundledWidgetSourceIds.SETS
-    }
-
-    @Deprecated("To be deleted. Migrating to widget source by suggested types")
-    data object Collections : BundledWidgetSourceView() {
-        override val id: Id get() = BundledWidgetSourceIds.COLLECTIONS
-    }
-
     data object Recent : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.RECENT
     }
@@ -36,3 +26,9 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
         override val id: Id get() = BundledWidgetSourceIds.BIN
     }
 }
+
+data class SuggestWidgetObjectType(
+    val id: Id,
+    val name: String,
+    val objectIcon: ObjectIcon
+) : DefaultSearchItem

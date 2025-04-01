@@ -207,7 +207,7 @@
 
 
     <string name="untitled">Untitled</string>
-    <string name="untitled_set">Untitled set</string>
+    <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Untitled collection</string>
     <string name="archived">Archived</string>
 
@@ -296,8 +296,8 @@
     <string name="mention_suggester_create_object">Create object</string>
     <string name="your_search_query">Search</string>
     <string name="syncing">Syncing…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>
-    <string name="new_set">New set</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="new_set">New query</string>
     <string name="create_new_object_type">Create new object type</string>
     <plurals name="page_selected">
         <item quantity="zero">Select pages</item>
@@ -455,7 +455,6 @@
     <string name="no_data">No data</string>
     <string name="no_source">No source</string>
     <string name="deleted_object">Deleted object</string>
-    <string name="open_set">Open set</string>
     <string name="deleted">Deleted</string>
     <string name="paste_link_or_search">Paste link or search objects</string>
     <string name="paste_from_clipboard">Paste from clipboard</string>
@@ -483,7 +482,7 @@
     <string name="card">Card</string>
     <string name="inline">Inline</string>
     <string name="set_view">Set View</string>
-    <string name="inline_set">Inline set</string>
+    <string name="inline_set">Inline query</string>
     <string name="inline_collection">Inline collection</string>
     <string name="fit_image">Fit image</string>
     <string name="image_preview">Image preview</string>
@@ -554,9 +553,9 @@
     <string name="my_types">My types</string>
     <string name="my_relations">My relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
-    <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
-    <string name="block_data_view_content_description_no_source">The inline set has no source</string>
-    <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
+    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
 
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
@@ -576,8 +575,8 @@
     <string name="set_no_items_title">No objects</string>
     <string name="set_no_items_description">Create first object to continue</string>
     <string name="set_no_items_button">Create object</string>
-    <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Turn Set into Collection</string>
+    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Turn Query into Collection</string>
     <string name="menu_change_query">Change query</string>
     <string name="collections">Collections</string>
     <string name="collection_widget_description">Your collections of objects</string>
@@ -594,8 +593,8 @@
     <string name="file_delete_cancel">Cancel</string>
     <string name="file_delete_delete">Delete</string>
     <string name="menu_type_change">Change type</string>
-    <string name="menu_type_open_set">Open set of %1$s</string>
-    <string name="menu_type_create_set">Create set of %1$s</string>
+    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Create object</string>
     <string name="view_layout_widget_title">Layout</string>
@@ -747,7 +746,7 @@
     <string name="edit_view">Edit view</string>
     <string name="relation_open_edit">Open to edit</string>
 
-    <string name="remove_from_set">Remove from this set</string>
+    <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
     <string name="content_description_check_icon">Check icon</string>
@@ -786,7 +785,6 @@
     <string name="find_a_relation">Find a relation</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Unknown type</string>
-    <string name="set">Set</string>
     <string name="collection">Collection</string>
     <string name="layout">Layout</string>
     <string name="button_fields">Properties</string>
@@ -815,7 +813,7 @@
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Go back</string>
 
-    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="snack_object_set_not_found">Query not found for this type.</string>
     <string name="create_new_set">Create</string>
 
     <string name="shortcut_create_new_object_of_type">New %1$s</string>
@@ -1066,7 +1064,7 @@
     <string name="widget_type_compact_list_description">Widget with a compact list view</string>
     <string name="widget_type_list">List</string>
     <string name="widget_type_view">View</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Change Source</string>
     <string name="widget_change_type">Change Type</string>
@@ -1198,7 +1196,7 @@
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
     <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
-    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="content_description_remove_from_set_button">Remove relation from this query</string>
 
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
@@ -1863,8 +1861,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
-    <string name="object_type_objects_menu_open_set">Open Set</string>
-    <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_objects_menu_open_set">Open Query</string>
+    <string name="object_type_objects_menu_create_set">Create Query</string>
     <string name="object_type_templates_menu_set_default">Set as default</string>
     <string name="object_type_templates_menu_edit">Edit</string>
     <string name="object_type_templates_menu_duplicate">Duplicate</string>
@@ -1922,7 +1920,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
-    <string name="object_set_of_title">Set of</string>
+    <string name="object_set_of_title">Query of</string>
     <string name="migration_migration_is_in_progress">Migration is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>

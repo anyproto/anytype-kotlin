@@ -32,8 +32,6 @@ class GetSuggestedWidgetTypes @Inject constructor(
             widgets = params.ctx
         )
 
-        logger.logWarning("Already used: $alreadyUsedObjectTypes")
-
         val types = repo.searchObjects(
             space = params.space,
             limit = DEFAULT_LIMIT,
@@ -66,26 +64,26 @@ class GetSuggestedWidgetTypes @Inject constructor(
 
     private suspend fun getAlreadyUsedTypes(space: SpaceId, widgets: Id) : List<Id> {
         val result = mutableListOf<Id>()
-        val preview = repo.getObject(space = space, id = widgets)
-        val map = preview.blocks.asMap()
-        logger.logWarning("Build map: ${map}")
-        map.getOrDefault(widgets, emptyList()).forEach { block ->
-            if (block.content is Block.Content.Widget && block.children.isNotEmpty()) {
-                val link = preview.blocks.find { it.id == block.children.first() }
-                val content = link?.content
-                if (content is Block.Content.Link) {
-                    val source = preview.details.getOrDefault(
-                        content.target,
-                        emptyMap()
-                    )
-                    val wrapper = ObjectWrapper.Basic(source)
-                    logger.logWarning("Found wrapper: $wrapper")
-                    if (wrapper.layout == ObjectType.Layout.OBJECT_TYPE) {
-                        result.add(wrapper.id)
+
+        runCatching {
+            val preview = repo.getObject(space = space, id = widgets)
+
+            val map = preview.blocks.asMap()
+
+            map.getOrDefault(widgets, emptyList()).forEach { block ->
+                if (block.content is Block.Content.Widget && block.children.isNotEmpty()) {
+                    val link = preview.blocks.find { it.id == block.children.first() }
+                    val content = link?.content
+                    if (content is Block.Content.Link) {
+                        val source = preview.details.getOrDefault(
+                            content.target,
+                            emptyMap()
+                        )
+                        val wrapper = ObjectWrapper.Basic(source)
+                        if (wrapper.layout == ObjectType.Layout.OBJECT_TYPE) {
+                            result.add(wrapper.id)
+                        }
                     }
-                } else {
-                    logger.logWarning("Already used: empty content, content: $content")
-                    // Do nothing
                 }
             }
         }

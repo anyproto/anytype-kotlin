@@ -335,13 +335,10 @@ class ObjectSetMenuViewModel(
         val featuredRelations = currentObject?.featuredRelations ?: emptyList()
 
         viewModelScope.launch {
+            val featuredWithoutConflict = featuredRelations.filter { key -> key == Relations.DESCRIPTION }
             val params = SetObjectDetails.Params(
                 ctx = ctx,
-                details = mapOf(
-                    Relations.FEATURED_RELATIONS to featuredRelations.filter {
-                        it != Relations.DESCRIPTION
-                    }
-                )
+                details = mapOf(Relations.FEATURED_RELATIONS to featuredWithoutConflict)
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {

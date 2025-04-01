@@ -50,11 +50,12 @@ import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 
 
 @Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
@@ -130,7 +131,8 @@ object ObjectMenuModule {
         addToFeaturedRelations: AddToFeaturedRelations,
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         userPermissionProvider: UserPermissionProvider,
-        deleteRelationFromObject: DeleteRelationFromObject
+        deleteRelationFromObject: DeleteRelationFromObject,
+        objectMenuOptionsProvider: ObjectMenuOptionsProvider
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -142,7 +144,7 @@ object ObjectMenuModule {
         dispatcher = dispatcher,
         updateFields = updateFields,
         delegator = delegator,
-        menuOptionsProvider = createMenuOptionsProvider(storage),
+        menuOptionsProvider = objectMenuOptionsProvider,
         addObjectToCollection = addObjectToCollection,
         createTemplateFromObject = createTemplateFromObject,
         setObjectDetails = setObjectDetails,
@@ -184,8 +186,12 @@ object ObjectMenuModule {
         dispatchers
     )
 
+    @Provides
+    @PerDialog
     @JvmStatic
-    private fun createMenuOptionsProvider(storage: Editor.Storage): ObjectMenuOptionsProvider =
+    fun provideMenuOptionsProvider(
+        storage: Editor.Storage
+    ): ObjectMenuOptionsProvider =
         ObjectMenuOptionsProviderImpl(
             objectViewDetailsFlow = storage.details.stream(),
             hasObjectLayoutConflict = storage.hasLayoutOrRelationConflict.stream()
@@ -290,7 +296,8 @@ object ObjectSetMenuModule {
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         userPermissionProvider: UserPermissionProvider,
         deleteRelationFromObject: DeleteRelationFromObject,
-        setObjectDetails: SetObjectDetails
+        setObjectDetails: SetObjectDetails,
+        objectMenuOptionsProvider: ObjectMenuOptionsProvider
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -300,7 +307,7 @@ object ObjectSetMenuModule {
         analytics = analytics,
         objectState = state,
         dispatcher = dispatcher,
-        menuOptionsProvider = createMenuOptionsProvider(state),
+        menuOptionsProvider = objectMenuOptionsProvider,
         addObjectToCollection = addObjectToCollection,
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
         createWidget = createWidget,
@@ -383,21 +390,37 @@ object ObjectSetMenuModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsFavorite = SetObjectListIsFavorite(repo = repo, dispatchers = dispatchers)
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @JvmStatic
-    private fun createMenuOptionsProvider(
-        state: StateFlow<ObjectState>,
+    @Provides
+    @PerDialog
+    fun provideMenuOptionsProvider(
+        state: MutableStateFlow<ObjectState>,
     ): ObjectMenuOptionsProvider {
-        return when (val currentState = state.value) {
-            is ObjectState.DataView -> ObjectMenuOptionsProviderImpl(
-                objectViewDetailsFlow = state.map { currentState.details }.distinctUntilChanged(),
-                hasObjectLayoutConflict = state.map { currentState.hasObjectLayoutConflict }
-                    .distinctUntilChanged()
-            )
-            else -> ObjectMenuOptionsProviderImpl(
-                objectViewDetailsFlow = emptyFlow(),
-                hasObjectLayoutConflict = emptyFlow()
-            )
-        }
+        val objectViewDetailsFlow = state
+            .flatMapLatest { currentState ->
+                if (currentState is ObjectState.DataView) {
+                    flowOf(currentState.details)
+                } else {
+                    emptyFlow()
+                }
+            }
+            .distinctUntilChanged()
+
+        val hasObjectLayoutConflictFlow = state
+            .flatMapLatest { currentState ->
+                if (currentState is ObjectState.DataView) {
+                    flowOf(currentState.hasObjectLayoutConflict)
+                } else {
+                    emptyFlow()
+                }
+            }
+            .distinctUntilChanged()
+
+        return ObjectMenuOptionsProviderImpl(
+            objectViewDetailsFlow = objectViewDetailsFlow,
+            hasObjectLayoutConflict = hasObjectLayoutConflictFlow
+        )
     }
 
     @JvmStatic

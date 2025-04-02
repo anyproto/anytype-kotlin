@@ -1641,7 +1641,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectIcon.None
         }
 
-        val name = fieldParser.getObjectName(obj)
+        val name = fieldParser.getObjectNameOrPluralsForTypes(obj)
 
         val description = when (inEditorAppearance.description) {
             InEditor.Description.NONE -> null

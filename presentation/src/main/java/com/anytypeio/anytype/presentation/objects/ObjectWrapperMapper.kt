@@ -70,7 +70,7 @@ suspend fun List<ObjectWrapper.Basic>.toLinkToView(
         val layout = obj.getProperLayout()
         LinkToItemView.Object(
             id = obj.id,
-            title = fieldParser.getObjectName(obj),
+            title = fieldParser.getObjectNameOrPluralsForTypes(obj),
             subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
             type = typeUrl,
             layout = layout,
@@ -92,7 +92,7 @@ suspend fun ObjectWrapper.Basic.toLinkToObjectView(
     val layout = this.getProperLayout()
     return LinkToItemView.LinkedTo.Object(
         id = this.id,
-        title = fieldParser.getObjectName(this),
+        title = fieldParser.getObjectNameOrPluralsForTypes(this),
         subtitle = getProperTypeName(id = typeUrl, types = objectTypes),
         type = typeUrl,
         layout = layout,

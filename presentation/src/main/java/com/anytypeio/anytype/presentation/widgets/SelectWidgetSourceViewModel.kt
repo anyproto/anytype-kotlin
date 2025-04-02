@@ -35,6 +35,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -61,7 +62,7 @@ class SelectWidgetSourceViewModel(
     storeOfObjectTypes = storeOfObjectTypes
 ) {
 
-    val suggested = MutableStateFlow<List<SuggestWidgetObjectType>>(emptyList())
+    val suggested = MutableStateFlow<List<SuggestWidgetObjectType>?>(null)
 
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
@@ -69,7 +70,7 @@ class SelectWidgetSourceViewModel(
     val viewState = combine(
         stateData
             .asFlow(),
-        suggested
+        suggested.filterNotNull()
     ) { state, suggested ->
         if (suggested.isNotEmpty()) {
             when(state) {

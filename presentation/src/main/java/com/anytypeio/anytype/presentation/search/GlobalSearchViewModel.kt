@@ -354,6 +354,7 @@ class GlobalSearchViewModel @Inject constructor(
     }
 
     fun onObjectClicked(globalSearchItemView: GlobalSearchItemView) {
+        Timber.i("onObjectClicked, globalSearchItemView $globalSearchItemView")
         viewModelScope.launch {
             navigation.emit(
                 globalSearchItemView.layout.navigation(

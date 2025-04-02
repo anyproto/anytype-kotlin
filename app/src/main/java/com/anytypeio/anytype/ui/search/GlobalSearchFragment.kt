@@ -25,6 +25,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -134,8 +135,15 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                         is OpenObjectNavigation.UnexpectedLayoutError -> {
                             toast(getString(R.string.error_unexpected_layout))
                         }
-                        else -> {
-                            // Do nothing.
+                        is OpenObjectNavigation.OpenType -> {
+                            runCatching {
+                                navigation().openObjectType(
+                                    objectId = nav.target,
+                                    space = nav.space
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening object type from ")
+                            }
                         }
                     }
                 }

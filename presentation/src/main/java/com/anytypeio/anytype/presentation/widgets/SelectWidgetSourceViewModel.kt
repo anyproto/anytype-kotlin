@@ -218,6 +218,9 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
+                    if (view is BundledWidgetSourceView.AllObjects) {
+                        isDismissed.value = true
+                    }
                 }
             }
             is Config.ExistingWidget -> {

@@ -134,9 +134,7 @@ fun AllContentWidgetCard(
                     .height(24.dp)
                     .width(24.dp)
                     .noRippleClickable {
-//                        onWidgetMenuAction(
-//                            item.id, DropDownMenuAction.RemoveWidget
-//                        )
+                        onDropDownMenuAction(DropDownMenuAction.RemoveWidget)
                     },
                 contentDescription = "Remove widget icon"
             )

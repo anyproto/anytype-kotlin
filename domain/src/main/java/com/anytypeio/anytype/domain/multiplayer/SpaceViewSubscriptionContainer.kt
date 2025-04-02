@@ -117,6 +117,7 @@ interface SpaceViewSubscriptionContainer {
                         Relations.READERS_LIMIT,
                         Relations.WRITERS_LIMIT,
                         Relations.NAME,
+                        Relations.PLURAL_NAME,
                         Relations.CREATED_DATE,
                         Relations.CREATOR,
                         Relations.ICON_IMAGE,

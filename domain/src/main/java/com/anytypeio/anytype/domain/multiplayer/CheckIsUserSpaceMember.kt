@@ -45,6 +45,7 @@ class CheckIsUserSpaceMember @Inject constructor(
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
+                Relations.PLURAL_NAME,
                 Relations.SPACE_ID,
                 Relations.PARTICIPANT_PERMISSIONS,
                 Relations.PARTICIPANT_STATUS,

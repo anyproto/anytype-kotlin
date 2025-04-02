@@ -15,6 +15,7 @@ object Relations {
     const val LAYOUT = "resolvedLayout"
     const val LEGACY_LAYOUT = "layout"
     const val NAME = "name"
+    const val PLURAL_NAME = "pluralName"
     const val ICON_EMOJI = "iconEmoji"
     const val ICON_OPTION = "iconOption"
     const val ICON_NAME = "iconName"

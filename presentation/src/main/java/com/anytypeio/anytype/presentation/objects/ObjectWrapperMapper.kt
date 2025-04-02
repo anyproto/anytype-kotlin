@@ -22,8 +22,8 @@ suspend fun List<ObjectWrapper.Basic>.toViews(
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectView> = map { obj ->
     obj.toView(
-        urlBuilder,
-        objectTypes,
+        urlBuilder = urlBuilder,
+        objectTypes = objectTypes,
         fieldParser = fieldParser,
         storeOfObjectTypes = storeOfObjectTypes
     )

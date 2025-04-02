@@ -43,7 +43,7 @@ suspend fun ObjectWrapper.Basic.toView(
     val layout = obj.getProperLayout()
     return DefaultObjectView(
         id = obj.id,
-        name = fieldParser.getObjectName(obj),
+        name = fieldParser.getObjectNameOrPluralsForTypes(obj),
         description = obj.description,
         type = objTypeId,
         typeName = objTypeName,

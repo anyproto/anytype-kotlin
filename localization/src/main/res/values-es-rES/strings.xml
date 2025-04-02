@@ -92,7 +92,6 @@
     <string name="option_other_divider">Línea divisoria</string>
     <string name="option_other_dots">Puntos divisorios</string>
     <string name="option_other_code">Fragmento de código</string>
-    <string name="option_relation_relation">Relación</string>
     <string name="toolbar_section_text">Texto</string>
     <string name="toolbar_section_list">Lista</string>
     <string name="toolbar_section_page">Página</string>
@@ -100,7 +99,7 @@
     <string name="toolbar_section_tool">Herramienta</string>
     <string name="toolbar_section_media">Medios</string>
     <string name="toolbar_section_objects">Objetos</string>
-    <string name="toolbar_section_relation">Relación</string>
+    <string name="toolbar_section_relation">Property</string>
     <string name="toolbar_action_delete">Eliminar</string>
     <string name="toolbar_action_duplicate">Duplicar</string>
     <string name="toolbar_action_mention">Mención</string>
@@ -174,7 +173,7 @@
     <string name="hint_paste_link">Pegar enlace</string>
     <string name="empty_tap_to_create_new_block">Vacío. Toca para crear un bloque.</string>
     <string name="untitled">Sin título</string>
-    <string name="untitled_set">Conjunto sin título</string>
+    <string name="untitled_set">Consulta sin título</string>
     <string name="untitled_collection">Colección sin título</string>
     <string name="archived">Archivado</string>
     <string name="loading">Cargando…</string>
@@ -233,7 +232,6 @@
     <string name="search_hint">Buscar…</string>
     <string name="relations">Relaciones</string>
     <string name="fields">Campos</string>
-    <string name="relation">Relación</string>
     <string name="download">Descargar</string>
     <string name="view">Vista</string>
     <string name="views">Vistas</string>
@@ -256,8 +254,8 @@
     <string name="mention_suggester_create_object">Crear objeto</string>
     <string name="your_search_query">Buscar</string>
     <string name="syncing">Sincronizando…</string>
-    <string name="choose_a_object_type_for_this_set">Elige un tipo de objeto para este conjunto</string>
-    <string name="new_set">Nuevo conjunto</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="new_set">Nueva consulta</string>
     <string name="create_new_object_type">Crear un tipo de objeto</string>
     <plurals name="page_selected">
         <item quantity="one">%d página seleccionada</item>
@@ -319,8 +317,8 @@
     <string name="unknown_object_type">Tipo desconocido</string>
     <string name="relation_format_short_text">Texto corto</string>
     <string name="relation_format_long_text">Texto</string>
-    <string name="set_new_relation">Nueva relación de conjunto</string>
-    <string name="relation_deleted">Relación eliminada</string>
+    <string name="set_new_relation">Set new property</string>
+    <string name="relation_deleted">Propiedad eliminada</string>
     <string name="content_description_document_cover">Portada de documento</string>
     <string name="content_description_cover_image_view">Vista de imagen de portada</string>
     <string name="cover_color_solid">Colores sólidos</string>
@@ -340,7 +338,7 @@
     <string name="heading">Título 2</string>
     <string name="subheading">Título 3</string>
     <string name="create_from_scratch">Crear desde cero</string>
-    <string name="create_relation_with_name">Crear relación «%1$s»</string>
+    <string name="create_relation_with_name">Create property \"%1$s\"</string>
     <string name="name_is_required">El nombre es necesario</string>
     <string name="favourite">Favorito</string>
     <string name="template">Plantilla</string>
@@ -378,7 +376,7 @@
     <string name="content_desc_search_button">Botón Buscar</string>
     <string name="content_desc_add_doc_button">Añadir documento</string>
     <string name="unsupported_block">Bloque no compatible</string>
-    <string name="new_relation">Nueva relación</string>
+    <string name="new_relation">Nueva propiedad</string>
     <string name="copy_link">Copiar enlace</string>
     <string name="edit_link">Editar enlace</string>
     <string name="unlink">Desenlazar</string>
@@ -402,7 +400,6 @@
     <string name="no_data">Sin datos</string>
     <string name="no_source">Sin origen</string>
     <string name="deleted_object">Objeto eliminado</string>
-    <string name="open_set">Abrir conjunto</string>
     <string name="deleted">Eliminado</string>
     <string name="paste_link_or_search">Pegar enlace o buscar objetos</string>
     <string name="paste_from_clipboard">Pegar desde el portapapeles</string>
@@ -430,7 +427,7 @@
     <string name="card">Tarjeta</string>
     <string name="inline">Insertado</string>
     <string name="set_view">Vista de conjunto</string>
-    <string name="inline_set">Conjunto insertado</string>
+    <string name="inline_set">Consulta insertada</string>
     <string name="inline_collection">Colección insertada</string>
     <string name="fit_image">Ajustar imagen</string>
     <string name="image_preview">Vista de imagen</string>
@@ -489,15 +486,15 @@
     <string name="error_find_block">No se encuentra el bloque seleccionado</string>
     <string name="error_block_selection">Error de selección de bloque</string>
     <string name="undefined">No definido</string>
-    <string name="set_by_relation">Relación: %1$s</string>
-    <string name="set_by_relations">Relaciones: %1$s</string>
+    <string name="set_by_relation">Property: %1$s</string>
+    <string name="set_by_relations">Properties: %1$s</string>
     <string name="set_by_type">Tipo de objeto: %1$s</string>
     <string name="my_types">Mis tipos</string>
-    <string name="my_relations">Mis relaciones</string>
+    <string name="my_relations">Mis propiedades</string>
     <string name="type_added">El tipo «%1$s» se ha añadido a tu biblioteca.</string>
-    <string name="block_data_view_content_description_title">El nombre del conjunto de origen para el conjunto insertado</string>
-    <string name="block_data_view_content_description_no_source">El conjunto insertado no tiene origen</string>
-    <string name="block_data_view_content_description_no_data">El origen del conjunto insertado no tiene tipo</string>
+    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Abierto recientemente</string>
     <string name="widget_source_anytype_library">Biblioteca de Anytype</string>
     <string name="widget_source_default_lists">Listas por defecto</string>
@@ -515,8 +512,8 @@
     <string name="set_no_items_title">No hay objetos</string>
     <string name="set_no_items_description">Crea el primer objeto para continuar</string>
     <string name="set_no_items_button">Crear objeto</string>
-    <string name="set_collection_view_not_present">Esta vista no existe en el conjunto o colección; vuelve a crear el objeto.</string>
-    <string name="menu_turn_to_collection">Convertir conjunto en colección</string>
+    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Convertir consulta en colección</string>
     <string name="menu_change_query">Cambiar consulta</string>
     <string name="collections">Colecciones</string>
     <string name="collection_widget_description">Tus colecciones de objetos</string>
@@ -533,8 +530,8 @@
     <string name="file_delete_cancel">Cancelar</string>
     <string name="file_delete_delete">Eliminar</string>
     <string name="menu_type_change">Cambiar tipo</string>
-    <string name="menu_type_open_set">Abrir conjunto de %1$s</string>
-    <string name="menu_type_create_set">Crear conjunto de %1$s</string>
+    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">No se puede eliminar la vista actual</string>
     <string name="type_templates_widget_title">Crear objeto</string>
     <string name="view_layout_widget_title">Diseño</string>
@@ -650,7 +647,7 @@
     <string name="object_view_type">Tipo de vista de objeto</string>
     <string name="object_type_name">Nombre del tipo de objeto</string>
     <string name="name">Nombre</string>
-    <string name="hint_type_name_for_new_relation">Nombre de nueva relación</string>
+    <string name="hint_type_name_for_new_relation">Name for new property</string>
     <string name="dv_create_new_object">Nuevo</string>
     <string name="content_description_plus_button">Botón Más</string>
     <string name="content_description_image_icon">Icono de imagen</string>
@@ -675,9 +672,9 @@
     <string name="edit_relations_title">Relaciones</string>
     <string name="edit_view">Editar vista</string>
     <string name="relation_open_edit">Abrir para editar</string>
-    <string name="remove_from_set">Quitar de este conjunto</string>
+    <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Restablecer</string>
-    <string name="search_a_relation">Buscar una relación</string>
+    <string name="search_a_relation">Search a property</string>
     <string name="content_description_check_icon">Icono de marca</string>
     <string name="content_desc_empty_values_bottom_check_icon">Colocar valores vacíos abajo</string>
     <string name="content_desc_empty_values_top_check_icon">Colocar valores vacíos arriba</string>
@@ -699,8 +696,8 @@
     <string name="remove">Borrar</string>
     <string name="choose_options">Elegir opciones</string>
     <string name="search_tags">Buscar etiquetas</string>
-    <string name="choose_relation_to_filter">Elige una relación por la que filtrar</string>
-    <string name="choose_relation_to_sort">Elige una relación por la que ordenar</string>
+    <string name="choose_relation_to_filter">Choose a property to filter</string>
+    <string name="choose_relation_to_sort">Choose a property to sort</string>
     <string name="btn_apply_new_object">Añadir a la lista</string>
     <string name="btn_add">Añadir</string>
     <string name="btn_upload_gallery">Cargar desde Galería</string>
@@ -709,10 +706,9 @@
     <string name="alert_qr_camera">En la versión de escritorio, ve a Ajustes - Clave para ver el código QR.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Elegir opción</string>
-    <string name="find_a_relation">Buscar una relación</string>
+    <string name="find_a_relation">Find a property</string>
     <string name="inbox">Bandeja de entrada</string>
     <string name="unknown_type">Tipo desconocido</string>
-    <string name="set">Conjunto</string>
     <string name="collection">Colección</string>
     <string name="layout">Diseño</string>
     <string name="button_fields">Propiedades</string>
@@ -739,7 +735,7 @@
     <string name="object_not_exist">Este objeto no existe</string>
     <string name="back_to_dashboard">Volver al tablero</string>
     <string name="go_back">Volver</string>
-    <string name="snack_object_set_not_found">No se encuentra un conjunto de este tipo.</string>
+    <string name="snack_object_set_not_found">Query not found for this type.</string>
     <string name="create_new_set">Crear</string>
     <string name="shortcut_create_new_object_of_type">Crear %1$s</string>
     <string name="close">Cerrar</string>
@@ -771,9 +767,9 @@
     <string name="without_template">Sin plantilla</string>
     <string name="unsplash_generic_error">Error al buscar imágenes en Unsplash. Inténtalo de nuevo más tarde.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">No olvides copiar y guardar tu clave desde los ajustes</string>
-    <string name="unlock_your_object_to_add_new_relation">Desprotege el objeto para añadir una nueva relación</string>
+    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
     <string name="unlock_your_object_to_edit_relations">Desprotege el objeto para editar las relaciones</string>
-    <string name="fragment_relation_create_from_scratch_title">Seleccionar tipo de relación</string>
+    <string name="fragment_relation_create_from_scratch_title">Seleccionar tipo de propiedad</string>
     <string name="fragment_dashboard_restore">Restaurar</string>
     <string name="your_account_deleted">Tu arca se ha eliminado.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -795,7 +791,7 @@
     <string name="snack_move_to">se ha movido a</string>
     <string name="recovery_phrase_copied">Tu clave se ha copiado</string>
     <string name="type_editing_title">Ajustes de tipo</string>
-    <string name="relation_editing_title">Ajustes de relación</string>
+    <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Borrar</string>
     <string name="empty_tree_widget">Este objeto no tiene enlaces a otros objetos.\nPrueba a crear alguno.</string>
     <string name="empty_list_widget">Esta vista no tiene objetos.\nPrueba a crear alguno.</string>
@@ -955,7 +951,7 @@
     <string name="widget_type_compact_list_description">Widget con vista de lista compacta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget con diseño de conjunto o colección</string>
+    <string name="widget_type_view_description">Widget con diseño de consulta o colección</string>
     <string name="widget_type_compact_list">Lista compacta</string>
     <string name="widget_change_source">Cambiar de origen</string>
     <string name="widget_change_type">Cambiar tipo</string>
@@ -969,19 +965,19 @@
     <string name="library_description_types">Los tipos son como categorías que ayudan a agrupar y manejar los objetos.</string>
     <string name="library_description_relations">Todos los objetos están conectados. Usa relaciones para crear conexiones entre objetos.</string>
     <string name="library_button_create_type">Crear un tipo</string>
-    <string name="library_button_create_relation">Crear una relación</string>
+    <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mis tipos</string>
     <string name="library_subtitle_relations">Mis relaciones</string>
     <string name="library_subtitle_library">Biblioteca</string>
     <string name="library_create_new_type">Crear el tipo «%1$s»</string>
-    <string name="library_create_new_relation">Crear la relación «%1$s»</string>
+    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
     <string name="library_objects_empty">No hay %1$s que se llamen «%2$s»</string>
     <string name="library_objects_empty_action">Crea algo nuevo o busca otra cosa.</string>
     <string name="library_relations_empty">No hay ningún tipo llamado «%1$s»</string>
     <string name="library_type_added">El tipo «%1$s» se ha añadido a tu biblioteca.\"</string>
     <string name="library_type_removed">El tipo «%1$s» se ha eliminado de tu biblioteca.\"</string>
-    <string name="library_relation_added">La relación «%1$s» se ha añadido a tu biblioteca.\"</string>
-    <string name="library_relation_removed">La relación «%1$s» se ha eliminado de tu biblioteca.\"</string>
+    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
+    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
     <string name="library_something_went_wrong">Algo ha salido mal. Inténtalo de nuevo más tarde.</string>
     <string name="type_creation_new_type">Nuevo tipo</string>
     <string name="type_creation_done">Listo</string>
@@ -1042,8 +1038,8 @@
     <string name="content_description_delete_button">Botón Eliminar</string>
     <string name="content_description_duplicate_button">Botón Duplicar</string>
     <string name="content_description_edit_view_button">Botón Editar-ver</string>
-    <string name="content_description_open_to_edit_view_button">Botón Abrir para editar relación</string>
-    <string name="content_description_remove_from_set_button">Eliminar relación de este conjunto</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
+    <string name="content_description_remove_from_set_button">Remove property from this query</string>
     <string name="content_desc_page_toolbar_search">Buscar páginas</string>
     <string name="content_desc_page_toolbar_navigation">Navegación por páginas</string>
     <string name="content_desc_page_toolbar_add_doc">Añadir nueva página</string>
@@ -1079,7 +1075,7 @@
     <string name="sharing_menu_btn_add">Añadir</string>
     <string name="sharing_menu_btn_open">Abrir</string>
     <!--endregion-->
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Ninguno</string>
     <string name="relation_origin_clipboard">Portapapeles</string>
     <string name="relation_origin_dnd">Arrastrar y colocar</string>
@@ -1098,7 +1094,7 @@
         <item quantity="one">%d enlace</item>
         <item quantity="other">%d enlaces</item>
     </plurals>
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="date_type_tomorrow">Mañana</string>
     <string name="date_type_today">Hoy</string>
     <string name="date_type_yesterday">Ayer</string>
@@ -1127,12 +1123,12 @@
     <string name="option_widget_edit">Editar opción</string>
     <string name="options_empty_description">No se ha encontrado nada. Crea la primera opción para comenzar.</string>
     <string name="options_empty_title">Sin opciones</string>
-    <string name="options_empty_not_editable">La relación está vacía</string>
+    <string name="options_empty_not_editable">La propiedad está vacía</string>
     <string name="options_delete_title">¿Seguro?</string>
     <string name="options_delete_description">La opción se eliminará definitivamente de tu espacio.</string>
     <string name="object_values_empty_description">No se encuentran objetos</string>
     <string name="object_values_empty_title">No hay valores</string>
-    <string name="object_values_empty_not_editable">La relación está vacía</string>
+    <string name="object_values_empty_not_editable">La propiedad está vacía</string>
     <string name="object_values_delete_title">¿Seguro?</string>
     <string name="object_values_delete_description">El objeto se moverá a la papelera.</string>
     <string name="hint_enter_name">Introducir nombre…</string>
@@ -1561,12 +1557,12 @@ En concreto,
     <string name="all_content_error_title">Se ha producido un error.</string>
     <string name="onboarding_my_first_space">Mi Primer Espacio</string>
     <string name="all_content_error_unexpected_layout">Error: diseño inesperado</string>
-    <string name="all_content_toast_relation_added">Relación añadida</string>
-    <string name="all_content_toast_relation_removed">Relación eliminada</string>
+    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Tipo de objeto añadido</string>
     <string name="all_content_toast_type_removed">Tipo de objeto eliminado</string>
     <string name="all_content_toast_archived">Objeto archivado</string>
-    <string name="all_content_new_relation">Nueva relación</string>
+    <string name="all_content_new_relation">Nueva propiedad</string>
     <string name="all_content_new_type">Nuevo tipo</string>
     <string name="all_content_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
     <string name="all_content_snackbar_title">se ha movido a la papelera</string>
@@ -1594,8 +1590,8 @@ En concreto,
     <string name="object_type_empty_items_title">Aquí no hay nada.</string>
     <string name="object_type_empty_items_subtitle">Crea tus primeros objetos para empezar.</string>
     <string name="object_type_menu_delete">Eliminar por completo</string>
-    <string name="object_type_objects_menu_open_set">Abrir conjunto</string>
-    <string name="object_type_objects_menu_create_set">Crear conjunto</string>
+    <string name="object_type_objects_menu_open_set">Abrir consulta</string>
+    <string name="object_type_objects_menu_create_set">Crear consulta</string>
     <string name="object_type_templates_menu_set_default">Establecer por defecto</string>
     <string name="object_type_templates_menu_edit">Editar</string>
     <string name="object_type_templates_menu_duplicate">Duplicar</string>
@@ -1648,7 +1644,7 @@ En concreto,
     <string name="object_type_settings_item_remove">Eliminar tipo</string>
     <string name="chats_alert_delete_this_message_description">Después de confirmar esto, no podrás restaurarlo.</string>
     <string name="chats_alert_delete_this_message">¿Eliminar este mensaje?</string>
-    <string name="object_set_of_title">Conjunto de</string>
+    <string name="object_set_of_title">Query of</string>
     <string name="migration_migration_is_in_progress">La migración está en curso</string>
     <string name="migration_this_shouldn_t_take_long">Esto puede llevar algún tiempo. No cierres la aplicación hasta que termine el proceso.</string>
     <string name="migration_error_try_again">Inténtalo de nuevo</string>

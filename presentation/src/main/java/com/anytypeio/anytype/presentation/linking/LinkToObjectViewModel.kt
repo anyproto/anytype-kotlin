@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LinkToObjectViewModel(
     private val vmParams: VmParams,
@@ -40,6 +41,10 @@ class LinkToObjectViewModel(
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
+
+    init {
+        Timber.d("LinkToObjectViewModel init")
+    }
 
     override suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         space = vmParams.space,

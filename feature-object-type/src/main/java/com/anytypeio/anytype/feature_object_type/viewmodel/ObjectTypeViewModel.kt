@@ -205,7 +205,8 @@ class ObjectTypeViewModel(
                             mapObjectTypeToUi(
                                 objType = objType,
                                 objectPermissions = objectPermissions,
-                                conflictingFields = conflictingFields
+                                conflictingFields = conflictingFields,
+                                fieldParser = fieldParser
                             )
                         } else {
                             Timber.w(
@@ -307,13 +308,14 @@ class ObjectTypeViewModel(
     private suspend fun mapObjectTypeToUi(
         objType: ObjectWrapper.Type,
         objectPermissions: ObjectPermissions,
-        conflictingFields: List<Id>
+        conflictingFields: List<Id>,
+        fieldParser: FieldParser
     ) {
         _objTypeState.value = objType
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
-            title = objType.name.orEmpty(),
+            title = fieldParser.getObjectPluralName(objectWrapper = objType),
             isEditable = objectPermissions.canEditDetails
         )
         uiIconState.value = UiIconState(

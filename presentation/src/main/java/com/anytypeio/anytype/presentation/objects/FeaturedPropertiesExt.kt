@@ -33,10 +33,9 @@ enum class ConflictResolutionStrategy {
  * Retrieves the current object and its type from [details] using [objectId]. If the object's type is TEMPLATE,
  * its target type is used as the effective type. The method then obtains the featured properties from the object
  * (via keys) and parses the recommended featured property IDs from the effective type using [fieldParser]. It fetches
- * the corresponding properties from [storeOfRelations] and checks for conflicts (i.e. any property key not equal
- * to [Relations.DESCRIPTION]).
+ * the corresponding properties from [storeOfRelations] and checks for conflict.
  *
- * In case of a conflict, the [conflictResolution] strategy is applied:
+ * In case of a conflict [hasFeaturedConflict], the [conflictResolution] strategy is applied:
  * - [ConflictResolutionStrategy.MERGE]: Merges the type and object properties, giving precedence to type properties.
  * - [ConflictResolutionStrategy.OBJECT_ONLY] (default): Uses only the object properties.
  *
@@ -103,7 +102,10 @@ suspend fun toFeaturedPropertiesViews(
             ids = typeRecommendedFeaturedPropertiesIds
         )
 
-        val hasConflict = objectFeaturedProperties.any { property -> property.key != Relations.DESCRIPTION } == true
+        val hasConflict = hasFeaturedConflict(
+            objectFeatured = objectFeaturedProperties,
+            typeRecommended = typeRecommendedFeaturedProperties
+        )
 
         if (!hasConflict) {
             val featuredViews = typeRecommendedFeaturedProperties.mapNotNull { property ->
@@ -170,6 +172,35 @@ suspend fun toFeaturedPropertiesViews(
         //featured block not found
         return null
     }
+}
+
+/**
+ * Determines if there is a conflict between the object's featured properties and the type's recommended featured properties.
+ *
+ * A conflict exists if any property in [objectFeatured] (ignoring those with key [Relations.DESCRIPTION])
+ * is not present in [typeRecommended] in the same order.
+ *
+ * @param objectFeatured List of featured properties from the object.
+ * @param typeRecommended List of recommended featured properties from the type.
+ * @return `true` if a conflict exists, `false` otherwise.
+ */
+private fun hasFeaturedConflict(
+    objectFeatured: List<ObjectWrapper.Relation>,
+    typeRecommended: List<ObjectWrapper.Relation>
+): Boolean {
+    // Filter out properties with key == Relations.DESCRIPTION
+    val filtered = objectFeatured.filter { it.key != Relations.DESCRIPTION }
+    if (filtered.isEmpty()) return false
+
+    // Check if filtered list appears in typeRecommended in the same order
+    var index = 0
+    for (property in typeRecommended) {
+        if (index < filtered.size && property.id == filtered[index].id) {
+            index++
+        }
+    }
+    // If not all properties were found in order, we have a conflict.
+    return index != filtered.size
 }
 
 private suspend fun ObjectWrapper.Relation.toView(

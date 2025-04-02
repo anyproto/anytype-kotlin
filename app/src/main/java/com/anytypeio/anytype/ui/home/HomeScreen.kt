@@ -416,15 +416,36 @@ private fun WidgetList(
                     )
                 }
                 is WidgetView.AllContent -> {
-                    AllContentWidgetCard(
-                        mode = mode,
-                        onWidgetClicked = {
-                            onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
-                        },
-                        onDropDownMenuAction = { action ->
-                            onWidgetMenuAction(item.id, action)
-                        },
-                    )
+                    if (mode is InteractionMode.Edit) {
+                        ReorderableItem(
+                            lazyListState, key = item.id
+                        ) { isDragged ->
+                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
+                            AllContentWidgetCard(
+                                mode = mode,
+                                onWidgetClicked = {
+                                    onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
+                                },
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
+                                alpha = alpha.value,
+                                lazyListState = lazyListState,
+                            )
+                        }
+                    } else {
+                        AllContentWidgetCard(
+                            mode = mode,
+                            onWidgetClicked = {
+                                onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
+                            },
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
+                            alpha = 1.0f,
+                            lazyListState = lazyListState,
+                        )
+                    }
                 }
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(

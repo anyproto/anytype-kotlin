@@ -908,7 +908,13 @@ class Middleware @Inject constructor(
             targetId = command.target,
             position = command.position.toMiddlewareModel(),
             fields = null,
-            spaceId = command.space
+            spaceId = command.space,
+            block = Block(
+                link = Block.Content.Link(
+                    style = Block.Content.Link.Style.Page,
+                    cardStyle = Block.Content.Link.CardStyle.Card
+                )
+            )
         )
 
         logRequestIfDebug(request)

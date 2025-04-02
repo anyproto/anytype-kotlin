@@ -77,6 +77,7 @@ class DefaultObjectTypeTemplatesContainer(
                     Relations.SPACE_ID,
                     Relations.TYPE_UNIQUE_KEY,
                     Relations.NAME,
+                    Relations.PLURAL_NAME,
                     Relations.ICON_EMOJI,
                     Relations.ICON_NAME,
                     Relations.ICON_IMAGE,

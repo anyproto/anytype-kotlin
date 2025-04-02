@@ -114,6 +114,7 @@ interface ActiveSpaceMemberSubscriptionContainer {
                                     Relations.PARTICIPANT_STATUS,
                                     Relations.LAYOUT,
                                     Relations.NAME,
+                                    Relations.PLURAL_NAME,
                                     Relations.ICON_IMAGE,
                                     Relations.GLOBAL_NAME
                                 )

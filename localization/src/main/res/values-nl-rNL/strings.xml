@@ -92,7 +92,6 @@
     <string name="option_other_divider">Scheidingslijn</string>
     <string name="option_other_dots">Gestippelde scheidingslijn</string>
     <string name="option_other_code">Codefragment</string>
-    <string name="option_relation_relation">Relatie</string>
     <string name="toolbar_section_text">Tekst</string>
     <string name="toolbar_section_list">Lijst</string>
     <string name="toolbar_section_page">Pagina</string>
@@ -100,7 +99,7 @@
     <string name="toolbar_section_tool">Functie</string>
     <string name="toolbar_section_media">Media</string>
     <string name="toolbar_section_objects">Objecten</string>
-    <string name="toolbar_section_relation">Relatie</string>
+    <string name="toolbar_section_relation">Property</string>
     <string name="toolbar_action_delete">Verwijder</string>
     <string name="toolbar_action_duplicate">Dupliceer</string>
     <string name="toolbar_action_mention">Vermeld</string>
@@ -174,7 +173,7 @@
     <string name="hint_paste_link">Plak koppeling</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
     <string name="untitled">Naamloos</string>
-    <string name="untitled_set">Naamloze set</string>
+    <string name="untitled_set">Naamloze opdracht</string>
     <string name="untitled_collection">Naamloze collectie</string>
     <string name="archived">Gearchiveerd</string>
     <string name="loading">Aan het laden…</string>
@@ -233,7 +232,6 @@
     <string name="search_hint">Zoek...</string>
     <string name="relations">Relaties</string>
     <string name="fields">Velden</string>
-    <string name="relation">Relatie</string>
     <string name="download">Downloaden</string>
     <string name="view">Weergave</string>
     <string name="views">Weergaven</string>
@@ -256,8 +254,8 @@
     <string name="mention_suggester_create_object">Maak object</string>
     <string name="your_search_query">Zoeken</string>
     <string name="syncing">Aan het synchroniseren…</string>
-    <string name="choose_a_object_type_for_this_set">Kies een object type voor deze set</string>
-    <string name="new_set">Nieuwe set</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="new_set">Nieuwe opdracht</string>
     <string name="create_new_object_type">Maak een nieuw object type aan</string>
     <plurals name="page_selected">
         <item quantity="one">%d pagina geselecteerd</item>
@@ -319,8 +317,8 @@
     <string name="unknown_object_type">Onbekend type</string>
     <string name="relation_format_short_text">Korte tekst</string>
     <string name="relation_format_long_text">Tekst</string>
-    <string name="set_new_relation">Stel nieuwe relatie in</string>
-    <string name="relation_deleted">Verwijderde relatie</string>
+    <string name="set_new_relation">Set new property</string>
+    <string name="relation_deleted">Verwijderde eigenschap</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Effen kleuren</string>
@@ -340,7 +338,7 @@
     <string name="heading">Koptekst</string>
     <string name="subheading">Subkoptekst</string>
     <string name="create_from_scratch">Maak aan vanuit niets</string>
-    <string name="create_relation_with_name">Maak relatie \"%1$s\" aan</string>
+    <string name="create_relation_with_name">Create property \"%1$s\"</string>
     <string name="name_is_required">Naam is vereist</string>
     <string name="favourite">Maak favoriet</string>
     <string name="template">Sjabloon</string>
@@ -378,7 +376,7 @@
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blok niet ondersteund</string>
-    <string name="new_relation">Nieuwe relatie</string>
+    <string name="new_relation">Nieuwe eigenschap</string>
     <string name="copy_link">Kopieer link</string>
     <string name="edit_link">Bewerk link</string>
     <string name="unlink">Verwijder link</string>
@@ -402,7 +400,6 @@
     <string name="no_data">Geen gegevens</string>
     <string name="no_source">Geen bron</string>
     <string name="deleted_object">Verwijderd object</string>
-    <string name="open_set">Open set</string>
     <string name="deleted">Verwijderd</string>
     <string name="paste_link_or_search">Plak link of zoek objecten</string>
     <string name="paste_from_clipboard">Plak vanaf klembord</string>
@@ -430,7 +427,7 @@
     <string name="card">Kaart</string>
     <string name="inline">In lijn</string>
     <string name="set_view">Stel weergave in</string>
-    <string name="inline_set">Inline set</string>
+    <string name="inline_set">Gealigneerde opdracht</string>
     <string name="inline_collection">Inline collectie</string>
     <string name="fit_image">Maak afbeelding passend</string>
     <string name="image_preview">Afbeeldingsvoorbeeld</string>
@@ -489,15 +486,15 @@
     <string name="error_find_block">Kon het geselecteerde blok niet vinden</string>
     <string name="error_block_selection">Blok selectiefout</string>
     <string name="undefined">Niet gedefinieerd</string>
-    <string name="set_by_relation">Relatie: %1$s</string>
-    <string name="set_by_relations">Relaties: %1$s</string>
+    <string name="set_by_relation">Property: %1$s</string>
+    <string name="set_by_relations">Properties: %1$s</string>
     <string name="set_by_type">Object type: %1$s</string>
     <string name="my_types">Mijn types</string>
-    <string name="my_relations">Mijn relaties</string>
+    <string name="my_relations">Mijn eigenschappen</string>
     <string name="type_added">Type \"%1$s\" toegevoegd aan jouw bibliotheek</string>
-    <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
-    <string name="block_data_view_content_description_no_source">The inline set has no source</string>
-    <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
+    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Onlangs geopend</string>
     <string name="widget_source_anytype_library">Anytype bibliotheek</string>
     <string name="widget_source_default_lists">Standaardlijsten</string>
@@ -515,8 +512,8 @@
     <string name="set_no_items_title">Geen objecten</string>
     <string name="set_no_items_description">Maak eerst object om door te gaan</string>
     <string name="set_no_items_button">Maak object</string>
-    <string name="set_collection_view_not_present">Weergave is niet aanwezig in set of collectie, maak het object alsjeblieft opnieuw</string>
-    <string name="menu_turn_to_collection">Zet set om naar collectie</string>
+    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Zet opdracht om naar collectie</string>
     <string name="menu_change_query">Verander zoekopdracht</string>
     <string name="collections">Collecties</string>
     <string name="collection_widget_description">Jouw collecties van objecten</string>
@@ -533,8 +530,8 @@
     <string name="file_delete_cancel">Annuleren</string>
     <string name="file_delete_delete">Verwijder</string>
     <string name="menu_type_change">Verander type</string>
-    <string name="menu_type_open_set">Open set van %1$s</string>
-    <string name="menu_type_create_set">Maak set aan van %1$s</string>
+    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
     <string name="type_templates_widget_title">Maak object</string>
     <string name="view_layout_widget_title">Opmaak</string>
@@ -650,7 +647,7 @@
     <string name="object_view_type">Object weergave type</string>
     <string name="object_type_name">Object type naam</string>
     <string name="name">Naam</string>
-    <string name="hint_type_name_for_new_relation">Naam voor nieuwe relatie</string>
+    <string name="hint_type_name_for_new_relation">Name for new property</string>
     <string name="dv_create_new_object">Nieuw</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -675,9 +672,9 @@
     <string name="edit_relations_title">Relaties</string>
     <string name="edit_view">Bewerk weergave</string>
     <string name="relation_open_edit">Open om te bewerken</string>
-    <string name="remove_from_set">Verwijder van deze set</string>
+    <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Reset</string>
-    <string name="search_a_relation">Zoek een relatie</string>
+    <string name="search_a_relation">Search a property</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Lege waarden onderaan sorteren</string>
     <string name="content_desc_empty_values_top_check_icon">Lege waarden bovenaan sorteren</string>
@@ -699,8 +696,8 @@
     <string name="remove">Verwijder</string>
     <string name="choose_options">Kies opties</string>
     <string name="search_tags">Zoek tags</string>
-    <string name="choose_relation_to_filter">Kies een relatie om te filteren</string>
-    <string name="choose_relation_to_sort">Kies een relatie om te sorteren</string>
+    <string name="choose_relation_to_filter">Choose a property to filter</string>
+    <string name="choose_relation_to_sort">Choose a property to sort</string>
     <string name="btn_apply_new_object">Voeg toe aan lijst</string>
     <string name="btn_add">Toevoegen</string>
     <string name="btn_upload_gallery">Uploaden uit galerij</string>
@@ -709,10 +706,9 @@
     <string name="alert_qr_camera">Ga naar Instellingen – Herstelsleutel op Desktop om de QR-code voor inloggen te vinden.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Kies optie</string>
-    <string name="find_a_relation">Vind een relatie</string>
+    <string name="find_a_relation">Find a property</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Onbekend type</string>
-    <string name="set">Set</string>
     <string name="collection">Verzameling</string>
     <string name="layout">Opmaak</string>
     <string name="button_fields">Eigenschappen</string>
@@ -739,7 +735,7 @@
     <string name="object_not_exist">Dit object bestaat niet</string>
     <string name="back_to_dashboard">Terug naar dashboard</string>
     <string name="go_back">Ga terug</string>
-    <string name="snack_object_set_not_found">Set niet gevonden voor dit type.</string>
+    <string name="snack_object_set_not_found">Query not found for this type.</string>
     <string name="create_new_set">Maak</string>
     <string name="shortcut_create_new_object_of_type">Nieuw %1$s</string>
     <string name="close">Sluiten</string>
@@ -771,9 +767,9 @@
     <string name="without_template">Zonder sjabloon</string>
     <string name="unsplash_generic_error">Fout tijdens het zoeken naar afbeeldingen op Unsplash. Probeer het later opnieuw.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Vergeet niet je herstelsleutel uit de instellingen te halen en op te slaan</string>
-    <string name="unlock_your_object_to_add_new_relation">Ontgrendel jouw object om een nieuwe relatie toe te voegen</string>
+    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
     <string name="unlock_your_object_to_edit_relations">Ontgrendel jouw object om relaties aan te passen</string>
-    <string name="fragment_relation_create_from_scratch_title">Selecteer relatie type</string>
+    <string name="fragment_relation_create_from_scratch_title">Selecteer eigenschap type</string>
     <string name="fragment_dashboard_restore">Herstel</string>
     <string name="your_account_deleted">Je kluis is verwijderd.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -795,7 +791,7 @@
     <string name="snack_move_to">verplaatst naar</string>
     <string name="recovery_phrase_copied">Je herstelsleutel is gekopieerd</string>
     <string name="type_editing_title">Type instellingen</string>
-    <string name="relation_editing_title">Relatie instellingen</string>
+    <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Verwijder</string>
     <string name="empty_tree_widget">Dit object heeft geen links naar andere objecten.\nProbeer een nieuwe te maken.</string>
     <string name="empty_list_widget">Deze weergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
@@ -955,7 +951,7 @@
     <string name="widget_type_compact_list_description">Widget met een compacte lijstweergave</string>
     <string name="widget_type_list">Lijst</string>
     <string name="widget_type_view">Weergave</string>
-    <string name="widget_type_view_description">Widget met een set of collectie lay-out</string>
+    <string name="widget_type_view_description">Widget met een opdracht of collectie opmaak</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
     <string name="widget_change_type">Wijzig type</string>
@@ -969,19 +965,19 @@
     <string name="library_description_types">Types zijn als categorieën die je helpen bij het groeperen en beheren van jouw objecten.</string>
     <string name="library_description_relations">Alle objecten zijn verbonden. Gebruik relaties om verbindingen tussen objecten te maken.</string>
     <string name="library_button_create_type">Maak een type aan</string>
-    <string name="library_button_create_relation">Maak een relatie aan</string>
+    <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mijn types</string>
     <string name="library_subtitle_relations">Mijn relaties</string>
     <string name="library_subtitle_library">Bibliotheek</string>
     <string name="library_create_new_type">Maak een type \'%1$s\' aan</string>
-    <string name="library_create_new_relation">Maak een relatie \'%1$s\' aan</string>
+    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
     <string name="library_objects_empty">Er zijn geen %1$s genaamd \'%2$s\'</string>
     <string name="library_objects_empty_action">Probeer een nieuwe aan te maken of zoek naar iets anders</string>
     <string name="library_relations_empty">Er zijn geen types genaamd ‘%1$s’</string>
     <string name="library_type_added">Type \'%1$s\' toegevoegd aan jouw bibliotheek\"</string>
     <string name="library_type_removed">Type \'%1$s\' verwijderd uit jouw bibliotheek\"</string>
-    <string name="library_relation_added">Relatie \'%1$s\' toegevoegd aan jouw bibliotheek\"</string>
-    <string name="library_relation_removed">Relatie \'%1$s\' verwijderd uit jouw bibliotheek\"</string>
+    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
+    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
     <string name="library_something_went_wrong">Er ging iets mis. Probeer het later alsjeblieft opnieuw.</string>
     <string name="type_creation_new_type">Nieuw type</string>
     <string name="type_creation_done">Gereed</string>
@@ -1042,8 +1038,8 @@
     <string name="content_description_delete_button">Delete button</string>
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
-    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
-    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
+    <string name="content_description_remove_from_set_button">Remove property from this query</string>
     <string name="content_desc_page_toolbar_search">Zoek pagina\'s</string>
     <string name="content_desc_page_toolbar_navigation">Navigatie door pagina\'s</string>
     <string name="content_desc_page_toolbar_add_doc">Voeg nieuwe pagina toe</string>
@@ -1079,7 +1075,7 @@
     <string name="sharing_menu_btn_add">Toevoegen</string>
     <string name="sharing_menu_btn_open">Open</string>
     <!--endregion-->
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Geen</string>
     <string name="relation_origin_clipboard">Klembord</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
@@ -1098,7 +1094,7 @@
         <item quantity="one">%d link</item>
         <item quantity="other">%d links</item>
     </plurals>
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="date_type_tomorrow">Morgen</string>
     <string name="date_type_today">Vandaag</string>
     <string name="date_type_yesterday">Gisteren</string>
@@ -1127,12 +1123,12 @@
     <string name="option_widget_edit">Bewerk optie</string>
     <string name="options_empty_description">Niets gevonden. Maak een eerste optie om te starten.</string>
     <string name="options_empty_title">Geen opties</string>
-    <string name="options_empty_not_editable">De relatie is leeg</string>
+    <string name="options_empty_not_editable">De eigenschap is leeg</string>
     <string name="options_delete_title">Weet je het zeker?</string>
     <string name="options_delete_description">De optie zal permanent worden verwijderd uit jouw ruimte</string>
     <string name="object_values_empty_description">Objecten niet gevonden</string>
     <string name="object_values_empty_title">Geen waarden</string>
-    <string name="object_values_empty_not_editable">De relatie is leeg</string>
+    <string name="object_values_empty_not_editable">De eigenschap is leeg</string>
     <string name="object_values_delete_title">Weet je het zeker?</string>
     <string name="object_values_delete_description">Het object zal naar de prullenbak worden verplaatst.</string>
     <string name="hint_enter_name">Voer naam in...</string>
@@ -1561,12 +1557,12 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_error_title">Er is iets misgegaan.</string>
     <string name="onboarding_my_first_space">Mijn eerste ruimte</string>
     <string name="all_content_error_unexpected_layout">Fout: onverwachte opmaak</string>
-    <string name="all_content_toast_relation_added">Relatie toegevoegd</string>
-    <string name="all_content_toast_relation_removed">Relatie verwijderd</string>
+    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Objecttype toegevoegd</string>
     <string name="all_content_toast_type_removed">Objecttype verwijderd</string>
     <string name="all_content_toast_archived">Object gearchiveerd</string>
-    <string name="all_content_new_relation">Nieuwe relatie</string>
+    <string name="all_content_new_relation">Nieuwe eigenschap</string>
     <string name="all_content_new_type">Nieuw type</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">verplaatst naar prullenmand</string>
@@ -1594,8 +1590,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_empty_items_title">Het is hier leeg.</string>
     <string name="object_type_empty_items_subtitle">Maak je eerste objecten om te beginnen.</string>
     <string name="object_type_menu_delete">Verwijder volledig</string>
-    <string name="object_type_objects_menu_open_set">Open set</string>
-    <string name="object_type_objects_menu_create_set">Maak set</string>
+    <string name="object_type_objects_menu_open_set">Open opdracht</string>
+    <string name="object_type_objects_menu_create_set">Maak opdracht</string>
     <string name="object_type_templates_menu_set_default">Stel in als standaard</string>
     <string name="object_type_templates_menu_edit">Bewerk</string>
     <string name="object_type_templates_menu_duplicate">Dupliceer</string>
@@ -1648,7 +1644,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_settings_item_remove">Verwijder type</string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
-    <string name="object_set_of_title">Set van</string>
+    <string name="object_set_of_title">Query of</string>
     <string name="migration_migration_is_in_progress">Bezig met migreren...</string>
     <string name="migration_this_shouldn_t_take_long">Dit kan enige tijd duren. Sluit de app alsjeblieft niet voordat het proces is voltooid.</string>
     <string name="migration_error_try_again">Probeer opnieuw</string>

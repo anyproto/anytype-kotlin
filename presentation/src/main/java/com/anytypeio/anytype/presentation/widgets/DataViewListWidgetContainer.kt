@@ -75,7 +75,7 @@ class DataViewListWidgetContainer(
                                 name = when(val source = widget.source) {
                                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                                        prettyPrintName = fieldParser.getObjectName(source.obj)
+                                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                                     )
                                 }
                             )
@@ -89,7 +89,7 @@ class DataViewListWidgetContainer(
                                 isExpanded = !isCollapsed,
                                 isLoading = true,
                                 name =  WidgetView.Name.Default(
-                                    prettyPrintName = fieldParser.getObjectName(widget.source.obj)
+                                    prettyPrintName = fieldParser.getObjectPluralName(widget.source.obj)
                                 )
                             )
                         }
@@ -130,7 +130,7 @@ class DataViewListWidgetContainer(
                                     name = when(val source = widget.source) {
                                         is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                                         is Widget.Source.Default ->  WidgetView.Name.Default(
-                                            prettyPrintName = fieldParser.getObjectName(source.obj)
+                                            prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                                         )
                                     }
                                 )
@@ -145,7 +145,7 @@ class DataViewListWidgetContainer(
                                     elements = emptyList(),
                                     isExpanded = false,
                                     name =  WidgetView.Name.Default(
-                                        prettyPrintName = fieldParser.getObjectName(source.obj)
+                                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                                     )
                                 )
                             )
@@ -270,7 +270,7 @@ class DataViewListWidgetContainer(
                             null
                         },
                         name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectName(obj)
+                            prettyPrintName = fieldParser.getObjectPluralName(obj)
                         )
                     )
                 },
@@ -280,7 +280,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default -> WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectName(source.obj)
+                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                     )
                 }
             )
@@ -312,7 +312,7 @@ class DataViewListWidgetContainer(
                             objType = storeOfObjectTypes.getTypeOfObject(obj)
                         ),
                         name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectName(obj)
+                            prettyPrintName = fieldParser.getObjectPluralName(obj)
                         )
                     )
                 },
@@ -321,7 +321,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectName(source.obj)
+                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                     )
                 }
             )
@@ -340,7 +340,7 @@ class DataViewListWidgetContainer(
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectName(source.obj)
+                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
                     )
                 }
             )
@@ -352,7 +352,7 @@ class DataViewListWidgetContainer(
                 isExpanded = true,
                 view = null,
                 name =  WidgetView.Name.Default(
-                    prettyPrintName = fieldParser.getObjectName(widget.source.obj)
+                    prettyPrintName = fieldParser.getObjectPluralName(widget.source.obj)
                 )
             )
             is Widget.Link, is Widget.Tree -> {

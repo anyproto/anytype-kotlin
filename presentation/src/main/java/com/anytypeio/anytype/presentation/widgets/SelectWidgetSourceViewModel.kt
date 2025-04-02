@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block.Content.DataView.Filter
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
@@ -50,7 +49,7 @@ class SelectWidgetSourceViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
-    fieldParser: FieldParser
+    private val fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -189,7 +188,7 @@ class SelectWidgetSourceViewModel(
                 suggested.value = types.map { type ->
                     SuggestWidgetObjectType(
                         id = type.id,
-                        name = type.name.orEmpty(),
+                        name = fieldParser.getObjectPluralName(type),
                         objectIcon = type.objectIcon()
                     )
                 }

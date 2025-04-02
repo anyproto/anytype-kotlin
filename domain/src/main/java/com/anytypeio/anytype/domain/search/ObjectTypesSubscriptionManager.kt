@@ -101,6 +101,7 @@ class ObjectTypesSubscriptionManager (
                 keys = listOf(
                     Relations.ID,
                     Relations.NAME,
+                    Relations.PLURAL_NAME,
                     Relations.IS_HIDDEN,
                     Relations.IS_DELETED,
                     Relations.IS_ARCHIVED,

@@ -70,6 +70,7 @@ class GetDefaultObjectType @Inject constructor(
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
+                Relations.PLURAL_NAME,
                 Relations.UNIQUE_KEY,
                 Relations.SPACE_ID,
                 Relations.DEFAULT_TEMPLATE_ID
@@ -113,6 +114,7 @@ class GetDefaultObjectType @Inject constructor(
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
+                Relations.PLURAL_NAME,
                 Relations.UNIQUE_KEY,
                 Relations.SPACE_ID,
                 Relations.DEFAULT_TEMPLATE_ID

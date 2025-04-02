@@ -44,6 +44,7 @@ class GetSpaceMemberByIdentity @Inject constructor(
                 Relations.PARTICIPANT_PERMISSIONS,
                 Relations.PARTICIPANT_STATUS,
                 Relations.NAME,
+                Relations.PLURAL_NAME,
                 Relations.ICON_IMAGE,
                 Relations.LAYOUT
             )

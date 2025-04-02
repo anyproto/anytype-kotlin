@@ -1653,6 +1653,7 @@ class HomeScreenViewModel(
                             add(Relations.ID)
                             add(Relations.UNIQUE_KEY)
                             add(Relations.NAME)
+                            add(Relations.PLURAL_NAME)
                         },
                         filters = buildList {
                             add(

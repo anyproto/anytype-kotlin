@@ -912,7 +912,8 @@ class Middleware @Inject constructor(
             block = Block(
                 link = Block.Content.Link(
                     style = Block.Content.Link.Style.Page,
-                    cardStyle = Block.Content.Link.CardStyle.Card
+                    cardStyle = Block.Content.Link.CardStyle.Card,
+                    iconSize = Block.Content.Link.IconSize.SizeSmall
                 )
             )
         )

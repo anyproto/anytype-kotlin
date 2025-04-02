@@ -83,6 +83,7 @@ class SelectWidgetSourceViewModel(
                             add(BundledWidgetSourceView.Recent)
                             add(BundledWidgetSourceView.RecentLocal)
                             add(BundledWidgetSourceView.Bin)
+                            add(BundledWidgetSourceView.AllObjects)
 
                             // Suggested widgets (aka object type widgets)
                             if (suggested.isNotEmpty()) {

@@ -25,6 +25,10 @@ sealed class BundledWidgetSourceView : DefaultSearchItem {
     data object Bin : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.BIN
     }
+
+    data object AllObjects : BundledWidgetSourceView() {
+        override val id: Id get() = BundledWidgetSourceIds.ALL_OBJECTS
+    }
 }
 
 data class SuggestWidgetObjectType(

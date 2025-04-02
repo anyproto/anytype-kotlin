@@ -1065,6 +1065,18 @@ class HomeScreenViewModel(
                     )
                 }
             }
+            is Widget.Source.Bundled.AllObjects -> {
+                viewModelScope.launch {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    navigation(
+                        Navigation.OpenAllContent(
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
         }
     }
 

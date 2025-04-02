@@ -129,6 +129,7 @@ sealed class WidgetView {
         val isEmpty: Boolean = false
     ) : WidgetView()
 
+    @Deprecated("To be deleted")
     data object AllContent: WidgetView() {
         const val ALL_CONTENT_WIDGET_ID = "bundled-widget.all-content"
         override val isLoading: Boolean = false

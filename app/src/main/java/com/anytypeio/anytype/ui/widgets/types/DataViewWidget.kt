@@ -601,4 +601,5 @@ fun Widget.Source.Bundled.res(): Int = when (this) {
     Widget.Source.Bundled.Sets -> R.string.sets
     Widget.Source.Bundled.Collections -> R.string.collections
     Widget.Source.Bundled.Bin -> R.string.bin
+    Widget.Source.Bundled.AllObjects -> R.string.all_content
 }

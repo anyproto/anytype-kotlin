@@ -1146,16 +1146,6 @@ class HomeScreenViewModel(
                 WidgetView.SpaceChat.id -> {
                     proceedWithSpaceChatWidgetHeaderClick()
                 }
-//                WidgetView.AllContent -> {
-//                    if (mode.value == InteractionMode.Edit) {
-//                        return@launch
-//                    }
-//                    navigation(
-//                        Navigation.OpenAllContent(
-//                            space = space
-//                        )
-//                    )
-//                }
                 else -> {
                     Timber.w("Skipping widget click: $widget")
                 }

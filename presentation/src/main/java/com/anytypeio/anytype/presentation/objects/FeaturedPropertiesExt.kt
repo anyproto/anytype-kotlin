@@ -316,9 +316,26 @@ suspend fun hasLayoutConflict(
     val currentObjectType = storeOfObjectTypes.getTypeOfObject(currentObject)
 
     val objectLayout = currentObject.layout
+
     val hasObjectLayoutConflict =
         objectLayout != null && currentObjectType != null && currentObjectType.isValid
                 && objectLayout != currentObjectType.recommendedLayout
 
-    return hasObjectLayoutConflict || hasFeaturedPropertiesConflict
+    val hasAlignConflict =
+        objectLayout != null && currentObjectType != null && currentObjectType.isValid
+                && !hasEqualLayoutAlign(currentObject, currentObjectType)
+
+    return hasObjectLayoutConflict || hasFeaturedPropertiesConflict || hasAlignConflict
+}
+
+private fun hasEqualLayoutAlign(
+    currentObject: ObjectWrapper.Basic,
+    objectType: ObjectWrapper.Type
+): Boolean {
+    if (!currentObject.isValid || !objectType.isValid) {
+        return true
+    }
+    val currentLayoutAlign: Double? = currentObject.getSingleValue<Double>(Relations.LAYOUT_ALIGN)
+    val typeLayoutAlign: Double? = objectType.getSingleValue<Double>(Relations.LAYOUT_ALIGN)
+    return currentLayoutAlign == typeLayoutAlign
 }

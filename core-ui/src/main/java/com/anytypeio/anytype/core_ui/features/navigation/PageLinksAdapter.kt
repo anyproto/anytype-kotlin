@@ -247,8 +247,9 @@ class SuggestWidgetObjectTypeViewHolder(
 ) : DefaultObjectViewAdapter.ObjectViewHolder(binding.root) {
 
     init {
-        binding.ivIcon.binding.emojiContainer.invisible()
         binding.tvSubtitle.gone()
+        binding.ivIcon.binding.emojiContainer.background = null
+
     }
 
     fun bind(source: SuggestWidgetObjectType) {

@@ -96,6 +96,6 @@ class GetSuggestedWidgetTypes @Inject constructor(
     )
     
     companion object {
-        const val DEFAULT_LIMIT = 5
+        const val DEFAULT_LIMIT = 10
     }
 }

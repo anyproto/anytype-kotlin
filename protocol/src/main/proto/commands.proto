@@ -2908,6 +2908,35 @@ message Rpc {
 
         }
 
+        message Export {
+            message Request {
+                string spaceId = 10;
+                // ids of documents for export, when empty - will export all available docs
+                string objectId = 2;
+                // export format
+                anytype.model.Export.Format format = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                string result = 2;
+                ResponseEvent event = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+
+        }
+
         message Import {
             message Request {
                 option (no_auth) = true;

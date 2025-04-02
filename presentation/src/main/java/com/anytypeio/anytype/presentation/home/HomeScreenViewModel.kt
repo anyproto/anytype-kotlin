@@ -483,7 +483,11 @@ class HomeScreenViewModel(
             }
             addAll(filtered)
             if (hasEditAccess) {
-                addAll(actions)
+                if (widgets.size > 1) {
+                    addAll(actions)
+                } else {
+                    add(WidgetView.EmptyState)
+                }
             }
         }
     }

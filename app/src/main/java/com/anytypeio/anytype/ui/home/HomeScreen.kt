@@ -418,7 +418,12 @@ private fun WidgetList(
                 is WidgetView.AllContent -> {
                     AllContentWidgetCard(
                         mode = mode,
-                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
+                        onWidgetClicked = {
+                            onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
+                        },
+                        onDropDownMenuAction = { action ->
+                            onWidgetMenuAction(item.id, action)
+                        },
                     )
                 }
                 is WidgetView.SpaceChat -> {

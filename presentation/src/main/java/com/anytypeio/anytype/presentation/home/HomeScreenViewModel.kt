@@ -253,8 +253,6 @@ class HomeScreenViewModel(
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    private val allContentWidget = AllContentWidgetContainer()
-
     private val spaceWidgetView = spaceWidgetContainer.view
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
@@ -459,7 +457,6 @@ class HomeScreenViewModel(
                 combine(
                     flows = buildList<Flow<WidgetView>> {
                         add(spaceWidgetView)
-                        add(allContentWidget.view)
                         addAll(list.map { m -> m.view })
                     }
                 ) { array ->
@@ -582,6 +579,11 @@ class HomeScreenViewModel(
                                 storeOfRelations = storeOfRelations,
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes
+                            )
+                        }
+                        is Widget.AllObjects -> {
+                            AllContentWidgetContainer(
+                                widget = widget
                             )
                         }
                     }
@@ -1144,16 +1146,16 @@ class HomeScreenViewModel(
                 WidgetView.SpaceChat.id -> {
                     proceedWithSpaceChatWidgetHeaderClick()
                 }
-                WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
-                    if (mode.value == InteractionMode.Edit) {
-                        return@launch
-                    }
-                    navigation(
-                        Navigation.OpenAllContent(
-                            space = space
-                        )
-                    )
-                }
+//                WidgetView.AllContent -> {
+//                    if (mode.value == InteractionMode.Edit) {
+//                        return@launch
+//                    }
+//                    navigation(
+//                        Navigation.OpenAllContent(
+//                            space = space
+//                        )
+//                    )
+//                }
                 else -> {
                     Timber.w("Skipping widget click: $widget")
                 }
@@ -1272,6 +1274,8 @@ class HomeScreenViewModel(
             else
                 Command.ChangeWidgetType.TYPE_LIST
         }
+        // All-objects widget has link appearance.
+        is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
     }
 
     // TODO move to a separate reducer inject into this VM's constructor

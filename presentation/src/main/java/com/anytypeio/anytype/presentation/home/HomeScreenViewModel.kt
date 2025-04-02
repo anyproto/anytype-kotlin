@@ -483,6 +483,7 @@ class HomeScreenViewModel(
             }
             addAll(filtered)
             if (hasEditAccess) {
+                // >1, and not >0, because space widget view is always there.
                 if (widgets.size > 1) {
                     addAll(actions)
                 } else {

@@ -146,7 +146,7 @@ class SelectWidgetSourceViewModel(
             target = target,
             isInEditMode = isInEditMode
         )
-        proceedWithSearchQuery()
+        proceedWithSearchQuery(ctx)
     }
 
     fun onStartWithExistingWidget(
@@ -164,10 +164,10 @@ class SelectWidgetSourceViewModel(
             type = type,
             isInEditMode = isInEditMode
         )
-        proceedWithSearchQuery()
+        proceedWithSearchQuery(ctx)
     }
 
-    private fun proceedWithSearchQuery() {
+    private fun proceedWithSearchQuery(ctx: Id) {
         viewModelScope.launch {
             getSuggestedWidgetTypes.async(
                 params = GetSuggestedWidgetTypes.Params(
@@ -182,7 +182,8 @@ class SelectWidgetSourceViewModel(
                         )
                         addAll(ObjectSearchConstants.filterTypes())
                     },
-                    objectTypeKeys = ObjectSearchConstants.defaultKeysObjectType
+                    objectTypeKeys = ObjectSearchConstants.defaultKeysObjectType,
+                    ctx = ctx
                 )
             ).onSuccess { types ->
                 suggested.value = types.map { type ->

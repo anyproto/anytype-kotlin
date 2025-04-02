@@ -211,8 +211,8 @@ class GlobalSearchViewModel @Inject constructor(
                 }
                 else -> new
             }
-        }.collect {
-            _state.value = it
+        }.collect { viewState ->
+            _state.value = viewState
         }
     }
 
@@ -568,7 +568,7 @@ suspend fun Command.SearchWithMeta.Result.view(
         backlinks = wrapper.backlinks,
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
-        title = fieldParser.getObjectName(wrapper),
+        title = fieldParser.getObjectNameOrPluralsForTypes(wrapper),
         type =  if (type != null) {
             storeOfObjectTypes.get(type)?.name.orEmpty()
         } else {

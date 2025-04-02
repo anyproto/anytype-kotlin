@@ -135,6 +135,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -252,8 +253,6 @@ class HomeScreenViewModel(
     private val widgets = MutableStateFlow<Widgets>(null)
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
-
-    private val allContentWidget = AllContentWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -459,7 +458,6 @@ class HomeScreenViewModel(
                 combine(
                     flows = buildList<Flow<WidgetView>> {
                         add(spaceWidgetView)
-                        add(allContentWidget.view)
                         addAll(list.map { m -> m.view })
                     }
                 ) { array ->
@@ -582,6 +580,11 @@ class HomeScreenViewModel(
                                 storeOfRelations = storeOfRelations,
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes
+                            )
+                        }
+                        is Widget.AllObjects -> {
+                            AllContentWidgetContainer(
+                                widget = widget
                             )
                         }
                     }
@@ -709,15 +712,25 @@ class HomeScreenViewModel(
                             }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                            commands.emit(
-                                Command.SelectWidgetType(
+                            if (dispatch.source == BundledWidgetSourceView.AllObjects.id) {
+                                // Applying link layout automatically to all-objects widget
+                                proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,
-                                    layout = ObjectType.Layout.SET.code,
-                                    target = dispatch.target,
-                                    isInEditMode = isInEditMode()
+                                    type = Command.ChangeWidgetType.TYPE_LINK,
+                                    target = dispatch.target
                                 )
-                            )
+                            } else {
+                                commands.emit(
+                                    Command.SelectWidgetType(
+                                        ctx = config.widgets,
+                                        source = dispatch.source,
+                                        layout = ObjectType.Layout.SET.code,
+                                        target = dispatch.target,
+                                        isInEditMode = isInEditMode()
+                                    )
+                                )
+                            }
                         }
                         is WidgetDispatchEvent.SourceChanged -> {
                             proceedWithUpdatingWidget(
@@ -1065,6 +1078,18 @@ class HomeScreenViewModel(
                     )
                 }
             }
+            is Widget.Source.Bundled.AllObjects -> {
+                viewModelScope.launch {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    navigation(
+                        Navigation.OpenAllContent(
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -1131,16 +1156,6 @@ class HomeScreenViewModel(
                 }
                 WidgetView.SpaceChat.id -> {
                     proceedWithSpaceChatWidgetHeaderClick()
-                }
-                WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
-                    if (mode.value == InteractionMode.Edit) {
-                        return@launch
-                    }
-                    navigation(
-                        Navigation.OpenAllContent(
-                            space = space
-                        )
-                    )
                 }
                 else -> {
                     Timber.w("Skipping widget click: $widget")
@@ -1260,6 +1275,8 @@ class HomeScreenViewModel(
             else
                 Command.ChangeWidgetType.TYPE_LIST
         }
+        // All-objects widget has link appearance.
+        is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
     }
 
     // TODO move to a separate reducer inject into this VM's constructor

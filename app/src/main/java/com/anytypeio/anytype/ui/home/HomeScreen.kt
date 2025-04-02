@@ -422,6 +422,7 @@ private fun WidgetList(
                         ) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             AllContentWidgetCard(
+                                index = index,
                                 mode = mode,
                                 onWidgetClicked = {
                                     onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
@@ -435,6 +436,7 @@ private fun WidgetList(
                         }
                     } else {
                         AllContentWidgetCard(
+                            index = index,
                             mode = mode,
                             onWidgetClicked = {
                                 onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)

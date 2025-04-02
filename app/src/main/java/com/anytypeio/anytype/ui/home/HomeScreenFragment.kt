@@ -276,6 +276,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     findNavController().navigate(
                         R.id.selectWidgetSourceScreen,
                         args = SelectWidgetSourceFragment.args(
+                            ctx = command.ctx,
                             target = command.target,
                             isInEditMode = command.isInEditMode,
                             spaceId = command.space

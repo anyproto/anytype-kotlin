@@ -226,7 +226,22 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
 
         val unsupportedLayouts =
-            ObjectType.Layout.values().toList() - SupportedLayouts.layouts.toSet()
+            ObjectType.Layout.entries - setOf(
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.NOTE,
+                ObjectType.Layout.IMAGE,
+                ObjectType.Layout.FILE,
+                ObjectType.Layout.VIDEO,
+                ObjectType.Layout.AUDIO,
+                ObjectType.Layout.PDF,
+                ObjectType.Layout.BOOKMARK,
+                ObjectType.Layout.PARTICIPANT,
+                ObjectType.Layout.PROFILE,
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION,
+                ObjectType.Layout.DATE
+            )
         val unsupportedLayout = unsupportedLayouts.random()
         val objectUnsupportedLayout = ObjectWrapper.Basic(
             mapOf(

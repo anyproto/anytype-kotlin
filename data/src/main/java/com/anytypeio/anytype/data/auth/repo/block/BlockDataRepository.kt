@@ -467,8 +467,8 @@ class BlockDataRepository(
         ctx: Id, relation: Id
     ): Payload? = remote.addRelationToObject(ctx, relation)
 
-    override suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload {
-        return remote.deleteRelationFromObject(ctx = ctx, relation = relation)
+    override suspend fun deleteRelationFromObject(ctx: Id, relations: List<Key>): Payload {
+        return remote.deleteRelationFromObject(ctx = ctx, relations = relations)
     }
 
     override suspend fun debugSpace(space: SpaceId): String = remote.debugSpace(space)

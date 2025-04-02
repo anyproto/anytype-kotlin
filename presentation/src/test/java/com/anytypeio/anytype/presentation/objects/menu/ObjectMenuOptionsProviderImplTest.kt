@@ -16,8 +16,8 @@ class ObjectMenuOptionsProviderImplTest {
 
     private val objectId: String = "objectId"
     private val details = MutableStateFlow<ObjectViewDetails>(ObjectViewDetails.EMPTY)
-    private val restrictions = MutableStateFlow<List<ObjectRestriction>>(emptyList())
-    private val provider = ObjectMenuOptionsProviderImpl(details, restrictions)
+    private val hasObjectLayoutConflict = MutableStateFlow(false)
+    private val provider = ObjectMenuOptionsProviderImpl(details, hasObjectLayoutConflict)
 
     @Test
     fun `when layout note - options are layout, relations, history`() {
@@ -35,7 +35,8 @@ class ObjectMenuOptionsProviderImplTest {
             hasDescriptionShow = true,
             hasRelations = true,
             hasDiagnosticsVisibility = true,
-            hasHistory = true
+            hasHistory = true,
+            hasObjectLayoutConflict = false
         )
 
         assertOptions(
@@ -59,7 +60,8 @@ class ObjectMenuOptionsProviderImplTest {
             hasRelations = true,
             hasDiagnosticsVisibility = true,
             hasHistory = true,
-            hasDescriptionShow = true
+            hasDescriptionShow = true,
+            hasObjectLayoutConflict = false
         )
 
         assertOptions(
@@ -118,7 +120,8 @@ class ObjectMenuOptionsProviderImplTest {
                 hasRelations = true,
                 hasDiagnosticsVisibility = true,
                 hasHistory = false,
-                hasDescriptionShow = true
+                hasDescriptionShow = true,
+                hasObjectLayoutConflict = false
             )
         )
     }
@@ -143,7 +146,8 @@ class ObjectMenuOptionsProviderImplTest {
                 hasRelations = true,
                 hasDiagnosticsVisibility = true,
                 hasHistory = false,
-                hasDescriptionShow = false
+                hasDescriptionShow = false,
+                hasObjectLayoutConflict = false
             )
         )
     }

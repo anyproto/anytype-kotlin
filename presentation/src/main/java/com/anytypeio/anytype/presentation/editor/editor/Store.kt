@@ -56,4 +56,5 @@ interface Store<T> {
     class Details : State<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
+    class LayoutConflict : State<Boolean>(false)
 }

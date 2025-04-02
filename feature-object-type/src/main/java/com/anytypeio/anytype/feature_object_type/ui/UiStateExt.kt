@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -67,7 +68,8 @@ suspend fun buildUiPropertiesList(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     objectTypeConflictingPropertiesIds: List<Id>,
-    showHiddenProperty: Boolean
+    showHiddenProperty: Boolean,
+    objectPermissions: ObjectPermissions
 ): List<UiFieldsListItem> {
 
     val parsedProperties = fieldParser.getObjectTypeParsedProperties(
@@ -82,7 +84,8 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectPermissions = objectPermissions
         )
     }
     val sidebarItems = parsedProperties.sidebar.mapNotNull {
@@ -90,7 +93,8 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectPermissions = objectPermissions
         )
     }
     val hiddenItems = parsedProperties.hidden.mapNotNull {
@@ -98,7 +102,8 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectPermissions = objectPermissions
         )
     }
     val conflictedItems = parsedProperties.localWithoutSystem.mapNotNull {
@@ -116,7 +121,8 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectPermissions = objectPermissions
         )
     }
 
@@ -125,7 +131,8 @@ suspend fun buildUiPropertiesList(
             property = it,
             stringResourceProvider = stringResourceProvider,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            objectPermissions = objectPermissions
         )
     }
 
@@ -133,7 +140,7 @@ suspend fun buildUiPropertiesList(
         add(Section.Header(canAdd = false))
         addAll(headerItems)
 
-        add(Section.SideBar(canAdd = true))
+        add(Section.SideBar(canAdd = objectPermissions.canEditRelationsList))
         addAll(sidebarItems)
 
         //todo file fields are off for now
@@ -185,7 +192,8 @@ private suspend fun mapToUiPropertiesDraggableListItem(
     property: ObjectWrapper.Relation,
     stringResourceProvider: StringResourceProvider,
     storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    objectPermissions: ObjectPermissions
 ): UiFieldsListItem? {
     if (property.key == Relations.DESCRIPTION) return null
 
@@ -199,7 +207,10 @@ private suspend fun mapToUiPropertiesDraggableListItem(
             storeOfObjectTypes = storeOfObjectTypes
         ),
         isEditableField = fieldParser.isPropertyEditable(property),
-        isPossibleToUnlinkFromType = fieldParser.isPropertyCanBeDeletedFromType(property)
+        isPossibleToUnlinkFromType =
+        objectPermissions.canUnlinkPropertyFromType &&
+                fieldParser.isPropertyCanBeDeletedFromType(property),
+        isPossibleToDrag = objectPermissions.canEditRelationsList
     )
 }
 

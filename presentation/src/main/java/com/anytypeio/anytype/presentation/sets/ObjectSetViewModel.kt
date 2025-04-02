@@ -12,6 +12,7 @@ import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -80,6 +81,7 @@ import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
@@ -245,7 +247,7 @@ class ObjectSetViewModel(
                     state to permission
                 }
                 .collectLatest { (state, permission) ->
-                    featured.value = toFeaturedPropertiesViews(
+                    val featuredBlock = toFeaturedPropertiesViews(
                         objectId = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         fieldParser = fieldParser,
@@ -255,12 +257,14 @@ class ObjectSetViewModel(
                         details = state.details,
                         participantCanEdit = permission?.isOwnerOrEditor() == true
                     )
+                    featured.value = featuredBlock
                     _header.value = state.header(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider,
                         isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
                     )
+                    updateLayoutConflictState(featuredBlock = featuredBlock)
                 }
         }
 
@@ -415,6 +419,33 @@ class ObjectSetViewModel(
                     success = { payload -> dispatcher.send(payload) }
                 )
             }
+        )
+    }
+
+    private suspend fun updateLayoutConflictState(
+        featuredBlock: BlockView.FeaturedRelation?,
+    ) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val objectWrapper = state.details.getObject(vmParams.ctx)
+
+        val blocks = featuredBlock?.let { listOf(it) } ?: emptyList()
+
+        val hasConflict = hasLayoutConflict(
+            currentObject = objectWrapper,
+            blocks = blocks,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+
+        dispatcher.send(
+            Payload(
+                context = vmParams.ctx,
+                events = listOf(
+                    Event.Command.DataView.UpdateConflictState(
+                        context = vmParams.ctx,
+                        hasConflict = hasConflict
+                    )
+                )
+            )
         )
     }
 
@@ -2309,14 +2340,25 @@ class ObjectSetViewModel(
                         || viewerDefTemplate == TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
             )
         )
-        return blankTemplate + templates.map { objTemplate ->
-            objTemplate.toTemplateView(
-                urlBuilder = urlBuilder,
-                coverImageHashProvider = coverImageHashProvider,
-                viewerDefTemplateId = viewerDefTemplate,
-                viewerDefTypeKey = viewerDefTypeKey
-            )
-        } + newTemplate
+        if (templates.size == 1 && templates.first().id == viewerDefTemplate) {
+            return templates.map { objTemplate ->
+                objTemplate.toTemplateView(
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    viewerDefTemplateId = viewerDefTemplate,
+                    viewerDefTypeKey = viewerDefTypeKey
+                )
+            } + newTemplate
+        } else {
+            return blankTemplate + templates.map { objTemplate ->
+                objTemplate.toTemplateView(
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    viewerDefTemplateId = viewerDefTemplate,
+                    viewerDefTypeKey = viewerDefTypeKey
+                )
+            } + newTemplate
+        }
     }
 
     private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {

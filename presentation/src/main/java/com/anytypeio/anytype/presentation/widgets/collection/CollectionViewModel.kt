@@ -75,7 +75,6 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -238,7 +237,7 @@ class CollectionViewModel(
         launch {
             withContext(dispatchers.io) {
                 // N.B. Unsubscribing from BIN is managed by space home screen.
-                if (subscription.id != Subscriptions.SUBSCRIPTION_ARCHIVED) {
+                if (subscription.id != Subscriptions.SUBSCRIPTION_BIN) {
                     container.unsubscribe(listOf(subscription.id))
                 }
             }

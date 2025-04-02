@@ -197,8 +197,8 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                             space = command.space
                         )
                     }.onFailure {
-                        toast("Failed to open relation creation screen")
-                        Timber.e(it, "Failed to open relation creation screen from all content")
+                        toast("Failed to open property creation screen")
+                        Timber.e(it, "Failed to open property creation screen from all content")
                     }
                 }
 

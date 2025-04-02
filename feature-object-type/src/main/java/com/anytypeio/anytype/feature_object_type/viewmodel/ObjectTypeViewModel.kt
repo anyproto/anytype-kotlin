@@ -336,7 +336,8 @@ class ObjectTypeViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectTypeConflictingPropertiesIds = conflictingFields,
-            showHiddenProperty = vmParams.showHiddenFields
+            showHiddenProperty = vmParams.showHiddenFields,
+            objectPermissions = objectPermissions
         )
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(
@@ -432,15 +433,23 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutButtonClick -> {
-                uiTypeLayoutsState.value = Visible(
-                    layouts = listOf(
-                        ObjectType.Layout.BASIC,
-                        ObjectType.Layout.NOTE,
-                        ObjectType.Layout.PROFILE,
-                        ObjectType.Layout.TODO
-                    ),
-                    selectedLayout = _objTypeState.value?.recommendedLayout
-                )
+                if (_objTypeState.value?.recommendedLayout == ObjectType.Layout.NOTE) {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(ObjectType.Layout.NOTE),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                } else {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(
+                            ObjectType.Layout.BASIC,
+                            //DROID-3485, NOTE layout is not supported for now
+                            //ObjectType.Layout.NOTE,
+                            ObjectType.Layout.PROFILE,
+                            ObjectType.Layout.TODO
+                        ),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                }
             }
 
             is TypeEvent.OnSyncStatusClick -> {

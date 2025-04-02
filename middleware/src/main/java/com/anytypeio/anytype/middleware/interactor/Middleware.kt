@@ -908,7 +908,14 @@ class Middleware @Inject constructor(
             targetId = command.target,
             position = command.position.toMiddlewareModel(),
             fields = null,
-            spaceId = command.space
+            spaceId = command.space,
+            block = Block(
+                link = Block.Content.Link(
+                    style = Block.Content.Link.Style.Page,
+                    cardStyle = Block.Content.Link.CardStyle.Card,
+                    iconSize = Block.Content.Link.IconSize.SizeSmall
+                )
+            )
         )
 
         logRequestIfDebug(request)
@@ -1171,10 +1178,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectRelationDelete(ctx: Id, relation: Key): Payload {
+    fun objectRelationDelete(ctx: Id, relations: List<Key>): Payload {
         val request = Rpc.ObjectRelation.Delete.Request(
             contextId = ctx,
-            relationKeys = listOf(relation)
+            relationKeys = relations
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectRelationDelete(request) }

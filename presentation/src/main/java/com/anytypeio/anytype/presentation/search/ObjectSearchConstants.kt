@@ -771,7 +771,7 @@ object ObjectSearchConstants {
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
         excludedTypeKeys: List<TypeKey> = emptyList(),
         excludeParticipant: Boolean = true,
-        excludeTemplates: Boolean = true
+        excludeTemplates: Boolean = true,
     ): List<DVFilter> {
         return buildList {
             addAll(

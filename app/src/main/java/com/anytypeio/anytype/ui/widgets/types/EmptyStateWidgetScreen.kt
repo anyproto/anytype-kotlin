@@ -33,11 +33,13 @@ fun EmptyStateWidgetScreen(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().align(Alignment.Center)
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = "There is no widgets yet",
+                text = stringResource(R.string.widgets_empty_state_message),
                 style = BodyRegular,
                 color = colorResource(R.color.text_primary),
                 textAlign = TextAlign.Center

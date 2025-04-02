@@ -593,6 +593,7 @@ message Block {
             Layout layout = 1;
             int32 limit = 2;
             string viewId = 3;
+            bool autoAdded = 4;
 
             enum Layout {
                 Link = 0;

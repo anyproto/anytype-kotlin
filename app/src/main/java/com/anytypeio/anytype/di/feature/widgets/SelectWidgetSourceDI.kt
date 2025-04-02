@@ -6,6 +6,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -51,6 +52,7 @@ interface SelectWidgetSourceDependencies : ComponentDependencies {
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun searchObjects(): SearchObjects
     fun fieldParser(): FieldParser
+    fun logger(): Logger
 }
 
 @Module

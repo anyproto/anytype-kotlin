@@ -135,6 +135,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -711,15 +712,25 @@ class HomeScreenViewModel(
                             }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                            commands.emit(
-                                Command.SelectWidgetType(
+                            if (dispatch.source == BundledWidgetSourceView.AllObjects.id) {
+                                // Applying link layout automatically to all-objects widget
+                                proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,
-                                    layout = ObjectType.Layout.SET.code,
-                                    target = dispatch.target,
-                                    isInEditMode = isInEditMode()
+                                    type = Command.ChangeWidgetType.TYPE_LINK,
+                                    target = dispatch.target
                                 )
-                            )
+                            } else {
+                                commands.emit(
+                                    Command.SelectWidgetType(
+                                        ctx = config.widgets,
+                                        source = dispatch.source,
+                                        layout = ObjectType.Layout.SET.code,
+                                        target = dispatch.target,
+                                        isInEditMode = isInEditMode()
+                                    )
+                                )
+                            }
                         }
                         is WidgetDispatchEvent.SourceChanged -> {
                             proceedWithUpdatingWidget(

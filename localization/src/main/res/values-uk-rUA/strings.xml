@@ -92,7 +92,6 @@
     <string name="option_other_divider">Лінійний розділювач</string>
     <string name="option_other_dots">Точковий розділювач</string>
     <string name="option_other_code">Фрагмент коду</string>
-    <string name="option_relation_relation">Relation</string>
     <string name="toolbar_section_text">Текст</string>
     <string name="toolbar_section_list">Список</string>
     <string name="toolbar_section_page">Page</string>
@@ -100,7 +99,7 @@
     <string name="toolbar_section_tool">Tool</string>
     <string name="toolbar_section_media">Медіа</string>
     <string name="toolbar_section_objects">Об\'єкти</string>
-    <string name="toolbar_section_relation">Relation</string>
+    <string name="toolbar_section_relation">Property</string>
     <string name="toolbar_action_delete">Видалити</string>
     <string name="toolbar_action_duplicate">Дублювати</string>
     <string name="toolbar_action_mention">Mention</string>
@@ -174,7 +173,7 @@
     <string name="hint_paste_link">Вставити посилання</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Untitled</string>
-    <string name="untitled_set">Безіменний набір</string>
+    <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Безіменна колекція</string>
     <string name="archived">Archived</string>
     <string name="loading">Loading…</string>
@@ -233,7 +232,6 @@
     <string name="search_hint">Search...</string>
     <string name="relations">Відносини</string>
     <string name="fields">Fields</string>
-    <string name="relation">Relation</string>
     <string name="download">Завантажити</string>
     <string name="view">Подання</string>
     <string name="views">Вигляди</string>
@@ -256,8 +254,8 @@
     <string name="mention_suggester_create_object">Створити об\'єкт</string>
     <string name="your_search_query">Пошук</string>
     <string name="syncing">Syncing…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>
-    <string name="new_set">New set</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="new_set">New query</string>
     <string name="create_new_object_type">Create new object type</string>
     <plurals name="page_selected">
         <item quantity="one">%d page selected</item>
@@ -321,8 +319,8 @@
     <string name="unknown_object_type">Unknown type</string>
     <string name="relation_format_short_text">Short text</string>
     <string name="relation_format_long_text">Текст</string>
-    <string name="set_new_relation">Set new relation</string>
-    <string name="relation_deleted">Видалене відношення</string>
+    <string name="set_new_relation">Set new property</string>
+    <string name="relation_deleted">Deleted property</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Суцільні кольори</string>
@@ -342,7 +340,7 @@
     <string name="heading">Заголовок</string>
     <string name="subheading">Підзаголовок</string>
     <string name="create_from_scratch">Create from scratch</string>
-    <string name="create_relation_with_name">Create relation \"%1$s\"</string>
+    <string name="create_relation_with_name">Create property \"%1$s\"</string>
     <string name="name_is_required">Name is required</string>
     <string name="favourite">Обране</string>
     <string name="template">Шаблон</string>
@@ -380,7 +378,7 @@
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Непідтримуваний блок</string>
-    <string name="new_relation">Новий зв\'язок</string>
+    <string name="new_relation">New property</string>
     <string name="copy_link">Копіювати посилання</string>
     <string name="edit_link">Edit link</string>
     <string name="unlink">Unlink</string>
@@ -404,7 +402,6 @@
     <string name="no_data">Немає даних</string>
     <string name="no_source">Немає джерела</string>
     <string name="deleted_object">Видалений об\'єкт</string>
-    <string name="open_set">Open set</string>
     <string name="deleted">Видалено</string>
     <string name="paste_link_or_search">Вставте посилання або знайдіть об\'єкти</string>
     <string name="paste_from_clipboard">Вставити з буфера обміну</string>
@@ -432,7 +429,7 @@
     <string name="card">Картка</string>
     <string name="inline">Inline</string>
     <string name="set_view">Set View</string>
-    <string name="inline_set">Вбудований набір</string>
+    <string name="inline_set">Inline query</string>
     <string name="inline_collection">Вбудована колекція</string>
     <string name="fit_image">Підігнати зображення</string>
     <string name="image_preview">Попередній перегляд зображення</string>
@@ -491,15 +488,15 @@
     <string name="error_find_block">Could\'t find the selected block</string>
     <string name="error_block_selection">Block selection error</string>
     <string name="undefined">Undefined</string>
-    <string name="set_by_relation">Relation: %1$s</string>
-    <string name="set_by_relations">Relations: %1$s</string>
+    <string name="set_by_relation">Property: %1$s</string>
+    <string name="set_by_relations">Properties: %1$s</string>
     <string name="set_by_type">Type: %1$s</string>
     <string name="my_types">My types</string>
-    <string name="my_relations">Мої відносини</string>
+    <string name="my_relations">My properties</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
-    <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
-    <string name="block_data_view_content_description_no_source">The inline set has no source</string>
-    <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
+    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Нещодавно відкриті</string>
     <string name="widget_source_anytype_library">Бібліотека Anytype</string>
     <string name="widget_source_default_lists">Default lists</string>
@@ -517,8 +514,8 @@
     <string name="set_no_items_title">Немає об\'єктів</string>
     <string name="set_no_items_description">Створіть перший об\'єкт, щоб продовжити</string>
     <string name="set_no_items_button">Створити об\'єкт</string>
-    <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Перетворити набір у колекцію</string>
+    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Turn Query into Collection</string>
     <string name="menu_change_query">Змінити запит</string>
     <string name="collections">Колекції</string>
     <string name="collection_widget_description">Your collections of objects</string>
@@ -535,8 +532,8 @@
     <string name="file_delete_cancel">Скасувати</string>
     <string name="file_delete_delete">Видалити</string>
     <string name="menu_type_change">Змінити тип</string>
-    <string name="menu_type_open_set">Open set of %1$s</string>
-    <string name="menu_type_create_set">Create set of %1$s</string>
+    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Створити об\'єкт</string>
     <string name="view_layout_widget_title">Макет</string>
@@ -652,7 +649,7 @@
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
     <string name="name">Назва</string>
-    <string name="hint_type_name_for_new_relation">Name for new relation</string>
+    <string name="hint_type_name_for_new_relation">Name for new property</string>
     <string name="dv_create_new_object">Новий</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -677,9 +674,9 @@
     <string name="edit_relations_title">Відносини</string>
     <string name="edit_view">Редагувати подання</string>
     <string name="relation_open_edit">Open to edit</string>
-    <string name="remove_from_set">Remove from this set</string>
+    <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Reset</string>
-    <string name="search_a_relation">Search a relation</string>
+    <string name="search_a_relation">Search a property</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
     <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
@@ -701,8 +698,8 @@
     <string name="remove">Вилучити</string>
     <string name="choose_options">Choose options</string>
     <string name="search_tags">Search tags</string>
-    <string name="choose_relation_to_filter">Choose a relation to filter</string>
-    <string name="choose_relation_to_sort">Choose a relation to sort</string>
+    <string name="choose_relation_to_filter">Choose a property to filter</string>
+    <string name="choose_relation_to_sort">Choose a property to sort</string>
     <string name="btn_apply_new_object">Add to list</string>
     <string name="btn_add">Додати</string>
     <string name="btn_upload_gallery">Upload from Gallery</string>
@@ -711,10 +708,9 @@
     <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
     <string name="alert_qr_camera_ok">Гаразд</string>
     <string name="choose_option">Choose option</string>
-    <string name="find_a_relation">Find a relation</string>
+    <string name="find_a_relation">Find a property</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Unknown type</string>
-    <string name="set">Набір</string>
     <string name="collection">Колекція</string>
     <string name="layout">Макет</string>
     <string name="button_fields">Properties</string>
@@ -741,7 +737,7 @@
     <string name="object_not_exist">Цей об\'єкт не існує</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Повернутись</string>
-    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="snack_object_set_not_found">Query not found for this type.</string>
     <string name="create_new_set">Створити</string>
     <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Close</string>
@@ -773,9 +769,9 @@
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
+    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
-    <string name="fragment_relation_create_from_scratch_title">Виберіть тип відношення</string>
+    <string name="fragment_relation_create_from_scratch_title">Select property type</string>
     <string name="fragment_dashboard_restore">Відновити</string>
     <string name="your_account_deleted">Your vault is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -799,7 +795,7 @@
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Your Key copied</string>
     <string name="type_editing_title">Type settings</string>
-    <string name="relation_editing_title">Relation settings</string>
+    <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Вилучити</string>
     <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
@@ -959,7 +955,7 @@
     <string name="widget_type_compact_list_description">Widget with a compact list view</string>
     <string name="widget_type_list">Список</string>
     <string name="widget_type_view">Подання</string>
-    <string name="widget_type_view_description">Widget with a Set or Collection layout</string>
+    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Змінити джерело</string>
     <string name="widget_change_type">Change Type</string>
@@ -973,19 +969,19 @@
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
     <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a relation</string>
+    <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">My types</string>
     <string name="library_subtitle_relations">Мої відносини</string>
     <string name="library_subtitle_library">Library</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
-    <string name="library_create_new_relation">Create a relation \'%1$s\'</string>
+    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
     <string name="library_objects_empty">There are no %1$s named \'%2$s\'</string>
     <string name="library_objects_empty_action">Try creating new one or search for something else</string>
     <string name="library_relations_empty">There are no types named \'%1$s\'</string>
     <string name="library_type_added">Type `%1$s` added to your library\"</string>
     <string name="library_type_removed">Type `%1$s` removed from your library\"</string>
-    <string name="library_relation_added">Relation `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Relation `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
+    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
     <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
     <string name="type_creation_new_type">New type</string>
     <string name="type_creation_done">Готово</string>
@@ -1046,8 +1042,8 @@
     <string name="content_description_delete_button">Delete button</string>
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
-    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
-    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
+    <string name="content_description_remove_from_set_button">Remove property from this query</string>
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
@@ -1083,7 +1079,7 @@
     <string name="sharing_menu_btn_add">Додати</string>
     <string name="sharing_menu_btn_open">Open</string>
     <!--endregion-->
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Нічого</string>
     <string name="relation_origin_clipboard">Clipboard</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
@@ -1106,7 +1102,7 @@
         <item quantity="many">%d links</item>
         <item quantity="other">%d links</item>
     </plurals>
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="date_type_tomorrow">Завтра</string>
     <string name="date_type_today">Сьогодні</string>
     <string name="date_type_yesterday">Вчора</string>
@@ -1135,12 +1131,12 @@
     <string name="option_widget_edit">Edit option</string>
     <string name="options_empty_description">Nothing found. Create first option to start.</string>
     <string name="options_empty_title">No options</string>
-    <string name="options_empty_not_editable">The relation is empty</string>
+    <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Ви впевнені?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="object_values_empty_description">Objects not found</string>
     <string name="object_values_empty_title">No values</string>
-    <string name="object_values_empty_not_editable">The relation is empty</string>
+    <string name="object_values_empty_not_editable">The property is empty</string>
     <string name="object_values_delete_title">Ви впевнені?</string>
     <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Enter name...</string>
@@ -1587,12 +1583,12 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_error_title">Something went wrong.</string>
     <string name="onboarding_my_first_space">My First Space</string>
     <string name="all_content_error_unexpected_layout">Error: unexpected layout</string>
-    <string name="all_content_toast_relation_added">Relation added</string>
-    <string name="all_content_toast_relation_removed">Relation removed</string>
+    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
-    <string name="all_content_new_relation">Новий зв\'язок</string>
+    <string name="all_content_new_relation">New property</string>
     <string name="all_content_new_type">New type</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
@@ -1620,8 +1616,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
-    <string name="object_type_objects_menu_open_set">Open Set</string>
-    <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_objects_menu_open_set">Open Query</string>
+    <string name="object_type_objects_menu_create_set">Create Query</string>
     <string name="object_type_templates_menu_set_default">Set as default</string>
     <string name="object_type_templates_menu_edit">Редагувати</string>
     <string name="object_type_templates_menu_duplicate">Дублювати</string>
@@ -1674,7 +1670,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_settings_item_remove">Delete type</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
-    <string name="object_set_of_title">Set of</string>
+    <string name="object_set_of_title">Query of</string>
     <string name="migration_migration_is_in_progress">Migration is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>

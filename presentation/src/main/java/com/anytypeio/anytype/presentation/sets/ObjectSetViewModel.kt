@@ -2340,14 +2340,25 @@ class ObjectSetViewModel(
                         || viewerDefTemplate == TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
             )
         )
-        return blankTemplate + templates.map { objTemplate ->
-            objTemplate.toTemplateView(
-                urlBuilder = urlBuilder,
-                coverImageHashProvider = coverImageHashProvider,
-                viewerDefTemplateId = viewerDefTemplate,
-                viewerDefTypeKey = viewerDefTypeKey
-            )
-        } + newTemplate
+        if (templates.size == 1 && templates.first().id == viewerDefTemplate) {
+            return templates.map { objTemplate ->
+                objTemplate.toTemplateView(
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    viewerDefTemplateId = viewerDefTemplate,
+                    viewerDefTypeKey = viewerDefTypeKey
+                )
+            } + newTemplate
+        } else {
+            return blankTemplate + templates.map { objTemplate ->
+                objTemplate.toTemplateView(
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    viewerDefTemplateId = viewerDefTemplate,
+                    viewerDefTypeKey = viewerDefTypeKey
+                )
+            } + newTemplate
+        }
     }
 
     private suspend fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {

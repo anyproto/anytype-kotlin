@@ -53,23 +53,6 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
-sealed class UiTypeSetupTitleAndIconState {
-
-    abstract val icon: ObjectIcon.TypeIcon.Default
-
-    data class CreateNewType(
-        override val icon: ObjectIcon.TypeIcon.Default,
-        val initialTitle: String = "",
-        val initialPlural: String = ""
-    ) : UiTypeSetupTitleAndIconState()
-
-    data class EditType(
-        override val icon: ObjectIcon.TypeIcon.Default,
-        val initialTitle: String = "",
-        val initialPlural: String = ""
-    ) : UiTypeSetupTitleAndIconState()
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

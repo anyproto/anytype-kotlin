@@ -485,6 +485,14 @@ class CollectionViewModel(
                         )
                     )
                 }
+                ObjectType.Layout.OBJECT_TYPE -> {
+                    commands.emit(
+                        Command.OpenTypeObject(
+                            target = target,
+                            space = view.space
+                        )
+                    )
+                }
                 else -> {
                     Timber.e("Unexpected layout: ${view.layout}")
                 }

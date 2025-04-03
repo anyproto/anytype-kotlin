@@ -3313,6 +3313,17 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.OBJECT_TYPE -> {
+                    navigate(
+                        EventWrapper(
+                            OpenTypeObject(
+                                target = target,
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }

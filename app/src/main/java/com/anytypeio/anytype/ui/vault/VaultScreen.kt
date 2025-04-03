@@ -110,7 +110,7 @@ fun VaultScreen(
                 color = colorResource(id = R.color.background_primary)
             )
             .then(
-                if (USE_EDGE_TO_EDGE && SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier

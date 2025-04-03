@@ -93,7 +93,7 @@ class DataViewListWidgetContainer(
                                 )
                             )
                         }
-                        is Widget.Link, is Widget.Tree -> {
+                        is Widget.Link, is Widget.Tree, is Widget.AllObjects -> {
                             throw IllegalStateException("Incompatible widget type.")
                         }
                     }
@@ -150,7 +150,7 @@ class DataViewListWidgetContainer(
                                 )
                             )
                         }
-                        is Widget.Tree, is Widget.Link -> {
+                        is Widget.Tree, is Widget.Link, is Widget.AllObjects -> {
                             throw IllegalStateException("Incompatible widget type.")
                         }
                     }
@@ -181,7 +181,7 @@ class DataViewListWidgetContainer(
                                 limit = when (widget) {
                                     is Widget.List -> widget.limit
                                     is Widget.View -> widget.limit
-                                    is Widget.Tree, is Widget.Link -> {
+                                    is Widget.Tree, is Widget.Link, is Widget.AllObjects -> {
                                         throw IllegalStateException("Incompatible widget type.")
                                     }
                                 }
@@ -355,7 +355,7 @@ class DataViewListWidgetContainer(
                     prettyPrintName = fieldParser.getObjectPluralName(widget.source.obj)
                 )
             )
-            is Widget.Link, is Widget.Tree -> {
+            is Widget.Link, is Widget.Tree, is Widget.AllObjects -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
         }

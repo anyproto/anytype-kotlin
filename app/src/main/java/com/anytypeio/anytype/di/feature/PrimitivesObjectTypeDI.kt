@@ -170,39 +170,6 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideStringResourceProvider(): StringResourceProvider
 }
 
-//region Space Types Screen
-@Component(
-    dependencies = [SpaceTypesDependencies::class],
-    modules = [
-        SpaceTypesModule::class,
-        SpaceTypesModule.Declarations::class
-    ]
-)
-@PerScreen
-interface SpaceTypesComponent {
-    @Component.Factory
-    interface Factory {
-        fun create(dependencies: SpaceTypesDependencies): SpaceTypesComponent
-    }
-}
-
-@Module
-object SpaceTypesModule {
-
-    @Module
-    interface Declarations {
-        @PerScreen
-        @Binds
-        fun bindViewModelFactory(
-            factory: SpaceTypesVMFactory
-        ): ViewModelProvider.Factory
-    }
-}
-
-interface SpaceTypesDependencies : ObjectTypeDependencies
-
-//endregion
-
 //region Create Type Screen
 @Component(
     dependencies = [CreateObjectTypeDependencies::class],

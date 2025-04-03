@@ -189,8 +189,8 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     runCatching {
                         navigation().openCreateObjectTypeScreen(spaceId = command.space)
                     }.onFailure {
-                        toast("Failed to open property creation screen")
-                        Timber.e(it, "Failed to open property creation screen from all content")
+                        toast("Failed to open type creation screen")
+                        Timber.e(it, "Failed to open type creation screen from all content")
                     }
                 }
 

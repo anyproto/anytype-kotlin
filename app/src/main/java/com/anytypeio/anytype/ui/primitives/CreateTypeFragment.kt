@@ -78,7 +78,7 @@ class CreateTypeFragment: BaseBottomSheetComposeFragment() {
                                     }
                                 )
                             }.onFailure {
-                                Timber.e(it, "Failed to open object type object from all content")
+                                Timber.e(it, "Failed to open object type object from create type Screen")
                             }
                         }
                     }

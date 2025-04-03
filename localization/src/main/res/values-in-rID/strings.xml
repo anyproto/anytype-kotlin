@@ -938,6 +938,7 @@
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Sunting</string>
     <string name="add_widget">Tambah</string>
+    <string name="empty_state_add_widget">Tambah Gawit</string>
     <string name="widget_source">Sumber widget</string>
     <string name="widget_type">Jenis widget</string>
     <string name="widget_add_below">Tambah di bawah</string>
@@ -1717,4 +1718,5 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_screen_action_button">Atur ulang ke bawaan</string>
     <string name="object_conflict_menu_item_title">Lerai konflik tata letak</string>
     <string name="widget_source_suggested">Disarankan</string>
+    <string name="widgets_empty_state_message">Belum ada gawit</string>
 </resources>

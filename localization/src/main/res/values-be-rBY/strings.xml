@@ -944,6 +944,7 @@
     <string name="create_widget">Стварыць віджэт</string>
     <string name="edit_widgets">Рэдагаваць</string>
     <string name="add_widget">Дадаць</string>
+    <string name="empty_state_add_widget">Дадаць Віджэт</string>
     <string name="widget_source">Крыніца віджэта</string>
     <string name="widget_type">Тып віджэта</string>
     <string name="widget_add_below">Дадаць ніжэй</string>
@@ -1756,4 +1757,5 @@
     <string name="object_conflict_screen_action_button">Reset to default</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

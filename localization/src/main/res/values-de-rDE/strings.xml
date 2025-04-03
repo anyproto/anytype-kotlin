@@ -940,6 +940,7 @@
     <string name="create_widget">Widget erstellen</string>
     <string name="edit_widgets">Bearbeiten</string>
     <string name="add_widget">Hinzufügen</string>
+    <string name="empty_state_add_widget">Widget hinzufügen</string>
     <string name="widget_source">Widget-Quelle</string>
     <string name="widget_type">Widget-Typ</string>
     <string name="widget_add_below">Unten hinzufügen</string>
@@ -1730,4 +1731,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_conflict_screen_action_button">Auf Standardeinstellung zurücksetzen</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

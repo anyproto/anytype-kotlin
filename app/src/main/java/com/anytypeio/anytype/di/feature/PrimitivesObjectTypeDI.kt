@@ -164,3 +164,67 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
 }
+
+//region Space Types Screen
+@Component(
+    dependencies = [SpaceTypesDependencies::class],
+    modules = [
+        SpaceTypesModule::class,
+        SpaceTypesModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpaceTypesComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: SpaceTypesDependencies): SpaceTypesComponent
+    }
+}
+
+@Module
+object SpaceTypesModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: SpaceTypesVMFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface SpaceTypesDependencies : ComponentDependencies
+//endregion
+
+//region Space Properties Screen
+@Component(
+    dependencies = [SpacePropertiesDependencies::class],
+    modules = [
+        SpacePropertiesModule::class,
+        SpacePropertiesModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpacePropertiesComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(dependencies: SpaceTypesDependencies): SpacePropertiesComponent
+    }
+}
+
+@Module
+object SpacePropertiesModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: SpaceTypesVMFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface SpacePropertiesDependencies : ComponentDependencies
+//endregion

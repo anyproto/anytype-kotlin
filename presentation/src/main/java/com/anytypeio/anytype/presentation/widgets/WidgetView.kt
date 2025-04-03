@@ -129,10 +129,10 @@ sealed class WidgetView {
         val isEmpty: Boolean = false
     ) : WidgetView()
 
-    data object AllContent: WidgetView() {
-        const val ALL_CONTENT_WIDGET_ID = "bundled-widget.all-content"
+    data class AllContent(
+        override val id: Id
+        ): WidgetView() {
         override val isLoading: Boolean = false
-        override val id: Id = ALL_CONTENT_WIDGET_ID
     }
 
     data object SpaceChat : WidgetView() {

@@ -59,6 +59,12 @@ sealed class Widget {
         val limit: Int
     ) : Widget()
 
+    data class AllObjects(
+        override val id: Id,
+        override val source: Source.Bundled.AllObjects,
+        override val config: Config,
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -99,6 +105,11 @@ sealed class Widget {
 
             data object Bin : Bundled() {
                 override val id: Id = BundledWidgetSourceIds.BIN
+                override val type: Id? = null
+            }
+
+            data object AllObjects : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.ALL_OBJECTS
                 override val type: Id? = null
             }
         }
@@ -150,51 +161,19 @@ fun List<Block>.parseWidgets(
                         is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
                     }
                     if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
-                        when (widgetContent.layout) {
-                            Block.Content.Widget.Layout.TREE -> {
-                                add(
-                                    Widget.Tree(
-                                        id = w.id,
-                                        source = source,
-                                        limit = widgetContent.limit,
-                                        config = config
-                                    )
+                        if (source is Widget.Source.Bundled.AllObjects) {
+                            add(
+                                Widget.AllObjects(
+                                    id = w.id,
+                                    source = source,
+                                    config = config
                                 )
-                            }
-                            Block.Content.Widget.Layout.LINK -> {
-                                add(
-                                    Widget.Link(
-                                        id = w.id,
-                                        source = source,
-                                        config = config
-                                    )
-                                )
-                            }
-                            Block.Content.Widget.Layout.LIST -> {
-                                add(
-                                    Widget.List(
-                                        id = w.id,
-                                        source = source,
-                                        limit = widgetContent.limit,
-                                        config = config
-                                    )
-                                )
-                            }
-                            Block.Content.Widget.Layout.COMPACT_LIST -> {
-                                add(
-                                    Widget.List(
-                                        id = w.id,
-                                        source = source,
-                                        isCompact = true,
-                                        limit = widgetContent.limit,
-                                        config = config
-                                    )
-                                )
-                            }
-                            Block.Content.Widget.Layout.VIEW -> {
-                                if (source is Widget.Source.Default) {
+                            )
+                        } else {
+                            when (widgetContent.layout) {
+                                Block.Content.Widget.Layout.TREE -> {
                                     add(
-                                        Widget.View(
+                                        Widget.Tree(
                                             id = w.id,
                                             source = source,
                                             limit = widgetContent.limit,
@@ -202,9 +181,56 @@ fun List<Block>.parseWidgets(
                                         )
                                     )
                                 }
+
+                                Block.Content.Widget.Layout.LINK -> {
+                                    add(
+                                        Widget.Link(
+                                            id = w.id,
+                                            source = source,
+                                            config = config
+                                        )
+                                    )
+                                }
+
+                                Block.Content.Widget.Layout.LIST -> {
+                                    add(
+                                        Widget.List(
+                                            id = w.id,
+                                            source = source,
+                                            limit = widgetContent.limit,
+                                            config = config
+                                        )
+                                    )
+                                }
+
+                                Block.Content.Widget.Layout.COMPACT_LIST -> {
+                                    add(
+                                        Widget.List(
+                                            id = w.id,
+                                            source = source,
+                                            isCompact = true,
+                                            limit = widgetContent.limit,
+                                            config = config
+                                        )
+                                    )
+                                }
+
+                                Block.Content.Widget.Layout.VIEW -> {
+                                    if (source is Widget.Source.Default) {
+                                        add(
+                                            Widget.View(
+                                                id = w.id,
+                                                source = source,
+                                                limit = widgetContent.limit,
+                                                config = config
+                                            )
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
+
                 }
             }
         }
@@ -218,6 +244,7 @@ fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
     BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
+    BundledWidgetSourceIds.ALL_OBJECTS -> Widget.Source.Bundled.AllObjects
     else -> throw IllegalStateException("Widget bundled id can't be $this")
 }
 

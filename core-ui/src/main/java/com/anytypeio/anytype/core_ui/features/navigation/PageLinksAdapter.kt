@@ -238,6 +238,13 @@ class BundledWidgetSourceHolder(
                     ivIcon.setBackgroundResource(R.drawable.ic_widget_system_bin)
                 }
             }
+            BundledWidgetSourceView.AllObjects -> {
+                with(binding) {
+                    tvTitle.setText(R.string.all_content)
+                    tvSubtitle.gone()
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_all_objects)
+                }
+            }
         }
     }
 }
@@ -247,8 +254,9 @@ class SuggestWidgetObjectTypeViewHolder(
 ) : DefaultObjectViewAdapter.ObjectViewHolder(binding.root) {
 
     init {
-        binding.ivIcon.binding.emojiContainer.invisible()
         binding.tvSubtitle.gone()
+        binding.ivIcon.binding.emojiContainer.background = null
+
     }
 
     fun bind(source: SuggestWidgetObjectType) {

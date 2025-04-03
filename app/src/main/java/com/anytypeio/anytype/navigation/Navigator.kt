@@ -294,6 +294,12 @@ class Navigator : AppNavigation {
         )
     }
 
+    override fun openCreateObjectTypeScreen(spaceId: Id) {
+        navController?.navigate(
+            resId = R.id.createObjectTypeScreen
+        )
+    }
+
     override fun openDateObject(
         objectId: Id,
         space: Id

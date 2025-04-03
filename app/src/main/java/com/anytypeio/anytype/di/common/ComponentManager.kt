@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
+import com.anytypeio.anytype.di.feature.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerDateObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
@@ -1111,6 +1112,12 @@ class ComponentManager(
         DaggerEditTypePropertiesComponent
             .factory()
             .create(params, findComponentDependencies())
+    }
+
+    val createObjectTypeComponent = Component {
+        DaggerCreateObjectTypeComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

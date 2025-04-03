@@ -57,7 +57,14 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 data class UiCreateTypeState(
     val icon: ObjectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
     val initialTitle: String,
-)
+) {
+    companion object {
+        val Empty = UiCreateTypeState(
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            initialTitle = ""
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

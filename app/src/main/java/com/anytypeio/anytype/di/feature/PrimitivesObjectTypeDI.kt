@@ -33,6 +33,7 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.SpaceTypesVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import dagger.Binds
@@ -212,8 +213,11 @@ interface SpaceTypesDependencies : ObjectTypeDependencies
 interface CreateObjectTypeComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: CreateObjectTypeDependencies): CreateObjectTypeComponent
+        fun create(dependencies: CreateObjectTypeDependencies)
+        : CreateObjectTypeComponent
     }
+
+    fun inject(fragment: CreateTypeFragment)
 }
 
 @Module
@@ -230,4 +234,4 @@ object CreateObjectTypeModule {
 }
 
 interface CreateObjectTypeDependencies : ObjectTypeDependencies
-//endregion Screen
+//endregion

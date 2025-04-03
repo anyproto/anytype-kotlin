@@ -186,7 +186,12 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 }
 
                 is AllContentViewModel.Command.OpenTypeCreation -> {
-                    //todo: implement new screen logic
+                    runCatching {
+                        navigation().openCreateObjectTypeScreen(spaceId = command.space)
+                    }.onFailure {
+                        toast("Failed to open property creation screen")
+                        Timber.e(it, "Failed to open property creation screen from all content")
+                    }
                 }
 
                 is AllContentViewModel.Command.OpenRelationCreation -> {

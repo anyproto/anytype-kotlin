@@ -161,6 +161,11 @@ sealed class WidgetView {
         }
     }
 
+    object EmptyState : WidgetView() {
+        override val id: Id get() = "id.widgets.empty.state"
+        override val isLoading: Boolean = false
+    }
+
     interface Draggable
 }
 

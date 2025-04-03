@@ -483,7 +483,12 @@ class HomeScreenViewModel(
             }
             addAll(filtered)
             if (hasEditAccess) {
-                addAll(actions)
+                // >1, and not >0, because space widget view is always there.
+                if (widgets.size > 1) {
+                    addAll(actions)
+                } else {
+                    add(WidgetView.EmptyState)
+                }
             }
         }
     }

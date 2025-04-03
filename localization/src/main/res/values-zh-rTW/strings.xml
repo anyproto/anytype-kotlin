@@ -938,6 +938,7 @@
     <string name="create_widget">建立一個小工具</string>
     <string name="edit_widgets">編輯</string>
     <string name="add_widget">添加</string>
+    <string name="empty_state_add_widget">新增小工具</string>
     <string name="widget_source">小工具來源</string>
     <string name="widget_type">小工具類型</string>
     <string name="widget_add_below">在下方添加</string>
@@ -1717,4 +1718,5 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

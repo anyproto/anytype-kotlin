@@ -609,15 +609,9 @@ class BlockDataRepository(
         prefilled = prefilled
     )
 
-    override suspend fun createType(
-        space: Id,
-        name: String,
-        emojiUnicode: String?,
-    ): Struct? = remote.createType(
-        space = space,
-        name = name,
-        emojiUnicode = emojiUnicode
-    )
+    override suspend fun createType(command: Command.CreateObjectType): String {
+        return remote.createType(command)
+    }
 
     override suspend fun createRelationOption(
         space: Id,

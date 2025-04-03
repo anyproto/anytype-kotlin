@@ -16,6 +16,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
@@ -295,8 +296,12 @@ class Navigator : AppNavigation {
     }
 
     override fun openCreateObjectTypeScreen(spaceId: Id) {
+        val args = CreateTypeFragment.args(
+            spaceId = spaceId
+        )
         navController?.navigate(
-            resId = R.id.createObjectTypeScreen
+            resId = R.id.createObjectTypeScreen,
+            args = args
         )
     }
 

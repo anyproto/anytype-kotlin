@@ -986,23 +986,17 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateObjectType(
-        space: Id,
-        name: String,
-        emojiUnicode: String?
-    ): Struct {
+        command: Command.CreateObjectType
+    ): String {
         val request = Rpc.Object.CreateObjectType.Request(
-            details = buildMap {
-                put(Relations.NAME, name)
-                emojiUnicode?.let {
-                    put(Relations.ICON_EMOJI, it)
-                }
-            },
-            spaceId = space
+            details = command.details,
+            spaceId = command.spaceId,
+            internalFlags = command.internalFlags.toMiddlewareModel()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreateObjectType(request) }
-        logResponseIfDebug(response)
-        return response.details ?: throw IllegalStateException("Null object type struct")
+        logResponseIfDebug(response, time)
+        return response.objectId
     }
 
     @Throws(Exception::class)

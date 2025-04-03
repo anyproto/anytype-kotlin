@@ -26,8 +26,10 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFie
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFactory
+import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.SpaceTypesVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -213,8 +215,11 @@ interface SpaceTypesDependencies : ObjectTypeDependencies
 interface CreateObjectTypeComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: CreateObjectTypeDependencies)
-        : CreateObjectTypeComponent
+        fun create(
+            @BindsInstance vmParams: CreateTypeVmParams,
+            dependencies: CreateObjectTypeDependencies
+        )
+                : CreateObjectTypeComponent
     }
 
     fun inject(fragment: CreateTypeFragment)
@@ -222,6 +227,14 @@ interface CreateObjectTypeComponent {
 
 @Module
 object CreateObjectTypeModule {
+
+    @Provides
+    @PerScreen
+    @JvmStatic
+    fun createObjectType(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObjectType = CreateObjectType(repo, dispatchers)
 
     @Module
     interface Declarations {
@@ -233,5 +246,11 @@ object CreateObjectTypeModule {
     }
 }
 
-interface CreateObjectTypeDependencies : ObjectTypeDependencies
+interface CreateObjectTypeDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+}
 //endregion

@@ -107,6 +107,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
+import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -1114,10 +1115,10 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val createObjectTypeComponent = Component {
+    val createObjectTypeComponent = ComponentWithParams { params: CreateTypeVmParams ->
         DaggerCreateObjectTypeComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(params, findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

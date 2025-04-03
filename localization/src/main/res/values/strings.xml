@@ -268,7 +268,7 @@
     <string name="select">Select</string>
     <string name="search">Search</string>
     <string name="search_hint">Search...</string>
-    <string name="relations">Relations</string>
+    <string name="relations">Properties</string>
     <string name="fields">Fields</string>
     <string name="download">Download</string>
     <string name="view">View</string>
@@ -335,10 +335,10 @@
     <string name="relation_format_phone">Phone number</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object relation</string>
-    <string name="relation_format_relation">Relation</string>
+    <string name="relation_format_relation">Properties</string>
     <string name="viewer_sorting_prefix">Then</string>
     <string name="enter_value">Enter value</string>
-    <string name="ityem_relations">Relations</string>
+    <string name="ityem_relations">Properties</string>
     <string name="add_sort">Add a sort</string>
     <string name="apply">Apply</string>
     <string name="add_filter">Add a filter</string>
@@ -740,7 +740,7 @@
     <string name="create">Create</string>
     <string name="new_view">New view</string>
     <string name="coming_soon">Coming soon</string>
-    <string name="edit_relations_title">Relations</string>
+    <string name="edit_relations_title">Properties</string>
     <string name="edit_view">Edit view</string>
     <string name="relation_open_edit">Open to edit</string>
 
@@ -963,7 +963,7 @@
     <string name="slash_widget_main_media">Media</string>
     <string name="slash_widget_main_objects">Objects</string>
     <string name="slash_widget_main_objects_subheader">Objects</string>
-    <string name="slash_widget_main_relations">Relations</string>
+    <string name="slash_widget_main_relations">Properties</string>
     <string name="slash_widget_main_other">Other</string>
     <string name="slash_widget_main_actions">Actions</string>
     <string name="slash_widget_main_alignment">Alignment</string>
@@ -1075,13 +1075,13 @@
     <!--region LIBRARY -->
 
     <string name="library_title_types">Types</string>
-    <string name="library_title_relations">Relations</string>
+    <string name="library_title_relations">Properties</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">My types</string>
-    <string name="library_subtitle_relations">My relations</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">Library</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1649,7 +1649,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
     <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
     <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
     <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
 
@@ -1786,7 +1786,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Types</string>
-    <string name="all_content_title_tab_relations">Relations</string>
+    <string name="all_content_title_tab_relations">Properties</string>
     <string name="all_content_sort_by">Sort by</string>
 
     <string name="all_content_sort_name_desc">Z → A</string>

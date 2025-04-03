@@ -940,6 +940,7 @@
     <string name="create_widget">Maak een widget aan</string>
     <string name="edit_widgets">Bewerken</string>
     <string name="add_widget">Toevoegen</string>
+    <string name="empty_state_add_widget">Voeg widget toe</string>
     <string name="widget_source">Widget bron</string>
     <string name="widget_type">Widget type</string>
     <string name="widget_add_below">Voeg hieronder toe</string>
@@ -1730,4 +1731,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_conflict_screen_action_button">Zet terug naar standaard</string>
     <string name="object_conflict_menu_item_title">Los opmaak conflict op</string>
     <string name="widget_source_suggested">Voorgesteld</string>
+    <string name="widgets_empty_state_message">Er zijn nog geen widgets</string>
 </resources>

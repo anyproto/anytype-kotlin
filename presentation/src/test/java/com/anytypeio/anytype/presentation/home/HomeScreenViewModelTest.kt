@@ -389,14 +389,14 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    addAll(HomeScreenViewModel.actions)
+                    add(WidgetView.EmptyState)
                 }
             )
         }
     }
 
     @Test
-    fun `should emit only actions when home screen has no associated widgets except the default ones`() =
+    fun `should emit empty state when home screen has no associated widgets`() =
         runTest {
 
             // SETUP
@@ -411,8 +411,6 @@ class HomeScreenViewModelTest {
                 blocks = listOf(smartBlock),
                 details = emptyMap()
             )
-
-            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
 
             stubConfig()
             stubInterceptEvents(events = emptyFlow())
@@ -440,7 +438,7 @@ class HomeScreenViewModelTest {
                 assertEquals(
                     expected = buildList {
                         add(defaultSpaceWidgetView)
-                        addAll(HomeScreenViewModel.actions)
+                        add(WidgetView.EmptyState)
                     },
                     actual = secondTimeItem
                 )
@@ -2071,7 +2069,7 @@ class HomeScreenViewModelTest {
                 actual = secondTimeState,
                 expected = buildList {
                     add(defaultSpaceWidgetView)
-                    addAll(HomeScreenViewModel.actions)
+                    add(WidgetView.EmptyState)
                 }
             )
         }

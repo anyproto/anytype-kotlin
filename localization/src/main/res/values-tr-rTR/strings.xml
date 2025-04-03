@@ -940,6 +940,7 @@
     <string name="create_widget">Bir widget oluştur</string>
     <string name="edit_widgets">Düzenle</string>
     <string name="add_widget">Ekle</string>
+    <string name="empty_state_add_widget">Widget ekle</string>
     <string name="widget_source">Widget kaynağı</string>
     <string name="widget_type">Widget tipi</string>
     <string name="widget_add_below">Aşağıya ekle</string>
@@ -1611,12 +1612,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_fields_menu_add_to_type">Geçerli türe ekle</string>
     <string name="object_type_fields_menu_remove">Kaldır</string>
     <string name="object_type_fields_local_info_title">Nesnelerin içinde bulundu</string>
-    <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
+    <string name="object_type_fields_local_info_description">Bu özellikler bazı nesnelerde bulunur ama Türün bir parçası değildir. Bu Türün tüm nesnelerinde görünmelerini sağlamak için onları ekleyin.</string>
     <string name="object_type_fields_local_info_button">Anladım</string>
-    <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
-    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_type_templates_empty">Bu türün herhangi bir\nşablonu yoktur</string>
+    <string name="object_properties_section_local">Yerel özellikler</string>
     <string name="object_properties_section_hidden">Gizli</string>
-    <string name="object_properties_local_info_title">Local properties</string>
+    <string name="object_properties_local_info_title">Yerel özellikler</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
     <string name="object_type_open_type_error">Mevcut nesne türü açılırken hata oluştu</string>
     <string name="day_of_week_monday">Pazartesi</string>
@@ -1730,4 +1731,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_conflict_screen_action_button">Reset to default</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

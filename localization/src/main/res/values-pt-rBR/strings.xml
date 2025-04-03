@@ -940,6 +940,7 @@
     <string name="create_widget">Criar um componente</string>
     <string name="edit_widgets">Editar</string>
     <string name="add_widget">Adicionar</string>
+    <string name="empty_state_add_widget">Adicionar Widget</string>
     <string name="widget_source">Fonte do widget</string>
     <string name="widget_type">Tipo de widget</string>
     <string name="widget_add_below">Adicionar abaixo</string>
@@ -1727,4 +1728,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

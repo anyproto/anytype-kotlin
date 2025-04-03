@@ -59,6 +59,7 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
@@ -492,6 +493,16 @@ private fun WidgetList(
                                 )
                             }
                         }
+                    }
+                }
+                is WidgetView.EmptyState -> {
+                    if (mode !is InteractionMode.Edit) {
+                        EmptyStateWidgetScreen(
+                            modifier = Modifier.fillParentMaxSize(),
+                            onAddWidgetClicked = {
+                                onCreateWidget()
+                            }
+                        )
                     }
                 }
             }

@@ -110,6 +110,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -1641,6 +1642,16 @@ class ObjectSetViewModel(
                     EventWrapper(
                         AppNavigation.Command.OpenParticipant(
                             objectId = target,
+                            space = space
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.OBJECT_TYPE -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenTypeObject(
+                            target = target,
                             space = space
                         )
                     )

@@ -73,7 +73,8 @@ class SetObjectFeaturedPropertiesTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
+        fieldParser =
+            FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         urlBuilder.stub {
             on { large(any()) } doReturn "any/url"
         }
@@ -162,6 +163,11 @@ class SetObjectFeaturedPropertiesTest {
         assertEquals(
             expected = listOf(propertyObjectType.key, propertyTag.key, propertyBacklinks.key),
             actual = featuredPropertiesBlock!!.relations.map { it.key })
+
+        assertEquals(
+            expected = false,
+            actual = featuredPropertiesBlock.hasFeaturePropertiesConflict
+        )
     }
 
     @Test
@@ -259,11 +265,16 @@ class SetObjectFeaturedPropertiesTest {
         )
 
         assertEquals(
+            expected = true,
+            actual = featuredPropertiesBlock!!.hasFeaturePropertiesConflict
+        )
+
+        assertEquals(
             expected = listOf(
                 propertyBacklinks.key,
                 propertyAuthor.key
             ),
-            actual = featuredPropertiesBlock!!.relations.map { it.key })
+            actual = featuredPropertiesBlock.relations.map { it.key })
     }
 
     @Test
@@ -362,6 +373,11 @@ class SetObjectFeaturedPropertiesTest {
         )
 
         assertEquals(
+            expected = true,
+            actual = featuredPropertiesBlock!!.hasFeaturePropertiesConflict
+        )
+
+        assertEquals(
             expected = listOf(
                 propertyObjectType.key,
                 propertyTag.key,
@@ -370,4 +386,117 @@ class SetObjectFeaturedPropertiesTest {
             ),
             actual = featuredPropertiesBlock!!.relations.map { it.key })
     }
+
+    @Test
+    fun `should not has a conflict, when all featured are presented in type recommended`() =
+        runTest {
+
+            val propertyObjectType = StubRelationObject(
+                id = "propertyObjectType_id",
+                name = "Object type",
+                key = Relations.TYPE
+            )
+            val propertyTag = StubRelationObject(
+                id = "propertyTag_id",
+                name = "Tag",
+                key = "key-tag"
+            )
+            val propertyBacklinks = StubRelationObject(
+                id = "propertyBacklinks_id",
+                name = "Backlinks",
+                key = "key-backlinks"
+            )
+            val propertyDescription = StubRelationObject(
+                id = "propertyDescription_id",
+                name = "Description",
+                key = Relations.DESCRIPTION
+            )
+
+            val propertyAuthor = StubRelationObject(
+                id = "propertyAuthor_id",
+                name = "Author",
+                key = "key-author"
+            )
+
+            storeOfRelations.merge(
+                relations = listOf(
+                    propertyObjectType,
+                    propertyTag,
+                    propertyBacklinks,
+                    propertyDescription,
+                    propertyAuthor
+                )
+            )
+
+            val objType = StubObjectType(
+                name = "Query",
+                uniqueKey = ObjectTypeIds.SET,
+                recommendedLayout = ObjectType.Layout.SET.code.toDouble(),
+                recommendedFeaturedRelations = listOf(
+                    propertyBacklinks.id,
+                    propertyAuthor.id,
+                    propertyObjectType.id,
+                    propertyTag.id,
+                    propertyDescription.id
+                )
+            )
+
+            storeOfObjectTypes.merge(
+                types = listOf(objType)
+            )
+
+            val objectSet = StubObject(
+                id = "id",
+                name = "Pages",
+                description = "This the description of Pages Set",
+                objectType = objType.id,
+                extraFields = mapOf(
+                    Relations.FEATURED_RELATIONS to listOf(
+                        propertyBacklinks.key,
+                        propertyDescription.key,
+                        propertyAuthor.key,
+                    )
+                )
+            )
+
+            val featuredBlock = StubFeatured()
+
+            val objectState = ObjectState.DataView.Set(
+                root = objectSet.id,
+                blocks = listOf(featuredBlock),
+                details = ObjectViewDetails(
+                    details = mapOf(
+                        objectSet.id to objectSet.map,
+                        objType.id to objType.map,
+                    )
+                )
+            )
+
+            val featuredPropertiesBlock = toFeaturedPropertiesViews(
+                objectId = objectSet.id,
+                storeOfRelations = storeOfRelations,
+                storeOfObjectTypes = storeOfObjectTypes,
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                details = objectState.details,
+                blocks = objectState.blocks,
+                participantCanEdit = true,
+                conflictResolutionStrategy = ConflictResolutionStrategy.MERGE
+            )
+
+            assertEquals(
+                expected = listOf(
+                    propertyBacklinks.key,
+                    propertyAuthor.key,
+                    propertyObjectType.key,
+                    propertyTag.key,
+                ),
+                actual = featuredPropertiesBlock!!.relations.map { it.key }
+            )
+
+            assertEquals(
+                expected = false,
+                actual = featuredPropertiesBlock.hasFeaturePropertiesConflict
+            )
+        }
 }

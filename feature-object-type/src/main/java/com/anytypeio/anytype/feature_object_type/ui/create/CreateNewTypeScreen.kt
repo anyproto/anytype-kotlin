@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -45,33 +44,43 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.HeadlineTitle
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.ui.header.NameField
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
-data class UiCreateTypeState(
-    val icon: ObjectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
-    val initialTitle: String,
-) {
-    companion object {
-        val Empty = UiCreateTypeState(
-            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
-            initialTitle = ""
-        )
-    }
+sealed class UiTypeSetupTitleAndIconState {
+
+    abstract val icon: ObjectIcon.TypeIcon.Default
+
+    data class CreateNewType(
+        override val icon: ObjectIcon.TypeIcon.Default,
+        val initialTitle: String = "",
+        val initialPlural: String = ""
+    ) : UiTypeSetupTitleAndIconState()
+
+    data class EditType(
+        override val icon: ObjectIcon.TypeIcon.Default,
+        val initialTitle: String = "",
+        val initialPlural: String = ""
+    ) : UiTypeSetupTitleAndIconState()
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateNewTypeScreen(
-    uiState: UiCreateTypeState,
+fun SetTypeTitlesAndIconScreen(
+    uiState: UiTypeSetupTitleAndIconState,
     modifier: Modifier = Modifier,
+    onTitleChanged: (String) -> Unit,
+    onPluralChanged: (String) -> Unit,
+    onIconClicked: () -> Unit,
     onDismiss: () -> Unit,
+    onButtonClicked: () -> Unit
 ) {
 
     val bottomSheetState = rememberModalBottomSheetState(
@@ -97,16 +106,27 @@ fun CreateNewTypeScreen(
     ) {
         CreateNewTypeScreenContent(
             uiState = uiState,
-            onDismiss = onDismiss
+            onTitleChanged = onTitleChanged,
+            onPluralChanged = onPluralChanged,
+            onIconClicked = onIconClicked,
+            onButtonClicked = onButtonClicked
         )
     }
 }
 
 @Composable
 private fun ColumnScope.CreateNewTypeScreenContent(
-    uiState: UiCreateTypeState,
-    onDismiss: () -> Unit,
+    uiState: UiTypeSetupTitleAndIconState,
+    onTitleChanged: (String) -> Unit,
+    onPluralChanged: (String) -> Unit,
+    onIconClicked: () -> Unit,
+    onButtonClicked: () -> Unit
 ) {
+
+    var isButtonEnabled by remember {
+        mutableStateOf(false)
+    }
+
     Spacer(modifier = Modifier.height(12.dp))
     Text(
         modifier = Modifier
@@ -115,7 +135,7 @@ private fun ColumnScope.CreateNewTypeScreenContent(
         textAlign = TextAlign.Center,
         style = Title1,
         color = colorResource(id = R.color.text_primary),
-        text = stringResource(id = R.string.object_type_create_new_title)
+        text = uiState.getTitle()
     )
     Spacer(modifier = Modifier.height(12.dp))
     Row(
@@ -128,25 +148,28 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                 shape = RoundedCornerShape(12.dp)
             )
             .padding(horizontal = 16.dp)
-            .padding(vertical = 20.dp)
+            .padding(vertical = 12.dp)
     ) {
         ListWidgetObjectIcon(
             modifier = Modifier
-                .size(30.dp)
                 .noRippleThrottledClickable {
-
+                    onIconClicked()
                 },
+            iconSize = 48.dp,
             icon = uiState.icon,
             backgroundColor = R.color.amp_transparent
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(0.dp))
         CreateTypeField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 2.5.dp)
+                .padding(top = 11.5.dp)
                 .wrapContentHeight(),
-            initialName = uiState.initialTitle,
-            onTypeEvent = {},
+            hint = uiState.getTitleHint(),
+            onTextChanged = {
+                onTitleChanged(it)
+                isButtonEnabled = it.isNotEmpty()
+            }
         )
     }
 
@@ -176,9 +199,10 @@ private fun ColumnScope.CreateNewTypeScreenContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            initialName = "",
-        ) { }
-
+            hint = uiState.getPluralHint(),
+            textStyle = BodyRegular,
+            onTextChanged = onPluralChanged
+        )
     }
     Spacer(modifier = Modifier.height(22.dp))
 
@@ -187,9 +211,10 @@ private fun ColumnScope.CreateNewTypeScreenContent(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         onClick = {
-            onDismiss()
+            onButtonClicked()
         },
-        text = stringResource(id = R.string.create),
+        enabled = isButtonEnabled,
+        text = uiState.getButtonTitle(),
         size = ButtonSize.Large,
     )
     Spacer(modifier = Modifier.height(10.dp))
@@ -198,13 +223,14 @@ private fun ColumnScope.CreateNewTypeScreenContent(
 @Composable
 private fun CreateTypeField(
     modifier: Modifier,
-    initialName: String,
-    onTypeEvent: (TypeEvent) -> Unit
+    textStyle: androidx.compose.ui.text.TextStyle = HeadlineHeading,
+    hint: String,
+    onTextChanged: (String) -> Unit
 ) {
 
     var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(
-            TextFieldValue(initialName)
+            TextFieldValue("")
         )
     }
 
@@ -217,13 +243,9 @@ private fun CreateTypeField(
         value = textFieldValue,
         onValueChange = { newValue ->
             textFieldValue = newValue
-            onTypeEvent.invoke(
-                TypeEvent.OnObjectTypeTitleUpdate(
-                    title = textFieldValue.text
-                )
-            )
+            onTextChanged(textFieldValue.text)
         },
-        textStyle = HeadlineTitle.copy(color = colorResource(id = R.color.text_primary)),
+        textStyle = textStyle.copy(color = colorResource(id = R.color.text_primary)),
         singleLine = false,
         cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
         modifier = modifier
@@ -234,24 +256,19 @@ private fun CreateTypeField(
         keyboardActions = KeyboardActions {
             keyboardController?.hide()
             focusManager.clearFocus()
-            onTypeEvent.invoke(
-                TypeEvent.OnObjectTypeTitleUpdate(
-                    title = textFieldValue.text
-                )
-            )
+            onTextChanged(textFieldValue.text)
         },
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(32.dp),
+                    .fillMaxWidth(),
                 contentAlignment = Alignment.CenterStart
             ) {
                 if (textFieldValue.text.isEmpty()) {
                     Text(
                         modifier = Modifier.wrapContentSize(),
-                        text = stringResource(id = R.string.untitled),
-                        style = HeadlineTitle,
+                        text = hint,
+                        style = textStyle,
                         color = colorResource(id = R.color.text_tertiary),
                     )
                 }
@@ -261,16 +278,72 @@ private fun CreateTypeField(
     )
 }
 
+@Composable
+fun UiTypeSetupTitleAndIconState.getTitleHint(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_title_hint)
+        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.untitled)
+    }
+}
+
+@Composable
+fun UiTypeSetupTitleAndIconState.getPluralHint(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_plural_title_hint)
+        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.untitled)
+    }
+}
+
+@Composable
+fun UiTypeSetupTitleAndIconState.getTitle(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_new_title)
+        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.object_type_rename_title)
+    }
+}
+
+@Composable
+fun UiTypeSetupTitleAndIconState.getButtonTitle(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.create)
+        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.done)
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun CreateNewTypeScreenPreview() {
     Column {
         CreateNewTypeScreenContent(
-            uiState = UiCreateTypeState(
-                icon = ObjectIcon.TypeIcon.Default.DEFAULT,
-                initialTitle = "To add a dependency on Emoji2, you must add the Google Maven repository to your project. Read Google's Maven repository for more information"
+            uiState = UiTypeSetupTitleAndIconState.CreateNewType(
+                icon = ObjectIcon.TypeIcon.Default(
+                    rawValue = "american-football",
+                    color = CustomIconColor.Red
+                )
             ),
-            onDismiss = {}
+            onTitleChanged = {},
+            onPluralChanged = {},
+            onIconClicked = { /* no-op */ },
+            onButtonClicked = { /* no-op */ }
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun EditTypeScreenPreview() {
+    Column {
+        CreateNewTypeScreenContent(
+            uiState = UiTypeSetupTitleAndIconState.EditType(
+                icon = ObjectIcon.TypeIcon.Default(
+                    rawValue = "american-football",
+                    color = CustomIconColor.Red
+                )
+            ),
+            onTitleChanged = {},
+            onPluralChanged = {},
+            onIconClicked = { /* no-op */ },
+            onButtonClicked = { /* no-op */ }
         )
     }
 }

@@ -84,8 +84,8 @@ class GetSuggestedWidgetTypes @Inject constructor(
                         if (wrapper.layout == ObjectType.Layout.OBJECT_TYPE) {
                             usedObjectTypes.add(wrapper.id)
                         } else {
-                            if (BundledWidgetSourceIds.ids.contains(wrapper.id)) {
-                                usedSystemSources.add(wrapper.id)
+                            if (BundledWidgetSourceIds.ids.contains(content.target)) {
+                                usedSystemSources.add(content.target)
                             }
                         }
                     }

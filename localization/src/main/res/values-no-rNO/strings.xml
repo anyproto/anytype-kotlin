@@ -92,7 +92,6 @@
     <string name="option_other_divider">Linjeskiller</string>
     <string name="option_other_dots">Prikkelinje</string>
     <string name="option_other_code">Kodesnutt</string>
-    <string name="option_relation_relation">Relasjon</string>
     <string name="toolbar_section_text">Tekst</string>
     <string name="toolbar_section_list">Liste</string>
     <string name="toolbar_section_page">Side</string>
@@ -100,7 +99,7 @@
     <string name="toolbar_section_tool">Verktøy</string>
     <string name="toolbar_section_media">Media</string>
     <string name="toolbar_section_objects">Objekter</string>
-    <string name="toolbar_section_relation">Relasjon</string>
+    <string name="toolbar_section_relation">Property</string>
     <string name="toolbar_action_delete">Slett</string>
     <string name="toolbar_action_duplicate">Dupliser</string>
     <string name="toolbar_action_mention">Mention</string>
@@ -174,7 +173,7 @@
     <string name="hint_paste_link">Lim inn lenke</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Untitled</string>
-    <string name="untitled_set">Navnløst sett</string>
+    <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Navnløs samling</string>
     <string name="archived">Arkivert</string>
     <string name="loading">Laster…</string>
@@ -233,7 +232,6 @@
     <string name="search_hint">Søk...</string>
     <string name="relations">Relasjoner</string>
     <string name="fields">Fields</string>
-    <string name="relation">Relasjon</string>
     <string name="download">Last ned</string>
     <string name="view">Visning</string>
     <string name="views">Visninger</string>
@@ -256,8 +254,8 @@
     <string name="mention_suggester_create_object">Opprett objekt</string>
     <string name="your_search_query">Søk</string>
     <string name="syncing">Synkroniserer…</string>
-    <string name="choose_a_object_type_for_this_set">Velg en objekttype for dette settet</string>
-    <string name="new_set">Nytt sett</string>
+    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="new_set">New query</string>
     <string name="create_new_object_type">Opprett ny objekttype</string>
     <plurals name="page_selected">
         <item quantity="one">%d side valgt</item>
@@ -319,8 +317,8 @@
     <string name="unknown_object_type">Ukjent type</string>
     <string name="relation_format_short_text">Kort tekst</string>
     <string name="relation_format_long_text">Tekst</string>
-    <string name="set_new_relation">Angi ny relasjon</string>
-    <string name="relation_deleted">Slettet relasjon</string>
+    <string name="set_new_relation">Set new property</string>
+    <string name="relation_deleted">Deleted property</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Heldekkende farger</string>
@@ -340,7 +338,7 @@
     <string name="heading">Overskrift</string>
     <string name="subheading">Underoverskrift</string>
     <string name="create_from_scratch">Create from scratch</string>
-    <string name="create_relation_with_name">Create relation \"%1$s\"</string>
+    <string name="create_relation_with_name">Create property \"%1$s\"</string>
     <string name="name_is_required">Name is required</string>
     <string name="favourite">Favoritt</string>
     <string name="template">Mal</string>
@@ -378,7 +376,7 @@
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blokk støttet ikke</string>
-    <string name="new_relation">Ny relasjon</string>
+    <string name="new_relation">New property</string>
     <string name="copy_link">Kopier lenke</string>
     <string name="edit_link">Rediger lenke</string>
     <string name="unlink">Koble fra</string>
@@ -402,7 +400,6 @@
     <string name="no_data">Ingen data</string>
     <string name="no_source">Ingen kilde</string>
     <string name="deleted_object">Slettet objekt</string>
-    <string name="open_set">Åpne sett</string>
     <string name="deleted">Slettet</string>
     <string name="paste_link_or_search">Lim inn kobling eller søk i objekter</string>
     <string name="paste_from_clipboard">Lim inn fra utklippstavle</string>
@@ -430,7 +427,7 @@
     <string name="card">Kort</string>
     <string name="inline">Inline</string>
     <string name="set_view">Set View</string>
-    <string name="inline_set">Innfelt sett</string>
+    <string name="inline_set">Inline query</string>
     <string name="inline_collection">Innfelt samling</string>
     <string name="fit_image">Tilpass bilde</string>
     <string name="image_preview">Forhåndsvisning av bilde</string>
@@ -489,18 +486,19 @@
     <string name="error_find_block">Could\'t find the selected block</string>
     <string name="error_block_selection">Block selection error</string>
     <string name="undefined">Undefined</string>
-    <string name="set_by_relation">Relation: %1$s</string>
-    <string name="set_by_relations">Relations: %1$s</string>
+    <string name="set_by_relation">Property: %1$s</string>
+    <string name="set_by_relations">Properties: %1$s</string>
     <string name="set_by_type">Type: %1$s</string>
     <string name="my_types">Mine typer</string>
-    <string name="my_relations">Mine relasjoner</string>
+    <string name="my_relations">My properties</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
-    <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
-    <string name="block_data_view_content_description_no_source">The inline set has no source</string>
-    <string name="block_data_view_content_description_no_data">The source of the inline set has no type</string>
+    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Nylig åpnet</string>
     <string name="widget_source_anytype_library">Anytype bibliotek</string>
     <string name="widget_source_default_lists">Default lists</string>
+    <string name="widget_source_system">System</string>
     <string name="your_favorite_objects">Dine favorittobjekter</string>
     <string name="on_this_device">På denne enheten</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
@@ -514,8 +512,8 @@
     <string name="set_no_items_title">Ingen objekter</string>
     <string name="set_no_items_description">Opprett det første objektet for å fortsette</string>
     <string name="set_no_items_button">Opprett objekt</string>
-    <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Gjør sett til samling</string>
+    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
+    <string name="menu_turn_to_collection">Turn Query into Collection</string>
     <string name="menu_change_query">Endre spørring</string>
     <string name="collections">Samlinger</string>
     <string name="collection_widget_description">Your collections of objects</string>
@@ -532,8 +530,8 @@
     <string name="file_delete_cancel">Avbryt</string>
     <string name="file_delete_delete">Slett</string>
     <string name="menu_type_change">Endre type</string>
-    <string name="menu_type_open_set">Åpne sett med %1$s</string>
-    <string name="menu_type_create_set">Opprett sett av %1$s</string>
+    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Gjeldende visning kan ikke slettes</string>
     <string name="type_templates_widget_title">Opprett objekt</string>
     <string name="view_layout_widget_title">Oppsett</string>
@@ -649,7 +647,7 @@
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
     <string name="name">Navn</string>
-    <string name="hint_type_name_for_new_relation">Name for new relation</string>
+    <string name="hint_type_name_for_new_relation">Name for new property</string>
     <string name="dv_create_new_object">Ny</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -674,9 +672,9 @@
     <string name="edit_relations_title">Relasjoner</string>
     <string name="edit_view">Redigeringsvisning</string>
     <string name="relation_open_edit">Åpne for å redigere</string>
-    <string name="remove_from_set">Fjern fra dette settet</string>
+    <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Reset</string>
-    <string name="search_a_relation">Search a relation</string>
+    <string name="search_a_relation">Search a property</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Sort empty values at the bottom</string>
     <string name="content_desc_empty_values_top_check_icon">Sort empty values at the top</string>
@@ -698,8 +696,8 @@
     <string name="remove">Fjern</string>
     <string name="choose_options">Velg alternativer</string>
     <string name="search_tags">Search tags</string>
-    <string name="choose_relation_to_filter">Choose a relation to filter</string>
-    <string name="choose_relation_to_sort">Choose a relation to sort</string>
+    <string name="choose_relation_to_filter">Choose a property to filter</string>
+    <string name="choose_relation_to_sort">Choose a property to sort</string>
     <string name="btn_apply_new_object">Legg til i listen</string>
     <string name="btn_add">Legg til</string>
     <string name="btn_upload_gallery">Last opp fra galleri</string>
@@ -708,10 +706,9 @@
     <string name="alert_qr_camera">Go to Settings – Key on Desktop in order to find the QR code for login.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Velg alternativ</string>
-    <string name="find_a_relation">Finn en relasjon</string>
+    <string name="find_a_relation">Find a property</string>
     <string name="inbox">Innboks</string>
     <string name="unknown_type">Ukjent type</string>
-    <string name="set">Sett</string>
     <string name="collection">Samling</string>
     <string name="layout">Oppsett</string>
     <string name="button_fields">Egenskaper</string>
@@ -738,7 +735,7 @@
     <string name="object_not_exist">Dette objektet eksisterer ikke</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Gå tilbake</string>
-    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="snack_object_set_not_found">Query not found for this type.</string>
     <string name="create_new_set">Opprett</string>
     <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Lukk</string>
@@ -770,9 +767,9 @@
     <string name="without_template">Uten mal</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your Key from settings</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
+    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
-    <string name="fragment_relation_create_from_scratch_title">Velg relasjonstype</string>
+    <string name="fragment_relation_create_from_scratch_title">Select property type</string>
     <string name="fragment_dashboard_restore">Gjenopprett</string>
     <string name="your_account_deleted">Your vault is deleted.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -794,7 +791,7 @@
     <string name="snack_move_to">flyttet til</string>
     <string name="recovery_phrase_copied">Your Key copied</string>
     <string name="type_editing_title">Type settings</string>
-    <string name="relation_editing_title">Relation settings</string>
+    <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Fjern</string>
     <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
@@ -943,6 +940,7 @@
     <string name="create_widget">Create a widget</string>
     <string name="edit_widgets">Rediger</string>
     <string name="add_widget">Legg til</string>
+    <string name="empty_state_add_widget">Legg til Widget</string>
     <string name="widget_source">Widget-kilde</string>
     <string name="widget_type">Widget-type</string>
     <string name="widget_add_below">Legg til under</string>
@@ -954,7 +952,7 @@
     <string name="widget_type_compact_list_description">Widget med kompakt listevisning</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Visning</string>
-    <string name="widget_type_view_description">Widget med sett- eller samlingsoppsett</string>
+    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Endre kilde</string>
     <string name="widget_change_type">Change Type</string>
@@ -968,19 +966,19 @@
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
     <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a relation</string>
+    <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mine typer</string>
     <string name="library_subtitle_relations">Mine relasjoner</string>
     <string name="library_subtitle_library">Bibliotek</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
-    <string name="library_create_new_relation">Create a relation \'%1$s\'</string>
+    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
     <string name="library_objects_empty">There are no %1$s named \'%2$s\'</string>
     <string name="library_objects_empty_action">Try creating new one or search for something else</string>
     <string name="library_relations_empty">There are no types named \'%1$s\'</string>
     <string name="library_type_added">Type `%1$s` added to your library\"</string>
     <string name="library_type_removed">Type `%1$s` removed from your library\"</string>
-    <string name="library_relation_added">Relation `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Relation `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
+    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
     <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
     <string name="type_creation_new_type">New type</string>
     <string name="type_creation_done">Ferdig</string>
@@ -1041,8 +1039,8 @@
     <string name="content_description_delete_button">Delete button</string>
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
-    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
-    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
+    <string name="content_description_remove_from_set_button">Remove property from this query</string>
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
@@ -1078,7 +1076,7 @@
     <string name="sharing_menu_btn_add">Legg til</string>
     <string name="sharing_menu_btn_open">Åpne</string>
     <!--endregion-->
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Ingen</string>
     <string name="relation_origin_clipboard">Utklippstavle</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
@@ -1097,7 +1095,7 @@
         <item quantity="one">%d link</item>
         <item quantity="other">%d links</item>
     </plurals>
-    <!--region ORIGIN RELATION VALUES -->
+    <!--region ORIGIN PROPERTIES VALUES -->
     <string name="date_type_tomorrow">I morgen</string>
     <string name="date_type_today">I dag</string>
     <string name="date_type_yesterday">I går</string>
@@ -1126,12 +1124,12 @@
     <string name="option_widget_edit">Rediger valg</string>
     <string name="options_empty_description">Fant ingenting. Opprett første alternativ for å starte.</string>
     <string name="options_empty_title">Ingen valg</string>
-    <string name="options_empty_not_editable">Relasjonen er tom</string>
+    <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Er du sikker?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="object_values_empty_description">Objects not found</string>
     <string name="object_values_empty_title">No values</string>
-    <string name="object_values_empty_not_editable">Relasjonen er tom</string>
+    <string name="object_values_empty_not_editable">The property is empty</string>
     <string name="object_values_delete_title">Er du sikker?</string>
     <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Skriv inn navn...</string>
@@ -1560,12 +1558,12 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_error_title">Something went wrong.</string>
     <string name="onboarding_my_first_space">My First Space</string>
     <string name="all_content_error_unexpected_layout">Error: unexpected layout</string>
-    <string name="all_content_toast_relation_added">Relation added</string>
-    <string name="all_content_toast_relation_removed">Relation removed</string>
+    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Object type added</string>
     <string name="all_content_toast_type_removed">Object type removed</string>
     <string name="all_content_toast_archived">Object archived</string>
-    <string name="all_content_new_relation">Ny relasjon</string>
+    <string name="all_content_new_relation">New property</string>
     <string name="all_content_new_type">New type</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">moved to bin</string>
@@ -1593,17 +1591,17 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
-    <string name="object_type_objects_menu_open_set">Open Set</string>
-    <string name="object_type_objects_menu_create_set">Create Set</string>
+    <string name="object_type_objects_menu_open_set">Open Query</string>
+    <string name="object_type_objects_menu_create_set">Create Query</string>
     <string name="object_type_templates_menu_set_default">Bruk som standard</string>
     <string name="object_type_templates_menu_edit">Rediger</string>
     <string name="object_type_templates_menu_duplicate">Dupliser</string>
     <string name="object_type_templates_menu_delete">Slett</string>
-    <string name="object_type_fields_section_header">Shown in object header</string>
-    <string name="object_type_fields_section_fields_menu">Shown in properties menu</string>
+    <string name="object_type_fields_section_header">Header</string>
+    <string name="object_type_fields_section_fields_menu">Properties panel</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Fil</string>
-    <string name="object_type_fields_section_local_fields">Local properties</string>
+    <string name="object_type_fields_section_local_fields">Found in objects </string>
     <string name="object_type_fields_title">Egenskaper</string>
     <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>
@@ -1613,10 +1611,14 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Fjern</string>
-    <string name="object_type_fields_local_info_title">Local fields</string>
-    <string name="object_type_fields_local_info_description">Some fields are not included in the object type. Please add them if you want to see them in all objects of this type, or remove them.</string>
+    <string name="object_type_fields_local_info_title">Found in objects</string>
+    <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
     <string name="object_type_fields_local_info_button">Got it</string>
     <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
+    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_properties_section_hidden">Hidden</string>
+    <string name="object_properties_local_info_title">Local properties</string>
+    <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
     <string name="object_type_open_type_error">Error opening current object type</string>
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
@@ -1643,12 +1645,12 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_settings_item_remove">Delete type</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
-    <string name="object_set_of_title">Set of</string>
+    <string name="object_set_of_title">Query of</string>
     <string name="migration_migration_is_in_progress">Migration is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Prøv igjen</string>
     <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please free up space and run the process again.</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
     <string name="fields_screen_title">Egenskaper</string>
     <string name="field_text_title">Tekst</string>
     <string name="field_text_empty">Enter</string>
@@ -1681,6 +1683,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Invite</string>
+    <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">Medlemmer</string>
     <string name="space_settings_types_button">Object Types</string>
@@ -1722,4 +1725,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title">Endre ikon</string>
     <string name="object_type_icon_remove">Fjern</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_conflict_screen_title">Resolve layout conflict</string>
+    <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
+    <string name="object_conflict_screen_action_button">Reset to default</string>
+    <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
+    <string name="widget_source_suggested">Suggested</string>
+    <string name="widgets_empty_state_message">There is no widgets yet</string>
 </resources>

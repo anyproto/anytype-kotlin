@@ -962,7 +962,7 @@
     <string name="library_title_types">类型</string>
     <string name="library_title_relations">属性</string>
     <string name="library_description_types">类型就像是帮助你对对象进行分组和管理的分类。</string>
-    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
+    <string name="library_description_relations">所有对象都是相互关联的。使用属性在对象之间建立连接。</string>
     <string name="library_button_create_type">创建类型</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">我的类型</string>
@@ -1405,7 +1405,7 @@
     <string name="notifications_alert_error_internal">出现内部错误。已经通知了我们团队。</string>
     <string name="notifications_alert_error_no_objects_to_import">没有找到要导入的项目。请选择有效的对象进行导入。</string>
     <string name="notifications_alert_error_import_canceled">导入流程已被用户取消。</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">导入的行数或属性数量已超出限制。请减少数量后重试。</string>
     <string name="notifications_alert_error_file_load">加载文件时出现了一点问题。请检查文件后重试。</string>
     <string name="notifications_alert_error_insufficient_permissions">您没有执行此操作的必要权限。请检查您的权限并重试。</string>
     <!-- Gallery Experience -->

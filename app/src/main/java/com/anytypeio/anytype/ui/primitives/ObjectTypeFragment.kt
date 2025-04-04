@@ -92,7 +92,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 }
 
                 ObjectTypeCommand.OpenFieldsScreen -> {
-                    navComposeController.navigate(OBJ_TYPE_FIELDS)
+                    navComposeController.navigate(OBJ_TYPE_PROPERTIES)
                 }
 
                 is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
@@ -107,6 +107,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     }.onFailure {
                         Timber.e(it, "Error while opening edit object type properties screen")
                     }
+                }
+
+                ObjectTypeCommand.CloseFieldsScreen -> {
+                    navComposeController.popBackStack()
                 }
             }
         }
@@ -149,14 +153,13 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     onTypeEvent = vm::onTypeEvent
                 )
             }
-            composable(route = OBJ_TYPE_FIELDS) {
+            composable(route = OBJ_TYPE_PROPERTIES) {
                 FieldsMainScreen(
                     uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
                     uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                    withDragger = false,
                     fieldEvent = vm::onFieldEvent
                 )
             }
@@ -232,7 +235,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
     companion object {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
-        private const val OBJ_TYPE_FIELDS = "obj_fields"
+        private const val OBJ_TYPE_PROPERTIES = "obj_properties"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

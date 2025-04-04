@@ -2,29 +2,40 @@ package com.anytypeio.anytype.presentation.widgets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.widgets.GetSuggestedWidgetTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import com.anytypeio.anytype.presentation.widgets.source.SuggestWidgetObjectType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -38,7 +49,8 @@ class SelectWidgetSourceViewModel(
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    fieldParser: FieldParser
+    private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
+    private val fieldParser: FieldParser
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -50,8 +62,48 @@ class SelectWidgetSourceViewModel(
     storeOfObjectTypes = storeOfObjectTypes
 ) {
 
+    val suggested = MutableStateFlow<List<SuggestWidgetObjectType>?>(null)
+
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
+
+    val viewState = combine(
+        stateData
+            .asFlow(),
+        suggested.filterNotNull()
+    ) { state, suggested ->
+        if (suggested.isNotEmpty()) {
+            when(state) {
+                is ObjectSearchView.Success -> {
+                    state.copy(
+                        objects = buildList {
+
+                            // System widgets
+                            add(ObjectSearchSection.SelectWidgetSource.System)
+                            add(BundledWidgetSourceView.Favorites)
+                            add(BundledWidgetSourceView.Recent)
+                            add(BundledWidgetSourceView.RecentLocal)
+                            add(BundledWidgetSourceView.Bin)
+                            add(BundledWidgetSourceView.AllObjects)
+
+                            // Suggested widgets (aka object type widgets)
+                            if (suggested.isNotEmpty()) {
+                                add(ObjectSearchSection.SelectWidgetSource.Suggested)
+                                addAll(suggested)
+                            }
+
+                            // Widgets from existing objects
+                            add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
+                            addAll(state.objects)
+                        }
+                    )
+                }
+                else -> state
+            }
+        } else {
+            state
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -65,55 +117,37 @@ class SelectWidgetSourceViewModel(
     }
 
     override fun resolveViews(result: Resultat<List<DefaultObjectView>>) {
-        result.fold(
-            onSuccess = { views ->
-                if (views.isEmpty()) {
-                    stateData.postValue(ObjectSearchView.NoResults(userInput.value))
-                } else {
-                    if (userInput.value.isEmpty()) {
-                        stateData.postValue(
-                            ObjectSearchView.Success(
-                                buildList {
-                                    add(NewObject)
-                                    add(ObjectSearchSection.SelectWidgetSource.DefaultLists)
-                                    addAll(
-                                        listOf(
-                                            BundledWidgetSourceView.Favorites,
-                                            BundledWidgetSourceView.Sets,
-                                            BundledWidgetSourceView.Collections,
-                                            BundledWidgetSourceView.Recent,
-                                            BundledWidgetSourceView.RecentLocal,
-                                        )
-                                    )
-                                    add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
-                                    addAll(views)
-                                }
-                            )
-                        )
+        viewModelScope.launch {
+            result.fold(
+                onSuccess = { views ->
+                    if (views.isEmpty()) {
+                        stateData.postValue(ObjectSearchView.NoResults(userInput.value))
                     } else {
                         stateData.postValue(ObjectSearchView.Success(views))
                     }
+                },
+                onLoading = {
+                    stateData.postValue(ObjectSearchView.Loading)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while selecting source for widget")
                 }
-            },
-            onLoading = {
-                stateData.postValue(ObjectSearchView.Loading)
-            },
-            onFailure = {
-                Timber.e(it, "Error while selecting source for widget")
-            }
-        )
+            )
+        }
     }
 
     fun onStartWithNewWidget(
+        ctx: Id,
         target: Id?,
         isInEditMode: Boolean
     ) {
         Timber.d("onStart with picking source for new widget")
         config = Config.NewWidget(
+            ctx = ctx,
             target = target,
             isInEditMode = isInEditMode
         )
-        proceedWithSearchQuery()
+        proceedWithSearchQuery(ctx)
     }
 
     fun onStartWithExistingWidget(
@@ -131,10 +165,37 @@ class SelectWidgetSourceViewModel(
             type = type,
             isInEditMode = isInEditMode
         )
-        proceedWithSearchQuery()
+        proceedWithSearchQuery(ctx)
     }
 
-    private fun proceedWithSearchQuery() {
+    private fun proceedWithSearchQuery(ctx: Id) {
+        viewModelScope.launch {
+            getSuggestedWidgetTypes.async(
+                params = GetSuggestedWidgetTypes.Params(
+                    space = vmParams.space,
+                    objectTypeFilters = buildList {
+                        add(
+                            DVFilter(
+                                relation = Relations.SPACE_ID,
+                                condition = DVFilterCondition.EQUAL,
+                                value = vmParams.space.id
+                            )
+                        )
+                        addAll(ObjectSearchConstants.filterTypes())
+                    },
+                    objectTypeKeys = ObjectSearchConstants.defaultKeysObjectType,
+                    ctx = ctx
+                )
+            ).onSuccess { types ->
+                suggested.value = types.map { type ->
+                    SuggestWidgetObjectType(
+                        id = type.id,
+                        name = fieldParser.getObjectPluralName(type),
+                        objectIcon = type.objectIcon()
+                    )
+                }
+            }
+        }
         getObjectTypes()
         startProcessingSearchQuery(null)
     }
@@ -157,6 +218,9 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
+                    if (view is BundledWidgetSourceView.AllObjects) {
+                        isDismissed.value = true
+                    }
                 }
             }
             is Config.ExistingWidget -> {
@@ -175,6 +239,43 @@ class SelectWidgetSourceViewModel(
                             isForNewWidget = false,
                             isInEditMode = curr.isInEditMode
                         )
+                    }
+                    isDismissed.value = true
+                }
+            }
+            Config.None -> {
+                Timber.w("Missing config for widget source")
+            }
+        }
+    }
+
+    fun onSuggestedWidgetObjectTypeClicked(view: SuggestWidgetObjectType) {
+        Timber.d("onSuggestedWidgetObjectTypeClicked, view:[$view]")
+        when (val curr = config) {
+            is Config.NewWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourcePicked.Default(
+                            source = view.id,
+                            target = curr.target,
+                            sourceLayout = ObjectType.Layout.OBJECT_TYPE.code
+                        )
+                    ).also {
+                        // TODO send analytics
+                    }
+                }
+            }
+            is Config.ExistingWidget -> {
+                viewModelScope.launch {
+                    dispatcher.send(
+                        WidgetDispatchEvent.SourceChanged(
+                            ctx = curr.ctx,
+                            widget = curr.widget,
+                            source = view.id,
+                            type = curr.type
+                        )
+                    ).also {
+                        // TODO send analytics
                     }
                     isDismissed.value = true
                 }
@@ -271,6 +372,7 @@ class SelectWidgetSourceViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fieldParser: FieldParser,
         private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -284,7 +386,8 @@ class SelectWidgetSourceViewModel(
                 dispatcher = dispatcher,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                getSuggestedWidgetTypes = getSuggestedWidgetTypes
             ) as T
         }
     }
@@ -292,6 +395,7 @@ class SelectWidgetSourceViewModel(
     sealed class Config {
         data object None : Config()
         data class NewWidget(
+            val ctx: Id,
             val target: Id?,
             val isInEditMode: Boolean
         ) : Config()

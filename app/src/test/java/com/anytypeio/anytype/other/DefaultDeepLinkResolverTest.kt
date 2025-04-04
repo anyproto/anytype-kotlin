@@ -5,6 +5,7 @@ import androidx.compose.runtime.key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertIs
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -55,20 +56,21 @@ class DefaultDeepLinkResolverTest {
 
     @Test
     fun `resolve link to object deep link with invite`() {
-        // Given
 
-        val obj = MockDataFactory.randomUuid()
+        val obj = "bafyreieaishyk22ik3v4m32zuy3uy2tmiv77fxogtjfv6adqfha4o3k3g4"
 
-        val space = MockDataFactory.randomUuid()
+        val space = "bafyreid5qfqm4jsujeuebi3c4oca3hfezhoqazmm6jeg6b7rakcxj5jdse.hsqlz8alp6p8"
 
-        val cid = MockDataFactory.randomUuid()
+        val cid = "bafybeibwcymz6tpq7jydnhwrlouwazzjwu4idoq6sreqold47ovdb7pin4"
 
-        val encryption = MockDataFactory.randomUuid()
+        val encryption = "8wujCkLqv6PiDGHA6iVWRkHpz5y4wF7iHLcrgkSPJqhb"
 
-        val deeplink = "anytype://object?objectId=$obj&spaceId=$space&inviteId=$cid#$encryption"
+        val link = "anytype://object?objectId=$obj&spaceId=$space&cid=$cid&key=$encryption&route=Web"
+
 
         // When
-        val result = deepLinkResolver.resolve(deeplink)
+        val result = deepLinkResolver.resolve(link)
+
 
         // Then
         assertEquals(

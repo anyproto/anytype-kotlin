@@ -161,6 +161,9 @@
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
+        <dialog android:id="@+id/objectTypeFieldsScreen"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
+            android:label="ObjectTypeFieldsScreen" />
     </navigation>
 
     <fragment
@@ -687,6 +690,10 @@
     <dialog
         android:id="@+id/multiplayerFeatureDialog"
         android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
+
+    <dialog
+        android:id="@+id/createObjectTypeScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.CreateTypeFragment"/>
 
     <action
         android:id="@+id/actionOpenSpaceFromVault"

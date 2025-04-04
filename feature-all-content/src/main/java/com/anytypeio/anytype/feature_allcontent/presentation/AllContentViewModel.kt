@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.models.AllContentBottomMenu
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
@@ -112,7 +113,8 @@ class AllContentViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val createObjectType: CreateObjectType
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -833,7 +835,7 @@ class AllContentViewModel(
         when (item) {
             UiContentItem.NewType -> {
                 viewModelScope.launch {
-                    commands.emit(Command.OpenTypeCreation)
+                    commands.emit(OpenTypeCreation(space = vmParams.spaceId.id))
                 }
             }
             is UiContentItem.Type -> {
@@ -1049,7 +1051,7 @@ class AllContentViewModel(
             data class ObjectArchived(val name: String) : SendToast()
         }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
-        data object OpenTypeCreation: Command()
+        data class OpenTypeCreation(val space: Id): Command()
         data class OpenShareScreen(val space: SpaceId): Command()
         data class OpenRelationEditing(
             val typeName: String,

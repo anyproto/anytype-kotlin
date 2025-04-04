@@ -200,6 +200,20 @@ open class ObjectSearchViewModel(
                     )
                 )
             }
+            ObjectType.Layout.OBJECT_TYPE -> {
+                val obj = objects
+                    .value
+                    .getOrNull()
+                    ?.find { obj -> obj.id == view.id }
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenTypeObject(
+                            target = target,
+                            space = requireNotNull(obj?.spaceId)
+                        )
+                    )
+                )
+            }
             ObjectType.Layout.PROFILE -> {
                 val obj = objects
                     .value

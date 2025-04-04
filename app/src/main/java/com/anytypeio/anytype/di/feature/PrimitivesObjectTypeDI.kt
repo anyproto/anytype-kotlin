@@ -26,11 +26,15 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFie
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
+import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFactory
+import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import dagger.Binds
@@ -164,3 +168,55 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
 }
+
+//region Create Type Screen
+@Component(
+    dependencies = [CreateObjectTypeDependencies::class],
+    modules = [
+        CreateObjectTypeModule::class,
+        CreateObjectTypeModule.Declarations::class
+    ]
+)
+@PerScreen
+interface CreateObjectTypeComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: CreateTypeVmParams,
+            dependencies: CreateObjectTypeDependencies
+        )
+                : CreateObjectTypeComponent
+    }
+
+    fun inject(fragment: CreateTypeFragment)
+}
+
+@Module
+object CreateObjectTypeModule {
+
+    @Provides
+    @PerScreen
+    @JvmStatic
+    fun createObjectType(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObjectType = CreateObjectType(repo, dispatchers)
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: CreateObjectTypeVMFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface CreateObjectTypeDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+}
+//endregion

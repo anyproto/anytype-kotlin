@@ -86,7 +86,8 @@ abstract class ObjectMenuViewModelBase(
             hasRelations = false,
             hasDiagnosticsVisibility = false,
             hasHistory = false,
-            hasDescriptionShow = false
+            hasDescriptionShow = false,
+            hasObjectLayoutConflict = false
         )
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
@@ -95,6 +96,9 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onCoverClicked(ctx: Id, space: Id)
     abstract fun onDescriptionClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
+    abstract fun onResetToDefaultLayout(ctx: Id, space: Id)
+
+    val showLayoutConflictScreen = MutableStateFlow(false)
 
     fun onHistoryClicked(ctx: Id, space: Id) {
         viewModelScope.launch {
@@ -475,6 +479,18 @@ abstract class ObjectMenuViewModelBase(
                 obj = ctx,
                 space = space
             )
+        }
+    }
+
+    fun onShowConflictScreen(objectId: Id, space: Id) {
+        viewModelScope.launch {
+            showLayoutConflictScreen.value = true
+        }
+    }
+
+    fun onHideConflictScreen() {
+        viewModelScope.launch {
+            showLayoutConflictScreen.value = false
         }
     }
 

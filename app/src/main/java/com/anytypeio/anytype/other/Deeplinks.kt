@@ -84,11 +84,21 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         val space = uri.getQueryParameter(SPACE_ID_PARAM)?.takeIf { it.isNotEmpty() }
             ?: return DeepLinkResolver.Action.Unknown // Ensure spaceId is required
 
+        val key = uri.getQueryParameter(DefaultSpaceInviteResolver.FILE_KEY_KEY)
+        val cid = uri.getQueryParameter(DefaultSpaceInviteResolver.CONTENT_ID_KEY)
+
         return if (obj != null) {
             DeepLinkResolver.Action.DeepLinkToObject(
                 obj = obj,
                 space = SpaceId(space),
-                invite = parseInvite(uri)
+                invite = if (!key.isNullOrEmpty() && !cid.isNullOrEmpty()) {
+                    DeepLinkResolver.Action.DeepLinkToObject.Invite(
+                        key = key,
+                        cid = cid
+                    )
+                } else {
+                    null
+                }
             )
         } else {
             DeepLinkResolver.Action.Unknown

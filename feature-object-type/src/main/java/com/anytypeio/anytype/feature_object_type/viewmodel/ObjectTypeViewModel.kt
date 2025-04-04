@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.*
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
@@ -204,7 +205,8 @@ class ObjectTypeViewModel(
                             mapObjectTypeToUi(
                                 objType = objType,
                                 objectPermissions = objectPermissions,
-                                conflictingFields = conflictingFields
+                                conflictingFields = conflictingFields,
+                                fieldParser = fieldParser
                             )
                         } else {
                             Timber.w(
@@ -306,13 +308,14 @@ class ObjectTypeViewModel(
     private suspend fun mapObjectTypeToUi(
         objType: ObjectWrapper.Type,
         objectPermissions: ObjectPermissions,
-        conflictingFields: List<Id>
+        conflictingFields: List<Id>,
+        fieldParser: FieldParser
     ) {
         _objTypeState.value = objType
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
-            title = objType.name.orEmpty(),
+            title = fieldParser.getObjectPluralName(objectWrapper = objType),
             isEditable = objectPermissions.canEditDetails
         )
         uiIconState.value = UiIconState(
@@ -335,7 +338,8 @@ class ObjectTypeViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectTypeConflictingPropertiesIds = conflictingFields,
-            showHiddenProperty = vmParams.showHiddenFields
+            showHiddenProperty = vmParams.showHiddenFields,
+            objectPermissions = objectPermissions
         )
         uiFieldsListState.value = UiFieldsListState(items = items)
         uiFieldsButtonState.value = UiFieldsButtonState.Visible(
@@ -431,15 +435,23 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutButtonClick -> {
-                uiTypeLayoutsState.value = Visible(
-                    layouts = listOf(
-                        ObjectType.Layout.BASIC,
-                        ObjectType.Layout.NOTE,
-                        ObjectType.Layout.PROFILE,
-                        ObjectType.Layout.TODO
-                    ),
-                    selectedLayout = _objTypeState.value?.recommendedLayout
-                )
+                if (_objTypeState.value?.recommendedLayout == ObjectType.Layout.NOTE) {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(ObjectType.Layout.NOTE),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                } else {
+                    uiTypeLayoutsState.value = Visible(
+                        layouts = listOf(
+                            ObjectType.Layout.BASIC,
+                            //DROID-3485, NOTE layout is not supported for now
+                            //ObjectType.Layout.NOTE,
+                            ObjectType.Layout.PROFILE,
+                            ObjectType.Layout.TODO
+                        ),
+                        selectedLayout = _objTypeState.value?.recommendedLayout
+                    )
+                }
             }
 
             is TypeEvent.OnSyncStatusClick -> {
@@ -456,6 +468,7 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnObjectTypeTitleUpdate -> {
+                uiTitleState.value = uiTitleState.value.copy(title = event.title)
                 updateTitle(event.title)
             }
 
@@ -698,7 +711,7 @@ class ObjectTypeViewModel(
             FieldEvent.Section.OnAddToSidebarIconClick -> {
                 viewModelScope.launch {
                     commands.emit(
-                        ObjectTypeCommand.OpenEditTypePropertiesScreen(
+                        OpenEditTypePropertiesScreen(
                             typeId = vmParams.objectId,
                             space = vmParams.spaceId.id,
                         )
@@ -747,6 +760,11 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
+            FieldEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.CloseFieldsScreen)
+                }
+            }
         }
     }
 

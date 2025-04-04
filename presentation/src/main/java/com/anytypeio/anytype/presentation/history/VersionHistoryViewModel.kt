@@ -219,7 +219,7 @@ class VersionHistoryViewModel(
             Relation.Format.FILE -> navigation.emit(Command.RelationObject(relation, isSet))
 
             else -> {
-                Timber.d("No interaction allowed with this relation with format:$relationFormat")
+                Timber.d("No interaction allowed with this property with format:$relationFormat")
             }
         }
     }

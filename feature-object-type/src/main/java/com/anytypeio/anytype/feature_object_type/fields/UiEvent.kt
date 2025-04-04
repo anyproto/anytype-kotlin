@@ -1,11 +1,12 @@
 package com.anytypeio.anytype.feature_object_type.fields
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesEvent
 
 sealed class FieldEvent {
 
     data object OnEditPropertyScreenDismiss : FieldEvent()
+
+    data object OnBackClick : FieldEvent()
 
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 

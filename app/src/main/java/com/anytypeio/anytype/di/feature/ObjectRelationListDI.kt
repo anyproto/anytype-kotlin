@@ -106,8 +106,11 @@ object ObjectRelationListModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun deleteRelationFromObject(repo: BlockRepository): DeleteRelationFromObject =
-        DeleteRelationFromObject(repo)
+    fun deleteRelationFromObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteRelationFromObject =
+        DeleteRelationFromObject(repo, dispatchers)
 
     @JvmStatic
     @Provides

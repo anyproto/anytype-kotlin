@@ -102,6 +102,7 @@ class LimitObjectTypeViewModel(
                     keys = listOf(
                         Relations.ID,
                         Relations.NAME,
+                        Relations.PLURAL_NAME,
                         Relations.SNIPPET,
                         Relations.DESCRIPTION,
                         Relations.ICON_EMOJI,

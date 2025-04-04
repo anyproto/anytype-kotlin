@@ -2,10 +2,9 @@ package com.anytypeio.anytype.presentation.objects.menu
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider.Options
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +15,7 @@ import timber.log.Timber
 
 class ObjectMenuOptionsProviderImpl(
     private val objectViewDetailsFlow: Flow<ObjectViewDetails>,
-    private val restrictions: Flow<List<ObjectRestriction>>
+    private val hasObjectLayoutConflict: Flow<Boolean>
 ) : ObjectMenuOptionsProvider {
 
     private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = objectViewDetailsFlow
@@ -41,16 +40,20 @@ class ObjectMenuOptionsProviderImpl(
                 return@map featuredRelations?.any { it == Relations.DESCRIPTION } == true
             }
 
+    private fun observeHasObjectLayoutConflict(): Flow<Boolean> = hasObjectLayoutConflict
+
     override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
         return combine(
             observeLayout(ctx),
-            observeFeatureFieldsContainsDescription(ctx)
-        ) { layout, featuredContainsDescription ->
+            observeFeatureFieldsContainsDescription(ctx),
+            observeHasObjectLayoutConflict()
+        ) { layout, featuredContainsDescription, hasObjectLayoutConflict ->
             createOptions(
                 layout = layout,
                 isLocked = isLocked,
                 isReadOnly = isReadOnly,
-                featuredContainsDescription = featuredContainsDescription
+                featuredContainsDescription = featuredContainsDescription,
+                hasObjectLayoutConflict = hasObjectLayoutConflict
             )
         }
     }
@@ -59,7 +62,8 @@ class ObjectMenuOptionsProviderImpl(
         layout: ObjectType.Layout?,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        featuredContainsDescription: Boolean
+        featuredContainsDescription: Boolean,
+        hasObjectLayoutConflict: Boolean
     ): Options {
         val hasIcon = !isLocked && !isReadOnly
         val hasCover = !isLocked && !isReadOnly
@@ -71,7 +75,8 @@ class ObjectMenuOptionsProviderImpl(
                     hasDiagnosticsVisibility = true,
                     hasHistory = false,
                     hasRelations = false,
-                    hasDescriptionShow = !featuredContainsDescription
+                    hasDescriptionShow = !featuredContainsDescription,
+                    hasObjectLayoutConflict = hasObjectLayoutConflict
                 )
 
                 in SupportedLayouts.systemLayouts -> Options.NONE
@@ -81,7 +86,8 @@ class ObjectMenuOptionsProviderImpl(
                         hasCover = false,
                         hasDiagnosticsVisibility = true,
                         hasHistory = false,
-                        hasDescriptionShow = !featuredContainsDescription
+                        hasDescriptionShow = !featuredContainsDescription,
+                        hasObjectLayoutConflict = hasObjectLayoutConflict
                     )
                 }
 
@@ -92,7 +98,8 @@ class ObjectMenuOptionsProviderImpl(
                         hasCover = hasCover,
                         hasDiagnosticsVisibility = true,
                         hasHistory = !isLocked && !isReadOnly,
-                        hasDescriptionShow = !featuredContainsDescription
+                        hasDescriptionShow = !featuredContainsDescription,
+                        hasObjectLayoutConflict = hasObjectLayoutConflict
                     )
                 }
 
@@ -103,7 +110,8 @@ class ObjectMenuOptionsProviderImpl(
                     hasCover = hasCover,
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
-                    hasDescriptionShow = !featuredContainsDescription
+                    hasDescriptionShow = !featuredContainsDescription,
+                    hasObjectLayoutConflict = hasObjectLayoutConflict
                 )
 
                 ObjectType.Layout.TODO -> Options(
@@ -112,7 +120,8 @@ class ObjectMenuOptionsProviderImpl(
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
-                    hasDescriptionShow = !featuredContainsDescription
+                    hasDescriptionShow = !featuredContainsDescription,
+                    hasObjectLayoutConflict = hasObjectLayoutConflict
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -121,17 +130,20 @@ class ObjectMenuOptionsProviderImpl(
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
-                    hasDescriptionShow = !featuredContainsDescription
+                    hasDescriptionShow = !featuredContainsDescription,
+                    hasObjectLayoutConflict = hasObjectLayoutConflict
                 )
 
                 else -> Options.NONE.copy(
-                    hasDiagnosticsVisibility = true
+                    hasDiagnosticsVisibility = true,
+                    hasObjectLayoutConflict = hasObjectLayoutConflict
                 )
             }
         } else {
             // unknown layout
             Options.NONE.copy(
-                hasDiagnosticsVisibility = true
+                hasDiagnosticsVisibility = true,
+                hasObjectLayoutConflict = hasObjectLayoutConflict
             )
         }
         return options

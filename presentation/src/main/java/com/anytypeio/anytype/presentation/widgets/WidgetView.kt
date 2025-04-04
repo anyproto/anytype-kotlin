@@ -119,6 +119,7 @@ sealed class WidgetView {
             data object Favorites : Type()
             data object Sets: Type()
             data object Collections: Type()
+            data object Bin: Type()
         }
     }
 
@@ -128,10 +129,10 @@ sealed class WidgetView {
         val isEmpty: Boolean = false
     ) : WidgetView()
 
-    data object AllContent: WidgetView() {
-        const val ALL_CONTENT_WIDGET_ID = "bundled-widget.all-content"
+    data class AllContent(
+        override val id: Id
+        ): WidgetView() {
         override val isLoading: Boolean = false
-        override val id: Id = ALL_CONTENT_WIDGET_ID
     }
 
     data object SpaceChat : WidgetView() {
@@ -158,6 +159,11 @@ sealed class WidgetView {
             override val id: Id get() = "id.action.edit-widgets"
             override val isLoading: Boolean = false
         }
+    }
+
+    object EmptyState : WidgetView() {
+        override val id: Id get() = "id.widgets.empty.state"
+        override val isLoading: Boolean = false
     }
 
     interface Draggable

@@ -102,6 +102,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is Command.AddBlock -> {
                 handleAddBlock(state, event)
             }
+            is Command.DataView.UpdateConflictState -> {
+                handleUpdateConflictState(state, event)
+            }
 
             else -> {
                 Timber.d("Ignoring event: $event")
@@ -549,6 +552,24 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             is ObjectState.DataView.TypeSet -> state.copy(blocks = state.blocks + event.blocks)
             ObjectState.Init -> state
             ObjectState.ErrorLayout -> state
+        }
+    }
+
+    private fun handleUpdateConflictState(
+        state: ObjectState,
+        event: Command.DataView.UpdateConflictState
+    ): ObjectState {
+        return when (state) {
+            is ObjectState.DataView.Collection -> state.copy(
+                hasObjectLayoutConflict = event.hasConflict
+            )
+            is ObjectState.DataView.Set -> state.copy(
+                hasObjectLayoutConflict = event.hasConflict
+            )
+            is ObjectState.DataView.TypeSet -> state.copy(
+                hasObjectLayoutConflict = event.hasConflict
+            )
+            else -> state
         }
     }
     //endregion

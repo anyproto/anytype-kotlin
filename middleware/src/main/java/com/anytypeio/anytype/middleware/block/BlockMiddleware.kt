@@ -420,10 +420,10 @@ class BlockMiddleware(
 
     override suspend fun deleteRelationFromObject(
         ctx: Id,
-        relation: Id
+        relations: List<Key>
     ): Payload = middleware.objectRelationDelete(
         ctx = ctx,
-        relation = relation
+        relations = relations
     )
 
     override suspend fun debugSpace(space: SpaceId): String = middleware.debugSpaceSummary(space)
@@ -688,14 +688,8 @@ class BlockMiddleware(
     )
 
     override suspend fun createType(
-        space: Id,
-        name: String,
-        emojiUnicode: String?
-    ): Struct? = middleware.objectCreateObjectType(
-        space = space,
-        name = name,
-        emojiUnicode = emojiUnicode
-    )
+        command: Command.CreateObjectType
+    ): String = middleware.objectCreateObjectType(command)
 
     override suspend fun createRelationOption(
         space: Id,

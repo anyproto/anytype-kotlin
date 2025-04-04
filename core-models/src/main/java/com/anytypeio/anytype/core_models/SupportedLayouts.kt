@@ -63,7 +63,7 @@ object SupportedLayouts {
         ObjectType.Layout.COLLECTION
     )
 
-    val globalSearchLayouts = createObjectLayouts + fileLayouts + dateLayouts
+    val globalSearchLayouts = createObjectLayouts + fileLayouts + dateLayouts + listOf(ObjectType.Layout.OBJECT_TYPE)
 
     val widgetsLayouts = layouts + dateLayouts
 

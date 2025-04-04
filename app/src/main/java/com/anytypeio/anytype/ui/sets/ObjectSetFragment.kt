@@ -129,6 +129,7 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEdi
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
@@ -244,6 +245,8 @@ open class ObjectSetFragment :
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
     private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
 
+    lateinit var titleTextWatcher: DefaultTextWatcher
+
     @Inject
     lateinit var factory: ObjectSetViewModelFactory
     private val vm: ObjectSetViewModel by viewModels { factory }
@@ -251,6 +254,7 @@ open class ObjectSetFragment :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setupOnBackPressedDispatcher()
+        titleTextWatcher = DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -362,10 +366,6 @@ open class ObjectSetFragment :
         binding.listView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
-
-        title.addTextChangedListener(
-            DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
-        )
 
         title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
             vm.onTitleFocusChanged(hasFocus)
@@ -1252,14 +1252,13 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.CreateBookmark -> {
-                findNavController().safeNavigate(
-                    R.id.objectSetScreen,
-                    R.id.setUrlForNewBookmark,
-                    SetObjectCreateRecordFragmentBase.args(
+                val fr = SetObjectCreateBookmarkRecordFragment().apply {
+                    arguments = SetObjectCreateRecordFragmentBase.args(
                         ctx = command.ctx,
-                        space = command.space
+                        space = command.space,
                     )
-                )
+                }
+                fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(
@@ -1368,6 +1367,8 @@ open class ObjectSetFragment :
     override fun onStart() {
         super.onStart()
 
+        title.addTextChangedListener(titleTextWatcher)
+
         vm.navPanelState.onEach {
             if (hasBinding) {
                 binding.bottomToolbar.setState(it)
@@ -1423,6 +1424,7 @@ open class ObjectSetFragment :
 
     override fun onStop() {
         super.onStop()
+        title.removeTextChangedListener(titleTextWatcher)
         vm.onStop()
     }
 

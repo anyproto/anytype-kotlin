@@ -306,6 +306,11 @@ sealed class Event {
                     val defaultObjectTypeId: String?
                 )
             }
+
+            data class UpdateConflictState(
+                override val context: Id,
+                val hasConflict: Boolean
+            ) : DataView()
         }
 
         sealed class Chats : Command() {

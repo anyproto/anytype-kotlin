@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.fields.ui
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,6 +55,8 @@ fun SectionLocalFieldsInfo(
 fun LocalInfoScreen(
     modifier: Modifier,
     bottomSheetState: SheetState,
+    @StringRes title : Int = R.string.object_type_fields_local_info_title,
+    @StringRes description : Int = R.string.object_type_fields_local_info_description,
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
@@ -75,7 +78,7 @@ fun LocalInfoScreen(
             textAlign = TextAlign.Center,
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
-            text = stringResource(R.string.object_type_fields_local_info_title)
+            text = stringResource(title)
         )
         Spacer(modifier = Modifier.height(7.dp))
         Text(
@@ -85,7 +88,7 @@ fun LocalInfoScreen(
             textAlign = TextAlign.Center,
             style = BodyCalloutRegular,
             color = colorResource(id = R.color.text_primary),
-            text = stringResource(R.string.object_type_fields_local_info_description)
+            text = stringResource(description)
         )
         Spacer(modifier = Modifier.height(30.dp))
         ButtonSecondary(

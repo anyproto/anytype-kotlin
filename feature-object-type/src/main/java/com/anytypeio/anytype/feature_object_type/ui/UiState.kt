@@ -31,6 +31,8 @@ sealed class ObjectTypeCommand {
 
     data object OpenFieldsScreen : ObjectTypeCommand()
 
+    data object CloseFieldsScreen : ObjectTypeCommand()
+
     data class OpenEditTypePropertiesScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
 }
 

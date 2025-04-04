@@ -5,12 +5,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -45,7 +48,8 @@ fun FieldListScreen(
     onTypeIconClicked: () -> Unit,
     onLocalInfoIconClicked: () -> Unit,
     onAddToTypeClicked: (Model.Item) -> Unit,
-    onRemoveFromObjectClicked: (Model.Item) -> Unit
+    onRemoveFromObjectClicked: (Model.Item) -> Unit,
+    onHiddenToggle: (Model.Section.Hidden) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -292,6 +296,11 @@ fun FieldListScreen(
                     Model.Section.Local -> {
                         SectionLocal(onLocalInfoIconClicked)
                     }
+
+                    is Model.Section.Hidden -> SectionHidden(
+                        item = item,
+                        onToggle = onHiddenToggle
+                    )
                 }
             }
         )
@@ -305,37 +314,29 @@ fun FieldListScreen(
 private fun SectionLocal(
     onLocalInfoIconClicked: () -> Unit = {}
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(52.dp)
+            .padding(top = 23.dp)
+            .height(22.dp).
+        noRippleThrottledClickable{
+            onLocalInfoIconClicked()
+        },
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            modifier = Modifier
-                .padding(bottom = 7.dp, start = 20.dp)
-                .align(Alignment.BottomStart),
-            text = stringResource(id = R.string.object_type_fields_section_local_fields),
+            modifier = Modifier.padding(start = 20.dp).weight(1.0f),
+            text = stringResource(id = R.string.object_properties_section_local),
             style = BodyCalloutMedium,
             color = colorResource(R.color.text_primary),
         )
-        Box(
+        Image(
             modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .height(37.dp)
-                .width(44.dp)
-                .noRippleThrottledClickable {
-                    onLocalInfoIconClicked()
-                }
-        ) {
-            Image(
-                modifier = Modifier
-                    .padding(bottom = 9.dp, end = 20.dp)
-                    .wrapContentSize()
-                    .align(Alignment.BottomEnd),
-                painter = painterResource(R.drawable.ic_section_local_fields),
-                contentDescription = "Section local fields info"
-            )
-        }
+                .wrapContentSize()
+                .padding(end = 14.dp),
+            painter = painterResource(R.drawable.ic_section_local_fields),
+            contentDescription = "Section local fields info"
+        )
     }
 }
 
@@ -355,9 +356,48 @@ private fun Section(item: Model.Section) {
             style = BodyCalloutMedium,
             color = colorResource(id = R.color.text_secondary),
             modifier = Modifier
-                .padding(vertical = 17.dp)
+                .padding(vertical = 11.dp)
                 .padding(start = 16.dp)
         )
+    }
+}
+
+@Composable
+private fun SectionHidden(
+    item: Model.Section.Hidden,
+    onToggle: (Model.Section.Hidden) -> Unit = {}
+) {
+    val text = stringResource(id = R.string.object_properties_section_hidden)
+    val iconRes = when (item) {
+        is Model.Section.Hidden.Shown -> R.drawable.ic_arrow_up_18
+        is Model.Section.Hidden.Unshown -> R.drawable.ic_list_arrow_18
+    }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .noRippleThrottledClickable{
+                onToggle(item)
+            },
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 7.dp)
+                .padding(start = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier.size(18.dp),
+                painter = painterResource(iconRes),
+                contentDescription = "Hidden section icon",
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = text,
+                style = BodyCalloutMedium,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier
+            )
+        }
     }
 }
 
@@ -365,7 +405,57 @@ private fun Section(item: Model.Section) {
 @Composable
 fun FieldListScreenPreview() {
     FieldListScreen(
-        state = listOf(Model.Section.Local),
+        state = listOf(
+            Model.Item(
+                view = ObjectRelationView.Default(
+                    id = "id3",
+                    system = false,
+                    key = "key3",
+                    name = "Name3",
+                    value = "Value3",
+                    format = RelationFormat.OBJECT
+                ),
+                isLocal = false
+            ),
+            Model.Section.Hidden.Shown(
+                listOf(
+                    Model.Item(
+                        view = ObjectRelationView.Default(
+                            id = "id1",
+                            system = false,
+                            key = "key1",
+                            name = "Name1",
+                            value = "Value1",
+                            format = RelationFormat.LONG_TEXT
+                        ),
+                        isLocal = false
+                    ),
+                    Model.Item(
+                        view = ObjectRelationView.Default(
+                            id = "id2",
+                            system = false,
+                            key = "key2",
+                            name = "Name2",
+                            value = "Value2",
+                            format = RelationFormat.TAG
+                        ),
+                        isLocal = false
+                    ),
+                )
+            ),
+            Model.Section.Local,
+            Model.Item(
+                view = ObjectRelationView.Default(
+                    id = "id55",
+                    system = false,
+                    key = "key55",
+                    name = "Local 55",
+                    value = "Valu55",
+                    format = RelationFormat.OBJECT
+                ),
+                isLocal = false
+            ),
+        ),
         onRelationClicked = {},
         onLocalInfoIconClicked = {},
         onTypeIconClicked = {},

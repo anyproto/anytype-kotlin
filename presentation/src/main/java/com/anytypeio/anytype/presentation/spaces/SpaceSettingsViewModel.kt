@@ -257,6 +257,7 @@ class SpaceSettingsViewModel(
                     add(Spacer(height = 8))
                     add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
                     if (widgetAutoCreationPreference != null) {
+                        add(Spacer(height = 8))
                         add(
                             widgetAutoCreationPreference
                         )

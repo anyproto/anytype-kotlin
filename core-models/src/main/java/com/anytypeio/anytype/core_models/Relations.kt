@@ -202,6 +202,6 @@ object Relations {
         "defaultViewType",
         "defaultTypeId",
         "resolvedLayout",
-        "file_id",
+        "fileId",
     )
 }

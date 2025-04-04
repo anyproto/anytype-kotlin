@@ -328,24 +328,22 @@ fun UiTypeSetupTitleAndIconState.Visible.getButtonTitle(): String {
     }
 }
 
-//@DefaultPreviews
-//@Composable
-//fun CreateNewTypeScreenPreview() {
-//    Column {
-//        CreateNewTypeScreenContent(
-//            uiState = UiTypeSetupTitleAndIconState.Visible.CreateNewType(
-//                icon = ObjectIcon.TypeIcon.Default(
-//                    rawValue = "american-football",
-//                    color = CustomIconColor.Red
-//                )
-//            ),
-//            onTitleChanged = {},
-//            onPluralChanged = {},
-//            onIconClicked = { /* no-op */ },
-//            onButtonClicked = { /* no-op */ }
-//        )
-//    }
-//}
+@DefaultPreviews
+@Composable
+fun CreateNewTypeScreenPreview() {
+    Column {
+        CreateNewTypeScreenContent(
+            uiState = UiTypeSetupTitleAndIconState.Visible.CreateNewType(
+                icon = ObjectIcon.TypeIcon.Default(
+                    rawValue = "american-football",
+                    color = CustomIconColor.Red
+                )
+            ),
+            onIconClicked = { /* no-op */ },
+            onButtonClicked = { _, _ -> }
+        )
+    }
+}
 
 @DefaultPreviews
 @Composable

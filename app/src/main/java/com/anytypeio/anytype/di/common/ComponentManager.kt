@@ -14,6 +14,8 @@ import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
+import com.anytypeio.anytype.di.feature.DaggerSpacePropertiesComponent
+import com.anytypeio.anytype.di.feature.DaggerSpaceTypesComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
@@ -121,6 +123,7 @@ import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
+import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
@@ -129,6 +132,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
+import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 import timber.log.Timber
@@ -1117,6 +1121,18 @@ class ComponentManager(
 
     val createObjectTypeComponent = ComponentWithParams { params: CreateTypeVmParams ->
         DaggerCreateObjectTypeComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val spaceTypesComponent = ComponentWithParams { params: SpaceTypesViewModel.VmParams ->
+        DaggerSpaceTypesComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val spacePropertiesComponent = ComponentWithParams { params: SpacePropertiesViewModel.VmParams ->
+        DaggerSpacePropertiesComponent
             .factory()
             .create(params, findComponentDependencies())
     }

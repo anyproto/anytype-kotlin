@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -15,6 +14,12 @@ import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys
+import com.anytypeio.anytype.presentation.search.buildDeletedFilter
+import com.anytypeio.anytype.presentation.search.buildLayoutFilter
+import com.anytypeio.anytype.presentation.search.buildLimitedObjectIdsFilter
+import com.anytypeio.anytype.presentation.search.buildSpaceIdFilter
+import com.anytypeio.anytype.presentation.search.buildTemplateFilter
+import com.anytypeio.anytype.presentation.search.buildUnlinkedObjectFilter
 
 val allContentTabLayouts = mapOf(
     AllContentTab.PAGES to listOf(
@@ -181,64 +186,4 @@ fun AllContentTab.filtersForSearch(
         }
     }
     return filters
-}
-
-private fun buildLayoutFilter(layouts: List<ObjectType.Layout>): DVFilter = DVFilter(
-    relation = Relations.LAYOUT,
-    condition = DVFilterCondition.IN,
-    value = layouts.map { it.code.toDouble() }
-)
-
-private fun buildTemplateFilter(): DVFilter = DVFilter(
-    relation = Relations.TYPE_UNIQUE_KEY,
-    condition = DVFilterCondition.NOT_EQUAL,
-    value = ObjectTypeUniqueKeys.TEMPLATE
-)
-
-private fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
-    relation = Relations.SPACE_ID,
-    condition = DVFilterCondition.IN,
-    value = spaces
-)
-
-private fun buildUnlinkedObjectFilter(): List<DVFilter> = listOf(
-    DVFilter(
-        relation = Relations.LINKS,
-        condition = DVFilterCondition.EMPTY
-    ),
-    DVFilter(
-        relation = Relations.BACKLINKS,
-        condition = DVFilterCondition.EMPTY
-    )
-)
-
-private fun buildLimitedObjectIdsFilter(limitedObjectIds: List<Id>): DVFilter = DVFilter(
-    relation = Relations.ID,
-    condition = DVFilterCondition.IN,
-    value = limitedObjectIds
-)
-
-private fun buildDeletedFilter(): List<DVFilter> {
-    return listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN_DISCOVERY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        )
-    )
 }

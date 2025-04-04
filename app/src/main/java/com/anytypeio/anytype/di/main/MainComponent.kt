@@ -21,6 +21,8 @@ import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
+import com.anytypeio.anytype.di.feature.SpacePropertiesDependencies
+import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
@@ -139,7 +141,9 @@ interface MainComponent :
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
     DebugDependencies,
-    CreateObjectTypeDependencies
+    CreateObjectTypeDependencies,
+    SpaceTypesDependencies,
+    SpacePropertiesDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -400,4 +404,14 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(CreateObjectTypeDependencies::class)
     abstract fun provideCreateObjectTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpaceTypesDependencies::class)
+    abstract fun provideSpaceTypesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpacePropertiesDependencies::class)
+    abstract fun provideSpacePropertiesDependencies(component: MainComponent): ComponentDependencies
 }

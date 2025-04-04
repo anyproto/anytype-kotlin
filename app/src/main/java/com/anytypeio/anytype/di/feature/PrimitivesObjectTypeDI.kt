@@ -33,10 +33,16 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
+import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
+import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
+import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
+import com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment
+import com.anytypeio.anytype.ui.primitives.SpaceTypesFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -168,6 +174,99 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
 }
+
+//region Space Types Screen
+@Component(
+    dependencies = [SpaceTypesDependencies::class],
+    modules = [
+        SpaceTypesModule::class,
+        SpaceTypesModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpaceTypesComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: SpaceTypesViewModel.VmParams,
+            dependencies: SpaceTypesDependencies
+        ): SpaceTypesComponent
+    }
+
+    fun inject(fragment: SpaceTypesFragment)
+}
+
+@Module
+object SpaceTypesModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: SpaceTypesVmFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface SpaceTypesDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun userPermissionProvider(): UserPermissionProvider
+    fun fieldParser(): FieldParser
+}
+//endregion
+
+//region Space Properties Screen
+@Component(
+    dependencies = [SpacePropertiesDependencies::class],
+    modules = [
+        SpacePropertiesModule::class,
+        SpacePropertiesModule.Declarations::class
+    ]
+)
+@PerScreen
+interface SpacePropertiesComponent {
+    @Component.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: SpacePropertiesViewModel.VmParams,
+            dependencies: SpacePropertiesDependencies
+        ): SpacePropertiesComponent
+    }
+
+    fun inject(fragment: SpacePropertiesFragment)
+}
+
+@Module
+object SpacePropertiesModule {
+
+    @Module
+    interface Declarations {
+        @PerScreen
+        @Binds
+        fun bindViewModelFactory(
+            factory: SpacePropertiesVmFactory
+        ): ViewModelProvider.Factory
+    }
+}
+
+interface SpacePropertiesDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun storeOfRelations(): StoreOfRelations
+    fun userPermissionProvider(): UserPermissionProvider
+    fun fieldParser(): FieldParser
+}
+//endregion
 
 //region Create Type Screen
 @Component(

@@ -30,6 +30,8 @@ import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
+import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
@@ -189,7 +191,7 @@ object SpaceTypesModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: SpaceTypesVMFactory
+            factory: SpaceTypesVmFactory
         ): ViewModelProvider.Factory
     }
 }
@@ -221,7 +223,7 @@ object SpacePropertiesModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: SpaceTypesVMFactory
+            factory: SpacePropertiesVmFactory
         ): ViewModelProvider.Factory
     }
 }

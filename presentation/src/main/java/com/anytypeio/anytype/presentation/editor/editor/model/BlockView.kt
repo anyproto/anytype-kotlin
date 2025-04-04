@@ -72,6 +72,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_UPLOAD
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
@@ -688,9 +689,37 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val hint: String? = null,
+            val url: String?,
             val icon: ObjectIcon
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_FILE_TITLE
+        }
+
+        /**
+         * UI-model for a video-layout title block.
+         * @property id block's id
+         * @property text text content (i.e. title text)
+         * @property videoUrl direct URL to video content
+         */
+        data class Video(
+            override val id: String,
+            override var isFocused: Boolean = false,
+            override var text: String,
+            override var coverColor: CoverColor? = null,
+            override var coverImage: Url? = null,
+            override var coverGradient: String? = null,
+            override val background: ThemeColor = ThemeColor.DEFAULT,
+            override val color: ThemeColor = ThemeColor.DEFAULT,
+            val emoji: String? = null,
+            override val image: String? = null,
+            override val mode: Mode = Mode.READ,
+            override var cursor: Int? = null,
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val hint: String? = null,
+            val videoUrl: String?,
+            val icon: ObjectIcon
+        ) : Title(), Searchable {
+            override fun getViewType() = HOLDER_VIDEO_TITLE
         }
 
         /**
@@ -1433,6 +1462,7 @@ sealed class BlockView : ViewType {
 
         @JvmInline
         value class RowId(val value: String)
+
         @JvmInline
         value class RowIndex(val value: Int)
 
@@ -1440,6 +1470,7 @@ sealed class BlockView : ViewType {
 
         @JvmInline
         value class ColumnId(val value: String)
+
         @JvmInline
         value class ColumnIndex(val value: Int)
 

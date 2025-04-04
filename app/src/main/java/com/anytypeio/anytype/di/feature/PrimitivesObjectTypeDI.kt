@@ -200,7 +200,16 @@ object SpaceTypesModule {
     }
 }
 
-interface SpaceTypesDependencies : ComponentDependencies
+interface SpaceTypesDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun userPermissionProvider(): UserPermissionProvider
+    fun fieldParser(): FieldParser
+}
 //endregion
 
 //region Space Properties Screen
@@ -232,7 +241,17 @@ object SpacePropertiesModule {
     }
 }
 
-interface SpacePropertiesDependencies : ComponentDependencies
+interface SpacePropertiesDependencies : ComponentDependencies {
+    fun stringResourceProvider(): StringResourceProvider
+    fun blockRepository(): BlockRepository
+    fun analyticsHelper(): AnalyticSpaceHelperDelegate
+    fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun storeOfRelations(): StoreOfRelations
+    fun userPermissionProvider(): UserPermissionProvider
+    fun fieldParser(): FieldParser
+}
 //endregion
 
 //region Create Type Screen

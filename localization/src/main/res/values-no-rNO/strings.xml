@@ -230,7 +230,7 @@
     <string name="select">Velg</string>
     <string name="search">Søk</string>
     <string name="search_hint">Søk...</string>
-    <string name="relations">Relasjoner</string>
+    <string name="relations">Egenskaper</string>
     <string name="fields">Fields</string>
     <string name="download">Last ned</string>
     <string name="view">Visning</string>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Telefonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object relation</string>
-    <string name="relation_format_relation">Relasjon</string>
+    <string name="relation_format_relation">Egenskaper</string>
     <string name="viewer_sorting_prefix">Deretter</string>
     <string name="enter_value">Skriv inn verdi</string>
-    <string name="ityem_relations">Relasjoner</string>
+    <string name="ityem_relations">Egenskaper</string>
     <string name="add_sort">Legg til sortering</string>
     <string name="apply">Apply</string>
     <string name="add_filter">Legg til et filter</string>
@@ -669,7 +669,7 @@
     <string name="create">Opprett</string>
     <string name="new_view">Ny visning</string>
     <string name="coming_soon">Kommer snart</string>
-    <string name="edit_relations_title">Relasjoner</string>
+    <string name="edit_relations_title">Egenskaper</string>
     <string name="edit_view">Redigeringsvisning</string>
     <string name="relation_open_edit">Åpne for å redigere</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Media</string>
     <string name="slash_widget_main_objects">Objekter</string>
     <string name="slash_widget_main_objects_subheader">Objekter</string>
-    <string name="slash_widget_main_relations">Relasjoner</string>
+    <string name="slash_widget_main_relations">Egenskaper</string>
     <string name="slash_widget_main_other">Annet</string>
     <string name="slash_widget_main_actions">Handlinger</string>
     <string name="slash_widget_main_alignment">Justering</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Types</string>
-    <string name="library_title_relations">Relasjoner</string>
+    <string name="library_title_relations">Egenskaper</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mine typer</string>
-    <string name="library_subtitle_relations">Mine relasjoner</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">Bibliotek</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1415,7 +1415,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_alert_error_internal">An internal error has occurred. Our team has been notified.</string>
     <string name="notifications_alert_error_no_objects_to_import">No items found to import. Please select valid objects for import.</string>
     <string name="notifications_alert_error_import_canceled">The import process has been canceled by the user.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or relations has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">There was an error loading the file. Please check the file and try again.</string>
     <string name="notifications_alert_error_insufficient_permissions">You do not have the necessary permissions to perform this action. Please check your permissions and try again.</string>
     <!-- Gallery Experience -->
@@ -1531,7 +1531,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">Bookmarks</string>
     <string name="all_content_title_tab_files">Files</string>
     <string name="all_content_title_tab_objetc_types">Types</string>
-    <string name="all_content_title_tab_relations">Relasjoner</string>
+    <string name="all_content_title_tab_relations">Egenskaper</string>
     <string name="all_content_sort_by">Sorter etter</string>
     <string name="all_content_sort_name_desc">Å → A</string>
     <string name="all_content_sort_name_asc">A → Å</string>
@@ -1726,6 +1726,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_remove">Fjern</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

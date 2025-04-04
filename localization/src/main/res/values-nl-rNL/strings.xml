@@ -230,7 +230,7 @@
     <string name="select">Selecteer</string>
     <string name="search">Zoeken</string>
     <string name="search_hint">Zoek...</string>
-    <string name="relations">Relaties</string>
+    <string name="relations">Eigenschappen</string>
     <string name="fields">Velden</string>
     <string name="download">Downloaden</string>
     <string name="view">Weergave</string>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Telefoonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object relatie</string>
-    <string name="relation_format_relation">Relatie</string>
+    <string name="relation_format_relation">Eigenschappen</string>
     <string name="viewer_sorting_prefix">Dan</string>
     <string name="enter_value">Voer waarde in</string>
-    <string name="ityem_relations">Relaties</string>
+    <string name="ityem_relations">Eigenschappen</string>
     <string name="add_sort">Voeg een sortering toe</string>
     <string name="apply">Toepassen</string>
     <string name="add_filter">Voeg een filter toe</string>
@@ -669,7 +669,7 @@
     <string name="create">Maak</string>
     <string name="new_view">Nieuwe weergave</string>
     <string name="coming_soon">Binnenkort</string>
-    <string name="edit_relations_title">Relaties</string>
+    <string name="edit_relations_title">Eigenschappen</string>
     <string name="edit_view">Bewerk weergave</string>
     <string name="relation_open_edit">Open om te bewerken</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Media</string>
     <string name="slash_widget_main_objects">Objecten</string>
     <string name="slash_widget_main_objects_subheader">Objecten</string>
-    <string name="slash_widget_main_relations">Relaties</string>
+    <string name="slash_widget_main_relations">Eigenschappen</string>
     <string name="slash_widget_main_other">Andere</string>
     <string name="slash_widget_main_actions">Acties</string>
     <string name="slash_widget_main_alignment">Uitlijning</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Types</string>
-    <string name="library_title_relations">Relaties</string>
+    <string name="library_title_relations">Eigenschappen</string>
     <string name="library_description_types">Types zijn als categorieën die je helpen bij het groeperen en beheren van jouw objecten.</string>
-    <string name="library_description_relations">Alle objecten zijn verbonden. Gebruik relaties om verbindingen tussen objecten te maken.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Maak een type aan</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mijn types</string>
-    <string name="library_subtitle_relations">Mijn relaties</string>
+    <string name="library_subtitle_relations">Mijn eigenschappen</string>
     <string name="library_subtitle_library">Bibliotheek</string>
     <string name="library_create_new_type">Maak een type \'%1$s\' aan</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1415,7 +1415,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_alert_error_internal">Er is een interne fout opgetreden. Ons team is op de hoogte gebracht.</string>
     <string name="notifications_alert_error_no_objects_to_import">Geen items gevonden om te importeren. Selecteer alsjeblieft geldige objecten om te importeren.</string>
     <string name="notifications_alert_error_import_canceled">Het importeerproces is geannuleerd door de gebruiker.</string>
-    <string name="notifications_alert_error_limit_exceeded">De importeerlimiet voor rijen of relaties is overschreden. Verminder alsjeblieft de hoeveelheid en probeer het opnieuw.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">Er is een fout opgetreden bij het laden van het bestand. Controleer het bestand en probeer het opnieuw.</string>
     <string name="notifications_alert_error_insufficient_permissions">Je hebt niet de benodigde rechten om deze actie uit te voeren. Controleer je machtigingen en probeer het opnieuw.</string>
     <!-- Gallery Experience -->
@@ -1531,7 +1531,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="all_content_title_tab_bookmarks">Bladwijzers</string>
     <string name="all_content_title_tab_files">Bestanden</string>
     <string name="all_content_title_tab_objetc_types">Types</string>
-    <string name="all_content_title_tab_relations">Relaties</string>
+    <string name="all_content_title_tab_relations">Eigenschappen</string>
     <string name="all_content_sort_by">Sorteer op</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1726,6 +1726,11 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_icon_remove">Verwijder</string>
     <string name="object_type_icon_change_title_search_hint">Zoek...</string>
     <string name="space_invite_link_copied">Ruimte uitnodigingskoppeling gekopieerd!</string>
+    <string name="object_type_create_new_title">Maak nieuw type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzel</string>
+    <string name="object_type_create_plural_title_hint">Puzzels</string>
     <string name="object_conflict_screen_title">Los opmaak conflict op</string>
     <string name="object_conflict_screen_description">Deze opmaak verschilt van de standaard van het type. Terugzetten om overeen te laten komen?</string>
     <string name="object_conflict_screen_action_button">Zet terug naar standaard</string>

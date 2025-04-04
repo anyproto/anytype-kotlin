@@ -230,7 +230,7 @@
     <string name="select">Pilih</string>
     <string name="search">Telusuri</string>
     <string name="search_hint">Telusuri ...</string>
-    <string name="relations">Relasi</string>
+    <string name="relations">Properti</string>
     <string name="fields">Fields</string>
     <string name="download">Unduh</string>
     <string name="view">Tampilan</string>
@@ -288,10 +288,10 @@
     <string name="relation_format_phone">Nomor telepon</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Relasi objek</string>
-    <string name="relation_format_relation">Relasi</string>
+    <string name="relation_format_relation">Properti</string>
     <string name="viewer_sorting_prefix">Kemudian</string>
     <string name="enter_value">Masukkan nilai</string>
-    <string name="ityem_relations">Relasi</string>
+    <string name="ityem_relations">Properti</string>
     <string name="add_sort">Add a sort</string>
     <string name="apply">Terapkan</string>
     <string name="add_filter">Add a filter</string>
@@ -668,7 +668,7 @@
     <string name="create">Buat</string>
     <string name="new_view">Tampilan baru</string>
     <string name="coming_soon">Coming soon</string>
-    <string name="edit_relations_title">Relasi</string>
+    <string name="edit_relations_title">Properti</string>
     <string name="edit_view">Sunting tampilan</string>
     <string name="relation_open_edit">Open to edit</string>
     <string name="remove_from_set">Hapus dari kueri ini</string>
@@ -859,7 +859,7 @@
     <string name="slash_widget_main_media">Media</string>
     <string name="slash_widget_main_objects">Objek</string>
     <string name="slash_widget_main_objects_subheader">Objek</string>
-    <string name="slash_widget_main_relations">Relasi</string>
+    <string name="slash_widget_main_relations">Properti</string>
     <string name="slash_widget_main_other">Lainnya</string>
     <string name="slash_widget_main_actions">Tindakan</string>
     <string name="slash_widget_main_alignment">Perataan</string>
@@ -960,13 +960,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Tipe</string>
-    <string name="library_title_relations">Relasi</string>
+    <string name="library_title_relations">Properti</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
+    <string name="library_description_relations">Semua objek saling terhubung. Gunakan properti untuk menghubungkan objek-objek.</string>
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Buat properti</string>
     <string name="library_subtitle_types">Tipeku</string>
-    <string name="library_subtitle_relations">Relasiku</string>
+    <string name="library_subtitle_relations">Propertiku</string>
     <string name="library_subtitle_library">Pustaka</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Buat properti \"%1$s\"</string>
@@ -1409,7 +1409,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_alert_error_internal">Terjadi galat internal. Tim kami telah diberitahukan.</string>
     <string name="notifications_alert_error_no_objects_to_import">Tidak ada item untuk diimpor. Silakan pilih objek yang valid untuk diimpor.</string>
     <string name="notifications_alert_error_import_canceled">Proses impor dibatalkan pengguna.</string>
-    <string name="notifications_alert_error_limit_exceeded">Batas impor untuk baris atau relasi telah tercapai. Silakan kurangi jumlah yang ingin diimpor lalu coba lagi.</string>
+    <string name="notifications_alert_error_limit_exceeded">Batas impor baris atau properti telah tercapai. Silakan kurangi jumlah yang ingin diimpor lalu coba lagi.</string>
     <string name="notifications_alert_error_file_load">Terjadi galat memuat berkas. Silakan cek ulang berkas lalu coba lagi.</string>
     <string name="notifications_alert_error_insufficient_permissions">Kamu tidak memiliki izin yang sesuai untuk melakukan tindakan ini. Silakan cek perizinanmu lalu coba lagi.</string>
     <!-- Gallery Experience -->
@@ -1518,7 +1518,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">Markah</string>
     <string name="all_content_title_tab_files">Berkas</string>
     <string name="all_content_title_tab_objetc_types">Tipe</string>
-    <string name="all_content_title_tab_relations">Relasi</string>
+    <string name="all_content_title_tab_relations">Properti</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1713,6 +1713,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_remove">Hapus</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Tautan undangan Ruang disalin!</string>
+    <string name="object_type_create_new_title">Buat tipe baru</string>
+    <string name="object_type_rename_title">Ganti nama tipe</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Lerai konflik tata letak</string>
     <string name="object_conflict_screen_description">Tata letak ini berbeda dengan tata letak bawaan tipe ini. Samakan?</string>
     <string name="object_conflict_screen_action_button">Atur ulang ke bawaan</string>

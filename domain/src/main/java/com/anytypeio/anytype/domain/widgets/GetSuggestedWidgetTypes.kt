@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -19,11 +20,11 @@ import javax.inject.Inject
 class GetSuggestedWidgetTypes @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository,
-) : ResultInteractor<GetSuggestedWidgetTypes.Params, List<ObjectWrapper.Type>>(dispatchers.io) {
+) : ResultInteractor<GetSuggestedWidgetTypes.Params, GetSuggestedWidgetTypes.Result>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): List<ObjectWrapper.Type> {
+    override suspend fun doWork(params: Params): Result {
 
-        val alreadyUsedObjectTypes = getAlreadyUsedTypes(
+        val (alreadyUsedObjectTypes, alreadyUsedSystemSources) = getAlreadyUsedTypes(
             space = params.space,
             widgets = params.ctx
         )
@@ -55,11 +56,15 @@ class GetSuggestedWidgetTypes @Inject constructor(
             ObjectWrapper.Type(result)
         }
 
-        return types
+        return Result(
+            suggestedObjectTypes = types,
+            suggestedSystemSources = BundledWidgetSourceIds.ids - alreadyUsedSystemSources
+        )
     }
 
-    private suspend fun getAlreadyUsedTypes(space: SpaceId, widgets: Id) : List<Id> {
-        val result = mutableListOf<Id>()
+    private suspend fun getAlreadyUsedTypes(space: SpaceId, widgets: Id) : Pair<List<Id>, List<Id>> {
+        val usedObjectTypes = mutableListOf<Id>()
+        val usedSystemSources = mutableListOf<Id>()
 
         runCatching {
             val preview = repo.getObject(space = space, id = widgets)
@@ -77,14 +82,18 @@ class GetSuggestedWidgetTypes @Inject constructor(
                         )
                         val wrapper = ObjectWrapper.Basic(source)
                         if (wrapper.layout == ObjectType.Layout.OBJECT_TYPE) {
-                            result.add(wrapper.id)
+                            usedObjectTypes.add(wrapper.id)
+                        } else {
+                            if (BundledWidgetSourceIds.ids.contains(wrapper.id)) {
+                                usedSystemSources.add(wrapper.id)
+                            }
                         }
                     }
                 }
             }
         }
 
-        return result.distinct()
+        return usedObjectTypes.distinct() to usedSystemSources.distinct()
     }
 
 
@@ -93,6 +102,11 @@ class GetSuggestedWidgetTypes @Inject constructor(
         val ctx: Id,
         val objectTypeFilters: List<DVFilter>,
         val objectTypeKeys: List<Id>
+    )
+
+    data class Result(
+        val suggestedObjectTypes: List<ObjectWrapper.Type>,
+        val suggestedSystemSources: List<String>
     )
     
     companion object {

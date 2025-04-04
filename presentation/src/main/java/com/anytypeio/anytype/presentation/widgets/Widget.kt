@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 
@@ -80,16 +81,6 @@ sealed class Widget {
         sealed class Bundled : Source() {
             data object Favorites : Bundled() {
                 override val id: Id = BundledWidgetSourceIds.FAVORITE
-                override val type: Id? = null
-            }
-
-            data object Sets : Bundled() {
-                override val id: Id = BundledWidgetSourceIds.SETS
-                override val type: Id? = null
-            }
-
-            data object Collections : Bundled() {
-                override val id: Id = BundledWidgetSourceIds.COLLECTIONS
                 override val type: Id? = null
             }
 

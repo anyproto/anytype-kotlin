@@ -71,18 +71,3 @@ object WidgetConfig {
     private val compactListLimitOptions = intArrayOf(DEFAULT_COMPACT_LIST_LIMIT, 10, 14)
     private val treeLimitOptions = intArrayOf(DEFAULT_TREE_LIMIT, 10, 14)
 }
-
-object BundledWidgetSourceIds {
-    const val FAVORITE = "favorite"
-    const val RECENT = "recent"
-    const val RECENT_LOCAL = "recentOpen"
-    const val BIN = "bin"
-    const val ALL_OBJECTS = "allObjects"
-
-    @Deprecated("DROID-3438 To be deleted")
-    const val SETS = "set"
-    @Deprecated("DROID-3438 To be deleted")
-    const val COLLECTIONS = "collection"
-
-    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, SETS, COLLECTIONS, BIN, ALL_OBJECTS)
-}

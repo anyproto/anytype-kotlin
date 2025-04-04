@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
@@ -191,9 +192,7 @@ class ListWidgetContainer(
     private fun resolveType() = when (subscription) {
         BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent
         BundledWidgetSourceIds.RECENT_LOCAL -> WidgetView.ListOfObjects.Type.RecentLocal
-        BundledWidgetSourceIds.SETS -> WidgetView.ListOfObjects.Type.Sets
         BundledWidgetSourceIds.FAVORITE -> WidgetView.ListOfObjects.Type.Favorites
-        BundledWidgetSourceIds.COLLECTIONS -> WidgetView.ListOfObjects.Type.Collections
         BundledWidgetSourceIds.BIN -> WidgetView.ListOfObjects.Type.Bin
         else -> throw IllegalStateException("Unexpected subscription: $subscription")
     }
@@ -236,18 +235,6 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
-
-            BundledWidgetSourceIds.SETS -> {
-                StoreSearchParams(
-                    space = SpaceId(space),
-                    subscription = subscription,
-                    sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(),
-                    keys = keys,
-                    limit = limit
-                )
-            }
-
             BundledWidgetSourceIds.FAVORITE -> {
                 StoreSearchParams(
                     space = SpaceId(space),
@@ -269,18 +256,6 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
-
-            BundledWidgetSourceIds.COLLECTIONS -> {
-                StoreSearchParams(
-                    space = SpaceId(space),
-                    subscription = subscription,
-                    sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(),
-                    keys = keys,
-                    limit = limit
-                )
-            }
-
             BundledWidgetSourceIds.BIN, Subscriptions.SUBSCRIPTION_BIN -> {
                 StoreSearchParams(
                     space = SpaceId(space),

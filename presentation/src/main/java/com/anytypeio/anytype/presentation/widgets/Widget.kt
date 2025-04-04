@@ -231,8 +231,6 @@ fun List<Block>.parseWidgets(
 fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
     BundledWidgetSourceIds.RECENT_LOCAL -> Widget.Source.Bundled.RecentLocal
-    BundledWidgetSourceIds.SETS -> Widget.Source.Bundled.Sets
-    BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
     BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
     BundledWidgetSourceIds.ALL_OBJECTS -> Widget.Source.Bundled.AllObjects

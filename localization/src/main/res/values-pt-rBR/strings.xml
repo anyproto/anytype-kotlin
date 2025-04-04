@@ -230,7 +230,7 @@
     <string name="select">Selecionar</string>
     <string name="search">Pesquisar</string>
     <string name="search_hint">Pesquisar...</string>
-    <string name="relations">Relações</string>
+    <string name="relations">Propriedades</string>
     <string name="fields">Fields</string>
     <string name="download">Baixar</string>
     <string name="view">Exibição</string>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Número de telefone</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object relation</string>
-    <string name="relation_format_relation">Relação</string>
+    <string name="relation_format_relation">Propriedades</string>
     <string name="viewer_sorting_prefix">Então</string>
     <string name="enter_value">Inserir valor</string>
-    <string name="ityem_relations">Relações</string>
+    <string name="ityem_relations">Propriedades</string>
     <string name="add_sort">Adicionar ordenação</string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Adicionar um filtro</string>
@@ -669,7 +669,7 @@
     <string name="create">Criar</string>
     <string name="new_view">Nova Exibição</string>
     <string name="coming_soon">Em breve</string>
-    <string name="edit_relations_title">Relações</string>
+    <string name="edit_relations_title">Propriedades</string>
     <string name="edit_view">Editar exibição</string>
     <string name="relation_open_edit">Abrir para editar</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Mídias</string>
     <string name="slash_widget_main_objects">Objetos</string>
     <string name="slash_widget_main_objects_subheader">Objetos</string>
-    <string name="slash_widget_main_relations">Relações</string>
+    <string name="slash_widget_main_relations">Propriedades</string>
     <string name="slash_widget_main_other">Outro</string>
     <string name="slash_widget_main_actions">Ações</string>
     <string name="slash_widget_main_alignment">Alinhamento</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Tipos</string>
-    <string name="library_title_relations">Relações</string>
+    <string name="library_title_relations">Propriedades</string>
     <string name="library_description_types">Tipos são como categorias que te ajudam a agrupar e gerenciar seus objetos.</string>
-    <string name="library_description_relations">Todos os objetos são conectados. Use relações para construir conexões entre os objetos.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Criar um Tipo</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Meus tipos</string>
-    <string name="library_subtitle_relations">Meus relacionamentos</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">Biblioteca</string>
     <string name="library_create_new_type">Criar Tipo \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1412,7 +1412,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="notifications_alert_error_internal">Ocorreu um erro interno. Nossa equipe foi notificada.</string>
     <string name="notifications_alert_error_no_objects_to_import">Nenhum item encontrado para importação. Por favor, selecione objetos válidos para importação.</string>
     <string name="notifications_alert_error_import_canceled">O processo de importação foi cancelado pelo usuário.</string>
-    <string name="notifications_alert_error_limit_exceeded">O limite de importação para linhas ou relações foi excedido. Por favor, reduza o montante e tente novamente.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">Houve um erro ao carregar o arquivo. Por favor, verifique o arquivo e tente novamente.</string>
     <string name="notifications_alert_error_insufficient_permissions">Você não tem as permissões necessárias para executar esta ação. Por favor, verifique suas permissões e tente novamente.</string>
     <!-- Gallery Experience -->
@@ -1528,7 +1528,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_title_tab_bookmarks">Marca página</string>
     <string name="all_content_title_tab_files">Arquivos</string>
     <string name="all_content_title_tab_objetc_types">Tipos</string>
-    <string name="all_content_title_tab_relations">Relações</string>
+    <string name="all_content_title_tab_relations">Propriedades</string>
     <string name="all_content_sort_by">Ordenar por</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1723,6 +1723,11 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="object_type_icon_remove">Remover</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

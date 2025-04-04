@@ -13,7 +13,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFac
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeViewModel
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeCommand
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
-import com.anytypeio.anytype.ui.base.navigation
 import javax.inject.Inject
 import kotlin.getValue
 import timber.log.Timber
@@ -50,8 +48,6 @@ class CreateTypeFragment: BaseBottomSheetComposeFragment() {
             SetTypeTitlesAndIconScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 onDismiss = vm::onDismiss,
-                onTitleChanged = vm::onTypeTitleChanged,
-                onPluralChanged = vm::onTypePluralChanged,
                 onIconClicked = vm::onIconClicked,
                 onButtonClicked = vm::onButtonClicked
             )

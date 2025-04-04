@@ -33,12 +33,16 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
+import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
+import com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment
+import com.anytypeio.anytype.ui.primitives.SpaceTypesFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
@@ -183,8 +187,13 @@ interface ObjectTypeDependencies : ComponentDependencies {
 interface SpaceTypesComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: SpaceTypesDependencies): SpaceTypesComponent
+        fun create(
+            @BindsInstance vmParams: SpaceTypesViewModel.VmParams,
+            dependencies: SpaceTypesDependencies
+        ): SpaceTypesComponent
     }
+
+    fun inject(fragment: SpaceTypesFragment)
 }
 
 @Module
@@ -224,8 +233,13 @@ interface SpaceTypesDependencies : ComponentDependencies {
 interface SpacePropertiesComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: SpaceTypesDependencies): SpacePropertiesComponent
+        fun create(
+            @BindsInstance vmParams: SpacePropertiesViewModel.VmParams,
+            dependencies: SpacePropertiesDependencies
+        ): SpacePropertiesComponent
     }
+
+    fun inject(fragment: SpacePropertiesFragment)
 }
 
 @Module

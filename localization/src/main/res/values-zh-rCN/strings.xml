@@ -230,7 +230,7 @@
     <string name="select">选择</string>
     <string name="search">搜索</string>
     <string name="search_hint">搜索</string>
-    <string name="relations">关联</string>
+    <string name="relations">属性</string>
     <string name="fields">字段</string>
     <string name="download">下载</string>
     <string name="view">视图</string>
@@ -288,10 +288,10 @@
     <string name="relation_format_phone">电话号码</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">对象关系</string>
-    <string name="relation_format_relation">关联</string>
+    <string name="relation_format_relation">属性</string>
     <string name="viewer_sorting_prefix">然后</string>
     <string name="enter_value">输入值</string>
-    <string name="ityem_relations">关联</string>
+    <string name="ityem_relations">属性</string>
     <string name="add_sort">添加排序</string>
     <string name="apply">应用</string>
     <string name="add_filter">添加筛选</string>
@@ -668,7 +668,7 @@
     <string name="create">创建</string>
     <string name="new_view">新建视图</string>
     <string name="coming_soon">即将上线</string>
-    <string name="edit_relations_title">关联</string>
+    <string name="edit_relations_title">属性</string>
     <string name="edit_view">编辑视图</string>
     <string name="relation_open_edit">打开编辑</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -859,7 +859,7 @@
     <string name="slash_widget_main_media">媒体</string>
     <string name="slash_widget_main_objects">对象</string>
     <string name="slash_widget_main_objects_subheader">对象</string>
-    <string name="slash_widget_main_relations">关联</string>
+    <string name="slash_widget_main_relations">属性</string>
     <string name="slash_widget_main_other">其他</string>
     <string name="slash_widget_main_actions">操作</string>
     <string name="slash_widget_main_alignment">排列</string>
@@ -960,13 +960,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">类型</string>
-    <string name="library_title_relations">关联</string>
+    <string name="library_title_relations">属性</string>
     <string name="library_description_types">类型就像是帮助你对对象进行分组和管理的分类。</string>
-    <string name="library_description_relations">所有对象都已连接。使用关联在对象之间建立连接。</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">创建类型</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">我的类型</string>
-    <string name="library_subtitle_relations">我的关联</string>
+    <string name="library_subtitle_relations">我的属性</string>
     <string name="library_subtitle_library">文库</string>
     <string name="library_create_new_type">创建类型 %1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1405,7 +1405,7 @@
     <string name="notifications_alert_error_internal">出现内部错误。已经通知了我们团队。</string>
     <string name="notifications_alert_error_no_objects_to_import">没有找到要导入的项目。请选择有效的对象进行导入。</string>
     <string name="notifications_alert_error_import_canceled">导入流程已被用户取消。</string>
-    <string name="notifications_alert_error_limit_exceeded">导入的行数或关联已经超出限制。请减少数量然后重试。</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">加载文件时出现了一点问题。请检查文件后重试。</string>
     <string name="notifications_alert_error_insufficient_permissions">您没有执行此操作的必要权限。请检查您的权限并重试。</string>
     <!-- Gallery Experience -->
@@ -1514,7 +1514,7 @@
     <string name="all_content_title_tab_bookmarks">书签</string>
     <string name="all_content_title_tab_files">文件</string>
     <string name="all_content_title_tab_objetc_types">类型</string>
-    <string name="all_content_title_tab_relations">关联</string>
+    <string name="all_content_title_tab_relations">属性</string>
     <string name="all_content_sort_by">排序方式</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1709,6 +1709,11 @@
     <string name="object_type_icon_remove">移除</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">新建类型</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">解决布局冲突</string>
     <string name="object_conflict_screen_description">此布局不同于该类型的默认值。重置为相符的？</string>
     <string name="object_conflict_screen_action_button">重置为默认值</string>

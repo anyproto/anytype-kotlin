@@ -125,7 +125,8 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                         mime = fileObject.fileMimeType,
                         fileName = fileObject.name,
                         extensions = fileExt
-                    )
+                    ),
+                    url = null
                 ),
                 BlockView.ButtonOpenFile.FileButton(
                     id = fileBlock.id,

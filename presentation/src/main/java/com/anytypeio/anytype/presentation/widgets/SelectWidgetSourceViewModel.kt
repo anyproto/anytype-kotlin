@@ -200,6 +200,14 @@ class SelectWidgetSourceViewModel(
         startProcessingSearchQuery(null)
     }
 
+    override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
+        return super.getSearchObjectsParams(ignore).copy(
+            filters = ObjectSearchConstants.filterSearchObjects(
+                excludeTypes = true
+            )
+        )
+    }
+
     fun onBundledWidgetSourceClicked(view: BundledWidgetSourceView) {
         Timber.d("onBundledWidgetSourceClicked, view:[$view]")
         when (val curr = config) {

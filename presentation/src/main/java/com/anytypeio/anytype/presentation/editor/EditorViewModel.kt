@@ -264,6 +264,7 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
 import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
@@ -274,6 +275,7 @@ import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -287,6 +289,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
+import kotlin.collections.orEmpty
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -5330,27 +5333,38 @@ class EditorViewModel(
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
         val objectViewDetails = orchestrator.stores.details.current()
+        val currentObj = objectViewDetails.getObject(vmParams.ctx)
+        if (currentObj == null) {
+            Timber.e("Object with id $context not found.")
+            return
+        }
+        val objType = objectViewDetails.getTypeForObject(vmParams.ctx)
+        if (objType == null) {
+            Timber.e("Object type of object $context not found.")
+            return
+        }
 
         viewModelScope.launch {
-            val objectRelationViews = objectViewDetails.getObjRelationsViews(
-                ctx = vmParams.ctx,
-                urlBuilder = urlBuilder,
+            val parsedFields = fieldParser.getObjectParsedProperties(
+                objectType = objType,
                 storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                objPropertiesKeys = currentObj.map.keys.toList().orEmpty()
             )
 
-            val recommendedRelationViews = objectViewDetails.getRecommendedRelations(
-                ctx = vmParams.ctx,
-                storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser,
-                urlBuilder = urlBuilder,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-            val update =
-                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
+            val properties = (parsedFields.header + parsedFields.sidebar).mapNotNull {
+                it.view(
+                    details = objectViewDetails,
+                    values = currentObj.map,
+                    urlBuilder = urlBuilder,
+                    fieldParser = fieldParser,
+                    isFeatured = currentObj.featuredRelations.contains(it.key),
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            }.map {
+                SlashRelationView.Item(it)
+            }
 
-            action.invoke(update)
+            action.invoke(properties)
         }
     }
 

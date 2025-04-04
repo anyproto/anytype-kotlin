@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
-import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -39,6 +38,8 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.`object`.FetchObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -79,7 +80,9 @@ class SpaceSettingsViewModel(
     private val observeWallpaper: ObserveWallpaper,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val appActionManager: AppActionManager,
-    private val getSpaceInviteLink: GetSpaceInviteLink
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val fetchObject: FetchObject,
+    private val setObjectDetails: SetObjectDetails
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -123,6 +126,30 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
+
+            var widgetAutoCreationPreference: UiSpaceSettingsItem.AutoCreateWidgets? = null
+
+            val config = spaceManager.getConfig(vmParams.space)
+
+            if (config != null) {
+                val widget = fetchObject.async(
+                    FetchObject.Params(
+                        space = vmParams.space,
+                        obj = config.widgets,
+                        keys = listOf(
+                            Relations.ID,
+                            Relations.AUTO_WIDGET_DISABLED
+                        )
+                    )
+                ).getOrNull()
+
+                if (widget != null) {
+                    widgetAutoCreationPreference = UiSpaceSettingsItem.AutoCreateWidgets(
+                        widget = widget.id,
+                        isAutoCreateEnabled = widget.getValue<Boolean>(Relations.AUTO_WIDGET_DISABLED) != true
+                    )
+                }
+            }
 
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
@@ -229,6 +256,12 @@ class SpaceSettingsViewModel(
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
                     add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
+                    if (widgetAutoCreationPreference != null) {
+                        add(Spacer(height = 8))
+                        add(
+                            widgetAutoCreationPreference
+                        )
+                    }
 
                     add(UiSpaceSettingsItem.Section.DataManagement)
                     add(UiSpaceSettingsItem.RemoteStorage)
@@ -351,6 +384,18 @@ class SpaceSettingsViewModel(
                                 val curr = uiEvent.currentDefaultObjectTypeId
                                 if (!curr.isNullOrEmpty()) add(curr)
                             }
+                        )
+                    )
+                }
+            }
+            is UiEvent.OnAutoCreateWidgetSwitchChanged -> {
+                viewModelScope.launch {
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = uiEvent.widget,
+                            details = mapOf(
+                                Relations.AUTO_WIDGET_DISABLED to !uiEvent.isAutoCreateEnabled
+                            )
                         )
                     )
                 }
@@ -701,7 +746,9 @@ class SpaceSettingsViewModel(
         private val observeWallpaper: ObserveWallpaper,
         private val appActionManager: AppActionManager,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val getSpaceInviteLink: GetSpaceInviteLink
+        private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val fetchObject: FetchObject,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -727,7 +774,9 @@ class SpaceSettingsViewModel(
             observeWallpaper = observeWallpaper,
             appActionManager = appActionManager,
             storeOfObjectTypes = storeOfObjectTypes,
-            getSpaceInviteLink = getSpaceInviteLink
+            getSpaceInviteLink = getSpaceInviteLink,
+            fetchObject = fetchObject,
+            setObjectDetails = setObjectDetails
         ) as T
     }
 

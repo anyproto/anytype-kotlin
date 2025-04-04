@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,6 +23,9 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -610,5 +614,67 @@ fun SpaceSettingsSection(
         modifier = modifier,
         title = text,
         textPaddingStart = 0.dp
+    )
+}
+
+@Composable
+fun AutoCreateWidgetItem(
+    onCheckedStatusChanged: (Boolean) -> Unit,
+    isChecked: Boolean
+) {
+
+    var checked = remember { mutableStateOf(isChecked) }
+
+    Row(
+        modifier = Modifier
+            .border(
+                shape = RoundedCornerShape(16.dp),
+                width = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+            .height(64.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = stringResource(id = R.string.space_settings_auto_create_widgets),
+            style = PreviewTitle1Regular,
+            color = colorResource(id = R.color.text_primary),
+        )
+        Switch(
+            checked = checked.value,
+            onCheckedChange = {
+                checked.value = it
+                onCheckedStatusChanged(it)
+            },
+            colors = SwitchDefaults.colors().copy(
+                checkedBorderColor = Color.Transparent,
+                uncheckedBorderColor = Color.Transparent,
+                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
+                uncheckedTrackColor = colorResource(R.color.palette_system_amber_50),
+                uncheckedThumbColor = colorResource(R.color.glyph_white)
+            )
+        )
+
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun AutoCreateWidgetItemPreview() {
+    AutoCreateWidgetItem(
+        onCheckedStatusChanged = {},
+        isChecked = true
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun AutoCreateWidgetItemUncheckedPreview() {
+    AutoCreateWidgetItem(
+        onCheckedStatusChanged = {},
+        isChecked = false
     )
 }

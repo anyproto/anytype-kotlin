@@ -291,7 +291,7 @@
     <string name="relation_format_phone">Нумар тэлефона</string>
     <string name="relation_format_emoji">Эмодзі</string>
     <string name="relation_format_object">Object relation</string>
-    <string name="relation_format_relation">Уласцівасць</string>
+    <string name="relation_format_relation">Уласцівасці</string>
     <string name="viewer_sorting_prefix">Потым</string>
     <string name="enter_value">Увядзіце значэнне</string>
     <string name="ityem_relations">Уласцівасці</string>
@@ -968,11 +968,11 @@
     <string name="library_title_types">Тыпы</string>
     <string name="library_title_relations">Уласцівасці</string>
     <string name="library_description_types">Тыпы - гэта як катэгорыі, якія дапамагаюць групаваць і кіраваць аб\'ектамі.</string>
-    <string name="library_description_relations">Усе аб\'екты звязаныя. Ужывайце ўласцівасці, каб пабудаваць сувязі паміж аб\'ектамі.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Стварыць тып</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Мае тыпы</string>
-    <string name="library_subtitle_relations">Мае ўласцівасці</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">Бібліятэка</string>
     <string name="library_create_new_type">Стварыць тып \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1427,7 +1427,7 @@
     <string name="notifications_alert_error_internal">Адбылася ўнутраная памылка. Наша каманда атрымала паведамленне.</string>
     <string name="notifications_alert_error_no_objects_to_import">Элементы для імпарту не знойдзены. Выберыце сапраўдныя аб\'екты для імпарту.</string>
     <string name="notifications_alert_error_import_canceled">Працэс імпарту быў адменены карыстальнікам.</string>
-    <string name="notifications_alert_error_limit_exceeded">Перавышаны ліміт імпарту радкоў або ўласцівасцей. Калі ласка, паменшыце колькасць і паспрабуйце яшчэ раз.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">Пры загрузцы файла адбылася памылка. Праверце файл і паўтарыце спробу.</string>
     <string name="notifications_alert_error_insufficient_permissions">У вас няма неабходных дазволаў для выканання гэтага дзеяння. Калі ласка, праверце свае дазволы і паўтарыце спробу.</string>
     <!-- Gallery Experience -->
@@ -1752,6 +1752,11 @@
     <string name="object_type_icon_remove">Выдаліць</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

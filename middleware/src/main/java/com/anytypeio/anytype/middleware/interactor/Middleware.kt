@@ -886,7 +886,9 @@ class Middleware @Inject constructor(
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
-            objectTypeUniqueKey = command.typeKey.key
+            objectTypeUniqueKey = command.typeKey.key,
+            // TODO check if still relevant
+            createTypeWidgetIfMissing = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreate(request) }

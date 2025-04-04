@@ -432,20 +432,20 @@ class SpaceSettingsViewModel(
 
     private fun proceedWithSpaceDeletion() {
         viewModelScope.launch {
-                deleteSpace.async(params = vmParams.space).fold(
-                    onSuccess = {
-                        analytics.sendEvent(
-                            eventName = EventsDictionary.deleteSpace,
-                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
-                        )
-                        spaceManager.clear()
-                        commands.emit(Command.ExitToVault)
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while deleting space")
-                    }
-                )
-            }
+            deleteSpace.async(params = vmParams.space).fold(
+                onSuccess = {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.deleteSpace,
+                        props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                    )
+                    spaceManager.clear()
+                    commands.emit(Command.ExitToVault)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
+        }
     }
 
     // What is below is candidate to legacy. Might be deleted soon.

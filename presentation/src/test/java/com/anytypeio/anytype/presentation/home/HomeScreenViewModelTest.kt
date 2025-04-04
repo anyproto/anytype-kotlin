@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -49,8 +48,10 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -66,6 +67,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -82,7 +84,6 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -219,6 +220,9 @@ class HomeScreenViewModelTest {
     lateinit var getSpaceView: GetSpaceView
 
     @Mock
+    lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+
+    @Mock
     lateinit var spaceManager: SpaceManager
 
     @Mock
@@ -268,6 +272,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var exitToVaultDelegate: ExitToVaultDelegate
+
+    @Mock
+    lateinit var activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+
+    @Mock
+    lateinit var deleteSpace: DeleteSpace
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -3061,7 +3071,11 @@ class HomeScreenViewModelTest {
         featureToggles = featureToggles,
         fieldParser = fieldParser,
         spaceInviteResolver = spaceInviteResolver,
-        exitToVaultDelegate = exitToVaultDelegate
+        exitToVaultDelegate = exitToVaultDelegate,
+        getSpaceInviteLink = getSpaceInviteLink,
+        spaceMembers = activeSpaceMemberSubscriptionContainer,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+        deleteSpace = deleteSpace
     )
 
     companion object {

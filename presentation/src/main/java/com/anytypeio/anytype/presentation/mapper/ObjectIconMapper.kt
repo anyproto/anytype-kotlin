@@ -106,6 +106,11 @@ fun ObjectWrapper.Type.objectIcon(): ObjectIcon.TypeIcon {
     val objIconOption = iconOption
     return when {
 
+        !objIconName.isNullOrEmpty() -> ObjectIcon.TypeIcon.Default(
+            rawValue = objIconName,
+            color = CustomIconColor.fromIconOption(objIconOption?.toInt())
+        )
+
         !objEmoji.isNullOrEmpty() -> {
             ObjectIcon.TypeIcon.Emoji(
                 unicode = objEmoji,
@@ -113,11 +118,6 @@ fun ObjectWrapper.Type.objectIcon(): ObjectIcon.TypeIcon {
                 color = CustomIconColor.fromIconOption(objIconOption?.toInt())
             )
         }
-
-        !objIconName.isNullOrEmpty() -> ObjectIcon.TypeIcon.Default(
-            rawValue = objIconName,
-            color = CustomIconColor.fromIconOption(objIconOption?.toInt())
-        )
 
         else -> ObjectIcon.TypeIcon.Default(
             rawValue = ObjectIcon.TypeIcon.Default.DEFAULT_CUSTOM_ICON,

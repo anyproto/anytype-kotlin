@@ -1737,4 +1737,5 @@ En concreto,
     <string name="object_conflict_menu_item_title">Resolver conflicto de diseño</string>
     <string name="widget_source_suggested">Sugerencia</string>
     <string name="widgets_empty_state_message">Aún no hay ningún widget</string>
+    <string name="space_settings_auto_create_widgets">Crear widgets de tipo automáticamente</string>
 </resources>

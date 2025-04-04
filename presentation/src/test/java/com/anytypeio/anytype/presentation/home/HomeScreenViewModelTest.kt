@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -89,7 +90,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
@@ -917,7 +917,6 @@ class HomeScreenViewModelTest {
 
             val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
             val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-            val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
 
             val favoriteLink = StubLinkToObjectBlock(
                 target = favoriteSource.id
@@ -925,10 +924,6 @@ class HomeScreenViewModelTest {
 
             val recentLink = StubLinkToObjectBlock(
                 target = recentSource.id
-            )
-
-            val setsLink = StubLinkToObjectBlock(
-                target = setsSource.id
             )
 
             val favoriteWidgetBlock = StubWidgetBlock(
@@ -941,14 +936,9 @@ class HomeScreenViewModelTest {
                 children = listOf(recentLink.id)
             )
 
-            val setsWidgetBlock = StubWidgetBlock(
-                layout = layout,
-                children = listOf(setsLink.id)
-            )
-
             val smartBlock = StubSmartBlock(
                 id = WIDGET_OBJECT_ID,
-                children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
+                children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id)
             )
 
             val givenObjectView = StubObjectView(
@@ -958,9 +948,7 @@ class HomeScreenViewModelTest {
                     favoriteWidgetBlock,
                     favoriteLink,
                     recentWidgetBlock,
-                    recentLink,
-                    setsWidgetBlock,
-                    setsLink
+                    recentLink
                 )
             )
 
@@ -972,13 +960,6 @@ class HomeScreenViewModelTest {
                 subscription = recentWidgetBlock.id,
                 targets = listOf(firstLink.id, secondLink.id),
                 results = listOf(firstLink, secondLink)
-            )
-
-            stubSearchByIds(
-                subscription = setsWidgetBlock.id,
-                targets = listOf(firstLink.id, secondLink.id),
-                results = listOf(firstLink, secondLink),
-                keys = TreeWidgetContainer.keys
             )
 
             stubDefaultSearch(
@@ -1042,16 +1023,6 @@ class HomeScreenViewModelTest {
 
             stubGetSpaceView(defaultSpaceConfig.spaceView)
 
-            stubDefaultSearch(
-                params = ListWidgetContainer.params(
-                    subscription = BundledWidgetSourceIds.SETS,
-                    space = defaultSpaceConfig.space,
-                    keys = TreeWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
-                ),
-                results = listOf(firstLink, secondLink)
-            )
-
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubWidgetActiveView(favoriteWidgetBlock)
@@ -1084,10 +1055,6 @@ class HomeScreenViewModelTest {
                     val secondWidget = firstTimeLoadingState1[2]
                     secondWidget is WidgetView.Tree && secondWidget.isLoading
                 }
-                assertTrue {
-                    val thirdWidget = firstTimeLoadingState1[3]
-                    thirdWidget is WidgetView.Tree && thirdWidget.isLoading
-                }
 
                 advanceUntilIdle()
 
@@ -1099,10 +1066,6 @@ class HomeScreenViewModelTest {
                 assertTrue {
                     val secondWidget = firstTimeLoadingState2[2]
                     secondWidget is WidgetView.Tree && !secondWidget.isLoading
-                }
-                assertTrue {
-                    val thirdWidget = firstTimeLoadingState2[3]
-                    thirdWidget is WidgetView.Tree && !thirdWidget.isLoading
                 }
 
                 val secondTimeState = awaitItem()
@@ -1172,40 +1135,6 @@ class HomeScreenViewModelTest {
                                         objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                                         indent = 0,
                                         path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id,
-                                        name = WidgetView.Name.Default(
-                                            prettyPrintName = fieldParser.getObjectName(secondLink)
-                                        )
-                                    )
-                                ),
-                                isExpanded = true
-                            )
-                        )
-                        add(
-                            WidgetView.Tree(
-                                id = setsWidgetBlock.id,
-                                source = Widget.Source.Bundled.Sets,
-                                name = WidgetView.Name.Bundled(
-                                    Widget.Source.Bundled.Sets,
-                                ),
-                                elements = listOf(
-                                    WidgetView.Tree.Element(
-                                        id = firstLink.id,
-                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                        obj = firstLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
-                                        indent = 0,
-                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id,
-                                        name = WidgetView.Name.Default(
-                                            prettyPrintName = fieldParser.getObjectName(firstLink)
-                                        )
-                                    ),
-                                    WidgetView.Tree.Element(
-                                        id = secondLink.id,
-                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                        obj = secondLink,
-                                        objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
-                                        indent = 0,
-                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id,
                                         name = WidgetView.Name.Default(
                                             prettyPrintName = fieldParser.getObjectName(secondLink)
                                         )
@@ -1600,11 +1529,9 @@ class HomeScreenViewModelTest {
 
         val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
         val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-        val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
 
         val favoriteLink = StubLinkToObjectBlock(target = favoriteSource.id)
         val recentLink = StubLinkToObjectBlock(target = recentSource.id)
-        val setsLink = StubLinkToObjectBlock(target = setsSource.id)
 
         val favoriteWidgetBlock = StubWidgetBlock(
             layout = Block.Content.Widget.Layout.TREE,
@@ -1616,14 +1543,9 @@ class HomeScreenViewModelTest {
             children = listOf(recentLink.id)
         )
 
-        val setsWidgetBlock = StubWidgetBlock(
-            layout = Block.Content.Widget.Layout.TREE,
-            children = listOf(setsLink.id)
-        )
-
         val firstWidgetObjectSmartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
-            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
+            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id)
         )
 
         val secondWidgetObjectSmartBlock = StubSmartBlock(
@@ -1638,9 +1560,7 @@ class HomeScreenViewModelTest {
                 favoriteWidgetBlock,
                 favoriteLink,
                 recentWidgetBlock,
-                recentLink,
-                setsWidgetBlock,
-                setsLink
+                recentLink
             )
         )
 
@@ -1671,12 +1591,6 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
-        stubSearchByIds(
-            subscription = setsWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
-
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
@@ -1690,16 +1604,6 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = defaultSpaceConfig.space,
-                keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.SETS,
                 space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
@@ -1728,8 +1632,7 @@ class HomeScreenViewModelTest {
                 unsubscribe(
                     listOf(
                         favoriteSource.id,
-                        recentSource.id,
-                        setsSource.id
+                        recentSource.id
                     )
                 )
             } doReturn Unit
@@ -1752,8 +1655,7 @@ class HomeScreenViewModelTest {
             unsubscribe(
                 subscriptions = listOf(
                     favoriteSource.id,
-                    recentSource.id,
-                    setsSource.id
+                    recentSource.id
                 )
             )
         }
@@ -1766,8 +1668,7 @@ class HomeScreenViewModelTest {
             unsubscribe(
                 subscriptions = listOf(
                     favoriteSource.id,
-                    recentSource.id,
-                    setsSource.id
+                    recentSource.id
                 )
             )
         }
@@ -1796,11 +1697,9 @@ class HomeScreenViewModelTest {
 
         val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
         val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-        val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
 
         val favoriteLink = StubLinkToObjectBlock(target = favoriteSource.id)
         val recentLink = StubLinkToObjectBlock(target = recentSource.id)
-        val setsLink = StubLinkToObjectBlock(target = setsSource.id)
 
         val layout = Block.Content.Widget.Layout.LIST
 
@@ -1814,14 +1713,9 @@ class HomeScreenViewModelTest {
             children = listOf(recentLink.id)
         )
 
-        val setsWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(setsLink.id)
-        )
-
         val firstWidgetObjectSmartBlock = StubSmartBlock(
             id = WIDGET_OBJECT_ID,
-            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
+            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id)
         )
 
         val secondWidgetObjectSmartBlock = StubSmartBlock(
@@ -1836,9 +1730,7 @@ class HomeScreenViewModelTest {
                 favoriteWidgetBlock,
                 favoriteLink,
                 recentWidgetBlock,
-                recentLink,
-                setsWidgetBlock,
-                setsLink
+                recentLink
             )
         )
 
@@ -1872,12 +1764,6 @@ class HomeScreenViewModelTest {
         )
 
         stubSearchByIds(
-            subscription = setsWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubSearchByIds(
             subscription = favoriteSource.id,
             keys = ListWidgetContainer.keys,
             targets = emptyList()
@@ -1904,16 +1790,6 @@ class HomeScreenViewModelTest {
         )
 
         stubGetSpaceView(defaultSpaceConfig.spaceView)
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.SETS,
-                space = defaultSpaceConfig.space,
-                keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
 
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
@@ -1953,17 +1829,6 @@ class HomeScreenViewModelTest {
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
                 ListWidgetContainer.params(
-                    subscription = setsSource.id,
-                    space = defaultSpaceConfig.space,
-                    keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
-                )
-            )
-        }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
                     subscription = recentSource.id,
                     space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
@@ -1982,8 +1847,7 @@ class HomeScreenViewModelTest {
             unsubscribe(
                 subscriptions = listOf(
                     favoriteSource.id,
-                    recentSource.id,
-                    setsSource.id
+                    recentSource.id
                 )
             )
         }

@@ -114,10 +114,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 ObjectTypeCommand.CloseFieldsScreen -> {
                     navComposeController.popBackStack()
                 }
-
-                is ObjectTypeCommand.OpenEditTypeTitleScreen -> {
-
-                }
             }
         }
     }

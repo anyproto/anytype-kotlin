@@ -117,8 +117,6 @@ sealed class WidgetView {
             data object Recent : Type()
             data object RecentLocal : Type()
             data object Favorites : Type()
-            data object Sets: Type()
-            data object Collections: Type()
             data object Bin: Type()
         }
     }

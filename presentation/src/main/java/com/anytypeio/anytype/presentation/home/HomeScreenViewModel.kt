@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
@@ -111,7 +112,6 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -1001,22 +1001,6 @@ class HomeScreenViewModel(
                     )
                 }
             }
-            is Widget.Source.Bundled.Sets -> {
-                viewModelScope.sendSelectHomeTabEvent(
-                    analytics = analytics,
-                    bundled = source
-                )
-                // TODO switch to bundled widgets id
-                viewModelScope.launch {
-                    navigation(
-                        Navigation.ExpandWidget(
-                            subscription = Subscription.Sets,
-                            space = spaceManager.get()
-                        )
-                    )
-                }
-            }
-
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendSelectHomeTabEvent(
                     analytics = analytics,
@@ -1032,7 +1016,6 @@ class HomeScreenViewModel(
                     )
                 }
             }
-
             is Widget.Source.Bundled.RecentLocal -> {
                 viewModelScope.sendSelectHomeTabEvent(
                     analytics = analytics,
@@ -1048,23 +1031,6 @@ class HomeScreenViewModel(
                     )
                 }
             }
-
-            is Widget.Source.Bundled.Collections -> {
-                viewModelScope.sendSelectHomeTabEvent(
-                    analytics = analytics,
-                    bundled = source
-                )
-                // TODO switch to bundled widgets id
-                viewModelScope.launch {
-                    navigation(
-                        Navigation.ExpandWidget(
-                            subscription = Subscription.Collections,
-                            space = spaceManager.get()
-                        )
-                    )
-                }
-            }
-
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
                     dispatchSelectHomeTabCustomSourceEvent(source)

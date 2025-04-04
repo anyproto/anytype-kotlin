@@ -80,8 +80,6 @@ fun ListWidgetCard(
                     Type.Favorites -> stringResource(id = R.string.favorites)
                     Type.Recent -> stringResource(id = R.string.recent)
                     Type.RecentLocal -> stringResource(id = R.string.recently_opened)
-                    Type.Sets -> stringResource(id = R.string.sets)
-                    Type.Collections -> stringResource(id = R.string.collections)
                     Type.Bin -> stringResource(R.string.bin)
                 },
                 isCardMenuExpanded = isCardMenuExpanded,

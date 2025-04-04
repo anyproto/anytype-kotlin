@@ -107,6 +107,8 @@ object Relations {
 
     const val LAYOUT_ALIGN = "layoutAlign"
 
+    const val AUTO_WIDGET_DISABLED = "autoWidgetDisabled"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

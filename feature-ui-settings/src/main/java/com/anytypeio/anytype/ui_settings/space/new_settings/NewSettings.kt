@@ -336,7 +336,21 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-
+                        is UiSpaceSettingsItem.AutoCreateWidgets -> {
+                            item {
+                                AutoCreateWidgetItem(
+                                    onCheckedStatusChanged = { isChecked ->
+                                        uiEvent(
+                                            UiEvent.OnAutoCreateWidgetSwitchChanged(
+                                                widget = item.widget,
+                                                isAutoCreateEnabled = isChecked
+                                            )
+                                        )
+                                    },
+                                    isChecked = item.isAutoCreateEnabled
+                                )
+                            }
+                        }
                         is UiSpaceSettingsItem.Spacer -> {
                             item {
                                 Spacer(modifier = Modifier.height(item.height.dp))

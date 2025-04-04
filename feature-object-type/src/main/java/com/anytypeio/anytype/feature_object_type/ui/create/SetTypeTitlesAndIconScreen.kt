@@ -21,6 +21,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,12 +60,12 @@ import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 fun SetTypeTitlesAndIconScreen(
     uiState: UiTypeSetupTitleAndIconState,
     modifier: Modifier = Modifier,
-    onTitleChanged: (String) -> Unit,
-    onPluralChanged: (String) -> Unit,
     onIconClicked: () -> Unit,
     onDismiss: () -> Unit,
-    onButtonClicked: () -> Unit
+    onButtonClicked: (String, String) -> Unit
 ) {
+
+    if (uiState !is UiTypeSetupTitleAndIconState.Visible) return
 
     val bottomSheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -89,8 +90,6 @@ fun SetTypeTitlesAndIconScreen(
     ) {
         CreateNewTypeScreenContent(
             uiState = uiState,
-            onTitleChanged = onTitleChanged,
-            onPluralChanged = onPluralChanged,
             onIconClicked = onIconClicked,
             onButtonClicked = onButtonClicked
         )
@@ -99,15 +98,22 @@ fun SetTypeTitlesAndIconScreen(
 
 @Composable
 private fun ColumnScope.CreateNewTypeScreenContent(
-    uiState: UiTypeSetupTitleAndIconState,
-    onTitleChanged: (String) -> Unit,
-    onPluralChanged: (String) -> Unit,
+    uiState: UiTypeSetupTitleAndIconState.Visible,
     onIconClicked: () -> Unit,
-    onButtonClicked: () -> Unit
+    onButtonClicked: (String, String) -> Unit
 ) {
 
-    var isButtonEnabled by remember {
-        mutableStateOf(false)
+    // Maintain individual state for each field's "not empty" condition.
+    var isTitleNotEmpty by remember { mutableStateOf(false) }
+    var isPluralNotEmpty by remember { mutableStateOf(false) }
+    var titleText by remember { mutableStateOf(uiState.getInitialTitleValue()) }
+    var pluralText by remember { mutableStateOf(uiState.getInitialPluralValue()) }
+    // Compute the button enabled state.
+    val isButtonEnabled = isTitleNotEmpty && isPluralNotEmpty
+
+    val icon = when(uiState) {
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> uiState.icon
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> uiState.icon
     }
 
     Spacer(modifier = Modifier.height(12.dp))
@@ -139,7 +145,7 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                     onIconClicked()
                 },
             iconSize = 48.dp,
-            icon = uiState.icon,
+            icon = icon,
             backgroundColor = R.color.amp_transparent
         )
         Spacer(modifier = Modifier.width(0.dp))
@@ -149,9 +155,12 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                 .padding(top = 11.5.dp)
                 .wrapContentHeight(),
             hint = uiState.getTitleHint(),
+            initialValue = uiState.getInitialTitleValue(),
             onTextChanged = {
-                onTitleChanged(it)
-                isButtonEnabled = it.isNotEmpty()
+                titleText = it
+            },
+            onButtonEnabled = { enable ->
+                isTitleNotEmpty = enable
             }
         )
     }
@@ -183,8 +192,14 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                 .fillMaxWidth()
                 .wrapContentHeight(),
             hint = uiState.getPluralHint(),
+            initialValue = uiState.getInitialPluralValue(),
             textStyle = BodyRegular,
-            onTextChanged = onPluralChanged
+            onTextChanged = {
+                pluralText = it
+            },
+            onButtonEnabled = { enable ->
+                isPluralNotEmpty = enable
+            }
         )
     }
     Spacer(modifier = Modifier.height(22.dp))
@@ -194,7 +209,7 @@ private fun ColumnScope.CreateNewTypeScreenContent(
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
         onClick = {
-            onButtonClicked()
+            onButtonClicked(titleText, pluralText)
         },
         enabled = isButtonEnabled,
         text = uiState.getButtonTitle(),
@@ -206,15 +221,21 @@ private fun ColumnScope.CreateNewTypeScreenContent(
 @Composable
 private fun CreateTypeField(
     modifier: Modifier,
+    initialValue: String = "",
     textStyle: androidx.compose.ui.text.TextStyle = HeadlineHeading,
     hint: String,
+    onButtonEnabled: (Boolean) -> Unit = {},
     onTextChanged: (String) -> Unit
 ) {
 
     var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(
-            TextFieldValue("")
+            TextFieldValue(initialValue)
         )
+    }
+
+    LaunchedEffect(textFieldValue) {
+        onButtonEnabled(textFieldValue.text.isNotEmpty())
     }
 
     val focusManager = LocalFocusManager.current
@@ -261,72 +282,86 @@ private fun CreateTypeField(
     )
 }
 
-@Composable
-fun UiTypeSetupTitleAndIconState.getTitleHint(): String {
+fun UiTypeSetupTitleAndIconState.Visible.getInitialTitleValue(): String {
     return when (this) {
-        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_title_hint)
-        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.untitled)
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> ""
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> this.initialTitle ?: ""
+    }
+}
+
+fun UiTypeSetupTitleAndIconState.Visible.getInitialPluralValue(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> ""
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> this.initialPlural ?: ""
     }
 }
 
 @Composable
-fun UiTypeSetupTitleAndIconState.getPluralHint(): String {
+fun UiTypeSetupTitleAndIconState.Visible.getTitleHint(): String {
     return when (this) {
-        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_plural_title_hint)
-        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.untitled)
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> stringResource(id = R.string.object_type_create_title_hint)
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> stringResource(id = R.string.untitled)
     }
 }
 
 @Composable
-fun UiTypeSetupTitleAndIconState.getTitle(): String {
+fun UiTypeSetupTitleAndIconState.Visible.getPluralHint(): String {
     return when (this) {
-        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.object_type_create_new_title)
-        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.object_type_rename_title)
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> stringResource(id = R.string.object_type_create_plural_title_hint)
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> stringResource(id = R.string.untitled)
     }
 }
 
 @Composable
-fun UiTypeSetupTitleAndIconState.getButtonTitle(): String {
+fun UiTypeSetupTitleAndIconState.Visible.getTitle(): String {
     return when (this) {
-        is UiTypeSetupTitleAndIconState.CreateNewType -> stringResource(id = R.string.create)
-        is UiTypeSetupTitleAndIconState.EditType -> stringResource(id = R.string.done)
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> stringResource(id = R.string.object_type_create_new_title)
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> stringResource(id = R.string.object_type_rename_title)
     }
 }
 
-@DefaultPreviews
 @Composable
-fun CreateNewTypeScreenPreview() {
-    Column {
-        CreateNewTypeScreenContent(
-            uiState = UiTypeSetupTitleAndIconState.CreateNewType(
-                icon = ObjectIcon.TypeIcon.Default(
-                    rawValue = "american-football",
-                    color = CustomIconColor.Red
-                )
-            ),
-            onTitleChanged = {},
-            onPluralChanged = {},
-            onIconClicked = { /* no-op */ },
-            onButtonClicked = { /* no-op */ }
-        )
+fun UiTypeSetupTitleAndIconState.Visible.getButtonTitle(): String {
+    return when (this) {
+        is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> stringResource(id = R.string.create)
+        is UiTypeSetupTitleAndIconState.Visible.EditType -> stringResource(id = R.string.done)
     }
 }
+
+//@DefaultPreviews
+//@Composable
+//fun CreateNewTypeScreenPreview() {
+//    Column {
+//        CreateNewTypeScreenContent(
+//            uiState = UiTypeSetupTitleAndIconState.Visible.CreateNewType(
+//                icon = ObjectIcon.TypeIcon.Default(
+//                    rawValue = "american-football",
+//                    color = CustomIconColor.Red
+//                )
+//            ),
+//            onTitleChanged = {},
+//            onPluralChanged = {},
+//            onIconClicked = { /* no-op */ },
+//            onButtonClicked = { /* no-op */ }
+//        )
+//    }
+//}
 
 @DefaultPreviews
 @Composable
 fun EditTypeScreenPreview() {
     Column {
         CreateNewTypeScreenContent(
-            uiState = UiTypeSetupTitleAndIconState.EditType(
+            uiState = UiTypeSetupTitleAndIconState.Visible.EditType(
                 icon = ObjectIcon.TypeIcon.Default(
                     rawValue = "american-football",
                     color = CustomIconColor.Red
-                )
+                ),
+                initialTitle = "Page",
+                initialPlural = "Pages"
             ),
-            onTitleChanged = {},
-            onPluralChanged = {},
             onIconClicked = { /* no-op */ },
-            onButtonClicked = { /* no-op */ }
+            onButtonClicked = { _, _ -> }
         )
     }
 }

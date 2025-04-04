@@ -33,6 +33,7 @@ import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
+import com.anytypeio.anytype.feature_object_type.ui.create.SetTypeTitlesAndIconScreen
 import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreen
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
@@ -60,6 +61,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
     ) = content {
         MaterialTheme {
             ObjectTypeScreen()
+            IconAndTitleUpdateScreen()
             IconsPickerScreen()
             ErrorScreen()
         }
@@ -111,6 +113,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
                 ObjectTypeCommand.CloseFieldsScreen -> {
                     navComposeController.popBackStack()
+                }
+
+                is ObjectTypeCommand.OpenEditTypeTitleScreen -> {
+
                 }
             }
         }
@@ -214,6 +220,16 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 }
             )
         }
+    }
+
+    @Composable
+    private fun IconAndTitleUpdateScreen() {
+        SetTypeTitlesAndIconScreen(
+            uiState = vm.uiTitleAndIconUpdateState.collectAsStateWithLifecycle().value,
+            onDismiss = vm::onDismissTitleAndIconScreen,
+            onIconClicked = vm::onIconClickedTitleAndIconScreen,
+            onButtonClicked = vm::onButtonClickedTitleAndIconScreen
+        )
     }
 
     override fun injectDependencies() {

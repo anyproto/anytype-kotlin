@@ -51,6 +51,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiPropertiesList
+import com.anytypeio.anytype.feature_object_type.ui.create.UiTypeSetupTitleAndIconState
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
@@ -59,6 +60,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -142,6 +144,10 @@ class ObjectTypeViewModel(
 
     //icons picker screen
     val uiIconsPickerScreen = MutableStateFlow<UiIconsPickerState>(UiIconsPickerState.Hidden)
+
+    //title and icon update screen
+    val uiTitleAndIconUpdateState =
+        MutableStateFlow<UiTypeSetupTitleAndIconState>(UiTypeSetupTitleAndIconState.Hidden)
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -315,13 +321,17 @@ class ObjectTypeViewModel(
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
-            title = fieldParser.getObjectPluralName(objectWrapper = objType),
+            title = objType.pluralName.orEmpty(),
             isEditable = objectPermissions.canEditDetails
         )
+        val newIcon = objType.objectIcon()
         uiIconState.value = UiIconState(
-            icon = objType.objectIcon(),
+            icon = newIcon,
             isEditable = objectPermissions.canEditDetails
         )
+        (uiTitleAndIconUpdateState.value as? UiTypeSetupTitleAndIconState.Visible.EditType)?.let {
+            uiTitleAndIconUpdateState.value = it.copy(icon = newIcon)
+        }
         if (objectPermissions.canDelete) {
             uiEditButtonState.value = UiEditButton.Visible
         }
@@ -395,31 +405,32 @@ class ObjectTypeViewModel(
             val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
             val formatIcon = item.format.simpleIcon()
 
-            uiEditPropertyScreen.value = if (permissions?.participantCanEdit == true && item.isEditableField) {
-                UiEditPropertyState.Visible.Edit(
-                    id = item.id,
-                    key = item.fieldKey,
-                    name = item.fieldTitle,
-                    formatName = formatName,
-                    formatIcon = formatIcon,
-                    format = item.format,
-                    limitObjectTypes = computedLimitTypes,
-                    isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
-                    showLimitTypes = false
-                )
-            } else {
-                UiEditPropertyState.Visible.View(
-                    id = item.id,
-                    key = item.fieldKey,
-                    name = item.fieldTitle,
-                    formatName = formatName,
-                    formatIcon = formatIcon,
-                    format = item.format,
-                    limitObjectTypes = computedLimitTypes,
-                    isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
-                    showLimitTypes = false
-                )
-            }
+            uiEditPropertyScreen.value =
+                if (permissions?.participantCanEdit == true && item.isEditableField) {
+                    UiEditPropertyState.Visible.Edit(
+                        id = item.id,
+                        key = item.fieldKey,
+                        name = item.fieldTitle,
+                        formatName = formatName,
+                        formatIcon = formatIcon,
+                        format = item.format,
+                        limitObjectTypes = computedLimitTypes,
+                        isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
+                        showLimitTypes = false
+                    )
+                } else {
+                    UiEditPropertyState.Visible.View(
+                        id = item.id,
+                        key = item.fieldKey,
+                        name = item.fieldTitle,
+                        formatName = formatName,
+                        formatIcon = formatIcon,
+                        format = item.format,
+                        limitObjectTypes = computedLimitTypes,
+                        isPossibleToUnlinkFromType = item.isPossibleToUnlinkFromType,
+                        showLimitTypes = false
+                    )
+                }
         }
     }
     //endregion
@@ -470,6 +481,10 @@ class ObjectTypeViewModel(
             is TypeEvent.OnObjectTypeTitleUpdate -> {
                 uiTitleState.value = uiTitleState.value.copy(title = event.title)
                 updateTitle(event.title)
+            }
+
+            is TypeEvent.OnObjectTypeTitleClick -> {
+                showTitleAndIconUpdateScreen()
             }
 
             TypeEvent.OnMenuItemDeleteClick -> {
@@ -865,6 +880,7 @@ class ObjectTypeViewModel(
                     else -> state
                 }
             }
+
             FieldEvent.EditProperty.OnLimitTypesDismiss -> {
                 uiEditPropertyScreen.value = when (val state = uiEditPropertyScreen.value) {
                     is UiEditPropertyState.Visible.Edit -> state.copy(showLimitTypes = false)
@@ -1032,6 +1048,57 @@ class ObjectTypeViewModel(
             )
         }
     }
+    //endregion
+
+    //region Title and Icon Update Screen
+
+    private fun showTitleAndIconUpdateScreen() {
+        val objType = _objTypeState.value ?: return
+        val initialIcon = uiIconState.value.icon
+        val initialTitle = objType.name
+        val initialPlural = objType.pluralName
+        Timber.d(
+            "showTitleAndIconUpdateScreen, initialIcon: $initialIcon, " +
+                    "initialTitle: $initialTitle, initialPlural: $initialPlural"
+        )
+        uiTitleAndIconUpdateState.value = UiTypeSetupTitleAndIconState.Visible.EditType(
+            icon = initialIcon,
+            initialTitle = initialTitle,
+            initialPlural = initialPlural
+        )
+    }
+
+    fun onDismissTitleAndIconScreen() {
+        uiTitleAndIconUpdateState.value = UiTypeSetupTitleAndIconState.Hidden
+    }
+
+    fun onIconClickedTitleAndIconScreen() {
+        uiIconsPickerScreen.value = UiIconsPickerState.Visible
+    }
+
+    fun onButtonClickedTitleAndIconScreen(title: String, plurals: String) {
+        val objType = _objTypeState.value ?: return
+        Timber.d("onButtonClickedTitleAndIconScreen, title: $title, plural: $plurals")
+        val params = SetObjectDetails.Params(
+            ctx = objType.id,
+            details = mapOf(
+                Relations.NAME to title,
+                Relations.PLURAL_NAME to plurals
+            )
+        )
+        viewModelScope.launch {
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object type title updated")
+                    uiTitleAndIconUpdateState.value = UiTypeSetupTitleAndIconState.Hidden
+                },
+                onFailure = {
+                    Timber.e(it, "Error while updating object type title")
+                }
+            )
+        }
+    }
+
     //endregion
 
     companion object {

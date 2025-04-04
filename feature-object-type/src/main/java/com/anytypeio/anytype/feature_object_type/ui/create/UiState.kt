@@ -4,17 +4,20 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 sealed class UiTypeSetupTitleAndIconState {
 
-    abstract val icon: ObjectIcon.TypeIcon.Default
+    data object Hidden : UiTypeSetupTitleAndIconState()
 
-    data class CreateNewType(
-        override val icon: ObjectIcon.TypeIcon.Default,
-        val initialTitle: String = "",
-        val initialPlural: String = ""
-    ) : UiTypeSetupTitleAndIconState()
+    sealed class Visible : UiTypeSetupTitleAndIconState() {
 
-    data class EditType(
-        override val icon: ObjectIcon.TypeIcon.Default,
-        val initialTitle: String = "",
-        val initialPlural: String = ""
-    ) : UiTypeSetupTitleAndIconState()
+        data class CreateNewType(
+            val icon: ObjectIcon.TypeIcon.Default,
+            val initialTitle: String = "",
+            val initialPlural: String = ""
+        ) : Visible()
+
+        data class EditType(
+            val icon: ObjectIcon.TypeIcon,
+            val initialTitle: String?,
+            val initialPlural: String?
+        ) : Visible()
+    }
 }

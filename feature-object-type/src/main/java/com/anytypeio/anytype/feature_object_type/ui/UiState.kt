@@ -34,6 +34,8 @@ sealed class ObjectTypeCommand {
     data object CloseFieldsScreen : ObjectTypeCommand()
 
     data class OpenEditTypePropertiesScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
+
+    data class OpenEditTypeTitleScreen(val typeId: Id) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)
@@ -43,9 +45,9 @@ data class UiTitleState(val title: String, val isEditable: Boolean) {
     }
 }
 
-data class UiIconState(val icon: ObjectIcon, val isEditable: Boolean) {
+data class UiIconState(val icon: ObjectIcon.TypeIcon, val isEditable: Boolean) {
     companion object {
-        val EMPTY = UiIconState(icon = ObjectIcon.None, isEditable = false)
+        val EMPTY = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false)
     }
 }
 //endregion

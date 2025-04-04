@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.header
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,7 +66,6 @@ fun IconAndTitleWidget(
                 .fillMaxWidth()
                 .wrapContentHeight(),
             initialName = uiTitleState.title,
-            enabled = uiTitleState.isEditable,
             onTypeEvent = onTypeEvent,
         )
     }
@@ -75,68 +75,21 @@ fun IconAndTitleWidget(
 fun NameField(
     modifier: Modifier,
     initialName: String,
-    enabled: Boolean,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
-
-    var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(
-            TextFieldValue(initialName)
-        )
+    val (text, color) = if (initialName.isEmpty()) {
+        stringResource(R.string.untitled) to colorResource(id = R.color.text_tertiary)
+    } else {
+        initialName to colorResource(id = R.color.text_primary)
     }
-
-    val focusManager = LocalFocusManager.current
-
-    val focusRequester = remember { FocusRequester() }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    BasicTextField(
-        value = textFieldValue,
-        onValueChange = { newValue ->
-            textFieldValue = newValue
-            onTypeEvent.invoke(
-                TypeEvent.OnObjectTypeTitleUpdate(
-                    title = textFieldValue.text
-                )
-            )
-        },
-        textStyle = HeadlineTitle.copy(color = colorResource(id = R.color.text_primary)),
-        singleLine = false,
-        enabled = enabled,
-        cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+    Text(
+        text = text,
+        style = HeadlineTitle.copy(color = color),
         modifier = modifier
             .padding(start = 12.dp, end = 20.dp)
-            .focusRequester(focusRequester),
-        keyboardOptions = KeyboardOptions(
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions {
-            keyboardController?.hide()
-            focusManager.clearFocus()
-            onTypeEvent.invoke(
-                TypeEvent.OnObjectTypeTitleUpdate(
-                    title = textFieldValue.text
-                )
-            )
-        },
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(32.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                if (textFieldValue.text.isEmpty()) {
-                    Text(
-                        modifier = Modifier.wrapContentSize(),
-                        text = stringResource(id = R.string.untitled),
-                        style = HeadlineTitle,
-                        color = colorResource(id = R.color.text_tertiary),
-                    )
-                }
+            .noRippleThrottledClickable {
+                onTypeEvent(TypeEvent.OnObjectTypeTitleClick)
             }
-            innerTextField()
-        }
     )
 }
 
@@ -148,7 +101,7 @@ fun IconAndTitleWidgetPreview() {
             .fillMaxWidth()
             .wrapContentHeight(),
         onTypeEvent = {},
-        uiIconState = UiIconState(icon = ObjectIcon.Task(isChecked = false), isEditable = true),
+        uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = true),
         uiTitleState = UiTitleState(
             title = "I understand that contributing to this repository will require me to agree with the",
             isEditable = true
@@ -164,7 +117,7 @@ fun IconAndTitleEmptyWidgetPreview() {
             .fillMaxWidth()
             .wrapContentHeight(),
         onTypeEvent = {},
-        uiIconState = UiIconState(icon = ObjectIcon.Task(isChecked = false), isEditable = true),
+        uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = true),
         uiTitleState = UiTitleState(
             title = "",
             isEditable = true

@@ -43,9 +43,9 @@ data class UiTitleState(val title: String, val isEditable: Boolean) {
     }
 }
 
-data class UiIconState(val icon: ObjectIcon, val isEditable: Boolean) {
+data class UiIconState(val icon: ObjectIcon.TypeIcon, val isEditable: Boolean) {
     companion object {
-        val EMPTY = UiIconState(icon = ObjectIcon.None, isEditable = false)
+        val EMPTY = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false)
     }
 }
 //endregion

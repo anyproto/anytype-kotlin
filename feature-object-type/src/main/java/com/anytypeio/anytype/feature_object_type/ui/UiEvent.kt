@@ -20,6 +20,7 @@ sealed class TypeEvent {
     //region Object Type Header
     data object OnObjectTypeIconClick : TypeEvent()
     data class OnObjectTypeTitleUpdate(val title: String) : TypeEvent()
+    data object OnObjectTypeTitleClick : TypeEvent()
     //endregion
 
     //region Templates

@@ -31,18 +31,11 @@ class CreateObjectTypeViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    private val INIT =
-        when (vmParams.mode) {
-            MODE.CREATE -> UiTypeSetupTitleAndIconState.CreateNewType(
-                icon = ObjectIcon.TypeIcon.Default.DEFAULT
-            )
-
-            MODE.EDIT -> UiTypeSetupTitleAndIconState.EditType(
-                icon = ObjectIcon.TypeIcon.Default.DEFAULT
-            )
-        }
-
-    private val _uiState = MutableStateFlow<UiTypeSetupTitleAndIconState>(INIT)
+    private val _uiState = MutableStateFlow<UiTypeSetupTitleAndIconState>(
+        UiTypeSetupTitleAndIconState.Visible.CreateNewType(
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT
+        )
+    )
     val uiState = _uiState.asStateFlow()
 
     //icons picker screen
@@ -50,19 +43,8 @@ class CreateObjectTypeViewModel(
 
     val commands = MutableSharedFlow<CreateTypeCommand>(replay = 0)
 
-    private val typeTitle = MutableStateFlow("")
-    private val typePlural = MutableStateFlow("")
-
     init {
         Timber.d("CreateObjectTypeViewModel initialized")
-    }
-
-    fun onTypeTitleChanged(title: String) {
-        typeTitle.value = title
-    }
-
-    fun onTypePluralChanged(plural: String) {
-        typePlural.value = plural
     }
 
     fun onDismiss() {
@@ -72,23 +54,20 @@ class CreateObjectTypeViewModel(
     }
 
     fun onRemoveIcon() {
-        val defaultIcon = ObjectIcon.TypeIcon.Default.DEFAULT
-        _uiState.value = when (val currentState = _uiState.value) {
-            is UiTypeSetupTitleAndIconState.CreateNewType -> currentState.copy(icon = defaultIcon)
-            is UiTypeSetupTitleAndIconState.EditType -> currentState.copy(icon = defaultIcon)
-        }
+        val currentState =
+            _uiState.value as? UiTypeSetupTitleAndIconState.Visible.CreateNewType ?: return
+        _uiState.value = currentState.copy(icon = ObjectIcon.TypeIcon.Default.DEFAULT)
         uiIconsPickerScreen.value = UiIconsPickerState.Hidden
     }
 
     fun onNewIconPicked(iconName: String, color: CustomIconColor?) {
+        val currentState =
+            _uiState.value as? UiTypeSetupTitleAndIconState.Visible.CreateNewType ?: return
         val newIcon = ObjectIcon.TypeIcon.Default(
             rawValue = iconName,
             color = color ?: CustomIconColor.DEFAULT
         )
-        _uiState.value = when (val currentState = _uiState.value) {
-            is UiTypeSetupTitleAndIconState.CreateNewType -> currentState.copy(icon = newIcon)
-            is UiTypeSetupTitleAndIconState.EditType -> currentState.copy(icon = newIcon)
-        }
+        _uiState.value = currentState.copy(icon = newIcon)
         uiIconsPickerScreen.value = UiIconsPickerState.Hidden
     }
 
@@ -100,24 +79,20 @@ class CreateObjectTypeViewModel(
         uiIconsPickerScreen.value = UiIconsPickerState.Hidden
     }
 
-    fun onButtonClicked() {
-        when (vmParams.mode) {
-            MODE.CREATE -> createNewType()
-            MODE.EDIT -> updateType()
-        }
+    fun onButtonClicked(title: String, plurals: String) {
+        createNewType(title = title, plurals = plurals)
     }
 
-    private fun createNewType() {
-        val icon = _uiState.value.icon
-        val name = typeTitle.value
-        val plural = typePlural.value
-        Timber.d("Creating new type with name: $name, plural: $plural, icon: $icon")
+    private fun createNewType(title: String, plurals: String) {
+        val state = _uiState.value as? UiTypeSetupTitleAndIconState.Visible.CreateNewType ?: return
+        val icon = state.icon
+        Timber.d("Creating new type with title: $title, plurals: $plurals, icon: $icon")
         viewModelScope.launch {
             createObjectType.execute(
                 CreateObjectType.Params(
                     space = vmParams.spaceId,
-                    name = name,
-                    pluralName = plural,
+                    name = title,
+                    pluralName = plurals,
                     iconName = icon.rawValue,
                     iconColor = icon.color.iconOption.toDouble()
                 )
@@ -149,25 +124,11 @@ class CreateObjectTypeViewModel(
         }
 
     }
-
-    private fun updateType() {
-        val icon = _uiState.value.icon
-        val name = typeTitle.value
-        val plural = typePlural.value
-        viewModelScope.launch {
-        }
-    }
 }
 
 data class CreateTypeVmParams(
-    val spaceId: Id,
-    val mode: MODE = MODE.CREATE
+    val spaceId: Id
 )
-
-enum class MODE {
-    CREATE,
-    EDIT
-}
 
 sealed class CreateTypeCommand {
     data object Dismiss : CreateTypeCommand()

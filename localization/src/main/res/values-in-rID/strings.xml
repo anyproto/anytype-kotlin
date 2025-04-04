@@ -962,7 +962,7 @@
     <string name="library_title_types">Tipe</string>
     <string name="library_title_relations">Properti</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
+    <string name="library_description_relations">Semua objek saling terhubung. Gunakan properti untuk menghubungkan objek-objek.</string>
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Buat properti</string>
     <string name="library_subtitle_types">Tipeku</string>
@@ -1409,7 +1409,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_alert_error_internal">Terjadi galat internal. Tim kami telah diberitahukan.</string>
     <string name="notifications_alert_error_no_objects_to_import">Tidak ada item untuk diimpor. Silakan pilih objek yang valid untuk diimpor.</string>
     <string name="notifications_alert_error_import_canceled">Proses impor dibatalkan pengguna.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">Batas impor baris atau properti telah tercapai. Silakan kurangi jumlah yang ingin diimpor lalu coba lagi.</string>
     <string name="notifications_alert_error_file_load">Terjadi galat memuat berkas. Silakan cek ulang berkas lalu coba lagi.</string>
     <string name="notifications_alert_error_insufficient_permissions">Kamu tidak memiliki izin yang sesuai untuk melakukan tindakan ini. Silakan cek perizinanmu lalu coba lagi.</string>
     <!-- Gallery Experience -->
@@ -1714,7 +1714,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Tautan undangan Ruang disalin!</string>
     <string name="object_type_create_new_title">Buat tipe baru</string>
-    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_rename_title">Ganti nama tipe</string>
     <string name="object_type_create_plural_title">Type list name</string>
     <string name="object_type_create_title_hint">Puzzle</string>
     <string name="object_type_create_plural_title_hint">Puzzles</string>

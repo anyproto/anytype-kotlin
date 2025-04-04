@@ -699,4 +699,13 @@
         android:id="@+id/actionOpenSpaceFromVault"
         app:destination="@id/homeScreen" />
 
+    <fragment android:id="@+id/spacePropertiesScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment"
+        android:label="SpacePropertiesScreen" />
+
+    <fragment
+        android:id="@+id/spaceTypesScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.SpaceTypesFragment"
+        android:label="SpaceMembersScreen" />
+
 </navigation>

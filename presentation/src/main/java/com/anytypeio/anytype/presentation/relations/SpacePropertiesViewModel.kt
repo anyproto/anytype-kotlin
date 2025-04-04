@@ -62,7 +62,7 @@ class SpacePropertiesViewModel(
                                         format = relation.format
                                     )
                                 }
-                            uiItemsState.value = UiSpacePropertiesScreenState.Content(allProperties)
+                            uiItemsState.value = UiSpacePropertiesScreenState(allProperties)
                         }
 
                         StoreOfRelations.TrackedEvent.Init -> {
@@ -110,9 +110,12 @@ class SpacePropertiesVmFactory @Inject constructor(
         ) as T
 }
 
-sealed class UiSpacePropertiesScreenState {
-    data object Empty : UiSpacePropertiesScreenState()
-    data class Content(val items: List<UiSpacePropertyItem>) : UiSpacePropertiesScreenState()
+data class UiSpacePropertiesScreenState(
+    val items: List<UiSpacePropertyItem>
+) {
+    companion object {
+        val Empty = UiSpacePropertiesScreenState(emptyList())
+    }
 }
 
 data class UiSpacePropertyItem(

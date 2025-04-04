@@ -28,7 +28,7 @@ class SpaceTypesViewModel(
     private val userPermissionProvider: UserPermissionProvider,
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
-    val uiItemsState = MutableStateFlow<UiSpaceTypesScreenState>(UiSpaceTypesScreenState.Empty)
+    val uiItemsState = MutableStateFlow<UiSpaceTypesScreenState>(UiSpaceTypesScreenState(emptyList()))
     val commands = MutableSharedFlow<Command>()
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
@@ -42,18 +42,11 @@ class SpaceTypesViewModel(
         viewModelScope.launch {
             storeOfObjectTypes.trackChanges()
                 .collectLatest { event ->
-                    when (event) {
-                        StoreOfObjectTypes.TrackedEvent.Change -> {
-                            val allTypes =
-                                storeOfObjectTypes.getAll().map { objectType ->
-                                    objectType.toUiItem()
-                                }
-                            uiItemsState.value = UiSpaceTypesScreenState.Content(allTypes)
+                    val allTypes =
+                        storeOfObjectTypes.getAll().map { objectType ->
+                            objectType.toUiItem()
                         }
-
-                        StoreOfObjectTypes.TrackedEvent.Init -> {}
-                    }
-
+                    uiItemsState.value = UiSpaceTypesScreenState(allTypes)
                 }
         }
     }
@@ -101,10 +94,7 @@ class SpaceTypesVmFactory @Inject constructor(
         ) as T
 }
 
-sealed class UiSpaceTypesScreenState{
-    data object Empty : UiSpaceTypesScreenState()
-    data class Content(val items: List<UiSpaceTypeItem>) : UiSpaceTypesScreenState()
-}
+data class UiSpaceTypesScreenState(val items: List<UiSpaceTypeItem>)
 
 data class UiSpaceTypeItem(
     val id: Id,

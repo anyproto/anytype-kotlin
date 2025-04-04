@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
+import com.anytypeio.anytype.feature_object_type.fields.ui.SpacePropertiesListScreen
 import javax.inject.Inject
 import kotlin.getValue
 import kotlinx.coroutines.flow.collect
@@ -35,6 +37,10 @@ class SpacePropertiesFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
+        SpacePropertiesListScreen(
+            uiState = vm.uiItemsState.collectAsStateWithLifecycle().value,
+            onBackPressed = { },
+        )
         LaunchedEffect(Unit) {
             vm.commands.collect()
         }

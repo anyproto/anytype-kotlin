@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
 import javax.inject.Inject
 import kotlin.getValue
 import kotlinx.coroutines.flow.collect
+import ui.space.SpaceTypesListScreen
 
 class SpaceTypesFragment : BaseComposeFragment() {
 
@@ -35,6 +37,10 @@ class SpaceTypesFragment : BaseComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
+        SpaceTypesListScreen(
+            uiState = vm.uiItemsState.collectAsStateWithLifecycle().value,
+            onBackPressed = { },
+        )
         LaunchedEffect(Unit) {
             vm.commands.collect()
         }

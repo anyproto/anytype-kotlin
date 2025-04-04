@@ -44,10 +44,12 @@ import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlin.collections.map
@@ -276,13 +278,13 @@ class SpaceSettingsViewModel(
             }
             UiEvent.OnBinClick -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageBin(vmParams.space))
+                    commands.emit(ManageBin(vmParams.space))
                 }
             }
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.ManageSharedSpace(vmParams.space)
+                        ManageSharedSpace(vmParams.space)
                     )
                 }
             }
@@ -295,12 +297,12 @@ class SpaceSettingsViewModel(
                         .async(vmParams.space)
                         .onFailure {
                             commands.emit(
-                                Command.ManageSharedSpace(vmParams.space)
+                                ManageSharedSpace(vmParams.space)
                             )
                         }
                         .onSuccess { link ->
                             commands.emit(
-                                Command.ShowInviteLinkQrCode(link.scheme)
+                                ShowInviteLinkQrCode(link.scheme)
                             )
                         }
                 }
@@ -308,7 +310,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.DESCRIPTION to uiEvent.description
@@ -320,7 +322,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveTitleClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.NAME to uiEvent.title
@@ -339,13 +341,13 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageSharedSpace(vmParams.space))
+                    commands.emit(ManageSharedSpace(vmParams.space))
                 }
             }
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.SelectDefaultObjectType(
+                        SelectDefaultObjectType(
                             space = vmParams.space,
                             excludedTypeIds = buildList {
                                 val curr = uiEvent.currentDefaultObjectTypeId
@@ -353,6 +355,17 @@ class SpaceSettingsViewModel(
                             }
                         )
                     )
+                }
+            }
+
+            UiEvent.OnObjectTypesClicked -> {
+                viewModelScope.launch {
+                    commands.emit(OpenTypesScreen(vmParams.space))
+                }
+            }
+            UiEvent.OnPropertiesClicked -> {
+                viewModelScope.launch {
+                    commands.emit(OpenPropertiesScreen(vmParams.space))
                 }
             }
         }
@@ -678,6 +691,8 @@ class SpaceSettingsViewModel(
         data object NavigateToMembershipUpdate : Command()
         data object OpenWallpaperPicker : Command()
         data object ManageRemoteStorage : Command()
+        data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()
+        data class OpenTypesScreen(val spaceId: SpaceId) : Command()
     }
 
     class Factory @Inject constructor(

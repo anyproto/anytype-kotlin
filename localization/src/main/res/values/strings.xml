@@ -2008,6 +2008,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title_search_hint">Search..."</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
 
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.DateObjectDependencies
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
 import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
@@ -137,7 +138,8 @@ interface MainComponent :
     ChatReactionDependencies,
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
-    DebugDependencies
+    DebugDependencies,
+    CreateObjectTypeDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -393,4 +395,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(EditTypePropertiesDependencies::class)
     abstract fun provideEditTypePropertiesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectTypeDependencies::class)
+    abstract fun provideCreateObjectTypeDependencies(component: MainComponent): ComponentDependencies
 }

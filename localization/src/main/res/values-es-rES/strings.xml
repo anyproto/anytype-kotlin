@@ -99,7 +99,7 @@
     <string name="toolbar_section_tool">Herramienta</string>
     <string name="toolbar_section_media">Medios</string>
     <string name="toolbar_section_objects">Objetos</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Propiedad</string>
     <string name="toolbar_action_delete">Eliminar</string>
     <string name="toolbar_action_duplicate">Duplicar</string>
     <string name="toolbar_action_mention">Mención</string>
@@ -254,7 +254,7 @@
     <string name="mention_suggester_create_object">Crear objeto</string>
     <string name="your_search_query">Buscar</string>
     <string name="syncing">Sincronizando…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
+    <string name="choose_a_object_type_for_this_set">Elige un tipo de objeto para esta consulta</string>
     <string name="new_set">Nueva consulta</string>
     <string name="create_new_object_type">Crear un tipo de objeto</string>
     <plurals name="page_selected">
@@ -1728,7 +1728,7 @@ En concreto,
     <string name="space_invite_link_copied">¡Enlace de invitación al espacio copiado!</string>
     <string name="object_type_create_new_title">Crear un tipo</string>
     <string name="object_type_rename_title">Rename type</string>
-    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_plural_title">Nombre de lista de tipo</string>
     <string name="object_type_create_title_hint">Puzle</string>
     <string name="object_type_create_plural_title_hint">Puzles</string>
     <string name="object_conflict_screen_title">Resolver conflicto de diseño</string>

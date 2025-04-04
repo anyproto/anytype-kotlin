@@ -21,6 +21,11 @@ sealed class UiEvent {
     data object OnInviteClicked : UiEvent()
     data object OnQrCodeClicked : UiEvent()
 
+    data class OnAutoCreateWidgetSwitchChanged(
+        val widget: Id,
+        val isAutoCreateEnabled: Boolean
+    ) : UiEvent()
+
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()
     }

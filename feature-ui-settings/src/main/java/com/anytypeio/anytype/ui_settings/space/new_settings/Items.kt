@@ -23,6 +23,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchColors
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -645,7 +647,14 @@ fun AutoCreateWidgetItem(
             onCheckedChange = {
                 checked.value = it
                 onCheckedStatusChanged(it)
-            }
+            },
+            colors = SwitchDefaults.colors().copy(
+                checkedBorderColor = Color.Transparent,
+                uncheckedBorderColor = Color.Transparent,
+                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
+                uncheckedTrackColor = colorResource(R.color.palette_system_amber_50),
+                uncheckedThumbColor = colorResource(R.color.glyph_white)
+            )
         )
 
     }
@@ -657,5 +666,14 @@ private fun AutoCreateWidgetItemPreview() {
     AutoCreateWidgetItem(
         onCheckedStatusChanged = {},
         isChecked = true
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun AutoCreateWidgetItemUncheckedPreview() {
+    AutoCreateWidgetItem(
+        onCheckedStatusChanged = {},
+        isChecked = false
     )
 }

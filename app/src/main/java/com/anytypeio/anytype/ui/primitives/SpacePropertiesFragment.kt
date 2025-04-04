@@ -10,9 +10,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
 import javax.inject.Inject
@@ -39,11 +41,14 @@ class SpacePropertiesFragment : BaseComposeFragment() {
     }
 
     override fun injectDependencies() {
-        TODO("Not yet implemented")
+        val params = SpacePropertiesViewModel.VmParams(
+            spaceId = SpaceId(space)
+        )
+        componentManager().spacePropertiesComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {
-        TODO("Not yet implemented")
+        componentManager().spacePropertiesComponent.release()
     }
 
     override fun onApplyWindowRootInsets(view: View) {

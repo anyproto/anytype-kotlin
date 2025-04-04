@@ -314,10 +314,8 @@ interface BlockRepository {
     ) : ObjectWrapper.Relation
 
     suspend fun createType(
-        space: Id,
-        name: String,
-        emojiUnicode: String?
-    ): Struct?
+        command: Command.CreateObjectType
+    ): String
 
     suspend fun createRelationOption(
         space: Id,

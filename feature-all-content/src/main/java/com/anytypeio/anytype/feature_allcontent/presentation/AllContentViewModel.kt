@@ -4,12 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryCreateType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -838,39 +835,7 @@ class AllContentViewModel(
         when (item) {
             UiContentItem.NewType -> {
                 viewModelScope.launch {
-                    createObjectType.execute(
-                        CreateObjectType.Params(
-                            space = vmParams.spaceId.id,
-                            name = ""
-                        )
-                    ).fold(
-                        onSuccess = { newType ->
-                            val spaceParams = provideParams(vmParams.spaceId.id)
-                            viewModelScope.sendEvent(
-                                analytics = analytics,
-                                eventName = libraryCreateType,
-                                props = Props(
-                                    mapOf(
-                                        EventsPropertiesKey.permissions to spaceParams.permission,
-                                        EventsPropertiesKey.spaceType to spaceParams.spaceType
-                                    )
-                                )
-                            )
-                            if (newType == null) {
-                                Timber.e("Error while creating type")
-                                return@fold
-                            }
-                            commands.emit(
-                                NavigateToObjectType(
-                                    id = newType.id,
-                                    space = vmParams.spaceId.id
-                                )
-                            )
-                        },
-                        onFailure = {
-                            Timber.e(it, "Error while creating type")
-                        }
-                    )
+                    commands.emit(OpenTypeCreation(space = vmParams.spaceId.id))
                 }
             }
             is UiContentItem.Type -> {
@@ -1086,7 +1051,7 @@ class AllContentViewModel(
             data class ObjectArchived(val name: String) : SendToast()
         }
         data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
-        data object OpenTypeCreation: Command()
+        data class OpenTypeCreation(val space: Id): Command()
         data class OpenShareScreen(val space: SpaceId): Command()
         data class OpenRelationEditing(
             val typeName: String,

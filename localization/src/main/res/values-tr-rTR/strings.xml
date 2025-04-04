@@ -230,7 +230,7 @@
     <string name="select">Seç</string>
     <string name="search">Ara</string>
     <string name="search_hint">Ara...</string>
-    <string name="relations">İlişkiler</string>
+    <string name="relations">Özellikler</string>
     <string name="fields">Alanlar</string>
     <string name="download">İndir</string>
     <string name="view">Görüntüle</string>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Telefon numarası</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Nesne ilişkisi</string>
-    <string name="relation_format_relation">İlişki</string>
+    <string name="relation_format_relation">Özellikler</string>
     <string name="viewer_sorting_prefix">Sonra</string>
     <string name="enter_value">Değeri gir</string>
-    <string name="ityem_relations">İlişkiler</string>
+    <string name="ityem_relations">Özellikler</string>
     <string name="add_sort">Bir sıralama ekleyin</string>
     <string name="apply">Uygula</string>
     <string name="add_filter">Bir filtre ekleyin </string>
@@ -669,7 +669,7 @@
     <string name="create">Oluştur</string>
     <string name="new_view">Yeni görünüm</string>
     <string name="coming_soon">Çok yakında</string>
-    <string name="edit_relations_title">İlişkiler</string>
+    <string name="edit_relations_title">Özellikler</string>
     <string name="edit_view">Görünümü düzenle</string>
     <string name="relation_open_edit">Düzenlemek için açın</string>
     <string name="remove_from_set">Bu sorgudan kaldır</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Medya</string>
     <string name="slash_widget_main_objects">Nesneler</string>
     <string name="slash_widget_main_objects_subheader">Nesneler</string>
-    <string name="slash_widget_main_relations">İlişkiler</string>
+    <string name="slash_widget_main_relations">Özellikler</string>
     <string name="slash_widget_main_other">Diğer</string>
     <string name="slash_widget_main_actions">Eylemler</string>
     <string name="slash_widget_main_alignment">Hizalama</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Türler</string>
-    <string name="library_title_relations">İlişkiler</string>
+    <string name="library_title_relations">Özellikler</string>
     <string name="library_description_types">Türler nesnelerinizi gruplandırmanıza ve yönetmenize yardımcı olan kategoriler gibidir.</string>
-    <string name="library_description_relations">Tüm nesneler birbirine bağlıdır. Nesneler arasında bağlantı kurmak için ilişkileri kullanın.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Bir tür oluştur</string>
     <string name="library_button_create_relation">Bir özellik oluştur</string>
     <string name="library_subtitle_types">Türlerim</string>
-    <string name="library_subtitle_relations">İlişkilerim</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">Kitaplık</string>
     <string name="library_create_new_type">Bir \'%1$s\' türü oluşturun</string>
     <string name="library_create_new_relation">\'%1$s\' özelliğini oluştur</string>
@@ -1415,7 +1415,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_alert_error_internal">Bizden kaynaklı bir hata meydana geldi. Ekibimiz bilgilendirildi.</string>
     <string name="notifications_alert_error_no_objects_to_import">İçe aktarılacak öğe bulunamadı. Lütfen içe aktarmak için geçerli nesneleri seçin.</string>
     <string name="notifications_alert_error_import_canceled">İçe aktarma işlemi kullanıcı tarafından iptal edildi.</string>
-    <string name="notifications_alert_error_limit_exceeded">Satırlar veya ilişkiler için içe aktarma sınırı aşıldı. Lütfen miktarı azaltın ve tekrar deneyin.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">Dosya yüklenirken bir hata oluştu. Lütfen dosyayı kontrol edin ve tekrar deneyin.</string>
     <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsiniz. Lütfen izinlerinizi kontrol edin ve tekrar deneyin.</string>
     <!-- Gallery Experience -->
@@ -1531,7 +1531,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_title_tab_bookmarks">Yer işaretleri</string>
     <string name="all_content_title_tab_files">Dosyalar</string>
     <string name="all_content_title_tab_objetc_types">Türler</string>
-    <string name="all_content_title_tab_relations">İlişkiler</string>
+    <string name="all_content_title_tab_relations">Özellikler</string>
     <string name="all_content_sort_by">Şuna göre sırala</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1726,6 +1726,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_icon_remove">Kaldır</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

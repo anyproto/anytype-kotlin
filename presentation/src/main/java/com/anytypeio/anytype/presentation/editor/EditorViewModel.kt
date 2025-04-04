@@ -249,6 +249,7 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -263,15 +264,18 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
 import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -285,6 +289,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
+import kotlin.collections.orEmpty
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -805,9 +810,11 @@ class EditorViewModel(
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
+                    participantCanEdit = permission?.isOwnerOrEditor() == true,
                     restrictions = orchestrator.stores.objectRestrictions.current(),
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
+                updateLayoutConflictState(currentObj, doc)
                 if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()
                 } else {
@@ -827,6 +834,20 @@ class EditorViewModel(
                 proceedWithCheckingInternalFlags()
             }
             .launchIn(viewModelScope)
+    }
+
+    private suspend fun updateLayoutConflictState(
+        currentObject: ObjectWrapper.Basic?,
+        newBlocks: List<BlockView>
+    ) {
+
+        val hasConflict = hasLayoutConflict(
+            currentObject = currentObject,
+            blocks = newBlocks,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+
+        orchestrator.stores.hasLayoutOrRelationConflict.update(hasConflict)
     }
 
     private fun refreshTableToolbar() {
@@ -3295,6 +3316,17 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.OBJECT_TYPE -> {
+                    navigate(
+                        EventWrapper(
+                            OpenTypeObject(
+                                target = target,
+                                space = vmParams.space.id
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }
@@ -5301,27 +5333,38 @@ class EditorViewModel(
 
     private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
         val objectViewDetails = orchestrator.stores.details.current()
+        val currentObj = objectViewDetails.getObject(vmParams.ctx)
+        if (currentObj == null) {
+            Timber.e("Object with id $context not found.")
+            return
+        }
+        val objType = objectViewDetails.getTypeForObject(vmParams.ctx)
+        if (objType == null) {
+            Timber.e("Object type of object $context not found.")
+            return
+        }
 
         viewModelScope.launch {
-            val objectRelationViews = objectViewDetails.getObjRelationsViews(
-                ctx = vmParams.ctx,
-                urlBuilder = urlBuilder,
+            val parsedFields = fieldParser.getObjectParsedProperties(
+                objectType = objType,
                 storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                objPropertiesKeys = currentObj.map.keys.toList().orEmpty()
             )
 
-            val recommendedRelationViews = objectViewDetails.getRecommendedRelations(
-                ctx = vmParams.ctx,
-                storeOfRelations = storeOfRelations,
-                fieldParser = fieldParser,
-                urlBuilder = urlBuilder,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-            val update =
-                (objectRelationViews + recommendedRelationViews).map { SlashRelationView.Item(it) }
+            val properties = (parsedFields.header + parsedFields.sidebar).mapNotNull {
+                it.view(
+                    details = objectViewDetails,
+                    values = currentObj.map,
+                    urlBuilder = urlBuilder,
+                    fieldParser = fieldParser,
+                    isFeatured = currentObj.featuredRelations.contains(it.key),
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            }.map {
+                SlashRelationView.Item(it)
+            }
 
-            action.invoke(update)
+            action.invoke(properties)
         }
     }
 
@@ -6813,9 +6856,9 @@ class EditorViewModel(
                 )
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->
-                    if (templates.isNotEmpty()) {
+                    if (templates.size > 1) {
                         selectTemplateViewState.value = SelectTemplateViewState.Active(
-                            count = templates.size + 1,
+                            count = templates.size,
                             typeId = objType.id
                         )
                     } else {

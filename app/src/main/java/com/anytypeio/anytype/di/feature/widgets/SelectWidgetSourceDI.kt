@@ -6,10 +6,12 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.widgets.GetSuggestedWidgetTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -50,6 +52,7 @@ interface SelectWidgetSourceDependencies : ComponentDependencies {
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun searchObjects(): SearchObjects
     fun fieldParser(): FieldParser
+    fun logger(): Logger
 }
 
 @Module
@@ -67,7 +70,8 @@ object SelectWidgetSourceModule {
         dispatcher: Dispatcher<WidgetDispatchEvent>,
         analyticsHelper: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        getSuggestedWidgetTypes: GetSuggestedWidgetTypes
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -77,6 +81,7 @@ object SelectWidgetSourceModule {
         dispatcher = dispatcher,
         analyticSpaceHelperDelegate = analyticsHelper,
         fieldParser = fieldParser,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        getSuggestedWidgetTypes = getSuggestedWidgetTypes
     )
 }

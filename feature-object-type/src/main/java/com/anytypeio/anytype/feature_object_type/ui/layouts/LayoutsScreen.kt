@@ -92,7 +92,7 @@ fun TypeLayoutsScreen(
             contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
             horizontalArrangement = Arrangement.spacedBy(
                 space = 12.dp,
-                alignment = Alignment.End
+                alignment = Alignment.Start
             ),
         ) {
             items(

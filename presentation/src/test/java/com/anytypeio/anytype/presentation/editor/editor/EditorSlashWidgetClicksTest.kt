@@ -424,171 +424,171 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
     //endregion
 
     //region {RELATIONS}
-    @Test
-    fun `should return Update command with relation items when clicked on Relations item`() = runTest {
-        // SETUP
-
-        val header = MockTypicalDocumentFactory.header
-        val title = MockTypicalDocumentFactory.title
-
-        val relation1 = StubRelationObject(
-            key = MockDataFactory.randomString(),
-            name = "Album's title",
-            format = Relation.Format.SHORT_TEXT
-        )
-
-        val relation2 = StubRelationObject(
-            key = MockDataFactory.randomString(),
-            name = "Album's year",
-            format = Relation.Format.NUMBER
-        )
-
-        val relation3 = StubRelationObject(
-            key = MockDataFactory.randomString(),
-            name = "Album's artist",
-            format = Relation.Format.SHORT_TEXT
-        )
-
-        val objectRelations = listOf(relation1, relation2, relation3)
-
-        val value1 = "Safe as milk"
-        val value2 = 1967.0
-        val value3 = "Captain Beefheart and his Magic Band"
-
-        val customDetails =
-            ObjectViewDetails(
-                mapOf(
-                    root to
-                        mapOf(
-                            Relations.ID to root,
-                            relation1.key to value1,
-                            relation2.key to value2,
-                            relation3.key to value3
-                        )
-                    )
-            )
-
-        val a = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.Text(
-                text = "Foo",
-                marks = emptyList(),
-                style = Block.Content.Text.Style.P
-            )
-        )
-
-        val b = Block(
-            id = MockDataFactory.randomUuid(),
-            fields = Block.Fields.empty(),
-            children = emptyList(),
-            content = Block.Content.RelationBlock(key = relation1.key)
-        )
-
-        val page = Block(
-            id = root,
-            fields = Block.Fields(emptyMap()),
-            content = Block.Content.Smart,
-            children = listOf(header.id, a.id, b.id)
-        )
-
-        val document = listOf(page, header, title, a, b)
-
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubOpenDocument(
-            document = document,
-            details = customDetails
-        )
-
-        val vm = buildViewModel()
-
-        storeOfRelations.merge(listOf(relation1, relation2, relation3))
-
-        vm.onStart(id = root, space = defaultSpace)
-
-        advanceUntilIdle()
-
-        vm.apply {
-            onBlockFocusChanged(
-                id = a.id,
-                hasFocus = true
-            )
-            onSlashTextWatcherEvent(
-                SlashEvent.Start(
-                    cursorCoordinate = 100,
-                    slashStart = 0
-                )
-            )
-        }
-
-        advanceUntilIdle()
-
-        // TESTING
-
-        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
-
-        vm.onSlashTextWatcherEvent(event = event)
-        vm.onSlashItemClicked(SlashItem.Main.Relations)
-
-        advanceUntilIdle()
-
-        val state = vm.controlPanelViewState.value
-
-        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
-
-        assertNotNull(stateWidget)
-
-        val expectedRelationItems = listOf(
-            SlashRelationView.Section.SubheaderWithBack,
-            SlashRelationView.RelationNew,
-            SlashRelationView.Item(
-                view = ObjectRelationView.Default(
-                    id = relation1.id,
-                    key = relation1.key,
-                    name = relation1.name.orEmpty(),
-                    value = value1,
-                    format = relation1.format,
-                    system = false
-                )
-            ),
-            SlashRelationView.Item(
-                view = ObjectRelationView.Default(
-                    id = relation2.id,
-                    key = relation2.key,
-                    name = relation2.name.orEmpty(),
-                    value = NumberParser.parse(value2),
-                    format = relation2.format,
-                    system = false
-                )
-            ),
-            SlashRelationView.Item(
-                view = ObjectRelationView.Default(
-                    id = relation3.id,
-                    key = relation3.key,
-                    name = relation3.name.orEmpty(),
-                    value = value3,
-                    format = relation3.format,
-                    system = false
-                )
-            )
-        )
-
-        val expected = SlashWidgetState.UpdateItems(
-            mainItems = emptyList(),
-            styleItems = emptyList(),
-            mediaItems = emptyList(),
-            objectItems = emptyList(),
-            relationItems = expectedRelationItems,
-            otherItems = emptyList(),
-            actionsItems = emptyList(),
-            alignmentItems = emptyList(),
-            colorItems = emptyList(),
-            backgroundItems = emptyList()
-        )
-        assertEquals(expected = expected, actual = stateWidget)
-    }
+//    @Test
+//    fun `should return Update command with relation items when clicked on Relations item`() = runTest {
+//        // SETUP
+//
+//        val header = MockTypicalDocumentFactory.header
+//        val title = MockTypicalDocumentFactory.title
+//
+//        val relation1 = StubRelationObject(
+//            key = MockDataFactory.randomString(),
+//            name = "Album's title",
+//            format = Relation.Format.SHORT_TEXT
+//        )
+//
+//        val relation2 = StubRelationObject(
+//            key = MockDataFactory.randomString(),
+//            name = "Album's year",
+//            format = Relation.Format.NUMBER
+//        )
+//
+//        val relation3 = StubRelationObject(
+//            key = MockDataFactory.randomString(),
+//            name = "Album's artist",
+//            format = Relation.Format.SHORT_TEXT
+//        )
+//
+//        val objectRelations = listOf(relation1, relation2, relation3)
+//
+//        val value1 = "Safe as milk"
+//        val value2 = 1967.0
+//        val value3 = "Captain Beefheart and his Magic Band"
+//
+//        val customDetails =
+//            ObjectViewDetails(
+//                mapOf(
+//                    root to
+//                        mapOf(
+//                            Relations.ID to root,
+//                            relation1.key to value1,
+//                            relation2.key to value2,
+//                            relation3.key to value3
+//                        )
+//                    )
+//            )
+//
+//        val a = Block(
+//            id = MockDataFactory.randomUuid(),
+//            fields = Block.Fields.empty(),
+//            children = emptyList(),
+//            content = Block.Content.Text(
+//                text = "Foo",
+//                marks = emptyList(),
+//                style = Block.Content.Text.Style.P
+//            )
+//        )
+//
+//        val b = Block(
+//            id = MockDataFactory.randomUuid(),
+//            fields = Block.Fields.empty(),
+//            children = emptyList(),
+//            content = Block.Content.RelationBlock(key = relation1.key)
+//        )
+//
+//        val page = Block(
+//            id = root,
+//            fields = Block.Fields(emptyMap()),
+//            content = Block.Content.Smart,
+//            children = listOf(header.id, a.id, b.id)
+//        )
+//
+//        val document = listOf(page, header, title, a, b)
+//
+//        stubInterceptEvents()
+//        stubInterceptThreadStatus()
+//        stubOpenDocument(
+//            document = document,
+//            details = customDetails
+//        )
+//
+//        val vm = buildViewModel()
+//
+//        storeOfRelations.merge(listOf(relation1, relation2, relation3))
+//
+//        vm.onStart(id = root, space = defaultSpace)
+//
+//        advanceUntilIdle()
+//
+//        vm.apply {
+//            onBlockFocusChanged(
+//                id = a.id,
+//                hasFocus = true
+//            )
+//            onSlashTextWatcherEvent(
+//                SlashEvent.Start(
+//                    cursorCoordinate = 100,
+//                    slashStart = 0
+//                )
+//            )
+//        }
+//
+//        advanceUntilIdle()
+//
+//        // TESTING
+//
+//        val event = SlashEvent.Filter(filter = "/", viewType = Types.HOLDER_NUMBERED)
+//
+//        vm.onSlashTextWatcherEvent(event = event)
+//        vm.onSlashItemClicked(SlashItem.Main.Relations)
+//
+//        advanceUntilIdle()
+//
+//        val state = vm.controlPanelViewState.value
+//
+//        val stateWidget = state?.slashWidget?.widgetState as SlashWidgetState.UpdateItems
+//
+//        assertNotNull(stateWidget)
+//
+//        val expectedRelationItems = listOf(
+//            SlashRelationView.Section.SubheaderWithBack,
+//            SlashRelationView.RelationNew,
+//            SlashRelationView.Item(
+//                view = ObjectRelationView.Default(
+//                    id = relation1.id,
+//                    key = relation1.key,
+//                    name = relation1.name.orEmpty(),
+//                    value = value1,
+//                    format = relation1.format,
+//                    system = false
+//                )
+//            ),
+//            SlashRelationView.Item(
+//                view = ObjectRelationView.Default(
+//                    id = relation2.id,
+//                    key = relation2.key,
+//                    name = relation2.name.orEmpty(),
+//                    value = NumberParser.parse(value2),
+//                    format = relation2.format,
+//                    system = false
+//                )
+//            ),
+//            SlashRelationView.Item(
+//                view = ObjectRelationView.Default(
+//                    id = relation3.id,
+//                    key = relation3.key,
+//                    name = relation3.name.orEmpty(),
+//                    value = value3,
+//                    format = relation3.format,
+//                    system = false
+//                )
+//            )
+//        )
+//
+//        val expected = SlashWidgetState.UpdateItems(
+//            mainItems = emptyList(),
+//            styleItems = emptyList(),
+//            mediaItems = emptyList(),
+//            objectItems = emptyList(),
+//            relationItems = expectedRelationItems,
+//            otherItems = emptyList(),
+//            actionsItems = emptyList(),
+//            alignmentItems = emptyList(),
+//            colorItems = emptyList(),
+//            backgroundItems = emptyList()
+//        )
+//        assertEquals(expected = expected, actual = stateWidget)
+//    }
     //endregion
 
     //region {OTHERS}

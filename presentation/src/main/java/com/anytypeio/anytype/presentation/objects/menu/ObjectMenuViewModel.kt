@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -80,7 +81,8 @@ class ObjectMenuViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val deleteRelationFromObject: DeleteRelationFromObject
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -521,6 +523,79 @@ class ObjectMenuViewModel(
         return doc.fields.isLocked ?: false
     }
 
+    override fun onResetToDefaultLayout(
+        ctx: Id,
+        space: Id
+    ) {
+
+        showLayoutConflictScreen.value = false
+
+        val currentObject = storage.details.current().getObject(ctx)
+        val featuredRelations = currentObject?.featuredRelations ?: emptyList()
+
+        viewModelScope.launch {
+            val params = DeleteRelationFromObject.Params(
+                ctx = ctx,
+                relations = listOf(
+                    Relations.LEGACY_LAYOUT,
+                    Relations.LAYOUT_ALIGN
+                )
+            )
+            deleteRelationFromObject.async(
+                params = params
+            ).fold(
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while resetting layout to default")
+                }
+            )
+        }
+
+        viewModelScope.launch{
+
+            val rootBlockFields = storage.document.get().find { it.id == ctx }?.fields
+
+            val params = UpdateFields.Params(
+                context = ctx,
+                fields = listOf(Pair(ctx, rootBlockFields?.copy(
+                    map = rootBlockFields.map.toMutableMap().apply {
+                        put("width", null)
+                    }
+                ) ?: Block.Fields.empty()))
+            )
+            updateFields(params = params
+            ).process(
+                success = { payload ->
+                    dispatcher.send(payload)
+                },
+                failure = {
+                    Timber.e(it, "Error while resetting layout to default")
+                }
+            )
+        }
+
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = ctx,
+                details = mapOf(
+                    Relations.FEATURED_RELATIONS to featuredRelations.filter {
+                        it == Relations.DESCRIPTION
+                    }.map { it }
+                )
+            )
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    dispatcher.send(it)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while resetting layout to default")
+                }
+            )
+        }
+    }
+
     @Suppress("UNCHECKED_CAST")
     class Factory @Inject constructor(
         private val duplicateObject: DuplicateObject,
@@ -549,7 +624,8 @@ class ObjectMenuViewModel(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val addToFeaturedRelations: AddToFeaturedRelations,
         private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val deleteRelationFromObject: DeleteRelationFromObject
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -579,7 +655,8 @@ class ObjectMenuViewModel(
                 spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
                 addToFeaturedRelations = addToFeaturedRelations,
                 removeFromFeaturedRelations = removeFromFeaturedRelations,
-                userPermissionProvider = userPermissionProvider
+                userPermissionProvider = userPermissionProvider,
+                deleteRelationFromObject = deleteRelationFromObject
             ) as T
         }
     }

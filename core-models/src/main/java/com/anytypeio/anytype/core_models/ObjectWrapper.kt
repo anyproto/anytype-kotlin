@@ -26,6 +26,7 @@ sealed class ObjectWrapper {
         val lastOpenedDate: Any? by default
 
         val name: String? by default
+        val pluralName: String? by default
 
         val iconEmoji: String? by default
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
@@ -163,6 +164,7 @@ sealed class ObjectWrapper {
         val id: Id by default
         val uniqueKey: String by default
         val name: String? by default
+        val pluralName: String? by default
         val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val isArchived: Boolean? by default

@@ -167,6 +167,7 @@ object Flags {
     const val FLAG_REFRESH: Flag = 0
     val skipRefreshKeys = listOf(
         Relations.NAME,
+        Relations.PLURAL_NAME,
         Relations.LAST_MODIFIED_DATE,
         Relations.SNIPPET,
         Relations.SYNC_DATE,

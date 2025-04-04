@@ -135,6 +135,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -252,8 +253,6 @@ class HomeScreenViewModel(
     private val widgets = MutableStateFlow<Widgets>(null)
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
-
-    private val allContentWidget = AllContentWidgetContainer()
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
@@ -456,18 +455,13 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                if (list.isNotEmpty()) {
-                    combine(
-                        flows = buildList<Flow<WidgetView>> {
-                            add(spaceWidgetView)
-                            add(allContentWidget.view)
-                            addAll(list.map { m -> m.view })
-                        }
-                    ) { array ->
-                        array.toList()
+                combine(
+                    flows = buildList<Flow<WidgetView>> {
+                        add(spaceWidgetView)
+                        addAll(list.map { m -> m.view })
                     }
-                } else {
-                    spaceWidgetView.map { view -> listOf(view) }
+                ) { array ->
+                    array.toList()
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
                 buildListOfWidgets(hasEditAccess, widgets)
@@ -489,7 +483,12 @@ class HomeScreenViewModel(
             }
             addAll(filtered)
             if (hasEditAccess) {
-                addAll(actions)
+                // >1, and not >0, because space widget view is always there.
+                if (widgets.size > 1) {
+                    addAll(actions)
+                } else {
+                    add(WidgetView.EmptyState)
+                }
             }
         }
     }
@@ -588,8 +587,13 @@ class HomeScreenViewModel(
                                 storeOfObjectTypes = storeOfObjectTypes
                             )
                         }
+                        is Widget.AllObjects -> {
+                            AllContentWidgetContainer(
+                                widget = widget
+                            )
+                        }
                     }
-                } + listOf(spaceBinWidgetContainer)
+                }
             }.collect {
                 Timber.d("Emitting list of containers: ${it.size}")
                 containers.value = it
@@ -713,15 +717,25 @@ class HomeScreenViewModel(
                             }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                            commands.emit(
-                                Command.SelectWidgetType(
+                            if (dispatch.source == BundledWidgetSourceView.AllObjects.id) {
+                                // Applying link layout automatically to all-objects widget
+                                proceedWithCreatingWidget(
                                     ctx = config.widgets,
                                     source = dispatch.source,
-                                    layout = ObjectType.Layout.SET.code,
-                                    target = dispatch.target,
-                                    isInEditMode = isInEditMode()
+                                    type = Command.ChangeWidgetType.TYPE_LINK,
+                                    target = dispatch.target
                                 )
-                            )
+                            } else {
+                                commands.emit(
+                                    Command.SelectWidgetType(
+                                        ctx = config.widgets,
+                                        source = dispatch.source,
+                                        layout = ObjectType.Layout.SET.code,
+                                        target = dispatch.target,
+                                        isInEditMode = isInEditMode()
+                                    )
+                                )
+                            }
                         }
                         is WidgetDispatchEvent.SourceChanged -> {
                             proceedWithUpdatingWidget(
@@ -902,16 +916,20 @@ class HomeScreenViewModel(
 
     fun onCreateWidgetClicked() {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -966,6 +984,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(source: Widget.Source) {
+        Timber.d("onWidgetSourceClicked: $source")
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendSelectHomeTabEvent(
@@ -1054,6 +1073,28 @@ class HomeScreenViewModel(
                     sendToast("Open bin to restore your archived object")
                 }
             }
+            is Widget.Source.Bundled.Bin -> {
+                viewModelScope.launch {
+                    navigation(
+                        Navigation.ExpandWidget(
+                            subscription = Subscription.Bin,
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
+            is Widget.Source.Bundled.AllObjects -> {
+                viewModelScope.launch {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    navigation(
+                        Navigation.OpenAllContent(
+                            space = spaceManager.get()
+                        )
+                    )
+                }
+            }
         }
     }
 
@@ -1081,6 +1122,7 @@ class HomeScreenViewModel(
     }
 
     fun onBundledWidgetClicked(widget: Id) {
+        Timber.d("onBundledWidgetClicked: $widget")
         viewModelScope.launch {
             // TODO DROID-2341 get space from widget views for better consistency
             val space = spaceManager.get()
@@ -1101,7 +1143,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                Subscriptions.SUBSCRIPTION_ARCHIVED -> {
+                Subscriptions.SUBSCRIPTION_BIN -> {
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Bin,
@@ -1119,16 +1161,6 @@ class HomeScreenViewModel(
                 }
                 WidgetView.SpaceChat.id -> {
                     proceedWithSpaceChatWidgetHeaderClick()
-                }
-                WidgetView.AllContent.ALL_CONTENT_WIDGET_ID -> {
-                    if (mode.value == InteractionMode.Edit) {
-                        return@launch
-                    }
-                    navigation(
-                        Navigation.OpenAllContent(
-                            space = space
-                        )
-                    )
                 }
                 else -> {
                     Timber.w("Skipping widget click: $widget")
@@ -1163,17 +1195,21 @@ class HomeScreenViewModel(
 
     private fun proceedWithAddingWidgetBelow(widget: Id) {
         viewModelScope.launch {
-            sendAddWidgetEvent(
-                analytics = analytics,
-                isInEditMode = isInEditMode()
-            )
-            commands.emit(
-                Command.SelectWidgetSource(
-                    target = widget,
-                    isInEditMode = isInEditMode(),
-                    space = spaceManager.get()
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                sendAddWidgetEvent(
+                    analytics = analytics,
+                    isInEditMode = isInEditMode()
                 )
-            )
+                commands.emit(
+                    Command.SelectWidgetSource(
+                        ctx = config.widgets,
+                        target = widget,
+                        isInEditMode = isInEditMode(),
+                        space = spaceManager.get()
+                    )
+                )
+            }
         }
     }
 
@@ -1244,6 +1280,8 @@ class HomeScreenViewModel(
             else
                 Command.ChangeWidgetType.TYPE_LIST
         }
+        // All-objects widget has link appearance.
+        is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -1637,6 +1675,7 @@ class HomeScreenViewModel(
                             add(Relations.ID)
                             add(Relations.UNIQUE_KEY)
                             add(Relations.NAME)
+                            add(Relations.PLURAL_NAME)
                         },
                         filters = buildList {
                             add(
@@ -2506,6 +2545,7 @@ sealed class Command {
      * [target] optional target, below which new widget will be created
      */
     data class SelectWidgetSource(
+        val ctx: Id,
         val target: Id? = null,
         val isInEditMode: Boolean,
         val space: Id

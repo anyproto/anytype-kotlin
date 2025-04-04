@@ -107,7 +107,14 @@ class MiddlewareTest {
             details = mapOf<String, Any?>(),
             templateId = templateId,
             objectTypeUniqueKey = typeKey.key,
-            spaceId = spaceId
+            spaceId = spaceId,
+            block = Block(
+                link = Block.Content.Link(
+                    style = Block.Content.Link.Style.Page,
+                    cardStyle = Block.Content.Link.CardStyle.Card,
+                    iconSize = Block.Content.Link.IconSize.SizeSmall
+                )
+            )
         )
 
         service.stub {
@@ -164,7 +171,14 @@ class MiddlewareTest {
             position = Block.Position.Inner,
             details = buildMap { put(Relations.NAME, name) },
             objectTypeUniqueKey = typeKey.key,
-            spaceId = spaceId
+            spaceId = spaceId,
+            block = Block(
+                link = Block.Content.Link(
+                    style = Block.Content.Link.Style.Page,
+                    cardStyle = Block.Content.Link.CardStyle.Card,
+                    iconSize = Block.Content.Link.IconSize.SizeSmall
+                )
+            )
         )
 
         service.stub {

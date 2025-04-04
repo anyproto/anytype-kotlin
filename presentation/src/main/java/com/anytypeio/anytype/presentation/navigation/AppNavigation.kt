@@ -72,6 +72,8 @@ interface AppNavigation {
     fun openAllContent(space: Id)
     fun openRelationCreationScreen(id: Id, name: String, space: Id)
 
+    fun openCreateObjectTypeScreen(spaceId: Id)
+
     sealed class Command {
 
         data object Exit : Command()

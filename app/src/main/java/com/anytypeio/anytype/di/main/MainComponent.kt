@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.DateObjectDependencies
 import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
 import com.anytypeio.anytype.di.feature.EditTypePropertiesDependencies
@@ -20,6 +21,8 @@ import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
+import com.anytypeio.anytype.di.feature.SpacePropertiesDependencies
+import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
@@ -137,7 +140,10 @@ interface MainComponent :
     ChatReactionDependencies,
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
-    DebugDependencies
+    DebugDependencies,
+    CreateObjectTypeDependencies,
+    SpaceTypesDependencies,
+    SpacePropertiesDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -393,4 +399,19 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(EditTypePropertiesDependencies::class)
     abstract fun provideEditTypePropertiesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectTypeDependencies::class)
+    abstract fun provideCreateObjectTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpaceTypesDependencies::class)
+    abstract fun provideSpaceTypesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpacePropertiesDependencies::class)
+    abstract fun provideSpacePropertiesDependencies(component: MainComponent): ComponentDependencies
 }

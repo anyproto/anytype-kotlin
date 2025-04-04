@@ -29,7 +29,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 @Composable
 fun WidgetMenu(
     canRemove: Boolean = true,
-    canChangeSource: Boolean = true,
+    canChangeSource: Boolean = false,
     canChangeType: Boolean = true,
     canEmptyBin: Boolean = false,
     canEditWidgets: Boolean = true,

@@ -1544,10 +1544,6 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
         props = Props(
             buildMap {
                 when (view) {
-                    BundledWidgetSourceView.Collections -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
-                    }
-
                     BundledWidgetSourceView.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
@@ -1560,8 +1556,11 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
                     }
 
-                    BundledWidgetSourceView.Sets -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    BundledWidgetSourceView.Bin -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
+                    }
+                    BundledWidgetSourceView.AllObjects -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
                 }
                 if (isForNewWidget)
@@ -1656,6 +1655,12 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
+                    }
+                    Widget.Source.Bundled.AllObjects -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
@@ -1695,6 +1700,12 @@ fun CoroutineScope.sendSelectHomeTabEvent(
 
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_BIN)
+                    }
+                    Widget.Source.Bundled.AllObjects -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
                 }
             }
@@ -1769,6 +1780,12 @@ fun CoroutineScope.sendReorderWidgetEvent(
 
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
+                    }
+                    Widget.Source.Bundled.Bin -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
+                    }
+                    Widget.Source.Bundled.AllObjects -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
                 }
             }

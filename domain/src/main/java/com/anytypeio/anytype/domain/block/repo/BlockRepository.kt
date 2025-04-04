@@ -232,7 +232,7 @@ interface BlockRepository {
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?
-    suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
+    suspend fun deleteRelationFromObject(ctx: Id, relations: List<Key>): Payload
 
     suspend fun debugSpace(space: SpaceId): String
 
@@ -314,10 +314,8 @@ interface BlockRepository {
     ) : ObjectWrapper.Relation
 
     suspend fun createType(
-        space: Id,
-        name: String,
-        emojiUnicode: String?
-    ): Struct?
+        command: Command.CreateObjectType
+    ): String
 
     suspend fun createRelationOption(
         space: Id,

@@ -49,6 +49,7 @@
         <attr name="title" format="string" />
         <attr name="subtitle" format="string" />
         <attr name="icon" format="reference" />
+        <attr name="showArrow" format="boolean" />
     </declare-styleable>
     <declare-styleable name="TextInputWidget">
         <attr name="ignoreDragAndDrop" format="boolean" />

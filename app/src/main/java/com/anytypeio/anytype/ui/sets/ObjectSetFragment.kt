@@ -129,6 +129,7 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEdi
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
+import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
@@ -1251,14 +1252,13 @@ open class ObjectSetFragment :
                 )
             }
             is ObjectSetCommand.Modal.CreateBookmark -> {
-                findNavController().safeNavigate(
-                    R.id.objectSetScreen,
-                    R.id.setUrlForNewBookmark,
-                    SetObjectCreateRecordFragmentBase.args(
+                val fr = SetObjectCreateBookmarkRecordFragment().apply {
+                    arguments = SetObjectCreateRecordFragmentBase.args(
                         ctx = command.ctx,
-                        space = command.space
+                        space = command.space,
                     )
-                )
+                }
+                fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(

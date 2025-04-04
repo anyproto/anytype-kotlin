@@ -480,6 +480,12 @@ sealed class Command {
         val shouldApplyEmptyUseCase: Boolean
     )
 
+    data class CreateObjectType(
+        val details: Struct,
+        val spaceId: Id,
+        val internalFlags: List<InternalFlags>
+    )
+
     data class AddObjectToSpace(val space: Id, val objectId: Id)
     data class ApplyTemplate(val objectId: Id, val template: Id?)
 

@@ -260,23 +260,6 @@ fun String?.getMimeIcon(extension: String?): Int {
     }
 }
 
-fun ObjectLayoutView.getName(): Int? = when (this) {
-    is ObjectLayoutView.Basic -> R.string.name_layout_basic
-    is ObjectLayoutView.Image -> null
-    is ObjectLayoutView.Note -> R.string.name_layout_note
-    is ObjectLayoutView.Profile -> R.string.name_layout_profile
-    is ObjectLayoutView.Participant -> R.string.name_layout_participant
-    is ObjectLayoutView.Set -> R.string.name_layout_set
-    is ObjectLayoutView.Todo -> R.string.name_layout_todo
-    is ObjectLayoutView.Dashboard -> null
-    is ObjectLayoutView.PDF -> null
-    is ObjectLayoutView.File -> null
-    is ObjectLayoutView.ObjectType -> null
-    is ObjectLayoutView.Relation -> null
-    is ObjectLayoutView.Space -> null
-    is ObjectLayoutView.Bookmark -> null
-}
-
 @StringRes
 fun RelationFormat.getPrettyName(): Int = when (this) {
     RelationFormat.LONG_TEXT, RelationFormat.SHORT_TEXT -> R.string.relation_format_long_text

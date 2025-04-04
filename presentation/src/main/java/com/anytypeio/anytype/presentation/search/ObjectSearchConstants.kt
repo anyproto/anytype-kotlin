@@ -23,7 +23,9 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.globalSearchLayouts
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects() = buildList {
+    fun filterSearchObjects(
+        excludeTypes: Boolean = false
+    ) = buildList {
         add(
             DVFilter(
                 relation = Relations.IS_ARCHIVED,
@@ -63,7 +65,13 @@ object ObjectSearchConstants {
             DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
-                value = globalSearchLayouts.map { it.code.toDouble() }
+                value = if (excludeTypes) {
+                    globalSearchLayouts
+                        .filter { it != ObjectType.Layout.OBJECT_TYPE }
+                        .map { it.code.toDouble() }
+                } else {
+                    globalSearchLayouts.map { it.code.toDouble() }
+                }
             )
         )
     }

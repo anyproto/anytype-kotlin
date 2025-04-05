@@ -1737,4 +1737,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_conflict_menu_item_title">Los opmaak conflict op</string>
     <string name="widget_source_suggested">Voorgesteld</string>
     <string name="widgets_empty_state_message">Er zijn nog geen widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
 </resources>

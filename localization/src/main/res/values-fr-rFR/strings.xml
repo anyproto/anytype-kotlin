@@ -338,7 +338,7 @@
     <string name="heading">En tête</string>
     <string name="subheading">Sous-titre</string>
     <string name="create_from_scratch">Créer à partir de zéro</string>
-    <string name="create_relation_with_name">Create property \"%1$s\"</string>
+    <string name="create_relation_with_name">Créer la propriété \"%1$s\'\'</string>
     <string name="name_is_required">Le nom est requis</string>
     <string name="favourite">Favoris</string>
     <string name="template">Modèle</string>
@@ -355,7 +355,7 @@
     <string name="select_date">Sélectionner une date</string>
     <string name="no_value">Aucune valeur</string>
     <string name="source">Source</string>
-    <string name="query">Query</string>
+    <string name="query">Requête</string>
     <string name="select_query">Sélectionner une requête</string>
     <string name="objects">Objets</string>
     <string name="your_objects">Vos objets</string>
@@ -427,7 +427,7 @@
     <string name="card">Carte</string>
     <string name="inline">Inline</string>
     <string name="set_view">Définir la vue</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Requête intégrée</string>
     <string name="inline_collection">Collection intégrée</string>
     <string name="fit_image">Ajuster l\'image</string>
     <string name="image_preview">Aperçu de l\'image</string>
@@ -486,14 +486,14 @@
     <string name="error_find_block">Impossible de trouver le bloc sélectionné</string>
     <string name="error_block_selection">Block selection error</string>
     <string name="undefined">Non défini</string>
-    <string name="set_by_relation">Property: %1$s</string>
-    <string name="set_by_relations">Properties: %1$s</string>
+    <string name="set_by_relation">Propriété : %1$s</string>
+    <string name="set_by_relations">Propriétés : %1$s</string>
     <string name="set_by_type">Type : %1$s</string>
     <string name="my_types">Mes types</string>
-    <string name="my_relations">My properties</string>
+    <string name="my_relations">Mes propriétés</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
-    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
-    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_title">Le nom de la requête source de la requête intégrée</string>
+    <string name="block_data_view_content_description_no_source">La requête intégrée n\'a aucune source</string>
     <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Récemment ouvert</string>
     <string name="widget_source_anytype_library">Bibliothèque Anytype</string>
@@ -968,7 +968,7 @@
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mes types</string>
-    <string name="library_subtitle_relations">My properties</string>
+    <string name="library_subtitle_relations">Mes propriétés</string>
     <string name="library_subtitle_library">Bibliothèque</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>

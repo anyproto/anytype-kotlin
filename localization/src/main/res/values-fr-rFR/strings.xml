@@ -99,7 +99,7 @@
     <string name="toolbar_section_tool">Outil</string>
     <string name="toolbar_section_media">Média</string>
     <string name="toolbar_section_objects">Objets</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Propriété</string>
     <string name="toolbar_action_delete">Supprimer</string>
     <string name="toolbar_action_duplicate">Dupliquer</string>
     <string name="toolbar_action_mention">Mention</string>
@@ -173,7 +173,7 @@
     <string name="hint_paste_link">Coller le lien</string>
     <string name="empty_tap_to_create_new_block">Vide. Appuyer pour créer un nouveau bloc</string>
     <string name="untitled">Sans titre</string>
-    <string name="untitled_set">Untitled query</string>
+    <string name="untitled_set">Requête sans nom</string>
     <string name="untitled_collection">Collection sans titre</string>
     <string name="archived">Archivé</string>
     <string name="loading">Chargement en cours…</string>
@@ -254,8 +254,8 @@
     <string name="mention_suggester_create_object">Créer un objet</string>
     <string name="your_search_query">Rechercher</string>
     <string name="syncing">Synchronisation...</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
-    <string name="new_set">New query</string>
+    <string name="choose_a_object_type_for_this_set">Choisir un type d\'objet pour cette requête</string>
+    <string name="new_set">Nouvelle requête</string>
     <string name="create_new_object_type">Créer un nouveau type d\'objet</string>
     <plurals name="page_selected">
         <item quantity="one">page sélectionnée %d</item>
@@ -288,7 +288,7 @@
     <string name="relation_format_email">Email</string>
     <string name="relation_format_phone">N° de téléphone</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Object relation</string>
+    <string name="relation_format_object">Relation de l\'objet</string>
     <string name="relation_format_relation">Propriétés</string>
     <string name="viewer_sorting_prefix">Ensuite</string>
     <string name="enter_value">Saisir une valeur</string>
@@ -296,7 +296,7 @@
     <string name="add_sort">Ajouter un tri</string>
     <string name="apply">Appliquer</string>
     <string name="add_filter">Ajouter un filtre</string>
-    <string name="relation_format_tag">Multi-Select</string>
+    <string name="relation_format_tag">Sélection multiple</string>
     <string name="unknown_number_of_objects">Nombre d\'objets inconnu</string>
     <string name="sort_ascending">Tri croissant</string>
     <string name="sort_descending">Tri décroissant</string>
@@ -317,8 +317,8 @@
     <string name="unknown_object_type">Type inconnu</string>
     <string name="relation_format_short_text">Texte court</string>
     <string name="relation_format_long_text">Texte</string>
-    <string name="set_new_relation">Set new property</string>
-    <string name="relation_deleted">Deleted property</string>
+    <string name="set_new_relation">Définir une nouvelle propriété</string>
+    <string name="relation_deleted">Propriété supprimée</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Couleurs unies</string>

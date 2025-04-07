@@ -40,7 +40,8 @@ import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
-import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
@@ -60,7 +61,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -118,11 +118,16 @@ class ObjectTypeViewModel(
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
 
-    //layout, fields and templates buttons
-    val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
-    val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
-    val uiTemplatesButtonState =
-        MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
+    //layout, properties and templates buttons
+    val uiHorizontalButtonsState =
+        MutableStateFlow<UiHorizontalButtonsState>(
+            UiHorizontalButtonsState(
+                uiLayoutButtonState = UiLayoutButtonState.Hidden,
+                uiPropertiesButtonState = UiPropertiesButtonState.Hidden,
+                uiTemplatesButtonState = UiTemplatesButtonState.Hidden,
+                isVisible = false
+            )
+        )
 
     //type layouts
     val uiTypeLayoutsState = MutableStateFlow<UiLayoutTypeState>(UiLayoutTypeState.Hidden)
@@ -137,7 +142,7 @@ class ObjectTypeViewModel(
         MutableStateFlow<UiLocalsFieldsInfoState>(UiLocalsFieldsInfoState.Hidden)
 
     //properties list
-    val uiFieldsListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
+    val uiTypePropertiesListState = MutableStateFlow<UiFieldsListState>(UiFieldsListState.EMPTY)
 
     //edit property
     val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
@@ -337,7 +342,11 @@ class ObjectTypeViewModel(
         }
         objType.recommendedLayout?.let { layout ->
             if (_objectTypePermissionsState.value?.canChangeRecommendedLayoutForThisType == true) {
-                uiLayoutButtonState.value = UiLayoutButtonState.Visible(layout = layout)
+                uiHorizontalButtonsState.value =
+                    uiHorizontalButtonsState.value.copy(
+                        uiLayoutButtonState = UiLayoutButtonState.Visible(layout = layout),
+                        isVisible = true
+                    )
             }
         }
         updateDefaultTemplates(defaultTemplate = objType.defaultTemplateId)
@@ -351,10 +360,16 @@ class ObjectTypeViewModel(
             showHiddenProperty = vmParams.showHiddenFields,
             objectPermissions = objectPermissions
         )
-        uiFieldsListState.value = UiFieldsListState(items = items)
-        uiFieldsButtonState.value = UiFieldsButtonState.Visible(
-            count = items.count { it is UiFieldsListItem.Item }
-        )
+        uiTypePropertiesListState.value = UiFieldsListState(items = items)
+        if (objectPermissions.canEditRelationsList) {
+            uiHorizontalButtonsState.value =
+                uiHorizontalButtonsState.value.copy(
+                    uiPropertiesButtonState = UiPropertiesButtonState.Visible(
+                        count = items.count { it is UiFieldsListItem.Item }
+                    ),
+                    isVisible = true
+                )
+        }
     }
 
     private fun mapTemplatesSubscriptionToUi(
@@ -362,7 +377,11 @@ class ObjectTypeViewModel(
         templates: List<TemplateView>,
         permissions: ObjectPermissions
     ) {
-        uiTemplatesButtonState.value = UiTemplatesButtonState.Visible(count = templates.size)
+
+        uiHorizontalButtonsState.value = uiHorizontalButtonsState.value.copy(
+            uiTemplatesButtonState = UiTemplatesButtonState.Visible(count = templates.size),
+            isVisible = true
+        )
 
         val updatedTemplates = templates.mapNotNull { template ->
             if (template is TemplateView.Template) {
@@ -735,7 +754,7 @@ class ObjectTypeViewModel(
             }
 
             FieldEvent.DragEvent.OnDragEnd -> {
-                val newItems = uiFieldsListState.value.items
+                val newItems = uiTypePropertiesListState.value.items
                 val headerItems = mutableListOf<Id>()
                 val sideBarItems = mutableListOf<Id>()
                 val hiddenItems = mutableListOf<Id>()
@@ -765,13 +784,13 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.DragEvent.OnMove -> {
-                val currentList = uiFieldsListState.value.items.toMutableList()
+                val currentList = uiTypePropertiesListState.value.items.toMutableList()
                 val fromIndex = currentList.indexOfFirst { it.id == event.fromKey }
                 val toIndex = currentList.indexOfFirst { it.id == event.toKey }
                 if ((fromIndex == -1) || (toIndex == -1)) return
                 val item = currentList.removeAt(fromIndex)
                 currentList.add(toIndex, item)
-                uiFieldsListState.value = UiFieldsListState(items = currentList)
+                uiTypePropertiesListState.value = UiFieldsListState(items = currentList)
             }
 
             is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
@@ -792,7 +811,7 @@ class ObjectTypeViewModel(
                 val hiddenItems = mutableListOf<Id>()
                 val filesItems = mutableListOf<Id>()
                 var currentSection: UiFieldsListItem.Section? = null
-                uiFieldsListState.value.items.forEach { item ->
+                uiTypePropertiesListState.value.items.forEach { item ->
                     when (item) {
                         is UiFieldsListItem.Item -> {
                             when (currentSection) {

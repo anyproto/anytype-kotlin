@@ -46,7 +46,7 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
     ) = content {
         MaterialTheme {
             FieldsMainModalScreen(
-                uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
+                uiFieldsListState = vm.uiTypePropertiesListState.collectAsStateWithLifecycle().value,
                 uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                 uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                 uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,

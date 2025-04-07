@@ -30,7 +30,7 @@ import com.anytypeio.anytype.presentation.objects.getProperType
 //region STATE
 @Immutable
 enum class AllContentTab {
-    PAGES, LISTS, MEDIA, BOOKMARKS, FILES, TYPES, RELATIONS
+    PAGES, LISTS, MEDIA, BOOKMARKS, FILES
 }
 
 sealed class AllContentMenuMode {
@@ -286,8 +286,6 @@ fun AllContentTab.toAnalyticsTabType(): String {
         AllContentTab.MEDIA -> "Media"
         AllContentTab.BOOKMARKS -> "Bookmarks"
         AllContentTab.FILES -> "Files"
-        AllContentTab.TYPES -> "Types"
-        AllContentTab.RELATIONS -> "Relations"
     }
 }
 

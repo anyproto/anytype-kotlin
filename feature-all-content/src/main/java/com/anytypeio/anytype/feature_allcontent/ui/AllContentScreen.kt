@@ -600,7 +600,6 @@ fun PreviewMainScreen() {
         uiTabsState = UiTabsState(
             tabs = listOf(
                 AllContentTab.PAGES,
-                AllContentTab.TYPES,
                 AllContentTab.LISTS
             ), selectedTab = AllContentTab.LISTS
         ),

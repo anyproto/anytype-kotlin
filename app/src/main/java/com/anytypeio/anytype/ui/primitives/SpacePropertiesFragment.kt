@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.primitives
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,14 +17,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyFormatsListScreen
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
-import com.anytypeio.anytype.feature_properties.space.SpacePropertiesEvent
+import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesEvent
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesListScreen
@@ -87,13 +85,9 @@ class SpacePropertiesFragment : BaseComposeFragment() {
         if (uiState is UiPropertyFormatsListState.Visible) {
             PropertyFormatsListScreen(
                 uiState = uiState,
-                onDismissRequest = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnPropertyFormatsListDismiss) },
+                onDismissRequest = { vm.onEvent(SpacePropertiesEvent.OnPropertyFormatsListDismiss) },
                 onFormatClick = {
-                    vm.proceedWithEditPropertyEvent(
-                        SpacePropertiesEvent.OnPropertyFormatSelected(
-                            it
-                        )
-                    )
+                    vm.onEvent(SpacePropertiesEvent.OnPropertyFormatSelected(format = it))
                 },
             )
         }
@@ -105,21 +99,30 @@ class SpacePropertiesFragment : BaseComposeFragment() {
             PropertyScreen(uiState = uiState,
                 modifier = Modifier.fillMaxWidth(),
                 onDismissRequest = vm::onDismissPropertyScreen,
-                onFormatClick = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnPropertyFormatClick) },
+                onFormatClick = {
+                    vm.onEvent(SpacePropertiesEvent.OnPropertyFormatClick)
+                },
                 onLimitObjectTypesDoneClick = {
-                    vm.proceedWithEditPropertyEvent(
+                    vm.onEvent(
                         SpacePropertiesEvent.OnLimitTypesDoneClick(it)
                     )
                 },
-                onSaveButtonClicked = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnSaveButtonClicked) },
-                onCreateNewButtonClicked = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnCreateNewButtonClicked) },
-                onPropertyNameUpdate = {
-                    vm.proceedWithEditPropertyEvent(
-                        SpacePropertiesEvent.OnPropertyNameUpdate(name = it)
-                    )
+                onSaveButtonClicked = {
+                    vm.onEvent(SpacePropertiesEvent.OnSaveButtonClicked)
                 },
-                onLimitTypesClick = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnLimitTypesClick) },
-                onDismissLimitTypes = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnLimitTypesDismiss) })
+                onCreateNewButtonClicked = {
+                    vm.onEvent(SpacePropertiesEvent.OnCreateNewButtonClicked)
+                },
+                onPropertyNameUpdate = {
+                    vm.onEvent(SpacePropertiesEvent.OnPropertyNameUpdate(name = it))
+                },
+                onLimitTypesClick = {
+                    vm.onEvent(SpacePropertiesEvent.OnLimitTypesClick)
+                },
+                onDismissLimitTypes = {
+                    vm.onEvent(SpacePropertiesEvent.OnLimitTypesDismiss)
+                }
+            )
         }
     }
 
@@ -135,11 +138,7 @@ class SpacePropertiesFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            // Do nothing.
-        } else {
-            super.onApplyWindowRootInsets(view)
-        }
+        // Do not apply.
     }
 
     companion object {

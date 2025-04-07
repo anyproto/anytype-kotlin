@@ -9,7 +9,9 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
@@ -62,7 +64,7 @@ class SelectWidgetSourceViewModel(
     storeOfObjectTypes = storeOfObjectTypes
 ) {
 
-    val suggested = MutableStateFlow<List<SuggestWidgetObjectType>?>(null)
+    val suggested = MutableStateFlow<SuggestedWidgetsState>(SuggestedWidgetsState.Init)
 
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
@@ -70,38 +72,51 @@ class SelectWidgetSourceViewModel(
     val viewState = combine(
         stateData
             .asFlow(),
-        suggested.filterNotNull()
+        suggested.filterIsInstance<SuggestedWidgetsState.Default>()
     ) { state, suggested ->
-        if (suggested.isNotEmpty()) {
-            when(state) {
-                is ObjectSearchView.Success -> {
-                    state.copy(
-                        objects = buildList {
 
-                            // System widgets
+
+        when(state) {
+            is ObjectSearchView.Success -> {
+                state.copy(
+                    objects = buildList {
+
+                        // System widgets
+
+                        if (suggested.suggestedSystemSources.isNotEmpty()) {
                             add(ObjectSearchSection.SelectWidgetSource.System)
-                            add(BundledWidgetSourceView.Favorites)
-                            add(BundledWidgetSourceView.AllObjects)
-                            add(BundledWidgetSourceView.Recent)
-                            add(BundledWidgetSourceView.RecentLocal)
-                            add(BundledWidgetSourceView.Bin)
-
-                            // Suggested widgets (aka object type widgets)
-                            if (suggested.isNotEmpty()) {
-                                add(ObjectSearchSection.SelectWidgetSource.Suggested)
-                                addAll(suggested)
+                            with(suggested.suggestedSystemSources) {
+                                if (contains(BundledWidgetSourceIds.FAVORITE)) {
+                                    add(BundledWidgetSourceView.Favorites)
+                                }
+                                if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
+                                    add(BundledWidgetSourceView.AllObjects)
+                                }
+                                if (contains(BundledWidgetSourceIds.RECENT)) {
+                                    add(BundledWidgetSourceView.Recent)
+                                }
+                                if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
+                                    add(BundledWidgetSourceView.RecentLocal)
+                                }
+                                if (contains(BundledWidgetSourceIds.BIN)) {
+                                    add(BundledWidgetSourceView.Bin)
+                                }
                             }
-
-                            // Widgets from existing objects
-                            add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
-                            addAll(state.objects)
                         }
-                    )
-                }
-                else -> state
+
+                        // Suggested widgets (aka object type widgets)
+                        if (suggested.suggestedObjectTypes.isNotEmpty()) {
+                            add(ObjectSearchSection.SelectWidgetSource.Suggested)
+                            addAll(suggested.suggestedObjectTypes)
+                        }
+
+                        // Widgets from existing objects
+                        add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
+                        addAll(state.objects)
+                    }
+                )
             }
-        } else {
-            state
+            else -> state
         }
     }
 
@@ -186,18 +201,29 @@ class SelectWidgetSourceViewModel(
                     objectTypeKeys = ObjectSearchConstants.defaultKeysObjectType,
                     ctx = ctx
                 )
-            ).onSuccess { types ->
-                suggested.value = types.map { type ->
-                    SuggestWidgetObjectType(
-                        id = type.id,
-                        name = fieldParser.getObjectPluralName(type),
-                        objectIcon = type.objectIcon()
-                    )
-                }
+            ).onSuccess { result ->
+                suggested.value = SuggestedWidgetsState.Default(
+                    suggestedSystemSources = result.suggestedSystemSources,
+                    suggestedObjectTypes = result.suggestedObjectTypes.map { type ->
+                        SuggestWidgetObjectType(
+                            id = type.id,
+                            name = fieldParser.getObjectPluralName(type),
+                            objectIcon = type.objectIcon()
+                        )
+                    }
+                )
             }
         }
         getObjectTypes()
         startProcessingSearchQuery(null)
+    }
+
+    override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
+        return super.getSearchObjectsParams(ignore).copy(
+            filters = ObjectSearchConstants.filterSearchObjects(
+                excludeTypes = true
+            )
+        )
     }
 
     fun onBundledWidgetSourceClicked(view: BundledWidgetSourceView) {
@@ -406,5 +432,13 @@ class SelectWidgetSourceViewModel(
             val type: Int,
             val isInEditMode: Boolean
         ) : Config()
+    }
+
+    sealed class SuggestedWidgetsState {
+        data object Init : SuggestedWidgetsState()
+        data class Default(
+            val suggestedObjectTypes: List<SuggestWidgetObjectType>,
+            val suggestedSystemSources: List<String>
+        ) : SuggestedWidgetsState()
     }
 }

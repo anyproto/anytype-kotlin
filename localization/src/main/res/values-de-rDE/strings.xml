@@ -230,7 +230,7 @@
     <string name="select">Auswählen</string>
     <string name="search">Suchen</string>
     <string name="search_hint">Suche...</string>
-    <string name="relations">Verknüpfungen</string>
+    <string name="relations">Eigenschaften</string>
     <string name="fields">Felder</string>
     <string name="download">Herunterladen</string>
     <string name="view">Ansicht</string>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Telefonnummer</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Objektbeziehung</string>
-    <string name="relation_format_relation">Verhältnis</string>
+    <string name="relation_format_relation">Eigenschaften</string>
     <string name="viewer_sorting_prefix">Dann</string>
     <string name="enter_value">Wert eingeben</string>
-    <string name="ityem_relations">Verknüpfungen</string>
+    <string name="ityem_relations">Eigenschaften</string>
     <string name="add_sort">Sortierung hinzufügen</string>
     <string name="apply">Anwenden</string>
     <string name="add_filter">Filter hinzufügen</string>
@@ -669,7 +669,7 @@
     <string name="create">Erstellen</string>
     <string name="new_view">Neue Ansicht</string>
     <string name="coming_soon">Bald verfügbar</string>
-    <string name="edit_relations_title">Verknüpfungen</string>
+    <string name="edit_relations_title">Eigenschaften</string>
     <string name="edit_view">Ansicht bearbeiten</string>
     <string name="relation_open_edit">Zum Bearbeiten öffnen</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Medien</string>
     <string name="slash_widget_main_objects">Objekte</string>
     <string name="slash_widget_main_objects_subheader">Objekte</string>
-    <string name="slash_widget_main_relations">Verknüpfungen</string>
+    <string name="slash_widget_main_relations">Eigenschaften</string>
     <string name="slash_widget_main_other">Weitere</string>
     <string name="slash_widget_main_actions">Aktionen</string>
     <string name="slash_widget_main_alignment">Ausrichtung</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Typen</string>
-    <string name="library_title_relations">Verknüpfungen</string>
+    <string name="library_title_relations">Eigenschaften</string>
     <string name="library_description_types">Typen sind wie Kategorien, die dir helfen, deine Objekte zu gruppieren und zu verwalten.</string>
-    <string name="library_description_relations">Alle Objekte sind verbunden. Benutzen Sie Beziehungen, um Verbindungen zwischen Objekten aufzubauen.</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Erstelle einen Typ</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Meine Typen</string>
-    <string name="library_subtitle_relations">Meine Relationen</string>
+    <string name="library_subtitle_relations">Meine Eigenschaften</string>
     <string name="library_subtitle_library">Bibliothek</string>
     <string name="library_create_new_type">Erstelle Typ „%1$s“</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1415,7 +1415,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_alert_error_internal">Es ist ein interner Fehler aufgetreten. Unser Team wurde benachrichtigt.</string>
     <string name="notifications_alert_error_no_objects_to_import">Keine Objekte zum Importieren gefunden. Bitte wähle gültige Objekte für den Import aus.</string>
     <string name="notifications_alert_error_import_canceled">Der Importvorgang wurde vom Benutzer abgebrochen.</string>
-    <string name="notifications_alert_error_limit_exceeded">Das Importlimit für Zeilen oder Beziehungen wurde überschritten. Bitte reduziere die Anzahl und versuche es erneut.</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">Es ist ein Fehler beim Laden der Datei aufgetreten. Bitte überprüfe die Datei und versuche es erneut.</string>
     <string name="notifications_alert_error_insufficient_permissions">Du hast nicht die notwendigen Berechtigungen zum Durchführen dieser Aktion. Bitte überprüfe deine Berechtigungen und versuche es erneut.</string>
     <!-- Gallery Experience -->
@@ -1531,7 +1531,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_title_tab_bookmarks">Lesezeichen</string>
     <string name="all_content_title_tab_files">Dateien</string>
     <string name="all_content_title_tab_objetc_types">Typen</string>
-    <string name="all_content_title_tab_relations">Verknüpfungen</string>
+    <string name="all_content_title_tab_relations">Eigenschaften</string>
     <string name="all_content_sort_by">Sortiere nach</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1726,6 +1726,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_icon_remove">Entfernen</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Neuen Typ erstellen</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Auf Standardeinstellung zurücksetzen</string>

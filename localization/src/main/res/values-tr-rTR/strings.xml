@@ -173,7 +173,7 @@
     <string name="hint_paste_link">Bağlantıyı yapıştır</string>
     <string name="empty_tap_to_create_new_block">Boş. Yeni bir blok oluşturmak için dokunun.</string>
     <string name="untitled">Başlıksız</string>
-    <string name="untitled_set">Untitled query</string>
+    <string name="untitled_set">Başlıksız sorgu</string>
     <string name="untitled_collection">Başlıksız koleksiyon</string>
     <string name="archived">Arşivlenmiş</string>
     <string name="loading">Yükleniyor…</string>
@@ -230,7 +230,7 @@
     <string name="select">Seç</string>
     <string name="search">Ara</string>
     <string name="search_hint">Ara...</string>
-    <string name="relations">İlişkiler</string>
+    <string name="relations">Özellikler</string>
     <string name="fields">Alanlar</string>
     <string name="download">İndir</string>
     <string name="view">Görüntüle</string>
@@ -255,7 +255,7 @@
     <string name="your_search_query">Ara</string>
     <string name="syncing">Eşitleniyor…</string>
     <string name="choose_a_object_type_for_this_set">Bu sorgu için bir nesne türü seçin</string>
-    <string name="new_set">New query</string>
+    <string name="new_set">Yeni sorgu</string>
     <string name="create_new_object_type">Yeni nesne türü oluştur</string>
     <plurals name="page_selected">
         <item quantity="one">%d sayfa seçildi</item>
@@ -289,10 +289,10 @@
     <string name="relation_format_phone">Telefon numarası</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Nesne ilişkisi</string>
-    <string name="relation_format_relation">İlişki</string>
+    <string name="relation_format_relation">Özellikler</string>
     <string name="viewer_sorting_prefix">Sonra</string>
     <string name="enter_value">Değeri gir</string>
-    <string name="ityem_relations">İlişkiler</string>
+    <string name="ityem_relations">Özellikler</string>
     <string name="add_sort">Bir sıralama ekleyin</string>
     <string name="apply">Uygula</string>
     <string name="add_filter">Bir filtre ekleyin </string>
@@ -318,7 +318,7 @@
     <string name="relation_format_short_text">Kısa metin</string>
     <string name="relation_format_long_text">Metin</string>
     <string name="set_new_relation">Yeni özellik ayarla</string>
-    <string name="relation_deleted">Deleted property</string>
+    <string name="relation_deleted">Silinmiş özellik</string>
     <string name="content_description_document_cover">Belgenin kapağı</string>
     <string name="content_description_cover_image_view">Kapak resmi görünümü</string>
     <string name="cover_color_solid">Düz renkler</string>
@@ -376,7 +376,7 @@
     <string name="content_desc_search_button">Arama düğmesi</string>
     <string name="content_desc_add_doc_button">Döküman ekle</string>
     <string name="unsupported_block">Desteklenmeyen blok</string>
-    <string name="new_relation">New property</string>
+    <string name="new_relation">Yeni özellik</string>
     <string name="copy_link">Bağlantıyı kopyala</string>
     <string name="edit_link">Bağlantıyı düzenle</string>
     <string name="unlink">Bağlantıyı kaldır</string>
@@ -427,7 +427,7 @@
     <string name="card">Kart</string>
     <string name="inline">Satır içi</string>
     <string name="set_view">Yeni görünüm</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Satır içi sorgu</string>
     <string name="inline_collection">Satır içi koleksiyon</string>
     <string name="fit_image">Resmi sığdır</string>
     <string name="image_preview">Resim önizlemesi</string>
@@ -490,7 +490,7 @@
     <string name="set_by_relations">Özellikler: %1$s</string>
     <string name="set_by_type">Nesne Türü: %1$s</string>
     <string name="my_types">Türlerim</string>
-    <string name="my_relations">My properties</string>
+    <string name="my_relations">Özelliklerim</string>
     <string name="type_added">\"%1$s\" türü kitaplığınıza eklendi</string>
     <string name="block_data_view_content_description_title">Satır içi sorgunun kaynak sorgusunun adı</string>
     <string name="block_data_view_content_description_no_source">Satır içi sorgunun kaynağı yok</string>
@@ -513,7 +513,7 @@
     <string name="set_no_items_description">Devam etmek için ilk nesneyi oluştur</string>
     <string name="set_no_items_button">Nesne oluştur</string>
     <string name="set_collection_view_not_present">Görünüm Sorguda veya Koleksiyonda mevcut değil, lütfen nesneyi yeniden oluşturun</string>
-    <string name="menu_turn_to_collection">Turn Query into Collection</string>
+    <string name="menu_turn_to_collection">Sorguyu Koleksiyona dönüştür</string>
     <string name="menu_change_query">Sorguyu değiştir</string>
     <string name="collections">Koleksiyonlar</string>
     <string name="collection_widget_description">Nesne koleksiyonlarınız</string>
@@ -669,7 +669,7 @@
     <string name="create">Oluştur</string>
     <string name="new_view">Yeni görünüm</string>
     <string name="coming_soon">Çok yakında</string>
-    <string name="edit_relations_title">İlişkiler</string>
+    <string name="edit_relations_title">Özellikler</string>
     <string name="edit_view">Görünümü düzenle</string>
     <string name="relation_open_edit">Düzenlemek için açın</string>
     <string name="remove_from_set">Bu sorgudan kaldır</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_main_media">Medya</string>
     <string name="slash_widget_main_objects">Nesneler</string>
     <string name="slash_widget_main_objects_subheader">Nesneler</string>
-    <string name="slash_widget_main_relations">İlişkiler</string>
+    <string name="slash_widget_main_relations">Özellikler</string>
     <string name="slash_widget_main_other">Diğer</string>
     <string name="slash_widget_main_actions">Eylemler</string>
     <string name="slash_widget_main_alignment">Hizalama</string>
@@ -952,7 +952,7 @@
     <string name="widget_type_compact_list_description">Kompakt bir liste görünümüne sahip widget</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_view">Görüntüle</string>
-    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
+    <string name="widget_type_view_description">Sorgu veya Koleksiyon düzenine sahip Widget</string>
     <string name="widget_type_compact_list">Kompakt liste</string>
     <string name="widget_change_source">Kaynağı Değiştir</string>
     <string name="widget_change_type">Türü değiştir</string>
@@ -962,13 +962,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Türler</string>
-    <string name="library_title_relations">İlişkiler</string>
+    <string name="library_title_relations">Özellikler</string>
     <string name="library_description_types">Türler nesnelerinizi gruplandırmanıza ve yönetmenize yardımcı olan kategoriler gibidir.</string>
-    <string name="library_description_relations">Tüm nesneler birbirine bağlıdır. Nesneler arasında bağlantı kurmak için ilişkileri kullanın.</string>
+    <string name="library_description_relations">Tüm nesneler birbirine bağlıdır. Nesneler arasında bağlantı kurmak için özellikleri kullanın.</string>
     <string name="library_button_create_type">Bir tür oluştur</string>
     <string name="library_button_create_relation">Bir özellik oluştur</string>
     <string name="library_subtitle_types">Türlerim</string>
-    <string name="library_subtitle_relations">İlişkilerim</string>
+    <string name="library_subtitle_relations">Özelliklerim</string>
     <string name="library_subtitle_library">Kitaplık</string>
     <string name="library_create_new_type">Bir \'%1$s\' türü oluşturun</string>
     <string name="library_create_new_relation">\'%1$s\' özelliğini oluştur</string>
@@ -1124,12 +1124,12 @@
     <string name="option_widget_edit">Seçeneği düzenle</string>
     <string name="options_empty_description">Hiçbir şey bulunamadı. Başlamak için ilk seçeneği oluşturun.</string>
     <string name="options_empty_title">Seçenek yok</string>
-    <string name="options_empty_not_editable">The property is empty</string>
+    <string name="options_empty_not_editable">Bu özellik boş</string>
     <string name="options_delete_title">Emin misiniz?</string>
     <string name="options_delete_description">Seçenek alanınızdan kalıcı olarak kaldırılacaktır.</string>
     <string name="object_values_empty_description">Nesneler bulunamadı.</string>
     <string name="object_values_empty_title">Değer yok</string>
-    <string name="object_values_empty_not_editable">The property is empty</string>
+    <string name="object_values_empty_not_editable">Bu özellik boş</string>
     <string name="object_values_delete_title">Emin misiniz?</string>
     <string name="object_values_delete_description">Nesne çöp kutusuna taşınacaktır.</string>
     <string name="hint_enter_name">İsim girin...</string>
@@ -1415,7 +1415,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_alert_error_internal">Bizden kaynaklı bir hata meydana geldi. Ekibimiz bilgilendirildi.</string>
     <string name="notifications_alert_error_no_objects_to_import">İçe aktarılacak öğe bulunamadı. Lütfen içe aktarmak için geçerli nesneleri seçin.</string>
     <string name="notifications_alert_error_import_canceled">İçe aktarma işlemi kullanıcı tarafından iptal edildi.</string>
-    <string name="notifications_alert_error_limit_exceeded">Satırlar veya ilişkiler için içe aktarma sınırı aşıldı. Lütfen miktarı azaltın ve tekrar deneyin.</string>
+    <string name="notifications_alert_error_limit_exceeded">Satırlar veya özellikler için içe aktarma sınırı aşıldı. Lütfen miktarı azaltın ve tekrar deneyin.</string>
     <string name="notifications_alert_error_file_load">Dosya yüklenirken bir hata oluştu. Lütfen dosyayı kontrol edin ve tekrar deneyin.</string>
     <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsiniz. Lütfen izinlerinizi kontrol edin ve tekrar deneyin.</string>
     <!-- Gallery Experience -->
@@ -1531,7 +1531,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_title_tab_bookmarks">Yer işaretleri</string>
     <string name="all_content_title_tab_files">Dosyalar</string>
     <string name="all_content_title_tab_objetc_types">Türler</string>
-    <string name="all_content_title_tab_relations">İlişkiler</string>
+    <string name="all_content_title_tab_relations">Özellikler</string>
     <string name="all_content_sort_by">Şuna göre sırala</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1563,7 +1563,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_toast_type_added">Nesne türü eklendi</string>
     <string name="all_content_toast_type_removed">Nesne türü kaldırıldı</string>
     <string name="all_content_toast_archived">Nesne arşivlendi</string>
-    <string name="all_content_new_relation">New property</string>
+    <string name="all_content_new_relation">Yeni özellik</string>
     <string name="all_content_new_type">Yeni tür</string>
     <string name="all_content_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
     <string name="all_content_snackbar_title">çöp kutusuna taşındı</string>
@@ -1591,8 +1591,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_empty_items_title">Burası boş.</string>
     <string name="object_type_empty_items_subtitle">Başlamak için ilk nesnelerinizi oluşturun.</string>
     <string name="object_type_menu_delete">Tamamen sil</string>
-    <string name="object_type_objects_menu_open_set">Open Query</string>
-    <string name="object_type_objects_menu_create_set">Create Query</string>
+    <string name="object_type_objects_menu_open_set">Sorgu Aç</string>
+    <string name="object_type_objects_menu_create_set">Sorgu Oluştur</string>
     <string name="object_type_templates_menu_set_default">Varsayılan olarak ayarla</string>
     <string name="object_type_templates_menu_edit">Düzenle</string>
     <string name="object_type_templates_menu_duplicate">Çoğalt</string>
@@ -1618,7 +1618,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_properties_section_local">Yerel özellikler</string>
     <string name="object_properties_section_hidden">Gizli</string>
     <string name="object_properties_local_info_title">Yerel özellikler</string>
-    <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_local_info_description">Bu özellikler yalnızca bu nesnede bulunur ve türünün bir parçası değildir. Tüm nesnelerde kullanılacak türe ekleyin veya kaldırın.</string>
     <string name="object_type_open_type_error">Mevcut nesne türü açılırken hata oluştu</string>
     <string name="day_of_week_monday">Pazartesi</string>
     <string name="day_of_week_tuesday">Salı</string>
@@ -1642,15 +1642,15 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_message_reactions_no_reactions_yet">Henüz tepki verilmemiş</string>
     <string name="chat_message_reactions_no_reactions_message">Muhtemelen birisi tepkisini kaldırdı veya teknik bir sorun oluştu</string>
     <string name="object_types_human">İnsan</string>
-    <string name="object_type_settings_item_remove">Delete type</string>
+    <string name="object_type_settings_item_remove">Türü sil</string>
     <string name="chats_alert_delete_this_message_description">Onaylandıktan sonra geri getirilemez</string>
     <string name="chats_alert_delete_this_message">Bu mesaj silinsin mi?</string>
-    <string name="object_set_of_title">Query of</string>
+    <string name="object_set_of_title">Sorgu</string>
     <string name="migration_migration_is_in_progress">Geçiş işlemi devam ediyor</string>
     <string name="migration_this_shouldn_t_take_long">Bu işlem biraz zaman alabilir. Lütfen işlem tamamlanana kadar uygulamayı kapatmayın.</string>
     <string name="migration_error_try_again">Tekrar deneyin</string>
     <string name="migration_migration_failed">Geçiş başarısız oldu</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Lütfen ≈ %1$s MB kadar alanı temizleyin ve işlemi tekrarlayın</string>
     <string name="fields_screen_title">Özellikler</string>
     <string name="field_text_title">Metin</string>
     <string name="field_text_empty">Giriş</string>
@@ -1683,7 +1683,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_section_data_management">Veri Yönetimi</string>
     <string name="space_settings_section_misc">Diğer</string>
     <string name="space_settings_invite">Davet et</string>
-    <string name="space_settings_invite_members">Invite members</string>
+    <string name="space_settings_invite_members">Üyeleri davet edin</string>
     <string name="space_settings_qrcode">Karekod</string>
     <string name="space_settings_members_button_members">Üyeler</string>
     <string name="space_settings_types_button">Nesne Türleri</string>
@@ -1694,12 +1694,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_delete_space_button">Alanı Sil</string>
     <string name="space_settings_icon_title">Resmi düzenle</string>
     <string name="space_settings_save_button">Kaydet</string>
-    <string name="object_type_add_property_screen_title">Add property</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
-    <string name="object_type_add_property_screen_section_types">Properties formats</string>
-    <string name="object_type_add_property_screen_section_existing">Existing properties</string>
-    <string name="object_type_add_property_screen_search_hint">Search or create new</string>
-    <string name="new_property_hint">New property</string>
+    <string name="object_type_add_property_screen_title">Özellik ekle</string>
+    <string name="object_type_add_property_screen_create">\'%1$s\' özelliğini oluştur</string>
+    <string name="object_type_add_property_screen_section_types">Özellik formatları</string>
+    <string name="object_type_add_property_screen_section_existing">Mevcut özellikler</string>
+    <string name="object_type_add_property_screen_search_hint">Ara veya yeni oluştur</string>
+    <string name="new_property_hint">Yeni özellik</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>
     <string name="edit_property_limit_all">Hepsi</string>
@@ -1726,6 +1726,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_icon_remove">Kaldır</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

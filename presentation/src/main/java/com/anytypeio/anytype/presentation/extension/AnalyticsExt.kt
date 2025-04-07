@@ -1636,10 +1636,6 @@ fun CoroutineScope.sendDeleteWidgetEvent(
         props = Props(
             buildMap {
                 when (bundled) {
-                    Widget.Source.Bundled.Collections -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
-                    }
-
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
@@ -1652,9 +1648,6 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
                     }
 
-                    Widget.Source.Bundled.Sets -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
-                    }
                     Widget.Source.Bundled.Bin -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
@@ -1682,9 +1675,6 @@ fun CoroutineScope.sendSelectHomeTabEvent(
             buildMap {
                 put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)
                 when (bundled) {
-                    Widget.Source.Bundled.Collections -> {
-                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
-                    }
 
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
@@ -1698,9 +1688,6 @@ fun CoroutineScope.sendSelectHomeTabEvent(
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
                     }
 
-                    Widget.Source.Bundled.Sets -> {
-                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
-                    }
                     Widget.Source.Bundled.Bin -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
@@ -1762,24 +1749,14 @@ fun CoroutineScope.sendReorderWidgetEvent(
         props = Props(
             buildMap {
                 when (bundled) {
-                    Widget.Source.Bundled.Collections -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
-                    }
-
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
-
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
-
                     Widget.Source.Bundled.RecentLocal -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
-                    }
-
-                    Widget.Source.Bundled.Sets -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
                     Widget.Source.Bundled.Bin -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_BIN)

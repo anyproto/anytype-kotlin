@@ -230,7 +230,7 @@
     <string name="select">選項</string>
     <string name="search">搜尋</string>
     <string name="search_hint">搜尋...</string>
-    <string name="relations">關聯</string>
+    <string name="relations">屬性</string>
     <string name="fields">Fields</string>
     <string name="download">已下載</string>
     <string name="view">檢視</string>
@@ -288,10 +288,10 @@
     <string name="relation_format_phone">電話號碼</string>
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Object relation</string>
-    <string name="relation_format_relation">關聯</string>
+    <string name="relation_format_relation">屬性</string>
     <string name="viewer_sorting_prefix">則</string>
     <string name="enter_value">輸入值</string>
-    <string name="ityem_relations">關聯</string>
+    <string name="ityem_relations">屬性</string>
     <string name="add_sort">新增排序</string>
     <string name="apply">Apply</string>
     <string name="add_filter">新增篩選條件</string>
@@ -668,7 +668,7 @@
     <string name="create">建立</string>
     <string name="new_view">新增檢視</string>
     <string name="coming_soon">即將推出</string>
-    <string name="edit_relations_title">關聯</string>
+    <string name="edit_relations_title">屬性</string>
     <string name="edit_view">編輯檢視</string>
     <string name="relation_open_edit">開啟以編輯</string>
     <string name="remove_from_set">Remove from this query</string>
@@ -859,7 +859,7 @@
     <string name="slash_widget_main_media">媒體</string>
     <string name="slash_widget_main_objects">物件</string>
     <string name="slash_widget_main_objects_subheader">物件</string>
-    <string name="slash_widget_main_relations">關聯</string>
+    <string name="slash_widget_main_relations">屬性</string>
     <string name="slash_widget_main_other">其它</string>
     <string name="slash_widget_main_actions">操作</string>
     <string name="slash_widget_main_alignment">對齊</string>
@@ -960,13 +960,13 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">類型</string>
-    <string name="library_title_relations">關聯</string>
+    <string name="library_title_relations">屬性</string>
     <string name="library_description_types">「類型」的概念就像是分類，協助您對「物件」進行分組和管理。</string>
-    <string name="library_description_relations">所有「物件」都是相互連結的。使用「關聯」在「物件」之間建立連結。</string>
+    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">建立類型</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">我的類型</string>
-    <string name="library_subtitle_relations">我的關聯</string>
+    <string name="library_subtitle_relations">My properties</string>
     <string name="library_subtitle_library">資料庫</string>
     <string name="library_create_new_type">建立類型 ‘%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1409,7 +1409,7 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_alert_error_internal">出現內部錯誤。已經通知了我們的團隊人員。</string>
     <string name="notifications_alert_error_no_objects_to_import">找不到要匯入的項目。請選擇有效的物件來匯入。</string>
     <string name="notifications_alert_error_import_canceled">用戶已取消匯入。</string>
-    <string name="notifications_alert_error_limit_exceeded">匯入的行數或關聯數量已超出限制。請減少匯入行數或關聯數量後再試一次。</string>
+    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
     <string name="notifications_alert_error_file_load">載入文件時發生錯誤。請檢查檔案並再試一次。</string>
     <string name="notifications_alert_error_insufficient_permissions">您沒有執行此操作所需的權限。請檢查您的權限後再試一次。</string>
     <!-- Gallery Experience -->
@@ -1518,7 +1518,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_tab_bookmarks">書籤</string>
     <string name="all_content_title_tab_files">檔案</string>
     <string name="all_content_title_tab_objetc_types">類型</string>
-    <string name="all_content_title_tab_relations">關聯</string>
+    <string name="all_content_title_tab_relations">屬性</string>
     <string name="all_content_sort_by">排序方式</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
@@ -1713,6 +1713,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_remove">移除</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_create_new_title">Create new type</string>
+    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_plural_title">Type list name</string>
+    <string name="object_type_create_title_hint">Puzzle</string>
+    <string name="object_type_create_plural_title_hint">Puzzles</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Reset to default</string>

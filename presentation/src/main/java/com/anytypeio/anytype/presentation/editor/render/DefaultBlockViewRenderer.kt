@@ -29,6 +29,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.mapper.getFileUrl
+import com.anytypeio.anytype.presentation.mapper.marks
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.toFileView
@@ -1497,8 +1500,24 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
+            ObjectType.Layout.VIDEO -> {
+                BlockView.Title.Video(
+                    mode = Mode.READ,
+                    id = block.id,
+                    text = fieldParser.getObjectName(currentObject),
+                    videoUrl = currentObject.getFileUrl(urlBuilder),
+                    icon = currentObject.objectIcon(builder = urlBuilder),
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor()
+                )
+            }
+
             ObjectType.Layout.FILE,
-            ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF -> {
                 val objType = storeOfObjectTypes.getTypeOfObject(currentObject)
@@ -1513,7 +1532,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
-                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
+                    url = currentObject.getFileUrl(urlBuilder)
                 )
             }
             ObjectType.Layout.IMAGE -> {

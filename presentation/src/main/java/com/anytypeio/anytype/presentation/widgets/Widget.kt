@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
+import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 
@@ -80,16 +81,6 @@ sealed class Widget {
         sealed class Bundled : Source() {
             data object Favorites : Bundled() {
                 override val id: Id = BundledWidgetSourceIds.FAVORITE
-                override val type: Id? = null
-            }
-
-            data object Sets : Bundled() {
-                override val id: Id = BundledWidgetSourceIds.SETS
-                override val type: Id? = null
-            }
-
-            data object Collections : Bundled() {
-                override val id: Id = BundledWidgetSourceIds.COLLECTIONS
                 override val type: Id? = null
             }
 
@@ -240,8 +231,6 @@ fun List<Block>.parseWidgets(
 fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
     BundledWidgetSourceIds.RECENT_LOCAL -> Widget.Source.Bundled.RecentLocal
-    BundledWidgetSourceIds.SETS -> Widget.Source.Bundled.Sets
-    BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
     BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
     BundledWidgetSourceIds.ALL_OBJECTS -> Widget.Source.Bundled.AllObjects

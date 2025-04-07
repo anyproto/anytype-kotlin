@@ -103,8 +103,11 @@ object Relations {
     const val WRITERS_LIMIT = "writersLimit"
 
     const val SHARED_SPACES_LIMIT = "sharedSpacesLimit"
+    const val FILE_ID = "fileId"
 
     const val LAYOUT_ALIGN = "layoutAlign"
+
+    const val AUTO_WIDGET_DISABLED = "autoWidgetDisabled"
 
     val systemRelationKeys = listOf(
         "id",
@@ -203,6 +206,7 @@ object Relations {
         "layoutWidth",
         "defaultViewType",
         "defaultTypeId",
-        "resolvedLayout"
+        "resolvedLayout",
+        "fileId",
     )
 }

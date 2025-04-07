@@ -65,9 +65,9 @@ sealed class UiLayoutTypeState {
 }
 //endregion
 
-sealed class UiFieldsButtonState {
-    data object Hidden : UiFieldsButtonState()
-    data class Visible(val count: Int) : UiFieldsButtonState()
+sealed class UiPropertiesButtonState {
+    data object Hidden : UiPropertiesButtonState()
+    data class Visible(val count: Int) : UiPropertiesButtonState()
 
 }
 

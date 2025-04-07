@@ -31,7 +31,7 @@ import com.anytypeio.anytype.feature_object_type.ui.TopBarContent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
-import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
@@ -58,7 +58,7 @@ fun WithSetScreen(
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
     //layout and fields buttons
-    uiFieldsButtonState: UiFieldsButtonState,
+    uiPropertiesButtonState: UiPropertiesButtonState,
     uiLayoutButtonState: UiLayoutButtonState,
     uiLayoutTypeState: UiLayoutTypeState,
     uiTemplatesButtonState: UiTemplatesButtonState,
@@ -95,7 +95,7 @@ fun WithSetScreen(
                 paddingValues = paddingValues,
                 uiIconState = uiIconState,
                 uiTitleState = uiTitleState,
-                uiFieldsButtonState = uiFieldsButtonState,
+                uiPropertiesButtonState = uiPropertiesButtonState,
                 uiLayoutButtonState = uiLayoutButtonState,
                 uiTemplatesButtonState = uiTemplatesButtonState,
                 objectId = objectId,
@@ -139,7 +139,7 @@ private fun MainContentSet(
     paddingValues: PaddingValues,
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
-    uiFieldsButtonState: UiFieldsButtonState,
+    uiPropertiesButtonState: UiPropertiesButtonState,
     uiLayoutButtonState: UiLayoutButtonState,
     uiTemplatesButtonState: UiTemplatesButtonState,
     objectId: String,
@@ -174,7 +174,7 @@ private fun MainContentSet(
                 .fillMaxWidth()
                 .height(36.dp)
                 .padding(horizontal = 20.dp),
-            uiFieldsButtonState = uiFieldsButtonState,
+            uiPropertiesButtonState = uiPropertiesButtonState,
             uiLayoutButtonState = uiLayoutButtonState,
             uiTemplatesButtonState = uiTemplatesButtonState,
             onTypeEvent = onTypeEvent

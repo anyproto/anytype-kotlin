@@ -40,7 +40,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
-import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
@@ -60,7 +60,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
@@ -118,8 +117,8 @@ class ObjectTypeViewModel(
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
 
-    //layout, fields and templates buttons
-    val uiFieldsButtonState = MutableStateFlow<UiFieldsButtonState>(UiFieldsButtonState.Hidden)
+    //layout, properties and templates buttons
+    val uiPropertiesButtonState = MutableStateFlow<UiPropertiesButtonState>(UiPropertiesButtonState.Hidden)
     val uiLayoutButtonState = MutableStateFlow<UiLayoutButtonState>(UiLayoutButtonState.Hidden)
     val uiTemplatesButtonState =
         MutableStateFlow<UiTemplatesButtonState>(UiTemplatesButtonState.Hidden)
@@ -352,7 +351,7 @@ class ObjectTypeViewModel(
             objectPermissions = objectPermissions
         )
         uiFieldsListState.value = UiFieldsListState(items = items)
-        uiFieldsButtonState.value = UiFieldsButtonState.Visible(
+        uiPropertiesButtonState.value = UiPropertiesButtonState.Visible(
             count = items.count { it is UiFieldsListItem.Item }
         )
     }

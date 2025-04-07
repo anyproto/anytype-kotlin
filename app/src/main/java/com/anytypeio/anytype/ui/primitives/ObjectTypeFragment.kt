@@ -143,7 +143,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
+                    uiPropertiesButtonState = vm.uiPropertiesButtonState.collectAsStateWithLifecycle().value,
                     uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
                     uiTemplatesButtonState = vm.uiTemplatesButtonState.collectAsStateWithLifecycle().value,
                     uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,

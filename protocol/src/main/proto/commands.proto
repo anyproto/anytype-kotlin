@@ -8312,15 +8312,16 @@ message Rpc {
 
         message ReadMessages {
             enum ReadType {
-                messages = 0;
-                replies = 1;
+                Messages = 0;
+                Mentions = 1;
             }
+
             message Request {
                 ReadType type = 1;
                 string chatObjectId = 2; // id of the chat object
                 string afterOrderId = 3; // read from this orderId; if empty - read from the beginning of the chat
                 string beforeOrderId = 4; // read til this orderId
-                int64 lastDbTimestamp = 5; // dbTimestamp from the last processed ChatState event(or GetMessages). Used to prevent race conditions
+                string lastStateId = 5; // stateId from the last processed ChatState event(or GetMessages). Used to prevent race conditions
             }
 
             message Response {
@@ -8343,8 +8344,14 @@ message Rpc {
         }
 
         message Unread {
+            enum ReadType {
+                Messages = 0;
+                Mentions = 1;
+            }
+
             message Request {
-                string chatObjectId = 2; // id of the chat object
+                ReadType type = 1;
+                string chatObjectId = 2;
                 string afterOrderId = 3;
             }
 

@@ -143,9 +143,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiFieldsButtonState = vm.uiFieldsButtonState.collectAsStateWithLifecycle().value,
-                    uiLayoutButtonState = vm.uiLayoutButtonState.collectAsStateWithLifecycle().value,
-                    uiTemplatesButtonState = vm.uiTemplatesButtonState.collectAsStateWithLifecycle().value,
+                    uiHorizontalButtonsState = vm.uiHorizontalButtonsState.collectAsStateWithLifecycle().value,
                     uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
                     uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
@@ -157,7 +155,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
             }
             composable(route = OBJ_TYPE_PROPERTIES) {
                 FieldsMainScreen(
-                    uiFieldsListState = vm.uiFieldsListState.collectAsStateWithLifecycle().value,
+                    uiFieldsListState = vm.uiTypePropertiesListState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,

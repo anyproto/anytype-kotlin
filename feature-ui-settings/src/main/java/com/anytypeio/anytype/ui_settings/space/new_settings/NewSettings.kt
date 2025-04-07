@@ -254,7 +254,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            localContext.toast("TODO")
+                                            uiEvent(UiEvent.OnObjectTypesClicked)
                                         }
                                 )
                             }
@@ -268,7 +268,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            localContext.toast("TODO")
+                                            uiEvent(UiEvent.OnPropertiesClicked)
                                         }
                                 )
                             }

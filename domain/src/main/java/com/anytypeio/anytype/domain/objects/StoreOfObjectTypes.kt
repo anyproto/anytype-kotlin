@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.objects
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
@@ -118,5 +119,26 @@ suspend fun StoreOfObjectTypes.getTypeOfObject(obj: ObjectWrapper.Basic): Object
         return get(typeId)
     } else {
         null
+    }
+}
+
+/**
+ * Shared helper to build the limit object types for a property.
+ */
+suspend fun StoreOfObjectTypes.mapLimitObjectTypes(
+    property: ObjectWrapper.Relation,
+): List<Id> {
+    return if (property.format == RelationFormat.OBJECT && property.relationFormatObjectTypes.isNotEmpty()) {
+        property.relationFormatObjectTypes.mapNotNull { id ->
+            get(id)?.let { objType ->
+                if (objType.isValid) {
+                    objType.id
+                } else {
+                    null
+                }
+            }
+        }
+    } else {
+        emptyList()
     }
 }

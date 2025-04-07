@@ -206,7 +206,7 @@ class EditTypePropertiesViewModel(
                         formatIcon = format.simpleIcon(),
                         format = format,
                         showLimitTypes = false,
-                        limitObjectTypes = getAllObjectTypesByFormat(format)
+                        limitObjectTypes = format.getAllObjectTypesByFormat(storeOfObjectTypes)
                     )
                 }
             }
@@ -235,7 +235,7 @@ class EditTypePropertiesViewModel(
                         formatIcon = format.simpleIcon(),
                         format = format,
                         showLimitTypes = false,
-                        limitObjectTypes = getAllObjectTypesByFormat(format)
+                        limitObjectTypes = format.getAllObjectTypesByFormat(storeOfObjectTypes)
                     )
                 }
             }
@@ -289,7 +289,7 @@ class EditTypePropertiesViewModel(
                                 ),
                                 formatIcon = newFormat.simpleIcon(),
                                 format = newFormat,
-                                limitObjectTypes = getAllObjectTypesByFormat(newFormat),
+                                limitObjectTypes = newFormat.getAllObjectTypesByFormat(storeOfObjectTypes),
                                 selectedLimitTypeIds = emptyList(),
                                 showLimitTypes = false
                             )
@@ -408,39 +408,6 @@ class EditTypePropertiesViewModel(
     }
     //endregion
 
-    //region Limit Object Types
-
-    private suspend fun getAllObjectTypesByFormat(format: RelationFormat): List<UiPropertyLimitTypeItem> {
-        if (format != RelationFormat.OBJECT) return emptyList()
-        return storeOfObjectTypes.getAll().mapNotNull { type ->
-            when (type.recommendedLayout) {
-                ObjectType.Layout.RELATION,
-                ObjectType.Layout.DASHBOARD,
-                ObjectType.Layout.SPACE,
-                ObjectType.Layout.RELATION_OPTION_LIST,
-                ObjectType.Layout.RELATION_OPTION,
-                ObjectType.Layout.SPACE_VIEW,
-                ObjectType.Layout.CHAT,
-                ObjectType.Layout.DATE,
-                ObjectType.Layout.OBJECT_TYPE,
-                ObjectType.Layout.CHAT_DERIVED,
-                ObjectType.Layout.TAG -> {
-                    null
-                }
-                else -> {
-                    UiPropertyLimitTypeItem(
-                        id = type.id,
-                        name = type.name.orEmpty(),
-                        icon = type.objectIcon(),
-                        uniqueKey = type.uniqueKey
-                    )
-                }
-            }
-        }
-    }
-
-    //endregion
-
     //region Commands
     sealed class EditTypePropertiesCommand {
         data object Exit : EditTypePropertiesCommand()
@@ -449,6 +416,37 @@ class EditTypePropertiesViewModel(
 
     companion object {
         private const val DEBOUNCE_DURATION = 300L
+    }
+}
+
+suspend fun RelationFormat.getAllObjectTypesByFormat(
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<UiPropertyLimitTypeItem> {
+    if (this != RelationFormat.OBJECT) return emptyList()
+    return storeOfObjectTypes.getAll().mapNotNull { type ->
+        when (type.recommendedLayout) {
+            ObjectType.Layout.RELATION,
+            ObjectType.Layout.DASHBOARD,
+            ObjectType.Layout.SPACE,
+            ObjectType.Layout.RELATION_OPTION_LIST,
+            ObjectType.Layout.RELATION_OPTION,
+            ObjectType.Layout.SPACE_VIEW,
+            ObjectType.Layout.CHAT,
+            ObjectType.Layout.DATE,
+            ObjectType.Layout.OBJECT_TYPE,
+            ObjectType.Layout.CHAT_DERIVED,
+            ObjectType.Layout.TAG -> {
+                null
+            }
+            else -> {
+                UiPropertyLimitTypeItem(
+                    id = type.id,
+                    name = type.name.orEmpty(),
+                    icon = type.objectIcon(),
+                    uniqueKey = type.uniqueKey
+                )
+            }
+        }
     }
 }
 

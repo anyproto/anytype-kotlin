@@ -13,6 +13,9 @@ sealed class UiEvent {
     data object OnSpaceMembersClicked : UiEvent()
     data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
 
+    data object OnObjectTypesClicked : UiEvent()
+    data object OnPropertiesClicked : UiEvent()
+
     data object OnDeleteSpaceClicked : UiEvent()
     data object OnLeaveSpaceClicked : UiEvent()
     data object OnRemoteStorageClick : UiEvent()

@@ -1738,4 +1738,6 @@ En concreto,
     <string name="widget_source_suggested">Sugerencia</string>
     <string name="widgets_empty_state_message">Aún no hay ningún widget</string>
     <string name="space_settings_auto_create_widgets">Crear widgets de tipo automáticamente</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">Propiedades</string>
 </resources>

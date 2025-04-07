@@ -99,7 +99,7 @@
     <string name="toolbar_section_tool">Werkzeug </string>
     <string name="toolbar_section_media">Medien</string>
     <string name="toolbar_section_objects">Objekte</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Eigenschaft</string>
     <string name="toolbar_action_delete">Löschen</string>
     <string name="toolbar_action_duplicate">Duplizieren</string>
     <string name="toolbar_action_mention">Erwähnen</string>
@@ -317,7 +317,7 @@
     <string name="unknown_object_type">Unbekannter Typ</string>
     <string name="relation_format_short_text">Kurztext</string>
     <string name="relation_format_long_text">Text</string>
-    <string name="set_new_relation">Set new property</string>
+    <string name="set_new_relation">Neue Eigenschaft festlegen</string>
     <string name="relation_deleted">Gelöschte Eigenschaft</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
@@ -338,7 +338,7 @@
     <string name="heading">Überschrift</string>
     <string name="subheading">Unterüberschrift</string>
     <string name="create_from_scratch">Selbst erstellen</string>
-    <string name="create_relation_with_name">Create property \"%1$s\"</string>
+    <string name="create_relation_with_name">Eigenschaft „%1$s“ erstellen</string>
     <string name="name_is_required">Name ist erforderlich</string>
     <string name="favourite">Zu Favoriten hinzufügen</string>
     <string name="template">Vorlage</string>
@@ -486,8 +486,8 @@
     <string name="error_find_block">Ausgewählter Block konnte nicht gefunden werden</string>
     <string name="error_block_selection">Blockauswahlfehler</string>
     <string name="undefined">Unbestimmt</string>
-    <string name="set_by_relation">Property: %1$s</string>
-    <string name="set_by_relations">Properties: %1$s</string>
+    <string name="set_by_relation">Eigenschaft: %1$s</string>
+    <string name="set_by_relations">Eigenschaften: %1$s</string>
     <string name="set_by_type">Typ: %1$s</string>
     <string name="my_types">Meine Typen</string>
     <string name="my_relations">Meine Eigenschaften</string>
@@ -647,7 +647,7 @@
     <string name="object_view_type">Objektansichtstyp</string>
     <string name="object_type_name">Objekttypname</string>
     <string name="name">Name</string>
-    <string name="hint_type_name_for_new_relation">Name for new property</string>
+    <string name="hint_type_name_for_new_relation">Name für neue Eigenschaft</string>
     <string name="dv_create_new_object">Neu</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -791,7 +791,7 @@
     <string name="snack_move_to">verschoben nach</string>
     <string name="recovery_phrase_copied">Schlüssel kopiert</string>
     <string name="type_editing_title">Typ-Einstellungen</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget">Dieses Objekt hat keine Links zu anderen Objekten.\nVersuche ein neues zu erstellen.</string>
     <string name="empty_list_widget">Diese Ansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
@@ -964,14 +964,14 @@
     <string name="library_title_types">Typen</string>
     <string name="library_title_relations">Eigenschaften</string>
     <string name="library_description_types">Typen sind wie Kategorien, die dir helfen, deine Objekte zu gruppieren und zu verwalten.</string>
-    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
+    <string name="library_description_relations">Alle Objekte sind verbunden. Verwende Eigenschaften, um Verbindungen zwischen Objekten herzustellen.</string>
     <string name="library_button_create_type">Erstelle einen Typ</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">Eigenschaft erstellen</string>
     <string name="library_subtitle_types">Meine Typen</string>
     <string name="library_subtitle_relations">Meine Eigenschaften</string>
     <string name="library_subtitle_library">Bibliothek</string>
     <string name="library_create_new_type">Erstelle Typ „%1$s“</string>
-    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
+    <string name="library_create_new_relation">Eigenschaft ‚%1$s‘ erstellen</string>
     <string name="library_objects_empty">Es gibt kein %1$s namens „%2$s“</string>
     <string name="library_objects_empty_action">Versuche ein neues zu erstellen oder suche nach etwas anderem</string>
     <string name="library_relations_empty">Es gibt keinen Typen namens „%1$s“</string>
@@ -1524,7 +1524,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">Papierkorb ansehen</string>
     <string name="all_content_title_tab_pages">Seiten</string>
     <string name="all_content_title_tab_lists">Gruppen</string>
     <string name="all_content_title_tab_media">Medien</string>
@@ -1611,7 +1611,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
     <string name="object_type_fields_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="object_type_fields_menu_remove">Entfernen</string>
-    <string name="object_type_fields_local_info_title">Found in objects</string>
+    <string name="object_type_fields_local_info_title">In Objekten gefunden</string>
     <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
     <string name="object_type_fields_local_info_button">Verstanden</string>
     <string name="object_type_templates_empty">Dieser Typ hat\nkeine Vorlagen</string>
@@ -1683,7 +1683,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_section_data_management">Datenverwaltung</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Einladen</string>
-    <string name="space_settings_invite_members">Invite members</string>
+    <string name="space_settings_invite_members">Mitglieder einladen</string>
     <string name="space_settings_qrcode">QR-Code</string>
     <string name="space_settings_members_button_members">Mitglieder</string>
     <string name="space_settings_types_button">Objekttypen</string>
@@ -1695,7 +1695,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="object_type_add_property_screen_title">Eigenschaft hinzufügen</string>
-    <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
+    <string name="object_type_add_property_screen_create">Eigenschaft ‚%1$s‘ erstellen</string>
     <string name="object_type_add_property_screen_section_types">Formate der Eigenschaften</string>
     <string name="object_type_add_property_screen_section_existing">Vorhandene Eigenschaften</string>
     <string name="object_type_add_property_screen_search_hint">Suchen oder neu erstellen</string>
@@ -1710,7 +1710,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="property_limit_objects_title">Limit objects</string>
-    <string name="property_include_time_section">Include time</string>
+    <string name="property_include_time_section">Zeit einbeziehen</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
@@ -1727,7 +1727,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
     <string name="object_type_create_new_title">Neuen Typ erstellen</string>
-    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_rename_title">Typ umbenennen</string>
     <string name="object_type_create_plural_title">Type list name</string>
     <string name="object_type_create_title_hint">Puzzle</string>
     <string name="object_type_create_plural_title_hint">Puzzles</string>
@@ -1737,4 +1737,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">Eigenschaften</string>
 </resources>

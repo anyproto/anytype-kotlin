@@ -25,7 +25,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyFormatsListScreen
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
-import com.anytypeio.anytype.feature_properties.space.EditProperty
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesEvent
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesListScreen
@@ -87,10 +87,10 @@ class SpacePropertiesFragment : BaseComposeFragment() {
         if (uiState is UiPropertyFormatsListState.Visible) {
             PropertyFormatsListScreen(
                 uiState = uiState,
-                onDismissRequest = { vm.proceedWithEditPropertyEvent(EditProperty.OnPropertyFormatsListDismiss) },
+                onDismissRequest = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnPropertyFormatsListDismiss) },
                 onFormatClick = {
                     vm.proceedWithEditPropertyEvent(
-                        EditProperty.OnPropertyFormatSelected(
+                        SpacePropertiesEvent.OnPropertyFormatSelected(
                             it
                         )
                     )
@@ -105,21 +105,21 @@ class SpacePropertiesFragment : BaseComposeFragment() {
             PropertyScreen(uiState = uiState,
                 modifier = Modifier.fillMaxWidth(),
                 onDismissRequest = vm::onDismissPropertyScreen,
-                onFormatClick = { vm.proceedWithEditPropertyEvent(EditProperty.OnPropertyFormatClick) },
+                onFormatClick = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnPropertyFormatClick) },
                 onLimitObjectTypesDoneClick = {
                     vm.proceedWithEditPropertyEvent(
-                        EditProperty.OnLimitTypesDoneClick(it)
+                        SpacePropertiesEvent.OnLimitTypesDoneClick(it)
                     )
                 },
-                onSaveButtonClicked = { vm.proceedWithEditPropertyEvent(EditProperty.OnSaveButtonClicked) },
-                onCreateNewButtonClicked = { vm.proceedWithEditPropertyEvent(EditProperty.OnCreateNewButtonClicked) },
+                onSaveButtonClicked = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnSaveButtonClicked) },
+                onCreateNewButtonClicked = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnCreateNewButtonClicked) },
                 onPropertyNameUpdate = {
                     vm.proceedWithEditPropertyEvent(
-                        EditProperty.OnPropertyNameUpdate(name = it)
+                        SpacePropertiesEvent.OnPropertyNameUpdate(name = it)
                     )
                 },
-                onLimitTypesClick = { vm.proceedWithEditPropertyEvent(EditProperty.OnLimitTypesClick) },
-                onDismissLimitTypes = { vm.proceedWithEditPropertyEvent(EditProperty.OnLimitTypesDismiss) })
+                onLimitTypesClick = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnLimitTypesClick) },
+                onDismissLimitTypes = { vm.proceedWithEditPropertyEvent(SpacePropertiesEvent.OnLimitTypesDismiss) })
         }
     }
 

@@ -33,8 +33,8 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
-import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider

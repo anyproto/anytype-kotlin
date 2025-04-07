@@ -10,18 +10,20 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
-import com.anytypeio.anytype.presentation.relations.SpacePropertiesVmFactory
-import com.anytypeio.anytype.feature_object_type.fields.ui.SpacePropertiesListScreen
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
+import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesListScreen
 import javax.inject.Inject
 import kotlin.getValue
-import kotlinx.coroutines.flow.collect
+import timber.log.Timber
 
 class SpacePropertiesFragment : BaseComposeFragment() {
 
@@ -39,10 +41,50 @@ class SpacePropertiesFragment : BaseComposeFragment() {
     ) = content {
         SpacePropertiesListScreen(
             uiState = vm.uiItemsState.collectAsStateWithLifecycle().value,
-            onBackPressed = { },
+            onBackPressed = vm::onBackClicked,
+            onPropertyClicked = vm::onPropertyClicked,
+            onAddIconClicked = vm::onCreateNewPropertyClicked
         )
         LaunchedEffect(Unit) {
-            vm.commands.collect()
+            vm.commands.collect { command ->
+                when (command) {
+                    SpacePropertiesViewModel.Command.Back -> {
+                        runCatching {
+                            findNavController().popBackStack()
+                        }.onFailure { e ->
+                            Timber.e(e, "Error while exiting back from all content")
+                        }
+                    }
+
+                    is SpacePropertiesViewModel.Command.CreateNewProperty -> {
+//                        runCatching {
+//                            navigation().openCreateObjectTypeScreen(spaceId = command.spaceId)
+//                        }.onFailure {
+//                            toast("Failed to open type creation screen")
+//                            Timber.e(it, "Failed to open type creation screen from all content")
+//                        }
+                    }
+
+                    is SpacePropertiesViewModel.Command.OpenPropertyDetails -> {
+//                        runCatching {
+//                            navigation().openObjectType(
+//                                objectId = command.id,
+//                                space = command.space
+//                            )
+//                        }.onFailure {
+//                            Timber.e(it, "Failed to open object type object from all content")
+//                        }
+                    }
+
+                    is SpacePropertiesViewModel.Command.ShowToast -> {
+                        runCatching {
+                            toast(command.message)
+                        }.onFailure {
+                            Timber.e(it, "Failed to show toast message")
+                        }
+                    }
+                }
+            }
         }
     }
 

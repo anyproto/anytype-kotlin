@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_object_type.ui.space
+package com.anytypeio.anytype.feature_properties.space.ui
 
 import android.os.Build
 import androidx.compose.foundation.Image
@@ -7,13 +7,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -29,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,23 +40,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.anytypeio.anytype.presentation.types.UiSpaceTypeItem
-import com.anytypeio.anytype.presentation.types.UiSpaceTypesScreenState
+import com.anytypeio.anytype.feature_properties.space.UiSpacePropertiesScreenState
+import com.anytypeio.anytype.feature_properties.space.UiSpacePropertyItem
 
 @Composable
-fun SpaceTypesListScreen(
-    uiState: UiSpaceTypesScreenState,
-    onTypeClicked: (UiSpaceTypeItem) -> Unit,
+fun SpacePropertiesListScreen(
+    uiState: UiSpacePropertiesScreenState,
+    onPropertyClicked: (UiSpacePropertyItem) -> Unit,
     onBackPressed: () -> Unit,
     onAddIconClicked: () -> Unit
 ) {
@@ -62,10 +63,12 @@ fun SpaceTypesListScreen(
             .background(color = colorResource(id = R.color.background_primary))
             .systemBarsPadding()
     ) {
+
         Topbar(
             onBackPressed = onBackPressed,
             onAddIconClicked = onAddIconClicked
         )
+
         val contentModifier =
             if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                 Modifier
@@ -74,11 +77,10 @@ fun SpaceTypesListScreen(
             else
                 Modifier
                     .fillMaxWidth()
-
         val lazyListState = rememberLazyListState()
 
         val items = remember {
-            mutableStateListOf<UiSpaceTypeItem>()
+            mutableStateListOf<UiSpacePropertyItem>()
         }
         items.swapList(uiState.items)
 
@@ -91,13 +93,13 @@ fun SpaceTypesListScreen(
                 key = { index -> items[index].id },
                 itemContent = {
                     val item = items[it]
-                    Type(
+                    Relation(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
-                            .padding(start = 12.dp, end = 20.dp)
+                            .padding(start = 20.dp, end = 20.dp)
                             .clickable {
-                                onTypeClicked(item)
+                                onPropertyClicked(item)
                             },
                         item = item
                     )
@@ -116,30 +118,45 @@ fun SpaceTypesListScreen(
 }
 
 @Composable
-private fun Type(
+private fun Relation(
     modifier: Modifier,
-    item: UiSpaceTypeItem
+    item: UiSpacePropertyItem
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = CenterVertically
     ) {
-        ListWidgetObjectIcon(
-            icon = item.icon,
-            modifier = Modifier,
-            iconSize = 40.dp
+        val icon = item.format.simpleIcon()
+        PropertyIcon(
+            modifier = Modifier.size(24.dp),
+            formatIconRes = icon
         )
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 2.dp),
+                .padding(start = 10.dp),
             text = name,
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+@Composable
+private fun RowScope.PropertyIcon(
+    modifier: Modifier,
+    formatIconRes: Int?
+) {
+    if (formatIconRes != null) {
+        Image(
+            painter = painterResource(id = formatIconRes),
+            contentDescription = "Property format icon",
+            contentScale = ContentScale.None,
+            modifier = modifier
         )
     }
 }
@@ -159,8 +176,7 @@ private fun Topbar(
         Box(
             modifier = Modifier
                 .width(56.dp)
-                .height(48.dp)
-                .align(Alignment.CenterStart)
+                .fillMaxHeight()
                 .noRippleThrottledClickable {
                     onBackPressed()
                 },
@@ -176,7 +192,7 @@ private fun Topbar(
         }
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = stringResource(R.string.space_types_screen_title),
+            text = stringResource(R.string.space_properties_screen_title),
             style = Title1,
             color = colorResource(R.color.text_primary),
             textAlign = TextAlign.Center
@@ -200,34 +216,4 @@ private fun Topbar(
             )
         }
     }
-}
-
-@DefaultPreviews
-@Composable
-fun SpaceTypesListScreenPreview() {
-    SpaceTypesListScreen(
-        uiState = UiSpaceTypesScreenState(
-            items = listOf(
-                UiSpaceTypeItem(
-                    id = "1",
-                    name = "Type 1",
-                    icon = ObjectIcon.TypeIcon.Default(
-                        rawValue = "american-football",
-                        color = CustomIconColor.Teal
-                    )
-                ),
-                UiSpaceTypeItem(
-                    id = "2",
-                    name = "Type 2",
-                    icon = ObjectIcon.TypeIcon.Default(
-                        rawValue = "bluetooth",
-                        color = CustomIconColor.Red
-                    )
-                )
-            )
-        ),
-        onBackPressed = {},
-        onTypeClicked = {},
-        onAddIconClicked = {}
-    )
 }

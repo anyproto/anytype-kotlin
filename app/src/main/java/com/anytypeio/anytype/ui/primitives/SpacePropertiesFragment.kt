@@ -5,7 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -18,6 +21,11 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
+import com.anytypeio.anytype.feature_properties.edit.ui.PropertyFormatsListScreen
+import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
+import com.anytypeio.anytype.feature_properties.space.EditProperty
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesListScreen
@@ -45,6 +53,11 @@ class SpacePropertiesFragment : BaseComposeFragment() {
             onPropertyClicked = vm::onPropertyClicked,
             onAddIconClicked = vm::onCreateNewPropertyClicked
         )
+        SpacePropertyScreen(
+            uiState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value
+        )
+        PropertyFormatsScreen()
+
         LaunchedEffect(Unit) {
             vm.commands.collect { command ->
                 when (command) {
@@ -56,26 +69,6 @@ class SpacePropertiesFragment : BaseComposeFragment() {
                         }
                     }
 
-                    is SpacePropertiesViewModel.Command.CreateNewProperty -> {
-//                        runCatching {
-//                            navigation().openCreateObjectTypeScreen(spaceId = command.spaceId)
-//                        }.onFailure {
-//                            toast("Failed to open type creation screen")
-//                            Timber.e(it, "Failed to open type creation screen from all content")
-//                        }
-                    }
-
-                    is SpacePropertiesViewModel.Command.OpenPropertyDetails -> {
-//                        runCatching {
-//                            navigation().openObjectType(
-//                                objectId = command.id,
-//                                space = command.space
-//                            )
-//                        }.onFailure {
-//                            Timber.e(it, "Failed to open object type object from all content")
-//                        }
-                    }
-
                     is SpacePropertiesViewModel.Command.ShowToast -> {
                         runCatching {
                             toast(command.message)
@@ -85,6 +78,48 @@ class SpacePropertiesFragment : BaseComposeFragment() {
                     }
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun PropertyFormatsScreen() {
+        val uiState = vm.uiPropertyFormatsListState.collectAsStateWithLifecycle().value
+        if (uiState is UiPropertyFormatsListState.Visible) {
+            PropertyFormatsListScreen(
+                uiState = uiState,
+                onDismissRequest = { vm.proceedWithEditPropertyEvent(EditProperty.OnPropertyFormatsListDismiss) },
+                onFormatClick = {
+                    vm.proceedWithEditPropertyEvent(
+                        EditProperty.OnPropertyFormatSelected(
+                            it
+                        )
+                    )
+                },
+            )
+        }
+    }
+
+    @Composable
+    private fun SpacePropertyScreen(uiState: UiEditPropertyState) {
+        if (uiState is UiEditPropertyState.Visible) {
+            PropertyScreen(uiState = uiState,
+                modifier = Modifier.fillMaxWidth(),
+                onDismissRequest = vm::onDismissPropertyScreen,
+                onFormatClick = { vm.proceedWithEditPropertyEvent(EditProperty.OnPropertyFormatClick) },
+                onLimitObjectTypesDoneClick = {
+                    vm.proceedWithEditPropertyEvent(
+                        EditProperty.OnLimitTypesDoneClick(it)
+                    )
+                },
+                onSaveButtonClicked = { vm.proceedWithEditPropertyEvent(EditProperty.OnSaveButtonClicked) },
+                onCreateNewButtonClicked = { vm.proceedWithEditPropertyEvent(EditProperty.OnCreateNewButtonClicked) },
+                onPropertyNameUpdate = {
+                    vm.proceedWithEditPropertyEvent(
+                        EditProperty.OnPropertyNameUpdate(name = it)
+                    )
+                },
+                onLimitTypesClick = { vm.proceedWithEditPropertyEvent(EditProperty.OnLimitTypesClick) },
+                onDismissLimitTypes = { vm.proceedWithEditPropertyEvent(EditProperty.OnLimitTypesDismiss) })
         }
     }
 

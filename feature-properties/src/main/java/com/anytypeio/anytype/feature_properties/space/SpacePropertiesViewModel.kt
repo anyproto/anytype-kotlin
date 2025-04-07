@@ -5,16 +5,35 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem.Format
+import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.New
+import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.Hidden
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.Visible
+import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
+import com.anytypeio.anytype.feature_properties.getAllObjectTypesByFormat
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel.Command.*
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import javax.inject.Inject
-import kotlin.collections.map
 import kotlin.collections.sortedBy
 import kotlin.text.orEmpty
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -30,20 +49,24 @@ class SpacePropertiesViewModel(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val userPermissionProvider: UserPermissionProvider,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val stringResourceProvider: StringResourceProvider,
+    private val setObjectDetails: SetObjectDetails,
+    private val createRelation: CreateRelation
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiItemsState =
         MutableStateFlow<UiSpacePropertiesScreenState>(UiSpacePropertiesScreenState.Empty)
 
+    //edit property
+    val uiEditPropertyScreen = MutableStateFlow<UiEditPropertyState>(UiEditPropertyState.Hidden)
+
+    val uiPropertyFormatsListState =
+        MutableStateFlow<UiPropertyFormatsListState>(UiPropertyFormatsListState.Hidden)
+
     val commands = MutableSharedFlow<Command>()
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
-
-    val notAllowedPropertiesFormats = listOf(
-        RelationFormat.UNDEFINED,
-        RelationFormat.RELATIONS,
-    )
 
     init {
         Timber.d("Space Properties ViewModel init")
@@ -54,13 +77,21 @@ class SpacePropertiesViewModel(
         viewModelScope.launch {
             storeOfRelations.trackChanges()
                 .collectLatest { event ->
-                    val allProperties = storeOfRelations.getAll().map { relation ->
-                        UiSpacePropertyItem(
-                            id = relation.id,
-                            key = RelationKey(relation.key),
-                            name = relation.name.orEmpty(),
-                            format = relation.format
-                        )
+                    val allProperties = storeOfRelations.getAll().mapNotNull { relation ->
+                        if (relation.isHidden == true) {
+                            return@mapNotNull null
+                        } else {
+                            UiSpacePropertyItem(
+                                id = relation.id,
+                                key = RelationKey(relation.key),
+                                name = relation.name.orEmpty(),
+                                format = relation.format,
+                                isEditableField = fieldParser.isPropertyEditable(relation),
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(
+                                    property = relation
+                                )
+                            )
+                        }
                     }.sortedBy { it.name }
 
                     uiItemsState.value = UiSpacePropertiesScreenState(allProperties)
@@ -75,9 +106,17 @@ class SpacePropertiesViewModel(
     }
 
     fun onCreateNewPropertyClicked() {
-        if (permission.value?.isOwnerOrEditor() == true)  {
+        if (permission.value?.isOwnerOrEditor() == true) {
             viewModelScope.launch {
-                commands.emit(Command.CreateNewProperty(vmParams.spaceId.id))
+                val format = DEFAULT_NEW_PROPERTY_FORMAT
+                uiEditPropertyScreen.value = New(
+                    name = "",
+                    formatName = stringResourceProvider.getPropertiesFormatPrettyString(format),
+                    formatIcon = format.simpleIcon(),
+                    format = format,
+                    showLimitTypes = false,
+                    limitObjectTypes = format.getAllObjectTypesByFormat(storeOfObjectTypes)
+                )
             }
         } else {
             viewModelScope.launch {
@@ -88,7 +127,44 @@ class SpacePropertiesViewModel(
 
     fun onPropertyClicked(item: UiSpacePropertyItem) {
         viewModelScope.launch {
-            commands.emit(Command.OpenPropertyDetails(item.id))
+
+            val computedLimitTypes = item.limitObjectTypes.mapNotNull { id ->
+                storeOfObjectTypes.get(id = id)?.let { objType ->
+                    UiPropertyLimitTypeItem(
+                        id = objType.id,
+                        name = fieldParser.getObjectName(objectWrapper = objType),
+                        icon = objType.objectIcon(),
+                        uniqueKey = objType.uniqueKey
+                    )
+                }
+            }
+            val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
+            val formatIcon = item.format.simpleIcon()
+            uiEditPropertyScreen.value = if (permission.value?.isOwnerOrEditor() == true && item.isEditableField) {
+                UiEditPropertyState.Visible.Edit(
+                    id = item.id,
+                    key = item.key.key,
+                    name = item.name,
+                    formatName = formatName,
+                    formatIcon = formatIcon,
+                    format = item.format,
+                    limitObjectTypes = computedLimitTypes,
+                    isPossibleToUnlinkFromType = false,
+                    showLimitTypes = false
+                )
+            } else {
+                UiEditPropertyState.Visible.View(
+                    id = item.id,
+                    key = item.key.key,
+                    name = item.name,
+                    formatName = formatName,
+                    formatIcon = formatIcon,
+                    format = item.format,
+                    limitObjectTypes = computedLimitTypes,
+                    isPossibleToUnlinkFromType = false,
+                    showLimitTypes = false
+                )
+            }
         }
     }
 
@@ -96,11 +172,152 @@ class SpacePropertiesViewModel(
         val spaceId: SpaceId
     )
 
+    //region Edit or Create Property
+    fun onDismissPropertyScreen() {
+        uiEditPropertyScreen.value = UiEditPropertyState.Hidden
+    }
+
+    fun proceedWithEditPropertyEvent(event: EditProperty) {
+        when (event) {
+            is EditProperty.OnPropertyNameUpdate -> {
+                val state = uiEditPropertyScreen.value as? UiEditPropertyState.Visible ?: return
+                uiEditPropertyScreen.value = when (state) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(name = event.name)
+                    is New -> state.copy(name = event.name)
+                    is View -> state
+                }
+            }
+
+            EditProperty.OnSaveButtonClicked -> {
+                val state =
+                    uiEditPropertyScreen.value as? UiEditPropertyState.Visible.Edit ?: return
+                viewModelScope.launch {
+                    val params = SetObjectDetails.Params(
+                        ctx = state.id,
+                        details = mapOf(
+                            Relations.NAME to state.name
+                        )
+                    )
+                    setObjectDetails.async(params).fold(
+                        onSuccess = {
+                            Timber.d("Relation updated: $it")
+                            uiEditPropertyScreen.value = UiEditPropertyState.Hidden
+                        },
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to update relation")
+                            commands.emit(
+                                ShowToast(message = error.message.orEmpty())
+                            )
+                        }
+                    )
+                }
+            }
+
+            EditProperty.OnLimitTypesClick -> {
+                uiEditPropertyScreen.value = when (val state = uiEditPropertyScreen.value) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(showLimitTypes = true)
+                    is New -> state.copy(showLimitTypes = true)
+                    is View -> state.copy(showLimitTypes = true)
+                    else -> state
+                }
+            }
+
+            EditProperty.OnLimitTypesDismiss -> {
+                uiEditPropertyScreen.value = when (val state = uiEditPropertyScreen.value) {
+                    is UiEditPropertyState.Visible.Edit -> state.copy(showLimitTypes = false)
+                    is New -> state.copy(showLimitTypes = false)
+                    is View -> state.copy(showLimitTypes = false)
+                    else -> state
+                }
+            }
+
+            is EditProperty.OnLimitTypesDoneClick -> {
+                val state = uiEditPropertyScreen.value as? New ?: return.also {
+                    Timber.e("Possible only for New state")
+                }
+                uiEditPropertyScreen.value = state.copy(
+                    selectedLimitTypeIds = event.items,
+                    showLimitTypes = false
+                )
+            }
+            EditProperty.OnPropertyFormatClick -> {
+                val state = uiEditPropertyScreen.value as? UiEditPropertyState.Visible.New ?: return
+                uiPropertyFormatsListState.value = Visible(
+                    items = UiEditTypePropertiesState.Companion.PROPERTIES_FORMATS.map { format ->
+                        Format(
+                            format = format,
+                            prettyName = stringResourceProvider.getPropertiesFormatPrettyString(format)
+                        )
+                    }
+                )
+            }
+
+            EditProperty.OnPropertyFormatsListDismiss -> {
+                uiPropertyFormatsListState.value = Hidden
+            }
+
+            is EditProperty.OnPropertyFormatSelected -> {
+                viewModelScope.launch {
+                    uiPropertyFormatsListState.value = Hidden
+                    val state = uiEditPropertyScreen.value as? UiEditPropertyState.Visible ?: return@launch
+                    uiEditPropertyScreen.value = when (state) {
+                        is New -> {
+                            val newFormat = event.format.format
+                            state.copy(
+                                formatName = stringResourceProvider.getPropertiesFormatPrettyString(
+                                    newFormat
+                                ),
+                                formatIcon = newFormat.simpleIcon(),
+                                format = newFormat,
+                                limitObjectTypes = newFormat.getAllObjectTypesByFormat(storeOfObjectTypes),
+                                selectedLimitTypeIds = emptyList(),
+                                showLimitTypes = false
+                            )
+                        }
+
+                        else -> state
+                    }
+                }
+            }
+
+            EditProperty.OnCreateNewButtonClicked -> {
+                proceedWithCreatingRelation()
+            }
+        }
+    }
+
+    fun proceedWithCreatingRelation() {
+        viewModelScope.launch {
+            val state = uiEditPropertyScreen.value as? New ?: return@launch
+            val params = CreateRelation.Params(
+                space = vmParams.spaceId.id,
+                format = state.format,
+                name = state.name,
+                limitObjectTypes = state.selectedLimitTypeIds,
+                prefilled = emptyMap()
+            )
+            createRelation(params).process(
+                success = { property ->
+                    Timber.d("Property created: $property")
+                    uiEditPropertyScreen.value = UiEditPropertyState.Hidden
+                },
+                failure = { error ->
+                    Timber.e(error, "Failed to create property")
+
+                }
+            )
+        }
+    }
+
+    //endregion
+
     sealed class Command {
         data object Back : Command()
-        data class CreateNewProperty(val spaceId:Id) : Command()
-        data class OpenPropertyDetails(val id: Id) : Command()
         data class ShowToast(val message: String) : Command()
+    }
+
+    companion object {
+        val DEFAULT_NEW_PROPERTY_FORMAT = RelationFormat.LONG_TEXT
     }
 }
 
@@ -111,7 +328,10 @@ class SpacePropertiesVmFactory @Inject constructor(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
     private val fieldParser: FieldParser,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val stringResourceProvider: StringResourceProvider,
+    private val setObjectDetails: SetObjectDetails,
+    private val createRelation: CreateRelation
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -122,7 +342,10 @@ class SpacePropertiesVmFactory @Inject constructor(
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             userPermissionProvider = userPermissionProvider,
             fieldParser = fieldParser,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            stringResourceProvider = stringResourceProvider,
+            setObjectDetails = setObjectDetails,
+            createRelation = createRelation
         ) as T
 }
 
@@ -138,5 +361,21 @@ data class UiSpacePropertyItem(
     val id: Id,
     val key: RelationKey,
     val name: String,
-    val format: RelationFormat
+    val format: RelationFormat,
+    val isEditableField: Boolean,
+    val limitObjectTypes: List<Id>
 )
+
+sealed class EditProperty {
+    data class OnPropertyNameUpdate(val name: String) : EditProperty()
+    data object OnSaveButtonClicked : EditProperty()
+    data object OnCreateNewButtonClicked : EditProperty()
+
+    data object OnPropertyFormatClick : EditProperty()
+    data object OnPropertyFormatsListDismiss: EditProperty()
+    data class OnPropertyFormatSelected(val format: Format) : EditProperty()
+
+    data object OnLimitTypesClick : EditProperty()
+    data object OnLimitTypesDismiss : EditProperty()
+    data class OnLimitTypesDoneClick(val items: List<Id>) : EditProperty()
+}

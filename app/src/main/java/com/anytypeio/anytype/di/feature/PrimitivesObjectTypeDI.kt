@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.types.CreateObjectType
@@ -244,6 +246,17 @@ interface SpacePropertiesComponent {
 
 @Module
 object SpacePropertiesModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun createRelation(
+        repo: BlockRepository,
+        storeOfRelations: StoreOfRelations
+    ) = CreateRelation(
+        repo = repo,
+        storeOfRelations = storeOfRelations
+    )
 
     @Module
     interface Declarations {

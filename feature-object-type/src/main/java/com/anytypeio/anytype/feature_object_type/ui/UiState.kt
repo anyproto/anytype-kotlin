@@ -65,6 +65,13 @@ sealed class UiLayoutTypeState {
 }
 //endregion
 
+data class UiHorizontalButtonsState(
+    val uiPropertiesButtonState: UiPropertiesButtonState,
+    val uiLayoutButtonState: UiLayoutButtonState,
+    val uiTemplatesButtonState: UiTemplatesButtonState,
+    val isVisible: Boolean
+)
+
 sealed class UiPropertiesButtonState {
     data object Hidden : UiPropertiesButtonState()
     data class Visible(val count: Int) : UiPropertiesButtonState()

@@ -15,14 +15,12 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
@@ -128,14 +126,6 @@ object AllContentModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideUpdateDetailUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): SetObjectDetails = SetObjectDetails(repository, dispatchers)
-
     @Provides
     @PerScreen
     @JvmStatic
@@ -143,14 +133,6 @@ object AllContentModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): RemoveObjectsFromWorkspace = RemoveObjectsFromWorkspace(repo, dispatchers)
-
-    @Provides
-    @PerScreen
-    @JvmStatic
-    fun createObjectType(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): CreateObjectType = CreateObjectType(repo, dispatchers)
 
     @Module
     interface Declarations {

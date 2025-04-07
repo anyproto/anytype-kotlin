@@ -9,7 +9,7 @@ interface AppActionManager {
     fun setup(actions: List<Action.CreateNew>)
 
     sealed class Action {
-        data class CreateNew(val type: TypeKey, val name: String) : Action()
+        data class CreateNew(val type: TypeKey, val name: String, val isDefault: Boolean = false) : Action()
         object ClearAll: Action()
     }
 }

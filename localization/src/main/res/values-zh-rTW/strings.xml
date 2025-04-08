@@ -957,6 +957,7 @@
     <string name="widget_remove_widget">移除小工具</string>
     <string name="widget_empty_bin">清空垃圾桶</string>
     <string name="widget_edit_widgets">編輯小工具</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">類型</string>

@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -254,9 +255,11 @@ fun WidgetHeader(
     onWidgetHeaderClicked: () -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
+    onCreateElement: () -> Unit = {},
     isExpanded: Boolean = false,
     isInEditMode: Boolean = true,
-    hasReadOnlyAccess: Boolean = false
+    hasReadOnlyAccess: Boolean = false,
+    canCreate: Boolean = false
 ) {
     val haptic = LocalHapticFeedback.current
     Box(
@@ -296,6 +299,19 @@ fun WidgetHeader(
                         )
                 )
         )
+
+        if (canCreate) {
+            Image(
+                painter = painterResource(R.drawable.ic_widget_system_plus_18),
+                contentDescription = stringResource(R.string.content_description_plus_button),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 50.dp)
+                    .clickable {
+                        onCreateElement()
+                    }
+            )
+        }
 
         WidgetArrow(
             modifier = Modifier.align(Alignment.CenterEnd),

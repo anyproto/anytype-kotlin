@@ -19,5 +19,6 @@ data class Config(
     val analytics: Id,
     val device: Id,
     val network: Id,
-    val workspaceObjectId: Id
+    val workspaceObjectId: Id,
+    val ethereumAddress: String = ""
 )

@@ -46,7 +46,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             device = info.deviceId,
             network = info.networkId,
             techSpace = info.techSpaceId,
-            workspaceObjectId = info.workspaceObjectId
+            workspaceObjectId = info.workspaceObjectId,
+            ethereumAddress = info.ethereumAddress
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )

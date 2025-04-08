@@ -1720,4 +1720,7 @@
     <string name="object_conflict_menu_item_title">解决布局冲突</string>
     <string name="widget_source_suggested">建议</string>
     <string name="widgets_empty_state_message">还没有部件</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">属性</string>
 </resources>

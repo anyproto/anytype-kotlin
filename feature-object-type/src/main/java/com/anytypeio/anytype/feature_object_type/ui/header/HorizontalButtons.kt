@@ -23,11 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.common.OldDevicesPreview
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 
@@ -35,7 +34,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 fun HorizontalButtons(
     modifier: Modifier,
     uiLayoutButtonState: UiLayoutButtonState,
-    uiFieldsButtonState: UiFieldsButtonState,
+    uiPropertiesButtonState: UiPropertiesButtonState,
     uiTemplatesButtonState: UiTemplatesButtonState = UiTemplatesButtonState.Hidden,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
@@ -54,7 +53,7 @@ fun HorizontalButtons(
                 shape = RoundedCornerShape(size = 8.dp)
             )
 
-        if (uiFieldsButtonState is UiFieldsButtonState.Visible) {
+        if (uiPropertiesButtonState is UiPropertiesButtonState.Visible) {
             Row(
                 modifier = modifierButton.noRippleThrottledClickable {
                     onTypeEvent(TypeEvent.OnFieldsButtonClick)
@@ -73,7 +72,7 @@ fun HorizontalButtons(
                     modifier = Modifier
                         .wrapContentSize()
                         .padding(start = 6.dp, end = 12.dp),
-                    text = uiFieldsButtonState.count.toString(),
+                    text = uiPropertiesButtonState.count.toString(),
                     style = PreviewTitle2Medium,
                     color = colorResource(R.color.glyph_active)
                 )
@@ -145,7 +144,7 @@ fun HorizontalButtonsPreview() {
             .fillMaxWidth()
             .padding(start = 20.dp),
         uiLayoutButtonState = UiLayoutButtonState.Visible(ObjectType.Layout.BASIC),
-        uiFieldsButtonState = UiFieldsButtonState.Visible(3),
+        uiPropertiesButtonState = UiPropertiesButtonState.Visible(3),
         uiTemplatesButtonState = UiTemplatesButtonState.Visible(2),
         onTypeEvent = {}
     )

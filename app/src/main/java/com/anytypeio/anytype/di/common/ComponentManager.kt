@@ -123,7 +123,7 @@ import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
-import com.anytypeio.anytype.presentation.relations.SpacePropertiesViewModel
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel

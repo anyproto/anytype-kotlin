@@ -9,13 +9,11 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.VmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -34,11 +32,9 @@ class AllContentViewModelFactory @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val createObject: CreateObject,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val setObjectDetails: SetObjectDetails,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser,
-    private val createObjectType: CreateObjectType
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -55,10 +51,8 @@ class AllContentViewModelFactory @Inject constructor(
             localeProvider = localeProvider,
             createObject = createObject,
             setObjectListIsArchived = setObjectListIsArchived,
-            setObjectDetails = setObjectDetails,
             removeObjectsFromWorkspace = removeObjectsFromWorkspace,
             userPermissionProvider = userPermissionProvider,
-            fieldParser = fieldParser,
-            createObjectType = createObjectType
+            fieldParser = fieldParser
         ) as T
 }

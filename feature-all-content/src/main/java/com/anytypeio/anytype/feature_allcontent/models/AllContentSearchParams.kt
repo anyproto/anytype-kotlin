@@ -1,19 +1,14 @@
 package com.anytypeio.anytype.feature_allcontent.models
 
 import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeysObjectType
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultRelationKeys
 import com.anytypeio.anytype.presentation.search.buildDeletedFilter
 import com.anytypeio.anytype.presentation.search.buildLayoutFilter
 import com.anytypeio.anytype.presentation.search.buildLimitedObjectIdsFilter
@@ -56,11 +51,6 @@ fun createSubscriptionParams(
     limit: Int,
     subscriptionId: String
 ): StoreSearchParams {
-    val keys = when (activeTab) {
-        AllContentTab.TYPES -> defaultKeysObjectType
-        AllContentTab.RELATIONS -> defaultRelationKeys
-        else -> defaultKeys
-    }
     val (filters, sorts) = activeTab.filtersForSubscribe(
         spaces = listOf(spaceId),
         activeSort = activeSort,
@@ -71,7 +61,7 @@ fun createSubscriptionParams(
         space = SpaceId(spaceId),
         filters = filters,
         sorts = sorts,
-        keys = keys,
+        keys = defaultKeys,
         limit = limit,
         subscription = subscriptionId
     )
@@ -103,70 +93,6 @@ fun AllContentTab.filtersForSubscribe(
                 if (activeMode == UiTitleState.OnlyUnlinked) {
                     addAll(buildUnlinkedObjectFilter())
                 }
-            }
-            val sorts = listOf(activeSort.toDVSort())
-            return filters to sorts
-        }
-        AllContentTab.TYPES -> {
-            val filters = buildList {
-                addAll(buildDeletedFilter())
-                add(buildSpaceIdFilter(spaces))
-                if (limitedObjectIds.isNotEmpty()) {
-                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
-                }
-                add(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        condition = DVFilterCondition.NOT_EQUAL,
-                        value = ObjectType.Layout.PARTICIPANT.code.toDouble()
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_EQUAL,
-                        value = ObjectTypeIds.CHAT_DERIVED
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_EQUAL,
-                        value = ObjectTypeIds.CHAT
-                    )
-                )
-            }
-            val sorts = listOf(activeSort.toDVSort())
-            return filters to sorts
-        }
-        AllContentTab.RELATIONS -> {
-            val filters = buildList {
-                addAll(buildDeletedFilter())
-                add(buildSpaceIdFilter(spaces))
-                if (limitedObjectIds.isNotEmpty()) {
-                    add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
-                }
-                add(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectType.Layout.RELATION.code.toDouble()
-                    ),
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.UNIQUE_KEY,
-                        condition = DVFilterCondition.NOT_EQUAL,
-                        value = ObjectTypeIds.CHAT_DERIVED
-                    )
-                )
             }
             val sorts = listOf(activeSort.toDVSort())
             return filters to sorts

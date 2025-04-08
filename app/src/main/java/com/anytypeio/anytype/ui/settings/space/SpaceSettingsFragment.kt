@@ -30,6 +30,8 @@ import com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment
+import com.anytypeio.anytype.ui.primitives.SpaceTypesFragment
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
@@ -198,6 +200,27 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                         )
                     }.onFailure {
                         Timber.w(it, "Error while showing invite QR code from space settings")
+                    }
+                }
+
+                is Command.OpenPropertiesScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.spacePropertiesScreen,
+                            args = SpacePropertiesFragment.args(space = space)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening space properties screen")
+                    }
+                }
+                is Command.OpenTypesScreen -> {
+                    runCatching {
+                        findNavController().navigate(
+                            resId = R.id.spaceTypesScreen,
+                            args = SpaceTypesFragment.args(space = space)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening space types screen")
                     }
                 }
             }

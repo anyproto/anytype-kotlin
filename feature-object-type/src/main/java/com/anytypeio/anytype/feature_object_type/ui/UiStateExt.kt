@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -12,6 +11,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
@@ -163,28 +163,6 @@ suspend fun buildUiPropertiesList(
 }
 
 /**
- * Shared helper to build the limit object types for a property.
- */
-private suspend fun mapLimitObjectTypes(
-    property: ObjectWrapper.Relation,
-    storeOfObjectTypes: StoreOfObjectTypes
-): List<Id> {
-    return if (property.format == RelationFormat.OBJECT && property.relationFormatObjectTypes.isNotEmpty()) {
-        property.relationFormatObjectTypes.mapNotNull { id ->
-            storeOfObjectTypes.get(id)?.let { objType ->
-                if (objType.isValid) {
-                    objType.id
-                } else {
-                    null
-                }
-            }
-        }
-    } else {
-        emptyList()
-    }
-}
-
-/**
  * Maps a property to a draggable UI list item.
  * Returns null if the property key equals DESCRIPTION.
  */
@@ -202,9 +180,8 @@ private suspend fun mapToUiPropertiesDraggableListItem(
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = mapLimitObjectTypes(
-            property = property,
-            storeOfObjectTypes = storeOfObjectTypes
+        limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(
+            property = property
         ),
         isEditableField = fieldParser.isPropertyEditable(property),
         isPossibleToUnlinkFromType =
@@ -231,9 +208,8 @@ private suspend fun mapToUiPropertiesLocalListItem(
         fieldKey = property.key,
         fieldTitle = property.getName(stringResourceProvider),
         format = property.format,
-        limitObjectTypes = mapLimitObjectTypes(
-            property = property,
-            storeOfObjectTypes = storeOfObjectTypes
+        limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(
+            property = property
         ),
         isEditableField = fieldParser.isPropertyEditable(property)
     )

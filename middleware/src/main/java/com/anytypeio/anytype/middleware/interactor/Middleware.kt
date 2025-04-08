@@ -822,7 +822,8 @@ class Middleware @Inject constructor(
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
             type = type,
-            spaceId = command.space.id
+            spaceId = command.space.id,
+            createTypeWidgetIfMissing = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
@@ -887,7 +888,6 @@ class Middleware @Inject constructor(
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
             objectTypeUniqueKey = command.typeKey.key,
-            // TODO check if still relevant
             createTypeWidgetIfMissing = true
         )
         logRequestIfDebug(request)

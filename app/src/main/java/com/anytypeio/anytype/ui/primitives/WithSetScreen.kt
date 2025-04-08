@@ -31,7 +31,8 @@ import com.anytypeio.anytype.feature_object_type.ui.TopBarContent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
-import com.anytypeio.anytype.feature_object_type.ui.UiFieldsButtonState
+import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
@@ -57,11 +58,9 @@ fun WithSetScreen(
     //header
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
-    //layout and fields buttons
-    uiFieldsButtonState: UiFieldsButtonState,
-    uiLayoutButtonState: UiLayoutButtonState,
+    //layout, properties and templates buttons
+    uiHorizontalButtonsState: UiHorizontalButtonsState,
     uiLayoutTypeState: UiLayoutTypeState,
-    uiTemplatesButtonState: UiTemplatesButtonState,
     //templates modal list
     uiTemplatesModalListState: UiTemplatesModalListState,
     //delete alert
@@ -95,9 +94,7 @@ fun WithSetScreen(
                 paddingValues = paddingValues,
                 uiIconState = uiIconState,
                 uiTitleState = uiTitleState,
-                uiFieldsButtonState = uiFieldsButtonState,
-                uiLayoutButtonState = uiLayoutButtonState,
-                uiTemplatesButtonState = uiTemplatesButtonState,
+                uiHorizontalButtonsState = uiHorizontalButtonsState,
                 objectId = objectId,
                 space = space,
                 onTypeEvent = onTypeEvent
@@ -139,9 +136,7 @@ private fun MainContentSet(
     paddingValues: PaddingValues,
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
-    uiFieldsButtonState: UiFieldsButtonState,
-    uiLayoutButtonState: UiLayoutButtonState,
-    uiTemplatesButtonState: UiTemplatesButtonState,
+    uiHorizontalButtonsState: UiHorizontalButtonsState,
     objectId: String,
     space: String,
     onTypeEvent: (TypeEvent) -> Unit
@@ -168,18 +163,20 @@ private fun MainContentSet(
             uiTitleState = uiTitleState,
             onTypeEvent = onTypeEvent
         )
-        Spacer(modifier = Modifier.height(20.dp))
-        HorizontalButtons(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(36.dp)
-                .padding(horizontal = 20.dp),
-            uiFieldsButtonState = uiFieldsButtonState,
-            uiLayoutButtonState = uiLayoutButtonState,
-            uiTemplatesButtonState = uiTemplatesButtonState,
-            onTypeEvent = onTypeEvent
-        )
-        Spacer(modifier = Modifier.height(24.dp))
+        if (uiHorizontalButtonsState.isVisible) {
+            Spacer(modifier = Modifier.height(20.dp))
+            HorizontalButtons(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp)
+                    .padding(horizontal = 20.dp),
+                uiPropertiesButtonState = uiHorizontalButtonsState.uiPropertiesButtonState,
+                uiLayoutButtonState = uiHorizontalButtonsState.uiLayoutButtonState,
+                uiTemplatesButtonState = uiHorizontalButtonsState.uiTemplatesButtonState,
+                onTypeEvent = onTypeEvent
+            )
+        }
+        Spacer(modifier = Modifier.height(32.dp))
         AndroidFragment<ObjectSetFragment>(
             modifier = Modifier
                 .fillMaxSize(),

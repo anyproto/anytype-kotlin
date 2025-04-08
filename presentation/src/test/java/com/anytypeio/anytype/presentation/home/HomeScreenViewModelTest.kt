@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -279,6 +280,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var deleteSpace: DeleteSpace
+
+    @Mock
+    lateinit var setObjectListIsFavorite: SetObjectListIsFavorite
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2925,7 +2929,8 @@ class HomeScreenViewModelTest {
         getSpaceInviteLink = getSpaceInviteLink,
         spaceMembers = activeSpaceMemberSubscriptionContainer,
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-        deleteSpace = deleteSpace
+        deleteSpace = deleteSpace,
+        setAsFavourite = setObjectListIsFavorite
     )
 
     companion object {

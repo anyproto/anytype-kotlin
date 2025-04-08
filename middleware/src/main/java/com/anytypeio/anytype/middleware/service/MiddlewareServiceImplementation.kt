@@ -2547,4 +2547,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun blockDataViewRelationSet(request: Rpc.BlockDataview.Relation.Set.Request): Rpc.BlockDataview.Relation.Set.Response {
+        val encoded = Service.blockDataviewRelationSet(
+            Rpc.BlockDataview.Relation.Set.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.Relation.Set.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.Relation.Set.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

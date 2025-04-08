@@ -841,7 +841,8 @@ fun Account.Info.config(): Config = Config(
     analytics = analyticsId,
     device = deviceId,
     network = networkId,
-    workspaceObjectId = workspaceObjectId
+    workspaceObjectId = workspaceObjectId,
+    ethereumAddress = ethereumAddress
 )
 
 fun MManifestInfo.toCoreModel(): ManifestInfo {

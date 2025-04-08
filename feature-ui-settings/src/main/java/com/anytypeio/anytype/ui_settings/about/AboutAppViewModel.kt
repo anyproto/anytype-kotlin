@@ -50,6 +50,7 @@ class AboutAppViewModel(
     val accountId = MutableStateFlow("")
     val analyticsId = MutableStateFlow("")
     val deviceId = MutableStateFlow("")
+    val ethereumAddress = MutableStateFlow("")
 
     init {
         viewModelScope.launch {
@@ -64,6 +65,7 @@ class AboutAppViewModel(
             val config = configStorage.get()
             analyticsId.value = config.analytics
             deviceId.value = config.device
+            ethereumAddress.value = config.ethereumAddress
         }
         viewModelScope.launch {
             getLibraryVersion(BaseUseCase.None).process(

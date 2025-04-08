@@ -33,6 +33,7 @@ fun AboutAppScreen(
     deviceId: String,
     version: String,
     buildNumber: Int,
+    ethereumKey: String,
     onMetaClicked: () -> Unit,
     onContactUsClicked: () -> Unit,
     onExternalLinkClicked: (AboutAppViewModel.ExternalLink) -> Unit,
@@ -108,13 +109,14 @@ fun AboutAppScreen(
         ) {
             Text(
                 text = stringResource(
-                    id = R.string.about_meta_info,
+                    id = R.string.about_meta_info_new,
                     version,
                     buildNumber,
                     libraryVersion,
                     accountId,
                     deviceId,
-                    analyticsId
+                    analyticsId,
+                    ethereumKey
                 ),
                 style = Caption2Regular.copy(
                     color = colorResource(id = R.color.text_secondary)
@@ -173,6 +175,7 @@ fun PreviewAboutAppScreen() {
         buildNumber = 1,
         onMetaClicked = {},
         onExternalLinkClicked = {},
-        onContactUsClicked = {}
+        onContactUsClicked = {},
+        ethereumKey = "Some key"
     )
 }

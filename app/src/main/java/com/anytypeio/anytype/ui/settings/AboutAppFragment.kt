@@ -58,6 +58,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         libraryVersion = vm.libraryVersion.collectAsState().value,
                         accountId = vm.accountId.collectAsState().value,
                         analyticsId = vm.analyticsId.collectAsState().value,
+                        ethereumKey = vm.ethereumAddress.collectAsState().value,
                         deviceId = vm.deviceId.collectAsState().value,
                         onMetaClicked = { copyMetaToClipboard() },
                         onContactUsClicked = {
@@ -72,6 +73,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                                         os = getOsVersion(),
                                         device = getDevice(),
                                         deviceId = vm.deviceId.value,
+                                        ethereumKey = vm.ethereumAddress.value
                                     )
                                 )
                             )
@@ -132,7 +134,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                 ClipData.newPlainText(
                     "Your Anytype technical info",
                     getString(
-                        R.string.about_meta_info_for_copy,
+                        R.string.about_meta_info_for_copy_new,
                         getDeviceName(),
                         Build.VERSION.SDK_INT,
                         getVersionText(),
@@ -140,7 +142,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         vm.libraryVersion.value,
                         vm.accountId.value,
                         vm.deviceId.value,
-                        vm.analyticsId.value
+                        vm.analyticsId.value,
+                        vm.ethereumAddress.value
                     )
                 )
             clipboard.setPrimaryClip(clip)
@@ -174,7 +177,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
         library: String,
         analytics: Id,
         deviceId: Id,
-        os: String
+        os: String,
+        ethereumKey: String
     ) : String {
         return "support@anytype.io" +
                 "?subject=Support%20request%2C%20Account%20ID%20$account" +
@@ -185,7 +189,8 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                 "%0D%0ALibrary%20version%3A%20$library" +
                 "%0D%0AAccount%20ID%3A%20$account" +
                 "%0D%0ADevice%20ID%3A%20$deviceId" +
-                "%0D%0AAnalytics%20ID%3A%20$analytics"
+                "%0D%0AAnalytics%20ID%3A%20$analytics" +
+                "%0D%0AEthereum%20key%3A%20$ethereumKey"
     }
 
     override fun injectDependencies() {

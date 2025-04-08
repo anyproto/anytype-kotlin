@@ -2478,6 +2478,9 @@ class HomeScreenViewModelTest {
 
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
+        stubInterceptEvents(
+            events = flowOf(emptyList())
+        )
 
         val vm = buildViewModel()
 

@@ -3,12 +3,14 @@ package com.anytypeio.anytype.feature_properties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -29,6 +31,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.*
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import kotlin.collections.plus
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,7 +56,7 @@ class EditTypePropertiesViewModel(
     private val createRelation: CreateRelation,
     private val setObjectDetails: SetObjectDetails,
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields,
-    private val urlBuilder: UrlBuilder
+    private val setDataViewProperties: SetDataViewProperties
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiEditTypePropertiesState.Companion.EMPTY)
@@ -218,6 +221,9 @@ class EditTypePropertiesViewModel(
                         proceedWithSetRecommendedProperties(
                             properties = objType.recommendedRelations + event.item.id
                         )
+                        proceedWithUpdateDataViewProperties(
+                            propertiesIds = objType.allRecommendedRelations + listOf(event.item.id)
+                        )
                     }
                 }
             }
@@ -373,6 +379,9 @@ class EditTypePropertiesViewModel(
                         proceedWithSetRecommendedProperties(
                             properties = objType.recommendedRelations + listOf(property.id)
                         )
+                        proceedWithUpdateDataViewProperties(
+                            propertiesIds = objType.allRecommendedRelations + listOf(property.id)
+                        )
                     }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
                 },
@@ -402,6 +411,33 @@ class EditTypePropertiesViewModel(
                     _errorState.value = UiEditTypePropertiesErrorState.Show(
                         UiEditTypePropertiesErrorState.Reason.ErrorAddingProperty(error.message ?: "")
                     )
+                }
+            )
+        }
+    }
+
+    // Updating both relations in type and dataview to preserve integrity between them
+    private suspend fun proceedWithUpdateDataViewProperties(
+        propertiesIds: List<Id>
+    ) {
+        // Show description in DataView properties list
+        val descriptionKey = Relations.DESCRIPTION
+
+        val allProperties = storeOfRelations.getById(ids = propertiesIds)
+
+        val allPropertiesKeys = allProperties.map { it.key } + listOf(descriptionKey)
+
+        viewModelScope.launch {
+            val params = SetDataViewProperties.Params(
+                objectId = vmParams.objectTypeId,
+                properties = allPropertiesKeys
+            )
+            setDataViewProperties.async(params).fold(
+                onSuccess = {
+                    Timber.d("Data view properties updated, payload:$it")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while updating data view properties")
                 }
             )
         }

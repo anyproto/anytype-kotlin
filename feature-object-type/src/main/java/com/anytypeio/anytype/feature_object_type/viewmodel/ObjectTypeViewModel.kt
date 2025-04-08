@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -103,7 +104,8 @@ class ObjectTypeViewModel(
     private val createTemplate: CreateTemplate,
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
-    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields
+    private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
+    private val setDataViewProperties: SetDataViewProperties
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -755,19 +757,19 @@ class ObjectTypeViewModel(
 
             FieldEvent.DragEvent.OnDragEnd -> {
                 val newItems = uiTypePropertiesListState.value.items
-                val headerItems = mutableListOf<Id>()
-                val sideBarItems = mutableListOf<Id>()
-                val hiddenItems = mutableListOf<Id>()
-                val filesItems = mutableListOf<Id>()
+                val headerItems = mutableListOf<UiFieldsListItem.Item>()
+                val sideBarItems = mutableListOf<UiFieldsListItem.Item>()
+                val hiddenItems = mutableListOf<UiFieldsListItem.Item>()
+                val filesItems = mutableListOf<UiFieldsListItem.Item>()
                 var currentSection: UiFieldsListItem.Section? = null
                 newItems.forEach { item ->
                     when (item) {
                         is UiFieldsListItem.Item -> {
                             when (currentSection) {
-                                is UiFieldsListItem.Section.Header -> headerItems.add(item.id)
-                                is UiFieldsListItem.Section.SideBar -> sideBarItems.add(item.id)
-                                is UiFieldsListItem.Section.Hidden -> hiddenItems.add(item.id)
-                                is UiFieldsListItem.Section.File -> filesItems.add(item.id)
+                                is UiFieldsListItem.Section.Header -> headerItems.add(item)
+                                is UiFieldsListItem.Section.SideBar -> sideBarItems.add(item)
+                                is UiFieldsListItem.Section.Hidden -> hiddenItems.add(item)
+                                is UiFieldsListItem.Section.File -> filesItems.add(item)
                                 else -> {}
                             }
                         }
@@ -776,6 +778,12 @@ class ObjectTypeViewModel(
                     }
                 }
                 proceedWithUpdatingTypeFields(
+                    headerFields = headerItems,
+                    sidebarFields = sideBarItems,
+                    hiddenFields = hiddenItems,
+                    fileFields = filesItems
+                )
+                proceedWithUpdateDataViewProperties(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
                     hiddenFields = hiddenItems,
@@ -806,29 +814,29 @@ class ObjectTypeViewModel(
         when (event) {
             is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
                 val deleteId = event.id
-                val headerItems = mutableListOf<Id>()
-                val sideBarItems = mutableListOf<Id>()
-                val hiddenItems = mutableListOf<Id>()
-                val filesItems = mutableListOf<Id>()
+                val headerItems = mutableListOf<UiFieldsListItem.Item>()
+                val sideBarItems = mutableListOf<UiFieldsListItem.Item>()
+                val hiddenItems = mutableListOf<UiFieldsListItem.Item>()
+                val filesItems = mutableListOf<UiFieldsListItem.Item>()
                 var currentSection: UiFieldsListItem.Section? = null
                 uiTypePropertiesListState.value.items.forEach { item ->
                     when (item) {
                         is UiFieldsListItem.Item -> {
                             when (currentSection) {
                                 is UiFieldsListItem.Section.Header -> {
-                                    if (item.id != deleteId) headerItems.add(item.id)
+                                    if (item.id != deleteId) headerItems.add(item)
                                 }
 
                                 is UiFieldsListItem.Section.SideBar -> {
-                                    if (item.id != deleteId) sideBarItems.add(item.id)
+                                    if (item.id != deleteId) sideBarItems.add(item)
                                 }
 
                                 is UiFieldsListItem.Section.Hidden -> {
-                                    if (item.id != deleteId) hiddenItems.add(item.id)
+                                    if (item.id != deleteId) hiddenItems.add(item)
                                 }
 
                                 is UiFieldsListItem.Section.File -> {
-                                    if (item.id != deleteId) filesItems.add(item.id)
+                                    if (item.id != deleteId) filesItems.add(item)
                                 }
 
                                 else -> {}
@@ -839,6 +847,12 @@ class ObjectTypeViewModel(
                     }
                 }
                 proceedWithUpdatingTypeFields(
+                    headerFields = headerItems,
+                    sidebarFields = sideBarItems,
+                    hiddenFields = hiddenItems,
+                    fileFields = filesItems
+                )
+                proceedWithUpdateDataViewProperties(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
                     hiddenFields = hiddenItems,
@@ -914,20 +928,20 @@ class ObjectTypeViewModel(
 
     //region USE CASES
     private fun proceedWithUpdatingTypeFields(
-        headerFields: List<Id>,
-        sidebarFields: List<Id>,
-        hiddenFields: List<Id>,
-        fileFields: List<Id>
+        headerFields: List<UiFieldsListItem.Item>,
+        sidebarFields: List<UiFieldsListItem.Item>,
+        hiddenFields: List<UiFieldsListItem.Item>,
+        fileFields: List<UiFieldsListItem.Item>
     ) {
         Timber.d("proceedWithUpdatingTypeFields")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields,
-                    Relations.RECOMMENDED_RELATIONS to sidebarFields,
-                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields,
-                    Relations.RECOMMENDED_FILE_RELATIONS to fileFields
+                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields.map { it.id },
+                    Relations.RECOMMENDED_RELATIONS to sidebarFields.map { it.id },
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields.map { it.id },
+                    Relations.RECOMMENDED_FILE_RELATIONS to fileFields.map { it.id }
                 )
             )
             setObjectDetails.async(params).fold(
@@ -936,6 +950,36 @@ class ObjectTypeViewModel(
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating fields")
+                }
+            )
+        }
+    }
+
+    // Updating both relations in type and dataview to preserve integrity between them
+    private fun proceedWithUpdateDataViewProperties(
+        headerFields: List<UiFieldsListItem.Item>,
+        sidebarFields: List<UiFieldsListItem.Item>,
+        hiddenFields: List<UiFieldsListItem.Item>,
+        fileFields: List<UiFieldsListItem.Item>
+    ) {
+        // Show description in DataView properties list
+        val descriptionKey = Relations.DESCRIPTION
+
+        val allPropertiesKeys =
+            (headerFields + sidebarFields + hiddenFields + fileFields)
+                .map { it.fieldKey } + listOf(descriptionKey)
+
+        viewModelScope.launch {
+            val params = SetDataViewProperties.Params(
+                objectId = vmParams.objectId,
+                properties = allPropertiesKeys
+            )
+            setDataViewProperties.async(params).fold(
+                onSuccess = {
+                    Timber.d("Data view properties updated, payload:$it")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while updating data view properties")
                 }
             )
         }

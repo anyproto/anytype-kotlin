@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_properties
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -20,7 +21,7 @@ class EditTypePropertiesViewModelFactory @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields,
-    private val urlBuilder: UrlBuilder
+    private val setDataViewProperties: SetDataViewProperties
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -33,6 +34,6 @@ class EditTypePropertiesViewModelFactory @Inject constructor(
             setObjectDetails = setObjectDetails,
             storeOfObjectTypes = storeOfObjectTypes,
             setObjectTypeRecommendedFields = setObjectTypeRecommendedFields,
-            urlBuilder = urlBuilder
+            setDataViewProperties = setDataViewProperties
         ) as T
 }

@@ -2,9 +2,11 @@ package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -68,6 +70,14 @@ object EditTypePropertiesModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectDetails = SetObjectDetails(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerModal
+    fun provideSetDataViewProperties(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewProperties = SetDataViewProperties(repo, dispatchers)
 
     @Module
     interface Declarations {

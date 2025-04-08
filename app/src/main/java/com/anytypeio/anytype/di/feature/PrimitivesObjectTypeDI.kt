@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -74,6 +75,14 @@ interface ObjectTypeComponent {
 
 @Module
 object ObjectTypeModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewProperties(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewProperties = SetDataViewProperties(repo, dispatchers)
 
     @JvmStatic
     @Provides

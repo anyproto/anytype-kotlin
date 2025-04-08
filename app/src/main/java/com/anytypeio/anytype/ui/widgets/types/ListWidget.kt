@@ -44,7 +44,8 @@ fun ListWidgetCard(
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {}
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -89,7 +90,9 @@ fun ListWidgetCard(
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction
+                onDropDownMenuAction = onDropDownMenuAction,
+                canCreate = (item.type is Type.Favorites && mode is InteractionMode.Default),
+                onCreateElement = { onCreateElement(item) }
             )
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -226,7 +228,8 @@ class HomeScreenViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val deleteSpace: DeleteSpace,
-    private val spaceMembers: ActiveSpaceMemberSubscriptionContainer
+    private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
+    private val setAsFavourite: SetObjectListIsFavorite
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -2347,6 +2350,66 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateWidgetElementClicked(view: WidgetView) {
+        viewModelScope.launch {
+
+        }
+        when(view) {
+            is WidgetView.ListOfObjects -> {
+                if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
+                    viewModelScope.launch {
+                        val space = SpaceId(spaceManager.get())
+                        val type = getDefaultObjectType.async(space)
+                            .getOrNull()
+                            ?.type ?: TypeKey(ObjectTypeIds.PAGE)
+                        createObject.async(
+                            params = CreateObject.Param(
+                                space = SpaceId(spaceManager.get()),
+                                type = type,
+                                prefilled = mapOf(Relations.IS_FAVORITE to true)
+                            )
+                        ).onSuccess { result ->
+                            proceedWithNavigation(result.obj.navigation())
+                            setAsFavourite.async(
+                                params = SetObjectListIsFavorite.Params(
+                                    objectIds = listOf(result.obj.id),
+                                    isFavorite = true
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while creating object")
+                        }
+                    }
+                }
+            }
+            is WidgetView.SetOfObjects -> {
+                viewModelScope.launch {
+                    val source = view.source
+                    if (source is Widget.Source.Default) {
+                        if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                            val wrapper = ObjectWrapper.Type(source.obj.map)
+                            createObject.async(
+                                params = CreateObject.Param(
+                                    space = SpaceId(spaceManager.get()),
+                                    type = TypeKey(wrapper.uniqueKey),
+                                    prefilled = mapOf(Relations.IS_FAVORITE to true)
+                                )
+                            ).onSuccess { result ->
+                                proceedWithNavigation(result.obj.navigation())
+                            }
+                        } else {
+                            Timber.w("Unexpected source layout: ${source.obj.layout}")
+                        }
+                    }
+                }
+
+            }
+            else -> {
+                Timber.w("Unexpected widget type: ${view::class.java.simpleName}")
+            }
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
@@ -2426,7 +2489,8 @@ class HomeScreenViewModel(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val deleteSpace: DeleteSpace,
-        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer
+        private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
+        private val setObjectListIsFavorite: SetObjectListIsFavorite
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2483,7 +2547,8 @@ class HomeScreenViewModel(
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             getSpaceInviteLink = getSpaceInviteLink,
             deleteSpace = this@Factory.deleteSpace,
-            spaceMembers = activeSpaceMemberSubscriptionContainer
+            spaceMembers = activeSpaceMemberSubscriptionContainer,
+            setAsFavourite = setObjectListIsFavorite
         ) as T
     }
 

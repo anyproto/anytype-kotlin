@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.*
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlin.collections.plus
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -56,7 +58,8 @@ class EditTypePropertiesViewModel(
     private val createRelation: CreateRelation,
     private val setObjectDetails: SetObjectDetails,
     private val setObjectTypeRecommendedFields: SetObjectTypeRecommendedFields,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val dispatcher: Dispatcher<Payload>
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(UiEditTypePropertiesState.Companion.EMPTY)
@@ -443,8 +446,9 @@ class EditTypePropertiesViewModel(
                 properties = allPropertiesKeys
             )
             setDataViewProperties.async(params).fold(
-                onSuccess = {
-                    Timber.d("Data view properties updated, payload:$it")
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                    Timber.d("Data view properties updated, payload:$payload")
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating data view properties")

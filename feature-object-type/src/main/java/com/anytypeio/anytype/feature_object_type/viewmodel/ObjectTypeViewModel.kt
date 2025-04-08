@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
@@ -28,7 +29,6 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
-import com.anytypeio.anytype.feature_object_type.fields.UiFieldEditOrNewState.Visible.*
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -105,7 +106,8 @@ class ObjectTypeViewModel(
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val dispatcher: Dispatcher<Payload>
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -975,8 +977,9 @@ class ObjectTypeViewModel(
                 properties = allPropertiesKeys
             )
             setDataViewProperties.async(params).fold(
-                onSuccess = {
-                    Timber.d("Data view properties updated, payload:$it")
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                    Timber.d("Data view properties updated, payload:$payload")
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating data view properties")

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_object_type.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
 class ObjectTypeVMFactory @Inject constructor(
@@ -42,7 +44,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val duplicateObjects: DuplicateObjects,
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val dispatcher: Dispatcher<Payload>
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -66,6 +69,7 @@ class ObjectTypeVMFactory @Inject constructor(
             duplicateObjects = duplicateObjects,
             getObjectTypeConflictingFields = getObjectTypeConflictingFields,
             objectTypeSetRecommendedFields = objectTypeSetRecommendedFields,
-            setDataViewProperties = setDataViewProperties
+            setDataViewProperties = setDataViewProperties,
+            dispatcher = dispatcher
         ) as T
 }

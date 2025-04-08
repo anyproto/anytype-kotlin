@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.feature_properties.EditTypePropertiesViewModelFactory
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.primitives.EditTypePropertiesFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -96,5 +98,6 @@ interface EditTypePropertiesDependencies : ComponentDependencies {
     fun provideBlockRepository(): BlockRepository
     fun provideAppCoroutineDispatchers(): AppCoroutineDispatchers
     fun urlBuilder(): UrlBuilder
+    fun dispatcher(): Dispatcher<Payload>
 }
 //endregion

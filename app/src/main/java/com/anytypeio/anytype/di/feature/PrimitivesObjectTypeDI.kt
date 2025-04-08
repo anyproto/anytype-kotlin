@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
@@ -184,6 +186,7 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
+    fun dispatcher(): Dispatcher<Payload>
 }
 
 //region Space Types Screen

@@ -959,6 +959,7 @@
     <string name="widget_remove_widget">Widget entfernen</string>
     <string name="widget_empty_bin">Behälter leeren</string>
     <string name="widget_edit_widgets">Widgets bearbeiten</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Typen</string>

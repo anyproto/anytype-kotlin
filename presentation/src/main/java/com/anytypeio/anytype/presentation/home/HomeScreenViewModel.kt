@@ -350,7 +350,7 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        widgets.value = emptyList()
+                        widgets.value = null
                     }
                 )
             }.map { result ->

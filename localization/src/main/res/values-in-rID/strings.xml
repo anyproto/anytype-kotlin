@@ -39,7 +39,9 @@
     <string name="about_privacy_policy">Kebijakan Privasi</string>
     <string name="about_acknowledgements">Pengakuan</string>
     <string name="about_meta_info">Versi Aplikasi: %1$s\nNomor Pembuatan: %2$d\nVersi Pustaka: %3$s\nAkun\u00A0ID:\u00A0%4$s\nPerangkat\u00A0ID:\u00A0%5$s\nAnalisis\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
+    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
     <string name="default_space">Ruang bawaan</string>

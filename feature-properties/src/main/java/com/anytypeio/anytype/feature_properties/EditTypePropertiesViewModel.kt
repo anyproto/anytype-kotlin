@@ -219,11 +219,16 @@ class EditTypePropertiesViewModel(
                     val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
                     if (objType != null) {
                         proceedWithSetRecommendedProperties(
-                            properties = objType.recommendedRelations + event.item.id
+                            properties = listOf(event.item.id) + objType.recommendedRelations
                         )
-                        proceedWithUpdateDataViewProperties(
-                            propertiesIds = objType.allRecommendedRelations + listOf(event.item.id)
-                        )
+                        val propertiesIds = buildList {
+                            addAll(objType.recommendedFeaturedRelations)
+                            add(event.item.id)
+                            addAll(objType.recommendedRelations)
+                            addAll(objType.recommendedFileRelations)
+                            addAll(objType.recommendedHiddenRelations)
+                        }
+                        proceedWithUpdateDataViewProperties(propertiesIds = propertiesIds)
                     }
                 }
             }
@@ -377,11 +382,16 @@ class EditTypePropertiesViewModel(
                     val objType = storeOfObjectTypes.get(vmParams.objectTypeId)
                     if (objType != null) {
                         proceedWithSetRecommendedProperties(
-                            properties = objType.recommendedRelations + listOf(property.id)
+                            properties = listOf(property.id) + objType.recommendedRelations
                         )
-                        proceedWithUpdateDataViewProperties(
-                            propertiesIds = objType.allRecommendedRelations + listOf(property.id)
-                        )
+                        val propertiesIds = buildList {
+                            addAll(objType.recommendedFeaturedRelations)
+                            add(property.id)
+                            addAll(objType.recommendedRelations)
+                            addAll(objType.recommendedFileRelations)
+                            addAll(objType.recommendedHiddenRelations)
+                        }
+                        proceedWithUpdateDataViewProperties(propertiesIds = propertiesIds)
                     }
                     uiPropertyEditState.value = UiEditPropertyState.Hidden
                 },

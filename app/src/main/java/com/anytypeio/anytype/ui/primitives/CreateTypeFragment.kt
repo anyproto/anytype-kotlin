@@ -62,7 +62,7 @@ class CreateTypeFragment: BaseBottomSheetComposeFragment() {
                         is CreateTypeCommand.NavigateToObjectType -> {
                             runCatching {
                                 findNavController().navigate(
-                                    resId = R.id.objectTypeScreen,
+                                    resId = R.id.objectTypeNavigation,
                                     args = ObjectTypeFragment.args(
                                         objectId = command.id,
                                         space = command.space

@@ -243,14 +243,33 @@
             app:popUpToInclusive="false" />
     </fragment>
 
-    <fragment
-        android:id="@+id/objectTypeScreen"
-        android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFragment"
-        android:label=" Object">
-        <action
-            android:id="@+id/openEmojiPicker"
-            app:destination="@id/typeSetIconPickerScreen" />
-    </fragment>
+    <navigation
+        android:id="@+id/objectTypeNavigation"
+        app:startDestination="@id/objectTypeScreen">
+        <fragment
+            android:id="@+id/objectTypeScreen"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFragment"
+            android:label="Object Type Screen">
+            <action
+                android:id="@+id/openEmojiPicker"
+                app:destination="@id/typeSetIconPickerScreen" />
+        </fragment>
+
+        <dialog
+            android:id="@+id/typeSetIconPickerScreen"
+            android:name="com.anytypeio.anytype.ui.types.picker.TypeIconPickFragment"
+            android:label="Object-Icon-Picker-Screen">
+            <argument
+                android:name="arg.type_show_remove"
+                android:defaultValue="true"
+                app:argType="boolean" />
+        </dialog>
+
+        <dialog
+            android:id="@+id/objectTypeFieldsScreen"
+            android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
+            android:label="ObjectTypeFieldsScreen" />
+    </navigation>
 
     <dialog
         android:id="@+id/editTypePropertiesScreen"

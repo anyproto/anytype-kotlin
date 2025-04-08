@@ -39,7 +39,9 @@
     <string name="about_privacy_policy">Палітыка прыватнасці</string>
     <string name="about_acknowledgements">Падзякі</string>
     <string name="about_meta_info">Версія праграмы: %1$s\nНумар зборкі: %2$d\nВерсія бібліятэкі: %3$s\nУліковы запіс\u00A0ID:\u00A0%4$s\nПрылада\u00A0ID:\u00A0%5$s\nАналітыка\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Прылада: %1$s\nВерсія Android: %2$d\nВерсія праграмы: %3$s\nНумар зборкі: %4$d\nВерсія бібліятэкі: %5$s\nУліковы запіс \u00A0ID:\u00A0%6$s\nПрылада\u00A0ID:\u00A0%7$s\nАналітыка\u00A0ID:\u00A0%8$s</string>
+    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
     <string name="space">Прастора</string>
     <string name="space_name">Назва прасторы</string>
     <string name="default_space">Ваша прастора</string>
@@ -858,7 +860,7 @@
     <string name="synced_files">Сінхранізаваныя файлы</string>
     <string name="log_in">Увайсці</string>
     <string name="create_object_section_library">Бібліятэка Anytype</string>
-    <string name="bin_empty_title">Ваша сметніца пуста.</string>
+    <string name="bin_empty_title">Your bin is empty.</string>
     <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Стыль</string>

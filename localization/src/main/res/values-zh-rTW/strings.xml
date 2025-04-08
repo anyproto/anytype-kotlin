@@ -957,6 +957,7 @@
     <string name="widget_remove_widget">移除小工具</string>
     <string name="widget_empty_bin">清空垃圾桶</string>
     <string name="widget_edit_widgets">編輯小工具</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">類型</string>
@@ -1724,4 +1725,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">屬性</string>
 </resources>

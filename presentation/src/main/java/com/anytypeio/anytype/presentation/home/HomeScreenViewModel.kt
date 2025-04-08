@@ -350,7 +350,7 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        widgets.value = emptyList()
+                        widgets.value = null
                     }
                 )
             }.map { result ->
@@ -642,6 +642,18 @@ class HomeScreenViewModel(
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
+            }
+        }
+
+        viewModelScope.launch {
+            payloads.collect { payload ->
+                payload.events.forEach { e ->
+                    if (e is Event.Command.Widgets.AutoWidgetAdded) {
+                        commands.emit(
+                            Command.ShowWidgetAutoCreatedToast(name = e.targetName)
+                        )
+                    }
+                }
             }
         }
     }
@@ -2516,6 +2528,8 @@ sealed class Command {
         val isInEditMode: Boolean,
         val space: Id
     ) : Command()
+
+    data class ShowWidgetAutoCreatedToast(val name: String) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceListViewModel
+import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarningScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -110,27 +111,14 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                         containerColor = colorResource(id = R.color.background_secondary),
                         sheetState = bottomSheetState
                     ) {
-                        Warning(
-                            actionButtonText = stringResource(R.string.delete),
-                            cancelButtonText = stringResource(R.string.back),
-                            title = stringResource(R.string.delete_space_title),
-                            subtitle = stringResource(R.string.delete_space_subtitle),
-                            onNegativeClick = {
-                                scope.launch {
-                                    bottomSheetState.hide()
-                                }.invokeOnCompletion {
-                                    vm.onWarningDismissed()
-                                }
-                            },
-                            onPositiveClick = {
+                        DeleteSpaceWarningScreen(
+                            onDeleteClick = {
                                 scope.launch {
                                     bottomSheetState.hide()
                                 }.invokeOnCompletion {
                                     vm.onDeleteSpaceAccepted(warning.space)
                                 }
-                            },
-                            isInProgress = false,
-                            footerHeight = 24.dp
+                            }
                         )
                     }
                 }
@@ -141,27 +129,14 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
                         containerColor = colorResource(id = R.color.background_secondary),
                         sheetState = bottomSheetState
                     ) {
-                        Warning(
-                            actionButtonText = stringResource(R.string.multiplayer_leave_space),
-                            cancelButtonText = stringResource(R.string.cancel),
-                            title = stringResource(R.string.multiplayer_leave_space),
-                            subtitle = stringResource(R.string.multiplayer_leave_space_warning_subtitle),
-                            onNegativeClick = {
-                                scope.launch {
-                                    bottomSheetState.hide()
-                                }.invokeOnCompletion {
-                                    vm.onWarningDismissed()
-                                }
-                            },
-                            onPositiveClick = {
+                        LeaveSpaceWarningScreen(
+                            onLeaveClicked = {
                                 scope.launch {
                                     bottomSheetState.hide()
                                 }.invokeOnCompletion {
                                     vm.onLeaveSpaceAccepted(warning.space)
                                 }
-                            },
-                            isInProgress = false,
-                            footerHeight = 24.dp
+                            }
                         )
                     }
                 }

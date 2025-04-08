@@ -959,6 +959,7 @@
     <string name="widget_remove_widget">Rimuovi Widget</string>
     <string name="widget_empty_bin">Svuota Cestino</string>
     <string name="widget_edit_widgets">Modifica Widgets</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Types</string>
@@ -1738,4 +1739,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Risolvi il conflitto di layout</string>
     <string name="widget_source_suggested">Suggerito</string>
     <string name="widgets_empty_state_message">Non ci sono ancora widget</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">Proprietà</string>
 </resources>

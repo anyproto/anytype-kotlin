@@ -959,6 +959,7 @@
     <string name="widget_remove_widget">Fjern widget</string>
     <string name="widget_empty_bin">Tøm papirkurven</string>
     <string name="widget_edit_widgets">Endre widgets</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Types</string>
@@ -1737,4 +1738,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">Egenskaper</string>
 </resources>

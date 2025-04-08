@@ -99,7 +99,7 @@
     <string name="toolbar_section_tool">Outil</string>
     <string name="toolbar_section_media">Média</string>
     <string name="toolbar_section_objects">Objets</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Propriété</string>
     <string name="toolbar_action_delete">Supprimer</string>
     <string name="toolbar_action_duplicate">Dupliquer</string>
     <string name="toolbar_action_mention">Mention</string>
@@ -173,7 +173,7 @@
     <string name="hint_paste_link">Coller le lien</string>
     <string name="empty_tap_to_create_new_block">Vide. Appuyer pour créer un nouveau bloc</string>
     <string name="untitled">Sans titre</string>
-    <string name="untitled_set">Untitled query</string>
+    <string name="untitled_set">Requête sans nom</string>
     <string name="untitled_collection">Collection sans titre</string>
     <string name="archived">Archivé</string>
     <string name="loading">Chargement en cours…</string>
@@ -254,8 +254,8 @@
     <string name="mention_suggester_create_object">Créer un objet</string>
     <string name="your_search_query">Rechercher</string>
     <string name="syncing">Synchronisation...</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
-    <string name="new_set">New query</string>
+    <string name="choose_a_object_type_for_this_set">Choisir un type d\'objet pour cette requête</string>
+    <string name="new_set">Nouvelle requête</string>
     <string name="create_new_object_type">Créer un nouveau type d\'objet</string>
     <plurals name="page_selected">
         <item quantity="one">page sélectionnée %d</item>
@@ -288,7 +288,7 @@
     <string name="relation_format_email">Email</string>
     <string name="relation_format_phone">N° de téléphone</string>
     <string name="relation_format_emoji">Emoji</string>
-    <string name="relation_format_object">Object relation</string>
+    <string name="relation_format_object">Relation de l\'objet</string>
     <string name="relation_format_relation">Propriétés</string>
     <string name="viewer_sorting_prefix">Ensuite</string>
     <string name="enter_value">Saisir une valeur</string>
@@ -296,7 +296,7 @@
     <string name="add_sort">Ajouter un tri</string>
     <string name="apply">Appliquer</string>
     <string name="add_filter">Ajouter un filtre</string>
-    <string name="relation_format_tag">Multi-Select</string>
+    <string name="relation_format_tag">Sélection multiple</string>
     <string name="unknown_number_of_objects">Nombre d\'objets inconnu</string>
     <string name="sort_ascending">Tri croissant</string>
     <string name="sort_descending">Tri décroissant</string>
@@ -317,8 +317,8 @@
     <string name="unknown_object_type">Type inconnu</string>
     <string name="relation_format_short_text">Texte court</string>
     <string name="relation_format_long_text">Texte</string>
-    <string name="set_new_relation">Set new property</string>
-    <string name="relation_deleted">Deleted property</string>
+    <string name="set_new_relation">Définir une nouvelle propriété</string>
+    <string name="relation_deleted">Propriété supprimée</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Couleurs unies</string>
@@ -338,7 +338,7 @@
     <string name="heading">En tête</string>
     <string name="subheading">Sous-titre</string>
     <string name="create_from_scratch">Créer à partir de zéro</string>
-    <string name="create_relation_with_name">Create property \"%1$s\"</string>
+    <string name="create_relation_with_name">Créer la propriété \"%1$s\'\'</string>
     <string name="name_is_required">Le nom est requis</string>
     <string name="favourite">Favoris</string>
     <string name="template">Modèle</string>
@@ -355,7 +355,7 @@
     <string name="select_date">Sélectionner une date</string>
     <string name="no_value">Aucune valeur</string>
     <string name="source">Source</string>
-    <string name="query">Query</string>
+    <string name="query">Requête</string>
     <string name="select_query">Sélectionner une requête</string>
     <string name="objects">Objets</string>
     <string name="your_objects">Vos objets</string>
@@ -427,7 +427,7 @@
     <string name="card">Carte</string>
     <string name="inline">Inline</string>
     <string name="set_view">Définir la vue</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Requête intégrée</string>
     <string name="inline_collection">Collection intégrée</string>
     <string name="fit_image">Ajuster l\'image</string>
     <string name="image_preview">Aperçu de l\'image</string>
@@ -486,14 +486,14 @@
     <string name="error_find_block">Impossible de trouver le bloc sélectionné</string>
     <string name="error_block_selection">Block selection error</string>
     <string name="undefined">Non défini</string>
-    <string name="set_by_relation">Property: %1$s</string>
-    <string name="set_by_relations">Properties: %1$s</string>
+    <string name="set_by_relation">Propriété : %1$s</string>
+    <string name="set_by_relations">Propriétés : %1$s</string>
     <string name="set_by_type">Type : %1$s</string>
     <string name="my_types">Mes types</string>
-    <string name="my_relations">My properties</string>
+    <string name="my_relations">Mes propriétés</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
-    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
-    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_title">Le nom de la requête source de la requête intégrée</string>
+    <string name="block_data_view_content_description_no_source">La requête intégrée n\'a aucune source</string>
     <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Récemment ouvert</string>
     <string name="widget_source_anytype_library">Bibliothèque Anytype</string>
@@ -959,6 +959,7 @@
     <string name="widget_remove_widget">Supprimer le Widget</string>
     <string name="widget_empty_bin">Vider la poubelle</string>
     <string name="widget_edit_widgets">Modifier les widgets</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Types</string>
@@ -968,7 +969,7 @@
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">Mes types</string>
-    <string name="library_subtitle_relations">My properties</string>
+    <string name="library_subtitle_relations">Mes propriétés</string>
     <string name="library_subtitle_library">Bibliothèque</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1734,4 +1735,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_types_screen_title">Object types</string>
+    <string name="space_properties_screen_title">Propriétés</string>
 </resources>

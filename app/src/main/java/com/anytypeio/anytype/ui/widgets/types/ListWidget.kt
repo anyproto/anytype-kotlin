@@ -125,7 +125,11 @@ fun ListWidgetCard(
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
                     } else {
-                        EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                        if (item.type is Type.Bin) {
+                            EmptyWidgetPlaceholder(R.string.bin_empty_title)
+                        } else {
+                            EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                        }
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
@@ -134,7 +138,8 @@ fun ListWidgetCard(
         WidgetMenu(
             isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode !is InteractionMode.Edit
+            canEditWidgets = mode !is InteractionMode.Edit,
+            canEmptyBin = item.elements.isNotEmpty() && item.type is Type.Bin
         )
     }
 }

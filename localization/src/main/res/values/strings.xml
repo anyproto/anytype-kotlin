@@ -953,7 +953,7 @@
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Anytype Library</string>
 
-    <string name="bin_empty_title">Your trash is empty.</string>
+    <string name="bin_empty_title">Your bin is empty.</string>
     <string name="bin_empty_subtitle">Looks like you’re all tidy and organized!</string>
 
 

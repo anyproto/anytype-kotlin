@@ -39,7 +39,9 @@
     <string name="about_privacy_policy">Datenschutzerklärung</string>
     <string name="about_acknowledgements">Danksagungen</string>
     <string name="about_meta_info">App-Version: %1$s\nBuild Nummer: %2$d\nLibrary Version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Gerät: %1$s\nAndroid Version: %2$d\nApp Version: %3$s\nBuild Nummer: %4$d\nLibrary Version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nGeräte\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
+    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
     <string name="default_space">Standard Space</string>

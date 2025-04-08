@@ -280,7 +280,7 @@ fun DeleteSpaceItem(
     BaseButton(
         modifier = modifier,
         title = stringResource(id = R.string.space_settings_delete_space_button),
-        textColor = R.color.palette_dark_red
+        textColor = R.color.palette_system_red
     )
 }
 

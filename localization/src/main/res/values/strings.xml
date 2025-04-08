@@ -1070,6 +1070,7 @@
     <string name="widget_remove_widget">Remove Widget</string>
     <string name="widget_empty_bin">Empty Bin</string>
     <string name="widget_edit_widgets">Edit Widgets</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
 
     <!--endregion-->
 

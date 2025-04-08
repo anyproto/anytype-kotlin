@@ -432,6 +432,14 @@ class HomeScreenFragment : BaseComposeFragment(),
                     Timber.e(it, "Error exiting home screen")
                 }
             }
+            is Command.ShowWidgetAutoCreatedToast -> {
+                toast(
+                    getString(
+                        R.string.widget_auto_created_toast,
+                        command.name
+                    )
+                )
+            }
         }
     }
 

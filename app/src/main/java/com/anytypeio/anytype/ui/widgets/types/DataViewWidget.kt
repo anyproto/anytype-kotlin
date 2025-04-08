@@ -71,7 +71,8 @@ fun DataViewListWidgetCard(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {}
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -115,7 +116,9 @@ fun DataViewListWidgetCard(
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction
+                onDropDownMenuAction = onDropDownMenuAction,
+                canCreate = mode is InteractionMode.Default,
+                onCreateElement = { onCreateElement(item) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(

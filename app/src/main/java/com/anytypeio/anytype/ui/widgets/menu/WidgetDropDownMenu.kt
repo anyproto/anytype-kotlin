@@ -115,7 +115,7 @@ fun WidgetMenu(
                 Text(
                     text = stringResource(id = R.string.widget_remove_widget),
                     style = defaultTextStyle.copy(
-                        color = colorResource(id = R.color.palette_dark_red)
+                        color = colorResource(id = R.color.palette_system_red)
                     ),
                     modifier = Modifier.padding(end = extraEndPadding)
                 )

@@ -44,7 +44,8 @@ fun ListWidgetCard(
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {}
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -89,7 +90,9 @@ fun ListWidgetCard(
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction
+                onDropDownMenuAction = onDropDownMenuAction,
+                canCreate = (item.type is Type.Favorites && mode is InteractionMode.Default),
+                onCreateElement = { onCreateElement(item) }
             )
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {
@@ -125,7 +128,11 @@ fun ListWidgetCard(
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
                     } else {
-                        EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                        if (item.type is Type.Bin) {
+                            EmptyWidgetPlaceholder(R.string.bin_empty_title)
+                        } else {
+                            EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                        }
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
@@ -134,7 +141,8 @@ fun ListWidgetCard(
         WidgetMenu(
             isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode !is InteractionMode.Edit
+            canEditWidgets = mode !is InteractionMode.Edit,
+            canEmptyBin = item.elements.isNotEmpty() && item.type is Type.Bin
         )
     }
 }

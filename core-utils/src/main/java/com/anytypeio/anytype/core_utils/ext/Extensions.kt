@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_utils.ext
 
 import android.content.Context
+import android.view.Gravity
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment

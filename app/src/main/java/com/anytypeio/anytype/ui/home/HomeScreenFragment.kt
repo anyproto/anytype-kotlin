@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -434,10 +435,11 @@ class HomeScreenFragment : BaseComposeFragment(),
             }
             is Command.ShowWidgetAutoCreatedToast -> {
                 toast(
-                    getString(
+                    msg = getString(
                         R.string.widget_auto_created_toast,
                         command.name
-                    )
+                    ),
+                    duration = Toast.LENGTH_LONG
                 )
             }
         }

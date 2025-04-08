@@ -117,7 +117,7 @@ fun DataViewListWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
-                canCreate = true,
+                canCreate = mode is InteractionMode.Default,
                 onCreateElement = { onCreateElement(item) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {

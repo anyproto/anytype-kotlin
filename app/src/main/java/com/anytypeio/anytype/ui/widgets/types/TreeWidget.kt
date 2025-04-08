@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -33,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -301,16 +304,22 @@ fun WidgetHeader(
         )
 
         if (canCreate) {
-            Image(
-                painter = painterResource(R.drawable.ic_widget_system_plus_18),
-                contentDescription = stringResource(R.string.content_description_plus_button),
-                modifier = Modifier
+            Box(
+                Modifier
                     .align(Alignment.CenterEnd)
-                    .padding(end = 50.dp)
-                    .clickable {
+                    .padding(end = 42.dp)
+                    .fillMaxHeight()
+                    .width(34.dp)
+                    .noRippleClickable {
                         onCreateElement()
                     }
-            )
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_widget_system_plus_18),
+                    contentDescription = stringResource(R.string.content_description_plus_button),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
 
         WidgetArrow(

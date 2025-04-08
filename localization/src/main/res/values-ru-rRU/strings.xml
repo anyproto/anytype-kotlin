@@ -963,6 +963,7 @@
     <string name="widget_remove_widget">Удалить виджет</string>
     <string name="widget_empty_bin">Очистить корзину</string>
     <string name="widget_edit_widgets">Редактировать виджеты</string>
+    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Типы</string>

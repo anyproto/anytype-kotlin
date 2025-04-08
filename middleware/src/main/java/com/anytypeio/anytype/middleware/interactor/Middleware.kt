@@ -2933,13 +2933,13 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun setDataViewPropertiesKeys(
-        command: Command.BlockDataViewSetProperties
+    fun setDataViewProperties(
+        command: Command.SetDataViewProperties
     ): Payload {
         val request = Rpc.BlockDataview.Relation.Set.Request(
             contextId = command.objectId,
             blockId = command.blockId,
-            relationKeys = command.propertiesKeys
+            relationKeys = command.properties
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.blockDataViewRelationSet(request) }

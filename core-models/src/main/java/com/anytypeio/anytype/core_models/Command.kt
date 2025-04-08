@@ -674,9 +674,9 @@ sealed class Command {
         val fields: List<Id>
     ) : Command()
 
-    data class BlockDataViewSetProperties(
+    data class SetDataViewProperties(
         val objectId: Id,
         val blockId: Id,
-        val propertiesKeys: List<Key>
+        val properties: List<Key>
     ) : Command()
 }

@@ -2351,6 +2351,9 @@ class HomeScreenViewModel(
     }
 
     fun onCreateWidgetElementClicked(view: WidgetView) {
+        viewModelScope.launch {
+
+        }
         when(view) {
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
@@ -2378,6 +2381,28 @@ class HomeScreenViewModel(
                         }
                     }
                 }
+            }
+            is WidgetView.SetOfObjects -> {
+                viewModelScope.launch {
+                    val source = view.source
+                    if (source is Widget.Source.Default) {
+                        if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                            val wrapper = ObjectWrapper.Type(source.obj.map)
+                            createObject.async(
+                                params = CreateObject.Param(
+                                    space = SpaceId(spaceManager.get()),
+                                    type = TypeKey(wrapper.uniqueKey),
+                                    prefilled = mapOf(Relations.IS_FAVORITE to true)
+                                )
+                            ).onSuccess { result ->
+                                proceedWithNavigation(result.obj.navigation())
+                            }
+                        } else {
+                            Timber.w("Unexpected source layout: ${source.obj.layout}")
+                        }
+                    }
+                }
+
             }
             else -> {
                 Timber.w("Unexpected widget type: ${view::class.java.simpleName}")

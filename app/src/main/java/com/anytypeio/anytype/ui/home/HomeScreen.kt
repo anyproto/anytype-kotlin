@@ -318,7 +318,8 @@ private fun WidgetList(
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateDataViewObject = onCreateDataViewObject
+                                onCreateDataViewObject = onCreateDataViewObject,
+                                onCreateElement = onCreateElement
                             )
                         }
                     } else {
@@ -334,7 +335,8 @@ private fun WidgetList(
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onCreateDataViewObject = onCreateDataViewObject
+                            onCreateDataViewObject = onCreateDataViewObject,
+                            onCreateElement = onCreateElement
                         )
                     }
                 }
@@ -591,7 +593,8 @@ private fun SetOfObjectsItem(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit
+    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
         modifier = Modifier
@@ -617,7 +620,8 @@ private fun SetOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateDataViewObject = onCreateDataViewObject
+            onCreateDataViewObject = onCreateDataViewObject,
+            onCreateElement = onCreateElement
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

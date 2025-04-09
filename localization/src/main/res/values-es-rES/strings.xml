@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Cancelar</string>
     <string name="file_delete_delete">Eliminar</string>
     <string name="menu_type_change">Cambiar tipo</string>
+    <string name="menu_type_open">Abrir tipo</string>
     <string name="menu_type_open_set">Abrir consulta de %1$s</string>
     <string name="menu_type_create_set">Crear consulta de %1$s</string>
     <string name="toast_active_view_delete">No se puede eliminar la vista actual</string>
@@ -1622,7 +1623,7 @@ En concreto,
     <string name="object_properties_section_hidden">Oculto</string>
     <string name="object_properties_local_info_title">Propiedades locales</string>
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
-    <string name="object_type_open_type_error">Error al abrir el tipo de objeto actual</string>
+    <string name="object_type_open_type_error">Error al abrir el tipo de objeto</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>
     <string name="day_of_week_wednesday">Miércoles</string>
@@ -1678,8 +1679,8 @@ En concreto,
     <string name="field_checkbox_title">Seleccionar</string>
     <string name="field_menu_add_to_type">Añadir al tipo actual</string>
     <string name="field_menu_remove_from_object">Quitar del objeto</string>
-    <string name="space_settings_space_name_hint">Nombre</string>
-    <string name="space_settings_space_description_hint">Descripción</string>
+    <string name="space_settings_space_name_hint">Añade un nombre</string>
+    <string name="space_settings_space_description_hint">Añadir una descripción</string>
     <string name="space_settings_section_collaboration">Colaboración</string>
     <string name="space_settings_section_content_model">Modelo de contenido</string>
     <string name="space_settings_section_preferences">Preferencias</string>

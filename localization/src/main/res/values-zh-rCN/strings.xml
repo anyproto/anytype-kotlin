@@ -1662,8 +1662,8 @@
     <string name="field_checkbox_title">选择</string>
     <string name="field_menu_add_to_type">添加到当前类型</string>
     <string name="field_menu_remove_from_object">从对象中移除</string>
-    <string name="space_settings_space_name_hint">名称</string>
-    <string name="space_settings_space_description_hint">描述</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">添加描述</string>
     <string name="space_settings_section_collaboration">协作</string>
     <string name="space_settings_section_content_model">内容模型</string>
     <string name="space_settings_section_preferences">首选项</string>

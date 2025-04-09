@@ -220,7 +220,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         )
                     }
                     findNavController().navigate(
-                        resId = R.id.objectTypeScreen,
+                        resId = R.id.objectTypeNavigation,
                         args = ObjectTypeFragment.args(
                             objectId = command.id,
                             space = command.space

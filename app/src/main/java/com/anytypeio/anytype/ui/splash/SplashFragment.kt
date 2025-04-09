@@ -29,6 +29,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.update.MigrationFailedScreen
 import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
@@ -190,6 +191,38 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         resId = R.id.objectNavigation,
                         args = EditorFragment.args(
                             ctx = command.id,
+                            space = command.space
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to object from splash")
+                }
+            }
+            is SplashViewModel.Command.NavigateToObjectType -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                    val chat = command.chat
+                    if (chat == null || !ChatConfig.isChatAllowed(space = command.space)) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            args = HomeScreenFragment.args(
+                                space = command.space,
+                                deeplink = null
+                            )
+                        )
+                    } else {
+                        findNavController().navigate(
+                            R.id.actionOpenChatFromVault,
+                            args = ChatFragment.args(
+                                space = command.space,
+                                ctx = chat
+                            )
+                        )
+                    }
+                    findNavController().navigate(
+                        resId = R.id.objectTypeScreen,
+                        args = ObjectTypeFragment.args(
+                            objectId = command.id,
                             space = command.space
                         )
                     )

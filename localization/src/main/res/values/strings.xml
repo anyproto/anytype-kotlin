@@ -593,6 +593,7 @@
     <string name="file_delete_cancel">Cancel</string>
     <string name="file_delete_delete">Delete</string>
     <string name="menu_type_change">Change type</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>

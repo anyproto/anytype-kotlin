@@ -5,6 +5,7 @@
     <item name="menuLink" type="id"/>
 
     <item name="menuChangeType" type="id"/>
+    <item name="menuOpenType" type="id"/>
     <item name="menuOpenSet" type="id"/>
     <item name="menuCreateSet" type="id"/>
 

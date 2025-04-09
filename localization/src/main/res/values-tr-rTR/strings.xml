@@ -39,9 +39,9 @@
     <string name="about_privacy_policy">Gizlilik Politikası</string>
     <string name="about_acknowledgements">Teşekkürler</string>
     <string name="about_meta_info">Uygulama sürümü: %1$s\nDerleme numarası: %2$d\nKütüphane sürümü: %3$s\nHesap\u00A0kimliği:\u00A0%4$s\nCihaz\u00A0kimliği:\u00A0%5$s\nAnalytics\u00A0kimliği:\u00A0%6$s</string>
-    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
+    <string name="about_meta_info_new">Uygulama sürümü: %1$s\nDerleme numarası: %2$d\nKütüphane sürümü: %3$s\Hesap\u00A0kimliği:\u00A0%4$s\nCihaz\u00A0kimliği:\u00A0%5$s\nAnalytics\u00A0kimliği:\u00A0%6$s\nEthereum key\u00A0kimliği:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Cihaz: %1$s\nAndroid sürümü: %2$d\nUygulama sürümü: %3$s\nDerleme sürümü: %4$d\nKütüphane sürümü: %5$s\nHesap\u00A0kimliği:\u00A0%6$s\nCihaz\u00A0kimliği:\u00A0%7$s\nAnalytics\u00A0kimliği:\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
+    <string name="about_meta_info_for_copy_new">Cihaz: %1$s\nAndroid sürümü: %2$d\nUygulama sürümü: %3$s\nDerleme numarası: %4$d\nKütüphane sürümü: %5$s\nHesap\u00A0kimliği:\u00A0%6$s\nCihaz\u00A0kimliği:\u00A0%7$s\nAnalytics\u00A0kimliği:\u00A0%8$s\nEthereum key\u00A0kimliği:\u00A0%9$s</string>
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
     <string name="default_space">Giriş alanı</string>
@@ -532,7 +532,7 @@
     <string name="file_delete_cancel">İptal</string>
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
-    <string name="menu_type_open">Open type</string>
+    <string name="menu_type_open">Tür aç</string>
     <string name="menu_type_open_set">%1$s sorgusunu aç</string>
     <string name="menu_type_create_set">%1$s sorgusunu oluştur</string>
     <string name="toast_active_view_delete">Mevcut görünüm silinemez</string>
@@ -962,7 +962,7 @@
     <string name="widget_remove_widget">Widget\'ı kaldır</string>
     <string name="widget_empty_bin">Çöp kutusu boş</string>
     <string name="widget_edit_widgets">Widget\'ları düzenle</string>
-    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
+    <string name="widget_auto_created_toast">%1$s widget\'ı eklendi</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Türler</string>

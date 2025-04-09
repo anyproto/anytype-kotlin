@@ -623,6 +623,7 @@
         <item name="rippleColor">@android:color/transparent</item>
         <item name="strokeColor">@color/shape_tertiary</item>
         <item name="strokeWidth">1dp</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
     </style>
 
     <!-- Editor, Table of Contents block -->

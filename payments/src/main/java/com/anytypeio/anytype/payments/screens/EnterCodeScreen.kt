@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.payments.R
@@ -113,7 +114,7 @@ private fun ModalCodeContent(
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp),
                 text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_code_title),
-                style = BodyBold,
+                style = BodySemiBold,
                 color = colorResource(
                     id = R.color.text_primary
                 ),

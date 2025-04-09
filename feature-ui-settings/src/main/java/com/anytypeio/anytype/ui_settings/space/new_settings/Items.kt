@@ -446,7 +446,7 @@ fun NewSettingsTextField(
     onValueChange: (String) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    textStyle: TextStyle = BodyBold,
+    textStyle: TextStyle = BodySemiBold,
     placeholderText: String,
     isEditEnabled: Boolean
 ) {

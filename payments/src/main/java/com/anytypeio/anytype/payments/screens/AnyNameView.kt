@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.models.TierAnyName
@@ -79,7 +80,7 @@ fun AnyNameView(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(id = R.string.payments_tier_details_name_title),
                 color = colorResource(id = R.color.text_primary),
-                style = BodyBold,
+                style = BodySemiBold,
                 textAlign = TextAlign.Start
             )
             Spacer(modifier = Modifier.height(6.dp))

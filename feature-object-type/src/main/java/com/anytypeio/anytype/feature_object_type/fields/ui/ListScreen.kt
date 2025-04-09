@@ -27,7 +27,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Scaffold
@@ -206,6 +208,8 @@ fun FieldsMainModalScreen(
         }
     }
 
+    val scrollState = rememberScrollState()
+
     Column(
         modifier = Modifier.fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -217,12 +221,14 @@ fun FieldsMainModalScreen(
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
+                .verticalScroll(state = scrollState)
                 .align(Alignment.CenterHorizontally)
         )
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
+                .verticalScroll(state = scrollState)
         ) {
             Text(
                 modifier = Modifier
@@ -237,6 +243,7 @@ fun FieldsMainModalScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(36.dp)
+                .verticalScroll(state = scrollState)
                 .background(color = colorResource(R.color.shape_transparent_secondary)),
             uiTitleState = uiTitleState,
             uiIconState = uiIconState

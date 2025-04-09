@@ -139,6 +139,7 @@ import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
+import kotlin.collections.orEmpty
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -2061,7 +2062,11 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateDataViewObject(widget: WidgetId, view: ViewId?) {
+    fun onCreateDataViewObject(
+        widget: WidgetId,
+        view: ViewId?,
+        navigate: Boolean = false
+    ) {
         Timber.d("onCreateDataViewObject")
         viewModelScope.launch {
             val target = widgets.value.orEmpty().find { it.id == widget }
@@ -2091,7 +2096,6 @@ class HomeScreenViewModel(
                                 }
                             } else if (widgetSource.obj.layout == ObjectType.Layout.SET) {
                                 val dataViewSource = widgetSource.obj.setOf.firstOrNull()
-
                                 if (dataViewSource != null) {
                                     val dataViewSourceObj =
                                         ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
@@ -2101,7 +2105,8 @@ class HomeScreenViewModel(
                                                 proceedWithCreatingDataViewObject(
                                                     dataViewSourceObj,
                                                     viewer,
-                                                    dv
+                                                    dv,
+                                                    navigate = navigate
                                                 )
                                             }
 
@@ -2109,7 +2114,8 @@ class HomeScreenViewModel(
                                                 proceedWithCreatingDataViewObject(
                                                     viewer,
                                                     dv,
-                                                    dataViewSourceObj
+                                                    dataViewSourceObj,
+                                                    navigate = navigate
                                                 )
                                             }
 
@@ -2136,7 +2142,8 @@ class HomeScreenViewModel(
     private suspend fun proceedWithCreatingDataViewObject(
         viewer: Block.Content.DataView.Viewer,
         dv: DV,
-        dataViewSourceObj: ObjectWrapper.Basic
+        dataViewSourceObj: ObjectWrapper.Basic,
+        navigate: Boolean = false
     ) {
         val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,
@@ -2158,8 +2165,14 @@ class HomeScreenViewModel(
                 Timber.d("Calling with params: $it")
             }
         ).fold(
-            onSuccess = {
-                Timber.d("Successfully created object with id: ${it.objectId}")
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+                if (navigate) {
+                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                    if (wrapper.isValid) {
+                        proceedWithNavigation(wrapper.navigation())
+                    }
+                }
             },
             onFailure = {
                 Timber.e(it, "Error while creating data view object for widget")
@@ -2170,7 +2183,8 @@ class HomeScreenViewModel(
     private suspend fun proceedWithCreatingDataViewObject(
         dataViewSourceObj: ObjectWrapper.Basic,
         viewer: Block.Content.DataView.Viewer,
-        dv: DV
+        dv: DV,
+        navigate: Boolean = false
     ) {
         val dataViewSourceType = dataViewSourceObj.uniqueKey
         val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
@@ -2192,8 +2206,14 @@ class HomeScreenViewModel(
                 Timber.d("Calling with params: $it")
             }
         ).fold(
-            onSuccess = {
-                Timber.d("Successfully created object with id: ${it.objectId}")
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+                if (navigate) {
+                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                    if (wrapper.isValid) {
+                        proceedWithNavigation(wrapper.navigation())
+                    }
+                }
             },
             onFailure = {
                 Timber.e(it, "Error while creating data view object for widget")
@@ -2204,7 +2224,7 @@ class HomeScreenViewModel(
     private suspend fun proceedWithAddingObjectToCollection(
         viewer: Block.Content.DataView.Viewer,
         dv: DV,
-        collection: Id
+        collection: Id,
     ) {
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
@@ -2365,8 +2385,7 @@ class HomeScreenViewModel(
                         createObject.async(
                             params = CreateObject.Param(
                                 space = SpaceId(spaceManager.get()),
-                                type = type,
-                                prefilled = mapOf(Relations.IS_FAVORITE to true)
+                                type = type
                             )
                         ).onSuccess { result ->
                             proceedWithNavigation(result.obj.navigation())
@@ -2397,6 +2416,18 @@ class HomeScreenViewModel(
                             ).onSuccess { result ->
                                 proceedWithNavigation(result.obj.navigation())
                             }
+                        } else if (source.obj.layout == ObjectType.Layout.COLLECTION) {
+                            onCreateDataViewObject(
+                                widget = view.id,
+                                view = null,
+                                navigate = true
+                            )
+                        } else if (source.obj.layout == ObjectType.Layout.SET) {
+                            onCreateDataViewObject(
+                                widget = view.id,
+                                view = null,
+                                navigate = true
+                            )
                         } else {
                             Timber.w("Unexpected source layout: ${source.obj.layout}")
                         }

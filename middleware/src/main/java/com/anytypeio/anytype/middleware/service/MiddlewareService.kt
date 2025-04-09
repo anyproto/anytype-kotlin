@@ -630,4 +630,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectTypeRecommendedFieldsSet(request: Rpc.ObjectType.Recommended.RelationsSet.Request) : Rpc.ObjectType.Recommended.RelationsSet.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewRelationSet(request: Rpc.BlockDataview.Relation.Set.Request): Rpc.BlockDataview.Relation.Set.Response
 }

@@ -324,6 +324,15 @@ class SplashViewModel(
                                                         )
                                                     )
                                                 }
+                                                ObjectType.Layout.OBJECT_TYPE -> {
+                                                    commands.emit(
+                                                        Command.NavigateToObjectType(
+                                                            id = id,
+                                                            space = space,
+                                                            chat = view.chatId
+                                                        )
+                                                    )
+                                                }
                                                 else ->
                                                     commands.emit(
                                                         Command.NavigateToObject(
@@ -429,6 +438,7 @@ class SplashViewModel(
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToDateObject(val id: Id, val space: Id, val chat: Id?) : Command()
+        data class NavigateToObjectType(val id: Id, val space: Id, val chat: Id?) : Command()
         data class Toast(val message: String) : Command()
     }
 

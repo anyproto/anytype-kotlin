@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -43,6 +44,7 @@ class ObjectSetSettingsViewModel(
 ) : BaseListViewModel<ViewerRelationListView>(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
+    val commands = MutableSharedFlow<Command>()
 
     init {
         Timber.i("ObjectSetSettingsViewModel, init")
@@ -50,8 +52,11 @@ class ObjectSetSettingsViewModel(
 
     fun onStart(viewerId: Id) {
         viewModelScope.launch {
-            objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
+            objectState.collect { state ->
                 Timber.d("New update, viewerId: $viewerId, state: $state")
+
+                if (state !is ObjectState.DataView) return@collect
+
                 val result = mutableListOf<ViewerRelationListView>()
                 val viewer = state.viewerById(viewerId) ?: return@collect
 
@@ -78,7 +83,33 @@ class ObjectSetSettingsViewModel(
     }
 
     fun onEditButtonClicked() {
-        screenState.value = ScreenState.EDIT
+        val state = objectState.value.dataViewState() ?: return
+        when (state) {
+            is ObjectState.DataView.Collection -> screenState.value = ScreenState.EDIT
+            is ObjectState.DataView.Set -> screenState.value = ScreenState.EDIT
+            is ObjectState.DataView.TypeSet -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenTypePropertiesScreen)
+                }
+            }
+        }
+    }
+
+    fun onAddButtonClicked() {
+        val state = objectState.value.dataViewState() ?: return
+        when (state) {
+            is ObjectState.DataView.Collection, is ObjectState.DataView.Set -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenRelationAddToDataView)
+                }
+            }
+
+            is ObjectState.DataView.TypeSet -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenTypePropertiesScreen)
+                }
+            }
+        }
     }
 
     fun onDoneButtonClicked() {
@@ -222,6 +253,11 @@ class ObjectSetSettingsViewModel(
                 onFailure = { Timber.e("Error while updating") }
             )
         }
+    }
+
+    sealed class Command {
+        data object OpenTypePropertiesScreen : Command()
+        data object OpenRelationAddToDataView : Command()
     }
 
     class Factory(

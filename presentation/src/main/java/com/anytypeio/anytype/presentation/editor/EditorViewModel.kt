@@ -275,6 +275,7 @@ import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -4273,6 +4274,26 @@ class EditorViewModel(
             proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
+        }
+    }
+
+    fun onOpenTypeClicked() {
+        viewModelScope.launch {
+            val type = orchestrator.stores.details.current().getTypeForObject(
+                vmParams.ctx
+            )
+            if (type != null) {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenTypeObject(
+                            target = type.id,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            } else {
+                Timber.e("Could not get type for current object")
+            }
         }
     }
 

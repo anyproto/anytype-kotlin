@@ -1619,10 +1619,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_type_fields_local_info_description">Bu özellikler bazı nesnelerde bulunur ama Türün bir parçası değildir. Bu Türün tüm nesnelerinde görünmelerini sağlamak için onları ekleyin.</string>
     <string name="object_type_fields_local_info_button">Anladım</string>
     <string name="object_type_templates_empty">Bu türün herhangi bir\nşablonu yoktur</string>
-    <string name="object_properties_section_local">Yerel özellikler</string>
+    <string name="object_properties_section_local">Yerel</string>
     <string name="object_properties_section_hidden">Gizli</string>
     <string name="object_properties_local_info_title">Yerel özellikler</string>
     <string name="object_properties_local_info_description">Bu özellikler yalnızca bu nesnede bulunur ve türünün bir parçası değildir. Tüm nesnelerde kullanılacak türe ekleyin veya kaldırın.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Nesne türü açılamadı</string>
     <string name="day_of_week_monday">Pazartesi</string>
     <string name="day_of_week_tuesday">Salı</string>

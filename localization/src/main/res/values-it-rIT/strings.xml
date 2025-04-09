@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Annulla</string>
     <string name="file_delete_delete">Elimina</string>
     <string name="menu_type_change">Cambia tipo</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">La vista corrente non può essere eliminata</string>
@@ -1623,7 +1624,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_section_hidden">Nascosto</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
-    <string name="object_type_open_type_error">Errore nell\'apertura del tipo di oggetto corrente</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
     <string name="day_of_week_wednesday">Mercoledì</string>

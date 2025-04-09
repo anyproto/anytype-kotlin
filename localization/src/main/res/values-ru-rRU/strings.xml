@@ -1708,8 +1708,8 @@
     <string name="field_checkbox_title">Выбрать</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
-    <string name="space_settings_space_name_hint">Название</string>
-    <string name="space_settings_space_description_hint">Описание</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Добавить описание</string>
     <string name="space_settings_section_collaboration">Совместная работа</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Настройки</string>

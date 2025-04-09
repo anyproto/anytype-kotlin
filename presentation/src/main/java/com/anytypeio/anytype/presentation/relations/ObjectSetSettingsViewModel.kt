@@ -95,6 +95,23 @@ class ObjectSetSettingsViewModel(
         }
     }
 
+    fun onAddButtonClicked() {
+        val state = objectState.value.dataViewState() ?: return
+        when (state) {
+            is ObjectState.DataView.Collection, is ObjectState.DataView.Set -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenRelationAddToDataView)
+                }
+            }
+
+            is ObjectState.DataView.TypeSet -> {
+                viewModelScope.launch {
+                    commands.emit(Command.OpenTypePropertiesScreen)
+                }
+            }
+        }
+    }
+
     fun onDoneButtonClicked() {
         screenState.value = ScreenState.LIST
     }
@@ -240,6 +257,7 @@ class ObjectSetSettingsViewModel(
 
     sealed class Command {
         data object OpenTypePropertiesScreen : Command()
+        data object OpenRelationAddToDataView : Command()
     }
 
     class Factory(

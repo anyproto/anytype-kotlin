@@ -653,8 +653,7 @@ fun AutoCreateWidgetItem(
                 checkedBorderColor = Color.Transparent,
                 uncheckedBorderColor = Color.Transparent,
                 checkedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedThumbColor = colorResource(R.color.glyph_white)
+                uncheckedTrackColor = colorResource(R.color.shape_secondary)
             )
         )
 

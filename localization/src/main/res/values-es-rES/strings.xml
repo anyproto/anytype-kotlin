@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Cancelar</string>
     <string name="file_delete_delete">Eliminar</string>
     <string name="menu_type_change">Cambiar tipo</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Abrir consulta de %1$s</string>
     <string name="menu_type_create_set">Crear consulta de %1$s</string>
     <string name="toast_active_view_delete">No se puede eliminar la vista actual</string>
@@ -1622,7 +1623,7 @@ En concreto,
     <string name="object_properties_section_hidden">Oculto</string>
     <string name="object_properties_local_info_title">Propiedades locales</string>
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
-    <string name="object_type_open_type_error">Error al abrir el tipo de objeto actual</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>
     <string name="day_of_week_wednesday">Miércoles</string>

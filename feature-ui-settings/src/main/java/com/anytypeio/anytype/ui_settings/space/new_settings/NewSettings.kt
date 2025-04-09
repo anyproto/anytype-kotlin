@@ -46,6 +46,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
+import timber.log.Timber
 
 @Composable
 fun SpaceSettingsContainer(
@@ -509,6 +510,8 @@ private fun EditDescriptionField(
     onSaveFieldValueClicked: (String) -> Unit
 ) {
 
+    Timber.d("Initial input description: $initialInput")
+
     var fieldInput by remember { mutableStateOf(initialInput) }
 
     Scaffold(
@@ -527,7 +530,7 @@ private fun EditDescriptionField(
                         .noRippleClickable {
                             onSaveFieldValueClicked(fieldInput)
                         },
-                    text = "Done",
+                    text = stringResource(R.string.done),
                     style = PreviewTitle1Medium,
                     color = if (fieldInput != initialInput) {
                         colorResource(id = R.color.text_primary)

@@ -396,6 +396,7 @@ fun NewSpaceDescriptionBlock(
     description: String,
     isEditEnabled: Boolean,
     onDescriptionSet: (String) -> Unit = {},
+    allowEmptyValue: Boolean = true
 ) {
 
     val descriptionValue = remember { mutableStateOf(description) }
@@ -410,10 +411,8 @@ fun NewSpaceDescriptionBlock(
             .debounce(300L)
             .dropWhile { input -> input == description }
             .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
-            .collect { query ->
-                onDescriptionSet(query)
-            }
+            .filter { if (allowEmptyValue) true else it.isNotEmpty() }
+            .collect { query -> onDescriptionSet(query) }
     }
 
     Column(modifier = modifier) {

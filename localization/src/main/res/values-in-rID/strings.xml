@@ -531,6 +531,7 @@
     <string name="file_delete_cancel">Batal</string>
     <string name="file_delete_delete">Hapus</string>
     <string name="menu_type_change">Ubah tipe</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
@@ -1609,7 +1610,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_section_hidden">Disembunyikan</string>
     <string name="object_properties_local_info_title">Properti lokal</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_type_open_type_error">Galat membuka tipe objek ini</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>

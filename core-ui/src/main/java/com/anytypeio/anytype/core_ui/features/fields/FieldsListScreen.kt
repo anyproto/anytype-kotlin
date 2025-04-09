@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.features.fields
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.relations.resRelati
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Model
@@ -49,7 +52,8 @@ fun FieldListScreen(
     onLocalInfoIconClicked: () -> Unit,
     onAddToTypeClicked: (Model.Item) -> Unit,
     onRemoveFromObjectClicked: (Model.Item) -> Unit,
-    onHiddenToggle: (Model.Section.Hidden) -> Unit = {}
+    onHiddenToggle: (Model.Section.Hidden) -> Unit = {},
+    onLocalToggle: (Model.Section.Local) -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -60,7 +64,7 @@ fun FieldListScreen(
             )
             .nestedScroll(rememberNestedScrollInteropConnection())
             .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -293,14 +297,24 @@ fun FieldListScreen(
                     is Model.Section.SideBar -> {
                         Section(item)
                     }
-                    Model.Section.Local -> {
-                        SectionLocal(onLocalInfoIconClicked)
+                    is Model.Section.Local -> {
+                        SectionLocal(
+                            item = item,
+                            onLocalInfoIconClicked = onLocalInfoIconClicked,
+                            onLocalSectionToggle = onLocalToggle
+                        )
                     }
 
                     is Model.Section.Hidden -> SectionHidden(
                         item = item,
                         onToggle = onHiddenToggle
                     )
+
+                    Model.Section.Empty -> {
+                        SectionEmpty() {
+                            onTypeIconClicked()
+                        }
+                    }
                 }
             }
         )
@@ -312,28 +326,49 @@ fun FieldListScreen(
 
 @Composable
 private fun SectionLocal(
-    onLocalInfoIconClicked: () -> Unit = {}
+    item: Model.Section.Local,
+    onLocalInfoIconClicked: () -> Unit = {},
+    onLocalSectionToggle: (Model.Section.Local) -> Unit = {}
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 23.dp)
-            .height(22.dp).
-        noRippleThrottledClickable{
-            onLocalInfoIconClicked()
-        },
-        verticalAlignment = Alignment.CenterVertically
+    val text = stringResource(id = R.string.object_properties_section_local)
+    val iconRes = when (item) {
+        is Model.Section.Local.Shown -> R.drawable.ic_arrow_up_18
+        is Model.Section.Local.Unshown -> R.drawable.ic_list_arrow_18
+    }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .noRippleThrottledClickable {
+                onLocalSectionToggle(item)
+            },
     ) {
-        Text(
-            modifier = Modifier.padding(start = 20.dp).weight(1.0f),
-            text = stringResource(id = R.string.object_properties_section_local),
-            style = BodyCalloutMedium,
-            color = colorResource(R.color.text_primary),
-        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(top = 15.dp, bottom = 3.dp)
+                .padding(start = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier.size(18.dp),
+                painter = painterResource(iconRes),
+                contentDescription = "Hidden section icon",
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(
+                text = text,
+                style = BodyCalloutMedium,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier
+            )
+        }
         Image(
             modifier = Modifier
+                .align(Alignment.CenterEnd)
                 .wrapContentSize()
-                .padding(end = 14.dp),
+                .padding(end = 14.dp)
+                .noRippleThrottledClickable {
+                    onLocalInfoIconClicked()
+                },
             painter = painterResource(R.drawable.ic_section_local_fields),
             contentDescription = "Section local fields info"
         )
@@ -373,15 +408,16 @@ private fun SectionHidden(
         is Model.Section.Hidden.Unshown -> R.drawable.ic_list_arrow_18
     }
     Box(
-        modifier = Modifier.fillMaxWidth()
-            .noRippleThrottledClickable{
+        modifier = Modifier
+            .fillMaxWidth()
+            .noRippleThrottledClickable {
                 onToggle(item)
             },
         contentAlignment = Alignment.CenterStart
     ) {
         Row(
             modifier = Modifier
-                .padding(vertical = 7.dp)
+                .padding(top = 15.dp, bottom = 3.dp)
                 .padding(start = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -401,11 +437,41 @@ private fun SectionHidden(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun SectionEmpty(
+    onClick: () -> Unit
+) {
+    val defaultModifier = Modifier
+        .fillMaxWidth()
+        .combinedClickable(
+            onClick = onClick,
+        )
+        .border(
+            width = 1.dp,
+            color = colorResource(id = R.color.shape_secondary),
+            shape = RoundedCornerShape(12.dp)
+        )
+        .padding(vertical = 16.dp)
+        .padding(horizontal = 16.dp)
+    Box(
+        modifier = defaultModifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.object_properties_empty_state),
+            style = Relations1,
+            color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun FieldListScreenPreview() {
     FieldListScreen(
         state = listOf(
+            Model.Section.Empty,
             Model.Item(
                 view = ObjectRelationView.Default(
                     id = "id3",
@@ -443,17 +509,20 @@ fun FieldListScreenPreview() {
                     ),
                 )
             ),
-            Model.Section.Local,
-            Model.Item(
-                view = ObjectRelationView.Default(
-                    id = "id55",
-                    system = false,
-                    key = "key55",
-                    name = "Local 55",
-                    value = "Valu55",
-                    format = RelationFormat.OBJECT
-                ),
-                isLocal = false
+            Model.Section.Local.Shown(
+                items = listOf(
+                    Model.Item(
+                        view = ObjectRelationView.Default(
+                            id = "id55",
+                            system = false,
+                            key = "key55",
+                            name = "Local 55",
+                            value = "Valu55",
+                            format = RelationFormat.OBJECT
+                        ),
+                        isLocal = false
+                    ),
+                )
             ),
         ),
         onRelationClicked = {},

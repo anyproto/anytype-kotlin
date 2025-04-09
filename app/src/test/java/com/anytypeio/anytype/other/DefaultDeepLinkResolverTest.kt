@@ -1,15 +1,13 @@
 package com.anytypeio.anytype.other
 
 import android.os.Build
-import androidx.compose.runtime.key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.Mock
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -165,5 +163,14 @@ class DefaultDeepLinkResolverTest {
 
         // Then
         assertEquals(DeepLinkResolver.Action.Unknown, result)
+    }
+
+    @Test
+    fun `check is deeplink`() {
+        val link1 = "https://object.any.coop/bafyreidqrtef4gcqjepl4llsy2xbauedtcdmjkz5xl4stfgt2ippbwveoq?spaceId=bafyreifj6nkvzfowzgfzu5ns4j54gjh5tmcxa3wd6rncbiuk3opq6o4244.1u5jgzo8m1ekc"
+
+        assertTrue(
+            deepLinkResolver.isDeepLink(link1)
+        )
     }
 }

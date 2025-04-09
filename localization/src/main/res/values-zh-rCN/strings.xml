@@ -531,6 +531,7 @@
     <string name="file_delete_cancel">取消</string>
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">当前视图不能被删除</string>
@@ -1605,7 +1606,7 @@
     <string name="object_properties_section_hidden">已隐藏</string>
     <string name="object_properties_local_info_title">本地属性</string>
     <string name="object_properties_local_info_description">这些属性仅存在于该对象中，不是其类型的一部分。添加到该类型可供在所有对象中使用，或者移除.</string>
-    <string name="object_type_open_type_error">打开当前对象类型出错</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">星期一</string>
     <string name="day_of_week_tuesday">星期二</string>
     <string name="day_of_week_wednesday">星期三</string>

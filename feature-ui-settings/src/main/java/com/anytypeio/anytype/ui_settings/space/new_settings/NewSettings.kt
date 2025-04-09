@@ -509,9 +509,6 @@ private fun EditDescriptionField(
     initialInput: String,
     onSaveFieldValueClicked: (String) -> Unit
 ) {
-
-    Timber.d("Initial input description: $initialInput")
-
     var fieldInput by remember { mutableStateOf(initialInput) }
 
     Scaffold(

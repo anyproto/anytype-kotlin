@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Abbrechen</string>
     <string name="file_delete_delete">Löschen</string>
     <string name="menu_type_change">Typ ändern</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Aktuelle Ansicht kann nicht gelöscht werden</string>
@@ -1622,7 +1623,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_properties_section_hidden">Ausgeblendet</string>
     <string name="object_properties_local_info_title">Lokale Eigenschaften</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_type_open_type_error">Fehler beim Öffnen des aktuellen Objekttyps</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>

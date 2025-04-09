@@ -318,15 +318,11 @@ fun BaseButton(
             Text(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(
-                        color = colorResource(id = R.color.transparent_active),
-                        shape = CircleShape
-                    )
                     .padding(horizontal = 6.dp),
                 text = "$count",
                 textAlign = TextAlign.Center,
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_white),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary),
             )
         }
         Image(

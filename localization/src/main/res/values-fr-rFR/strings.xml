@@ -1616,10 +1616,11 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_local_info_description">Ces propriétés existent dans certains objets mais ne font pas partie du type. Ajoutez-les pour les faire apparaître dans tous les objets de ce type.</string>
     <string name="object_type_fields_local_info_button">Compris</string>
     <string name="object_type_templates_empty">Ce type n\'a pas\nde modèle</string>
-    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Masqué</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">Ces propriétés existent uniquement dans cet objet et ne font pas partie de son type. Ajouter au type à utiliser dans tous les objets, ou supprimer.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Lundi</string>
     <string name="day_of_week_tuesday">Mardi</string>

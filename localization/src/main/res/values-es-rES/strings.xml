@@ -1619,10 +1619,11 @@ En concreto,
     <string name="object_type_fields_local_info_description">Estas propiedades existen en algún objeto pero no forman parte del tipo. Añádelas para que aparezcan en todos los objetos de este tipo.</string>
     <string name="object_type_fields_local_info_button">Entendido</string>
     <string name="object_type_templates_empty">Este tipo no tiene\nninguna plantilla</string>
-    <string name="object_properties_section_local">Propiedades locales</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Oculto</string>
     <string name="object_properties_local_info_title">Propiedades locales</string>
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Error al abrir el tipo de objeto</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>

@@ -1602,10 +1602,11 @@
     <string name="object_type_fields_local_info_description">这些属性仅存在于某些对象中，不是其类型的一部分。添加后可供在此类型的所有对象中使用。</string>
     <string name="object_type_fields_local_info_button">明白了</string>
     <string name="object_type_templates_empty">此类型没有任何模板</string>
-    <string name="object_properties_section_local">本地属性</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">已隐藏</string>
     <string name="object_properties_local_info_title">本地属性</string>
     <string name="object_properties_local_info_description">这些属性仅存在于该对象中，不是其类型的一部分。添加到该类型可供在所有对象中使用，或者移除.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">星期一</string>
     <string name="day_of_week_tuesday">星期二</string>

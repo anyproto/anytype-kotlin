@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Annuleren</string>
     <string name="file_delete_delete">Verwijder</string>
     <string name="menu_type_change">Verander type</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
@@ -1622,7 +1623,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_properties_section_hidden">Verborgen</string>
     <string name="object_properties_local_info_title">Lokale eigenschappen</string>
     <string name="object_properties_local_info_description">Deze eigenschappen bestaan alleen in dit object en maken geen deel uit van het type. Voeg toe aan het type om te gebruiken in alle objecten, of verwijder.</string>
-    <string name="object_type_open_type_error">Fout bij het openen van het huidige objecttype</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Maandag</string>
     <string name="day_of_week_tuesday">Dinsdag</string>
     <string name="day_of_week_wednesday">Woensdag</string>

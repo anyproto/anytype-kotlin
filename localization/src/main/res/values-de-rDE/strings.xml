@@ -1679,8 +1679,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="field_checkbox_title">Auswählen</string>
     <string name="field_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="field_menu_remove_from_object">Aus dem Objekt entfernen</string>
-    <string name="space_settings_space_name_hint">Name</string>
-    <string name="space_settings_space_description_hint">Beschreibung</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Beschreibung hinzufügen</string>
     <string name="space_settings_section_collaboration">Zusammenarbeit</string>
     <string name="space_settings_section_content_model">Inhaltsmodell</string>
     <string name="space_settings_section_preferences">Einstellungen</string>

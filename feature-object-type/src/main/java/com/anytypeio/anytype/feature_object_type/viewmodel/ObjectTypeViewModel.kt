@@ -478,8 +478,7 @@ class ObjectTypeViewModel(
                     uiTypeLayoutsState.value = Visible(
                         layouts = listOf(
                             ObjectType.Layout.BASIC,
-                            //DROID-3485, NOTE layout is not supported for now
-                            //ObjectType.Layout.NOTE,
+                            ObjectType.Layout.NOTE,
                             ObjectType.Layout.PROFILE,
                             ObjectType.Layout.TODO
                         ),

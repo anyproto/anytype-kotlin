@@ -1679,8 +1679,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="field_checkbox_title">Selecteer</string>
     <string name="field_menu_add_to_type">Voeg toe aan het huidige type</string>
     <string name="field_menu_remove_from_object">Verwijder uit het object</string>
-    <string name="space_settings_space_name_hint">Naam</string>
-    <string name="space_settings_space_description_hint">Beschrijving</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Voeg een beschrijving toe</string>
     <string name="space_settings_section_collaboration">Samenwerking</string>
     <string name="space_settings_section_content_model">Inhoud model</string>
     <string name="space_settings_section_preferences">Voorkeuren</string>

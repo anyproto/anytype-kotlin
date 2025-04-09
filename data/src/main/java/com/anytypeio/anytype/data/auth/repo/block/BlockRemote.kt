@@ -473,4 +473,6 @@ interface BlockRemote {
 
     suspend fun objectTypeSetRecommendedHeaderFields(command: Command.ObjectTypeSetRecommendedHeaderFields)
     suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields)
+
+    suspend fun setDataViewProperties(command: Command.SetDataViewProperties): Payload
 }

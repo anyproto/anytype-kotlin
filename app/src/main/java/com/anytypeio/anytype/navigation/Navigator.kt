@@ -335,7 +335,7 @@ class Navigator : AppNavigation {
         space: Id
     ) {
         navController?.navigate(
-            resId = R.id.objectTypeScreen,
+            resId = R.id.objectTypeNavigation,
             args = ObjectTypeFragment.args(
                 objectId = objectId,
                 space = space

@@ -1084,4 +1084,8 @@ class BlockMiddleware(
     override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
         middleware.objectTypeSetRecommendedFields(command)
     }
+
+    override suspend fun setDataViewProperties(command: Command.SetDataViewProperties): Payload {
+        return middleware.setDataViewProperties(command)
+    }
 }

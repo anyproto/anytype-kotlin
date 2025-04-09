@@ -531,6 +531,7 @@
     <string name="file_delete_cancel">Batal</string>
     <string name="file_delete_delete">Hapus</string>
     <string name="menu_type_change">Ubah tipe</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
@@ -1609,7 +1610,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_section_hidden">Disembunyikan</string>
     <string name="object_properties_local_info_title">Properti lokal</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_type_open_type_error">Galat membuka tipe objek ini</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>
@@ -1665,8 +1666,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Pilih</string>
     <string name="field_menu_add_to_type">Tambahkan ke tipe saat ini</string>
     <string name="field_menu_remove_from_object">Hapus dari objek</string>
-    <string name="space_settings_space_name_hint">Nama</string>
-    <string name="space_settings_space_description_hint">Deskripsi</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Tambahkan deskripsi</string>
     <string name="space_settings_section_collaboration">Kolaborasi</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferensi</string>

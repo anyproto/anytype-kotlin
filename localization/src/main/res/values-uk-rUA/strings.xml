@@ -534,6 +534,7 @@
     <string name="file_delete_cancel">Скасувати</string>
     <string name="file_delete_delete">Видалити</string>
     <string name="menu_type_change">Змінити тип</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
@@ -1648,7 +1649,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_section_hidden">Hidden</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_type_open_type_error">Error opening current object type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>
     <string name="day_of_week_wednesday">Wednesday</string>
@@ -1704,8 +1705,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Select</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
-    <string name="space_settings_space_name_hint">Назва</string>
-    <string name="space_settings_space_description_hint">Опис</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Додати опис</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferences</string>

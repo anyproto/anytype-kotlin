@@ -1666,8 +1666,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Pilih</string>
     <string name="field_menu_add_to_type">Tambahkan ke tipe saat ini</string>
     <string name="field_menu_remove_from_object">Hapus dari objek</string>
-    <string name="space_settings_space_name_hint">Nama</string>
-    <string name="space_settings_space_description_hint">Deskripsi</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Tambahkan deskripsi</string>
     <string name="space_settings_section_collaboration">Kolaborasi</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferensi</string>

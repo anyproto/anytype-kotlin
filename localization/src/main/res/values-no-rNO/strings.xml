@@ -1679,8 +1679,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Velg</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
-    <string name="space_settings_space_name_hint">Navn</string>
-    <string name="space_settings_space_description_hint">Beskrivelse</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Legg til en beskrivelse</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferences</string>

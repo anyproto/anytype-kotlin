@@ -25,6 +25,6 @@ object ChatConfig {
     )
 
     fun isChatAllowed(space: Id): Boolean {
-        return false//BuildConfig.DEBUG || spacesWithSpaceLevelChat.contains(space)
+        return BuildConfig.DEBUG || spacesWithSpaceLevelChat.contains(space)
     }
 }

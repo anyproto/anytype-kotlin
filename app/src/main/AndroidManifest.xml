@@ -57,7 +57,7 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="download.anytype.io/" />
+                <data android:scheme="https" android:host="download.anytype.io" />
             </intent-filter>
             <intent-filter android:label="Link to object" android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />

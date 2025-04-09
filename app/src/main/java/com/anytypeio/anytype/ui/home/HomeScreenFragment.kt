@@ -518,7 +518,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 runCatching {
                     findNavController()
                         .navigate(
-                            R.id.spaceSettingsScreen,
+                            R.id.actionOpenSpaceSettings,
                             SpaceSettingsFragment.args(
                                 space = SpaceId(space)
                             )

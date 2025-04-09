@@ -13,6 +13,7 @@ class ObjectTypePopupMenu(
     context: Context,
     anchor: View,
     onChangeTypeClicked: () -> Unit,
+    onOpenTypeClicked: () -> Unit,
     onOpenSetClicked: (Id, SpaceId) -> Unit,
     onCreateSetClicked: (Id) -> Unit,
     items: List<ObjectTypeMenuItem>
@@ -29,6 +30,17 @@ class ObjectTypePopupMenu(
                         res.getString(R.string.menu_type_change)
                     ).setOnMenuItemClickListener {
                         onChangeTypeClicked()
+                        true
+                    }
+                }
+                is ObjectTypeMenuItem.OpenType -> {
+                    menu.add(
+                        0,
+                        R.id.menuOpenType,
+                        index,
+                        res.getString(R.string.menu_type_open)
+                    ).setOnMenuItemClickListener {
+                        onOpenTypeClicked()
                         true
                     }
                 }

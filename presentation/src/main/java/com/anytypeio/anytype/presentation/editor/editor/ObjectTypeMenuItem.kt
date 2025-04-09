@@ -5,6 +5,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 
 sealed class ObjectTypeMenuItem {
     object ChangeType: ObjectTypeMenuItem()
+    object OpenType: ObjectTypeMenuItem()
     data class OpenSet(val set: Id, val space: Id, val typeName: String) : ObjectTypeMenuItem()
     data class CreateSet(val type: Id, val typeName: String) : ObjectTypeMenuItem()
 }
@@ -16,6 +17,7 @@ fun ListenerType.Relation.ObjectType.items(
     val relation = this
     return if (set.isNullOrBlank()) {
         listOf(
+            ObjectTypeMenuItem.OpenType,
             ObjectTypeMenuItem.ChangeType,
             ObjectTypeMenuItem.CreateSet(
                 type = relation.relation.id,
@@ -24,6 +26,7 @@ fun ListenerType.Relation.ObjectType.items(
         )
     } else {
         listOf(
+            ObjectTypeMenuItem.OpenType,
             ObjectTypeMenuItem.ChangeType,
             ObjectTypeMenuItem.OpenSet(
                 set = set,

@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -345,7 +346,7 @@ fun VaultSpaceCard(
         ) {
             Text(
                 text = title.ifEmpty { stringResource(id = R.string.untitled) },
-                style = BodyBold,
+                style = BodySemiBold,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

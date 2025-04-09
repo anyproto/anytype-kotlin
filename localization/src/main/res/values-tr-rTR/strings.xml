@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">İptal</string>
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">%1$s sorgusunu aç</string>
     <string name="menu_type_create_set">%1$s sorgusunu oluştur</string>
     <string name="toast_active_view_delete">Mevcut görünüm silinemez</string>
@@ -1622,7 +1623,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_properties_section_hidden">Gizli</string>
     <string name="object_properties_local_info_title">Yerel özellikler</string>
     <string name="object_properties_local_info_description">Bu özellikler yalnızca bu nesnede bulunur ve türünün bir parçası değildir. Tüm nesnelerde kullanılacak türe ekleyin veya kaldırın.</string>
-    <string name="object_type_open_type_error">Mevcut nesne türü açılırken hata oluştu</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Pazartesi</string>
     <string name="day_of_week_tuesday">Salı</string>
     <string name="day_of_week_wednesday">Çarşamba</string>

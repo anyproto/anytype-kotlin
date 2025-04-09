@@ -1676,8 +1676,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="field_checkbox_title">Sélectionner</string>
     <string name="field_menu_add_to_type">Ajouter au type actuel</string>
     <string name="field_menu_remove_from_object">Retirer de l’objet</string>
-    <string name="space_settings_space_name_hint">Nom</string>
-    <string name="space_settings_space_description_hint">Description</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Ajouter une description</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Modèle de contenu</string>
     <string name="space_settings_section_preferences">Préférences</string>

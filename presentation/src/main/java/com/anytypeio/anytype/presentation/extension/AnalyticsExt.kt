@@ -1664,13 +1664,13 @@ fun CoroutineScope.sendDeleteWidgetEvent(
     )
 }
 
-fun CoroutineScope.sendSelectHomeTabEvent(
+fun CoroutineScope.sendClickWidgetTitleEvent(
     analytics: Analytics,
     bundled: Widget.Source.Bundled
 ) {
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.selectHomeTab,
+        eventName = EventsDictionary.clickWidgetTitle,
         props = Props(
             buildMap {
                 put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)
@@ -1700,14 +1700,14 @@ fun CoroutineScope.sendSelectHomeTabEvent(
     )
 }
 
-fun CoroutineScope.sendSelectHomeTabEvent(
+fun CoroutineScope.sendClickWidgetTitleEvent(
     analytics: Analytics,
     sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false
 ) {
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.selectHomeTab,
+        eventName = EventsDictionary.clickWidgetTitle,
         props = Props(
             buildMap {
                 put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)

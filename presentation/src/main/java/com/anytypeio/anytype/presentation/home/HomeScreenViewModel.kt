@@ -94,7 +94,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelec
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
+import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -1003,7 +1003,7 @@ class HomeScreenViewModel(
         Timber.d("onWidgetSourceClicked: $source")
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
-                viewModelScope.sendSelectHomeTabEvent(
+                viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source
                 )
@@ -1018,7 +1018,7 @@ class HomeScreenViewModel(
                 }
             }
             is Widget.Source.Bundled.Recent -> {
-                viewModelScope.sendSelectHomeTabEvent(
+                viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source
                 )
@@ -1033,7 +1033,7 @@ class HomeScreenViewModel(
                 }
             }
             is Widget.Source.Bundled.RecentLocal -> {
-                viewModelScope.sendSelectHomeTabEvent(
+                viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source
                 )
@@ -1746,7 +1746,7 @@ class HomeScreenViewModel(
             if (sourceObjectType != null) {
                 val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
                 if (objectTypeWrapper != null) {
-                    sendSelectHomeTabEvent(
+                    sendClickWidgetTitleEvent(
                         analytics = analytics,
                         sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                         isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()

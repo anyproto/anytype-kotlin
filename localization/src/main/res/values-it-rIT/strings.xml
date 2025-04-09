@@ -1680,8 +1680,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Seleziona</string>
     <string name="field_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="field_menu_remove_from_object">Rimuovi dall\'oggetto</string>
-    <string name="space_settings_space_name_hint">Nome</string>
-    <string name="space_settings_space_description_hint">Descrizione</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Aggiungi una descrizione</string>
     <string name="space_settings_section_collaboration">Collaborazione</string>
     <string name="space_settings_section_content_model">Modello di contenuto</string>
     <string name="space_settings_section_preferences">Preferenze</string>

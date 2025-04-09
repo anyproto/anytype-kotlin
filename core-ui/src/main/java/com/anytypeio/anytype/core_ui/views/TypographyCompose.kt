@@ -61,6 +61,14 @@ val HeadlineSubheading =
 
 //Content/Body/Bold
 val BodyBold = TextStyle(
+    fontFamily = fontInterBold,
+    fontWeight = FontWeight.W700,
+    fontSize = 17.sp,
+    lineHeight = 24.sp,
+    letterSpacing = (-0.024).em
+)
+
+val BodySemiBold = TextStyle(
     fontFamily = fontInterSemibold,
     fontWeight = FontWeight.W600,
     fontSize = 17.sp,

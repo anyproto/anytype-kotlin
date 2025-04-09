@@ -267,11 +267,6 @@ fun MigrationInProgressScreen() {
                     color = colorResource(R.color.palette_dark_blue),
                     trackColor = colorResource(R.color.shape_primary)
                 )
-                Image(
-                    modifier = Modifier.align(Alignment.Center),
-                    painter = painterResource(R.drawable.ic_migration_error_exclamation),
-                    contentDescription = null
-                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(

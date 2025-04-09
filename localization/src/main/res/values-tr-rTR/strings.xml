@@ -1679,8 +1679,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="field_checkbox_title">Seç</string>
     <string name="field_menu_add_to_type">Geçerli türe ekle</string>
     <string name="field_menu_remove_from_object">Nesneden sil</string>
-    <string name="space_settings_space_name_hint">İsim</string>
-    <string name="space_settings_space_description_hint">Açıklama</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Açıklama ekle</string>
     <string name="space_settings_section_collaboration">İş Birliği</string>
     <string name="space_settings_section_content_model">İçerik Modeli</string>
     <string name="space_settings_section_preferences">Tercihler</string>

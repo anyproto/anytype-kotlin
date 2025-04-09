@@ -1679,8 +1679,8 @@ En concreto,
     <string name="field_checkbox_title">Seleccionar</string>
     <string name="field_menu_add_to_type">Añadir al tipo actual</string>
     <string name="field_menu_remove_from_object">Quitar del objeto</string>
-    <string name="space_settings_space_name_hint">Nombre</string>
-    <string name="space_settings_space_description_hint">Descripción</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Añadir una descripción</string>
     <string name="space_settings_section_collaboration">Colaboración</string>
     <string name="space_settings_section_content_model">Modelo de contenido</string>
     <string name="space_settings_section_preferences">Preferencias</string>

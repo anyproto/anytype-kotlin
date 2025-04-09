@@ -107,14 +107,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
         with(lifecycleScope) {
             subscribe(binding.editBtn.clicks()) { vm.onEditButtonClicked() }
             subscribe(binding.doneBtn.clicks()) { vm.onDoneButtonClicked() }
-            subscribe(binding.iconAdd.clicks()) {
-                RelationAddToDataViewFragment.new(
-                    ctx = ctx,
-                    dv = dv,
-                    viewer = viewer,
-                    space = space
-                ).showChildFragment()
-            }
+            subscribe(binding.iconAdd.clicks()) { vm.onAddButtonClicked() }
             subscribe(vm.commands) { command ->
                 when (command) {
                     is ObjectSetSettingsViewModel.Command.OpenTypePropertiesScreen -> {
@@ -127,6 +120,22 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
                             Timber.e(
                                 it,
                                 "Error while opening object type fields from object fields list"
+                            )
+                        }
+                    }
+
+                    ObjectSetSettingsViewModel.Command.OpenRelationAddToDataView -> {
+                        runCatching {
+                            RelationAddToDataViewFragment.new(
+                                ctx = ctx,
+                                dv = dv,
+                                viewer = viewer,
+                                space = space
+                            ).showChildFragment()
+                        }.onFailure {
+                            Timber.e(
+                                it,
+                                "Error while opening relation add to data view"
                             )
                         }
                     }

@@ -19,7 +19,9 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -70,6 +72,8 @@ fun AddFieldScreen(
 
     val lazyListState = rememberLazyListState()
 
+    val scrollState = rememberScrollState()
+
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -90,10 +94,12 @@ fun AddFieldScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp)
+                        .verticalScroll(scrollState)
                 )
                 DefaultSearchBar(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .verticalScroll(scrollState)
                         .padding(horizontal = 20.dp, vertical = 10.dp),
                     hint = R.string.object_type_add_property_screen_search_hint
                 ) { newQuery ->

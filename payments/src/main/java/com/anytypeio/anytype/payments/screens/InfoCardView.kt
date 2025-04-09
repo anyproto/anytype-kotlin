@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Relations2
 
 @Composable
@@ -60,7 +61,7 @@ fun InfoCard(
                 .verticalScroll(rememberScrollState()),
             text = title,
             color = colorResource(id = R.color.text_primary),
-            style = BodyBold,
+            style = BodySemiBold,
             textAlign = TextAlign.Center
         )
         Text(

@@ -32,9 +32,7 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
 import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
 import com.anytypeio.anytype.presentation.extension.getStruct
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
@@ -188,11 +186,9 @@ class RelationListViewModel(
         }
 
         return buildList {
-            //DROID-3505 - temporarily disable header fields
-//            if (headerFields.isNotEmpty()) {
-//                add(Model.Section.Header)
-//                addAll(headerFields)
-//            }
+            if (headerFields.isNotEmpty()) {
+                addAll(headerFields)
+            }
 
             //todo file fields are off for now
             if (false) {
@@ -205,84 +201,32 @@ class RelationListViewModel(
                 }
             }
 
-            val currentHiddenState = views.value.firstOrNull { it is Model.Section.Hidden }
-            if (currentHiddenState is Model.Section.Hidden.Shown) {
-                add(
-                    Model.Section.Hidden.Shown(
-                        hiddenFields
+            if (hiddenFields.isNotEmpty()) {
+                val currentHiddenState = views.value.firstOrNull { it is Model.Section.Hidden }
+                if (currentHiddenState is Model.Section.Hidden.Shown) {
+                    add(
+                        Model.Section.Hidden.Shown(items = hiddenFields)
                     )
-                )
-                addAll(hiddenFields)
-            } else {
-                add(
-                    Model.Section.Hidden.Unshown(
-                        hiddenFields
+                    addAll(hiddenFields)
+                } else {
+                    add(
+                        Model.Section.Hidden.Unshown(items = hiddenFields)
                     )
-                )
+                }
             }
 
             if (localFields.isNotEmpty()) {
-                add(Model.Section.Local)
-                addAll(localFields)
-            }
-        }
-    }
-
-    private suspend fun constructViews(
-        ctx: Id,
-        details: ObjectViewDetails
-    ): List<Model> {
-
-        val objectRelationViews = details.getObjRelationsViews(
-            ctx = ctx,
-            storeOfRelations = storeOfRelations,
-            fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
-            storeOfObjectTypes = storeOfObjectTypes
-        ).map { view ->
-            Model.Item(
-                view = view,
-                isLocal = false
-            )
-        }
-
-        val recommendedRelationViews = details.getRecommendedRelations(
-            ctx = ctx,
-            storeOfRelations = storeOfRelations,
-            fieldParser = fieldParser,
-            urlBuilder = urlBuilder,
-            storeOfObjectTypes = storeOfObjectTypes
-        ).map { view ->
-            Model.Item(
-                view = view,
-                isLocal = false
-            )
-        }
-
-        val objectWrapperType = details.getTypeForObject(currentObjectId = ctx)
-
-        return buildFinalList(
-            objectRelations = objectRelationViews,
-            recommendedRelations = recommendedRelationViews,
-            objectTypeWrapper = objectWrapperType
-        )
-    }
-
-    private fun buildFinalList(
-        objectRelations: List<Model.Item>,
-        recommendedRelations: List<Model.Item>,
-        objectTypeWrapper: ObjectWrapper.Type?
-    ): MutableList<Model> {
-        return mutableListOf<Model>().apply {
-            val (isFeatured, other) = objectRelations.partition { it.view.featured }
-            if (isFeatured.isNotEmpty()) {
-                addAll(isFeatured)
-            }
-            if (other.isNotEmpty()) {
-                addAll(other)
-            }
-            if (recommendedRelations.isNotEmpty()) {
-                addAll(recommendedRelations)
+                val currentLocalState = views.value.firstOrNull { it is Model.Section.Local }
+                if (currentLocalState is Model.Section.Local.Shown) {
+                    add(
+                        Model.Section.Local.Shown(items = localFields)
+                    )
+                    addAll(localFields)
+                } else {
+                    add(
+                        Model.Section.Local.Unshown(items = localFields)
+                    )
+                }
             }
         }
     }
@@ -349,6 +293,33 @@ class RelationListViewModel(
             }
             is Model.Section.Hidden.Unshown -> {
                 newList[index] = Model.Section.Hidden.Shown(item.items)
+                newList.addAll(index + 1, item.items)
+            }
+        }
+        views.value = newList
+    }
+
+    fun onLocalToggle(item: Model.Section.Local) {
+        val currentList = views.value
+
+        val index = currentList.indexOfFirst {
+            it is Model.Section.Local
+        }
+        if (index == -1) return
+
+        val newList = currentList.toMutableList()
+
+        when (item) {
+            is Model.Section.Local.Shown -> {
+                newList[index] = Model.Section.Local.Unshown(item.items)
+                repeat(item.items.size) {
+                    if (newList.size > index + 1) {
+                        newList.removeAt(index + 1)
+                    }
+                }
+            }
+            is Model.Section.Local.Unshown -> {
+                newList[index] = Model.Section.Local.Shown(item.items)
                 newList.addAll(index + 1, item.items)
             }
         }
@@ -737,8 +708,18 @@ class RelationListViewModel(
                 override val identifier: String get() = "Section_SideBar"
             }
 
-            data object Local : Section() {
-                override val identifier: String get() = "Section_Local"
+            sealed class Local : Section() {
+                data class Shown(
+                    val items: List<Model.Item>
+                ) : Local() {
+                    override val identifier: String get() = "Section_Local_Shown"
+                }
+
+                data class Unshown(
+                    val items: List<Model.Item>
+                ) : Local() {
+                    override val identifier: String get() = "Section_Local_Unshown"
+                }
             }
 
             sealed class Hidden : Section() {

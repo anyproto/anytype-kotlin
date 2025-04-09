@@ -2934,6 +2934,21 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
     }
 
+    @Throws(Exception::class)
+    fun setDataViewProperties(
+        command: Command.SetDataViewProperties
+    ): Payload {
+        val request = Rpc.BlockDataview.Relation.Set.Request(
+            contextId = command.objectId,
+            blockId = command.blockId,
+            relationKeys = command.properties
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewRelationSet(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

@@ -673,4 +673,10 @@ sealed class Command {
         val objectTypeId: String,
         val fields: List<Id>
     ) : Command()
+
+    data class SetDataViewProperties(
+        val objectId: Id,
+        val blockId: Id,
+        val properties: List<Key>
+    ) : Command()
 }

@@ -1114,4 +1114,8 @@ class BlockDataRepository(
     override suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields) {
         remote.objectTypeSetRecommendedFields(command)
     }
+
+    override suspend fun setDataViewProperties(command: Command.SetDataViewProperties): Payload {
+        return remote.setDataViewProperties(command)
+    }
 }

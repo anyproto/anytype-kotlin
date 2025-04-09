@@ -207,7 +207,7 @@ sealed class ObjectWrapper {
         val iconOption: Double? by default
 
         val allRecommendedRelations: List<Id>
-            get() = recommendedRelations + recommendedFeaturedRelations + recommendedHiddenRelations + recommendedFileRelations
+            get() = recommendedFeaturedRelations + recommendedRelations + recommendedFileRelations + recommendedHiddenRelations
 
         val isValid get() =
             map.containsKey(Relations.UNIQUE_KEY) && map.containsKey(Relations.ID)

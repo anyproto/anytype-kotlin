@@ -655,13 +655,13 @@ fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
     viewerRelations: List<DVViewerRelation>
 ): List<SimpleRelationView> = this.map { dataViewRelation ->
     val isVisible =
-        viewerRelations.firstOrNull { it.key == dataViewRelation.key }?.isVisible ?: false
+        viewerRelations.firstOrNull { it.key == dataViewRelation.key }?.isVisible == true
     SimpleRelationView(
         key = dataViewRelation.key,
         title = dataViewRelation.name.orEmpty(),
         format = dataViewRelation.format.toView(),
         isVisible = isVisible,
-        isHidden = dataViewRelation.isHidden ?: false,
+        isHidden = dataViewRelation.isHidden == true,
         isReadonly = dataViewRelation.isReadonlyValue,
         isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key)
     )

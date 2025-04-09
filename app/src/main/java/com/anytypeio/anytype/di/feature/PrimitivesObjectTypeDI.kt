@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -9,6 +10,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -39,6 +41,7 @@ import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesVmFactory
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
@@ -74,6 +77,14 @@ interface ObjectTypeComponent {
 
 @Module
 object ObjectTypeModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewProperties(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewProperties = SetDataViewProperties(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -175,6 +186,7 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
+    fun dispatcher(): Dispatcher<Payload>
 }
 
 //region Space Types Screen

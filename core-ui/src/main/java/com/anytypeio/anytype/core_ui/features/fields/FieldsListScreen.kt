@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.features.fields
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.relations.resRelati
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Model
@@ -306,6 +309,12 @@ fun FieldListScreen(
                         item = item,
                         onToggle = onHiddenToggle
                     )
+
+                    Model.Section.Empty -> {
+                        SectionEmpty() {
+                            onTypeIconClicked()
+                        }
+                    }
                 }
             }
         )
@@ -428,11 +437,41 @@ private fun SectionHidden(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun SectionEmpty(
+    onClick: () -> Unit
+) {
+    val defaultModifier = Modifier
+        .fillMaxWidth()
+        .combinedClickable(
+            onClick = onClick,
+        )
+        .border(
+            width = 1.dp,
+            color = colorResource(id = R.color.shape_secondary),
+            shape = RoundedCornerShape(12.dp)
+        )
+        .padding(vertical = 16.dp)
+        .padding(horizontal = 16.dp)
+    Box(
+        modifier = defaultModifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.object_properties_empty_state),
+            style = Relations1,
+            color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun FieldListScreenPreview() {
     FieldListScreen(
         state = listOf(
+            Model.Section.Empty,
             Model.Item(
                 view = ObjectRelationView.Default(
                     id = "id3",

@@ -1892,6 +1892,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_section_hidden">Hidden</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
 
     <string name="object_type_open_type_error">Failed to open the object type</string>
 

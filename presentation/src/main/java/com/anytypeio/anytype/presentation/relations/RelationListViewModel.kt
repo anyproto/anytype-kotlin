@@ -209,9 +209,16 @@ class RelationListViewModel(
                     )
                     addAll(hiddenFields)
                 } else {
+                    if (headerFields.isEmpty() && sidebarFields.isEmpty() && localFields.isEmpty()) {
+                        add(Model.Section.Empty)
+                    }
                     add(
                         Model.Section.Hidden.Unshown(items = hiddenFields)
                     )
+                }
+            } else {
+                if (headerFields.isEmpty() && sidebarFields.isEmpty() && localFields.isEmpty()) {
+                    add(Model.Section.Empty)
                 }
             }
 
@@ -734,6 +741,10 @@ class RelationListViewModel(
                 ) : Hidden() {
                     override val identifier: String get() = "Section_Hidden_Unshown"
                 }
+            }
+
+            data object Empty : Section() {
+                override val identifier: String get() = "Section_Empty"
             }
         }
 

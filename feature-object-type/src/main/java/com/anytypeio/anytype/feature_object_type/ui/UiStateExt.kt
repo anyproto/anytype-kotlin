@@ -152,12 +152,12 @@ suspend fun buildUiPropertiesList(
         if (showHiddenProperty) {
             add(Section.Hidden(canAdd = false))
             addAll(hiddenItems)
-            addAll(conflictedSystemItems)
         }
 
-        if (conflictedItems.isNotEmpty()) {
+        if (conflictedItems.isNotEmpty() || conflictedSystemItems.isNotEmpty()) {
             add(Section.Local(canAdd = false))
             addAll(conflictedItems)
+            addAll(conflictedSystemItems)
         }
     }
 }

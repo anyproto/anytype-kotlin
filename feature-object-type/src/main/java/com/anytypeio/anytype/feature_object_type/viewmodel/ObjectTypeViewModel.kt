@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -107,7 +108,8 @@ class ObjectTypeViewModel(
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -778,7 +780,7 @@ class ObjectTypeViewModel(
                         is UiFieldsListItem.Section -> currentSection = item
                     }
                 }
-                proceedWithUpdatingTypeFields(
+                proceedWithUpdatingTypeProperties(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
                     hiddenFields = hiddenItems,
@@ -813,7 +815,7 @@ class ObjectTypeViewModel(
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
-            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
+            is FieldEvent.FieldItemMenu.OnRemoveFromTypeClick -> {
                 val deleteId = event.id
                 val headerItems = mutableListOf<UiFieldsListItem.Item>()
                 val sideBarItems = mutableListOf<UiFieldsListItem.Item>()
@@ -847,7 +849,7 @@ class ObjectTypeViewModel(
                         is UiFieldsListItem.Section -> currentSection = item
                     }
                 }
-                proceedWithUpdatingTypeFields(
+                proceedWithUpdatingTypeProperties(
                     headerFields = headerItems,
                     sidebarFields = sideBarItems,
                     hiddenFields = hiddenItems,
@@ -867,6 +869,27 @@ class ObjectTypeViewModel(
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
             }
+
+            is FieldEvent.FieldItemMenu.OnMoveToBinClick -> {
+                proceedWithMovePropertyToBin(propertyId = event.id)
+            }
+        }
+    }
+
+    private fun proceedWithMovePropertyToBin(propertyId: Id) {
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(propertyId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Property $propertyId moved to bin")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving property $propertyId to bin")
+                }
+            )
         }
     }
 
@@ -928,13 +951,13 @@ class ObjectTypeViewModel(
     //endregion
 
     //region USE CASES
-    private fun proceedWithUpdatingTypeFields(
+    private fun proceedWithUpdatingTypeProperties(
         headerFields: List<UiFieldsListItem.Item>,
         sidebarFields: List<UiFieldsListItem.Item>,
         hiddenFields: List<UiFieldsListItem.Item>,
         fileFields: List<UiFieldsListItem.Item>
     ) {
-        Timber.d("proceedWithUpdatingTypeFields")
+        Timber.d("proceedWithUpdatingTypeProperties")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
@@ -947,10 +970,10 @@ class ObjectTypeViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
-                    Timber.d("Fields updated")
+                    Timber.d("Properties updated")
                 },
                 onFailure = {
-                    Timber.e(it, "Error while updating fields")
+                    Timber.e(it, "Error while updating properties")
                 }
             )
         }

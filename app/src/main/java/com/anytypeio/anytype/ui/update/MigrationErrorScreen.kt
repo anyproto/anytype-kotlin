@@ -375,7 +375,7 @@ fun MigrationFailedScreen(
 @Composable
 fun MigrationInProgressScreenPreview() {
     MigrationInProgressScreen(
-        progress = 0.5f
+        progress = 0.2f
     )
 }
 

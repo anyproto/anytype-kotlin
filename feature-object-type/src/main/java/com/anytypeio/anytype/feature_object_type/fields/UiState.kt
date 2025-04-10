@@ -45,6 +45,7 @@ sealed class UiFieldsListItem {
         abstract val format: RelationFormat
         abstract val limitObjectTypes: List<Id>
         abstract val isPossibleToUnlinkFromType: Boolean
+        abstract val isPossibleToMoveToBin: Boolean
         abstract val isEditableField: Boolean
 
         data class Draggable(
@@ -54,6 +55,7 @@ sealed class UiFieldsListItem {
             override val format: RelationFormat,
             override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean,
+            override val isPossibleToMoveToBin: Boolean,
             override val isEditableField: Boolean,
             val isPossibleToDrag: Boolean
         ) : Item()
@@ -65,6 +67,7 @@ sealed class UiFieldsListItem {
             override val format: RelationFormat,
             override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean = false,
+            override val isPossibleToMoveToBin: Boolean = false,
             override val isEditableField: Boolean
         ) : Item()
     }

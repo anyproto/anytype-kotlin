@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_models.primitives.Value
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -60,7 +61,9 @@ interface FieldParser {
 
     fun isPropertyEditable(property: ObjectWrapper.Relation): Boolean
 
-    fun isPropertyCanBeDeletedFromType(property: ObjectWrapper.Relation): Boolean
+    fun isPropertyCanBeUnlinkedFromType(property: ObjectWrapper.Relation): Boolean
+
+    fun isPossibleToMovePropertyToBin(property: ObjectWrapper.Relation): Boolean
 }
 
 class FieldParserImpl @Inject constructor(
@@ -331,8 +334,13 @@ class FieldParserImpl @Inject constructor(
                 Relations.systemRelationKeys.contains(relation.key))
     }
 
-    override fun isPropertyCanBeDeletedFromType(property: ObjectWrapper.Relation): Boolean {
-        return !(property.isHidden == true || Relations.systemRelationKeys.contains(property.key))
+    override fun isPropertyCanBeUnlinkedFromType(property: ObjectWrapper.Relation): Boolean {
+        return property.isHidden != true
     }
+
+    override fun isPossibleToMovePropertyToBin(property: ObjectWrapper.Relation): Boolean {
+        return property.isHidden != true && !property.restrictions.contains(ObjectRestriction.DELETE)
+    }
+
     //endregion
 }

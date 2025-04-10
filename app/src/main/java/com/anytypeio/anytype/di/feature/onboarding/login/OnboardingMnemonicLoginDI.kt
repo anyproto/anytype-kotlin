@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.data.auth.event.EventProcessMigrationDateChannel
+import com.anytypeio.anytype.data.auth.event.EventProcessMigrationRemoteChannel
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -21,7 +23,10 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.EventProcessMigrationChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.interactor.EventProcessMigrationMiddlewareChannel
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -83,6 +88,18 @@ object OnboardingMnemonicLoginModule {
 
         @Binds
         @PerScreen
+        fun bindMigrationChannel(
+            impl: EventProcessMigrationDateChannel
+        ): EventProcessMigrationChannel
+
+        @Binds
+        @PerScreen
+        fun bindMigrationRemoteChannel(
+            impl: EventProcessMigrationMiddlewareChannel
+        ): EventProcessMigrationRemoteChannel
+
+        @Binds
+        @PerScreen
         fun bindViewModelFactory(
             factory: OnboardingMnemonicLoginViewModel.Factory
         ): ViewModelProvider.Factory
@@ -108,4 +125,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun debugAccountSelectTrace(): DebugAccountSelectTrace
     fun logger(): Logger
+    fun eventProxy(): EventProxy
 }

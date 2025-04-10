@@ -5,6 +5,8 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.data.auth.event.EventProcessMigrationDateChannel
+import com.anytypeio.anytype.data.auth.event.EventProcessMigrationRemoteChannel
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -31,7 +33,10 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.EventProcessMigrationChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.interactor.EventProcessMigrationMiddlewareChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
@@ -185,6 +190,18 @@ object SplashModule {
         fun bindMigrationHelperDelegate(
             impl: MigrationHelperDelegate.Impl
         ): MigrationHelperDelegate
+
+        @Binds
+        @PerScreen
+        fun bindMigrationChannel(
+            impl: EventProcessMigrationDateChannel
+        ): EventProcessMigrationChannel
+
+        @Binds
+        @PerScreen
+        fun bindMigrationRemoteChannel(
+            impl: EventProcessMigrationMiddlewareChannel
+        ): EventProcessMigrationRemoteChannel
     }
 
 }
@@ -211,4 +228,5 @@ interface SplashDependencies : ComponentDependencies {
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun logger(): Logger
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun eventProxy(): EventProxy
 }

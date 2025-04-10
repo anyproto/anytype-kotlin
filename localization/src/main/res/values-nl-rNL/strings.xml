@@ -1019,6 +1019,7 @@
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De leegte betreden</string>
     <string name="onboarding_your_key_can_t_be_empty">Je herstelsleutel mag niet leeg zijn</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Lees meer over Sleutel</string>
     <string name="onboarding_key_additional_info">Je kunt deze herstelsleutel later terugvinden in de app instellingen</string>
     <string name="onboarding_what_is_the_key">Wat is de herstelsleutel?</string>

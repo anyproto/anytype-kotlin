@@ -32,6 +32,20 @@ data class Process(
 
     sealed class Event {
 
+        sealed class Migration : Event() {
+            data class New(
+                val process: Process
+            ) : Migration()
+
+            data class Update(
+                val process: Process
+            ) : Migration()
+
+            data class Done(
+                val process: Process
+            ) : Migration()
+        }
+
         sealed class DropFiles : Event() {
             data class New(
                 val process: Process

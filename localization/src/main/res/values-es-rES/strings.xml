@@ -1019,6 +1019,7 @@
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando a tu arca</string>
     <string name="onboarding_your_key_can_t_be_empty">La clave no puede estar vacía.</string>
+    <string name="onboarding_your_name">Tu nombre</string>
     <string name="onboarding_mnemonic_read_more">Más información sobre la clave</string>
     <string name="onboarding_key_additional_info">Puedes ver esta clave más adelante en los ajustes de la aplicación.</string>
     <string name="onboarding_what_is_the_key">¿Qué es una clave?</string>
@@ -1623,7 +1624,7 @@ En concreto,
     <string name="object_properties_section_hidden">Oculto</string>
     <string name="object_properties_local_info_title">Propiedades locales</string>
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
-    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_properties_empty_state">Aún no hay propiedades. Añade algunas a este tipo.</string>
     <string name="object_type_open_type_error">Error al abrir el tipo de objeto</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>

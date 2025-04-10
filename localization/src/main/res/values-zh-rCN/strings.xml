@@ -1017,6 +1017,7 @@
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">输入无效</string>
     <string name="onboarding_your_key_can_t_be_empty">密钥不能为空</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">进一步了解什么是密钥</string>
     <string name="onboarding_key_additional_info">您之后可以在本应用的设置中找到此密钥</string>
     <string name="onboarding_what_is_the_key">什么是密钥？</string>

@@ -1017,6 +1017,7 @@
     <string name="onboarding_login_or">或</string>
     <string name="onboarding_entering_void_title">正在進入 Void 身份集錦圖表</string>
     <string name="onboarding_your_key_can_t_be_empty">您的密鑰不能為空</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Read more about Key</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">什麼是密鑰？</string>

@@ -6,9 +6,13 @@ import com.anytypeio.anytype.core_models.Process.State
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.workspace.EventProcessMigrationChannel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.scan
+
+typealias MigrationEvents = List<Event.Migration>
 
 sealed class GenericProcessProgressState {
     data object Init : GenericProcessProgressState()
@@ -20,9 +24,9 @@ sealed class GenericProcessProgressState {
         private val dispatchers: AppCoroutineDispatchers,
         private val channel: EventProcessMigrationChannel
     ) {
-        val state = channel
+        val state : Flow<GenericProcessProgressState> = channel
             .observe()
-            .scan<List<Event.Migration>, GenericProcessProgressState>(
+            .scan<MigrationEvents, GenericProcessProgressState>(
                 initial = Init
             ) { state, events ->
                 var result = state
@@ -70,6 +74,7 @@ sealed class GenericProcessProgressState {
                 }
                 result
             }
+            .distinctUntilChanged()
             .flowOn(dispatchers.io)
             .catch {
                 emit(Error(it))

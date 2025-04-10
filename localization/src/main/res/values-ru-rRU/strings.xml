@@ -1023,6 +1023,7 @@
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_your_key_can_t_be_empty">Ваш ключ не может быть пустым</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Подробнее о Ключе</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>

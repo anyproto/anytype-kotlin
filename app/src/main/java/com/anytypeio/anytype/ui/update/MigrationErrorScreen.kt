@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.update
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -245,7 +246,9 @@ fun MigrationStartScreenPreview() {
 }
 
 @Composable
-fun MigrationInProgressScreen() {
+fun MigrationInProgressScreen(
+    @FloatRange(from = 0.0, to = 1.0) progress: Float
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -260,6 +263,7 @@ fun MigrationInProgressScreen() {
                     .fillMaxWidth()
             ) {
                 CircularProgressIndicator(
+                    progress = { progress },
                     modifier = Modifier
                         .size(88.dp)
                         .align(Alignment.Center),
@@ -370,7 +374,9 @@ fun MigrationFailedScreen(
 @DefaultPreviews
 @Composable
 fun MigrationInProgressScreenPreview() {
-    MigrationInProgressScreen()
+    MigrationInProgressScreen(
+        progress = 0.5f
+    )
 }
 
 @DefaultPreviews

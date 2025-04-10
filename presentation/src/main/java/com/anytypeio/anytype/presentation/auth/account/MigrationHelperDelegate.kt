@@ -63,8 +63,11 @@ interface MigrationHelperDelegate {
     sealed class State {
         data object Init: State()
         sealed class InProgress : State() {
-            data object Idle : InProgress()
-            data class Progress(val processId: Id, val progress: Float) : InProgress()
+            abstract val progress: Float
+            data object Idle : InProgress() {
+                override val progress: Float = 0f
+            }
+            data class Progress(val processId: Id, override val progress: Float) : InProgress()
         }
         sealed class Failed : State() {
             data class UnknownError(val error: Throwable) : Failed()

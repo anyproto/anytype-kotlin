@@ -10,3 +10,7 @@ interface EventProcessImportChannel {
 interface EventProcessDropFilesChannel {
     fun observe(): Flow<List<Process.Event.DropFiles>>
 }
+
+interface EventProcessMigrationChannel {
+    fun observe(): Flow<List<Process.Event.Migration>>
+}

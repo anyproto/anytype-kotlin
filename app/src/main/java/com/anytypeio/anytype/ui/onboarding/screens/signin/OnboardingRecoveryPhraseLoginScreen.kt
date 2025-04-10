@@ -228,7 +228,7 @@ fun RecoveryScreen(
                     )
                 }
                 is SetupState.Migration.InProgress -> {
-                    MigrationInProgressScreen()
+                    MigrationInProgressScreen(progress = state.progress.progress)
                 }
                 is SetupState.Migration.AwaitingStart -> {
                     MigrationStartScreen(

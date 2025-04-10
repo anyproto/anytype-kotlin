@@ -90,7 +90,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                                             )
                                         }
                                         is SplashViewModel.State.Migration.InProgress -> {
-                                            MigrationInProgressScreen()
+                                            MigrationInProgressScreen(
+                                                progress = state.progress
+                                            )
                                         }
                                         is SplashViewModel.State.Migration.Failed -> {
                                             MigrationFailedScreen(

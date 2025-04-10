@@ -156,7 +156,6 @@ class EventProcessMigrationMiddlewareChannel(
                                 null
                             }
                         }
-
                         eventProcessDone != null -> {
                             val process = eventProcessDone.process
                             val processType = process?.migration

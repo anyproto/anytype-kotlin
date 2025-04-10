@@ -1019,6 +1019,7 @@
     <string name="onboarding_login_or">YA DA</string>
     <string name="onboarding_entering_void_title">Void\'e giriliyor</string>
     <string name="onboarding_your_key_can_t_be_empty">Anahtar alanı boş olamaz</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Anahtar hakkında daha fazlasını okuyun</string>
     <string name="onboarding_key_additional_info">Bu anahtarı daha sonra uygulama ayarlarında bulabilirsiniz.</string>
     <string name="onboarding_what_is_the_key">Anahtar nedir?</string>

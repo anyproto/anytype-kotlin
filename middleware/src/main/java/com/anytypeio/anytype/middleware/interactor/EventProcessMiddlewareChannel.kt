@@ -6,6 +6,7 @@ import com.anytypeio.anytype.data.auth.event.EventProcessImportRemoteChannel
 import com.anytypeio.anytype.data.auth.event.EventProcessMigrationRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -121,7 +122,7 @@ class EventProcessImportMiddlewareChannel(
     }
 }
 
-class EventProcessMigrationMiddlewareChannel(
+class EventProcessMigrationMiddlewareChannel @Inject constructor(
     private val events: EventProxy
 ) : EventProcessMigrationRemoteChannel {
 

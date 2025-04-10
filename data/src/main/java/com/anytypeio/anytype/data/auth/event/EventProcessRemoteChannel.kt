@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.domain.workspace.EventProcessDropFilesChannel
 import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
 import com.anytypeio.anytype.domain.workspace.EventProcessMigrationChannel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 interface EventProcessImportRemoteChannel {
@@ -36,7 +37,7 @@ interface EventProcessMigrationRemoteChannel {
     fun observe(): Flow<List<Process.Event.Migration>>
 }
 
-class EventProcessMigrationDateChannel(
+class EventProcessMigrationDateChannel @Inject constructor(
     private val channel: EventProcessMigrationRemoteChannel
 ) : EventProcessMigrationChannel {
 

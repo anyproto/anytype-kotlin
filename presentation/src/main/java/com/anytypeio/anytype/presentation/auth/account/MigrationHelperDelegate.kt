@@ -80,9 +80,9 @@ interface MigrationHelperDelegate {
 typealias MigrationEvents = List<Event.Migration>
 
 class MigrationProgressObserver @Inject constructor(
-    channel: EventProcessMigrationChannel
+    private val channel: EventProcessMigrationChannel
 ) {
-    val state : Flow<MigrationHelperDelegate.State> = channel
+    val state : Flow<MigrationHelperDelegate.State> get() = channel
         .observe()
         .scan<MigrationEvents, MigrationHelperDelegate.State>(
             initial = MigrationHelperDelegate.State.InProgress.Idle

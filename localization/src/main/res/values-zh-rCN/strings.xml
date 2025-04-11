@@ -1590,6 +1590,7 @@
     <string name="object_type_fields_section_hidden">已隐藏</string>
     <string name="object_type_fields_section_file">文件</string>
     <string name="object_type_fields_section_local_fields">在对象中找到 </string>
+    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
     <string name="object_type_fields_title">属性</string>
     <string name="object_type_fields_info_text">您正在编辑类型</string>
     <string name="object_type_fields_edit_field">编辑字段</string>
@@ -1597,6 +1598,8 @@
     <string name="object_type_fields_preview_field">预览字段</string>
     <string name="object_type_fields_btn_save">保存</string>
     <string name="object_type_fields_menu_delete">从类型取消链接</string>
+    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
+    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
     <string name="object_type_fields_menu_add_to_type">添加到当前类型</string>
     <string name="object_type_fields_menu_remove">移除</string>
     <string name="object_type_fields_local_info_title">在对象中找到</string>

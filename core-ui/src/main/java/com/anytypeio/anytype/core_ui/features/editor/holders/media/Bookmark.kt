@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -24,6 +25,7 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import kotlin.text.get
 import timber.log.Timber
 
 class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), DecoratableCardViewHolder {
@@ -43,6 +45,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
     override val decoratableCard: View = binding.bookmarkRoot
 
     override val editorTouchProcessor: EditorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> clickContainer.onTouchEvent(e) }
     )
 

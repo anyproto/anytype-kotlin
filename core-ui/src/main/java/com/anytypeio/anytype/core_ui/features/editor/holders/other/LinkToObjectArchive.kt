@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.text.Spannable
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
@@ -38,6 +39,7 @@ class LinkToObjectArchive(
     val title = binding.pageTitle
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

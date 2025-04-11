@@ -7,6 +7,7 @@ import android.text.Editable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.Lifecycle
@@ -910,7 +911,9 @@ class BlockAdapter(
             if (holder !is SupportCustomTouchProcessor) {
                 when (holder) {
                     is RelationBlockViewHolder -> {
+                        val touchSlop = ViewConfiguration.get(holder.itemView.context).scaledTouchSlop
                         val processor = EditorTouchProcessor(
+                            touchSlop = touchSlop,
                             fallback = { holder.itemView.onTouchEvent(it) },
                             onLongClick = {
                                 val pos = holder.bindingAdapterPosition

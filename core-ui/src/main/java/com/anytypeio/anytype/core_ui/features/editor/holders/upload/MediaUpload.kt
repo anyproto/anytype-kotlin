@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.upload
 
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -24,6 +25,7 @@ abstract class MediaUpload(
     abstract fun uploadClick(target: String, clicked: (ListenerType) -> Unit)
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

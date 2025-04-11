@@ -10,6 +10,7 @@ import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
@@ -34,6 +35,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(
+            touchSlop = ViewConfiguration.get(context).scaledTouchSlop,
             fallback = { e -> super.onTouchEvent(e) }
         )
     }

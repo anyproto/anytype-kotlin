@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Annuleren</string>
     <string name="file_delete_delete">Verwijder</string>
     <string name="menu_type_change">Verander type</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
@@ -1018,6 +1019,7 @@
     <string name="onboarding_login_or">OF</string>
     <string name="onboarding_entering_void_title">De leegte betreden</string>
     <string name="onboarding_your_key_can_t_be_empty">Je herstelsleutel mag niet leeg zijn</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Lees meer over Sleutel</string>
     <string name="onboarding_key_additional_info">Je kunt deze herstelsleutel later terugvinden in de app instellingen</string>
     <string name="onboarding_what_is_the_key">Wat is de herstelsleutel?</string>
@@ -1618,11 +1620,12 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_type_fields_local_info_description">Deze eigenschappen bestaan in sommige objecten, maar maken geen deel uit van het type. Voeg ze toe om ze zichtbaar te maken in alle objecten van dit type.</string>
     <string name="object_type_fields_local_info_button">Ik snap het</string>
     <string name="object_type_templates_empty">Dit type heeft geen sjablonen</string>
-    <string name="object_properties_section_local">Lokale eigenschappen</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Verborgen</string>
     <string name="object_properties_local_info_title">Lokale eigenschappen</string>
     <string name="object_properties_local_info_description">Deze eigenschappen bestaan alleen in dit object en maken geen deel uit van het type. Voeg toe aan het type om te gebruiken in alle objecten, of verwijder.</string>
-    <string name="object_type_open_type_error">Fout bij het openen van het huidige objecttype</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Maandag</string>
     <string name="day_of_week_tuesday">Dinsdag</string>
     <string name="day_of_week_wednesday">Woensdag</string>
@@ -1678,8 +1681,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="field_checkbox_title">Selecteer</string>
     <string name="field_menu_add_to_type">Voeg toe aan het huidige type</string>
     <string name="field_menu_remove_from_object">Verwijder uit het object</string>
-    <string name="space_settings_space_name_hint">Naam</string>
-    <string name="space_settings_space_description_hint">Beschrijving</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Voeg een beschrijving toe</string>
     <string name="space_settings_section_collaboration">Samenwerking</string>
     <string name="space_settings_section_content_model">Inhoud model</string>
     <string name="space_settings_section_preferences">Voorkeuren</string>

@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -135,11 +136,6 @@ fun DefaultTypeItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
-        ListWidgetObjectIcon(
-            modifier = Modifier,
-            iconSize = 20.dp,
-            icon = icon
-        )
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = name.take(10),
@@ -150,7 +146,7 @@ fun DefaultTypeItem(
         )
         Image(
             painter = painterResource(id = R.drawable.ic_disclosure_8_24),
-            contentDescription = "Members icon",
+            contentDescription = null,
             modifier = Modifier.size(24.dp)
         )
     }
@@ -322,15 +318,11 @@ fun BaseButton(
             Text(
                 modifier = Modifier
                     .wrapContentSize()
-                    .background(
-                        color = colorResource(id = R.color.transparent_active),
-                        shape = CircleShape
-                    )
                     .padding(horizontal = 6.dp),
                 text = "$count",
                 textAlign = TextAlign.Center,
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_white),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary),
             )
         }
         Image(
@@ -372,13 +364,13 @@ fun NewSpaceNameInputField(
 
     Column(modifier = modifier) {
         Text(
-            text = stringResource(id = R.string.space_name),
-            style = BodyCalloutRegular.copy(color = colorResource(id = R.color.text_primary)),
+            text = stringResource(id = R.string.name),
+            style = Caption1Regular.copy(color = colorResource(id = R.color.text_primary)),
             color = colorResource(id = R.color.text_secondary)
         )
         NewSettingsTextField(
             value = nameValue.value,
-            textStyle = BodyBold.copy(color = colorResource(id = R.color.text_primary)),
+            textStyle = BodySemiBold.copy(color = colorResource(id = R.color.text_primary)),
             onValueChange = {
                 nameValue.value = it
             },
@@ -400,6 +392,7 @@ fun NewSpaceDescriptionBlock(
     description: String,
     isEditEnabled: Boolean,
     onDescriptionSet: (String) -> Unit = {},
+    allowEmptyValue: Boolean = true
 ) {
 
     val descriptionValue = remember { mutableStateOf(description) }
@@ -414,16 +407,14 @@ fun NewSpaceDescriptionBlock(
             .debounce(300L)
             .dropWhile { input -> input == description }
             .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
-            .collect { query ->
-                onDescriptionSet(query)
-            }
+            .filter { if (allowEmptyValue) true else it.isNotEmpty() }
+            .collect { query -> onDescriptionSet(query) }
     }
 
     Column(modifier = modifier) {
         Text(
-            text = stringResource(id = R.string.space_settings_space_description_hint),
-            style = BodyCalloutRegular,
+            text = stringResource(id = R.string.description),
+            style = Caption1Regular,
             color = colorResource(id = R.color.text_secondary)
         )
         NewSettingsTextField(
@@ -450,7 +441,7 @@ fun NewSettingsTextField(
     onValueChange: (String) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    textStyle: TextStyle = BodyBold,
+    textStyle: TextStyle = BodySemiBold,
     placeholderText: String,
     isEditEnabled: Boolean
 ) {
@@ -653,8 +644,7 @@ fun AutoCreateWidgetItem(
                 checkedBorderColor = Color.Transparent,
                 uncheckedBorderColor = Color.Transparent,
                 checkedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedThumbColor = colorResource(R.color.glyph_white)
+                uncheckedTrackColor = colorResource(R.color.shape_secondary)
             )
         )
 

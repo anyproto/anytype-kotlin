@@ -531,6 +531,7 @@
     <string name="file_delete_cancel">取消</string>
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">当前视图不能被删除</string>
@@ -1016,6 +1017,7 @@
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">输入无效</string>
     <string name="onboarding_your_key_can_t_be_empty">密钥不能为空</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">进一步了解什么是密钥</string>
     <string name="onboarding_key_additional_info">您之后可以在本应用的设置中找到此密钥</string>
     <string name="onboarding_what_is_the_key">什么是密钥？</string>
@@ -1601,11 +1603,12 @@
     <string name="object_type_fields_local_info_description">这些属性仅存在于某些对象中，不是其类型的一部分。添加后可供在此类型的所有对象中使用。</string>
     <string name="object_type_fields_local_info_button">明白了</string>
     <string name="object_type_templates_empty">此类型没有任何模板</string>
-    <string name="object_properties_section_local">本地属性</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">已隐藏</string>
     <string name="object_properties_local_info_title">本地属性</string>
     <string name="object_properties_local_info_description">这些属性仅存在于该对象中，不是其类型的一部分。添加到该类型可供在所有对象中使用，或者移除.</string>
-    <string name="object_type_open_type_error">打开当前对象类型出错</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">星期一</string>
     <string name="day_of_week_tuesday">星期二</string>
     <string name="day_of_week_wednesday">星期三</string>
@@ -1661,8 +1664,8 @@
     <string name="field_checkbox_title">选择</string>
     <string name="field_menu_add_to_type">添加到当前类型</string>
     <string name="field_menu_remove_from_object">从对象中移除</string>
-    <string name="space_settings_space_name_hint">名称</string>
-    <string name="space_settings_space_description_hint">描述</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">添加描述</string>
     <string name="space_settings_section_collaboration">协作</string>
     <string name="space_settings_section_content_model">内容模型</string>
     <string name="space_settings_section_preferences">首选项</string>

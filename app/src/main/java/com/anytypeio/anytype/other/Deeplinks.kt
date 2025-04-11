@@ -138,7 +138,9 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     override fun isDeepLink(link: String): Boolean {
-        return link.contains(defaultInviteRegex) || link.contains(DEEP_LINK_PATTERN)
+        return link.contains(defaultInviteRegex)
+                || link.contains(defaultLinkToObjectRegex)
+                || link.contains(DEEP_LINK_PATTERN)
     }
 }
 

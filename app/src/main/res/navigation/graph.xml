@@ -213,6 +213,13 @@
         <action
             android:id="@+id/actionOpenSpaceSwitcher"
             app:destination="@id/selectSpaceScreen"/>
+        <action
+            android:id="@+id/actionOpenSpaceSettings"
+            app:destination="@id/spaceSettingsScreen"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -332,7 +339,7 @@
     <fragment
         android:id="@+id/spaceSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment"
-        android:label="SpaceSettingsScreen"/>
+        android:label="SpaceSettingsScreen" />
 
     <dialog
         android:id="@+id/spaceListScreen"

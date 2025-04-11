@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Abbrechen</string>
     <string name="file_delete_delete">Löschen</string>
     <string name="menu_type_change">Typ ändern</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Aktuelle Ansicht kann nicht gelöscht werden</string>
@@ -674,7 +675,7 @@
     <string name="edit_relations_title">Eigenschaften</string>
     <string name="edit_view">Ansicht bearbeiten</string>
     <string name="relation_open_edit">Zum Bearbeiten öffnen</string>
-    <string name="remove_from_set">Remove from this query</string>
+    <string name="remove_from_set">Aus dieser Abfrage entfernen</string>
     <string name="reset">Zurücksetzen</string>
     <string name="search_a_relation">Search a property</string>
     <string name="content_description_check_icon">Check icon</string>
@@ -1018,6 +1019,7 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
+    <string name="onboarding_your_name">Dein Name</string>
     <string name="onboarding_mnemonic_read_more">Mehr über Schlüssel lesen</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>
@@ -1538,10 +1540,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_sort_by">Sortiere nach</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
+    <string name="all_content_sort_date_desc">Neueste zuerst</string>
+    <string name="all_content_sort_date_asc">Älteste zuerst</string>
+    <string name="all_content_sort_date_updated">Aktualisierungsdatum</string>
+    <string name="all_content_sort_date_created">Erstellungsdatum</string>
     <string name="all_content_sort_date_used">Datum der letzten Verwendung</string>
     <string name="all_content_sort_name">Name</string>
     <string name="all_content">Alle Objekte</string>
@@ -1561,7 +1563,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_error_title">Etwas ist schiefgelaufen.</string>
     <string name="onboarding_my_first_space">Mein erster Space</string>
     <string name="all_content_error_unexpected_layout">Fehler: Unerwartetes Layout</string>
-    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_added">Eigenschaft hinzugefügt</string>
     <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Objekttyp hinzugefügt</string>
     <string name="all_content_toast_type_removed">Objekttyp entfernt</string>
@@ -1618,11 +1620,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
     <string name="object_type_fields_local_info_button">Verstanden</string>
     <string name="object_type_templates_empty">Dieser Typ hat\nkeine Vorlagen</string>
-    <string name="object_properties_section_local">Lokale Eigenschaften</string>
+    <string name="object_properties_section_local">Lokal</string>
     <string name="object_properties_section_hidden">Ausgeblendet</string>
     <string name="object_properties_local_info_title">Lokale Eigenschaften</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_type_open_type_error">Fehler beim Öffnen des aktuellen Objekttyps</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1648,7 +1651,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_settings_item_remove">Typ löschen</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
-    <string name="object_set_of_title">Query of</string>
+    <string name="object_set_of_title">Abfrage von</string>
     <string name="migration_migration_is_in_progress">Migration läuft</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
@@ -1678,8 +1681,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="field_checkbox_title">Auswählen</string>
     <string name="field_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="field_menu_remove_from_object">Aus dem Objekt entfernen</string>
-    <string name="space_settings_space_name_hint">Name</string>
-    <string name="space_settings_space_description_hint">Beschreibung</string>
+    <string name="space_settings_space_name_hint">Namen hinzufügen</string>
+    <string name="space_settings_space_description_hint">Beschreibung hinzufügen</string>
     <string name="space_settings_section_collaboration">Zusammenarbeit</string>
     <string name="space_settings_section_content_model">Inhaltsmodell</string>
     <string name="space_settings_section_preferences">Einstellungen</string>
@@ -1741,6 +1744,6 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
-    <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_title">Objekttypen</string>
     <string name="space_properties_screen_title">Eigenschaften</string>
 </resources>

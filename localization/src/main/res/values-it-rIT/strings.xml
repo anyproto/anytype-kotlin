@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Annulla</string>
     <string name="file_delete_delete">Elimina</string>
     <string name="menu_type_change">Cambia tipo</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">La vista corrente non può essere eliminata</string>
@@ -1018,6 +1019,7 @@
     <string name="onboarding_login_or">O</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_your_key_can_t_be_empty">La tua Chiave non può essere vuota</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">Per saperne di più sulla Chiave</string>
     <string name="onboarding_key_additional_info">È possibile trovare questa chiave in un secondo momento nelle impostazioni dell\'applicazione</string>
     <string name="onboarding_what_is_the_key">Cos\'è una Chiave?</string>
@@ -1619,11 +1621,12 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_description">Queste proprietà esistono in alcuni oggetti, ma non fanno parte del Tipo. Aggiungerle per farle apparire in tutti gli oggetti di questo Tipo.</string>
     <string name="object_type_fields_local_info_button">Capito</string>
     <string name="object_type_templates_empty">Questo Tipo non ha modelli</string>
-    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Nascosto</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
-    <string name="object_type_open_type_error">Errore nell\'apertura del tipo di oggetto corrente</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
     <string name="day_of_week_wednesday">Mercoledì</string>
@@ -1679,8 +1682,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Seleziona</string>
     <string name="field_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="field_menu_remove_from_object">Rimuovi dall\'oggetto</string>
-    <string name="space_settings_space_name_hint">Nome</string>
-    <string name="space_settings_space_description_hint">Descrizione</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Aggiungi una descrizione</string>
     <string name="space_settings_section_collaboration">Collaborazione</string>
     <string name="space_settings_section_content_model">Modello di contenuto</string>
     <string name="space_settings_section_preferences">Preferenze</string>

@@ -3,6 +3,8 @@ package com.anytypeio.anytype.data.auth.event
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.domain.workspace.EventProcessDropFilesChannel
 import com.anytypeio.anytype.domain.workspace.EventProcessImportChannel
+import com.anytypeio.anytype.domain.workspace.EventProcessMigrationChannel
+import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
 interface EventProcessImportRemoteChannel {
@@ -27,6 +29,19 @@ class EventProcessDropFilesDateChannel(
 ) : EventProcessDropFilesChannel {
 
     override fun observe(): Flow<List<Process.Event.DropFiles>> {
+        return channel.observe()
+    }
+}
+
+interface EventProcessMigrationRemoteChannel {
+    fun observe(): Flow<List<Process.Event.Migration>>
+}
+
+class EventProcessMigrationDateChannel @Inject constructor(
+    private val channel: EventProcessMigrationRemoteChannel
+) : EventProcessMigrationChannel {
+
+    override fun observe(): Flow<List<Process.Event.Migration>> {
         return channel.observe()
     }
 }

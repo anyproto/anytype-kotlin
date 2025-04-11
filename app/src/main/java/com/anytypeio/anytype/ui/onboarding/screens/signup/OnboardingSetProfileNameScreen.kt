@@ -94,7 +94,7 @@ private fun SetProfileNameScreen(
                     onBackClicked()
                 },
             painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-            contentDescription = "Back button"
+            contentDescription = stringResource(R.string.content_description_back_button_icon)
         )
         SetProfileNameNextButton(
             modifier = Modifier
@@ -148,7 +148,7 @@ fun SetProfileNameInput(
                 .focusRequester(focusRequester)
             ,
             text = text,
-            placeholder = stringResource(id = R.string.untitled),
+            placeholder = stringResource(id = R.string.onboarding_your_name),
             keyboardActions = KeyboardActions(
                 onDone = {
                     focus.clearFocus()

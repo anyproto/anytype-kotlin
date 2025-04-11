@@ -1138,6 +1138,7 @@
     <string name="onboarding_login_or">OR</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
+    <string name="onboarding_your_name">Your name</string>
 
     <string name="onboarding_mnemonic_read_more">Read more about Key</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
@@ -1888,10 +1889,11 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
     <string name="object_type_fields_local_info_button">Got it</string>
     <string name="object_type_templates_empty">This type doesn’t have\nany templates</string>
-    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Hidden</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
 
     <string name="object_type_open_type_error">Failed to open the object type</string>
 
@@ -1955,8 +1957,8 @@ Please provide specific details of your needs here.</string>
     <string name="field_menu_add_to_type">Add to the current type</string>
     <string name="field_menu_remove_from_object">Remove from the object</string>
 
-    <string name="space_settings_space_name_hint">Name</string>
-    <string name="space_settings_space_description_hint">Description</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Add a description</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Content Model</string>
     <string name="space_settings_section_preferences">Preferences</string>

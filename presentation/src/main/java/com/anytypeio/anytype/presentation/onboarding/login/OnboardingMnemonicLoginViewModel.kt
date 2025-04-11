@@ -318,15 +318,16 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         account = id
                     )
                 }
-                MigrationHelperDelegate.State.InProgress -> {
+                is MigrationHelperDelegate.State.InProgress -> {
                     state.value = SetupState.Migration.InProgress(
-                        account = id
+                        account = id,
+                        progress = migrationState
                     )
                 }
-                MigrationHelperDelegate.State.Migrated -> {
+                is MigrationHelperDelegate.State.Migrated -> {
                     proceedWithSelectingAccount(id)
                 }
-                MigrationHelperDelegate.State.Init -> {
+                is MigrationHelperDelegate.State.Init -> {
                     // Do nothing.
                 }
             }
@@ -435,7 +436,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         sealed class Migration : SetupState() {
             abstract val account: Id
             data class AwaitingStart(override val account: Id) : Migration()
-            data class InProgress(override val account: Id): Migration()
+            data class InProgress(
+                override val account: Id,
+                val progress: MigrationHelperDelegate.State.InProgress
+            ): Migration()
             data class Failed(
                 val state: MigrationHelperDelegate.State.Failed,
                 override val account: Id

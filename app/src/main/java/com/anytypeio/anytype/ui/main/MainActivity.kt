@@ -183,9 +183,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.RequestNotificationPermission -> {
                                 runCatching {
-                                    findNavController(R.id.fragment).navigate(
-                                        R.id.requestNotificationPermissionDialog
-                                    )
+                                    val controller = findNavController(R.id.fragment)
+                                    val currentDestination = controller.currentDestination
+                                    if (currentDestination?.id != R.id.requestNotificationPermissionDialog) {
+                                        controller.navigate(R.id.requestNotificationPermissionDialog)
+                                    } else {
+                                        Timber.w("Request permission dialog already in stack.")
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while navigation")
                                 }
@@ -393,16 +397,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
         when(intent.action) {
             Intent.ACTION_VIEW -> {
-                val data = intent.dataString
-                if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
-                    // Clearing intent to only handle it once:
-                    with(intent) {
-                        setAction(null)
-                        setData(null)
-                        putExtras(Bundle())
+                intent.data?.let { uri ->
+                    val data = uri.toString()
+                    if (DefaultDeepLinkResolver.isDeepLink(data)) {
+                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+
+                        // Optionally clear to prevent repeat
+                        intent.action = null
+                        intent.data = null
+                        intent.replaceExtras(Bundle())
                     }
-                    vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
-                } else {
+                } ?: run {
                     intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
                         vm.onIntentCreateObject(it)
                     }

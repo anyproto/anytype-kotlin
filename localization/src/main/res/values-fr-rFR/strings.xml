@@ -532,6 +532,7 @@
     <string name="file_delete_cancel">Annuler</string>
     <string name="file_delete_delete">Supprimer</string>
     <string name="menu_type_change">Changer le type</string>
+    <string name="menu_type_open">Open type</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Impossible de supprimer la vue actuelle</string>
@@ -1018,6 +1019,7 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>
+    <string name="onboarding_your_name">Your name</string>
     <string name="onboarding_mnemonic_read_more">En savoir plus sur la clé</string>
     <string name="onboarding_key_additional_info">Vous pourrez trouver cette clé plus tard dans les paramètres de l\'application</string>
     <string name="onboarding_what_is_the_key">Qu\'est-ce que la Clé ?</string>
@@ -1615,11 +1617,12 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_local_info_description">Ces propriétés existent dans certains objets mais ne font pas partie du type. Ajoutez-les pour les faire apparaître dans tous les objets de ce type.</string>
     <string name="object_type_fields_local_info_button">Compris</string>
     <string name="object_type_templates_empty">Ce type n\'a pas\nde modèle</string>
-    <string name="object_properties_section_local">Local properties</string>
+    <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Masqué</string>
     <string name="object_properties_local_info_title">Local properties</string>
     <string name="object_properties_local_info_description">Ces propriétés existent uniquement dans cet objet et ne font pas partie de son type. Ajouter au type à utiliser dans tous les objets, ou supprimer.</string>
-    <string name="object_type_open_type_error">Erreur d\'ouverture du type d\'objet actuel</string>
+    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
+    <string name="object_type_open_type_error">Failed to open the object type</string>
     <string name="day_of_week_monday">Lundi</string>
     <string name="day_of_week_tuesday">Mardi</string>
     <string name="day_of_week_wednesday">Mercredi</string>
@@ -1675,8 +1678,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="field_checkbox_title">Sélectionner</string>
     <string name="field_menu_add_to_type">Ajouter au type actuel</string>
     <string name="field_menu_remove_from_object">Retirer de l’objet</string>
-    <string name="space_settings_space_name_hint">Nom</string>
-    <string name="space_settings_space_description_hint">Description</string>
+    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_description_hint">Ajouter une description</string>
     <string name="space_settings_section_collaboration">Collaboration</string>
     <string name="space_settings_section_content_model">Modèle de contenu</string>
     <string name="space_settings_section_preferences">Préférences</string>

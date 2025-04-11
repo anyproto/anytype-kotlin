@@ -586,7 +586,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                 is Command.SearchWithMeta.Result.Meta.Source.Relation -> {
                     val relation = storeOfRelations.getByKey(source.key)
                     val dep = meta.dependencies.firstOrNull()
-                    if (relation != null && relation.map.isNotEmpty() && dep != null && dep.map.isNotEmpty()) {
+                    if (relation != null && relation.map.isNotEmpty() && relation.key != Relations.TYPE && dep != null && dep.map.isNotEmpty()) {
                         when(relation.format) {
                             SHORT_TEXT, LONG_TEXT, URL, EMAIL, PHONE -> {
                                 GlobalSearchItemView.Meta.Default(

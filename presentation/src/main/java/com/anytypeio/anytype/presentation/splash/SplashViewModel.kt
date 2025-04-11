@@ -17,11 +17,9 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
-import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -35,13 +33,11 @@ import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -116,7 +112,9 @@ class SplashViewModel(
                         // Do nothing.
                     }
                     is MigrationHelperDelegate.State.InProgress -> {
-                        state.value = State.Migration.InProgress
+                        state.value = State.Migration.InProgress(
+                            progress = migrationState.progress
+                        )
                     }
                     is MigrationHelperDelegate.State.Migrated -> {
                         proceedWithLaunchingAccount()
@@ -455,7 +453,7 @@ class SplashViewModel(
         data class Error(val msg: String): State()
         sealed class Migration : State() {
             data object AwaitingStart: Migration()
-            data object InProgress: Migration()
+            data class InProgress(val progress: Float): Migration()
             data class Failed(val state: MigrationHelperDelegate.State.Failed) : Migration()
         }
     }

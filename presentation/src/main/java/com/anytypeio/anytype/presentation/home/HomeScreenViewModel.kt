@@ -1016,13 +1016,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetSourceClicked(source: Widget.Source) {
+    fun onWidgetSourceClicked(widget: Id, source: Widget.Source) {
         Timber.d("onWidgetSourceClicked: $source")
+        val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
         when (source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source
+                    bundled = source,
+                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1037,7 +1039,8 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source
+                    bundled = source,
+                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1052,7 +1055,8 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.RecentLocal -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source
+                    bundled = source,
+                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1066,7 +1070,10 @@ class HomeScreenViewModel(
             }
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
-                    dispatchSelectHomeTabCustomSourceEvent(source)
+                    dispatchSelectHomeTabCustomSourceEvent(
+                        widget = widget,
+                        source = source
+                    )
                     proceedWithOpeningObject(source.obj)
                 } else {
                     sendToast("Open bin to restore your archived object")
@@ -1722,12 +1729,14 @@ class HomeScreenViewModel(
 
     private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
         viewModelScope.launch {
+            val isAutoCreated = widgets.value?.find { it.id == target?.id }?.isAutoCreated
             when (val source = target?.source) {
                 is Widget.Source.Bundled -> {
                     sendDeleteWidgetEvent(
                         analytics = analytics,
                         bundled = source,
-                        isInEditMode = isInEditMode()
+                        isInEditMode = isInEditMode(),
+                        isAutoCreated = isAutoCreated
                     )
                 }
                 is Widget.Source.Default -> {
@@ -1739,7 +1748,8 @@ class HomeScreenViewModel(
                                 analytics = analytics,
                                 sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
                                 isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty(),
-                                isInEditMode = isInEditMode()
+                                isInEditMode = isInEditMode(),
+                                isAutoCreated = isAutoCreated
                             )
                         } else {
                             Timber.e("Failed to dispatch analytics: source type not found in types storage")
@@ -1757,8 +1767,9 @@ class HomeScreenViewModel(
 
     private fun isInEditMode() = mode.value == InteractionMode.Edit
 
-    private fun dispatchSelectHomeTabCustomSourceEvent(source: Widget.Source) {
+    private fun dispatchSelectHomeTabCustomSourceEvent(widget: Id, source: Widget.Source) {
         viewModelScope.launch {
+            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
             val sourceObjectType = source.type
             if (sourceObjectType != null) {
                 val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
@@ -1766,7 +1777,8 @@ class HomeScreenViewModel(
                     sendClickWidgetTitleEvent(
                         analytics = analytics,
                         sourceObjectTypeId = objectTypeWrapper.sourceObject.orEmpty(),
-                        isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty()
+                        isCustomObjectType = objectTypeWrapper.sourceObject.isNullOrEmpty(),
+                        isAutoCreated = isAutoCreated
                     )
                 } else {
                     Timber.e("Failed to dispatch analytics: source type not found in types storage")
@@ -1788,9 +1800,11 @@ class HomeScreenViewModel(
             }
             when(source) {
                 is Widget.Source.Bundled -> {
+                    val isAutoCreated = widgets.value?.find { it.id == subject.id }?.isAutoCreated
                     sendReorderWidgetEvent(
                         analytics = analytics,
-                        bundled = source
+                        bundled = source,
+                        isAutoCreated = isAutoCreated
                     )
                 }
                 is Widget.Source.Default -> {

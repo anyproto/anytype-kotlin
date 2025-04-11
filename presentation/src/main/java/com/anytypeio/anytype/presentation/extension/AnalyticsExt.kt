@@ -1605,7 +1605,8 @@ fun CoroutineScope.sendDeleteWidgetEvent(
     analytics: Analytics,
     sourceObjectTypeId: Id,
     isCustomObjectType: Boolean = false,
-    isInEditMode: Boolean
+    isInEditMode: Boolean,
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         analytics = analytics,
@@ -1620,6 +1621,12 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
                 else
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                }
             }
         )
     )
@@ -1628,7 +1635,8 @@ fun CoroutineScope.sendDeleteWidgetEvent(
 fun CoroutineScope.sendDeleteWidgetEvent(
     analytics: Analytics,
     bundled: Widget.Source.Bundled,
-    isInEditMode: Boolean
+    isInEditMode: Boolean,
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         analytics = analytics,
@@ -1659,6 +1667,12 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
                 else
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                }
             }
         )
     )
@@ -1666,7 +1680,8 @@ fun CoroutineScope.sendDeleteWidgetEvent(
 
 fun CoroutineScope.sendClickWidgetTitleEvent(
     analytics: Analytics,
-    bundled: Widget.Source.Bundled
+    bundled: Widget.Source.Bundled,
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         analytics = analytics,
@@ -1675,25 +1690,27 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
             buildMap {
                 put(WidgetAnalytics.VIEW, WidgetAnalytics.VIEW_WIDGET)
                 when (bundled) {
-
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
-
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
-
                     Widget.Source.Bundled.RecentLocal -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
                     }
-
                     Widget.Source.Bundled.Bin -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_BIN)
                     }
                     Widget.Source.Bundled.AllObjects -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
+                }
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
                 }
             }
         )
@@ -1703,7 +1720,8 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
 fun CoroutineScope.sendClickWidgetTitleEvent(
     analytics: Analytics,
     sourceObjectTypeId: Id,
-    isCustomObjectType: Boolean = false
+    isCustomObjectType: Boolean = false,
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         analytics = analytics,
@@ -1715,6 +1733,12 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                     put(WidgetAnalytics.TAB, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
                     put(WidgetAnalytics.TAB, sourceObjectTypeId)
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                }
             }
         )
     )
@@ -1741,7 +1765,8 @@ fun CoroutineScope.sendReorderWidgetEvent(
 
 fun CoroutineScope.sendReorderWidgetEvent(
     analytics: Analytics,
-    bundled: Widget.Source.Bundled
+    bundled: Widget.Source.Bundled,
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         analytics = analytics,
@@ -1764,6 +1789,12 @@ fun CoroutineScope.sendReorderWidgetEvent(
                     Widget.Source.Bundled.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
+                }
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
                 }
             }
         )

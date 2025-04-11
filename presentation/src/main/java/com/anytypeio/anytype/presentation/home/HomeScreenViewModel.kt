@@ -982,7 +982,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetMenuClicked(widget: Id) {
+    fun onWidgetMenuTriggered(widget: Id) {
         viewModelScope.launch {
             val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
             analytics.sendScreenWidgetMenuEvent(

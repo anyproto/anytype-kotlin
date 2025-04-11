@@ -65,6 +65,7 @@ fun TreeWidgetCard(
     onExpandElement: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -110,7 +111,8 @@ fun TreeWidgetCard(
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
                 isInEditMode = mode is InteractionMode.Edit,
-                hasReadOnlyAccess = mode == InteractionMode.ReadOnly
+                hasReadOnlyAccess = mode == InteractionMode.ReadOnly,
+                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) }
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -253,6 +255,7 @@ fun WidgetHeader(
     isCardMenuExpanded: MutableState<Boolean>,
     isHeaderMenuExpanded: MutableState<Boolean>,
     onWidgetHeaderClicked: () -> Unit,
+    onWidgetMenuTriggered: () -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     onCreateElement: () -> Unit = {},
@@ -293,6 +296,9 @@ fun WidgetHeader(
                             onLongClick = {
                                 isCardMenuExpanded.value = !isCardMenuExpanded.value
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (isCardMenuExpanded.value) {
+                                    onWidgetMenuTriggered()
+                                }
                             },
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }

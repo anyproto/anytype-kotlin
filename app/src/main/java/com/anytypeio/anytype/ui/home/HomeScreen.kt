@@ -80,6 +80,7 @@ fun HomeScreen(
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
@@ -123,7 +124,8 @@ fun HomeScreen(
             onCreateWidget = onCreateWidget,
             onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onCreateDataViewObject = onCreateDataViewObject,
-            onCreateElement = onCreateElement
+            onCreateElement = onCreateElement,
+            onWidgetMenuTriggered = onWidgetMenuTriggered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -182,6 +184,7 @@ private fun WidgetList(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
@@ -256,7 +259,8 @@ private fun WidgetList(
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onCreateObjectInsideWidget = onCreateObjectInsideWidget
+                                onCreateObjectInsideWidget = onCreateObjectInsideWidget,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered
                             )
                         }
                     } else {
@@ -274,7 +278,8 @@ private fun WidgetList(
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onCreateObjectInsideWidget = onCreateObjectInsideWidget
+                            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered
                         )
                     }
                 }
@@ -289,7 +294,8 @@ private fun WidgetList(
                                 alpha = alpha.value,
                                 item = item,
                                 onWidgetMenuAction = onWidgetMenuAction,
-                                onWidgetSourceClicked = onWidgetSourceClicked
+                                onWidgetSourceClicked = onWidgetSourceClicked,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered
                             )
                         }
                     } else {
@@ -300,7 +306,8 @@ private fun WidgetList(
                             alpha = 1.0f,
                             item = item,
                             onWidgetMenuAction = onWidgetMenuAction,
-                            onWidgetSourceClicked = onWidgetSourceClicked
+                            onWidgetSourceClicked = onWidgetSourceClicked,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered
                         )
                     }
                 }
@@ -319,6 +326,7 @@ private fun WidgetList(
                                 onWidgetElementClicked = { obj ->
                                     onWidgetElementClicked(item.id, obj)
                                 },
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onChangeWidgetView = onChangeWidgetView,
@@ -338,6 +346,7 @@ private fun WidgetList(
                             onWidgetElementClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onChangeWidgetView = onChangeWidgetView,
@@ -605,6 +614,7 @@ private fun SetOfObjectsItem(
     item: WidgetView.SetOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -629,6 +639,7 @@ private fun SetOfObjectsItem(
             item = item,
             onWidgetObjectClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
+            onWidgetMenuTriggered = onWidgetMenuTriggered,
             onDropDownMenuAction = { action ->
                 onWidgetMenuAction(item.id, action)
             },
@@ -736,7 +747,8 @@ private fun LinkWidgetItem(
     alpha: Float,
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit
+    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -757,7 +769,8 @@ private fun LinkWidgetItem(
             },
             onWidgetSourceClicked = onWidgetSourceClicked,
             isInEditMode = mode is InteractionMode.Edit,
-            hasReadOnlyAccess = mode is InteractionMode.ReadOnly
+            hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+            onWidgetMenuTriggered = onWidgetMenuTriggered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -791,6 +804,7 @@ private fun TreeWidgetItem(
     alpha: Float,
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -822,7 +836,8 @@ private fun TreeWidgetItem(
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
-            onCreateObjectInsideWidget = onCreateObjectInsideWidget
+            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
+            onWidgetMenuClicked = onWidgetMenuTriggered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

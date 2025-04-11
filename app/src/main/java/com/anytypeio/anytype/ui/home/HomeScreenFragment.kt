@@ -210,7 +210,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
-            onCreateElement = vm::onCreateWidgetElementClicked
+            onCreateElement = vm::onCreateWidgetElementClicked,
+            onWidgetMenuTriggered = vm::onWidgetMenuTriggered
         )
     }
 

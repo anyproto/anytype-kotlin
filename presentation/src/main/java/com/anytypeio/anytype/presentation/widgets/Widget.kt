@@ -29,7 +29,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
-        override val isAutoCreated: Boolean,
+        override val isAutoCreated: Boolean = false,
         val limit: Int = 0,
     ) : Widget()
 
@@ -41,7 +41,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
-        override val isAutoCreated: Boolean,
+        override val isAutoCreated: Boolean = false,
     ) : Widget()
 
     /**
@@ -52,7 +52,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
-        override val isAutoCreated: Boolean,
+        override val isAutoCreated: Boolean = false,
         val isCompact: Boolean = false,
         val limit: Int = 0
     ) : Widget()
@@ -61,7 +61,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source.Default,
         override val config: Config,
-        override val isAutoCreated: Boolean,
+        override val isAutoCreated: Boolean = false,
         val limit: Int
     ) : Widget()
 
@@ -69,7 +69,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source.Bundled.AllObjects,
         override val config: Config,
-        override val isAutoCreated: Boolean,
+        override val isAutoCreated: Boolean = false,
     ) : Widget()
 
     sealed class Source {

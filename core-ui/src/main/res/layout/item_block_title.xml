@@ -52,13 +52,12 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageIcon"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxHeight="443dp"
         android:layout_gravity="bottom"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:scaleType="centerCrop"
         android:layout_marginTop="51dp"
         android:adjustViewBounds="true"
         android:background="@color/shape_tertiary"

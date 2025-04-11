@@ -3,12 +3,11 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
+import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
@@ -19,6 +18,8 @@ sealed class Widget {
 
     abstract val source: Source
     abstract val config: Config
+
+    val isAutoCreated = false
 
     /**
      * @property [id] id of the widget

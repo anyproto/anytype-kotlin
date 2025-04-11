@@ -1782,12 +1782,13 @@ suspend fun Analytics.sendScreenHomeEvent() {
 }
 
 suspend fun Analytics.sendOpenSidebarObjectEvent(
-    isAutoCreated: Boolean
+    isAutoCreated: Boolean?
 ) {
     sendEvent(
         eventName = EventsDictionary.openSidebarObject,
         props = Props(
             buildMap {
+                if (isAutoCreated == null) return
                 if (isAutoCreated) {
                     put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
                 } else {

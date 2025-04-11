@@ -11,7 +11,8 @@ sealed class FieldEvent {
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
     sealed class FieldItemMenu : FieldEvent() {
-        data class OnDeleteFromTypeClick(val id: Id) : FieldItemMenu()
+        data class OnRemoveFromTypeClick(val id: Id) : FieldItemMenu()
+        data class OnMoveToBinClick(val id: Id) : FieldItemMenu()
         data class OnAddLocalToTypeClick(val item: UiFieldsListItem) : FieldItemMenu()
     }
 

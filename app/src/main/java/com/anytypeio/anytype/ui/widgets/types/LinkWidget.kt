@@ -39,7 +39,7 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 fun LinkWidgetCard(
     item: WidgetView.Link,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     isInEditMode: Boolean,
     hasReadOnlyAccess: Boolean = false,
@@ -71,11 +71,11 @@ fun LinkWidgetCard(
                     }
                 } else if (hasReadOnlyAccess) {
                     Modifier.noRippleClickable {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 } else {
                     Modifier.combinedClickable(
-                        onClick = { onWidgetSourceClicked(item.source) },
+                        onClick = { onWidgetSourceClicked(item.id, item.source) },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)

@@ -65,7 +65,7 @@ fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -109,7 +109,7 @@ fun DataViewListWidgetCard(
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -196,7 +196,7 @@ fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -239,7 +239,7 @@ fun GalleryWidgetCard(
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },

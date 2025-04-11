@@ -81,7 +81,7 @@ fun HomeScreen(
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onEditWidgets: () -> Unit,
@@ -183,7 +183,7 @@ private fun WidgetList(
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -417,7 +417,7 @@ private fun WidgetList(
                                     onWidgetElementClicked(item.id, obj)
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTrrigered = onWidgetMenuTriggered,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
@@ -435,7 +435,7 @@ private fun WidgetList(
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuTrrigered = onWidgetMenuTriggered,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
@@ -462,7 +462,10 @@ private fun WidgetList(
                                 index = index,
                                 mode = mode,
                                 onWidgetClicked = {
-                                    onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
+                                    onWidgetSourceClicked(
+                                        item.id,
+                                        Widget.Source.Bundled.AllObjects
+                                    )
                                 },
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
@@ -476,7 +479,10 @@ private fun WidgetList(
                             index = index,
                             mode = mode,
                             onWidgetClicked = {
-                                onWidgetSourceClicked(Widget.Source.Bundled.AllObjects)
+                                onWidgetSourceClicked(
+                                    item.id,
+                                    Widget.Source.Bundled.AllObjects
+                                )
                             },
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
@@ -554,8 +560,8 @@ private fun ListOfObjectsItem(
     alpha: Float,
     item: WidgetView.ListOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
-    onWidgetMenuTrrigered: (WidgetId) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -585,7 +591,7 @@ private fun ListOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTrrigered
+            onWidgetMenuTriggered = onWidgetMenuTriggered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -619,7 +625,7 @@ private fun SetOfObjectsItem(
     alpha: Float,
     item: WidgetView.SetOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -688,7 +694,7 @@ private fun GalleryWidgetItem(
     alpha: Float,
     item: WidgetView.Gallery,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -755,7 +761,7 @@ private fun LinkWidgetItem(
     alpha: Float,
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
 ) {
     Box(
@@ -816,7 +822,7 @@ private fun TreeWidgetItem(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit
 ) {

@@ -48,7 +48,6 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.orNull
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -66,7 +65,8 @@ fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -109,7 +109,7 @@ fun DataViewListWidgetCard(
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -118,7 +118,8 @@ fun DataViewListWidgetCard(
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
                 canCreate = mode is InteractionMode.Default,
-                onCreateElement = { onCreateElement(item) }
+                onCreateElement = { onCreateElement(item) },
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(
@@ -195,7 +196,8 @@ fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -237,14 +239,15 @@ fun GalleryWidgetCard(
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction
+                onDropDownMenuAction = onDropDownMenuAction,
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(

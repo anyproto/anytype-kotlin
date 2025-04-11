@@ -186,7 +186,7 @@ class HomeScreenFragment : BaseComposeFragment(),
             onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                 vm.onDropDownMenuAction(widget, action)
             },
-            onWidgetObjectClicked = vm::onWidgetObjectClicked,
+            onWidgetElementClicked = vm::onWidgetElementClicked,
             onWidgetSourceClicked = vm::onWidgetSourceClicked,
             onChangeWidgetView = vm::onChangeCurrentWidgetView,
             onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
@@ -210,7 +210,8 @@ class HomeScreenFragment : BaseComposeFragment(),
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
-            onCreateElement = vm::onCreateWidgetElementClicked
+            onCreateElement = vm::onCreateWidgetElementClicked,
+            onWidgetMenuTriggered = vm::onWidgetMenuTriggered
         )
     }
 

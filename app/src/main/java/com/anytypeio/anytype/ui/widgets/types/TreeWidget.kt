@@ -10,7 +10,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -35,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -66,8 +63,9 @@ fun TreeWidgetCard(
     mode: InteractionMode,
     item: WidgetView.Tree,
     onExpandElement: (TreePath) -> Unit,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetMenuClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -108,19 +106,20 @@ fun TreeWidgetCard(
                 title = item.getPrettyName(),
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.source) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
                 isInEditMode = mode is InteractionMode.Edit,
-                hasReadOnlyAccess = mode == InteractionMode.ReadOnly
+                hasReadOnlyAccess = mode == InteractionMode.ReadOnly,
+                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) }
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
                     item = item,
                     mode = mode,
                     onExpand = onExpandElement,
-                    onWidgetElementClicked = onWidgetObjectClicked,
+                    onWidgetElementClicked = onWidgetElementClicked,
                     onObjectCheckboxClicked = onObjectCheckboxClicked
                 )
             } else {
@@ -256,6 +255,7 @@ fun WidgetHeader(
     isCardMenuExpanded: MutableState<Boolean>,
     isHeaderMenuExpanded: MutableState<Boolean>,
     onWidgetHeaderClicked: () -> Unit,
+    onWidgetMenuTriggered: () -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     onCreateElement: () -> Unit = {},
@@ -296,6 +296,9 @@ fun WidgetHeader(
                             onLongClick = {
                                 isCardMenuExpanded.value = !isCardMenuExpanded.value
                                 haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                if (isCardMenuExpanded.value) {
+                                    onWidgetMenuTriggered()
+                                }
                             },
                             indication = null,
                             interactionSource = remember { MutableInteractionSource() }

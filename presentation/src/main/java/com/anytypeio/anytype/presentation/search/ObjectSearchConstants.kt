@@ -607,8 +607,8 @@ object ObjectSearchConstants {
 
     val sortTabArchive = listOf(
         DVSort(
-            relationKey = Relations.NAME,
-            type = DVSortType.ASC,
+            relationKey = Relations.LAST_MODIFIED_DATE,
+            type = DVSortType.DESC,
             relationFormat = RelationFormat.LONG_TEXT
         )
     )

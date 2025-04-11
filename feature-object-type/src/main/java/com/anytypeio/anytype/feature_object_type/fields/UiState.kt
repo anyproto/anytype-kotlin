@@ -74,10 +74,12 @@ sealed class UiFieldsListItem {
 
     sealed class Section : UiFieldsListItem() {
         abstract val canAdd: Boolean
+        abstract val isEmptyState: Boolean
 
         data class Header(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_header"
@@ -86,7 +88,8 @@ sealed class UiFieldsListItem {
 
         data class SideBar(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_sidebar"
@@ -95,7 +98,8 @@ sealed class UiFieldsListItem {
 
         data class Hidden(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_hidden"
@@ -104,7 +108,8 @@ sealed class UiFieldsListItem {
 
         data class Local(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean= false
         ) : Section() {
             companion object {
                 const val ID = "section_local"
@@ -113,7 +118,8 @@ sealed class UiFieldsListItem {
 
         data class File(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_file_recommended"

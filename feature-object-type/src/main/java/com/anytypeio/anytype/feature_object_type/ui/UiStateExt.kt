@@ -68,7 +68,6 @@ suspend fun buildUiPropertiesList(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     objectTypeConflictingPropertiesIds: List<Id>,
-    showHiddenProperty: Boolean,
     objectPermissions: ObjectPermissions
 ): List<UiFieldsListItem> {
 
@@ -106,7 +105,7 @@ suspend fun buildUiPropertiesList(
             objectPermissions = objectPermissions
         )
     }
-    val conflictedItems = parsedProperties.localWithoutSystem.mapNotNull {
+    val conflictedItems = parsedProperties.local.mapNotNull {
         mapToUiPropertiesLocalListItem(
             property = it,
             stringResourceProvider = stringResourceProvider,
@@ -115,33 +114,20 @@ suspend fun buildUiPropertiesList(
         )
     }
 
-    //this items goes to the Hidden section as draggable items
-    val conflictedSystemItems = parsedProperties.localSystem.mapNotNull {
-        mapToUiPropertiesDraggableListItem(
-            property = it,
-            stringResourceProvider = stringResourceProvider,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            objectPermissions = objectPermissions
-        )
-    }
-
-    val fileRecommendedFields = parsedProperties.file.mapNotNull {
-        mapToUiPropertiesDraggableListItem(
-            property = it,
-            stringResourceProvider = stringResourceProvider,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            objectPermissions = objectPermissions
-        )
-    }
-
     return buildList {
-        add(Section.Header(canAdd = false))
-        addAll(headerItems)
+        if (headerItems.isNotEmpty()) {
+            add(Section.Header(canAdd = false))
+            addAll(headerItems)
+        } else {
+            add(Section.Header(canAdd = false, isEmptyState = true))
+        }
 
-        add(Section.SideBar(canAdd = objectPermissions.canEditRelationsList))
-        addAll(sidebarItems)
+        if (sidebarItems.isNotEmpty()) {
+            add(Section.SideBar(canAdd = objectPermissions.canEditRelationsList))
+            addAll(sidebarItems)
+        } else {
+            add(Section.SideBar(canAdd = objectPermissions.canEditRelationsList, isEmptyState = true))
+        }
 
         //todo file fields are off for now
 //        if (fileRecommendedFields.isNotEmpty()) {
@@ -149,15 +135,16 @@ suspend fun buildUiPropertiesList(
 //            addAll(fileRecommendedFields)
 //        }
 
-        if (showHiddenProperty) {
+        if (hiddenItems.isNotEmpty()) {
             add(Section.Hidden(canAdd = false))
             addAll(hiddenItems)
+        } else {
+            add(Section.Hidden(canAdd = false, isEmptyState = true))
         }
 
-        if (conflictedItems.isNotEmpty() || conflictedSystemItems.isNotEmpty()) {
+        if (conflictedItems.isNotEmpty()) {
             add(Section.Local(canAdd = false))
             addAll(conflictedItems)
-            addAll(conflictedSystemItems)
         }
     }
 }

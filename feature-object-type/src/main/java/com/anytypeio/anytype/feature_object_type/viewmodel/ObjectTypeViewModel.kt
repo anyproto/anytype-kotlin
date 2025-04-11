@@ -363,7 +363,6 @@ class ObjectTypeViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectTypeConflictingPropertiesIds = conflictingFields,
-            showHiddenProperty = vmParams.showHiddenFields,
             objectPermissions = objectPermissions
         )
         uiTypePropertiesListState.value = UiFieldsListState(items = items)

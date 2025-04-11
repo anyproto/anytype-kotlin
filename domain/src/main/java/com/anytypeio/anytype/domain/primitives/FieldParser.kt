@@ -273,22 +273,14 @@ class FieldParserImpl @Inject constructor(
 
         // Filter out properties already present in the recommended groups.
         val allLocalProperties = storeOfRelations.getValidRelations(
-            ids = localPropertiesIds
-                .filter { it !in existingIds }
-                .toList()
+            ids = localPropertiesIds.filter { it !in existingIds }
         )
-
-        // Partition local properties into system and non-system properties.
-        val (localSystemProperties, localPropertiesWithoutSystem) = allLocalProperties.partition {
-            Relations.systemRelationKeys.contains(it.key)
-        }
 
         return ParsedProperties(
             header = headerProperties,
             sidebar = sidebarProperties,
             hidden = hiddenProperties,
-            localWithoutSystem = localPropertiesWithoutSystem,
-            localSystem = localSystemProperties,
+            local = allLocalProperties,
             file = fileProperties
         )
     }

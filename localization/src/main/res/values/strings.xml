@@ -1876,6 +1876,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">File</string>
     <string name="object_type_fields_section_local_fields">Found in objects </string>
+    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
     <string name="object_type_fields_title">Properties</string>
     <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Edit field</string>

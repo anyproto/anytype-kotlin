@@ -529,58 +529,71 @@ private fun LazyItemScope.SectionItem(
         key = item.id,
         enabled = isReorderable
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-        ) {
-            Text(
+        Column {
+            Box(
                 modifier = Modifier
-                    .padding(bottom = 4.dp, start = 20.dp)
-                    .align(Alignment.BottomStart),
-                text = title,
-                style = BodyCalloutMedium,
-                color = textColor,
-            )
-            if (item.canAdd) {
-                Box(
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                Text(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .width(54.dp)
-                        .height(40.dp)
-                        .noRippleThrottledClickable {
-                            onAddIconClick()
-                        }
-                ) {
-                    Image(
+                        .padding(bottom = 4.dp, start = 20.dp)
+                        .align(Alignment.BottomStart),
+                    text = title,
+                    style = BodyCalloutMedium,
+                    color = textColor,
+                )
+                if (item.canAdd) {
+                    Box(
                         modifier = Modifier
-                            .padding(bottom = 2.dp, end = 20.dp)
-                            .wrapContentSize()
-                            .align(Alignment.BottomEnd),
-                        painter = painterResource(R.drawable.ic_default_plus),
-                        contentDescription = "$title plus button"
-                    )
+                            .align(Alignment.BottomEnd)
+                            .width(54.dp)
+                            .height(40.dp)
+                            .noRippleThrottledClickable {
+                                onAddIconClick()
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(bottom = 2.dp, end = 20.dp)
+                                .wrapContentSize()
+                                .align(Alignment.BottomEnd),
+                            painter = painterResource(R.drawable.ic_default_plus),
+                            contentDescription = "$title plus button"
+                        )
+                    }
+                }
+                if (item is Section.Local) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .height(37.dp)
+                            .width(44.dp)
+                            .noRippleThrottledClickable {
+                                fieldEvent(FieldEvent.Section.OnLocalInfoClick)
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(bottom = 9.dp, end = 20.dp)
+                                .wrapContentSize()
+                                .align(Alignment.BottomEnd),
+                            painter = painterResource(R.drawable.ic_section_local_fields),
+                            contentDescription = "Section local fields info"
+                        )
+                    }
                 }
             }
-            if (item is Section.Local) {
-                Box(
+            if (item.isEmptyState) {
+                Text(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .height(37.dp)
-                        .width(44.dp)
-                        .noRippleThrottledClickable {
-                            fieldEvent(FieldEvent.Section.OnLocalInfoClick)
-                        }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(bottom = 9.dp, end = 20.dp)
-                            .wrapContentSize()
-                            .align(Alignment.BottomEnd),
-                        painter = painterResource(R.drawable.ic_section_local_fields),
-                        contentDescription = "Section local fields info"
-                    )
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 16.dp, bottom = 8.dp),
+                    style = Relations1,
+                    color = colorResource(R.color.text_tertiary),
+                    text = stringResource(R.string.object_type_fields_section_empty_state_text)
+                )
             }
         }
     }
@@ -831,7 +844,7 @@ fun PreviewTypeFieldsMainScreen() {
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(
-                UiFieldsListItem.Section.Header(),
+                UiFieldsListItem.Section.Header(isEmptyState = true),
                 UiFieldsListItem.Item.Draggable(
                     id = "id1",
                     fieldKey = "key1",

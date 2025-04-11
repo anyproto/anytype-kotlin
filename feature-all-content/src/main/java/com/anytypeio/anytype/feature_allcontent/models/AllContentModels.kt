@@ -199,7 +199,7 @@ suspend fun ObjectWrapper.Basic.toAllContentItem(
     return UiContentItem.Item(
         id = obj.id,
         space = space,
-        name = fieldParser.getObjectName(obj),
+        name = fieldParser.getObjectNameOrPluralsForTypes(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,
         typeName = objectTypes.firstOrNull { type ->

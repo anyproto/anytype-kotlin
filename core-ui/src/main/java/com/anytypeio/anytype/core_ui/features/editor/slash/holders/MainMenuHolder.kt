@@ -40,7 +40,7 @@ class MainMenuHolder(val binding: ItemSlashWidgetMainBinding) :
             }
             SlashItem.Main.Relations -> {
                 textMain.setText(R.string.slash_widget_main_relations)
-                iconMain.setImageResource(R.drawable.ic_slash_main_relations)
+                iconMain.setImageResource(R.drawable.ic_properties_purple_24)
             }
             SlashItem.Main.Style -> {
                 textMain.setText(R.string.slash_widget_main_style)

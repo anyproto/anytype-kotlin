@@ -38,3 +38,4 @@ class MigrateAccount @Inject constructor(
         data class Other(val acc: Id) : Params()
     }
 }
+

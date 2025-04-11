@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -91,10 +90,10 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
+import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -966,9 +965,10 @@ class HomeScreenViewModel(
         treeWidgetBranchStateHolder.onExpand(linkPath = path)
     }
 
-    fun onWidgetObjectClicked(obj: ObjectWrapper.Basic) {
+    fun onWidgetElementClicked(widget: Id, obj: ObjectWrapper.Basic) {
         Timber.d("With id: ${obj.id}")
         if (obj.isArchived != true) {
+//            analytics.sendScreenHomeEvent()
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")

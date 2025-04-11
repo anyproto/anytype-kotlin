@@ -186,7 +186,7 @@ class HomeScreenFragment : BaseComposeFragment(),
             onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                 vm.onDropDownMenuAction(widget, action)
             },
-            onWidgetObjectClicked = vm::onWidgetObjectClicked,
+            onWidgetElementClicked = vm::onWidgetElementClicked,
             onWidgetSourceClicked = vm::onWidgetSourceClicked,
             onChangeWidgetView = vm::onChangeCurrentWidgetView,
             onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,

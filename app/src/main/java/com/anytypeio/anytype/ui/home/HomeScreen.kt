@@ -79,7 +79,7 @@ fun HomeScreen(
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
@@ -108,7 +108,7 @@ fun HomeScreen(
             widgets = widgets,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
-            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetElementClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onBundledWidgetHeaderClicked = onBundledWidgetClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
@@ -180,7 +180,7 @@ private fun WidgetList(
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -250,7 +250,9 @@ private fun WidgetList(
                                 item = item,
                                 onExpand = onExpand,
                                 onWidgetMenuAction = onWidgetMenuAction,
-                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetElementClicked = { obj ->
+                                    onWidgetElementClicked(item.id, obj)
+                                },
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
@@ -266,7 +268,9 @@ private fun WidgetList(
                             item = item,
                             onExpand = onExpand,
                             onWidgetMenuAction = onWidgetMenuAction,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetElementClicked = { obj ->
+                                onWidgetElementClicked(item.id, obj)
+                            },
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
@@ -312,7 +316,9 @@ private fun WidgetList(
                                 lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
-                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetElementClicked = { obj ->
+                                    onWidgetElementClicked(item.id, obj)
+                                },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onChangeWidgetView = onChangeWidgetView,
@@ -329,7 +335,9 @@ private fun WidgetList(
                             lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetElementClicked = { obj ->
+                                onWidgetElementClicked(item.id, obj)
+                            },
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onChangeWidgetView = onChangeWidgetView,
@@ -352,7 +360,9 @@ private fun WidgetList(
                                 lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
-                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetElementClicked = { obj ->
+                                    onWidgetElementClicked(item.id, obj)
+                                },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onChangeWidgetView = onChangeWidgetView,
@@ -368,7 +378,9 @@ private fun WidgetList(
                             lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetElementClicked = { obj ->
+                                onWidgetElementClicked(item.id, obj)
+                            },
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onChangeWidgetView = onChangeWidgetView,
@@ -390,7 +402,9 @@ private fun WidgetList(
                                 lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
-                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                onWidgetElementClicked = { obj ->
+                                    onWidgetElementClicked(item.id, obj)
+                                },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
@@ -405,7 +419,9 @@ private fun WidgetList(
                             lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
-                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            onWidgetElementClicked = { obj ->
+                                onWidgetElementClicked(item.id, obj)
+                            },
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
@@ -524,7 +540,7 @@ private fun ListOfObjectsItem(
     lazyListState: ReorderableLazyListState,
     alpha: Float,
     item: WidgetView.ListOfObjects,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -547,7 +563,7 @@ private fun ListOfObjectsItem(
         ListWidgetCard(
             item = item,
             mode = mode,
-            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetObjectClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onDropDownMenuAction = { action ->
                 onWidgetMenuAction(item.id, action)
@@ -587,7 +603,7 @@ private fun SetOfObjectsItem(
     lazyListState: ReorderableLazyListState,
     alpha: Float,
     item: WidgetView.SetOfObjects,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -611,7 +627,7 @@ private fun SetOfObjectsItem(
     ) {
         DataViewListWidgetCard(
             item = item,
-            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetObjectClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onDropDownMenuAction = { action ->
                 onWidgetMenuAction(item.id, action)
@@ -654,7 +670,7 @@ private fun GalleryWidgetItem(
     lazyListState: ReorderableLazyListState,
     alpha: Float,
     item: WidgetView.Gallery,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -677,7 +693,7 @@ private fun GalleryWidgetItem(
     ) {
         GalleryWidgetCard(
             item = item,
-            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetObjectClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onDropDownMenuAction = { action ->
                 onWidgetMenuAction(item.id, action)
@@ -776,7 +792,7 @@ private fun TreeWidgetItem(
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -801,7 +817,7 @@ private fun TreeWidgetItem(
             onDropDownMenuAction = { action ->
                 onWidgetMenuAction(item.id, action)
             },
-            onWidgetObjectClicked = onWidgetObjectClicked,
+            onWidgetElementClicked = onWidgetElementClicked,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,

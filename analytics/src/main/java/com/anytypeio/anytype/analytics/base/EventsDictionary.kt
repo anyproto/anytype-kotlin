@@ -156,6 +156,7 @@ object EventsDictionary {
     const val screenHome = "ScreenHome"
     const val clickWidgetTitle = "ClickWidgetTitle"
     const val screenWidgetMenu = "ScreenWidgetMenu"
+    const val openSidebarObject = "OpenSidebarObject"
 
     //Templates
     const val selectTemplate = "SelectTemplate"

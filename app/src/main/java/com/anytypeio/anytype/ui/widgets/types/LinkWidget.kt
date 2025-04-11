@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 
@@ -38,10 +39,11 @@ import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
 @Composable
 fun LinkWidgetCard(
     item: WidgetView.Link,
-    onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     isInEditMode: Boolean,
-    hasReadOnlyAccess: Boolean = false
+    hasReadOnlyAccess: Boolean = false,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -63,14 +65,17 @@ fun LinkWidgetCard(
                 if (isInEditMode) {
                     Modifier.noRippleClickable {
                         isCardMenuExpanded.value = !isCardMenuExpanded.value
+                        if (isCardMenuExpanded.value == true) {
+                            onWidgetMenuTriggered(item.id)
+                        }
                     }
                 } else if (hasReadOnlyAccess) {
                     Modifier.noRippleClickable {
-                        onWidgetSourceClicked(item.source)
+                        onWidgetSourceClicked(item.id, item.source)
                     }
                 } else {
                     Modifier.combinedClickable(
-                        onClick = { onWidgetSourceClicked(item.source) },
+                        onClick = { onWidgetSourceClicked(item.id, item.source) },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)

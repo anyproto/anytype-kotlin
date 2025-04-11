@@ -154,7 +154,9 @@ object EventsDictionary {
     const val reorderWidget = "ReorderWidget"
     const val deleteWidget = "DeleteWidget"
     const val screenHome = "ScreenHome"
-    const val selectHomeTab = "SelectHomeTab"
+    const val clickWidgetTitle = "ClickWidgetTitle"
+    const val screenWidgetMenu = "ScreenWidgetMenu"
+    const val openSidebarObject = "OpenSidebarObject"
 
     //Templates
     const val selectTemplate = "SelectTemplate"

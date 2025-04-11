@@ -10,6 +10,7 @@ object WidgetAnalytics {
     const val VIEW = "view"
     const val CONTEXT = "context"
     const val ROUTE = "route"
+    const val WIDGET_TYPE = "widgetType"
 
     // Values
 
@@ -35,4 +36,7 @@ object WidgetAnalytics {
     const val CUSTOM_OBJECT_TYPE = "custom"
 
     const val ROUTE_ADD_WIDGET = "AddWidget"
+
+    const val WIDGET_TYPE_AUTO = "Auto"
+    const val WIDGET_TYPE_MANUAL = "Manual"
 }

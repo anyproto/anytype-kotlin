@@ -36,7 +36,6 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Process
@@ -449,7 +448,8 @@ fun MBlock.toCoreWidget(): Block.Content.Widget {
             MWidgetLayout.View -> Block.Content.Widget.Layout.VIEW
         },
         limit = content.limit,
-        activeView = content.viewId.ifEmpty { null }
+        activeView = content.viewId.ifEmpty { null },
+        isAutoAdded = content.autoAdded
     )
 }
 

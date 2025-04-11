@@ -247,14 +247,11 @@ class SpaceSettingsViewModel(
                             add(UiSpaceSettingsItem.Section.Collaboration)
                             add(UiSpaceSettingsItem.InviteMembers)
                         }
-                        SpaceAccessType.DEFAULT -> {
-                            // Do nothing.
-                        }
                         SpaceAccessType.SHARED -> {
                             add(UiSpaceSettingsItem.Section.Collaboration)
                             add(Members(count = spaceMemberCount))
                         }
-                        null -> {
+                        SpaceAccessType.DEFAULT, null -> {
                             // Do nothing.
                         }
                     }

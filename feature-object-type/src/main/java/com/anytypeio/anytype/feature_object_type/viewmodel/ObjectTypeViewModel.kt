@@ -780,16 +780,16 @@ class ObjectTypeViewModel(
                     }
                 }
                 proceedWithUpdatingTypeProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 proceedWithUpdateDataViewProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
             }
 
@@ -849,16 +849,16 @@ class ObjectTypeViewModel(
                     }
                 }
                 proceedWithUpdatingTypeProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 proceedWithUpdateDataViewProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
@@ -951,20 +951,20 @@ class ObjectTypeViewModel(
 
     //region USE CASES
     private fun proceedWithUpdatingTypeProperties(
-        headerFields: List<UiFieldsListItem.Item>,
-        sidebarFields: List<UiFieldsListItem.Item>,
-        hiddenFields: List<UiFieldsListItem.Item>,
-        fileFields: List<UiFieldsListItem.Item>
+        headerProperties: List<UiFieldsListItem.Item>,
+        sidebarProperties: List<UiFieldsListItem.Item>,
+        hiddenProperties: List<UiFieldsListItem.Item>,
+        fileProperties: List<UiFieldsListItem.Item>
     ) {
         Timber.d("proceedWithUpdatingTypeProperties")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields.map { it.id },
-                    Relations.RECOMMENDED_RELATIONS to sidebarFields.map { it.id },
-                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields.map { it.id },
-                    Relations.RECOMMENDED_FILE_RELATIONS to fileFields.map { it.id }
+                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerProperties.map { it.id },
+                    Relations.RECOMMENDED_RELATIONS to sidebarProperties.map { it.id },
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenProperties.map { it.id },
+                    Relations.RECOMMENDED_FILE_RELATIONS to fileProperties.map { it.id }
                 )
             )
             setObjectDetails.async(params).fold(
@@ -978,18 +978,18 @@ class ObjectTypeViewModel(
         }
     }
 
-    // Updating both relations in type and dataview to preserve integrity between them
+    // Updating both all recommended properties in type and dataview to preserve integrity between them
     private fun proceedWithUpdateDataViewProperties(
-        headerFields: List<UiFieldsListItem.Item>,
-        sidebarFields: List<UiFieldsListItem.Item>,
-        hiddenFields: List<UiFieldsListItem.Item>,
-        fileFields: List<UiFieldsListItem.Item>
+        headerProperties: List<UiFieldsListItem.Item>,
+        sidebarProperties: List<UiFieldsListItem.Item>,
+        hiddenProperties: List<UiFieldsListItem.Item>,
+        fileProperties: List<UiFieldsListItem.Item>
     ) {
         // Show description in DataView properties list
         val descriptionKey = Relations.DESCRIPTION
 
         val allPropertiesKeys =
-            (headerFields + sidebarFields + hiddenFields + fileFields)
+            (headerProperties + sidebarProperties + hiddenProperties + fileProperties)
                 .map { it.fieldKey } + listOf(descriptionKey)
 
         viewModelScope.launch {

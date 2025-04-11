@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.*
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlin.collections.map
@@ -241,12 +242,21 @@ class SpaceSettingsViewModel(
                         add(UiSpaceSettingsItem.Multiplayer)
                     }
 
-                    add(UiSpaceSettingsItem.Section.Collaboration)
-
-                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
-                        add(UiSpaceSettingsItem.Members(count = spaceMemberCount))
-                    } else {
-                        add(UiSpaceSettingsItem.InviteMembers)
+                    when(spaceView.spaceAccessType) {
+                        SpaceAccessType.PRIVATE -> {
+                            add(UiSpaceSettingsItem.Section.Collaboration)
+                            add(UiSpaceSettingsItem.InviteMembers)
+                        }
+                        SpaceAccessType.DEFAULT -> {
+                            // Do nothing.
+                        }
+                        SpaceAccessType.SHARED -> {
+                            add(UiSpaceSettingsItem.Section.Collaboration)
+                            add(Members(count = spaceMemberCount))
+                        }
+                        null -> {
+                            // Do nothing.
+                        }
                     }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)

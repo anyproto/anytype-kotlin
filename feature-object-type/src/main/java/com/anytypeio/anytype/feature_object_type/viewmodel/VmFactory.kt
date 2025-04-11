@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -45,7 +46,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -70,6 +72,7 @@ class ObjectTypeVMFactory @Inject constructor(
             getObjectTypeConflictingFields = getObjectTypeConflictingFields,
             objectTypeSetRecommendedFields = objectTypeSetRecommendedFields,
             setDataViewProperties = setDataViewProperties,
-            dispatcher = dispatcher
+            dispatcher = dispatcher,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
 }

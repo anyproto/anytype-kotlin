@@ -172,7 +172,7 @@ class RelationListViewModel(
             Model.Item(it, isLocal = false)
         }
 
-        val localFields = parsedFields.localWithoutSystem.mapNotNull {
+        val localFields = parsedFields.local.mapNotNull {
             if (it.key == Relations.DESCRIPTION) return@mapNotNull null
             it.view(
                 details = details,

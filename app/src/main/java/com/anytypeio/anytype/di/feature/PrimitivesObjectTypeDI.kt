@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -157,6 +158,14 @@ object ObjectTypeModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectTypeHeaderRecommendedFields =
         SetObjectTypeHeaderRecommendedFields(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
     @Module
     interface Declarations {

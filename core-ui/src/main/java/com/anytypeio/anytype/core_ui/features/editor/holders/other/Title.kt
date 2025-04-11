@@ -179,10 +179,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
             image.visible()
-            loadImageWithCustomResize(image, url)
-        } ?: run { image.setImageDrawable(null) }
+            Glide
+                .with(image)
+                .load(url)
+                .centerCrop()
+                .into(image)
+        } ?: apply { image.setImageDrawable(null) }
     }
 
+    // TODO use for objects with image layout; move to the dedicated view holder.
     private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
         val context = imageView.context
         val displayMetrics = context.resources.displayMetrics

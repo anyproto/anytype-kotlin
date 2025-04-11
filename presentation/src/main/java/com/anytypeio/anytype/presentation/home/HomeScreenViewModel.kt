@@ -95,6 +95,7 @@ import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
+import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -978,6 +979,15 @@ class HomeScreenViewModel(
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")
+        }
+    }
+
+    fun onWidgetMenuClicked(widget: Id) {
+        viewModelScope.launch {
+            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+            analytics.sendScreenWidgetMenuEvent(
+                isAutoCreated = isAutoCreated
+            )
         }
     }
 

@@ -1799,6 +1799,24 @@ suspend fun Analytics.sendOpenSidebarObjectEvent(
     )
 }
 
+suspend fun Analytics.sendScreenWidgetMenuEvent(
+    isAutoCreated: Boolean?
+) {
+    sendEvent(
+        eventName = EventsDictionary.screenWidgetMenu,
+        props = Props(
+            buildMap {
+                if (isAutoCreated == null) return
+                if (isAutoCreated) {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                } else {
+                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                }
+            }
+        )
+    )
+}
+
 suspend fun Analytics.sendSettingsStorageEvent() {
     sendEvent(
         eventName = EventsDictionary.screenSettingsStorage

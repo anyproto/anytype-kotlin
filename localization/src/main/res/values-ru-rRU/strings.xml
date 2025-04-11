@@ -1636,6 +1636,7 @@
     <string name="object_type_fields_section_hidden">Hidden</string>
     <string name="object_type_fields_section_file">Файл</string>
     <string name="object_type_fields_section_local_fields">Found in objects </string>
+    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
     <string name="object_type_fields_title">Свойства</string>
     <string name="object_type_fields_info_text">Вы редактировали тип</string>
     <string name="object_type_fields_edit_field">Редактировать поле</string>
@@ -1643,6 +1644,8 @@
     <string name="object_type_fields_preview_field">Предпросмотр поля</string>
     <string name="object_type_fields_btn_save">Сохранить</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
+    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
+    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Удалить</string>
     <string name="object_type_fields_local_info_title">Found in objects</string>

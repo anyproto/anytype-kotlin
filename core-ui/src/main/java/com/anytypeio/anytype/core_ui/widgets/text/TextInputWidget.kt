@@ -13,6 +13,7 @@ import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.KeyEvent
 import android.view.MotionEvent
+import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.graphics.withTranslation
 import com.anytypeio.anytype.core_ui.R
@@ -66,6 +67,7 @@ class TextInputWidget : AppCompatEditText {
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(
+            touchSlop = ViewConfiguration.get(context).scaledTouchSlop,
             fallback = { e -> super.onTouchEvent(e) }
         )
     }

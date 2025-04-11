@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.annotation.SuppressLint
 import android.view.View
+import android.view.ViewConfiguration
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -25,6 +26,7 @@ abstract class Media(view: View) : BlockViewHolder(view),
     abstract fun select(isSelected: Boolean)
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> clickContainer.onTouchEvent(e) }
     )
 

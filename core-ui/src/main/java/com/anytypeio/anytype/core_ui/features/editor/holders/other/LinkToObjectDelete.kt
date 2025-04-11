@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -32,6 +33,7 @@ class LinkToObjectDelete(
         get() = binding.decorationContainer
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

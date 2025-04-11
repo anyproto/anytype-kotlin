@@ -1533,32 +1533,26 @@ class DefaultBlockViewRenderer @Inject constructor(
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
                     icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
-                    url = currentObject.getFileUrl(urlBuilder)
                 )
             }
-            ObjectType.Layout.IMAGE -> {
-                BlockView.Title.Basic(
-                    mode = Mode.READ,
-                    id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
-                    image = currentObject.iconImage?.let { image ->
-                        if (image.isNotBlank())
-                            urlBuilder.large(image)
-                        else
-                            null
-                    },
-                    isFocused = resolveIsFocused(focus, block),
-                    cursor = cursor,
-                    coverColor = coverContainer.coverColor,
-                    coverImage = coverContainer.coverImage,
-                    coverGradient = coverContainer.coverGradient,
-                    background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
-                )
-            }
+
             else -> {
-                // Fallback to basic title in case of unexpected layout or when wrapper is null
-                BlockView.Title.Basic(
+                currentObject?.iconImage?.takeIf { it.isNotBlank() }?.let { imageUrl ->
+                    BlockView.Title.Image(
+                        mode = Mode.READ,
+                        id = block.id,
+                        text = content.text,
+                        image = urlBuilder.large(imageUrl),
+                        icon = currentObject.objectIcon(builder = urlBuilder),
+                        isFocused = resolveIsFocused(focus, block),
+                        cursor = cursor,
+                        coverColor = coverContainer.coverColor,
+                        coverImage = coverContainer.coverImage,
+                        coverGradient = coverContainer.coverGradient,
+                        background = block.parseThemeBackgroundColor(),
+                        color = block.textColor()
+                    )
+                } ?: BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,

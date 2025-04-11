@@ -332,7 +332,7 @@ class ObjectTypeViewModel(
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
-            title = objType.pluralName.orEmpty(),
+            title = objType.pluralName.takeIf { it.isNullOrBlank() } ?: objType.name.orEmpty(),
             isEditable = objectPermissions.canEditDetails
         )
         val newIcon = objType.objectIcon()

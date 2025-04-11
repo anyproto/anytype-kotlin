@@ -33,7 +33,6 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
@@ -182,22 +181,25 @@ class ShareSpaceViewModel(
         space: ObjectWrapper.SpaceView?,
         isCurrentUserOwner: Boolean
     ) {
-        if (isCurrentUserOwner) {
-            shareLinkViewState.value = when (space?.spaceAccessType) {
-                SpaceAccessType.PRIVATE -> ShareLinkViewState.NotGenerated
-                SpaceAccessType.SHARED -> {
-                    val link = getSpaceInviteLink.async(vmParams.space)
-                    if (link.isSuccess) {
-                        ShareLinkViewState.Shared(link.getOrThrow().scheme)
-                    } else {
-                        ShareLinkViewState.NotGenerated
-                    }
-                }
-
-                else -> ShareLinkViewState.Init
+        shareLinkViewState.value = when (space?.spaceAccessType) {
+            SpaceAccessType.PRIVATE -> {
+                if (isCurrentUserOwner)
+                    ShareLinkViewState.NotGenerated
+                else
+                    ShareLinkViewState.Init
             }
-        } else {
-            ShareLinkViewState.Init
+            SpaceAccessType.SHARED -> {
+                val link = getSpaceInviteLink.async(vmParams.space)
+                if (link.isSuccess) {
+                    ShareLinkViewState.Shared(link.getOrThrow().scheme)
+                } else {
+                    if (isCurrentUserOwner)
+                        ShareLinkViewState.NotGenerated
+                    else
+                        ShareLinkViewState.Init
+                }
+            }
+            else -> ShareLinkViewState.Init
         }
     }
 

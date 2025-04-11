@@ -108,7 +108,7 @@ fun FieldsItem(
     BaseButton(
         modifier = modifier,
         title = stringResource(id = R.string.properties),
-        icon = R.drawable.ic_fields_24,
+        icon = R.drawable.ic_properties_24,
     )
 }
 

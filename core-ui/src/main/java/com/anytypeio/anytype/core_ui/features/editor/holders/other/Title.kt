@@ -187,7 +187,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         } ?: apply { image.setImageDrawable(null) }
     }
 
-    // TODO use for object with image layout. move to the dedicated view holder.
+    // TODO use for objects with image layout; move to the dedicated view holder.
     private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
         val context = imageView.context
         val displayMetrics = context.resources.displayMetrics

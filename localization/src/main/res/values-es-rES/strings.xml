@@ -1607,6 +1607,7 @@ En concreto,
     <string name="object_type_fields_section_hidden">Oculto</string>
     <string name="object_type_fields_section_file">Archivo</string>
     <string name="object_type_fields_section_local_fields">Encontrada en objetos</string>
+    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
     <string name="object_type_fields_title">Propiedades</string>
     <string name="object_type_fields_info_text">Estás editando el tipo</string>
     <string name="object_type_fields_edit_field">Editar campo</string>
@@ -1614,6 +1615,8 @@ En concreto,
     <string name="object_type_fields_preview_field">Previsualizar campo</string>
     <string name="object_type_fields_btn_save">Guardar</string>
     <string name="object_type_fields_menu_delete">Desconectar del espacio</string>
+    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
+    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
     <string name="object_type_fields_menu_add_to_type">Añadir al tipo actual</string>
     <string name="object_type_fields_menu_remove">Borrar</string>
     <string name="object_type_fields_local_info_title">Encontrada en objetos</string>

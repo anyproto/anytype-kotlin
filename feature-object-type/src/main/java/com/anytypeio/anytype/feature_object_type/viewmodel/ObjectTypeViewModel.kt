@@ -884,9 +884,11 @@ class ObjectTypeViewModel(
             setObjectListIsArchived.async(params).fold(
                 onSuccess = {
                     Timber.d("Property $propertyId moved to bin")
+                    proceedWithGetObjectTypeConflictingFields()
                 },
                 onFailure = {
                     Timber.e(it, "Error while moving property $propertyId to bin")
+                    proceedWithGetObjectTypeConflictingFields()
                 }
             )
         }
@@ -970,9 +972,11 @@ class ObjectTypeViewModel(
             setObjectDetails.async(params).fold(
                 onSuccess = {
                     Timber.d("Properties updated")
+                    proceedWithGetObjectTypeConflictingFields()
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating properties")
+                    proceedWithGetObjectTypeConflictingFields()
                 }
             )
         }
@@ -1017,8 +1021,9 @@ class ObjectTypeViewModel(
                     spaceId = vmParams.spaceId.id
                 )
             ).fold(
-                onSuccess = { fields ->
-                    _objectTypeConflictingFieldIds.value = fields
+                onSuccess = { properties ->
+                    Timber.d("Conflicting properties: $properties")
+                    _objectTypeConflictingFieldIds.value = properties
                 },
                 onFailure = {
                     Timber.e(it, "Error while getting conflicting fields")

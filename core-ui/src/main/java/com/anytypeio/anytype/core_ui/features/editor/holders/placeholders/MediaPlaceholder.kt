@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.placeholders
 
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
@@ -39,6 +40,7 @@ abstract class MediaPlaceholder(
     abstract fun setup()
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

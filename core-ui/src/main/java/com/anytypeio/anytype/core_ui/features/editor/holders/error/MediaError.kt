@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.error
 
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import androidx.core.view.marginEnd
 import androidx.core.view.marginStart
@@ -28,6 +29,7 @@ abstract class MediaError(
     abstract fun errorClick(item: BlockView.Error, clicked: (ListenerType) -> Unit)
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

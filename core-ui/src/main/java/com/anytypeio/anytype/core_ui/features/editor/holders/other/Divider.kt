@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -26,6 +27,7 @@ abstract class Divider(view: View) : BlockViewHolder(view),
     abstract val container: View
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.core.view.ViewCompat.generateViewId
@@ -36,6 +37,7 @@ class TableOfContents(
     private val defPadding = root.resources.getDimension(R.dimen.def_toc_item_padding_start).toInt()
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> root.onTouchEvent(e) }
     )
 

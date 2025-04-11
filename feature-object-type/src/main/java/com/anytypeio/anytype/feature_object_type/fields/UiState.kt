@@ -45,6 +45,7 @@ sealed class UiFieldsListItem {
         abstract val format: RelationFormat
         abstract val limitObjectTypes: List<Id>
         abstract val isPossibleToUnlinkFromType: Boolean
+        abstract val isPossibleToMoveToBin: Boolean
         abstract val isEditableField: Boolean
 
         data class Draggable(
@@ -54,6 +55,7 @@ sealed class UiFieldsListItem {
             override val format: RelationFormat,
             override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean,
+            override val isPossibleToMoveToBin: Boolean,
             override val isEditableField: Boolean,
             val isPossibleToDrag: Boolean
         ) : Item()
@@ -65,16 +67,19 @@ sealed class UiFieldsListItem {
             override val format: RelationFormat,
             override val limitObjectTypes: List<Id>,
             override val isPossibleToUnlinkFromType: Boolean = false,
+            override val isPossibleToMoveToBin: Boolean = false,
             override val isEditableField: Boolean
         ) : Item()
     }
 
     sealed class Section : UiFieldsListItem() {
         abstract val canAdd: Boolean
+        abstract val isEmptyState: Boolean
 
         data class Header(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_header"
@@ -83,7 +88,8 @@ sealed class UiFieldsListItem {
 
         data class SideBar(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_sidebar"
@@ -92,7 +98,8 @@ sealed class UiFieldsListItem {
 
         data class Hidden(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_hidden"
@@ -101,7 +108,8 @@ sealed class UiFieldsListItem {
 
         data class Local(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean= false
         ) : Section() {
             companion object {
                 const val ID = "section_local"
@@ -110,7 +118,8 @@ sealed class UiFieldsListItem {
 
         data class File(
             override val id: Id = ID,
-            override val canAdd: Boolean = false
+            override val canAdd: Boolean = false,
+            override val isEmptyState: Boolean = false
         ) : Section() {
             companion object {
                 const val ID = "section_file_recommended"

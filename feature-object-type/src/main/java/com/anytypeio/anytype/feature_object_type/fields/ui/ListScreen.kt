@@ -63,6 +63,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UxSmallTextRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
@@ -159,7 +160,7 @@ fun FieldsMainScreen(
             onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
             onCreateNewButtonClicked = {},
             onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
-            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) },
+            onMenuUnlinkClick = { fieldEvent(OnRemoveFromTypeClick(it)) },
             onLimitTypesClick = { fieldEvent(OnLimitTypesClick) },
             onDismissLimitTypes = { fieldEvent(OnLimitTypesDismiss) },
         )
@@ -267,7 +268,7 @@ fun FieldsMainModalScreen(
             onSaveButtonClicked = { fieldEvent(EditProperty.OnSaveButtonClicked) },
             onCreateNewButtonClicked = {},
             onPropertyNameUpdate = { fieldEvent(EditProperty.OnPropertyNameUpdate(it)) },
-            onMenuUnlinkClick = { fieldEvent(OnDeleteFromTypeClick(it)) },
+            onMenuUnlinkClick = { fieldEvent(OnRemoveFromTypeClick(it)) },
             onLimitTypesClick = { fieldEvent(OnLimitTypesClick) },
             onDismissLimitTypes = { fieldEvent(OnLimitTypesDismiss) },
         )
@@ -528,58 +529,71 @@ private fun LazyItemScope.SectionItem(
         key = item.id,
         enabled = isReorderable
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-        ) {
-            Text(
+        Column {
+            Box(
                 modifier = Modifier
-                    .padding(bottom = 4.dp, start = 20.dp)
-                    .align(Alignment.BottomStart),
-                text = title,
-                style = BodyCalloutMedium,
-                color = textColor,
-            )
-            if (item.canAdd) {
-                Box(
+                    .fillMaxWidth()
+                    .height(52.dp)
+            ) {
+                Text(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .width(54.dp)
-                        .height(40.dp)
-                        .noRippleThrottledClickable {
-                            onAddIconClick()
-                        }
-                ) {
-                    Image(
+                        .padding(bottom = 4.dp, start = 20.dp)
+                        .align(Alignment.BottomStart),
+                    text = title,
+                    style = BodyCalloutMedium,
+                    color = textColor,
+                )
+                if (item.canAdd) {
+                    Box(
                         modifier = Modifier
-                            .padding(bottom = 2.dp, end = 20.dp)
-                            .wrapContentSize()
-                            .align(Alignment.BottomEnd),
-                        painter = painterResource(R.drawable.ic_default_plus),
-                        contentDescription = "$title plus button"
-                    )
+                            .align(Alignment.BottomEnd)
+                            .width(54.dp)
+                            .height(40.dp)
+                            .noRippleThrottledClickable {
+                                onAddIconClick()
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(bottom = 2.dp, end = 20.dp)
+                                .wrapContentSize()
+                                .align(Alignment.BottomEnd),
+                            painter = painterResource(R.drawable.ic_default_plus),
+                            contentDescription = "$title plus button"
+                        )
+                    }
+                }
+                if (item is Section.Local) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .height(37.dp)
+                            .width(44.dp)
+                            .noRippleThrottledClickable {
+                                fieldEvent(FieldEvent.Section.OnLocalInfoClick)
+                            }
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .padding(bottom = 9.dp, end = 20.dp)
+                                .wrapContentSize()
+                                .align(Alignment.BottomEnd),
+                            painter = painterResource(R.drawable.ic_section_local_fields),
+                            contentDescription = "Section local fields info"
+                        )
+                    }
                 }
             }
-            if (item is Section.Local) {
-                Box(
+            if (item.isEmptyState) {
+                Text(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .height(37.dp)
-                        .width(44.dp)
-                        .noRippleThrottledClickable {
-                            fieldEvent(FieldEvent.Section.OnLocalInfoClick)
-                        }
-                ) {
-                    Image(
-                        modifier = Modifier
-                            .padding(bottom = 9.dp, end = 20.dp)
-                            .wrapContentSize()
-                            .align(Alignment.BottomEnd),
-                        painter = painterResource(R.drawable.ic_section_local_fields),
-                        contentDescription = "Section local fields info"
-                    )
-                }
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
+                        .padding(top = 16.dp, bottom = 8.dp),
+                    style = Relations1,
+                    color = colorResource(R.color.text_tertiary),
+                    text = stringResource(R.string.object_type_fields_section_empty_state_text)
+                )
             }
         }
     }
@@ -692,9 +706,7 @@ private fun LazyItemScope.FieldItemDraggable(
                         onLongClick = {
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             // show your menu, only if NOT dragging
-                            if (item.isPossibleToUnlinkFromType) {
-                                isMenuExpanded.value = true
-                            }
+                            isMenuExpanded.value = true
                         }
                     )
                     .padding(end = 16.dp)
@@ -764,18 +776,34 @@ fun ItemDropDownMenu(
     ) {
         when (item) {
             is UiFieldsListItem.Item.Draggable -> {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.object_type_fields_menu_delete),
-                            style = BodyCalloutRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        onFieldEvent(OnDeleteFromTypeClick(id = item.id))
-                    },
-                )
+                if (item.isPossibleToUnlinkFromType) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.object_type_fields_menu_remove_from_type),
+                                style = UxSmallTextRegular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            onFieldEvent(OnRemoveFromTypeClick(id = item.id))
+                        },
+                    )
+                }
+                if (item.isPossibleToMoveToBin) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.object_type_fields_menu_move_to_bin),
+                                style = UxSmallTextRegular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            onFieldEvent(OnMoveToBinClick(id = item.id))
+                        },
+                    )
+                }
             }
 
             is UiFieldsListItem.Item.Local -> {
@@ -816,13 +844,14 @@ fun PreviewTypeFieldsMainScreen() {
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(
-                UiFieldsListItem.Section.Header(),
+                UiFieldsListItem.Section.Header(isEmptyState = true),
                 UiFieldsListItem.Item.Draggable(
                     id = "id1",
                     fieldKey = "key1",
                     fieldTitle = "Status",
                     format = RelationFormat.STATUS,
                     isPossibleToUnlinkFromType = true,
+                    isPossibleToMoveToBin = true,
                     isEditableField = true,
                     limitObjectTypes = listOf(),
                     isPossibleToDrag = false
@@ -833,6 +862,7 @@ fun PreviewTypeFieldsMainScreen() {
                     fieldTitle = "Very long field title, just to test how it looks",
                     format = RelationFormat.LONG_TEXT,
                     isPossibleToUnlinkFromType = true,
+                    isPossibleToMoveToBin = true,
                     isEditableField = true,
                     limitObjectTypes = listOf(),
                     isPossibleToDrag = true
@@ -847,6 +877,7 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.URL,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
+                    isPossibleToMoveToBin = true,
                     limitObjectTypes = listOf(),
                     isPossibleToDrag = true
                 ),
@@ -857,6 +888,7 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.DATE,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
+                    isPossibleToMoveToBin = true,
                     limitObjectTypes = listOf(),
                     isPossibleToDrag = false
                 ),
@@ -868,6 +900,7 @@ fun PreviewTypeFieldsMainScreen() {
                     format = RelationFormat.LONG_TEXT,
                     isEditableField = true,
                     isPossibleToUnlinkFromType = true,
+                    isPossibleToMoveToBin = true,
                     limitObjectTypes = listOf(),
                     isPossibleToDrag = true
                 ),

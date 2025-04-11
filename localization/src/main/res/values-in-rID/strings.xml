@@ -39,9 +39,9 @@
     <string name="about_privacy_policy">Kebijakan Privasi</string>
     <string name="about_acknowledgements">Pengakuan</string>
     <string name="about_meta_info">Versi Aplikasi: %1$s\nNomor Pembuatan: %2$d\nVersi Pustaka: %3$s\nAkun\u00A0ID:\u00A0%4$s\nPerangkat\u00A0ID:\u00A0%5$s\nAnalisis\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
+    <string name="about_meta_info_new">Versi Aplikasi: %1$s\nNomor Build: %2$d\nVersi Pustaka: %3$s\nID\u00A0Akun:\u00A0%4$s\nID\u00A0Perangkat:\u00A0%5$s\nID\u00A0Analitik:\u00A0%6$s\nID\u00A0Ethereum key:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
+    <string name="about_meta_info_for_copy_new">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nNomor Build: %4$d\nVersi Pustaka: %5$s\nID\u00A0Akun:\u00A0%6$s\nID\u00A0Perangkat:\u00A0%7$s\nID\u00A0Analitik:\u00A0%8$s\nID\u00A0Ethereum key:\u00A0%9$s</string>
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
     <string name="default_space">Ruang bawaan</string>
@@ -531,7 +531,7 @@
     <string name="file_delete_cancel">Batal</string>
     <string name="file_delete_delete">Hapus</string>
     <string name="menu_type_change">Ubah tipe</string>
-    <string name="menu_type_open">Open type</string>
+    <string name="menu_type_open">Buka tipe</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
@@ -960,7 +960,7 @@
     <string name="widget_remove_widget">Hapus widget</string>
     <string name="widget_empty_bin">Tempat sampah kosong</string>
     <string name="widget_edit_widgets">Sunting widget</string>
-    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
+    <string name="widget_auto_created_toast">Gawit %1$s telah ditambahkan</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Tipe</string>
@@ -1017,7 +1017,7 @@
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Kunci tidak boleh kosong</string>
-    <string name="onboarding_your_name">Your name</string>
+    <string name="onboarding_your_name">Namamu</string>
     <string name="onboarding_mnemonic_read_more">Lebih lanjut tentang Kunci</string>
     <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan aplikasi</string>
     <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
@@ -1607,12 +1607,12 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
     <string name="object_type_fields_local_info_button">Oke</string>
     <string name="object_type_templates_empty">Tipe ini tidak punya templat</string>
-    <string name="object_properties_section_local">Local</string>
+    <string name="object_properties_section_local">Lokal</string>
     <string name="object_properties_section_hidden">Disembunyikan</string>
     <string name="object_properties_local_info_title">Properti lokal</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
-    <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_properties_empty_state">Belum ada properti. Tambahkan beberapa untuk tipe ini</string>
+    <string name="object_type_open_type_error">Gagal membuka tipe objek</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>
@@ -1668,7 +1668,7 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Pilih</string>
     <string name="field_menu_add_to_type">Tambahkan ke tipe saat ini</string>
     <string name="field_menu_remove_from_object">Hapus dari objek</string>
-    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_name_hint">Tambahkan nama</string>
     <string name="space_settings_space_description_hint">Tambahkan deskripsi</string>
     <string name="space_settings_section_collaboration">Kolaborasi</string>
     <string name="space_settings_section_content_model">Content Model</string>
@@ -1731,6 +1731,6 @@ Please provide specific details of your needs here.</string>
     <string name="widget_source_suggested">Disarankan</string>
     <string name="widgets_empty_state_message">Belum ada gawit</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
-    <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_title">Tipe objek</string>
     <string name="space_properties_screen_title">Properti</string>
 </resources>

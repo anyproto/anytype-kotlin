@@ -183,9 +183,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.RequestNotificationPermission -> {
                                 runCatching {
-                                    findNavController(R.id.fragment).navigate(
-                                        R.id.requestNotificationPermissionDialog
-                                    )
+                                    val controller = findNavController(R.id.fragment)
+                                    val currentDestination = controller.currentDestination
+                                    if (currentDestination?.id != R.id.requestNotificationPermissionDialog) {
+                                        controller.navigate(R.id.requestNotificationPermissionDialog)
+                                    } else {
+                                        Timber.w("Request permission dialog already in stack.")
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while navigation")
                                 }

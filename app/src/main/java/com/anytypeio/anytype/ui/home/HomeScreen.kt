@@ -417,6 +417,7 @@ private fun WidgetList(
                                     onWidgetElementClicked(item.id, obj)
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
+                                onWidgetMenuTrrigered = onWidgetMenuTriggered,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
@@ -434,6 +435,7 @@ private fun WidgetList(
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
+                            onWidgetMenuTrrigered = onWidgetMenuTriggered,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
@@ -553,6 +555,7 @@ private fun ListOfObjectsItem(
     item: WidgetView.ListOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTrrigered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -581,7 +584,8 @@ private fun ListOfObjectsItem(
             },
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement
+            onCreateElement = onCreateElement,
+            onWidgetMenuTriggered = onWidgetMenuTrrigered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

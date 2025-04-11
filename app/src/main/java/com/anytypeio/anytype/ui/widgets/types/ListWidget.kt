@@ -42,6 +42,7 @@ fun ListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -92,7 +93,8 @@ fun ListWidgetCard(
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
                 canCreate = (item.type is Type.Favorites && mode is InteractionMode.Default),
-                onCreateElement = { onCreateElement(item) }
+                onCreateElement = { onCreateElement(item) },
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {

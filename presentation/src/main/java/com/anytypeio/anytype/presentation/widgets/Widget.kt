@@ -19,7 +19,7 @@ sealed class Widget {
     abstract val source: Source
     abstract val config: Config
 
-    val isAutoCreated = false
+    abstract val isAutoCreated: Boolean
 
     /**
      * @property [id] id of the widget
@@ -29,7 +29,8 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
-        val limit: Int = 0
+        override val isAutoCreated: Boolean,
+        val limit: Int = 0,
     ) : Widget()
 
     /**
@@ -40,6 +41,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
+        override val isAutoCreated: Boolean,
     ) : Widget()
 
     /**
@@ -50,6 +52,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source,
         override val config: Config,
+        override val isAutoCreated: Boolean,
         val isCompact: Boolean = false,
         val limit: Int = 0
     ) : Widget()
@@ -58,6 +61,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source.Default,
         override val config: Config,
+        override val isAutoCreated: Boolean,
         val limit: Int
     ) : Widget()
 
@@ -65,6 +69,7 @@ sealed class Widget {
         override val id: Id,
         override val source: Source.Bundled.AllObjects,
         override val config: Config,
+        override val isAutoCreated: Boolean,
     ) : Widget()
 
     sealed class Source {
@@ -158,7 +163,8 @@ fun List<Block>.parseWidgets(
                                 Widget.AllObjects(
                                     id = w.id,
                                     source = source,
-                                    config = config
+                                    config = config,
+                                    isAutoCreated = widgetContent.isAutoAdded
                                 )
                             )
                         } else {
@@ -169,7 +175,8 @@ fun List<Block>.parseWidgets(
                                             id = w.id,
                                             source = source,
                                             limit = widgetContent.limit,
-                                            config = config
+                                            config = config,
+                                            isAutoCreated = widgetContent.isAutoAdded
                                         )
                                     )
                                 }
@@ -179,7 +186,8 @@ fun List<Block>.parseWidgets(
                                         Widget.Link(
                                             id = w.id,
                                             source = source,
-                                            config = config
+                                            config = config,
+                                            isAutoCreated = widgetContent.isAutoAdded
                                         )
                                     )
                                 }
@@ -190,7 +198,8 @@ fun List<Block>.parseWidgets(
                                             id = w.id,
                                             source = source,
                                             limit = widgetContent.limit,
-                                            config = config
+                                            config = config,
+                                            isAutoCreated = widgetContent.isAutoAdded
                                         )
                                     )
                                 }
@@ -202,7 +211,8 @@ fun List<Block>.parseWidgets(
                                             source = source,
                                             isCompact = true,
                                             limit = widgetContent.limit,
-                                            config = config
+                                            config = config,
+                                            isAutoCreated = widgetContent.isAutoAdded
                                         )
                                     )
                                 }
@@ -214,7 +224,8 @@ fun List<Block>.parseWidgets(
                                                 id = w.id,
                                                 source = source,
                                                 limit = widgetContent.limit,
-                                                config = config
+                                                config = config,
+                                                isAutoCreated = widgetContent.isAutoAdded
                                             )
                                         )
                                     }

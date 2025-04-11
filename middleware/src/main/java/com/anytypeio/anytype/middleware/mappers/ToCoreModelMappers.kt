@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
-import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.DVTimeFormat
@@ -36,7 +35,6 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Process
@@ -449,7 +447,8 @@ fun MBlock.toCoreWidget(): Block.Content.Widget {
             MWidgetLayout.View -> Block.Content.Widget.Layout.VIEW
         },
         limit = content.limit,
-        activeView = content.viewId.ifEmpty { null }
+        activeView = content.viewId.ifEmpty { null },
+        isAutoAdded = content.autoAdded
     )
 }
 

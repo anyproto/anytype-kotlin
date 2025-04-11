@@ -377,7 +377,8 @@ private fun WidgetList(
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onSeeAllObjectsClicked = onSeeAllObjectsClicked
+                                onSeeAllObjectsClicked = onSeeAllObjectsClicked,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered
                             )
                         }
                     } else {
@@ -395,7 +396,8 @@ private fun WidgetList(
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onSeeAllObjectsClicked = onSeeAllObjectsClicked
+                            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered
                         )
                     }
                 }
@@ -683,6 +685,7 @@ private fun GalleryWidgetItem(
     item: WidgetView.Gallery,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -713,7 +716,8 @@ private fun GalleryWidgetItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked
+            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
+            onWidgetMenuTriggered = onWidgetMenuTriggered
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

@@ -2180,17 +2180,20 @@ class HomeScreenViewModel(
             viewer,
             storeOfObjectTypes
         )
+        val type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
         val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
             dataViewRelationLinks = dv.relationLinks,
             objSetByRelation = ObjectWrapper.Relation(dataViewSourceObj.map)
         )
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByRelation(
                 filters = viewer.filters,
                 template = defaultTemplate,
-                type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE),
+                type = type,
                 prefilled = prefilled
             ).also {
                 Timber.d("Calling with params: $it")
@@ -2198,6 +2201,14 @@ class HomeScreenViewModel(
         ).fold(
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
                 if (navigate) {
                     val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
                     if (wrapper.isValid) {
@@ -2227,9 +2238,12 @@ class HomeScreenViewModel(
             dataViewRelationLinks = dv.relationLinks,
             dateProvider = dateProvider
         )
+        val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByType(
-                type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE),
+                type = type,
                 filters = viewer.filters,
                 template = defaultTemplate,
                 prefilled = prefilled
@@ -2239,6 +2253,14 @@ class HomeScreenViewModel(
         ).fold(
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
                 if (navigate) {
                     val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
                     if (wrapper.isValid) {
@@ -2277,12 +2299,25 @@ class HomeScreenViewModel(
             prefilled = prefilled
         )
 
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
+
         createDataViewObject.async(params = createObjectParams).fold(
             onFailure = {
                 Timber.e("Error creating object for collection")
             },
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = defaultObjectTypeUniqueKey.key,
+                    spaceParams = provideParams(space)
+                )
+
                 addObjectToCollection.async(
                     AddObjectToCollection.Params(
                         ctx = collection,
@@ -2402,9 +2437,6 @@ class HomeScreenViewModel(
     }
 
     fun onCreateWidgetElementClicked(view: WidgetView) {
-        viewModelScope.launch {
-
-        }
         when(view) {
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
@@ -2413,12 +2445,21 @@ class HomeScreenViewModel(
                         val type = getDefaultObjectType.async(space)
                             .getOrNull()
                             ?.type ?: TypeKey(ObjectTypeIds.PAGE)
+                        val startTime = System.currentTimeMillis()
                         createObject.async(
                             params = CreateObject.Param(
-                                space = SpaceId(spaceManager.get()),
+                                space = space,
                                 type = type
                             )
                         ).onSuccess { result ->
+                            sendAnalyticsObjectCreateEvent(
+                                objType = type.key,
+                                analytics = analytics,
+                                route = EventsDictionary.Routes.widget,
+                                startTime = startTime,
+                                view = null,
+                                spaceParams = provideParams(space.id)
+                            )
                             proceedWithNavigation(result.obj.navigation())
                             setAsFavourite.async(
                                 params = SetObjectListIsFavorite.Params(
@@ -2438,13 +2479,23 @@ class HomeScreenViewModel(
                     if (source is Widget.Source.Default) {
                         if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
                             val wrapper = ObjectWrapper.Type(source.obj.map)
+                            val space = SpaceId(spaceManager.get())
+                            val startTime = System.currentTimeMillis()
                             createObject.async(
                                 params = CreateObject.Param(
-                                    space = SpaceId(spaceManager.get()),
+                                    space = space,
                                     type = TypeKey(wrapper.uniqueKey),
                                     prefilled = mapOf(Relations.IS_FAVORITE to true)
                                 )
                             ).onSuccess { result ->
+                                sendAnalyticsObjectCreateEvent(
+                                    objType = wrapper.uniqueKey,
+                                    analytics = analytics,
+                                    route = EventsDictionary.Routes.widget,
+                                    startTime = startTime,
+                                    view = null,
+                                    spaceParams = provideParams(space.id)
+                                )
                                 proceedWithNavigation(result.obj.navigation())
                             }
                         } else if (source.obj.layout == ObjectType.Layout.COLLECTION) {

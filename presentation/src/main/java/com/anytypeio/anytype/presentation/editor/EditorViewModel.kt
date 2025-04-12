@@ -6858,9 +6858,6 @@ class EditorViewModel(
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
 
-    fun Struct?.isObjectParticipant(): Boolean =
-        this?.getOrDefault(Relations.LAYOUT, null) == ObjectType.Layout.PARTICIPANT.code.toDouble()
-
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
             sendAnalyticsSelectTemplateEvent(analytics)

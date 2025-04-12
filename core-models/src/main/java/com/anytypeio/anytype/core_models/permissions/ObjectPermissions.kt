@@ -88,11 +88,17 @@ fun ObjectView.toObjectPermissions(
     }
     val isTemplateObject = (typeUniqueKey == ObjectTypeIds.TEMPLATE)
 
-    val currentLayout = when (val value = details[root]?.getOrDefault(Relations.LAYOUT, null)) {
-        is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
-            layout.code == value.toInt()
-        }
+    val detailsForRoot = details[root]
+    val rawLayoutValue = if (detailsForRoot?.containsKey(Relations.LEGACY_LAYOUT) == true) {
+        detailsForRoot[Relations.LEGACY_LAYOUT]
+    } else {
+        detailsForRoot?.get(Relations.LAYOUT)
+    }
 
+    val currentLayout = when (rawLayoutValue) {
+        is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
+            layout.code == rawLayoutValue.toInt()
+        }
         else -> null
     }
 

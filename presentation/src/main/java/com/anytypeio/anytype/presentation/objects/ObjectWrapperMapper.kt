@@ -33,7 +33,8 @@ suspend fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
     objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    usePluralNames: Boolean = true
 ): DefaultObjectView {
     val obj = this
     val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
@@ -43,7 +44,7 @@ suspend fun ObjectWrapper.Basic.toView(
     val layout = obj.getProperLayout()
     return DefaultObjectView(
         id = obj.id,
-        name = fieldParser.getObjectNameOrPluralsForTypes(obj),
+        name = if (usePluralNames) fieldParser.getObjectNameOrPluralsForTypes(obj) else fieldParser.getObjectName(obj),
         description = obj.description,
         type = objTypeId,
         typeName = objTypeName,

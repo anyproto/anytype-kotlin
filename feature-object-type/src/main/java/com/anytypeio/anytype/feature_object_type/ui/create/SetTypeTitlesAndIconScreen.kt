@@ -103,15 +103,13 @@ private fun ColumnScope.CreateNewTypeScreenContent(
     onButtonClicked: (String, String) -> Unit
 ) {
 
-    // Maintain individual state for each field's "not empty" condition.
+    // Only track the Title non-empty condition.
     var isTitleNotEmpty by remember { mutableStateOf(false) }
-    var isPluralNotEmpty by remember { mutableStateOf(false) }
     var titleText by remember { mutableStateOf(uiState.getInitialTitleValue()) }
-    // We now hold a mutable state for plural text that can be updated
-    // either by the user typing in the plurals field or via the title field.
+    // Plural text is maintained separately.
     var pluralText by remember { mutableStateOf(uiState.getInitialPluralValue()) }
-    // Compute the button enabled state.
-    val isButtonEnabled = isTitleNotEmpty && isPluralNotEmpty
+    // The button is enabled if the Title is not empty
+    val isButtonEnabled = isTitleNotEmpty
 
     val icon = when(uiState) {
         is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> uiState.icon
@@ -207,9 +205,7 @@ private fun ColumnScope.CreateNewTypeScreenContent(
             onTextChanged = { newPluralText ->
                 pluralText = newPluralText
             },
-            onButtonEnabled = { enable ->
-                isPluralNotEmpty = enable
-            }
+            onButtonEnabled = { }
         )
     }
     Spacer(modifier = Modifier.height(22.dp))

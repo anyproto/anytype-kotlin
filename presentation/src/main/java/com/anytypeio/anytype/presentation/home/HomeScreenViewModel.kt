@@ -2402,9 +2402,6 @@ class HomeScreenViewModel(
     }
 
     fun onCreateWidgetElementClicked(view: WidgetView) {
-        viewModelScope.launch {
-
-        }
         when(view) {
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
@@ -2413,12 +2410,21 @@ class HomeScreenViewModel(
                         val type = getDefaultObjectType.async(space)
                             .getOrNull()
                             ?.type ?: TypeKey(ObjectTypeIds.PAGE)
+                        val startTime = System.currentTimeMillis()
                         createObject.async(
                             params = CreateObject.Param(
-                                space = SpaceId(spaceManager.get()),
+                                space = space,
                                 type = type
                             )
                         ).onSuccess { result ->
+                            sendAnalyticsObjectCreateEvent(
+                                objType = type.key,
+                                analytics = analytics,
+                                route = EventsDictionary.Routes.widget,
+                                startTime = startTime,
+                                view = EventsDictionary.View.viewHome,
+                                spaceParams = provideParams(space.id)
+                            )
                             proceedWithNavigation(result.obj.navigation())
                             setAsFavourite.async(
                                 params = SetObjectListIsFavorite.Params(
@@ -2438,13 +2444,23 @@ class HomeScreenViewModel(
                     if (source is Widget.Source.Default) {
                         if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
                             val wrapper = ObjectWrapper.Type(source.obj.map)
+                            val space = SpaceId(spaceManager.get())
+                            val startTime = System.currentTimeMillis()
                             createObject.async(
                                 params = CreateObject.Param(
-                                    space = SpaceId(spaceManager.get()),
+                                    space = space,
                                     type = TypeKey(wrapper.uniqueKey),
                                     prefilled = mapOf(Relations.IS_FAVORITE to true)
                                 )
                             ).onSuccess { result ->
+                                sendAnalyticsObjectCreateEvent(
+                                    objType = wrapper.uniqueKey,
+                                    analytics = analytics,
+                                    route = EventsDictionary.Routes.widget,
+                                    startTime = startTime,
+                                    view = EventsDictionary.View.viewHome,
+                                    spaceParams = provideParams(space.id)
+                                )
                                 proceedWithNavigation(result.obj.navigation())
                             }
                         } else if (source.obj.layout == ObjectType.Layout.COLLECTION) {

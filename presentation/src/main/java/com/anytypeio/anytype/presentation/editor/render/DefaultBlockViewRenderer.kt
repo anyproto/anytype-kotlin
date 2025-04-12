@@ -1535,24 +1535,25 @@ class DefaultBlockViewRenderer @Inject constructor(
                     icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
                 )
             }
-
+            ObjectType.Layout.IMAGE -> {
+                val icon =  currentObject.iconImage
+                BlockView.Title.Image(
+                    mode = Mode.READ,
+                    id = block.id,
+                    text = content.text,
+                    image = if (!icon.isNullOrEmpty()) urlBuilder.large(icon) else null,
+                    icon = currentObject.objectIcon(builder = urlBuilder),
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor()
+                )
+            }
             else -> {
-                currentObject?.iconImage?.takeIf { it.isNotBlank() }?.let { imageUrl ->
-                    BlockView.Title.Image(
-                        mode = Mode.READ,
-                        id = block.id,
-                        text = content.text,
-                        image = urlBuilder.large(imageUrl),
-                        icon = currentObject.objectIcon(builder = urlBuilder),
-                        isFocused = resolveIsFocused(focus, block),
-                        cursor = cursor,
-                        coverColor = coverContainer.coverColor,
-                        coverImage = coverContainer.coverImage,
-                        coverGradient = coverContainer.coverGradient,
-                        background = block.parseThemeBackgroundColor(),
-                        color = block.textColor()
-                    )
-                } ?: BlockView.Title.Basic(
+                BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,

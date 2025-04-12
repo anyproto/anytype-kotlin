@@ -1553,6 +1553,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                 )
             }
             else -> {
+                // Fallback to basic title in case of unexpected layout or when wrapper is null
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleImageBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
@@ -175,6 +176,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
     }
+
     open fun setImage(item: BlockView.Title) {
         Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
@@ -185,48 +187,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 .centerCrop()
                 .into(image)
         } ?: apply { image.setImageDrawable(null) }
-    }
-
-    // TODO use for objects with image layout; move to the dedicated view holder.
-    private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
-        val context = imageView.context
-        val displayMetrics = context.resources.displayMetrics
-        val screenWidth = displayMetrics.widthPixels
-
-        Glide.with(context)
-            .asBitmap()
-            .load(url)
-            .override(Target.SIZE_ORIGINAL)
-            .into(object : CustomTarget<Bitmap>() {
-                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                    val aspectRatio = resource.width.toFloat() / resource.height.toFloat()
-                    val calculatedHeight = (screenWidth / aspectRatio).toInt()
-
-                    val imageHeight = when {
-                        calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
-                        calculatedHeight > dpToPx(context, 443) -> dpToPx(context, 443)
-                        else -> calculatedHeight
-                    }
-
-                    imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        width = screenWidth
-                        height = imageHeight
-                    }
-                    imageView.setImageBitmap(resource)
-                }
-
-                override fun onLoadCleared(placeholder: Drawable?) {
-                    imageView.setImageDrawable(null)
-                }
-            })
-    }
-
-    private fun dpToPx(context: Context, dp: Int): Int {
-        return TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            dp.toFloat(),
-            context.resources.displayMetrics
-        ).toInt()
     }
 
     open fun processPayloads(
@@ -659,6 +619,79 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
     }
 
+    class Image(private val imageBinding: ItemBlockTitleImageBinding) : Title(imageBinding.root) {
+
+        private val context: Context = imageBinding.root.context
+
+        override val icon: ObjectIconWidget = imageBinding.objectIconWidget
+        override val image: ImageView = imageBinding.imageIcon
+        override val content: TextInputWidget = imageBinding.title
+        override val selectionView: View = itemView
+
+        override fun applyTextColor(item: BlockView.Title) {
+            // Do nothing
+        }
+
+        override fun applyBackground(item: BlockView.Title) {
+            // Do nothing
+        }
+
+        fun bind(item: BlockView.Title.Image) {
+            super.bind(
+                item = item,
+                onCoverClicked = {},
+                click = {}
+            )
+            content.setText(item.text)
+        }
+
+        override fun setImage(item: BlockView.Title) {
+            item.image?.let { url ->
+                image.visible()
+                loadImageWithCustomResize(image, url)
+            } ?: run { image.setImageDrawable(null) }
+        }
+
+        private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
+            val displayMetrics = context.resources.displayMetrics
+            val screenWidth = displayMetrics.widthPixels
+
+            Glide.with(context)
+                .asBitmap()
+                .load(url)
+                .override(Target.SIZE_ORIGINAL)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                        val aspectRatio = resource.width.toFloat() / resource.height.toFloat()
+                        val calculatedHeight = (screenWidth / aspectRatio).toInt()
+
+                        val imageHeight = when {
+                            calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
+                            calculatedHeight > dpToPx(context, 443) -> dpToPx(context, 443)
+                            else -> calculatedHeight
+                        }
+
+                        imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                            width = screenWidth
+                            height = imageHeight
+                        }
+                        imageView.setImageBitmap(resource)
+                    }
+
+                    override fun onLoadCleared(placeholder: Drawable?) {
+                        imageView.setImageDrawable(null)
+                    }
+                })
+        }
+
+        private fun dpToPx(context: Context, dp: Int): Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dp.toFloat(),
+                context.resources.displayMetrics
+            ).toInt()
+        }
+    }
 
     class Video(
         private val videoBinding: ItemBlockTitleVideoBinding,

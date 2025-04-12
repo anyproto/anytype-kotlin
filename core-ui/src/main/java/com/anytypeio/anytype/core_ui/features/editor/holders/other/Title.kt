@@ -178,6 +178,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     open fun setImage(item: BlockView.Title) {
+        Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
             image.visible()
             Glide

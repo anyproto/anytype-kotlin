@@ -1604,6 +1604,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_section_hidden">Masqué</string>
     <string name="object_type_fields_section_file">Fichier</string>
     <string name="object_type_fields_section_local_fields">Trouvé dans les objets </string>
+    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
     <string name="object_type_fields_title">Propriétés</string>
     <string name="object_type_fields_info_text">Vous éditez le type</string>
     <string name="object_type_fields_edit_field">Éditer le champ</string>
@@ -1611,6 +1612,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_fields_preview_field">Champ d\'aperçu</string>
     <string name="object_type_fields_btn_save">Sauvegarder</string>
     <string name="object_type_fields_menu_delete">Dissocier du type</string>
+    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
+    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
     <string name="object_type_fields_menu_add_to_type">Ajouter au type actuel</string>
     <string name="object_type_fields_menu_remove">Supprimer</string>
     <string name="object_type_fields_local_info_title">Trouvé dans les objets</string>

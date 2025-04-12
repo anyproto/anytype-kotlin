@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.other
 import android.text.Spannable
 import android.text.SpannableString
 import android.view.View
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
@@ -62,6 +63,7 @@ abstract class LinkToObjectCard(
     abstract override val decoratableCard: CardView
 
     override val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(itemView.context).scaledTouchSlop,
         fallback = { e -> itemView.onTouchEvent(e) }
     )
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.TvTableOfContentsBinding
@@ -19,6 +20,7 @@ class TableOfContentsItemWidget @JvmOverloads constructor(
     val textView = binding.text
 
     val editorTouchProcessor = EditorTouchProcessor(
+        touchSlop = ViewConfiguration.get(context).scaledTouchSlop,
         fallback = { e -> this.onTouchEvent(e) }
     )
 

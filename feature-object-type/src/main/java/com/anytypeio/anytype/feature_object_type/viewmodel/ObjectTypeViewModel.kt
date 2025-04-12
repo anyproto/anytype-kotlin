@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -107,7 +108,8 @@ class ObjectTypeViewModel(
     private val getObjectTypeConflictingFields: GetObjectTypeConflictingFields,
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
-    private val dispatcher: Dispatcher<Payload>
+    private val dispatcher: Dispatcher<Payload>,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -330,7 +332,7 @@ class ObjectTypeViewModel(
         _objectTypePermissionsState.value = objectPermissions
 
         uiTitleState.value = UiTitleState(
-            title = objType.pluralName.orEmpty(),
+            title = fieldParser.getObjectPluralName(objType),
             isEditable = objectPermissions.canEditDetails
         )
         val newIcon = objType.objectIcon()
@@ -361,7 +363,6 @@ class ObjectTypeViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             storeOfRelations = storeOfRelations,
             objectTypeConflictingPropertiesIds = conflictingFields,
-            showHiddenProperty = vmParams.showHiddenFields,
             objectPermissions = objectPermissions
         )
         uiTypePropertiesListState.value = UiFieldsListState(items = items)
@@ -778,17 +779,17 @@ class ObjectTypeViewModel(
                         is UiFieldsListItem.Section -> currentSection = item
                     }
                 }
-                proceedWithUpdatingTypeFields(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                proceedWithUpdatingTypeProperties(
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 proceedWithUpdateDataViewProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
             }
 
@@ -813,7 +814,7 @@ class ObjectTypeViewModel(
 
     private fun proceedWithFieldItemMenuClick(event: FieldEvent.FieldItemMenu) {
         when (event) {
-            is FieldEvent.FieldItemMenu.OnDeleteFromTypeClick -> {
+            is FieldEvent.FieldItemMenu.OnRemoveFromTypeClick -> {
                 val deleteId = event.id
                 val headerItems = mutableListOf<UiFieldsListItem.Item>()
                 val sideBarItems = mutableListOf<UiFieldsListItem.Item>()
@@ -847,17 +848,17 @@ class ObjectTypeViewModel(
                         is UiFieldsListItem.Section -> currentSection = item
                     }
                 }
-                proceedWithUpdatingTypeFields(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                proceedWithUpdatingTypeProperties(
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 proceedWithUpdateDataViewProperties(
-                    headerFields = headerItems,
-                    sidebarFields = sideBarItems,
-                    hiddenFields = hiddenItems,
-                    fileFields = filesItems
+                    headerProperties = headerItems,
+                    sidebarProperties = sideBarItems,
+                    hiddenProperties = hiddenItems,
+                    fileProperties = filesItems
                 )
                 uiEditPropertyScreen.value = UiEditPropertyState.Hidden
             }
@@ -867,6 +868,29 @@ class ObjectTypeViewModel(
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
             }
+
+            is FieldEvent.FieldItemMenu.OnMoveToBinClick -> {
+                proceedWithMovePropertyToBin(propertyId = event.id)
+            }
+        }
+    }
+
+    private fun proceedWithMovePropertyToBin(propertyId: Id) {
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(propertyId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Property $propertyId moved to bin")
+                    proceedWithGetObjectTypeConflictingFields()
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving property $propertyId to bin")
+                    proceedWithGetObjectTypeConflictingFields()
+                }
+            )
         }
     }
 
@@ -928,46 +952,48 @@ class ObjectTypeViewModel(
     //endregion
 
     //region USE CASES
-    private fun proceedWithUpdatingTypeFields(
-        headerFields: List<UiFieldsListItem.Item>,
-        sidebarFields: List<UiFieldsListItem.Item>,
-        hiddenFields: List<UiFieldsListItem.Item>,
-        fileFields: List<UiFieldsListItem.Item>
+    private fun proceedWithUpdatingTypeProperties(
+        headerProperties: List<UiFieldsListItem.Item>,
+        sidebarProperties: List<UiFieldsListItem.Item>,
+        hiddenProperties: List<UiFieldsListItem.Item>,
+        fileProperties: List<UiFieldsListItem.Item>
     ) {
-        Timber.d("proceedWithUpdatingTypeFields")
+        Timber.d("proceedWithUpdatingTypeProperties")
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerFields.map { it.id },
-                    Relations.RECOMMENDED_RELATIONS to sidebarFields.map { it.id },
-                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenFields.map { it.id },
-                    Relations.RECOMMENDED_FILE_RELATIONS to fileFields.map { it.id }
+                    Relations.RECOMMENDED_FEATURED_RELATIONS to headerProperties.map { it.id },
+                    Relations.RECOMMENDED_RELATIONS to sidebarProperties.map { it.id },
+                    Relations.RECOMMENDED_HIDDEN_RELATIONS to hiddenProperties.map { it.id },
+                    Relations.RECOMMENDED_FILE_RELATIONS to fileProperties.map { it.id }
                 )
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
-                    Timber.d("Fields updated")
+                    Timber.d("Properties updated")
+                    proceedWithGetObjectTypeConflictingFields()
                 },
                 onFailure = {
-                    Timber.e(it, "Error while updating fields")
+                    Timber.e(it, "Error while updating properties")
+                    proceedWithGetObjectTypeConflictingFields()
                 }
             )
         }
     }
 
-    // Updating both relations in type and dataview to preserve integrity between them
+    // Updating both all recommended properties in type and dataview to preserve integrity between them
     private fun proceedWithUpdateDataViewProperties(
-        headerFields: List<UiFieldsListItem.Item>,
-        sidebarFields: List<UiFieldsListItem.Item>,
-        hiddenFields: List<UiFieldsListItem.Item>,
-        fileFields: List<UiFieldsListItem.Item>
+        headerProperties: List<UiFieldsListItem.Item>,
+        sidebarProperties: List<UiFieldsListItem.Item>,
+        hiddenProperties: List<UiFieldsListItem.Item>,
+        fileProperties: List<UiFieldsListItem.Item>
     ) {
         // Show description in DataView properties list
         val descriptionKey = Relations.DESCRIPTION
 
         val allPropertiesKeys =
-            (headerFields + sidebarFields + hiddenFields + fileFields)
+            (headerProperties + sidebarProperties + hiddenProperties + fileProperties)
                 .map { it.fieldKey } + listOf(descriptionKey)
 
         viewModelScope.launch {
@@ -995,8 +1021,9 @@ class ObjectTypeViewModel(
                     spaceId = vmParams.spaceId.id
                 )
             ).fold(
-                onSuccess = { fields ->
-                    _objectTypeConflictingFieldIds.value = fields
+                onSuccess = { properties ->
+                    Timber.d("Conflicting properties: $properties")
+                    _objectTypeConflictingFieldIds.value = properties
                 },
                 onFailure = {
                     Timber.e(it, "Error while getting conflicting fields")

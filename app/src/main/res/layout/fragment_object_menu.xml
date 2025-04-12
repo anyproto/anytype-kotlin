@@ -99,7 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/default_ripple"
-                    app:icon="@drawable/ic_obj_settings_fields_24"
+                    app:icon="@drawable/ic_properties_purple_24"
                     app:title="@string/properties" />
 
                 <View

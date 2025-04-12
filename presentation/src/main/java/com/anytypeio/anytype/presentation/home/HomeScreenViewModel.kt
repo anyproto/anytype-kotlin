@@ -2299,12 +2299,25 @@ class HomeScreenViewModel(
             prefilled = prefilled
         )
 
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
+
         createDataViewObject.async(params = createObjectParams).fold(
             onFailure = {
                 Timber.e("Error creating object for collection")
             },
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = defaultObjectTypeUniqueKey.key,
+                    spaceParams = provideParams(space)
+                )
+
                 addObjectToCollection.async(
                     AddObjectToCollection.Params(
                         ctx = collection,
@@ -2444,7 +2457,7 @@ class HomeScreenViewModel(
                                 analytics = analytics,
                                 route = EventsDictionary.Routes.widget,
                                 startTime = startTime,
-                                view = EventsDictionary.View.viewHome,
+                                view = null,
                                 spaceParams = provideParams(space.id)
                             )
                             proceedWithNavigation(result.obj.navigation())
@@ -2480,7 +2493,7 @@ class HomeScreenViewModel(
                                     analytics = analytics,
                                     route = EventsDictionary.Routes.widget,
                                     startTime = startTime,
-                                    view = EventsDictionary.View.viewHome,
+                                    view = null,
                                     spaceParams = provideParams(space.id)
                                 )
                                 proceedWithNavigation(result.obj.navigation())

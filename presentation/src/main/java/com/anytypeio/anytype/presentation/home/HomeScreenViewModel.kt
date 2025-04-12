@@ -2180,17 +2180,20 @@ class HomeScreenViewModel(
             viewer,
             storeOfObjectTypes
         )
+        val type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
         val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
             dataViewRelationLinks = dv.relationLinks,
             objSetByRelation = ObjectWrapper.Relation(dataViewSourceObj.map)
         )
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByRelation(
                 filters = viewer.filters,
                 template = defaultTemplate,
-                type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE),
+                type = type,
                 prefilled = prefilled
             ).also {
                 Timber.d("Calling with params: $it")
@@ -2198,6 +2201,14 @@ class HomeScreenViewModel(
         ).fold(
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
                 if (navigate) {
                     val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
                     if (wrapper.isValid) {
@@ -2227,9 +2238,12 @@ class HomeScreenViewModel(
             dataViewRelationLinks = dv.relationLinks,
             dateProvider = dateProvider
         )
+        val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val space = spaceManager.get()
+        val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByType(
-                type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE),
+                type = type,
                 filters = viewer.filters,
                 template = defaultTemplate,
                 prefilled = prefilled
@@ -2239,6 +2253,14 @@ class HomeScreenViewModel(
         ).fold(
             onSuccess = { result ->
                 Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
                 if (navigate) {
                     val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
                     if (wrapper.isValid) {

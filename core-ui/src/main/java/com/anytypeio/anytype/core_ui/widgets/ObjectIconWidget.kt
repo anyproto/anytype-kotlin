@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget.Companion.DRAWABLE_DIR
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -368,41 +369,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setTypeIcon(icon: ObjectIcon.TypeIcon) {
 
-        //todo next PR
-        val (resId, tint) = when (icon) {
-            is ObjectIcon.TypeIcon.Default -> {
-                val resId = context.resources.getIdentifier(
-                    icon.drawableResId,
-                    DRAWABLE_DIR,
-                    context.packageName
-                )
-                if (resId != 0) {
-                    resId to context.getColor(icon.color.colorRes())
-                } else {
-                    0 to 0
-                }
-            }
-
-            ObjectIcon.TypeIcon.Deleted -> 0 to 0
-            is ObjectIcon.TypeIcon.Emoji -> 0 to 0
-            is ObjectIcon.TypeIcon.Fallback -> {
-                val resId = context.resources.getIdentifier(
-                    icon.drawableResId,
-                    DRAWABLE_DIR,
-                    context.packageName
-                )
-                if (resId != 0) {
-                    resId to context.getColor(CustomIconColor.Transparent.colorRes())
-                } else {
-                    val defaultFallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
-                    context.resources.getIdentifier(
-                        defaultFallback.drawableResId,
-                        DRAWABLE_DIR,
-                        context.packageName
-                    ) to context.getColor(CustomIconColor.Transparent.colorRes())
-                }
-            }
-        }
+        val (resId, tint) = icon.getDrawableAndTintColor(context)
 
         with(binding) {
             ivCheckbox.invisible()
@@ -419,6 +386,44 @@ class ObjectIconWidget @JvmOverloads constructor(
             binding.tvEmojiFallback.imageTintList = ColorStateList.valueOf(tint)
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting object type icon for")
+        }
+    }
+}
+
+fun TypeIcon.getDrawableAndTintColor(context: Context): Pair<Int, Int> {
+    val icon = this
+    return when (icon) {
+        is ObjectIcon.TypeIcon.Default -> {
+            val resId = context.resources.getIdentifier(
+                icon.drawableResId,
+                DRAWABLE_DIR,
+                context.packageName
+            )
+            if (resId != 0) {
+                resId to context.getColor(icon.color.colorRes())
+            } else {
+                0 to 0
+            }
+        }
+
+        ObjectIcon.TypeIcon.Deleted -> 0 to 0
+        is ObjectIcon.TypeIcon.Emoji -> 0 to 0
+        is ObjectIcon.TypeIcon.Fallback -> {
+            val resId = context.resources.getIdentifier(
+                icon.drawableResId,
+                DRAWABLE_DIR,
+                context.packageName
+            )
+            if (resId != 0) {
+                resId to context.getColor(CustomIconColor.Transparent.colorRes())
+            } else {
+                val defaultFallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                context.resources.getIdentifier(
+                    defaultFallback.drawableResId,
+                    DRAWABLE_DIR,
+                    context.packageName
+                ) to context.getColor(CustomIconColor.Transparent.colorRes())
+            }
         }
     }
 }

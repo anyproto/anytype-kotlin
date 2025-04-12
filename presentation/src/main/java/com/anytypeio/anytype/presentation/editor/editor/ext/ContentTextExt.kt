@@ -44,7 +44,7 @@ fun Block.Content.Text.getTextAndMarks(
                 else -> {
                     val obj = details.getObject(mark.param)
                     if (obj != null) {
-                        fieldParser.getObjectName(obj)
+                        fieldParser.getObjectNameOrPluralsForTypes(obj)
                     } else {
                         return@forEach
                     }

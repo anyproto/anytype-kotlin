@@ -25,7 +25,8 @@ val allContentTabLayouts = mapOf(
     ),
     AllContentTab.LISTS to listOf(
         ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION
+        ObjectType.Layout.COLLECTION,
+        ObjectType.Layout.OBJECT_TYPE,
     ),
     AllContentTab.FILES to listOf(
         ObjectType.Layout.FILE,

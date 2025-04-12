@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 
 fun String.getMentionName(untitled: String): String = if (this.isBlank()) untitled else this
@@ -72,6 +73,15 @@ fun Block.Content.Text.Mark.createMentionMarkup(
             urlBuilder = urlBuilder,
             isArchived = isArchived
         )
+        ObjectType.Layout.OBJECT_TYPE -> {
+            val objType = ObjectWrapper.Type(map = obj.map)
+            Markup.Mark.Mention.ObjectType(
+                from = range.first,
+                to = range.last,
+                param = p,
+                icon = objType.objectIcon()
+            )
+        }
         ObjectType.Layout.DATE -> {
             Markup.Mark.Mention.Date(
                 from = range.first,

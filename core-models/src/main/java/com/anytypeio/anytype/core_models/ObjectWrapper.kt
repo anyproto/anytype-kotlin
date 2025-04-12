@@ -51,11 +51,16 @@ sealed class ObjectWrapper {
         val links: List<Id> get() = getValues(Relations.LINKS)
 
         val layout: ObjectType.Layout?
-            get() = when (val value = map[Relations.LAYOUT]) {
-                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
-                    layout.code == value.toInt()
+            get() {
+                // Try legacy layout first, then fallback to resolved layout.
+                val layoutValue = when {
+                    map[Relations.LEGACY_LAYOUT] is Double -> map[Relations.LEGACY_LAYOUT] as Double
+                    map[Relations.LAYOUT] is Double -> map[Relations.LAYOUT] as Double
+                    else -> null
                 }
-                else -> null
+                return layoutValue?.let { value ->
+                    ObjectType.Layout.entries.singleOrNull { it.code == value.toInt() }
+                }
             }
 
         val id: Id by default
@@ -182,12 +187,18 @@ sealed class ObjectWrapper {
                 else -> ObjectType.Layout.BASIC
             }
         val layout: ObjectType.Layout?
-            get() = when (val value = map[Relations.LAYOUT]) {
-                is Double -> ObjectType.Layout.entries.singleOrNull { layout ->
-                    layout.code == value.toInt()
+            get() {
+                // Try legacy layout first, then fallback to resolved layout.
+                val layoutValue = when {
+                    map[Relations.LEGACY_LAYOUT] is Double -> map[Relations.LEGACY_LAYOUT] as Double
+                    map[Relations.LAYOUT] is Double -> map[Relations.LAYOUT] as Double
+                    else -> null
                 }
-                else -> null
+                return layoutValue?.let { value ->
+                    ObjectType.Layout.entries.singleOrNull { it.code == value.toInt() }
+                }
             }
+
         val defaultTemplateId: Id? by default
 
         val restrictions: List<ObjectRestriction>

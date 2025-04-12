@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -188,6 +189,42 @@ class ObjectWrapperExtensionsKtTest {
             expected = "Anytype is next-generation sof",
             actual = result.first().name
         )
+    }
+
+    @Test
+    fun testLegacyLayoutTakesPrecedence() {
+        val details = mapOf(
+            Relations.ID to "root",
+            Relations.LEGACY_LAYOUT to 1.0, // should map to Layout.PROFILE
+            Relations.LAYOUT to 3.0         // would map to Set, but legacy should win
+        )
+        val result = ObjectWrapper.Basic(details)
+        val resultType = ObjectWrapper.Type(details)
+        assertEquals(Layout.PROFILE, result.layout)
+        assertEquals(Layout.PROFILE, resultType.layout)
+    }
+
+    @Test
+    fun testResolvedLayoutUsedWhenLegacyAbsent() {
+        val details = mapOf(
+            Relations.ID to "root",
+            Relations.LAYOUT to 3.0, // should map to Layout.Set
+        )
+        val result = ObjectWrapper.Basic(details)
+        val resultType = ObjectWrapper.Type(details)
+        assertEquals(Layout.SET, result.layout)
+        assertEquals(Layout.SET, resultType.layout)
+    }
+
+    @Test
+    fun testNonDoubleValueReturnsNull() {
+        val details = mapOf(
+            Relations.LEGACY_LAYOUT to "invalid"  // invalid value type
+        )
+        val result = ObjectWrapper.Basic(details)
+        val resultType = ObjectWrapper.Type(details)
+        assertNull(result.layout)
+        assertNull(resultType.layout)
     }
 
     fun stubUrlBuilder(targetObjectId: String) {

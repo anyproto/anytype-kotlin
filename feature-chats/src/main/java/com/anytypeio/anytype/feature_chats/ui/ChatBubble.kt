@@ -142,7 +142,7 @@ fun Bubble(
         // Bubble username section
         if (!isUserAuthor) {
             Text(
-                text = name,
+                text = name.ifEmpty { stringResource(R.string.untitled) },
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,

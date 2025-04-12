@@ -103,13 +103,13 @@ private fun ColumnScope.CreateNewTypeScreenContent(
     onButtonClicked: (String, String) -> Unit
 ) {
 
-    // Maintain individual state for each field's "not empty" condition.
+    // Only track the Title non-empty condition.
     var isTitleNotEmpty by remember { mutableStateOf(false) }
-    var isPluralNotEmpty by remember { mutableStateOf(false) }
     var titleText by remember { mutableStateOf(uiState.getInitialTitleValue()) }
+    // Plural text is maintained separately.
     var pluralText by remember { mutableStateOf(uiState.getInitialPluralValue()) }
-    // Compute the button enabled state.
-    val isButtonEnabled = isTitleNotEmpty && isPluralNotEmpty
+    // The button is enabled if the Title is not empty
+    val isButtonEnabled = isTitleNotEmpty
 
     val icon = when(uiState) {
         is UiTypeSetupTitleAndIconState.Visible.CreateNewType -> uiState.icon
@@ -156,8 +156,14 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                 .wrapContentHeight(),
             hint = uiState.getTitleHint(),
             initialValue = uiState.getInitialTitleValue(),
-            onTextChanged = {
-                titleText = it
+            onTextChanged = { newText ->
+                // Check if the plural still matches the current title.
+                // If they are equal then we can assume auto-population is still active.
+                val shouldAutoUpdate = titleText == pluralText
+                titleText = newText
+                if (shouldAutoUpdate) {
+                    pluralText = newText
+                }
             },
             onButtonEnabled = { enable ->
                 isTitleNotEmpty = enable
@@ -187,19 +193,19 @@ private fun ColumnScope.CreateNewTypeScreenContent(
             text = stringResource(id = R.string.object_type_create_plural_title)
         )
         Spacer(modifier = Modifier.height(4.dp))
+        // Note: Here we pass the parent's pluralText as the initialValue so that
+        // if it changes, we can update the field (see the LaunchedEffect inside CreateTypeField).
         CreateTypeField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
             hint = uiState.getPluralHint(),
-            initialValue = uiState.getInitialPluralValue(),
+            initialValue = pluralText,
             textStyle = BodyRegular,
-            onTextChanged = {
-                pluralText = it
+            onTextChanged = { newPluralText ->
+                pluralText = newPluralText
             },
-            onButtonEnabled = { enable ->
-                isPluralNotEmpty = enable
-            }
+            onButtonEnabled = { }
         )
     }
     Spacer(modifier = Modifier.height(22.dp))
@@ -228,10 +234,24 @@ private fun CreateTypeField(
     onTextChanged: (String) -> Unit
 ) {
 
+    // Hold the text state internally.
     var textFieldValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(
             TextFieldValue(initialValue)
         )
+    }
+
+    // Store the last value received from the parent.
+    var lastInitialValue by remember { mutableStateOf(initialValue) }
+
+    // If initialValue changes, and the field is still auto-populated (i.e. the user didn't change it manually)
+    // then update the textFieldValue.
+    LaunchedEffect(initialValue) {
+        if (textFieldValue.text == lastInitialValue) {
+            textFieldValue = TextFieldValue(initialValue)
+            onButtonEnabled(initialValue.isNotEmpty())
+        }
+        lastInitialValue = initialValue
     }
 
     LaunchedEffect(textFieldValue) {

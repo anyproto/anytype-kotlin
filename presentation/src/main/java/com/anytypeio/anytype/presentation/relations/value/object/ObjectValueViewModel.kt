@@ -235,7 +235,8 @@ class ObjectValueViewModel(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
                 fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                usePluralNames = false
             ),
             isSelected = isSelected,
             number = number,

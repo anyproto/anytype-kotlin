@@ -1533,20 +1533,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
                     icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
-                    url = currentObject.getFileUrl(urlBuilder)
                 )
             }
             ObjectType.Layout.IMAGE -> {
-                BlockView.Title.Basic(
+                val icon =  currentObject.iconImage
+                BlockView.Title.Image(
                     mode = Mode.READ,
                     id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
-                    image = currentObject.iconImage?.let { image ->
-                        if (image.isNotBlank())
-                            urlBuilder.large(image)
-                        else
-                            null
-                    },
+                    text = content.text,
+                    image = if (!icon.isNullOrEmpty()) urlBuilder.large(icon) else null,
+                    icon = currentObject.objectIcon(builder = urlBuilder),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,

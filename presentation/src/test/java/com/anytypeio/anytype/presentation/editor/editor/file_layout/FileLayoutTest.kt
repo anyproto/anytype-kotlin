@@ -125,8 +125,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                         mime = fileObject.fileMimeType,
                         fileName = fileObject.name,
                         extensions = fileExt
-                    ),
-                    url = null
+                    )
                 ),
                 BlockView.ButtonOpenFile.FileButton(
                     id = fileBlock.id,
@@ -185,11 +184,12 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         val firstTimeExpected = ViewState.Success(
             listOf(
-                BlockView.Title.Basic(
+                BlockView.Title.Image(
                     isFocused = false,
                     id = title.id,
-                    text = "${fileObject.name}.$fileExt",
-                    mode = BlockView.Mode.READ //in this case for a Image Object title is always locked!
+                    text = title.content.asText().text,
+                    mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.None
                 ),
                 BlockView.ButtonOpenFile.ImageButton(
                     id = fileBlock.id,

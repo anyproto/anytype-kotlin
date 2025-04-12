@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTableBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleFileBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleImageBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
@@ -172,6 +173,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_LOADING
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_FILE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_BUTTON_OPEN_IMAGE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_IMAGE_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PICTURE_ERROR
@@ -376,6 +378,13 @@ class BlockAdapter(
                     ItemBlockTitleFileBinding.inflate(inflater, parent, false)
                 )
             }
+
+            HOLDER_IMAGE_TITLE -> {
+                Title.Image(
+                    ItemBlockTitleImageBinding.inflate(inflater, parent, false)
+                )
+            }
+
             HOLDER_VIDEO_TITLE -> Title.Video(
                 ItemBlockTitleVideoBinding.inflate(inflater, parent, false),
                 lifecycle
@@ -1046,6 +1055,13 @@ class BlockAdapter(
                         )
                     }
 
+                    is Title.Image -> {
+                        holder.processPayloads(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Title.Image
+                        )
+                    }
+
                     is Numbered -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1417,6 +1433,12 @@ class BlockAdapter(
             is Title.Video -> {
                 holder.apply {
                     bind(item = blocks[position] as BlockView.Title.Video)
+                }
+            }
+
+            is Title.Image -> {
+                holder.apply {
+                    bind(item = blocks[position] as BlockView.Title.Image)
                 }
             }
             is Code -> {

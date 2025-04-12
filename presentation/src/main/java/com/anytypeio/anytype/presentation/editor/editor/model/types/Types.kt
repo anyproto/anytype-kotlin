@@ -7,6 +7,7 @@ object Types {
     const val HOLDER_ARCHIVE_TITLE = 36
     const val HOLDER_FILE_TITLE = 37
     const val HOLDER_VIDEO_TITLE = 60
+    const val HOLDER_IMAGE_TITLE = 11
     const val HOLDER_TODO_TITLE = 48
     const val HOLDER_HEADER_ONE = 2
     const val HOLDER_HEADER_TWO = 3

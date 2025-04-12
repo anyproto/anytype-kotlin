@@ -356,6 +356,7 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.ButtonOpenFile.ImageButton -> view
             is BlockView.ButtonOpenFile.FileButton -> view
             is BlockView.Title.Video -> view
+            is BlockView.Title.Image -> view
         }
     }
 }

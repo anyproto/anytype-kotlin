@@ -206,5 +206,6 @@ private fun Markup.Mark.updateRanges(start: Int, length: Int): Markup.Mark {
         is Markup.Mark.Mention.Profile.WithImage -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Mention.Profile.WithInitials -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Mention.Date -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Mention.ObjectType -> copy(from = newFrom, to = newTo)
     }
 }

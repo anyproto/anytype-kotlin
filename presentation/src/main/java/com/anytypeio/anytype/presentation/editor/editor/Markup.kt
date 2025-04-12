@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.text.Spannable
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 /**
  * Classes implementing this interface should support markup rendering.
@@ -107,6 +108,13 @@ interface Markup {
                 override val from: Int,
                 override val to: Int,
                 override val param: String,
+            ) : Mention()
+
+            data class ObjectType(
+                override val from: Int,
+                override val to: Int,
+                override val param: String,
+                val icon: ObjectIcon.TypeIcon
             ) : Mention()
 
             sealed class Profile : Mention() {

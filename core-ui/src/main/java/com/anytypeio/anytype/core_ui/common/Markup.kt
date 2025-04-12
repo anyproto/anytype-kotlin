@@ -7,6 +7,7 @@ import android.text.SpannableStringBuilder
 import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.drawable
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.disable
+import com.anytypeio.anytype.core_ui.widgets.getDrawableAndTintColor
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -485,6 +487,30 @@ fun Editable.proceedWithSettingMentionSpan(
                     imagePadding = mentionImagePadding,
                     param = mark.param,
                     placeholder = placeholder,
+                    isArchived = false
+                ),
+                mark.from,
+                mark.to,
+                Markup.MENTION_SPANNABLE_FLAG
+            )
+            setClickableSpan(click, mark)
+        }
+        is Markup.Mark.Mention.ObjectType -> {
+            val (drawableRes, tint) = mark.icon.getDrawableAndTintColor(context)
+            val drawable = ContextCompat.getDrawable(context, drawableRes)?.mutate()
+            if (drawable != null) {
+                DrawableCompat.setTint(drawable, tint)
+            }
+            val finalDrawable = drawable ?: ContextCompat.getDrawable(context, R.drawable.ic_empty_state_type)
+            setSpan(
+                MentionSpan(
+                    onImageResourceReady = onImageReady,
+                    context = context,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
+                    emoji = null,
+                    placeholder = finalDrawable,
                     isArchived = false
                 ),
                 mark.from,

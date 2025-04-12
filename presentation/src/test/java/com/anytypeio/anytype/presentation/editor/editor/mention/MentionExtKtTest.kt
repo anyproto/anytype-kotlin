@@ -9,6 +9,8 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -326,14 +328,13 @@ class MentionExtTest {
             param = MockDataFactory.randomString()
         )
 
-        ObjectType.Layout.values().iterator().forEach { layout: ObjectType.Layout ->
+        ObjectType.Layout.entries.iterator().forEach { layout: ObjectType.Layout ->
             when (layout) {
                 ObjectType.Layout.BASIC -> equalsMentionBase(mark, layout)
                 ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> equalsMentionProfile(mark, layout)
                 ObjectType.Layout.TODO -> equalsMentionTodo(mark, layout)
                 ObjectType.Layout.SET -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.COLLECTION -> equalsMentionNoIcon(mark, layout)
-                ObjectType.Layout.OBJECT_TYPE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.RELATION -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.FILE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.DASHBOARD -> equalsMentionNoIcon(mark, layout)
@@ -341,6 +342,7 @@ class MentionExtTest {
                 ObjectType.Layout.NOTE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.SPACE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.PDF -> equalsMentionNoIcon(mark, layout)
+                ObjectType.Layout.OBJECT_TYPE -> equalsMentionObjectType(mark, layout)
                 else -> {}
             }
         }
@@ -387,6 +389,28 @@ class MentionExtTest {
             to = mark.range.last,
             param = mark.param!!,
             isArchived = false
+        )
+        assertEquals(expected, result)
+    }
+
+    private fun equalsMentionObjectType(mark: Block.Content.Text.Mark, layout: ObjectType.Layout?) {
+        val obj = ObjectWrapper.Basic(
+            mapOf(
+                Relations.LAYOUT to layout?.code?.toDouble(),
+                Relations.ICON_NAME to "typeIcon",
+                Relations.ICON_OPTION to CustomIconColor.Red.iconOption.toDouble()
+            )
+        )
+        val result = mark.createMentionMarkup(obj, urlBuilder)
+
+        val expected = Markup.Mark.Mention.ObjectType(
+            from = mark.range.first,
+            to = mark.range.last,
+            param = mark.param!!,
+            icon = ObjectIcon.TypeIcon.Default(
+                rawValue = "typeIcon",
+                color = CustomIconColor.Red
+            )
         )
         assertEquals(expected, result)
     }

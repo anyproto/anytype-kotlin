@@ -137,11 +137,11 @@ object SlashExtensions {
             SlashItem.SelectDate
         ) + objectTypes.toSlashItemView()
 
-    fun getSlashWidgetRelationItems(relations: List<SlashPropertyView>): List<SlashPropertyView> =
+    fun getSlashWidgetPropertyItems(properties: List<SlashPropertyView>): List<SlashPropertyView> =
         listOf(
             SlashPropertyView.Section.SubheaderWithBack,
             //SlashRelationView.RelationNew
-        ) + relations
+        ) + properties
 
     fun getSlashWidgetColorItems(color: ThemeColor?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->

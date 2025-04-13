@@ -5392,10 +5392,10 @@ class EditorViewModel(
         )
     }
 
-    private fun proceedWithRelations(relations: List<SlashPropertyView>) {
+    private fun proceedWithRelations(properties: List<SlashPropertyView>) {
         onSlashWidgetStateChanged(
             SlashWidgetState.UpdateItems.empty().copy(
-                relationItems = SlashExtensions.getSlashWidgetRelationItems(relations)
+                relationItems = SlashExtensions.getSlashWidgetPropertyItems(properties)
             )
         )
     }

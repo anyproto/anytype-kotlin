@@ -3,12 +3,12 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 
-sealed class SlashRelationView : DefaultObjectDiffIdentifier {
-    data class Item(val view: ObjectRelationView) : SlashRelationView() {
+sealed class SlashPropertyView : DefaultObjectDiffIdentifier {
+    data class Item(val view: ObjectRelationView) : SlashPropertyView() {
         override val identifier: String get() = view.identifier
     }
 
-    sealed class Section : SlashRelationView() {
+    sealed class Section : SlashPropertyView() {
         object Subheader : Section() {
             override val identifier: String get() = javaClass.simpleName
         }
@@ -17,7 +17,7 @@ sealed class SlashRelationView : DefaultObjectDiffIdentifier {
             override val identifier: String get() = javaClass.simpleName
         }
     }
-    object RelationNew : SlashRelationView() {
+    object PropertyNew : SlashPropertyView() {
         override val identifier: String get() = javaClass.simpleName
     }
 }

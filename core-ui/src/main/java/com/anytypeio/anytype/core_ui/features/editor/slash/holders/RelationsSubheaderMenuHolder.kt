@@ -6,19 +6,19 @@ import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSubheaderLeftBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashPropertyView
 
 class RelationsSubheaderMenuHolder(
     val binding: ItemSlashWidgetSubheaderBinding
 ) : RecyclerView.ViewHolder(binding.root) {
 
-    fun bind(item: SlashRelationView.Section) = with(binding) {
+    fun bind(item: SlashPropertyView.Section) = with(binding) {
         val text = when (item) {
-            SlashRelationView.Section.Subheader -> {
+            SlashPropertyView.Section.Subheader -> {
                 flBack.invisible()
                 R.string.slash_widget_main_relations
             }
-            SlashRelationView.Section.SubheaderWithBack -> {
+            SlashPropertyView.Section.SubheaderWithBack -> {
                 flBack.visible()
                 R.string.slash_widget_main_relations
             }

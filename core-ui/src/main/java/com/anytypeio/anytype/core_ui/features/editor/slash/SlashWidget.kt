@@ -54,7 +54,7 @@ class SlashWidget @JvmOverloads constructor(
     }
 
     private val relationsAdapter by lazy {
-        SlashRelationsAdapter(
+        SlashPropertiesAdapter(
             items = listOf(),
             clicks = { _clickEvents.trySend(it) }
         )

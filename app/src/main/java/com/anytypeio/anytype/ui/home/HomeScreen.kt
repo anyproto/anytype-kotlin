@@ -522,8 +522,7 @@ private fun WidgetList(
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                alpha = alpha.value,
-                                lazyListState = lazyListState,
+                                alpha = alpha.value
                             )
                         }
                     } else {
@@ -539,8 +538,7 @@ private fun WidgetList(
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            alpha = 1.0f,
-                            lazyListState = lazyListState,
+                            alpha = 1.0f
                         )
                     }
                 }

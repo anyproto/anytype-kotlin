@@ -560,7 +560,7 @@ private fun WidgetList(
 }
 
 @Composable
-private fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(
+fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(
     view: View,
     onDragStopped: () -> Unit
 ): Modifier {

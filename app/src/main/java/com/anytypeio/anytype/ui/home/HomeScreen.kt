@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -71,6 +72,7 @@ import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -252,24 +254,9 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             TreeWidgetItem(
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_START
-                                        )
-                                    },
-                                    onDragStopped = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_END
-                                        )
-                                        Timber.d("onDragStopped")
-                                    },
-                                ),
+                                modifier = DefaultDragAndDropModifier(view),
                                 index = index,
                                 mode = mode,
-                                lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
                                 onExpand = onExpand,
@@ -288,7 +275,6 @@ private fun WidgetList(
                         TreeWidgetItem(
                             index = index,
                             mode = mode,
-                            lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
                             onExpand = onExpand,
@@ -309,24 +295,9 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             LinkWidgetItem(
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_START
-                                        )
-                                    },
-                                    onDragStopped = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_END
-                                        )
-                                        Timber.d("onDragStopped")
-                                    },
-                                ),
+                                modifier = DefaultDragAndDropModifier(view),
                                 index = index,
                                 mode = mode,
-                                lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
                                 onWidgetMenuAction = onWidgetMenuAction,
@@ -338,7 +309,6 @@ private fun WidgetList(
                         LinkWidgetItem(
                             index = index,
                             mode = mode,
-                            lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
                             onWidgetMenuAction = onWidgetMenuAction,
@@ -352,24 +322,9 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             SetOfObjectsItem(
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_START
-                                        )
-                                    },
-                                    onDragStopped = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_END
-                                        )
-                                        Timber.d("onDragStopped")
-                                    },
-                                ),
+                                modifier = DefaultDragAndDropModifier(view),
                                 index = index,
                                 mode = mode,
-                                lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
                                 onWidgetElementClicked = { obj ->
@@ -389,7 +344,6 @@ private fun WidgetList(
                         SetOfObjectsItem(
                             index = index,
                             mode = mode,
-                            lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
                             onWidgetElementClicked = { obj ->
@@ -411,24 +365,9 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             GalleryWidgetItem(
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_START
-                                        )
-                                    },
-                                    onDragStopped = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_END
-                                        )
-                                        Timber.d("onDragStopped")
-                                    },
-                                ),
+                                modifier = DefaultDragAndDropModifier(view),
                                 index = index,
                                 mode = mode,
-                                lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
                                 onWidgetElementClicked = { obj ->
@@ -447,7 +386,6 @@ private fun WidgetList(
                         GalleryWidgetItem(
                             index = index,
                             mode = mode,
-                            lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
                             onWidgetElementClicked = { obj ->
@@ -468,24 +406,9 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             ListOfObjectsItem(
-                                modifier = Modifier.draggableHandle(
-                                    onDragStarted = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_START
-                                        )
-                                    },
-                                    onDragStopped = {
-                                        ViewCompat.performHapticFeedback(
-                                            view,
-                                            HapticFeedbackConstantsCompat.GESTURE_END
-                                        )
-                                        Timber.d("onDragStopped")
-                                    },
-                                ),
+                                modifier = DefaultDragAndDropModifier(view),
                                 index = index,
                                 mode = mode,
-                                lazyListState = lazyListState,
                                 alpha = alpha.value,
                                 item = item,
                                 onWidgetElementClicked = { obj ->
@@ -503,7 +426,6 @@ private fun WidgetList(
                         ListOfObjectsItem(
                             index = index,
                             mode = mode,
-                            lazyListState = lazyListState,
                             alpha = 1.0f,
                             item = item,
                             onWidgetElementClicked = { obj ->
@@ -626,11 +548,28 @@ private fun WidgetList(
 }
 
 @Composable
+private fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(view: View): Modifier {
+    return Modifier.draggableHandle(
+        onDragStarted = {
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.GESTURE_START
+            )
+        },
+        onDragStopped = {
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.GESTURE_END
+            )
+        }
+    )
+}
+
+@Composable
 private fun ListOfObjectsItem(
     modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
-    lazyListState: LazyListState,
     alpha: Float,
     item: WidgetView.ListOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
@@ -642,17 +581,10 @@ private fun ListOfObjectsItem(
     onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    modifier
-                else
-                    modifier
-            )
             .alpha(alpha)
     ) {
         ListWidgetCard(
@@ -697,7 +629,6 @@ private fun SetOfObjectsItem(
     modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
-    lazyListState: LazyListState,
     alpha: Float,
     item: WidgetView.SetOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
@@ -711,17 +642,10 @@ private fun SetOfObjectsItem(
     onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    modifier
-                else
-                    modifier
-            )
             .alpha(alpha)
     ) {
         DataViewListWidgetCard(
@@ -768,7 +692,6 @@ private fun GalleryWidgetItem(
     modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
-    lazyListState: LazyListState,
     alpha: Float,
     item: WidgetView.Gallery,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
@@ -781,17 +704,10 @@ private fun GalleryWidgetItem(
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    modifier
-                else
-                    modifier
-            )
             .alpha(alpha)
     ) {
         GalleryWidgetCard(
@@ -837,7 +753,6 @@ private fun LinkWidgetItem(
     modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
-    lazyListState: LazyListState,
     alpha: Float,
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
@@ -845,16 +760,9 @@ private fun LinkWidgetItem(
     onWidgetMenuTriggered: (WidgetId) -> Unit,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    modifier
-                else
-                    modifier
-            )
             .alpha(alpha)
     ) {
         LinkWidgetCard(
@@ -896,7 +804,6 @@ private fun TreeWidgetItem(
     modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
-    lazyListState: LazyListState,
     alpha: Float,
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
@@ -909,17 +816,10 @@ private fun TreeWidgetItem(
     onCreateObjectInsideWidget: (Id) -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .animateContentSize()
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    modifier
-                else
-                    modifier
-            )
             .alpha(alpha)
     ) {
         TreeWidgetCard(

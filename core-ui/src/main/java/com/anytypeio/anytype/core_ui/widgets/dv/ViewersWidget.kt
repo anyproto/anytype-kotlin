@@ -182,7 +182,6 @@ private fun ViewersWidgetContent(
                 count = views.size,
                 key = { index -> views[index].id },
             ) { index ->
-
                 ReorderableItem(reorderableLazyListState, key = views[index].id) { isDragging ->
                     val currentItem = LocalView.current
                     if (isDragging) {

@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -93,6 +92,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -105,7 +105,6 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.Empt
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.SectionView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
-import com.anytypeio.anytype.ui.home.DefaultDragAndDropModifier
 import com.anytypeio.anytype.ui.settings.typography
 import com.google.accompanist.themeadapter.material.createMdcTheme
 import kotlinx.coroutines.flow.collectLatest

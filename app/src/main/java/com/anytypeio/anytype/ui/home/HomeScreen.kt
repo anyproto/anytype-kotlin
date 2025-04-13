@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.home
 
-import android.view.View
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -25,7 +24,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -51,6 +49,7 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -72,11 +71,8 @@ import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
-import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -557,28 +553,6 @@ private fun WidgetList(
             }
         }
     }
-}
-
-@Composable
-fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(
-    view: View,
-    onDragStopped: () -> Unit
-): Modifier {
-    return Modifier.draggableHandle(
-        onDragStarted = {
-            ViewCompat.performHapticFeedback(
-                view,
-                HapticFeedbackConstantsCompat.GESTURE_START
-            )
-        },
-        onDragStopped = {
-            ViewCompat.performHapticFeedback(
-                view,
-                HapticFeedbackConstantsCompat.GESTURE_END
-            )
-            onDragStopped()
-        }
-    )
 }
 
 @Composable

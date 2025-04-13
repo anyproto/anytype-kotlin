@@ -83,7 +83,6 @@ composeAccompanistPermissions = { module = "com.google.accompanist:accompanist-p
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
 composeAccompanistNavigation = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanistVersion" }
-composeReorderableLegacy = { module = "com.github.fat-fellow.ComposeReorderable:reorderable", version.ref = "composeReorderableLegacyVersion" }
 composeReorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "composeReorderableVersion" }
 composeConstraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstraintLayoutVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.6.3" }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -26,6 +28,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -56,11 +61,9 @@ import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.DoneMode
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Edit
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.EditMode
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.ReorderableLazyListState
-import org.burnoutcrew.reorderable.detectReorder
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
+import sh.calvin.reorderable.ReorderableCollectionItemScope
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -114,17 +117,19 @@ private fun ViewersWidgetContent(
     action: (ViewersWidgetUi.Action) -> Unit
 ) {
 
+    val view = LocalView.current
+    val lastFromIndex = remember { mutableStateOf<Int?>(null) }
+    val lastToIndex = remember { mutableStateOf<Int?>(null) }
+
+    val lazyListState = rememberLazyListState()
+
     val views = remember { mutableStateListOf<ViewerView>() }
     views.swapList(state.items)
 
-    val lazyListState = rememberReorderableLazyListState(
-        onMove = { from, to ->
-            val newList = views.toMutableList().apply {
-                add(to.index, removeAt(from.index))
-            }
-            views.swapList(newList)
-        },
-        onDragEnd = { from, to ->
+    val onDragStoppedHandler = {
+        val from = lastFromIndex.value
+        val to = lastToIndex.value
+        if (from != null && to != null && from != to) {
             action(
                 ViewersWidgetUi.Action.OnMove(
                     currentViews = views,
@@ -133,7 +138,25 @@ private fun ViewersWidgetContent(
                 )
             )
         }
-    )
+        // Reset after firing
+        lastFromIndex.value = null
+        lastToIndex.value = null
+    }
+
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        lastFromIndex.value = from.index
+        lastToIndex.value = to.index
+
+        val newList = views.toMutableList().apply {
+            add(to.index, removeAt(from.index))
+        }
+        views.swapList(newList)
+
+        ViewCompat.performHapticFeedback(
+            view,
+            HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+        )
+    }
 
     Column(
         modifier = modifier
@@ -150,9 +173,8 @@ private fun ViewersWidgetContent(
         )
 
         LazyColumn(
-            state = lazyListState.listState,
+            state = lazyListState,
             modifier = Modifier
-                .reorderable(lazyListState)
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
@@ -160,26 +182,20 @@ private fun ViewersWidgetContent(
                 count = views.size,
                 key = { index -> views[index].id },
             ) { index ->
-
-                ReorderableItem(
-                    modifier = Modifier.animateItem(),
-                    reorderableState = lazyListState,
-                    key = views[index].id
-                ) { isDragging ->
+                ReorderableItem(reorderableLazyListState, key = views[index].id) { isDragging ->
                     val currentItem = LocalView.current
                     if (isDragging) {
                         currentItem.isHapticFeedbackEnabled = true
                         currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                     }
                     Item(
+                        dndModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                         modifier = Modifier,
-                        lazyListState = lazyListState,
                         isDragging = isDragging,
                         isEditing = state.isEditing,
                         action = action,
                         view = views[index]
                     )
-
                 }
                 if (index != views.size - 1) {
                     Divider()
@@ -191,8 +207,8 @@ private fun ViewersWidgetContent(
 
 @Composable
 private fun Item(
+    dndModifier: Modifier = Modifier,
     modifier: Modifier,
-    lazyListState: ReorderableLazyListState,
     isDragging: Boolean,
     isEditing: Boolean,
     action: (ViewersWidgetUi.Action) -> Unit,
@@ -228,8 +244,7 @@ private fun Item(
             contentDescription = "Delete view"
         )
         Image(
-            modifier = Modifier
-                .detectReorder(lazyListState)
+            modifier = dndModifier
                 .constrainAs(dnd) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
@@ -385,5 +400,27 @@ private fun ActionText(modifier: Modifier, text: String, click: () -> Unit) {
         style = BodyRegular,
         color = colorResource(id = R.color.glyph_active),
         textAlign = TextAlign.Center
+    )
+}
+
+@Composable
+fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(
+    view: View,
+    onDragStopped: () -> Unit
+): Modifier {
+    return Modifier.draggableHandle(
+        onDragStarted = {
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.GESTURE_START
+            )
+        },
+        onDragStopped = {
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.GESTURE_END
+            )
+            onDragStopped()
+        }
     )
 }

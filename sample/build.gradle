@@ -65,7 +65,7 @@ dependencies {
     implementation libs.composeAccompanistPagerIndicators
     implementation libs.preference
     implementation libs.activityCompose
-    implementation libs.composeReorderableLegacy
+    implementation libs.composeReorderable
     debugImplementation libs.composeTooling
 
     testImplementation libs.junit

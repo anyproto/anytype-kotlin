@@ -5,7 +5,7 @@ object SlashConst {
     const val SLASH_MAIN_STYLE = "Style"
     const val SLASH_MAIN_MEDIA = "Media"
     const val SLASH_MAIN_OBJECTS = "Objects"
-    const val SLASH_MAIN_RELATIONS = "Relations"
+    const val SLASH_MAIN_PROPERTIES = "Properties"
     const val SLASH_MAIN_OTHER = "Other"
     const val SLASH_MAIN_ACTIONS = "Actions"
     const val SLASH_MAIN_ALIGNMENT = "Alignment"
@@ -58,5 +58,5 @@ object SlashConst {
 
     const val SLASH_BACK = "Back"
 
-    const val SLASH_RELATION_NEW = "Relation new"
+    const val SLASH_PROPERTY_NEW = "Property new"
 }

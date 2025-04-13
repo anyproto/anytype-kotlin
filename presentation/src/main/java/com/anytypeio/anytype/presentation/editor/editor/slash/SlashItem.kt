@@ -12,7 +12,7 @@ sealed class SlashWidgetState {
         val styleItems: List<SlashItem>,
         val mediaItems: List<SlashItem>,
         val objectItems: List<SlashItem>,
-        val relationItems: List<SlashRelationView>,
+        val relationItems: List<SlashPropertyView>,
         val otherItems: List<SlashItem>,
         val actionsItems: List<SlashItem>,
         val alignmentItems: List<SlashItem>,
@@ -148,8 +148,8 @@ sealed class SlashItem {
             override fun getAbbreviation(): List<String>? = null
         }
 
-        object Relations : Main() {
-            override fun getSearchName(): String = SlashConst.SLASH_MAIN_RELATIONS
+        object Properties : Main() {
+            override fun getSearchName(): String = SlashConst.SLASH_MAIN_PROPERTIES
             override fun getAbbreviation(): List<String>? = null
         }
 
@@ -305,14 +305,14 @@ sealed class SlashItem {
     }
     //endregion
 
-    //region RELATION
-    data class Relation(val relation: SlashRelationView.Item) : SlashItem() {
-        override fun getSearchName(): String = relation.view.name
+    //region Properties
+    data class Property(val property: SlashPropertyView.Item) : SlashItem() {
+        override fun getSearchName(): String = property.view.name
         override fun getAbbreviation(): List<String>? = null
     }
 
-    object RelationNew : SlashItem() {
-        override fun getSearchName(): String = SlashConst.SLASH_RELATION_NEW
+    object PropertyNew : SlashItem() {
+        override fun getSearchName(): String = SlashConst.SLASH_PROPERTY_NEW
         override fun getAbbreviation(): List<String>? = null
     }
     //endregion

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor.slash
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.const.SlashConst
 import com.anytypeio.anytype.core_utils.ext.parseMatchedInt
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_COLUMN_COUNT
 import com.anytypeio.anytype.domain.table.CreateTable.Companion.DEFAULT_MAX_COLUMN_COUNT
@@ -49,7 +50,7 @@ object SlashExtensions {
         SlashItem.Main.Style,
         SlashItem.Main.Media,
         SlashItem.Main.Objects,
-        SlashItem.Main.Relations,
+        SlashItem.Main.Properties,
         SlashItem.Main.Other,
         SlashItem.Main.Actions,
         SlashItem.Main.Alignment,
@@ -136,11 +137,11 @@ object SlashExtensions {
             SlashItem.SelectDate
         ) + objectTypes.toSlashItemView()
 
-    fun getSlashWidgetRelationItems(relations: List<SlashRelationView>): List<SlashRelationView> =
+    fun getSlashWidgetPropertyItems(properties: List<SlashPropertyView>): List<SlashPropertyView> =
         listOf(
-            SlashRelationView.Section.SubheaderWithBack,
+            SlashPropertyView.Section.SubheaderWithBack,
             //SlashRelationView.RelationNew
-        ) + relations
+        ) + properties
 
     fun getSlashWidgetColorItems(color: ThemeColor?): List<SlashItem.Color.Text> =
         ThemeColor.values().map { themeColor ->
@@ -165,7 +166,7 @@ object SlashExtensions {
         viewType: Int,
         text: CharSequence,
         objectTypes: List<SlashItem.ObjectType>,
-        relations: List<SlashRelationView.Item>
+        properties: List<SlashPropertyView.Item>
     ): SlashWidgetState.UpdateItems {
         val filter = text.subSequence(1, text.length).toString()
         val filteredStyle = filterSlashItems(
@@ -205,9 +206,9 @@ object SlashExtensions {
             filter = filter,
             items = listOf(SlashItem.Actions.LinkTo, SlashItem.SelectDate) + objectTypes
         )
-        val filteredRelations = filterRelations(
+        val filteredRelations = filterProperties(
             filter = filter,
-            items = relations
+            items = properties
         )
         return SlashWidgetState.UpdateItems.empty().copy(
             styleItems = filteredStyle,
@@ -251,28 +252,31 @@ object SlashExtensions {
         return updateWithSubheader(filtered)
     }
 
-    private fun filterRelations(
+    private fun filterProperties(
         filter: String,
-        items: List<SlashRelationView.Item>
-    ): List<SlashRelationView> {
-        val filtered = mutableListOf<SlashRelationView>()
-        if (SlashRelationView.RelationNew.identifier.contains(filter, true)) {
-            filtered.add(SlashRelationView.RelationNew)
-        }
+        items: List<SlashPropertyView.Item>
+    ): List<SlashPropertyView> {
+        val filtered = mutableListOf<SlashPropertyView>()
+//        if (SlashRelationView.RelationNew.identifier.contains(filter, true)) {
+//            filtered.add(SlashRelationView.RelationNew)
+//        }
+
+        // Process property items.
         items.forEach { item ->
             if (searchBySubheadingOrName(
                     filter = filter,
-                    subheading = SlashItem.Main.Relations.getSearchName(),
+                    subheading = listOf<String>(SlashConst.SLASH_MAIN_PROPERTIES, "Relations"),
                     name = item.view.name
                 )
             ) {
                 filtered.add(item)
             }
         }
+        // If there are any filtered items, prepend a section header.
         return if (filtered.isEmpty()) {
             filtered
         } else {
-            listOf(SlashRelationView.Section.Subheader) + filtered
+            listOf(SlashPropertyView.Section.Subheader) + filtered
         }
     }
 
@@ -337,7 +341,15 @@ object SlashExtensions {
         name: String,
         abbreviation: List<String>? = null
     ): Boolean = subheading.startsWith(filter, true) || name.contains(filter, true) ||
-            abbreviation?.any { it.contains(filter, true) } ?: false
+            abbreviation?.any { it.contains(filter, true) } == true
+
+    private fun searchBySubheadingOrName(
+        filter: String,
+        subheading: List<String>,
+        name: String,
+        abbreviation: List<String>? = null
+    ): Boolean = subheading.any { it.startsWith(filter, true) }  || name.contains(filter, true) ||
+            abbreviation?.any { it.contains(filter, true) } == true
 
     private fun updateWithSubheader(items: List<SlashItem>): List<SlashItem> =
         if (items.isNotEmpty()) {

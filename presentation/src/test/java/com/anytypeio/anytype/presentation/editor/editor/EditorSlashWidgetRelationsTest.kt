@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashPropertyView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
@@ -129,8 +129,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         advanceUntilIdle()
 
         vm.onSlashItemClicked(
-            SlashItem.Relation(
-                relation = SlashRelationView.Item(
+            SlashItem.Property(
+                property = SlashPropertyView.Item(
                     view = ObjectRelationView.Default(
                         id = r2.id,
                         key = r2.key,
@@ -260,8 +260,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         //TESTING
 
         vm.onSlashItemClicked(
-            SlashItem.Relation(
-                relation = SlashRelationView.Item(
+            SlashItem.Property(
+                property = SlashPropertyView.Item(
                     view = ObjectRelationView.Default(
                         key = r3.key,
                         id = r3.id,
@@ -383,8 +383,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         //TESTING
 
         vm.onSlashItemClicked(
-            SlashItem.Relation(
-                relation = SlashRelationView.Item(
+            SlashItem.Property(
+                property = SlashPropertyView.Item(
                     view = ObjectRelationView.Default(
                         id = r3.id,
                         key = r3.key,
@@ -477,8 +477,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
         //TESTING
 
         vm.onSlashItemClicked(
-            SlashItem.Relation(
-                relation = SlashRelationView.Item(
+            SlashItem.Property(
+                property = SlashPropertyView.Item(
                     view = ObjectRelationView.Default(
                         key = r2.key,
                         id = r2.id,
@@ -568,8 +568,8 @@ class EditorSlashWidgetRelationsTest: EditorPresentationTestSetup() {
                 id = a.id,
                 selection = IntRange(14, 14)
             )
-            onSlashItemClicked(SlashItem.Main.Relations)
-            onSlashItemClicked(SlashItem.RelationNew)
+            onSlashItemClicked(SlashItem.Main.Properties)
+            onSlashItemClicked(SlashItem.PropertyNew)
 
             advanceUntilIdle()
             //open RelationListScreen

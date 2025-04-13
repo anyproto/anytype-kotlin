@@ -25,12 +25,12 @@ import com.anytypeio.anytype.core_utils.diff.DefaultDiffUtil
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashPropertyView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import timber.log.Timber
 
-class SlashRelationsAdapter(
-    private var items: List<SlashRelationView>,
+class SlashPropertiesAdapter(
+    private var items: List<SlashPropertyView>,
     private val clicks: (SlashItem) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -142,7 +142,7 @@ class SlashRelationsAdapter(
                 ).apply {
                     updatePadding(this.itemView, defaultPadding)
                     itemView.setOnClickListener {
-                        clicks(SlashItem.RelationNew)
+                        clicks(SlashItem.PropertyNew)
                     }
                 }
             }
@@ -160,8 +160,8 @@ class SlashRelationsAdapter(
     private fun onItemClicked(position: Int) {
         if (position != RecyclerView.NO_POSITION) {
             val view = items[position]
-            check(view is SlashRelationView.Item)
-            clicks(SlashItem.Relation(view))
+            check(view is SlashPropertyView.Item)
+            clicks(SlashItem.Property(view))
         }
     }
 
@@ -183,49 +183,49 @@ class SlashRelationsAdapter(
         val item = items[position]
         when (holder) {
             is ListRelationViewHolder.Status -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Status)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Checkbox -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Checkbox)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Tags -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Tags)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Object -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Object)
                 holder.bind(view)
             }
             is ListRelationViewHolder.File -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.File)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Default -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Default)
                 holder.bind(view)
             }
             is ListRelationViewHolder.Date -> {
-                check(item is SlashRelationView.Item)
+                check(item is SlashPropertyView.Item)
                 val view = item.view
                 check(view is ObjectRelationView.Date)
                 holder.bind(view)
             }
             is RelationsSubheaderMenuHolder -> {
-                check(item is SlashRelationView.Section)
+                check(item is SlashPropertyView.Section)
                 holder.bind(item)
             }
             is RelationsSubheaderOnlyMenuHolder -> {
@@ -240,7 +240,7 @@ class SlashRelationsAdapter(
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (val item = items[position]) {
-        is SlashRelationView.Item -> {
+        is SlashPropertyView.Item -> {
             when (item.view) {
                 is ObjectRelationView.Checkbox -> R.layout.item_relation_list_relation_checkbox
                 is ObjectRelationView.Object -> R.layout.item_relation_list_relation_object
@@ -251,12 +251,12 @@ class SlashRelationsAdapter(
                 else -> R.layout.item_relation_list_relation_default
             }
         }
-        is SlashRelationView.Section.SubheaderWithBack -> R.layout.item_slash_widget_subheader
-        SlashRelationView.Section.Subheader -> R.layout.item_slash_widget_subheader_left
-        SlashRelationView.RelationNew -> R.layout.item_relation_add_new
+        is SlashPropertyView.Section.SubheaderWithBack -> R.layout.item_slash_widget_subheader
+        SlashPropertyView.Section.Subheader -> R.layout.item_slash_widget_subheader_left
+        SlashPropertyView.PropertyNew -> R.layout.item_relation_add_new
     }
 
-    fun update(update: List<SlashRelationView>) {
+    fun update(update: List<SlashPropertyView>) {
         Timber.d("Updating adapter: $update")
         val differ = DefaultDiffUtil(old = items, new = update)
         val result = DiffUtil.calculateDiff(differ, false)

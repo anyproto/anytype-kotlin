@@ -30,7 +30,6 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -162,7 +161,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.SL
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetAlignmentItems
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashExtensions.getSlashWidgetStyleItems
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashPropertyView
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
 import com.anytypeio.anytype.presentation.editor.editor.slash.convertToMarkType
 import com.anytypeio.anytype.presentation.editor.editor.slash.convertToUiBlock
@@ -249,7 +248,6 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -262,8 +260,6 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
-import com.anytypeio.anytype.presentation.extension.getObjRelationsViews
-import com.anytypeio.anytype.presentation.extension.getRecommendedRelations
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -275,7 +271,6 @@ import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
-import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
@@ -4965,11 +4960,11 @@ class EditorViewModel(
                 proceedWithGettingObjectTypes(
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
                 ) { objectTypes ->
-                    getRelations { relations ->
+                    getProperties { properties ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
                             objectTypes = objectTypes.toSlashItemView(),
-                            relations = relations,
+                            properties = properties,
                             viewType = slashViewType
                         )
                         incFilterSearchEmptyCount(widgetState)
@@ -5040,8 +5035,8 @@ class EditorViewModel(
                     )
                 )
             }
-            is SlashItem.Main.Relations -> {
-                getRelations { proceedWithRelations(it) }
+            is SlashItem.Main.Properties -> {
+                getProperties { proceedWithProperties(it) }
             }
             is SlashItem.Main.Objects -> {
                 proceedWithGettingObjectTypes(
@@ -5158,9 +5153,9 @@ class EditorViewModel(
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onAddNewObjectClicked(objectTypeView = item.objectTypeView)
             }
-            is SlashItem.Relation -> {
+            is SlashItem.Property -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
-                val relationKey = item.relation.view.key
+                val relationKey = item.property.view.key
                 onSlashRelationItemClicked(
                     relationKey = relationKey,
                     targetId = targetId,
@@ -5207,7 +5202,7 @@ class EditorViewModel(
             is SlashItem.Subheader -> {
                 Timber.d("Click on Slash Subheader, do nothing")
             }
-            SlashItem.RelationNew -> {
+            SlashItem.PropertyNew -> {
                 dispatch(
                     Command.OpenAddRelationScreen(ctx = context, target = targetId)
                 )
@@ -5352,7 +5347,7 @@ class EditorViewModel(
         }
     }
 
-    private fun getRelations(action: (List<SlashRelationView.Item>) -> Unit) {
+    private fun getProperties(action: (List<SlashPropertyView.Item>) -> Unit) {
         val objectViewDetails = orchestrator.stores.details.current()
         val currentObj = objectViewDetails.getObject(vmParams.ctx)
         if (currentObj == null) {
@@ -5382,7 +5377,7 @@ class EditorViewModel(
                     storeOfObjectTypes = storeOfObjectTypes
                 )
             }.map {
-                SlashRelationView.Item(it)
+                SlashPropertyView.Item(it)
             }
 
             action.invoke(properties)
@@ -5397,10 +5392,10 @@ class EditorViewModel(
         )
     }
 
-    private fun proceedWithRelations(relations: List<SlashRelationView>) {
+    private fun proceedWithProperties(properties: List<SlashPropertyView>) {
         onSlashWidgetStateChanged(
             SlashWidgetState.UpdateItems.empty().copy(
-                relationItems = SlashExtensions.getSlashWidgetRelationItems(relations)
+                relationItems = SlashExtensions.getSlashWidgetPropertyItems(properties)
             )
         )
     }

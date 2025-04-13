@@ -261,6 +261,7 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
+import com.anytypeio.anytype.presentation.extension.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
@@ -5348,26 +5349,28 @@ class EditorViewModel(
     }
 
     private fun getProperties(action: (List<SlashPropertyView.Item>) -> Unit) {
-        val objectViewDetails = orchestrator.stores.details.current()
-        val currentObj = objectViewDetails.getObject(vmParams.ctx)
-        if (currentObj == null) {
-            Timber.e("Object with id $context not found.")
-            return
-        }
-        val objType = objectViewDetails.getTypeForObject(vmParams.ctx)
-        if (objType == null) {
-            Timber.e("Object type of object $context not found.")
-            return
-        }
-
         viewModelScope.launch {
+            val objectViewDetails = orchestrator.stores.details.current()
+            val currentObj = objectViewDetails.getObject(vmParams.ctx)
+            if (currentObj == null) {
+                Timber.e("Object with id $context not found.")
+                return@launch
+            }
+            val objType = objectViewDetails.getTypeForObjectAndTargetTypeForTemplate(
+                currentObjectId = vmParams.ctx,
+                storeOfObjectTypes = storeOfObjectTypes,
+            )
+            if (objType == null) {
+                Timber.e("Object type of object $context not found.")
+                return@launch
+            }
             val parsedFields = fieldParser.getObjectParsedProperties(
                 objectType = objType,
                 storeOfRelations = storeOfRelations,
                 objPropertiesKeys = currentObj.map.keys.toList().orEmpty()
             )
 
-            val properties = (parsedFields.header + parsedFields.sidebar).mapNotNull {
+            val properties = (parsedFields.header + parsedFields.sidebar).map {
                 it.view(
                     details = objectViewDetails,
                     values = currentObj.map,

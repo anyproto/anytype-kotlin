@@ -230,6 +230,17 @@ private fun WidgetList(
         )
     }
 
+    val onDragStoppedHandler = {
+        val from = lastFromIndex.value
+        val to = lastToIndex.value
+        if (from != null && to != null && from != to) {
+            onMove(views.value, from, to)
+        }
+        // Reset after firing
+        lastFromIndex.value = null
+        lastToIndex.value = null
+    }
+
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
@@ -256,16 +267,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             TreeWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 alpha = alpha.value,
@@ -306,16 +308,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             LinkWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 alpha = alpha.value,
@@ -342,16 +335,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             SetOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 alpha = alpha.value,
@@ -394,16 +378,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             GalleryWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 alpha = alpha.value,
@@ -444,16 +419,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             ListOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 alpha = alpha.value,
@@ -501,16 +467,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             AllContentWidgetCard(
-                                modifier = DefaultDragAndDropModifier(view) {
-                                    val from = lastFromIndex.value
-                                    val to = lastToIndex.value
-                                    if (from != null && to != null && from != to) {
-                                        onMove(views.value, from, to)
-                                    }
-                                    // Reset after firing
-                                    lastFromIndex.value = null
-                                    lastToIndex.value = null
-                                },
+                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 index = index,
                                 mode = mode,
                                 onWidgetClicked = {

@@ -501,6 +501,16 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             AllContentWidgetCard(
+                                modifier = DefaultDragAndDropModifier(view) {
+                                    val from = lastFromIndex.value
+                                    val to = lastToIndex.value
+                                    if (from != null && to != null && from != to) {
+                                        onMove(views.value, from, to)
+                                    }
+                                    // Reset after firing
+                                    lastFromIndex.value = null
+                                    lastToIndex.value = null
+                                },
                                 index = index,
                                 mode = mode,
                                 onWidgetClicked = {

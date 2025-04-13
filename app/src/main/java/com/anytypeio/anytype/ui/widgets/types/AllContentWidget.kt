@@ -47,11 +47,11 @@ import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AllContentWidgetCard(
+    modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
     onWidgetClicked: () -> Unit = {},
     onDropDownMenuAction: (DropDownMenuAction) -> Unit = {},
-    lazyListState: LazyListState,
     alpha: Float,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -59,16 +59,9 @@ fun AllContentWidgetCard(
         mutableStateOf(false)
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-//                    Modifier.detectReorderAfterLongPress(lazyListState)
-                    Modifier
-                else
-                    Modifier
-            )
             .alpha(alpha)
     ) {
         Box(
@@ -154,8 +147,7 @@ fun AllContentWidgetPreview() {
         index = 0,
         onWidgetClicked = {},
         mode = InteractionMode.Default,
-        alpha = 1.0f,
-        lazyListState = lazyListState
+        alpha = 1.0f
     )
 }
 

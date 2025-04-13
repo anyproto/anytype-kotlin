@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -45,11 +47,11 @@ import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AllContentWidgetCard(
+    modifier: Modifier = Modifier,
     index: Int,
     mode: InteractionMode,
     onWidgetClicked: () -> Unit = {},
     onDropDownMenuAction: (DropDownMenuAction) -> Unit = {},
-    lazyListState: ReorderableLazyListState,
     alpha: Float,
 ) {
     val haptic = LocalHapticFeedback.current
@@ -57,15 +59,9 @@ fun AllContentWidgetCard(
         mutableStateOf(false)
     }
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.detectReorderAfterLongPress(lazyListState)
-                else
-                    Modifier
-            )
             .alpha(alpha)
     ) {
         Box(
@@ -90,7 +86,8 @@ fun AllContentWidgetCard(
                             }
                         )
                     } else {
-                        Modifier.detectReorderAfterLongPress(lazyListState)
+//                        Modifier.detectReorderAfterLongPress(lazyListState)
+                        Modifier
                     }
                 )
                 .alpha(alpha)
@@ -145,20 +142,12 @@ fun AllContentWidgetCard(
 @DefaultPreviews
 @Composable
 fun AllContentWidgetPreview() {
-    val lazyListState = rememberReorderableLazyListState(
-        onMove = { from, to ->
-            //
-        },
-        onDragEnd = { from, to ->
-            //
-        }
-    )
+    val lazyListState = rememberLazyListState()
     AllContentWidgetCard(
         index = 0,
         onWidgetClicked = {},
         mode = InteractionMode.Default,
-        alpha = 1.0f,
-        lazyListState = lazyListState
+        alpha = 1.0f
     )
 }
 

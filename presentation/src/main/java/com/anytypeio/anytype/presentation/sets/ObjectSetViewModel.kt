@@ -1728,7 +1728,8 @@ class ObjectSetViewModel(
         val target = obj.id
         val space = vmParams.space.id
 
-        if (obj.isTemplateObject(storeOfObjectTypes = storeOfObjectTypes)) {
+        // If the object is a Template (and not a Set or Collection), open it in the Modal Template Screen
+        if (obj.isTemplateObject(storeOfObjectTypes = storeOfObjectTypes) && !obj.layout.isDataView()) {
             obj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes = storeOfObjectTypes)
                 ?.let { objType ->
                     val event = AppNavigation.Command.OpenModalTemplateEdit(

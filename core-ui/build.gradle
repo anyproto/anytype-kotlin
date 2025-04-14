@@ -58,7 +58,7 @@ dependencies {
     implementation libs.coilCompose
     implementation libs.coilNetwork
     implementation libs.composeConstraintLayout
-    implementation libs.composeReorderableLegacy
+    implementation libs.composeReorderable
 
     testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')

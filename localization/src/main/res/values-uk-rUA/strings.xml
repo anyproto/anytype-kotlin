@@ -1681,7 +1681,6 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>

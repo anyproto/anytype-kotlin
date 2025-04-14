@@ -1684,7 +1684,6 @@
     <string name="chats_alert_delete_this_message_description">Его нельзя восстановить после подтверждения</string>
     <string name="chats_alert_delete_this_message">Удалить это сообщение?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_migration_is_in_progress">Миграция в процессе</string>
     <string name="migration_this_shouldn_t_take_long">Это может занять некоторое время. Пожалуйста, не закрывайте приложение, пока процесс не завершится.</string>
     <string name="migration_error_try_again">Попробуйте еще раз</string>
     <string name="migration_migration_failed">Сбой миграции</string>

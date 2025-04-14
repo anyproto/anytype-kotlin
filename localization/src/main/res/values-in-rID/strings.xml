@@ -1642,7 +1642,6 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
     <string name="object_set_of_title">Kueri dari</string>
-    <string name="migration_migration_is_in_progress">Migrasi sedang berlangsung</string>
     <string name="migration_this_shouldn_t_take_long">Ini mungkin perlu beberapa waktu. Mohon tidak menutup aplikasi hingga proses selesai.</string>
     <string name="migration_error_try_again">Coba lagi</string>
     <string name="migration_migration_failed">Migrasi gagal</string>

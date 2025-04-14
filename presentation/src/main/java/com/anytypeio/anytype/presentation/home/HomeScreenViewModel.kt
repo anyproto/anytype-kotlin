@@ -735,7 +735,10 @@ class HomeScreenViewModel(
                             }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                            if (dispatch.source == BundledWidgetSourceView.AllObjects.id) {
+                            if (
+                                dispatch.source == BundledWidgetSourceView.AllObjects.id
+                                || dispatch.source == BundledWidgetSourceView.Bin.id
+                            ) {
                                 // Applying link layout automatically to all-objects widget
                                 proceedWithCreatingWidget(
                                     ctx = config.widgets,
@@ -2054,6 +2057,7 @@ class HomeScreenViewModel(
     }
 
     fun onCreateObjectInsideWidget(widget: Id) {
+        Timber.d("onCreateObjectInsideWidget: ${widget}")
         when(val target = widgets.value.orEmpty().find { it.id == widget }) {
             is Widget.Tree -> {
                 val source = target.source
@@ -2111,6 +2115,7 @@ class HomeScreenViewModel(
                         )
                     ).fold(
                         onSuccess = { obj ->
+                            Timber.d("onCreateDataViewObject:gotDataViewPreview")
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())
                                 dv?.viewers?.firstOrNull()
@@ -2118,6 +2123,7 @@ class HomeScreenViewModel(
                                 dv?.viewers?.find { it.id == view }
 
                             if (widgetSource.obj.layout == ObjectType.Layout.COLLECTION) {
+                                Timber.d("onCreateDataViewObject:source is collection")
                                 if (dv != null && viewer != null) {
                                     proceedWithAddingObjectToCollection(
                                         viewer = viewer,
@@ -2125,12 +2131,15 @@ class HomeScreenViewModel(
                                         collection = widgetSource.obj.id
                                     )
                                 }
-                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET) {
+                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET || widgetSource.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                                Timber.d("onCreateDataViewObject:source is set")
                                 val dataViewSource = widgetSource.obj.setOf.firstOrNull()
                                 if (dataViewSource != null) {
-                                    val dataViewSourceObj =
-                                        ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                                    val dataViewSourceObj = ObjectWrapper.Basic(
+                                        obj.details[dataViewSource].orEmpty()
+                                    )
                                     if (dv != null && viewer != null) {
+                                        Timber.d("onCreateDataViewObject:found dv and view")
                                         when (val layout = dataViewSourceObj.layout) {
                                             ObjectType.Layout.OBJECT_TYPE -> {
                                                 proceedWithCreatingDataViewObject(
@@ -2140,7 +2149,6 @@ class HomeScreenViewModel(
                                                     navigate = navigate
                                                 )
                                             }
-
                                             ObjectType.Layout.RELATION -> {
                                                 proceedWithCreatingDataViewObject(
                                                     viewer,
@@ -2228,6 +2236,7 @@ class HomeScreenViewModel(
         dv: DV,
         navigate: Boolean = false
     ) {
+        Timber.d("proceedWithCreatingDataViewObject")
         val dataViewSourceType = dataViewSourceObj.uniqueKey
         val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,

@@ -1638,7 +1638,6 @@
     <string name="chats_alert_delete_this_message_description">确认后无法恢复</string>
     <string name="chats_alert_delete_this_message">删除此消息？</string>
     <string name="object_set_of_title"> 的查询</string>
-    <string name="migration_migration_is_in_progress">迁移正在进行</string>
     <string name="migration_this_shouldn_t_take_long">这可能需要一些时间。不要关闭本软件，直至更新完成。</string>
     <string name="migration_error_try_again">请再试一次</string>
     <string name="migration_migration_failed">迁移失败</string>

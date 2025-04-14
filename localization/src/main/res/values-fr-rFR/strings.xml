@@ -1652,7 +1652,6 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
     <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_migration_is_in_progress">Migration en cours</string>
     <string name="migration_this_shouldn_t_take_long">Cela peut prendre un certain temps. Veuillez ne pas fermer l\'application avant que le processus soit terminé.</string>
     <string name="migration_error_try_again">Essayez de nouveau</string>
     <string name="migration_migration_failed">Échec de la migration</string>

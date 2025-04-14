@@ -888,7 +888,9 @@
 
     <string name="type_editing_uninstall">Remove</string>
     <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1929,7 +1931,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_migration_is_in_progress">Migration is in progress</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>

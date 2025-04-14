@@ -117,7 +117,7 @@ fun DataViewListWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
-                canCreate = mode is InteractionMode.Default,
+                canCreate = mode is InteractionMode.Default && item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
@@ -160,24 +160,35 @@ fun DataViewListWidgetCard(
                 }
             } else {
                 if (item.isExpanded) {
-                    when {
-                        item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
-                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholderWithCreateButton(
-                            R.string.empty_list_widget,
-                            onCreateClicked = {
-                                onCreateDataViewObject(
-                                    item.id, item.tabs.find { it.isSelected }?.id
+                    if (item.isLoading) {
+                        EmptyWidgetPlaceholder(R.string.loading)
+                    } else if (item.canCreateObjectOfType) {
+                        if (mode !is InteractionMode.ReadOnly) {
+                            if (item.tabs.isNotEmpty()) {
+                                EmptyWidgetPlaceholderWithCreateButton(
+                                    R.string.empty_list_widget,
+                                    onCreateClicked = {
+                                        onCreateDataViewObject(
+                                            item.id, item.tabs.find { it.isSelected }?.id
+                                        )
+                                    }
+                                )
+                            } else {
+                                EmptyWidgetPlaceholderWithCreateButton(
+                                    text = R.string.empty_list_widget_no_view,
+                                    onCreateClicked = {
+                                        onCreateDataViewObject(
+                                            item.id, item.tabs.find { it.isSelected }?.id
+                                        )
+                                    }
                                 )
                             }
-                        )
-                        else -> EmptyWidgetPlaceholderWithCreateButton(
-                            text = R.string.empty_list_widget_no_view,
-                            onCreateClicked = {
-                                onCreateDataViewObject(
-                                    item.id, item.tabs.find { it.isSelected }?.id
-                                )
-                            }
-                        )
+                        } else {
+                            EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
+                        }
+                    } else {
+                        // Cannot create an object of the given type.
+                        EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }

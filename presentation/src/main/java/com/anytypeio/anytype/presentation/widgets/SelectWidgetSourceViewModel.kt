@@ -244,7 +244,10 @@ class SelectWidgetSourceViewModel(
                             isInEditMode = curr.isInEditMode
                         )
                     }
-                    if (view is BundledWidgetSourceView.AllObjects) {
+                    if (
+                        view is BundledWidgetSourceView.AllObjects
+                        || view is BundledWidgetSourceView.Bin
+                    ) {
                         isDismissed.value = true
                     }
                 }

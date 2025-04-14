@@ -32,6 +32,7 @@ object WidgetConfig {
                 code == ObjectType.Layout.PARTICIPANT.code ||
                 code == ObjectType.Layout.IMAGE.code ||
                 code == ObjectType.Layout.VIDEO.code ||
+                code == ObjectType.Layout.AUDIO.code ||
                 code == ObjectType.Layout.FILE.code
     }
 

@@ -1655,7 +1655,6 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_migration_is_in_progress">Bezig met migreren...</string>
     <string name="migration_this_shouldn_t_take_long">Dit kan enige tijd duren. Sluit de app alsjeblieft niet voordat het proces is voltooid.</string>
     <string name="migration_error_try_again">Probeer opnieuw</string>
     <string name="migration_migration_failed">Migratie mislukt</string>

@@ -12,8 +12,11 @@ import com.anytypeio.anytype.core_models.ext.toDateObject
 import com.anytypeio.anytype.core_models.ext.toFileObject
 import com.anytypeio.anytype.core_models.ext.toInternalFlagsObject
 import com.anytypeio.anytype.core_models.ext.toObject
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 fun ObjectViewDetails.getStruct(id: Id): Struct? = details[id]
 
@@ -65,6 +68,25 @@ suspend fun ObjectViewDetails.getTypeForObjectAndTargetTypeForTemplate(
     val type = currentObject?.getProperType()
     if (type != null) {
         val currType = getTypeObject(type)
+        val effectiveType = if (currType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+            currentObject.targetObjectType?.let { storeOfObjectTypes.get(it) }
+        } else {
+            currType
+        }
+        return effectiveType
+    }
+    return null
+}
+
+suspend fun getTypeForObjectAndTargetTypeForTemplate(
+    storeOfObjectTypes: StoreOfObjectTypes,
+    objectStore: ObjectStore,
+    objectId: Id
+): ObjectWrapper.Type? {
+    val currentObject = objectStore.get(target = objectId)
+    val type = currentObject?.getProperType()
+    if (type != null) {
+        val currType = storeOfObjectTypes.getTypeOfObject(currentObject)
         val effectiveType = if (currType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
             currentObject.targetObjectType?.let { storeOfObjectTypes.get(it) }
         } else {

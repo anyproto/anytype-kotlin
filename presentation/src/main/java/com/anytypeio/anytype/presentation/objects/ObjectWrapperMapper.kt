@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -9,6 +10,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -129,6 +132,27 @@ suspend fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
 
 private fun ObjectWrapper.Basic.getProperLayout() = layout ?: ObjectType.Layout.BASIC
 fun ObjectWrapper.Basic.getProperType() = type.firstOrNull()
+
+suspend fun ObjectWrapper.Basic.isTemplateObject(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+    val currentObjectType = storeOfObjectTypes.getTypeOfObject(this)
+    return currentObjectType?.uniqueKey == ObjectTypeIds.TEMPLATE
+}
+
+suspend fun ObjectWrapper.Basic.getTypeForObjectAndTargetTypeForTemplate(
+    storeOfObjectTypes: StoreOfObjectTypes
+): ObjectWrapper.Type? {
+    val type = getProperType()
+    if (type != null) {
+        val currType = storeOfObjectTypes.getTypeOfObject(this)
+        val effectiveType = if (currType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+            targetObjectType?.let { storeOfObjectTypes.get(it) }
+        } else {
+            currType
+        }
+        return effectiveType
+    }
+    return null
+}
 
 private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
     types.find { it.id == id }?.name.orEmpty()

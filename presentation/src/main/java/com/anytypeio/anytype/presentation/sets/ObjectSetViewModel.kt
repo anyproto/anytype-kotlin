@@ -77,12 +77,17 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
+import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -1080,9 +1085,7 @@ class ObjectSetViewModel(
             val obj = objectStore.get(target)
             if (obj != null) {
                 proceedWithNavigation(
-                    target = target,
-                    layout = obj.layout,
-                    space = vmParams.space.id,
+                    obj = obj,
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1613,25 +1616,12 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNavigation(
+    private suspend fun navigateByLayout(
         target: Id,
         space: Id,
         layout: ObjectType.Layout?,
         identityProfileLink: Id? = null
     ) {
-        if (target == vmParams.ctx) {
-            toast("You are already here")
-            Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
-            return
-        }
-//        navigate(
-//            EventWrapper(
-//                AppNavigation.Command.OpenTemplate(
-//                    targetTemplateId = target,
-//                    targetTypeId =
-//                )
-//            )
-//        )
         when (layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
@@ -1716,6 +1706,54 @@ class ObjectSetViewModel(
         }
     }
 
+    private suspend fun proceedWithNavigation(
+        target: Id,
+        space: Id,
+        layout: ObjectType.Layout?,
+        identityProfileLink: Id? = null
+    ) {
+        if (target == vmParams.ctx) {
+            toast("You are already here")
+            Timber.d("proceedWithNavigation, target == vmParams.ctx")
+            return
+        }
+        navigateByLayout(target, space, layout, identityProfileLink)
+    }
+
+    private suspend fun proceedWithNavigation(
+        obj: ObjectWrapper.Basic,
+        identityProfileLink: Id? = null
+    ) {
+        if (obj.id == vmParams.ctx) {
+            toast("You are already here")
+            Timber.d("proceedWithNavigation, target == vmParams.ctx")
+            return
+        }
+
+        val target = obj.id
+        val space = vmParams.space.id
+
+        if (obj.isTemplateObject(storeOfObjectTypes = storeOfObjectTypes)) {
+            obj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes = storeOfObjectTypes)
+                ?.let { objType ->
+                    val event = AppNavigation.Command.OpenModalTemplateEdit(
+                        template = target,
+                        space = vmParams.space.id,
+                        templateTypeId = objType.id,
+                        templateTypeKey = objType.uniqueKey
+                    )
+                    navigate(EventWrapper(event))
+                    return
+                }
+        }
+
+        navigateByLayout(
+            target = target,
+            space = space,
+            layout = obj.layout,
+            identityProfileLink = identityProfileLink
+        )
+    }
     //endregion NAVIGATION
 
     fun onUnsupportedViewErrorClicked() {
@@ -3087,11 +3125,7 @@ class ObjectSetViewModel(
                 timeInSeconds = timeInMillis / 1000,
                 spaceId = vmParams.space,
                 actionSuccess = { obj ->
-                    proceedWithNavigation(
-                        target = obj.id,
-                        space = vmParams.space.id,
-                        layout = obj.layout
-                    )
+                    proceedWithNavigation(obj = obj)
                 },
                 actionFailure = {
                     toast("Error while parsing date object")

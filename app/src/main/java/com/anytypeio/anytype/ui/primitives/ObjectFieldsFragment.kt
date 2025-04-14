@@ -71,6 +71,7 @@ class ObjectFieldsFragment : BaseBottomSheetComposeFragment(),
             MaterialTheme {
                 FieldListScreen(
                     state = vm.views.collectAsStateWithLifecycle().value,
+                    uiSettingsIconState = vm.uiSettingsIconState.collectAsStateWithLifecycle().value,
                     onRelationClicked = {
                         vm.onRelationClicked(
                             ctx = ctx,

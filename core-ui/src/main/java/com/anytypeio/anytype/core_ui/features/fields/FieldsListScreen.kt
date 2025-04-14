@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,13 +39,16 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Model
+import com.anytypeio.anytype.presentation.relations.UiPropertiesSettingsIconState
 import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FieldListScreen(
     state: List<Model>,
+    uiSettingsIconState: UiPropertiesSettingsIconState,
     onRelationClicked: (Model.Item) -> Unit,
     onTypeIconClicked: () -> Unit,
     onLocalInfoIconClicked: () -> Unit,
@@ -85,21 +87,23 @@ fun FieldListScreen(
                     color = colorResource(id = R.color.text_primary),
                 )
 
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .width(56.dp)
-                        .height(48.dp)
-                        .noRippleThrottledClickable {
-                            onTypeIconClicked()
-                        },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        modifier = Modifier.wrapContentSize(),
-                        painter = painterResource(R.drawable.ic_settings_24),
-                        contentDescription = "Open object's type"
-                    )
+                if (uiSettingsIconState is UiPropertiesSettingsIconState.Shown) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .width(56.dp)
+                            .height(48.dp)
+                            .noRippleThrottledClickable {
+                                onTypeIconClicked()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            modifier = Modifier.wrapContentSize(),
+                            painter = painterResource(R.drawable.ic_settings_24),
+                            contentDescription = "Open object's type"
+                        )
+                    }
                 }
             }
         }
@@ -336,7 +340,8 @@ private fun SectionLocal(
         is Model.Section.Local.Unshown -> R.drawable.ic_list_arrow_18
     }
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .noRippleThrottledClickable {
                 onLocalSectionToggle(item)
             },
@@ -529,6 +534,7 @@ fun FieldListScreenPreview() {
         onLocalInfoIconClicked = {},
         onTypeIconClicked = {},
         onAddToTypeClicked = {},
-        onRemoveFromObjectClicked = {}
+        onRemoveFromObjectClicked = {},
+        uiSettingsIconState = UiPropertiesSettingsIconState.Shown,
     )
 }

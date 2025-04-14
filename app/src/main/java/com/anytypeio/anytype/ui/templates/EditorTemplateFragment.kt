@@ -136,20 +136,6 @@ class EditorTemplateFragment : EditorFragment() {
                 )
             }
 
-        fun args(
-            targetTemplateId: String,
-            space: Id,
-            targetTypeId: Id,
-            targetTypeKey: Key,
-            screenType: Int
-        ) = bundleOf(
-            CTX_KEY to targetTemplateId,
-            SPACE_ID_KEY to space,
-            ARG_TARGET_TYPE_ID to targetTypeId,
-            ARG_TARGET_TYPE_KEY to targetTypeKey,
-            ARG_SCREEN_TYPE to screenType
-        )
-
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_TARGET_TYPE_ID = "target_type_id"
         const val ARG_TARGET_TYPE_KEY = "target_type_key"

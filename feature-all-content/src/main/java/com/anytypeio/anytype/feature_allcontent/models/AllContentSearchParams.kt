@@ -106,9 +106,7 @@ fun AllContentTab.filtersForSearch(
     val filters = buildList {
         addAll(buildDeletedFilter())
         add(buildSpaceIdFilter(spaces))
-        if (tab == AllContentTab.PAGES) {
-            add(buildTemplateFilter())
-        }
+        add(buildTemplateFilter())
     }
     return filters
 }

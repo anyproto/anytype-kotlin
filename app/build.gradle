@@ -226,7 +226,6 @@ dependencies {
     implementation libs.composeAccompanistNavigation
     implementation libs.preference
     implementation libs.activityCompose
-    implementation libs.composeReorderableLegacy
     implementation libs.composeReorderable
 
     implementation libs.room

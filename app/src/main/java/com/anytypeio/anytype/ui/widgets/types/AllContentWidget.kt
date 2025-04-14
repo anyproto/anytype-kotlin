@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -40,9 +38,6 @@ import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import org.burnoutcrew.reorderable.ReorderableLazyListState
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -86,7 +81,6 @@ fun AllContentWidgetCard(
                             }
                         )
                     } else {
-//                        Modifier.detectReorderAfterLongPress(lazyListState)
                         Modifier
                     }
                 )
@@ -142,7 +136,6 @@ fun AllContentWidgetCard(
 @DefaultPreviews
 @Composable
 fun AllContentWidgetPreview() {
-    val lazyListState = rememberLazyListState()
     AllContentWidgetCard(
         index = 0,
         onWidgetClicked = {},

@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,6 +39,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.BottomSheetValue
 import androidx.compose.material.Divider
@@ -76,6 +76,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
@@ -90,6 +92,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.CollectionActionWidget
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.setVisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -108,10 +111,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
-import org.burnoutcrew.reorderable.ReorderableItem
-import org.burnoutcrew.reorderable.detectReorderAfterLongPress
-import org.burnoutcrew.reorderable.rememberReorderableLazyListState
-import org.burnoutcrew.reorderable.reorderable
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -126,7 +127,7 @@ fun ScreenContent(
     )
     {
         Box(
-            modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+            modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                 Modifier.windowInsetsPadding(WindowInsets.systemBars)
             else
                 Modifier
@@ -210,34 +211,47 @@ fun ListView(
     itemBackground: Color = colorResource(id = R.color.background_primary)
 ) {
 
+    val view = LocalView.current
+
     val views = remember {
         mutableStateOf<List<CollectionView>>(listOf())
     }
-    val lazyListState = rememberReorderableLazyListState(
-        onMove = { from, to ->
+
+    val lazyListState = rememberLazyListState()
+
+    val lastFromIndex = remember { mutableStateOf<Int?>(null) }
+    val lastToIndex = remember { mutableStateOf<Int?>(null) }
+
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+            lastFromIndex.value = from.index
+            lastToIndex.value = to.index
+
             views.value = views.value.toMutableList().apply {
                 add(to.index, removeAt(from.index))
             }
-        },
-        onDragEnd = { from, to ->
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+            )
+        }
+
+    val onDragStoppedHandler = {
+        val from = lastFromIndex.value
+        val to = lastToIndex.value
+        if (from != null && to != null && from != to) {
             vm.onMove(views.value, from, to)
-        },
-    )
+        }
+        // Reset after firing
+        lastFromIndex.value = null
+        lastToIndex.value = null
+    }
 
     uiState.views.fold(
         onSuccess = { list ->
             views.value = list
             LazyColumn(
-                state = lazyListState.listState,
-                modifier = Modifier
-                    .then(
-                        if (uiState.inDragMode)
-                            Modifier.reorderable(lazyListState)
-                        else
-                            Modifier
-                    )
-                    .fillMaxHeight()
-                    .fillMaxWidth(),
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 180.dp)
             ) {
                 items(
@@ -256,18 +270,13 @@ fun ListView(
                     when (item) {
                         is CollectionObjectView -> {
                             if (uiState.inDragMode) {
-                                ReorderableItem(
-                                    lazyListState,
-                                    key = item.obj.id,
-                                ) { isDragging ->
+                                ReorderableItem(reorderableLazyListState, key = item.obj.id,) { isDragging ->
                                     val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
                                     Column(
                                         modifier = Modifier
                                             .then(
                                                 if (uiState.inDragMode) {
-                                                    Modifier.detectReorderAfterLongPress(
-                                                        lazyListState
-                                                    )
+                                                    DefaultDragAndDropModifier(view, onDragStoppedHandler)
                                                 } else {
                                                     Modifier
                                                 }
@@ -303,7 +312,7 @@ fun ListView(
                         is SectionView -> {
                             if (uiState.inDragMode) {
                                 ReorderableItem(
-                                    lazyListState,
+                                    reorderableLazyListState,
                                     key = item.name,
                                 ) {
                                     SectionItem(item)

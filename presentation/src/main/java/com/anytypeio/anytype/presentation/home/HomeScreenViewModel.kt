@@ -735,7 +735,10 @@ class HomeScreenViewModel(
                             }
                         }
                         is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                            if (dispatch.source == BundledWidgetSourceView.AllObjects.id) {
+                            if (
+                                dispatch.source == BundledWidgetSourceView.AllObjects.id
+                                || dispatch.source == BundledWidgetSourceView.Bin.id
+                            ) {
                                 // Applying link layout automatically to all-objects widget
                                 proceedWithCreatingWidget(
                                     ctx = config.widgets,

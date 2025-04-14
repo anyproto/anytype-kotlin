@@ -90,6 +90,13 @@ interface AppNavigation {
             val space: Id
         ) : Command()
 
+        data class OpenModalTemplateEdit(
+            val template: Id,
+            val templateTypeId: Id,
+            val templateTypeKey: Key,
+            val space: Id
+        ) : Command()
+
         object OpenSettings : Command()
 
         data class OpenShareScreen(

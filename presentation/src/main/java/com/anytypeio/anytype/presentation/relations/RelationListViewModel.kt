@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -75,6 +76,7 @@ class RelationListViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
     val showLocalInfo = MutableStateFlow(false)
+    val uiSettingsIconState = MutableStateFlow<UiPropertiesSettingsIconState>(UiPropertiesSettingsIconState.Hidden)
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
@@ -110,6 +112,12 @@ class RelationListViewModel(
         if (objType == null) {
             Timber.w("Failed to get object type for object: $ctx from types store")
             return emptyList()
+        }
+
+        uiSettingsIconState.value = if (objType.uniqueKey == ObjectTypeIds.TEMPLATE) {
+            UiPropertiesSettingsIconState.Hidden
+        } else {
+            UiPropertiesSettingsIconState.Shown
         }
 
         val parsedFields = fieldParser.getObjectParsedProperties(
@@ -814,4 +822,9 @@ class RelationListViewModel(
         const val NOT_FOUND_IN_RELATION_STORE = "Couldn't find in relation store by id:"
         const val NOT_SUPPORTED_UPDATE_VALUE = "Update value of this relation isn't supported"
     }
+}
+
+sealed class UiPropertiesSettingsIconState {
+    data object Hidden : UiPropertiesSettingsIconState()
+    data object Shown : UiPropertiesSettingsIconState()
 }

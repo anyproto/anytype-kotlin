@@ -85,9 +85,7 @@ fun AllContentTab.filtersForSubscribe(
                 addAll(buildDeletedFilter())
                 add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
-                if (tab == AllContentTab.PAGES) {
-                    add(buildTemplateFilter())
-                }
+                add(buildTemplateFilter())
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
                 }
@@ -108,9 +106,7 @@ fun AllContentTab.filtersForSearch(
     val filters = buildList {
         addAll(buildDeletedFilter())
         add(buildSpaceIdFilter(spaces))
-        if (tab == AllContentTab.PAGES) {
-            add(buildTemplateFilter())
-        }
+        add(buildTemplateFilter())
     }
     return filters
 }

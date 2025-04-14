@@ -2120,6 +2120,7 @@ class HomeScreenViewModel(
                                 dv?.viewers?.find { it.id == view }
 
                             if (widgetSource.obj.layout == ObjectType.Layout.COLLECTION) {
+                                Timber.d("onCreateDataViewObject:source is collection")
                                 if (dv != null && viewer != null) {
                                     proceedWithAddingObjectToCollection(
                                         viewer = viewer,
@@ -2127,12 +2128,15 @@ class HomeScreenViewModel(
                                         collection = widgetSource.obj.id
                                     )
                                 }
-                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET) {
+                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET || widgetSource.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                                Timber.d("onCreateDataViewObject:source is set")
                                 val dataViewSource = widgetSource.obj.setOf.firstOrNull()
                                 if (dataViewSource != null) {
-                                    val dataViewSourceObj =
-                                        ObjectWrapper.Basic(obj.details[dataViewSource].orEmpty())
+                                    val dataViewSourceObj = ObjectWrapper.Basic(
+                                        obj.details[dataViewSource].orEmpty()
+                                    )
                                     if (dv != null && viewer != null) {
+                                        Timber.d("onCreateDataViewObject:found dv and view")
                                         when (val layout = dataViewSourceObj.layout) {
                                             ObjectType.Layout.OBJECT_TYPE -> {
                                                 proceedWithCreatingDataViewObject(

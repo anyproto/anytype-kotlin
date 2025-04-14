@@ -797,7 +797,9 @@
     <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget">Dieses Objekt hat keine Links zu anderen Objekten.\nVersuche ein neues zu erstellen.</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">Diese Ansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">Diese Datenansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="this_widget_has_no_object">Dieses Widget hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="emoji">Emoji</string>
@@ -1655,6 +1657,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
     <string name="object_set_of_title">Abfrage von</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>

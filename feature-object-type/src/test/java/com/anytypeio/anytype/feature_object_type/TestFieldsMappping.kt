@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_object_type
 
 import android.util.Log
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
@@ -259,6 +260,173 @@ class TestFieldsMappping {
         assertEquals(
             expected = listOf(fieldCreatedDate),
             actual = parsedFields.hidden
+        )
+    }
+
+    @Test
+    fun `should has only local properties when object type is deleted`() = runTest {
+
+        storeOfRelations.apply {
+            merge(allSpaceRelations)
+        }
+
+        val testObjectType = StubObjectType(
+            isDeleted = true,
+            recommendedFeaturedRelations = listOf(field1, field1, field2, field3).map { it.id },
+            recommendedRelations = listOf(field1, field4, field4).map { it.id },
+            recommendedFileRelations = listOf(field1, field2, field3, field4, field5, field5).map { it.id },
+            recommendedHiddenRelations = listOf(field1, field2, field3, field4, field5, fieldCreatedDate, fieldCreatedDate).map { it.id },
+            space = space
+        )
+
+        storeOfObjectTypes.apply {
+            merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
+        }
+
+        val parsedFields = fieldParser.getObjectParsedProperties(
+            objectType = testObjectType,
+            storeOfRelations = storeOfRelations,
+            objPropertiesKeys = listOf(
+                field1.key,
+                field2.key,
+                field3.key,
+                field4.key,
+                field5.key
+            ),
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.header
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.sidebar
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.file
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.hidden
+        )
+
+        assertEquals(
+            expected = listOf(field1, field2, field3, field4, field5),
+            actual = parsedFields.local
+        )
+    }
+
+    @Test
+    fun `should has only local properties when object type is null`() = runTest {
+
+        storeOfRelations.apply {
+            merge(allSpaceRelations)
+        }
+
+        val testObjectType = null
+
+        storeOfObjectTypes.apply {
+            merge(listOf(fieldAssigneeObjType2, fieldAssigneeObjType1))
+        }
+
+        val parsedFields = fieldParser.getObjectParsedProperties(
+            objectType = testObjectType,
+            storeOfRelations = storeOfRelations,
+            objPropertiesKeys = listOf(
+                field1.key,
+                field2.key,
+                field3.key,
+                field4.key,
+                field5.key
+            ),
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.header
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.sidebar
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.file
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.hidden
+        )
+
+        assertEquals(
+            expected = listOf(field1, field2, field3, field4, field5),
+            actual = parsedFields.local
+        )
+    }
+
+    @Test
+    fun `should has only local properties when object type is not valid`() = runTest {
+
+        storeOfRelations.apply {
+            merge(allSpaceRelations)
+        }
+
+        val testObjectType = ObjectWrapper.Type(
+            //without UNIQUE_KEY - not valid
+            map = mapOf(Relations.ID to "test_object_type_id")
+        )
+
+        storeOfObjectTypes.apply {
+            merge(listOf(testObjectType, fieldAssigneeObjType2, fieldAssigneeObjType1))
+        }
+
+        storeOfObjectTypes.apply {
+            merge(listOf(fieldAssigneeObjType2, fieldAssigneeObjType1))
+        }
+
+        val parsedFields = fieldParser.getObjectParsedProperties(
+            objectType = testObjectType,
+            storeOfRelations = storeOfRelations,
+            objPropertiesKeys = listOf(
+                field1.key,
+                field2.key,
+                field3.key,
+                field4.key,
+                field5.key
+            ),
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.header
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.sidebar
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.file
+        )
+
+        assertEquals(
+            expected = listOf(),
+            actual = parsedFields.hidden
+        )
+
+        assertEquals(
+            expected = listOf(field1, field2, field3, field4, field5),
+            actual = parsedFields.local
         )
     }
 }

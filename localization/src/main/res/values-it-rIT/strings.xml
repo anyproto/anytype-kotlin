@@ -39,7 +39,7 @@
     <string name="about_privacy_policy">Informativa sulla Privacy</string>
     <string name="about_acknowledgements">Riconoscimenti</string>
     <string name="about_meta_info">Versione dell\'app: %1$s\nNumero di build: %2$d\nVersione della libreria: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDispositivo\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
+    <string name="about_meta_info_new">Versione dell\'app: %1$s\nNumero di build: %2$d\nVersione della libreria: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDispositivo\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nChiave Ethereum\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersione di Android: %2$d\nVersione app: %3$s\nNumero di build: %4$d\nVersione libreria: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
     <string name="space">Spazio</string>
@@ -101,7 +101,7 @@
     <string name="toolbar_section_tool">Strumento</string>
     <string name="toolbar_section_media">Multimedia</string>
     <string name="toolbar_section_objects">Oggetti</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Proprietà</string>
     <string name="toolbar_action_delete">Elimina</string>
     <string name="toolbar_action_duplicate">Duplica</string>
     <string name="toolbar_action_mention">Menziona</string>
@@ -175,7 +175,7 @@
     <string name="hint_paste_link">Incolla link</string>
     <string name="empty_tap_to_create_new_block">Vuoto. Tocca per creare un nuovo blocco</string>
     <string name="untitled">Senza titolo</string>
-    <string name="untitled_set">Untitled query</string>
+    <string name="untitled_set">Query senza titolo</string>
     <string name="untitled_collection">Collezione senza titolo</string>
     <string name="archived">Archiviato</string>
     <string name="loading">Caricamento…</string>
@@ -256,8 +256,8 @@
     <string name="mention_suggester_create_object">Crea oggetto</string>
     <string name="your_search_query">Cerca</string>
     <string name="syncing">Sincronizzazione…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
-    <string name="new_set">New query</string>
+    <string name="choose_a_object_type_for_this_set">Scegli un tipo di oggetto per questa query</string>
+    <string name="new_set">Nuova query</string>
     <string name="create_new_object_type">Crea nuovo tipo di oggetto</string>
     <plurals name="page_selected">
         <item quantity="one">%d page selected</item>
@@ -319,8 +319,8 @@
     <string name="unknown_object_type">Tipo sconosciuto</string>
     <string name="relation_format_short_text">Testo breve</string>
     <string name="relation_format_long_text">Testo</string>
-    <string name="set_new_relation">Set new property</string>
-    <string name="relation_deleted">Deleted property</string>
+    <string name="set_new_relation">Imposta nuova proprietà</string>
+    <string name="relation_deleted">Proprietà eliminata</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Colori a tinta unita</string>
@@ -340,7 +340,7 @@
     <string name="heading">Titolo</string>
     <string name="subheading">Sottotitolo</string>
     <string name="create_from_scratch">Crea da zero</string>
-    <string name="create_relation_with_name">Create property \"%1$s\"</string>
+    <string name="create_relation_with_name">Crea proprietà \"%1$s\"</string>
     <string name="name_is_required">Il nome è obbligatorio</string>
     <string name="favourite">Preferito</string>
     <string name="template">Modello</string>
@@ -429,7 +429,7 @@
     <string name="card">Scheda</string>
     <string name="inline">In linea</string>
     <string name="set_view">Imposta Vista</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Query in linea</string>
     <string name="inline_collection">Collezione in linea</string>
     <string name="fit_image">Adatta immagine</string>
     <string name="image_preview">Anteprima immagine</string>
@@ -488,14 +488,14 @@
     <string name="error_find_block">Impossibile trovare il blocco selezionato</string>
     <string name="error_block_selection">Errore di selezione blocco</string>
     <string name="undefined">Undefined</string>
-    <string name="set_by_relation">Property: %1$s</string>
-    <string name="set_by_relations">Properties: %1$s</string>
+    <string name="set_by_relation">Proprietà: %1$s</string>
+    <string name="set_by_relations">Proprietà: %1$s</string>
     <string name="set_by_type">Tipo Oggetto: %1$s</string>
     <string name="my_types">I miei tipi</string>
-    <string name="my_relations">My properties</string>
+    <string name="my_relations">Le mie proprietà</string>
     <string name="type_added">Tipo `%1$s` aggiunto alla tua libreria</string>
     <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
-    <string name="block_data_view_content_description_no_source">The inline query has no source</string>
+    <string name="block_data_view_content_description_no_source">La query in linea non ha sorgente</string>
     <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
     <string name="object_search_recently_opened_section_title">Aperti di recente</string>
     <string name="widget_source_anytype_library">Libreria di Anytype</string>
@@ -532,8 +532,8 @@
     <string name="file_delete_cancel">Annulla</string>
     <string name="file_delete_delete">Elimina</string>
     <string name="menu_type_change">Cambia tipo</string>
-    <string name="menu_type_open">Open type</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
+    <string name="menu_type_open">Apri tipo</string>
+    <string name="menu_type_open_set">Apri query di %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">La vista corrente non può essere eliminata</string>
     <string name="type_templates_widget_title">Crea oggetto</string>
@@ -650,7 +650,7 @@
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
     <string name="name">Nome</string>
-    <string name="hint_type_name_for_new_relation">Name for new property</string>
+    <string name="hint_type_name_for_new_relation">Nome per la nuova proprietà</string>
     <string name="dv_create_new_object">Nuovo</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -675,9 +675,9 @@
     <string name="edit_relations_title">Proprietà</string>
     <string name="edit_view">Modifica vista</string>
     <string name="relation_open_edit">Open to edit</string>
-    <string name="remove_from_set">Remove from this query</string>
+    <string name="remove_from_set">Rimuovi da questa query</string>
     <string name="reset">Reset</string>
-    <string name="search_a_relation">Search a property</string>
+    <string name="search_a_relation">Cerca una proprietà</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Ordina i valori vuoti in fondo</string>
     <string name="content_desc_empty_values_top_check_icon">Ordina i valori vuoti in alto</string>
@@ -972,7 +972,7 @@
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a property</string>
     <string name="library_subtitle_types">I miei tipi</string>
-    <string name="library_subtitle_relations">My properties</string>
+    <string name="library_subtitle_relations">Le mie proprietà</string>
     <string name="library_subtitle_library">Libreria</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1312,7 +1312,7 @@
     <string name="payments_tier_details_name_min">Min. 7 caratteri</string>
     <string name="payments_tier_details_name_error">Questo nome è già stato preso!</string>
     <string name="payments_tier_details_name_validated">Il nome [%1$s] è disponibile!</string>
-    <string name="payments_tier_details_name_validating">Validating name</string>
+    <string name="payments_tier_details_name_validating">Convalida del nome</string>
     <string name="payments_tier_details_free_forever">Per sempre</string>
     <string name="payments_tier_details_valid_until">Valido fino al %1$s</string>
     <string name="payments_tier_details_info_explorer">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
@@ -1410,9 +1410,9 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_already_sent">Email già inviata, riprova dopo 1 minuto</string>
     <string name="membership_email_failed_to_send">Email failed to send</string>
     <string name="membership_email_membership_already_exists">Membership already exists</string>
-    <string name="membership_email_code_expired">Code expired</string>
-    <string name="membership_email_code_wrong">Code is wrong</string>
-    <string name="membership_email_code_success">Code is correct</string>
+    <string name="membership_email_code_expired">Codice scaduto</string>
+    <string name="membership_email_code_wrong">Il codice è errato</string>
+    <string name="membership_email_code_success">Il codice è valido</string>
     <string name="membership_email_membership_not_found">Membership non trovata</string>
     <string name="membership_email_membership_already_active">Abbonamento già attivo</string>
     <!-- Notifications -->
@@ -1528,7 +1528,7 @@ Please provide specific details of your needs here.</string>
     <string name="new_object">Nuovo oggetto</string>
     <string name="vault_my_spaces">I miei Spazi</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
-    <string name="all_content_title_only_unlinked">Only unlinked</string>
+    <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>
     <string name="all_content_title_tab_pages">Pagine</string>

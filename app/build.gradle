@@ -106,7 +106,7 @@ android {
         }
 
         debug {
-            applicationIdSuffix ".debug"
+            applicationIdSuffix ".dev"
             debuggable true
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug

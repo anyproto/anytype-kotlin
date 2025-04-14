@@ -127,12 +127,18 @@ fun TreeWidgetCard(
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
                     } else {
-                        EmptyWidgetPlaceholderWithCreateButton(
-                            R.string.empty_tree_widget,
-                            onCreateClicked = {
-                                onCreateObjectInsideWidget(item.id)
-                            }
-                        )
+                        if (mode !is InteractionMode.ReadOnly) {
+                            EmptyWidgetPlaceholderWithCreateButton(
+                                R.string.empty_tree_widget,
+                                onCreateClicked = {
+                                    onCreateObjectInsideWidget(item.id)
+                                }
+                            )
+                        } else {
+                            EmptyWidgetPlaceholder(
+                                R.string.empty_tree_widget_reader_access
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }

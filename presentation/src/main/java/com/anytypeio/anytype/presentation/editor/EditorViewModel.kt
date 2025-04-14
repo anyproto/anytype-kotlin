@@ -261,13 +261,13 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
-import com.anytypeio.anytype.presentation.extension.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -5356,10 +5356,7 @@ class EditorViewModel(
                 Timber.e("Object with id $context not found.")
                 return@launch
             }
-            val objType = objectViewDetails.getTypeForObjectAndTargetTypeForTemplate(
-                currentObjectId = vmParams.ctx,
-                storeOfObjectTypes = storeOfObjectTypes,
-            )
+            val objType = currentObj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)
             if (objType == null) {
                 Timber.e("Object type of object $context not found.")
                 return@launch

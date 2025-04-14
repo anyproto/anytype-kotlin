@@ -9,7 +9,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.relationsScreenShow
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -35,9 +34,10 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getStruct
-import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
+import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -106,19 +106,21 @@ class RelationListViewModel(
         details: ObjectViewDetails
     ): List<Model> {
 
-        val objType = details.getTypeForObject(ctx)
-        _currentObjectTypeId = objType?.id
-
-        if (objType == null) {
-            Timber.w("Failed to get object type for object: $ctx from types store")
+        val currentObj = details.getObject(ctx)
+        if (currentObj == null) {
+            Timber.e("Object with id $ctx not found.")
             return emptyList()
         }
+        val objType = currentObj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)
 
-        uiSettingsIconState.value = if (objType.uniqueKey == ObjectTypeIds.TEMPLATE) {
-            UiPropertiesSettingsIconState.Hidden
-        } else {
-            UiPropertiesSettingsIconState.Shown
-        }
+        _currentObjectTypeId = objType?.id
+
+        uiSettingsIconState.value =
+            if (objType == null || objType.isDeleted == true || currentObj.isTemplateObject(storeOfObjectTypes)) {
+                UiPropertiesSettingsIconState.Hidden
+            } else {
+                UiPropertiesSettingsIconState.Shown
+            }
 
         val parsedFields = fieldParser.getObjectParsedProperties(
             objectType = objType,

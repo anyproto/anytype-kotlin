@@ -48,7 +48,7 @@ interface FieldParser {
     ): Pair<Id?, String?>
 
     suspend fun getObjectParsedProperties(
-        objectType: ObjectWrapper.Type,
+        objectType: ObjectWrapper.Type?,
         objPropertiesKeys: List<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedProperties
@@ -236,10 +236,23 @@ class FieldParserImpl @Inject constructor(
 
     // Consolidated function to build Parsed Properties.
     private suspend fun getParsedProperties(
-        objType: ObjectWrapper.Type,
+        objType: ObjectWrapper.Type?,
         localPropertiesIds: Collection<Id>,
         storeOfRelations: StoreOfRelations
     ): ParsedProperties {
+
+        if (objType == null || !objType.isValid || objType.isDeleted == true) {
+            val allLocalProperties = storeOfRelations.getValidRelations(
+                ids = localPropertiesIds.toList()
+            )
+            return ParsedProperties(
+                header = emptyList(),
+                sidebar = emptyList(),
+                hidden = emptyList(),
+                local = allLocalProperties,
+                file = emptyList()
+            )
+        }
 
         // Clean recommended IDs based on priority.
         // recommendedFeaturedRelations always remain.
@@ -286,7 +299,7 @@ class FieldParserImpl @Inject constructor(
     }
 
     override suspend fun getObjectParsedProperties(
-        objectType: ObjectWrapper.Type,
+        objectType: ObjectWrapper.Type?,
         objPropertiesKeys: List<Key>,
         storeOfRelations: StoreOfRelations
     ): ParsedProperties {

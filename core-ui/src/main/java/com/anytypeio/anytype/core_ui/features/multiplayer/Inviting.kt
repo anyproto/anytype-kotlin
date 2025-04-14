@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -39,15 +40,28 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
-@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
-fun ShareInviteLinkCardPreview() {
+@DefaultPreviews
+fun ShareInviteLinkCardNotOwnerPreview() {
     ShareInviteLinkCard(
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
         onDeleteLinkClicked = {},
         onShowQrCodeClicked = {},
-        modifier = Modifier
+        modifier = Modifier,
+        isCurrentUserOwner = false
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ShareInviteLinkCardOwnerPreview() {
+    ShareInviteLinkCard(
+        link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
+        onShareInviteClicked = {},
+        onDeleteLinkClicked = {},
+        onShowQrCodeClicked = {},
+        modifier = Modifier,
+        isCurrentUserOwner = true
     )
 }
 
@@ -65,6 +79,7 @@ fun GenerateInviteLinkCardPreview() {
 fun ShareInviteLinkCard(
     modifier: Modifier = Modifier,
     link: String,
+    isCurrentUserOwner: Boolean,
     onShareInviteClicked: () -> Unit,
     onDeleteLinkClicked: () -> Unit,
     onShowQrCodeClicked: () -> Unit
@@ -91,35 +106,37 @@ fun ShareInviteLinkCard(
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_action_more),
-                    contentDescription = "Menu button",
-                    modifier = Modifier.noRippleClickable {
-                        isMenuExpanded = true
-                    }
-                )
-                DropdownMenu(
-                    expanded = isMenuExpanded,
-                    onDismissRequest = {
-                        isMenuExpanded = false
-                    },
-                    modifier = Modifier.background(
-                        color = colorResource(id = R.color.background_secondary)
-                    )
-                ) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onDeleteLinkClicked()
-                            isMenuExpanded = false
+            if (isCurrentUserOwner) {
+                Box {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_action_more),
+                        contentDescription = "Menu button",
+                        modifier = Modifier.noRippleClickable {
+                            isMenuExpanded = true
                         }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.multiplayer_delete_link),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_dark_red),
-                            modifier = Modifier.weight(1.0f)
+                    )
+                    DropdownMenu(
+                        expanded = isMenuExpanded,
+                        onDismissRequest = {
+                            isMenuExpanded = false
+                        },
+                        modifier = Modifier.background(
+                            color = colorResource(id = R.color.background_secondary)
                         )
+                    ) {
+                        DropdownMenuItem(
+                            onClick = {
+                                onDeleteLinkClicked()
+                                isMenuExpanded = false
+                            }
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.multiplayer_delete_link),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_dark_red),
+                                modifier = Modifier.weight(1.0f)
+                            )
+                        }
                     }
                 }
             }

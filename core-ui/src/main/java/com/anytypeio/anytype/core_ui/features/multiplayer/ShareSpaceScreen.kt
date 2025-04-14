@@ -183,7 +183,7 @@ fun ShareSpaceScreen(
                                 modifier = Modifier.weight(1.0f)
                             )
                         }
-                        if (spaceAccessType == SpaceAccessType.SHARED) {
+                        if (spaceAccessType == SpaceAccessType.SHARED && isCurrentUserOwner) {
                             Divider(
                                 paddingStart = 0.dp,
                                 paddingEnd = 0.dp
@@ -205,11 +205,9 @@ fun ShareSpaceScreen(
                     }
                 }
             }
-            if (isCurrentUserOwner) {
-                Section(
-                    title = stringResource(R.string.multiplayer_members_and_requests)
-                )
-            }
+            Section(
+                title = stringResource(R.string.multiplayer_members_and_requests)
+            )
             Incentive(
                 incentiveState = incentiveState,
                 onIncentiveClicked = onIncentiveClicked
@@ -315,7 +313,8 @@ fun ShareSpaceScreen(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onDeleteLinkClicked = onDeleteLinkClicked,
-                        onShowQrCodeClicked = onShareQrCodeClicked
+                        onShowQrCodeClicked = onShareQrCodeClicked,
+                        isCurrentUserOwner = isCurrentUserOwner
                     )
                 }
             }

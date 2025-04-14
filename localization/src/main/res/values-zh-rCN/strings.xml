@@ -101,7 +101,7 @@
     <string name="toolbar_section_tool">工具</string>
     <string name="toolbar_section_media">媒体</string>
     <string name="toolbar_section_objects">对象</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">属性</string>
     <string name="toolbar_action_delete">删除</string>
     <string name="toolbar_action_duplicate">生成副本</string>
     <string name="toolbar_action_mention">提及</string>
@@ -318,7 +318,7 @@
     <string name="unknown_object_type">未知类型</string>
     <string name="relation_format_short_text">短文本</string>
     <string name="relation_format_long_text">正文</string>
-    <string name="set_new_relation">Set new property</string>
+    <string name="set_new_relation">新建属性</string>
     <string name="relation_deleted">已删除属性</string>
     <string name="content_description_document_cover">文档封面</string>
     <string name="content_description_cover_image_view">封面图片视图</string>
@@ -531,7 +531,7 @@
     <string name="file_delete_cancel">取消</string>
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
-    <string name="menu_type_open">Open type</string>
+    <string name="menu_type_open">打开类型</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">当前视图不能被删除</string>
@@ -674,9 +674,9 @@
     <string name="edit_relations_title">属性</string>
     <string name="edit_view">编辑视图</string>
     <string name="relation_open_edit">打开编辑</string>
-    <string name="remove_from_set">Remove from this query</string>
+    <string name="remove_from_set">从此查询中移除</string>
     <string name="reset">重置</string>
-    <string name="search_a_relation">Search a property</string>
+    <string name="search_a_relation">搜索属性</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">将空值排序到底部</string>
     <string name="content_desc_empty_values_top_check_icon">将空值排序到顶部</string>
@@ -708,7 +708,7 @@
     <string name="alert_qr_camera">请前往位于桌面端的设置 - 密钥，以便找到用于登录的二维码。</string>
     <string name="alert_qr_camera_ok">好的</string>
     <string name="choose_option">选择选项</string>
-    <string name="find_a_relation">Find a property</string>
+    <string name="find_a_relation">查找属性</string>
     <string name="inbox">收集箱</string>
     <string name="unknown_type">未知类型</string>
     <string name="collection">集锦</string>
@@ -737,7 +737,7 @@
     <string name="object_not_exist">此对象不存在</string>
     <string name="back_to_dashboard">返回仪表盘</string>
     <string name="go_back">回到</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">未找到此类型的查询。</string>
     <string name="create_new_set">创建</string>
     <string name="shortcut_create_new_object_of_type">新 %1$s</string>
     <string name="close">关闭</string>
@@ -769,7 +769,7 @@
     <string name="without_template">无模板</string>
     <string name="unsplash_generic_error">在 Unsplash上搜索图像时出错。请稍后再试。</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">不要忘记在设置中获取并保存您的密钥</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">解锁您的对象以添加新属性</string>
     <string name="unlock_your_object_to_edit_relations">解锁您的对象以编辑关联</string>
     <string name="fragment_relation_create_from_scratch_title">选择属性类型</string>
     <string name="fragment_dashboard_restore">恢复</string>
@@ -792,7 +792,7 @@
     <string name="snack_move_to">移动到</string>
     <string name="recovery_phrase_copied">密钥已复制</string>
     <string name="type_editing_title">类型设置</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">属性设置</string>
     <string name="type_editing_uninstall">移除</string>
     <string name="empty_tree_widget">这个对象没有链接到其他对象。\n尝试创建一个。</string>
     <string name="empty_list_widget">这个对象没有链接到其他对象。\n尝试创建一个。</string>
@@ -968,19 +968,19 @@
     <string name="library_description_types">类型就像是帮助你对对象进行分组和管理的分类。</string>
     <string name="library_description_relations">所有对象都是相互关联的。使用属性在对象之间建立连接。</string>
     <string name="library_button_create_type">创建类型</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">创建属性</string>
     <string name="library_subtitle_types">我的类型</string>
     <string name="library_subtitle_relations">我的属性</string>
     <string name="library_subtitle_library">文库</string>
     <string name="library_create_new_type">创建类型 %1$s\'</string>
-    <string name="library_create_new_relation">Create a property \'%1$s\'</string>
+    <string name="library_create_new_relation">创建属性“%1$s”</string>
     <string name="library_objects_empty">没有 %1$s 名为 \'%2$s\'</string>
     <string name="library_objects_empty_action">试试创建一个新的或搜索其他内容</string>
     <string name="library_relations_empty">没有命名为 %1$s 的类型\'</string>
     <string name="library_type_added">类型 ‘%1$s’ 已添加到您的文库\"</string>
     <string name="library_type_removed">类型 ‘%1$s’ 已从您的文库移除\"</string>
-    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">属性 ‘%1$s’ 已添加到您的文库\"</string>
+    <string name="library_relation_removed">属性 ‘%1$s’ 已从您的文库移除\"</string>
     <string name="library_something_went_wrong">出错了。请稍后再试。</string>
     <string name="type_creation_new_type">新建类型</string>
     <string name="type_creation_done">完成</string>
@@ -1017,7 +1017,7 @@
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">输入无效</string>
     <string name="onboarding_your_key_can_t_be_empty">密钥不能为空</string>
-    <string name="onboarding_your_name">Your name</string>
+    <string name="onboarding_your_name">你的名字</string>
     <string name="onboarding_mnemonic_read_more">进一步了解什么是密钥</string>
     <string name="onboarding_key_additional_info">您之后可以在本应用的设置中找到此密钥</string>
     <string name="onboarding_what_is_the_key">什么是密钥？</string>
@@ -1441,7 +1441,7 @@
     <string name="membership_agree_terms">使用条款</string>
     <string name="membership_agree_middle">和</string>
     <string name="membership_agree_privacy">隐私策略</string>
-    <string name="membership_support_already_acquired">您已经使用其他的 Anytype 账户获得了一个会员计划。</string>
+    <string name="membership_support_already_acquired">您已经使用其他的 Anytype 账号获得了一个会员计划。</string>
     <string name="membership_support_different_subscription">找到不同 ID 的订阅</string>
     <string name="membership_support_more_then_one_subscription">找到了不止一个订阅</string>
     <string name="multiplayer_space_join_request_participants_error">空间参与者错误</string>
@@ -1468,8 +1468,8 @@
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">检测到网络 ID 不匹配。请验证您的网络配置。</string>
     <string name="error_login_select_vault_error">选择库时出错</string>
-    <string name="error_login_account_deleted_error">此账户已被删除。请尝试使用另一个账户或者创建一个新的。</string>
-    <string name="error_login_account_need_update_error">无法检索账户。请更新 Anytype 至最新版本。</string>
+    <string name="error_login_account_deleted_error">此账号已被删除。请尝试使用另一个账号或者创建一个新的。</string>
+    <string name="error_login_account_need_update_error">无法获取账户信息。请将 Anytype 更新至最新版本。</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
     <string name="sort_empty_values_desc">显示空白值</string>
@@ -1510,9 +1510,9 @@
     <string name="new_object">新对象</string>
     <string name="vault_my_spaces">我的空间</string>
     <string name="all_content_title_all_content">所有对象</string>
-    <string name="all_content_title_only_unlinked">Only unlinked</string>
+    <string name="all_content_title_only_unlinked">仅未链接</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">查看回收站</string>
     <string name="all_content_title_tab_pages">页面</string>
     <string name="all_content_title_tab_lists">分组</string>
     <string name="all_content_title_tab_media">媒体</string>
@@ -1523,10 +1523,10 @@
     <string name="all_content_sort_by">排序方式</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
+    <string name="all_content_sort_date_desc">从新到旧</string>
+    <string name="all_content_sort_date_asc">从旧到新</string>
+    <string name="all_content_sort_date_updated">更新日期</string>
+    <string name="all_content_sort_date_created">创建日期</string>
     <string name="all_content_sort_date_used">上次使用日期</string>
     <string name="all_content_sort_name">名称</string>
     <string name="all_content">所有对象</string>
@@ -1598,8 +1598,8 @@
     <string name="object_type_fields_preview_field">预览字段</string>
     <string name="object_type_fields_btn_save">保存</string>
     <string name="object_type_fields_menu_delete">从类型取消链接</string>
-    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
-    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
+    <string name="object_type_fields_menu_remove_from_type">从类型中移除</string>
+    <string name="object_type_fields_menu_move_to_bin">移到回收站</string>
     <string name="object_type_fields_menu_add_to_type">添加到当前类型</string>
     <string name="object_type_fields_menu_remove">移除</string>
     <string name="object_type_fields_local_info_title">在对象中找到</string>
@@ -1637,7 +1637,7 @@
     <string name="object_type_settings_item_remove">删除类型</string>
     <string name="chats_alert_delete_this_message_description">确认后无法恢复</string>
     <string name="chats_alert_delete_this_message">删除此消息？</string>
-    <string name="object_set_of_title">Query of</string>
+    <string name="object_set_of_title"> 的查询</string>
     <string name="migration_migration_is_in_progress">迁移正在进行</string>
     <string name="migration_this_shouldn_t_take_long">这可能需要一些时间。不要关闭本软件，直至更新完成。</string>
     <string name="migration_error_try_again">请再试一次</string>
@@ -1716,8 +1716,8 @@
     <string name="migration_screen_what_to_expect_description">在更新过程中您会看到一个加载画面。完成之后您即可继续使用本软件。</string>
     <string name="object_type_icon_change_title">更改图标</string>
     <string name="object_type_icon_remove">移除</string>
-    <string name="object_type_icon_change_title_search_hint">Search...\"</string>
-    <string name="space_invite_link_copied">Space invite link copied!</string>
+    <string name="object_type_icon_change_title_search_hint">搜索...\"</string>
+    <string name="space_invite_link_copied">空间邀请链接已复制！</string>
     <string name="object_type_create_new_title">新建类型</string>
     <string name="object_type_rename_title">Rename type</string>
     <string name="object_type_create_plural_title">Type list name</string>
@@ -1730,6 +1730,6 @@
     <string name="widget_source_suggested">建议</string>
     <string name="widgets_empty_state_message">还没有部件</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
-    <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_title">对象类型</string>
     <string name="space_properties_screen_title">属性</string>
 </resources>

@@ -470,22 +470,15 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnLayoutButtonClick -> {
-                if (_objTypeState.value?.recommendedLayout == ObjectType.Layout.NOTE) {
-                    uiTypeLayoutsState.value = Visible(
-                        layouts = listOf(ObjectType.Layout.NOTE),
-                        selectedLayout = _objTypeState.value?.recommendedLayout
-                    )
-                } else {
-                    uiTypeLayoutsState.value = Visible(
-                        layouts = listOf(
-                            ObjectType.Layout.BASIC,
-                            ObjectType.Layout.NOTE,
-                            ObjectType.Layout.PROFILE,
-                            ObjectType.Layout.TODO
-                        ),
-                        selectedLayout = _objTypeState.value?.recommendedLayout
-                    )
-                }
+                uiTypeLayoutsState.value = Visible(
+                    layouts = listOf(
+                        ObjectType.Layout.BASIC,
+                        ObjectType.Layout.NOTE,
+                        ObjectType.Layout.PROFILE,
+                        ObjectType.Layout.TODO
+                    ),
+                    selectedLayout = _objTypeState.value?.recommendedLayout
+                )
             }
 
             is TypeEvent.OnSyncStatusClick -> {

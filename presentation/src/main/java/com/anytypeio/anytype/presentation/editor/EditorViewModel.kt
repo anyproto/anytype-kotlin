@@ -5358,7 +5358,7 @@ class EditorViewModel(
             }
             val objType = currentObj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)
             if (objType == null) {
-                Timber.e("Object type of object $context not found.")
+                Timber.w("Object type of object $context not found.")
                 return@launch
             }
             val parsedFields = fieldParser.getObjectParsedProperties(

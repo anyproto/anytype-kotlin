@@ -24,6 +24,7 @@ import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFrag
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
@@ -351,6 +352,19 @@ class Navigator : AppNavigation {
             resId = R.id.objectTypeFieldsScreen,
             args = ObjectTypeFieldsFragment.args(
                 objectId = objectId,
+                space = space
+            )
+        )
+    }
+
+    override fun openTemplateScreen(templateId: Id, typeId: Id, typeKey: Key, space: Id) {
+        navController?.navigate(
+            resId = R.id.editorTemplateScreen,
+            args = EditorTemplateFragment.args(
+                targetTemplateId = templateId,
+                targetTypeId = typeId,
+                targetTypeKey = typeKey,
+                screenType = EditorTemplateFragment.TYPE_TEMPLATE_EDIT,
                 space = space
             )
         )

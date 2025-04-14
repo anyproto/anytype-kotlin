@@ -5,6 +5,11 @@
     android:id="@+id/main_navigation"
     app:startDestination="@id/splashScreen">
 
+    <fragment
+        android:id="@+id/editorTemplateScreen"
+        android:name="com.anytypeio.anytype.ui.templates.EditorTemplateFragment"
+        android:label="Editor Template Screen" />
+
     <navigation
         android:id="@+id/objectNavigation"
         app:startDestination="@id/pageScreen">

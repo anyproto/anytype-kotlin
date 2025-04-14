@@ -71,7 +71,15 @@ class NavigationRouter(
                     objectId = command.objectId,
                     space = command.space
                 )
-                else -> Timber.d("Nav command ignored: $command")
+                is AppNavigation.Command.OpenTemplate -> {
+                    navigation.open(
+                        templateId = command.templateId,
+                        space = command.space,
+                        targetTypeId = command.targetTypeId,
+                        targetTypeKey = command.targetTypeKey
+                    )
+                }
+                //else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {
             Timber.e(e, "Error while navigation")

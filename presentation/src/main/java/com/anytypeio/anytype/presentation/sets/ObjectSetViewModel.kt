@@ -1624,6 +1624,14 @@ class ObjectSetViewModel(
             Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
             return
         }
+//        navigate(
+//            EventWrapper(
+//                AppNavigation.Command.OpenTemplate(
+//                    targetTemplateId = target,
+//                    targetTypeId =
+//                )
+//            )
+//        )
         when (layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,

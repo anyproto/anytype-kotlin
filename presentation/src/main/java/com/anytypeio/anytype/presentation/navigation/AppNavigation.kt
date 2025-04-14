@@ -74,6 +74,13 @@ interface AppNavigation {
 
     fun openCreateObjectTypeScreen(spaceId: Id)
 
+    fun openTemplateScreen(
+        templateId: Id,
+        typeId: Id,
+        typeKey: Key,
+        spaceId: Id
+    )
+
     sealed class Command {
 
         data object Exit : Command()
@@ -129,6 +136,13 @@ interface AppNavigation {
         data class DeletedAccountScreen(val deadline: Long) : Command()
 
         data class OpenTemplates(val typeId: Id) : Command()
+
+        data class OpenTemplate(
+            val targetTemplateId: Id,
+            val targetTypeId: Id,
+            val targetTypeKey: Key,
+            val space: Id
+        ) : Command()
     }
 
     interface Provider {

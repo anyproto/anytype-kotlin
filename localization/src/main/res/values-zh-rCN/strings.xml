@@ -795,7 +795,9 @@
     <string name="relation_editing_title">属性设置</string>
     <string name="type_editing_uninstall">移除</string>
     <string name="empty_tree_widget">这个对象没有链接到其他对象。\n尝试创建一个。</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">这个对象没有链接到其他对象。\n尝试创建一个。</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">此数据视图没有对象。\n尝试创建一个新的对象。</string>
     <string name="this_widget_has_no_object">此小部件没有对象。\n尝试创建一个新小部件。</string>
     <string name="emoji">Emoji</string>
@@ -1638,6 +1640,7 @@
     <string name="chats_alert_delete_this_message_description">确认后无法恢复</string>
     <string name="chats_alert_delete_this_message">删除此消息？</string>
     <string name="object_set_of_title"> 的查询</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">这可能需要一些时间。不要关闭本软件，直至更新完成。</string>
     <string name="migration_error_try_again">请再试一次</string>
     <string name="migration_migration_failed">迁移失败</string>

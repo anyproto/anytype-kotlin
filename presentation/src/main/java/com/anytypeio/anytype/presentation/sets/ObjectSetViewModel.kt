@@ -21,6 +21,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
@@ -68,21 +70,21 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.TimeInMillis
-import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
+import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -90,7 +92,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.ObjectSetCommand.Modal.*
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -110,7 +111,6 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command
 import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
@@ -1080,9 +1080,7 @@ class ObjectSetViewModel(
             val obj = objectStore.get(target)
             if (obj != null) {
                 proceedWithNavigation(
-                    target = target,
-                    layout = obj.layout,
-                    space = vmParams.space.id,
+                    obj = obj,
                     identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
@@ -1613,17 +1611,12 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNavigation(
+    private suspend fun navigateByLayout(
         target: Id,
         space: Id,
         layout: ObjectType.Layout?,
         identityProfileLink: Id? = null
     ) {
-        if (target == vmParams.ctx) {
-            toast("You are already here")
-            Timber.d("proceedWithOpeningObject, target == vmParams.ctx")
-            return
-        }
         when (layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
@@ -1708,6 +1701,55 @@ class ObjectSetViewModel(
         }
     }
 
+    private suspend fun proceedWithNavigation(
+        target: Id,
+        space: Id,
+        layout: ObjectType.Layout?,
+        identityProfileLink: Id? = null
+    ) {
+        if (target == vmParams.ctx) {
+            toast("You are already here")
+            Timber.d("proceedWithNavigation, target == vmParams.ctx")
+            return
+        }
+        navigateByLayout(target, space, layout, identityProfileLink)
+    }
+
+    private suspend fun proceedWithNavigation(
+        obj: ObjectWrapper.Basic,
+        identityProfileLink: Id? = null
+    ) {
+        if (obj.id == vmParams.ctx) {
+            toast("You are already here")
+            Timber.d("proceedWithNavigation, target == vmParams.ctx")
+            return
+        }
+
+        val target = obj.id
+        val space = vmParams.space.id
+
+        // If the object is a Template (and not a Set or Collection), open it in the Modal Template Screen
+        if (obj.isTemplateObject(storeOfObjectTypes = storeOfObjectTypes) && !obj.layout.isDataView()) {
+            obj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes = storeOfObjectTypes)
+                ?.let { objType ->
+                    val event = AppNavigation.Command.OpenModalTemplateEdit(
+                        template = target,
+                        space = vmParams.space.id,
+                        templateTypeId = objType.id,
+                        templateTypeKey = objType.uniqueKey
+                    )
+                    navigate(EventWrapper(event))
+                    return
+                }
+        }
+
+        navigateByLayout(
+            target = target,
+            space = space,
+            layout = obj.layout,
+            identityProfileLink = identityProfileLink
+        )
+    }
     //endregion NAVIGATION
 
     fun onUnsupportedViewErrorClicked() {
@@ -3075,11 +3117,7 @@ class ObjectSetViewModel(
                 timeInSeconds = timeInMillis / 1000,
                 spaceId = vmParams.space,
                 actionSuccess = { obj ->
-                    proceedWithNavigation(
-                        target = obj.id,
-                        space = vmParams.space.id,
-                        layout = obj.layout
-                    )
+                    proceedWithNavigation(obj = obj)
                 },
                 actionFailure = {
                     toast("Error while parsing date object")

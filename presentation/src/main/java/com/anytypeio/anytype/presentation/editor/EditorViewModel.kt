@@ -267,6 +267,7 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -5348,26 +5349,25 @@ class EditorViewModel(
     }
 
     private fun getProperties(action: (List<SlashPropertyView.Item>) -> Unit) {
-        val objectViewDetails = orchestrator.stores.details.current()
-        val currentObj = objectViewDetails.getObject(vmParams.ctx)
-        if (currentObj == null) {
-            Timber.e("Object with id $context not found.")
-            return
-        }
-        val objType = objectViewDetails.getTypeForObject(vmParams.ctx)
-        if (objType == null) {
-            Timber.e("Object type of object $context not found.")
-            return
-        }
-
         viewModelScope.launch {
+            val objectViewDetails = orchestrator.stores.details.current()
+            val currentObj = objectViewDetails.getObject(vmParams.ctx)
+            if (currentObj == null) {
+                Timber.e("Object with id $context not found.")
+                return@launch
+            }
+            val objType = currentObj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)
+            if (objType == null) {
+                Timber.w("Object type of object $context not found.")
+                return@launch
+            }
             val parsedFields = fieldParser.getObjectParsedProperties(
                 objectType = objType,
                 storeOfRelations = storeOfRelations,
                 objPropertiesKeys = currentObj.map.keys.toList().orEmpty()
             )
 
-            val properties = (parsedFields.header + parsedFields.sidebar).mapNotNull {
+            val properties = (parsedFields.header + parsedFields.sidebar).map {
                 it.view(
                     details = objectViewDetails,
                     values = currentObj.map,

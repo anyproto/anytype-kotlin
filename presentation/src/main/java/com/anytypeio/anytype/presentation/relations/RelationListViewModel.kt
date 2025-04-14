@@ -34,9 +34,10 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getStruct
-import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
+import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.relations.model.RelationOperationError
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -75,6 +76,7 @@ class RelationListViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val views = MutableStateFlow<List<Model>>(emptyList())
     val showLocalInfo = MutableStateFlow(false)
+    val uiSettingsIconState = MutableStateFlow<UiPropertiesSettingsIconState>(UiPropertiesSettingsIconState.Hidden)
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
@@ -104,13 +106,21 @@ class RelationListViewModel(
         details: ObjectViewDetails
     ): List<Model> {
 
-        val objType = details.getTypeForObject(ctx)
-        _currentObjectTypeId = objType?.id
-
-        if (objType == null) {
-            Timber.w("Failed to get object type for object: $ctx from types store")
+        val currentObj = details.getObject(ctx)
+        if (currentObj == null) {
+            Timber.e("Object with id $ctx not found.")
             return emptyList()
         }
+        val objType = currentObj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)
+
+        _currentObjectTypeId = objType?.id
+
+        uiSettingsIconState.value =
+            if (objType == null || objType.isDeleted == true || currentObj.isTemplateObject(storeOfObjectTypes)) {
+                UiPropertiesSettingsIconState.Hidden
+            } else {
+                UiPropertiesSettingsIconState.Shown
+            }
 
         val parsedFields = fieldParser.getObjectParsedProperties(
             objectType = objType,
@@ -814,4 +824,9 @@ class RelationListViewModel(
         const val NOT_FOUND_IN_RELATION_STORE = "Couldn't find in relation store by id:"
         const val NOT_SUPPORTED_UPDATE_VALUE = "Update value of this relation isn't supported"
     }
+}
+
+sealed class UiPropertiesSettingsIconState {
+    data object Hidden : UiPropertiesSettingsIconState()
+    data object Shown : UiPropertiesSettingsIconState()
 }

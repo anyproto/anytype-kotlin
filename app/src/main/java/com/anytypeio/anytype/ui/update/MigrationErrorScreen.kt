@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -142,7 +144,11 @@ fun MigrationStartScreen(
 fun MigrationReadMoreBottomSheet(
     onDismissRequest: () -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     ModalBottomSheet(
+        sheetState = sheetState,
         onDismissRequest = onDismissRequest,
         dragHandle = {
             Dragger(
@@ -198,7 +204,7 @@ fun MigrationReadMoreScreenContent() {
                 modifier = Modifier
                     .background(
                         shape = CircleShape,
-                        color = colorResource(R.color.palette_dark_blue)
+                        color = colorResource(R.color.palette_dark_purple)
                     )
                     .size(48.dp)
             ) {
@@ -274,7 +280,7 @@ fun MigrationInProgressScreen(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = stringResource(R.string.migration_migration_is_in_progress),
+                text = stringResource(R.string.migration_update_is_in_progress),
                 style = HeadlineHeading,
                 color = colorResource(R.color.text_primary),
                 textAlign = TextAlign.Center,

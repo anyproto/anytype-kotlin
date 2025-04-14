@@ -1655,7 +1655,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
     <string name="object_set_of_title">Abfrage von</string>
-    <string name="migration_migration_is_in_progress">Migration läuft</string>
+    <string name="migration_update_is_in_progress">Migration läuft</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>

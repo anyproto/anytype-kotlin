@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -72,12 +74,31 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
         val name: Name
-        ) : WidgetView(), Draggable {
+    ) : WidgetView(), Draggable {
+        val canCreateObjectOfType : Boolean get() {
+            return when(source) {
+                Widget.Source.Bundled.AllObjects -> false
+                Widget.Source.Bundled.Bin -> false
+                Widget.Source.Bundled.Favorites -> true
+                Widget.Source.Bundled.Recent -> false
+                Widget.Source.Bundled.RecentLocal -> false
+                is Widget.Source.Default -> {
+                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                        val wrapper = ObjectWrapper.Type(source.obj.map)
+                        SupportedLayouts.createObjectLayouts.contains(wrapper.recommendedLayout)
+                    } else {
+                        true
+                    }
+                }
+            }
+        }
+
         data class Tab(
             val id: Id,
             val name: String,
             val isSelected: Boolean
         )
+
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,

@@ -2054,6 +2054,7 @@ class HomeScreenViewModel(
     }
 
     fun onCreateObjectInsideWidget(widget: Id) {
+        Timber.d("onCreateObjectInsideWidget: ${widget}")
         when(val target = widgets.value.orEmpty().find { it.id == widget }) {
             is Widget.Tree -> {
                 val source = target.source
@@ -2111,6 +2112,7 @@ class HomeScreenViewModel(
                         )
                     ).fold(
                         onSuccess = { obj ->
+                            Timber.d("onCreateDataViewObject:gotDataViewPreview")
                             val dv = obj.blocks.find { it.content is DV }?.content as? DV
                             val viewer = if (view.isNullOrEmpty())
                                 dv?.viewers?.firstOrNull()
@@ -2140,7 +2142,6 @@ class HomeScreenViewModel(
                                                     navigate = navigate
                                                 )
                                             }
-
                                             ObjectType.Layout.RELATION -> {
                                                 proceedWithCreatingDataViewObject(
                                                     viewer,
@@ -2228,6 +2229,7 @@ class HomeScreenViewModel(
         dv: DV,
         navigate: Boolean = false
     ) {
+        Timber.d("proceedWithCreatingDataViewObject")
         val dataViewSourceType = dataViewSourceObj.uniqueKey
         val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,

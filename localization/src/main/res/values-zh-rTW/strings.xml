@@ -795,7 +795,9 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">移除</string>
     <string name="empty_tree_widget">此物件尚未連結至其他物件。\n請嘗試建立一個新的。</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">此檢視內沒有物件。\n請嘗試建立一個新的。</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">該資料檢視沒有物件。\n請嘗試建立一個新的。</string>
     <string name="this_widget_has_no_object">此小工具內沒有物件。\n請嘗試建立一個新的。</string>
     <string name="emoji">Emoji</string>
@@ -1642,6 +1644,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">It cannot be restored after confirmation</string>
     <string name="chats_alert_delete_this_message">Delete this message?</string>
     <string name="object_set_of_title">Query of</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">請再試一次</string>
     <string name="migration_migration_failed">Migration failed</string>

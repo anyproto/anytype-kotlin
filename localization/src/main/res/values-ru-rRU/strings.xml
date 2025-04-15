@@ -801,7 +801,9 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Удалить</string>
     <string name="empty_tree_widget">Этот объект не имеет ссылок на другие объекты.\nПопробуйте создать новую.</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">Этот вид не имеет объектов.\nПопробуйте создать новый.</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">Этот вид данных не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="this_widget_has_no_object">Этот виджет не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="emoji">Эмодзи</string>
@@ -1684,6 +1686,7 @@
     <string name="chats_alert_delete_this_message_description">Его нельзя восстановить после подтверждения</string>
     <string name="chats_alert_delete_this_message">Удалить это сообщение?</string>
     <string name="object_set_of_title">Query of</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">Это может занять некоторое время. Пожалуйста, не закрывайте приложение, пока процесс не завершится.</string>
     <string name="migration_error_try_again">Попробуйте еще раз</string>
     <string name="migration_migration_failed">Сбой миграции</string>

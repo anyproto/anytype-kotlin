@@ -797,7 +797,9 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Verwijder</string>
     <string name="empty_tree_widget">Dit object heeft geen links naar andere objecten.\nProbeer een nieuwe te maken.</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">Deze weergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">Deze gegevensweergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="this_widget_has_no_object">Deze widget heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="emoji">Emoji</string>
@@ -1655,6 +1657,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_alert_delete_this_message_description">Het kan niet worden hersteld na bevestiging</string>
     <string name="chats_alert_delete_this_message">Verwijder dit bericht?</string>
     <string name="object_set_of_title">Query of</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">Dit kan enige tijd duren. Sluit de app alsjeblieft niet voordat het proces is voltooid.</string>
     <string name="migration_error_try_again">Probeer opnieuw</string>
     <string name="migration_migration_failed">Migratie mislukt</string>

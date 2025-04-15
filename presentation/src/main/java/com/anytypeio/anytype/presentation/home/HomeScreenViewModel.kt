@@ -2100,7 +2100,7 @@ class HomeScreenViewModel(
     fun onCreateDataViewObject(
         widget: WidgetId,
         view: ViewId?,
-        navigate: Boolean = false
+        navigate: Boolean = true
     ) {
         Timber.d("onCreateDataViewObject")
         viewModelScope.launch {

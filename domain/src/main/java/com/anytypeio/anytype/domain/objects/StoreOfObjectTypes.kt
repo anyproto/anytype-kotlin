@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -57,6 +58,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         emitAll(
             trackChanges()
                 .mapNotNull { get(id) }
+                .filter { it.isValid }
         )
     }
 

@@ -62,7 +62,7 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
         subscribe(vm.commands) { command ->
             Timber.d("Received command: $command")
             when (command) {
-                is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
+                is ObjectTypeCommand.OpenAddNewPropertyScreen -> {
                     runCatching {
                         findNavController().navigate(
                             R.id.editTypePropertiesScreen,

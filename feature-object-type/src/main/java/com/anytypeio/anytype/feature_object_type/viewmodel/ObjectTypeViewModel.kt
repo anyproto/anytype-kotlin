@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_object_type.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -61,7 +62,11 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeScreen
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
@@ -183,6 +188,9 @@ class ObjectTypeViewModel(
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
         startSubscriptions()
+    }
+
+    fun sendAnalyticsScreenObjectType() {
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics
@@ -465,7 +473,14 @@ class ObjectTypeViewModel(
         when (event) {
             TypeEvent.OnFieldsButtonClick -> {
                 viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.OpenFieldsScreen)
+                    commands.emit(ObjectTypeCommand.OpenTypePropertiesListScreen)
+                }
+                viewModelScope.launch {
+                    sendAnalyticsShowObjectTypeScreen(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.typeRoute,
+                        spaceParams = provideParams(vmParams.spaceId.id)
+                    )
                 }
             }
 
@@ -737,12 +752,15 @@ class ObjectTypeViewModel(
 
             FieldEvent.Section.OnLocalInfoClick -> {
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
+                viewModelScope.launch {
+                    sendAnalyticsPropertiesLocalInfo(analytics, provideParams(vmParams.spaceId.id))
+                }
             }
 
             FieldEvent.Section.OnAddToSidebarIconClick -> {
                 viewModelScope.launch {
                     commands.emit(
-                        OpenEditTypePropertiesScreen(
+                        OpenAddNewPropertyScreen(
                             typeId = vmParams.objectId,
                             space = vmParams.spaceId.id,
                         )
@@ -860,6 +878,9 @@ class ObjectTypeViewModel(
                 val currentRecommendedFields = _objTypeState.value?.recommendedRelations.orEmpty()
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
+                viewModelScope.launch {
+                    sendAnalyticsLocalPropertyResolve(analytics, provideParams(vmParams.spaceId.id))
+                }
             }
 
             is FieldEvent.FieldItemMenu.OnMoveToBinClick -> {
@@ -966,6 +987,10 @@ class ObjectTypeViewModel(
                 onSuccess = {
                     Timber.d("Properties updated")
                     proceedWithGetObjectTypeConflictingFields()
+                    sendAnalyticsReorderRelationEvent(
+                        analytics = analytics,
+                        spaceParams = provideParams(vmParams.spaceId.id)
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating properties")

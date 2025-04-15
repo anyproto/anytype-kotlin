@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -347,6 +348,13 @@ class ObjectSetMenuViewModel(
                 onFailure = {
                     Timber.e(it, "Error while resetting layout to default")
                 }
+            )
+        }
+
+        viewModelScope.launch {
+            sendAnalyticsResolveObjectConflict(
+                analytics = analytics,
+                spaceParams = provideParams(space)
             )
         }
     }

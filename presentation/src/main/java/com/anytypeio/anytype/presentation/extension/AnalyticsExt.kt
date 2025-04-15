@@ -337,10 +337,18 @@ fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
 }
 
 fun CoroutineScope.sendAnalyticsReorderRelationEvent(
-    analytics: Analytics
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
     sendEvent(
         analytics = analytics,
+        props = props,
         eventName = EventsDictionary.logReorderRelation
     )
 }
@@ -365,19 +373,35 @@ fun CoroutineScope.sendAnalyticsResolveObjectConflict(
 }
 
 fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
-    analytics: Analytics
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
     sendEvent(
         analytics = analytics,
+        props = props,
         eventName = EventsDictionary.logClickConflictFieldHelp
     )
 }
 
 fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
-    analytics: Analytics
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
     sendEvent(
         analytics = analytics,
+        props = props,
         eventName = EventsDictionary.logAddConflictRelation
     )
 }

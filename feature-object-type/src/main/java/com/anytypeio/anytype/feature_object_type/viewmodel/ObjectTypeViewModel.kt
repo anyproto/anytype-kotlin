@@ -753,7 +753,7 @@ class ObjectTypeViewModel(
             FieldEvent.Section.OnLocalInfoClick -> {
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
                 viewModelScope.launch {
-                    sendAnalyticsPropertiesLocalInfo(analytics)
+                    sendAnalyticsPropertiesLocalInfo(analytics, provideParams(vmParams.spaceId.id))
                 }
             }
 
@@ -879,7 +879,7 @@ class ObjectTypeViewModel(
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
                 viewModelScope.launch {
-                    sendAnalyticsLocalPropertyResolve(analytics)
+                    sendAnalyticsLocalPropertyResolve(analytics, provideParams(vmParams.spaceId.id))
                 }
             }
 
@@ -989,6 +989,7 @@ class ObjectTypeViewModel(
                     proceedWithGetObjectTypeConflictingFields()
                     sendAnalyticsReorderRelationEvent(
                         analytics = analytics,
+                        spaceParams = provideParams(vmParams.spaceId.id)
                     )
                 },
                 onFailure = {

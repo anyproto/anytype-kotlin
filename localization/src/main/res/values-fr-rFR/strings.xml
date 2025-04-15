@@ -797,7 +797,9 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Supprimer</string>
     <string name="empty_tree_widget">Cet objet n\'a pas de liens vers d\'autres objets.\nEssayez d\'en créer un nouveau.</string>
+    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
     <string name="empty_list_widget">Cette vue n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
+    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
     <string name="empty_list_widget_no_view">Cette vue de données n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
     <string name="this_widget_has_no_object">Ce widget n\'a pas d\'objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="emoji">Emoji</string>
@@ -1652,6 +1654,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_alert_delete_this_message_description">Il ne pourra pas être restauré après confirmation</string>
     <string name="chats_alert_delete_this_message">Supprimer ce message ?</string>
     <string name="object_set_of_title">Query of</string>
+    <string name="migration_update_is_in_progress">Update is in progress</string>
     <string name="migration_this_shouldn_t_take_long">Cela peut prendre un certain temps. Veuillez ne pas fermer l\'application avant que le processus soit terminé.</string>
     <string name="migration_error_try_again">Essayez de nouveau</string>
     <string name="migration_migration_failed">Échec de la migration</string>
@@ -1744,5 +1747,10 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_section_my_types">Mes Types</string>
+    <string name="space_types_screen_section_system_types">System Types</string>
     <string name="space_properties_screen_title">Propriétés</string>
+    <string name="space_properties_screen_section_my_types">My Properties</string>
+    <string name="space_properties_screen_section_system_types">System Properties</string>
+    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
 </resources>

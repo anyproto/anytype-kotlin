@@ -1776,5 +1776,10 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_section_my_types">Мої типи</string>
+    <string name="space_types_screen_section_system_types">System Types</string>
     <string name="space_properties_screen_title">Properties</string>
+    <string name="space_properties_screen_section_my_types">My Properties</string>
+    <string name="space_properties_screen_section_system_types">System Properties</string>
+    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
 </resources>

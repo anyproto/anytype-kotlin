@@ -101,7 +101,7 @@
     <string name="toolbar_section_tool">Ferramenta</string>
     <string name="toolbar_section_media">Mídias</string>
     <string name="toolbar_section_objects">Objetos</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Propriedade</string>
     <string name="toolbar_action_delete">Excluir</string>
     <string name="toolbar_action_duplicate">Duplicar</string>
     <string name="toolbar_action_mention">Menção</string>
@@ -174,7 +174,7 @@
     <string name="hint_toggle">Alternar bloco</string>
     <string name="hint_paste_link">Colar link</string>
     <string name="empty_tap_to_create_new_block">Vazio. Toque para criar um novo bloco</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">Sem título</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Coleção sem título</string>
     <string name="archived">Arquivado</string>
@@ -233,7 +233,7 @@
     <string name="search">Pesquisar</string>
     <string name="search_hint">Pesquisar...</string>
     <string name="relations">Propriedades</string>
-    <string name="fields">Fields</string>
+    <string name="fields">Campos</string>
     <string name="download">Baixar</string>
     <string name="view">Exibição</string>
     <string name="views">Exibições</string>
@@ -256,8 +256,8 @@
     <string name="mention_suggester_create_object">Criar objeto</string>
     <string name="your_search_query">Pesquisar</string>
     <string name="syncing">Sincronizando…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this query</string>
-    <string name="new_set">New query</string>
+    <string name="choose_a_object_type_for_this_set">Selecione um tipo de objeto para essa consulta</string>
+    <string name="new_set">Nova consulta</string>
     <string name="create_new_object_type">Criar novo objeto</string>
     <plurals name="page_selected">
         <item quantity="one">Página %d selecionada</item>
@@ -298,7 +298,7 @@
     <string name="add_sort">Adicionar ordenação</string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Adicionar um filtro</string>
-    <string name="relation_format_tag">Multi-Select</string>
+    <string name="relation_format_tag">Seleção múltipla</string>
     <string name="unknown_number_of_objects">Número desconhecido de objetos</string>
     <string name="sort_ascending">Crescente</string>
     <string name="sort_descending">Decrescente</string>
@@ -1747,5 +1747,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_section_my_types">Meus Tipos</string>
+    <string name="space_types_screen_section_system_types">System Types</string>
     <string name="space_properties_screen_title">Propriedades</string>
+    <string name="space_properties_screen_section_my_types">My Properties</string>
+    <string name="space_properties_screen_section_system_types">System Properties</string>
+    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
 </resources>

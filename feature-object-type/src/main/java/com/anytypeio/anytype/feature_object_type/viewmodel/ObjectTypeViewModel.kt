@@ -190,7 +190,7 @@ class ObjectTypeViewModel(
         startSubscriptions()
     }
 
-    fun senAnalyticsScreenObjectType() {
+    fun sendAnalyticsScreenObjectType() {
         viewModelScope.launch {
             sendAnalyticsScreenObjectType(
                 analytics = analytics

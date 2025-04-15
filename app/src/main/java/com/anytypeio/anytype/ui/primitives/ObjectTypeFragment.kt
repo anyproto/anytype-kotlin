@@ -116,7 +116,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 }
             }
         }
-        vm.senAnalyticsScreenObjectType()
+        vm.sendAnalyticsScreenObjectType()
     }
 
     override fun onStart() {

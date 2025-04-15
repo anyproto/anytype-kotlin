@@ -40,6 +40,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -52,7 +53,7 @@ import com.anytypeio.anytype.presentation.types.UiSpaceTypesScreenState
 @Composable
 fun SpaceTypesListScreen(
     uiState: UiSpaceTypesScreenState,
-    onTypeClicked: (UiSpaceTypeItem) -> Unit,
+    onTypeClicked: (UiSpaceTypeItem.Type) -> Unit,
     onBackPressed: () -> Unit,
     onAddIconClicked: () -> Unit
 ) {
@@ -91,17 +92,24 @@ fun SpaceTypesListScreen(
                 key = { index -> items[index].id },
                 itemContent = {
                     val item = items[it]
-                    Type(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .padding(start = 12.dp, end = 20.dp)
-                            .clickable {
-                                onTypeClicked(item)
-                            },
-                        item = item
-                    )
-                    Divider()
+                    when (item) {
+                        is UiSpaceTypeItem.Section -> {
+                            Section(item)
+                        }
+                        is UiSpaceTypeItem.Type -> {
+                            Type(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .padding(start = 12.dp, end = 20.dp)
+                                    .clickable {
+                                        onTypeClicked(item)
+                                    },
+                                item = item
+                            )
+                            Divider()
+                        }
+                    }
                 }
             )
             item {
@@ -116,9 +124,35 @@ fun SpaceTypesListScreen(
 }
 
 @Composable
+private fun Section(section: UiSpaceTypeItem.Section) {
+    val text = when (section) {
+        is UiSpaceTypeItem.Section.MyTypes ->
+            stringResource(R.string.space_types_screen_section_my_types)
+        is UiSpaceTypeItem.Section.System ->
+            stringResource(R.string.space_types_screen_section_system_types)
+    }
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(bottom = 8.dp, start = 20.dp)
+                    .align(Alignment.BottomStart),
+                text = text,
+                style = Caption1Medium,
+                color = colorResource(R.color.text_secondary),
+            )
+        }
+    }
+}
+
+@Composable
 private fun Type(
     modifier: Modifier,
-    item: UiSpaceTypeItem
+    item: UiSpaceTypeItem.Type
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -208,7 +242,8 @@ fun SpaceTypesListScreenPreview() {
     SpaceTypesListScreen(
         uiState = UiSpaceTypesScreenState(
             items = listOf(
-                UiSpaceTypeItem(
+                UiSpaceTypeItem.Section.MyTypes(),
+                UiSpaceTypeItem.Type(
                     id = "1",
                     name = "Type 1",
                     icon = ObjectIcon.TypeIcon.Default(
@@ -216,7 +251,8 @@ fun SpaceTypesListScreenPreview() {
                         color = CustomIconColor.Teal
                     )
                 ),
-                UiSpaceTypeItem(
+                UiSpaceTypeItem.Section.System(),
+                UiSpaceTypeItem.Type(
                     id = "2",
                     name = "Type 2",
                     icon = ObjectIcon.TypeIcon.Default(

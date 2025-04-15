@@ -64,11 +64,19 @@ class SpaceTypesViewModel(
                             if (notAllowedTypesLayouts.contains(resolvedLayout)) {
                                 return@mapNotNull null
                             } else {
-                                objectType.toUiItem()
+                                objectType
                             }
                         }
-                            .sortedBy { it.name }
-                    uiItemsState.value = UiSpaceTypesScreenState(allTypes)
+                    val (myTypes, systemTypes) = allTypes.partition { it.sourceObject.isNullOrBlank() }
+
+                    val list = buildList {
+                        add(UiSpaceTypeItem.Section.MyTypes())
+                        addAll(myTypes.map { it.toUiItem() }.sortedBy { it.name })
+                        add(UiSpaceTypeItem.Section.System())
+                        addAll(systemTypes.map { it.toUiItem() }.sortedBy { it.name })
+                    }
+
+                    uiItemsState.value = UiSpaceTypesScreenState(list)
                 }
         }
     }
@@ -91,7 +99,7 @@ class SpaceTypesViewModel(
         }
     }
 
-    fun onTypeClicked(type: UiSpaceTypeItem) {
+    fun onTypeClicked(type: UiSpaceTypeItem.Type) {
         viewModelScope.launch {
             commands.emit(
                 Command.OpenType(
@@ -109,7 +117,7 @@ class SpaceTypesViewModel(
         data class ShowToast(val message: String) : Command()
     }
 
-    private fun ObjectWrapper.Type.toUiItem() = UiSpaceTypeItem(
+    private fun ObjectWrapper.Type.toUiItem() = UiSpaceTypeItem.Type(
         id = id,
         name = fieldParser.getObjectName(this),
         icon = this.objectIcon()
@@ -143,8 +151,18 @@ class SpaceTypesVmFactory @Inject constructor(
 
 data class UiSpaceTypesScreenState(val items: List<UiSpaceTypeItem>)
 
-data class UiSpaceTypeItem(
-    val id: Id,
-    val name: String,
-    val icon: ObjectIcon.TypeIcon
-)
+
+
+sealed class UiSpaceTypeItem{
+    abstract val id: Id
+    data class Type(
+        override val id: Id,
+        val name: String,
+        val icon: ObjectIcon.TypeIcon
+    ) : UiSpaceTypeItem()
+
+    sealed class Section : UiSpaceTypeItem() {
+        data class MyTypes(override val id: Id = "section_my_types") : Section()
+        data class System(override val id: Id = "section_system") : Section()
+    }
+}

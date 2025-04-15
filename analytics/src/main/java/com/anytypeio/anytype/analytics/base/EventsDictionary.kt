@@ -171,6 +171,12 @@ object EventsDictionary {
     const val clickOnboarding = "ClickOnboarding"
     const val clickLogin = "ClickLogin"
 
+    //Primitives
+    const val logScreenEditType = "ScreenEditType"
+    const val logReorderRelation = "ReorderRelation"
+    const val logClickConflictFieldHelp = "ClickConflictFieldHelp"
+    const val logAddConflictRelation = "AddConflictRelation"
+
     // Vault events
 
     const val screenVault = "ScreenVault"
@@ -325,6 +331,8 @@ object EventsDictionary {
         const val gallery = "Gallery"
         const val notification = "Notification"
         const val featuredRelations = "FeaturedRelations"
+        const val objectRoute = "Object"
+        const val typeRoute = "Type"
     }
 
     object Type {

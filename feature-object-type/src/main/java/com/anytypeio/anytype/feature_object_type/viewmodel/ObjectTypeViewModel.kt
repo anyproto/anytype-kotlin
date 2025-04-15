@@ -62,6 +62,9 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeScreen
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -749,6 +752,9 @@ class ObjectTypeViewModel(
 
             FieldEvent.Section.OnLocalInfoClick -> {
                 uiFieldLocalInfoState.value = UiLocalsFieldsInfoState.Visible
+                viewModelScope.launch {
+                    sendAnalyticsPropertiesLocalInfo(analytics)
+                }
             }
 
             FieldEvent.Section.OnAddToSidebarIconClick -> {
@@ -872,6 +878,9 @@ class ObjectTypeViewModel(
                 val currentRecommendedFields = _objTypeState.value?.recommendedRelations.orEmpty()
                 val newRecommendedFields = currentRecommendedFields + event.item.id
                 proceedWithSetRecommendedFields(newRecommendedFields)
+                viewModelScope.launch {
+                    sendAnalyticsLocalPropertyResolve(analytics)
+                }
             }
 
             is FieldEvent.FieldItemMenu.OnMoveToBinClick -> {
@@ -978,6 +987,9 @@ class ObjectTypeViewModel(
                 onSuccess = {
                     Timber.d("Properties updated")
                     proceedWithGetObjectTypeConflictingFields()
+                    sendAnalyticsReorderRelationEvent(
+                        analytics = analytics,
+                    )
                 },
                 onFailure = {
                     Timber.e(it, "Error while updating properties")

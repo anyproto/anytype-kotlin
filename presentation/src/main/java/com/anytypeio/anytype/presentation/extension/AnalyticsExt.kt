@@ -336,6 +336,33 @@ fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
     )
 }
 
+fun CoroutineScope.sendAnalyticsReorderRelationEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.logReorderRelation
+    )
+}
+
+fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.logClickConflictFieldHelp
+    )
+}
+
+fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.logAddConflictRelation
+    )
+}
+
 /**
  *  SearchResult - event code
  *  index - number of position of chosen item, started from 1

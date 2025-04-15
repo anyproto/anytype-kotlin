@@ -797,9 +797,9 @@
     <string name="relation_editing_title">Ajustes de la propiedad</string>
     <string name="type_editing_uninstall">Borrar</string>
     <string name="empty_tree_widget">Este objeto no tiene enlaces a otros objetos.\nPrueba a crear alguno.</string>
-    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
+    <string name="empty_tree_widget_reader_access">Este objeto no tiene enlaces a otros objetos.</string>
     <string name="empty_list_widget">Esta vista no tiene objetos.\nPrueba a crear alguno.</string>
-    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
+    <string name="empty_list_widget_no_objects">Aún no hay objetos en este widget.</string>
     <string name="empty_list_widget_no_view">Esta vista de datos no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="this_widget_has_no_object">Este widget no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="emoji">Emoji</string>
@@ -1657,7 +1657,7 @@ En concreto,
     <string name="chats_alert_delete_this_message_description">Después de confirmar esto, no podrás restaurarlo.</string>
     <string name="chats_alert_delete_this_message">¿Eliminar este mensaje?</string>
     <string name="object_set_of_title">Consulta de</string>
-    <string name="migration_update_is_in_progress">Update is in progress</string>
+    <string name="migration_update_is_in_progress">La actualización está en curso</string>
     <string name="migration_this_shouldn_t_take_long">Esto puede llevar algún tiempo. No cierres la aplicación hasta que termine el proceso.</string>
     <string name="migration_error_try_again">Inténtalo de nuevo</string>
     <string name="migration_migration_failed">La migración ha fallado</string>

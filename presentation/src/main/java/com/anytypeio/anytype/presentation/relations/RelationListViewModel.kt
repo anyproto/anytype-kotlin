@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getStruct
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeScreen
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
@@ -267,6 +268,13 @@ class RelationListViewModel(
         val objTypeId = _currentObjectTypeId ?: return
         viewModelScope.launch {
             commands.emit(Command.NavigateToObjectType(objTypeId))
+        }
+        viewModelScope.launch {
+            sendAnalyticsShowObjectTypeScreen(
+                route = EventsDictionary.Routes.objectRoute,
+                analytics = analytics,
+                spaceParams = provideParams(vmParams.spaceId.id),
+            )
         }
     }
 

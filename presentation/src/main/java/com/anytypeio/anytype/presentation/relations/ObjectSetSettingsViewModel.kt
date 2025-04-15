@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeScreen
 import com.anytypeio.anytype.presentation.mapper.mapToSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
@@ -91,6 +92,13 @@ class ObjectSetSettingsViewModel(
                 viewModelScope.launch {
                     commands.emit(Command.OpenTypePropertiesScreen)
                 }
+                viewModelScope.launch {
+                    sendAnalyticsShowObjectTypeScreen(
+                        route = EventsDictionary.Routes.objectRoute,
+                        analytics = analytics,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
+                }
             }
         }
     }
@@ -107,6 +115,13 @@ class ObjectSetSettingsViewModel(
             is ObjectState.DataView.TypeSet -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenTypePropertiesScreen)
+                }
+                viewModelScope.launch {
+                    sendAnalyticsShowObjectTypeScreen(
+                        route = EventsDictionary.Routes.objectRoute,
+                        analytics = analytics,
+                        spaceParams = provideParams(spaceManager.get())
+                    )
                 }
             }
         }

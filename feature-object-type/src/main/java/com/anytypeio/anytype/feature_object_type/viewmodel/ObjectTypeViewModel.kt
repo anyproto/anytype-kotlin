@@ -208,7 +208,7 @@ class ObjectTypeViewModel(
     private fun proceedWithObservingObjectType() {
         viewModelScope.launch {
             combine(
-                storeOfObjectTypes.trackChanges(),
+                storeOfObjectTypes.observe(id = vmParams.objectId),
                 storeOfRelations.trackChanges(),
                 userPermissionProvider.observe(space = vmParams.spaceId),
                 _objectTypeConflictingFieldIds,

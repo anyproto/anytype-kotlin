@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
@@ -54,7 +55,8 @@ class SpacePropertiesViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val setObjectDetails: SetObjectDetails,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     // Main UI states
@@ -77,7 +79,7 @@ class SpacePropertiesViewModel(
             storeOfRelations.trackChanges()
                 .collectLatest { event ->
                     val allProperties = storeOfRelations.getAll().mapNotNull { property ->
-                        if (property.isHidden == true) {
+                        if (property.isHidden == true || property.isDeleted == true || property.isArchived == true) {
                             null
                         } else {
                             property
@@ -94,7 +96,8 @@ class SpacePropertiesViewModel(
                                 name = property.name.orEmpty(),
                                 format = property.format,
                                 isEditableField = fieldParser.isPropertyEditable(property),
-                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property)
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property),
+                                isPossibleMoveToBin = true
                             )
                         }.sortedBy { it.name })
                         add(UiSpacePropertyItem.Section.SystemProperties())
@@ -105,13 +108,32 @@ class SpacePropertiesViewModel(
                                 name = property.name.orEmpty(),
                                 format = property.format,
                                 isEditableField = fieldParser.isPropertyEditable(property),
-                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property)
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property),
+                                isPossibleMoveToBin = false
                             )
                         }.sortedBy { it.name })
                     }
 
                     uiItemsState.value = UiSpacePropertiesScreenState(list)
                 }
+        }
+    }
+
+    fun onMoveToBinProperty(item: UiSpacePropertyItem.Item) {
+        val propertyId = item.id
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(propertyId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Property $propertyId moved to bin")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving property $propertyId to bin")
+                }
+            )
         }
     }
 
@@ -350,7 +372,8 @@ class SpacePropertiesVmFactory @Inject constructor(
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val setObjectDetails: SetObjectDetails,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -364,7 +387,8 @@ class SpacePropertiesVmFactory @Inject constructor(
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider,
             setObjectDetails = setObjectDetails,
-            createRelation = createRelation
+            createRelation = createRelation,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
 }
 
@@ -391,6 +415,7 @@ sealed class UiSpacePropertyItem{
         val name: String,
         val format: RelationFormat,
         val isEditableField: Boolean,
-        val limitObjectTypes: List<Id>
+        val limitObjectTypes: List<Id>,
+        val isPossibleMoveToBin: Boolean = false
     ) : UiSpacePropertyItem()
 }

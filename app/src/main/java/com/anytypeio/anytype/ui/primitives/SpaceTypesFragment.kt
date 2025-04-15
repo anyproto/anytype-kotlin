@@ -46,6 +46,7 @@ class SpaceTypesFragment : BaseComposeFragment() {
                 onBackPressed = vm::onBackClicked,
                 onTypeClicked = vm::onTypeClicked,
                 onAddIconClicked = vm::onCreateNewTypeClicked,
+                onMoveToBin = vm::onMoveToBin
             )
         }
         LaunchedEffect(Unit) {

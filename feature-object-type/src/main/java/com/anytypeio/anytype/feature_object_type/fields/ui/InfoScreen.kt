@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
@@ -91,12 +92,12 @@ fun LocalInfoScreen(
             text = stringResource(description)
         )
         Spacer(modifier = Modifier.height(30.dp))
-        ButtonSecondary(
+        ButtonPrimary(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
             text = stringResource(R.string.object_type_fields_local_info_button),
-            size = ButtonSize.LargeSecondary,
+            size = ButtonSize.Large,
             onClick = {
                 onDismiss()
             }

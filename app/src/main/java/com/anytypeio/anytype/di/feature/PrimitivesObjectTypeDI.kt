@@ -222,6 +222,14 @@ interface SpaceTypesComponent {
 @Module
 object SpaceTypesModule {
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -267,6 +275,14 @@ interface SpacePropertiesComponent {
 
 @Module
 object SpacePropertiesModule {
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
     @JvmStatic
     @Provides

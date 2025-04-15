@@ -49,7 +49,8 @@ class SpacePropertiesFragment : BaseComposeFragment() {
             uiState = vm.uiItemsState.collectAsStateWithLifecycle().value,
             onBackPressed = vm::onBackClicked,
             onPropertyClicked = vm::onPropertyClicked,
-            onAddIconClicked = vm::onCreateNewPropertyClicked
+            onAddIconClicked = vm::onCreateNewPropertyClicked,
+            onMoveToBin = vm::onMoveToBinProperty
         )
         SpacePropertyScreen(
             uiState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value

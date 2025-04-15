@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -29,6 +31,7 @@ class SpaceTypesViewModel(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val userPermissionProvider: UserPermissionProvider,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiItemsState =
@@ -60,24 +63,61 @@ class SpaceTypesViewModel(
                 .collectLatest { event ->
                     val allTypes =
                         storeOfObjectTypes.getAll().mapNotNull { objectType ->
-                            val resolvedLayout = objectType.recommendedLayout ?: return@mapNotNull null
+                            val resolvedLayout =
+                                objectType.recommendedLayout ?: return@mapNotNull null
                             if (notAllowedTypesLayouts.contains(resolvedLayout)) {
                                 return@mapNotNull null
                             } else {
                                 objectType
                             }
                         }
-                    val (myTypes, systemTypes) = allTypes.partition { it.sourceObject.isNullOrBlank() }
+                    val (myTypes, systemTypes) = allTypes.partition {
+                        !it.restrictions.contains(
+                            ObjectRestriction.DELETE
+                        )
+                    }
 
                     val list = buildList {
                         add(UiSpaceTypeItem.Section.MyTypes())
-                        addAll(myTypes.map { it.toUiItem() }.sortedBy { it.name })
+                        addAll(myTypes.map { type ->
+                            UiSpaceTypeItem.Type(
+                                id = type.id,
+                                name = fieldParser.getObjectName(type),
+                                icon = type.objectIcon(),
+                                isPossibleMoveToBin = true
+                            )
+                        }.sortedBy { it.name })
                         add(UiSpaceTypeItem.Section.System())
-                        addAll(systemTypes.map { it.toUiItem() }.sortedBy { it.name })
+                        addAll(systemTypes.map { type ->
+                            UiSpaceTypeItem.Type(
+                                id = type.id,
+                                name = fieldParser.getObjectName(type),
+                                icon = type.objectIcon(),
+                                isPossibleMoveToBin = false
+                            )
+                        }.sortedBy { it.name })
                     }
 
                     uiItemsState.value = UiSpaceTypesScreenState(list)
                 }
+        }
+    }
+
+    fun onMoveToBin(item: UiSpaceTypeItem.Type) {
+        val typeId = item.id
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(typeId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object Type $typeId moved to bin")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving pbject type $typeId to bin")
+                }
+            )
         }
     }
 
@@ -88,7 +128,7 @@ class SpaceTypesViewModel(
     }
 
     fun onCreateNewTypeClicked() {
-        if (permission.value?.isOwnerOrEditor() == true)  {
+        if (permission.value?.isOwnerOrEditor() == true) {
             viewModelScope.launch {
                 commands.emit(Command.CreateNewType(vmParams.spaceId.id))
             }
@@ -117,13 +157,6 @@ class SpaceTypesViewModel(
         data class ShowToast(val message: String) : Command()
     }
 
-    private fun ObjectWrapper.Type.toUiItem() = UiSpaceTypeItem.Type(
-        id = id,
-        name = fieldParser.getObjectName(this),
-        icon = this.objectIcon()
-
-    )
-
     data class VmParams(
         val spaceId: SpaceId
     )
@@ -135,7 +168,8 @@ class SpaceTypesVmFactory @Inject constructor(
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -145,20 +179,22 @@ class SpaceTypesVmFactory @Inject constructor(
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             userPermissionProvider = userPermissionProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
 }
 
 data class UiSpaceTypesScreenState(val items: List<UiSpaceTypeItem>)
 
 
-
-sealed class UiSpaceTypeItem{
+sealed class UiSpaceTypeItem {
     abstract val id: Id
+
     data class Type(
         override val id: Id,
         val name: String,
-        val icon: ObjectIcon.TypeIcon
+        val icon: ObjectIcon.TypeIcon,
+        val isPossibleMoveToBin: Boolean = false
     ) : UiSpaceTypeItem()
 
     sealed class Section : UiSpaceTypeItem() {

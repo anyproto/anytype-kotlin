@@ -10,12 +10,18 @@ import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 interface StoreOfObjectTypes {
     val size: Int
+
+    suspend fun observe(id: Id) : Flow<ObjectWrapper.Type>
     suspend fun get(id: Id): ObjectWrapper.Type?
     suspend fun getByKey(key: Key): ObjectWrapper.Type?
     suspend fun getAll(): List<ObjectWrapper.Type>
@@ -42,6 +48,17 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
     private val updates = MutableSharedFlow<TrackedEvent>()
 
     override val size: Int get() = store.size
+
+    override suspend fun observe(id: Id): Flow<ObjectWrapper.Type> = flow {
+        val init = get(id)
+        if (init != null) {
+            emit(init)
+        }
+        emitAll(
+            trackChanges()
+                .mapNotNull { get(id) }
+        )
+    }
 
     override suspend fun get(id: Id): ObjectWrapper.Type? = mutex.withLock {
         store[id]

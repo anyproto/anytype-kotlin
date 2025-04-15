@@ -788,8 +788,8 @@ open class ObjectSetFragment :
 
     private fun setupNewButtonsForTypeSet(isCreateObjectAllowed: Boolean) {
         if (isCreateObjectAllowed) {
-            addNewButton.visible()
-            addNewIconButton.gone()
+            addNewButton.gone()
+            addNewIconButton.visible()
         } else {
             addNewButton.gone()
             addNewIconButton.gone()

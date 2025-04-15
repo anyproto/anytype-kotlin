@@ -29,11 +29,11 @@ sealed class ObjectTypeCommand {
         val spaceId: Id
     ) : ObjectTypeCommand()
 
-    data object OpenFieldsScreen : ObjectTypeCommand()
+    data object OpenTypePropertiesListScreen : ObjectTypeCommand()
 
     data object CloseFieldsScreen : ObjectTypeCommand()
 
-    data class OpenEditTypePropertiesScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
+    data class OpenAddNewPropertyScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)

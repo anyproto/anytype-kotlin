@@ -16,6 +16,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.logScreenEditType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreateLink
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
@@ -313,6 +314,95 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
         startTime = startTime,
         middleTime = System.currentTimeMillis(),
         renderTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
+    route: String,
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.route to route,
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        eventName = logScreenEditType,
+        props = props
+    )
+}
+
+fun CoroutineScope.sendAnalyticsReorderRelationEvent(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        props = props,
+        eventName = EventsDictionary.logReorderRelation
+    )
+}
+
+
+fun CoroutineScope.sendAnalyticsResolveObjectConflict(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.route to EventsDictionary.Routes.objectRoute,
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        props = props,
+        eventName = EventsDictionary.logResetToTypeDefault
+    )
+}
+
+fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        props = props,
+        eventName = EventsDictionary.logClickConflictFieldHelp
+    )
+}
+
+fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        props = props,
+        eventName = EventsDictionary.logAddConflictRelation
     )
 }
 

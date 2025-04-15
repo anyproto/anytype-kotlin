@@ -351,9 +351,10 @@ class ObjectTypeViewModel(
         (uiTitleAndIconUpdateState.value as? UiTypeSetupTitleAndIconState.Visible.EditType)?.let {
             uiTitleAndIconUpdateState.value = it.copy(icon = newIcon)
         }
-        if (objectPermissions.canDelete) {
-            uiEditButtonState.value = UiEditButton.Visible
-        }
+        //turn off button, we give Move to Bin logic in Library now
+//        if (objectPermissions.canDelete) {
+//            uiEditButtonState.value = UiEditButton.Visible
+//        }
         objType.recommendedLayout?.let { layout ->
             if (_objectTypePermissionsState.value?.canChangeRecommendedLayoutForThisType == true) {
                 uiHorizontalButtonsState.value =

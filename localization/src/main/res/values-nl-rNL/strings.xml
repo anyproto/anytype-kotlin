@@ -1739,9 +1739,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_invite_link_copied">Ruimte uitnodigingskoppeling gekopieerd!</string>
     <string name="object_type_create_new_title">Maak nieuw type</string>
     <string name="object_type_rename_title">Rename type</string>
-    <string name="object_type_create_plural_title">Type list name</string>
-    <string name="object_type_create_title_hint">Puzzel</string>
-    <string name="object_type_create_plural_title_hint">Puzzels</string>
+    <string name="object_type_create_plural_title">Type Plural name</string>
+    <string name="object_type_create_title_hint">e.g. Project</string>
+    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
     <string name="object_conflict_screen_title">Los opmaak conflict op</string>
     <string name="object_conflict_screen_description">Deze opmaak verschilt van de standaard van het type. Terugzetten om overeen te laten komen?</string>
     <string name="object_conflict_screen_action_button">Zet terug naar standaard</string>

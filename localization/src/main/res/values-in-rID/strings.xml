@@ -795,9 +795,9 @@
     <string name="relation_editing_title">Pengaturan properti</string>
     <string name="type_editing_uninstall">Hapus</string>
     <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
-    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
+    <string name="empty_tree_widget_reader_access">Objek ini tidak punya tautan ke objek lain.</string>
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
-    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
+    <string name="empty_list_widget_no_objects">Belum ada objek di gawit ini.</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1644,7 +1644,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">Pesan tak dapat dikembalikan lagi</string>
     <string name="chats_alert_delete_this_message">Hapus pesan ini?</string>
     <string name="object_set_of_title">Kueri dari</string>
-    <string name="migration_update_is_in_progress">Update is in progress</string>
+    <string name="migration_update_is_in_progress">Pembaruan sedang berlangsung</string>
     <string name="migration_this_shouldn_t_take_long">Ini mungkin perlu beberapa waktu. Mohon tidak menutup aplikasi hingga proses selesai.</string>
     <string name="migration_error_try_again">Coba lagi</string>
     <string name="migration_migration_failed">Migrasi gagal</string>
@@ -1737,5 +1737,10 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_empty_state_message">Belum ada gawit</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Tipe objek</string>
+    <string name="space_types_screen_section_my_types">Tipeku</string>
+    <string name="space_types_screen_section_system_types">System Types</string>
     <string name="space_properties_screen_title">Properti</string>
+    <string name="space_properties_screen_section_my_types">My Properties</string>
+    <string name="space_properties_screen_section_system_types">System Properties</string>
+    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
 </resources>

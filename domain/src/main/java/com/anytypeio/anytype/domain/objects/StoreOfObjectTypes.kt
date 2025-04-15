@@ -52,7 +52,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
 
     override suspend fun observe(id: Id): Flow<ObjectWrapper.Type> = flow {
         val init = get(id)
-        if (init != null) {
+        if (init != null && init.isValid) {
             emit(init)
         }
         emitAll(

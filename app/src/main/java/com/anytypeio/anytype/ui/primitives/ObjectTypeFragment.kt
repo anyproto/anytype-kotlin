@@ -93,11 +93,11 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     )
                 }
 
-                ObjectTypeCommand.OpenFieldsScreen -> {
+                ObjectTypeCommand.OpenTypePropertiesListScreen -> {
                     navComposeController.navigate(OBJ_TYPE_PROPERTIES)
                 }
 
-                is ObjectTypeCommand.OpenEditTypePropertiesScreen -> {
+                is ObjectTypeCommand.OpenAddNewPropertyScreen -> {
                     runCatching {
                         findNavController().navigate(
                             R.id.editTypePropertiesScreen,
@@ -116,6 +116,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 }
             }
         }
+        vm.senAnalyticsScreenObjectType()
     }
 
     override fun onStart() {

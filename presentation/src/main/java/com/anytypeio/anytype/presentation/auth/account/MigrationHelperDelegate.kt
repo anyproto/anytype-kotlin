@@ -20,7 +20,7 @@ import kotlinx.coroutines.flow.scan
 
 interface MigrationHelperDelegate {
 
-    suspend fun proceedWithMigration() : Flow<State>
+    suspend fun proceedWithMigration(params: MigrateAccount.Params) : Flow<State>
 
     class Impl @Inject constructor(
         private val migrateAccount: MigrateAccount,
@@ -28,9 +28,9 @@ interface MigrationHelperDelegate {
         private val processProgressObserver: MigrationProgressObserver
     ) : MigrationHelperDelegate {
 
-        override suspend fun proceedWithMigration(): Flow<State> {
+        override suspend fun proceedWithMigration(params: MigrateAccount.Params): Flow<State> {
             return migrateAccount
-                .stream(MigrateAccount.Params.Current)
+                .stream(params)
                 .flatMapLatest { result ->
                     flow {
                         when(result) {

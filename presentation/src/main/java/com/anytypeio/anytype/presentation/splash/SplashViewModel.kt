@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
@@ -103,7 +104,7 @@ class SplashViewModel(
 
     private suspend fun proceedWithAccountMigration() {
         if (migrationRetryCount <= 1) {
-            proceedWithMigration().collect { migrationState ->
+            proceedWithMigration(MigrateAccount.Params.Current).collect { migrationState ->
                 when (migrationState) {
                     is MigrationHelperDelegate.State.Failed -> {
                         state.value = State.Migration.Failed(migrationState)

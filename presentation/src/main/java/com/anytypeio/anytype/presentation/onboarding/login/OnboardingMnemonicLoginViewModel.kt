@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationExcep
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
@@ -310,7 +311,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithAccountMigration(id: String) {
-        proceedWithMigration().collect { migrationState ->
+        proceedWithMigration(
+            params = MigrateAccount.Params.Other(acc = id)
+        ).collect { migrationState ->
             when (migrationState) {
                 is MigrationHelperDelegate.State.Failed -> {
                     state.value = SetupState.Migration.Failed(

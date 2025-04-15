@@ -1238,10 +1238,13 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithCreatingObjectTypeSetObject(currentState: ObjectState.DataView.TypeSet) {
+    private suspend fun proceedWithCreatingObjectTypeSetObject(
+        currentState: ObjectState.DataView.TypeSet,
+        templateChosenBy: String?
+    ) {
         val objectType = storeOfObjectTypes.get(vmParams.ctx)
 
-        val objectTypeUniqueKey = objectType?.uniqueKey ?:return
+        val objectTypeUniqueKey = objectType?.uniqueKey ?: return
 
         if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
             dispatch(
@@ -1263,7 +1266,7 @@ class ObjectSetViewModel(
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(objectTypeUniqueKey),
                     filters = viewer.filters,
-                    template = objectType.defaultTemplateId,
+                    template = templateChosenBy ?: objectType.defaultTemplateId,
                     prefilled = prefilled
                 )
             )
@@ -2917,7 +2920,8 @@ class ObjectSetViewModel(
 
                 is ObjectState.DataView.TypeSet -> {
                     proceedWithCreatingObjectTypeSetObject(
-                        currentState = state
+                        currentState = state,
+                        templateChosenBy = templateId
                     )
                 }
             }

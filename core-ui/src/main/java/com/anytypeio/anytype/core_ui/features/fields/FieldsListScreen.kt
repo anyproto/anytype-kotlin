@@ -336,8 +336,8 @@ private fun SectionLocal(
 ) {
     val text = stringResource(id = R.string.object_properties_section_local)
     val iconRes = when (item) {
-        is Model.Section.Local.Shown -> R.drawable.ic_arrow_up_18
-        is Model.Section.Local.Unshown -> R.drawable.ic_list_arrow_18
+        is Model.Section.Local.Shown -> R.drawable.ic_list_arrow_18
+        is Model.Section.Local.Unshown -> R.drawable.ic_arrow_right_18
     }
     Box(
         modifier = Modifier
@@ -409,8 +409,8 @@ private fun SectionHidden(
 ) {
     val text = stringResource(id = R.string.object_properties_section_hidden)
     val iconRes = when (item) {
-        is Model.Section.Hidden.Shown -> R.drawable.ic_arrow_up_18
-        is Model.Section.Hidden.Unshown -> R.drawable.ic_list_arrow_18
+        is Model.Section.Hidden.Shown -> R.drawable.ic_list_arrow_18
+        is Model.Section.Hidden.Unshown -> R.drawable.ic_arrow_right_18
     }
     Box(
         modifier = Modifier

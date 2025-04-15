@@ -9,10 +9,12 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
@@ -53,7 +55,8 @@ class SpacePropertiesViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val setObjectDetails: SetObjectDetails,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     // Main UI states
@@ -76,21 +79,61 @@ class SpacePropertiesViewModel(
             storeOfRelations.trackChanges()
                 .collectLatest { event ->
                     val allProperties = storeOfRelations.getAll().mapNotNull { property ->
-                        if (property.isHidden == true) {
+                        if (property.isHidden == true || property.isDeleted == true || property.isArchived == true) {
                             null
                         } else {
-                            UiSpacePropertyItem(
+                            property
+                        }
+                    }
+                    val (myProperties, systemProperties) =
+                        allProperties.partition { !it.restrictions.contains(ObjectRestriction.DELETE) }
+                    val list = buildList {
+                        add(UiSpacePropertyItem.Section.MyProperties())
+                        addAll(myProperties.map { property ->
+                            UiSpacePropertyItem.Item(
                                 id = property.id,
                                 key = RelationKey(property.key),
                                 name = property.name.orEmpty(),
                                 format = property.format,
                                 isEditableField = fieldParser.isPropertyEditable(property),
-                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property)
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property),
+                                isPossibleMoveToBin = true
                             )
-                        }
-                    }.sortedBy { it.name }
-                    uiItemsState.value = UiSpacePropertiesScreenState(allProperties)
+                        }.sortedBy { it.name })
+                        add(UiSpacePropertyItem.Section.SystemProperties())
+                        addAll(systemProperties.map { property ->
+                            UiSpacePropertyItem.Item(
+                                id = property.id,
+                                key = RelationKey(property.key),
+                                name = property.name.orEmpty(),
+                                format = property.format,
+                                isEditableField = fieldParser.isPropertyEditable(property),
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property),
+                                isPossibleMoveToBin = false
+                            )
+                        }.sortedBy { it.name })
+                    }
+
+                    uiItemsState.value = UiSpacePropertiesScreenState(list)
                 }
+        }
+    }
+
+    fun onMoveToBinProperty(item: UiSpacePropertyItem.Item) {
+        val propertyId = item.id
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(propertyId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Property $propertyId moved to bin")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving property $propertyId to bin")
+                }
+            )
         }
     }
 
@@ -124,7 +167,7 @@ class SpacePropertiesViewModel(
         }
     }
 
-    fun onPropertyClicked(item: UiSpacePropertyItem) {
+    fun onPropertyClicked(item: UiSpacePropertyItem.Item) {
         viewModelScope.launch {
             val computedLimitTypes = computeLimitTypes(item = item)
             val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
@@ -158,7 +201,7 @@ class SpacePropertiesViewModel(
         }
     }
 
-    private suspend fun computeLimitTypes(item: UiSpacePropertyItem): List<UiPropertyLimitTypeItem> {
+    private suspend fun computeLimitTypes(item: UiSpacePropertyItem.Item): List<UiPropertyLimitTypeItem> {
         return item.limitObjectTypes.mapNotNull { id ->
             storeOfObjectTypes.get(id = id)?.let { objType ->
                 UiPropertyLimitTypeItem(
@@ -329,7 +372,8 @@ class SpacePropertiesVmFactory @Inject constructor(
     private val storeOfRelations: StoreOfRelations,
     private val stringResourceProvider: StringResourceProvider,
     private val setObjectDetails: SetObjectDetails,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -343,7 +387,8 @@ class SpacePropertiesVmFactory @Inject constructor(
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider,
             setObjectDetails = setObjectDetails,
-            createRelation = createRelation
+            createRelation = createRelation,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
 }
 
@@ -355,11 +400,22 @@ data class UiSpacePropertiesScreenState(
     }
 }
 
-data class UiSpacePropertyItem(
-    val id: Id,
-    val key: RelationKey,
-    val name: String,
-    val format: RelationFormat,
-    val isEditableField: Boolean,
-    val limitObjectTypes: List<Id>
-)
+sealed class UiSpacePropertyItem{
+
+    abstract val id: Id
+
+    sealed class Section : UiSpacePropertyItem() {
+        data class MyProperties(override val id: Id = "section_my_properties") : Section()
+        data class SystemProperties(override val id: Id = "section_system_properties") : Section()
+    }
+
+    data class Item(
+        override val id: Id,
+        val key: RelationKey,
+        val name: String,
+        val format: RelationFormat,
+        val isEditableField: Boolean,
+        val limitObjectTypes: List<Id>,
+        val isPossibleMoveToBin: Boolean = false
+    ) : UiSpacePropertyItem()
+}

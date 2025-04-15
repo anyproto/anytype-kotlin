@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -79,7 +80,15 @@ class SpacePropertiesViewModel(
                         if (property.isHidden == true) {
                             null
                         } else {
-                            UiSpacePropertyItem(
+                            property
+                        }
+                    }
+                    val (myProperties, systemProperties) =
+                        allProperties.partition { !it.restrictions.contains(ObjectRestriction.DELETE) }
+                    val list = buildList {
+                        add(UiSpacePropertyItem.Section.MyProperties())
+                        addAll(myProperties.map { property ->
+                            UiSpacePropertyItem.Item(
                                 id = property.id,
                                 key = RelationKey(property.key),
                                 name = property.name.orEmpty(),
@@ -87,9 +96,21 @@ class SpacePropertiesViewModel(
                                 isEditableField = fieldParser.isPropertyEditable(property),
                                 limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property)
                             )
-                        }
-                    }.sortedBy { it.name }
-                    uiItemsState.value = UiSpacePropertiesScreenState(allProperties)
+                        }.sortedBy { it.name })
+                        add(UiSpacePropertyItem.Section.SystemProperties())
+                        addAll(systemProperties.map { property ->
+                            UiSpacePropertyItem.Item(
+                                id = property.id,
+                                key = RelationKey(property.key),
+                                name = property.name.orEmpty(),
+                                format = property.format,
+                                isEditableField = fieldParser.isPropertyEditable(property),
+                                limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(property = property)
+                            )
+                        }.sortedBy { it.name })
+                    }
+
+                    uiItemsState.value = UiSpacePropertiesScreenState(list)
                 }
         }
     }
@@ -124,7 +145,7 @@ class SpacePropertiesViewModel(
         }
     }
 
-    fun onPropertyClicked(item: UiSpacePropertyItem) {
+    fun onPropertyClicked(item: UiSpacePropertyItem.Item) {
         viewModelScope.launch {
             val computedLimitTypes = computeLimitTypes(item = item)
             val formatName = stringResourceProvider.getPropertiesFormatPrettyString(item.format)
@@ -158,7 +179,7 @@ class SpacePropertiesViewModel(
         }
     }
 
-    private suspend fun computeLimitTypes(item: UiSpacePropertyItem): List<UiPropertyLimitTypeItem> {
+    private suspend fun computeLimitTypes(item: UiSpacePropertyItem.Item): List<UiPropertyLimitTypeItem> {
         return item.limitObjectTypes.mapNotNull { id ->
             storeOfObjectTypes.get(id = id)?.let { objType ->
                 UiPropertyLimitTypeItem(
@@ -355,11 +376,21 @@ data class UiSpacePropertiesScreenState(
     }
 }
 
-data class UiSpacePropertyItem(
-    val id: Id,
-    val key: RelationKey,
-    val name: String,
-    val format: RelationFormat,
-    val isEditableField: Boolean,
-    val limitObjectTypes: List<Id>
-)
+sealed class UiSpacePropertyItem{
+
+    abstract val id: Id
+
+    sealed class Section : UiSpacePropertyItem() {
+        data class MyProperties(override val id: Id = "section_my_properties") : Section()
+        data class SystemProperties(override val id: Id = "section_system_properties") : Section()
+    }
+
+    data class Item(
+        override val id: Id,
+        val key: RelationKey,
+        val name: String,
+        val format: RelationFormat,
+        val isEditableField: Boolean,
+        val limitObjectTypes: List<Id>
+    ) : UiSpacePropertyItem()
+}

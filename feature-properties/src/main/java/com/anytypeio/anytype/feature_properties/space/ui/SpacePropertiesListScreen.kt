@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -53,7 +54,7 @@ import com.anytypeio.anytype.feature_properties.space.UiSpacePropertyItem
 @Composable
 fun SpacePropertiesListScreen(
     uiState: UiSpacePropertiesScreenState,
-    onPropertyClicked: (UiSpacePropertyItem) -> Unit,
+    onPropertyClicked: (UiSpacePropertyItem.Item) -> Unit,
     onBackPressed: () -> Unit,
     onAddIconClicked: () -> Unit
 ) {
@@ -93,17 +94,24 @@ fun SpacePropertiesListScreen(
                 key = { index -> items[index].id },
                 itemContent = {
                     val item = items[it]
-                    Relation(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp)
-                            .padding(start = 20.dp, end = 20.dp)
-                            .clickable {
-                                onPropertyClicked(item)
-                            },
-                        item = item
-                    )
-                    Divider()
+                    when (item ) {
+                        is UiSpacePropertyItem.Item -> {
+                            Relation(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .padding(start = 20.dp, end = 20.dp)
+                                    .clickable {
+                                        onPropertyClicked(item)
+                                    },
+                                item = item
+                            )
+                            Divider()
+                        }
+                        is UiSpacePropertyItem.Section -> {
+                            Section(item)
+                        }
+                    }
                 }
             )
             item {
@@ -118,9 +126,35 @@ fun SpacePropertiesListScreen(
 }
 
 @Composable
+private fun Section(section: UiSpacePropertyItem.Section) {
+    val text = when (section) {
+        is UiSpacePropertyItem.Section.MyProperties ->
+            stringResource(R.string.space_properties_screen_section_my_types)
+        is UiSpacePropertyItem.Section.SystemProperties ->
+            stringResource(R.string.space_properties_screen_section_system_types)
+    }
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(bottom = 8.dp, start = 20.dp)
+                    .align(Alignment.BottomStart),
+                text = text,
+                style = Caption1Medium,
+                color = colorResource(R.color.text_secondary),
+            )
+        }
+    }
+}
+
+@Composable
 private fun Relation(
     modifier: Modifier,
-    item: UiSpacePropertyItem
+    item: UiSpacePropertyItem.Item
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),

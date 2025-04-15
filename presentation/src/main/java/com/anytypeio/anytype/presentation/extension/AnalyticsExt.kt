@@ -345,6 +345,25 @@ fun CoroutineScope.sendAnalyticsReorderRelationEvent(
     )
 }
 
+
+fun CoroutineScope.sendAnalyticsResolveObjectConflict(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.route to EventsDictionary.Routes.objectRoute,
+            EventsPropertiesKey.permissions to spaceParams.permission,
+            EventsPropertiesKey.spaceType to spaceParams.spaceType
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        props = props,
+        eventName = EventsDictionary.logResetToTypeDefault
+    )
+}
+
 fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
     analytics: Analytics
 ) {

@@ -44,6 +44,7 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -592,6 +593,13 @@ class ObjectMenuViewModel(
                 onFailure = {
                     Timber.e(it, "Error while resetting layout to default")
                 }
+            )
+        }
+
+        viewModelScope.launch {
+            sendAnalyticsResolveObjectConflict(
+                analytics = analytics,
+                spaceParams = provideParams(space)
             )
         }
     }

@@ -176,6 +176,7 @@ object EventsDictionary {
     const val logReorderRelation = "ReorderRelation"
     const val logClickConflictFieldHelp = "ClickConflictFieldHelp"
     const val logAddConflictRelation = "AddConflictRelation"
+    const val logResetToTypeDefault = "ResetToTypeDefault"
 
     // Vault events
 

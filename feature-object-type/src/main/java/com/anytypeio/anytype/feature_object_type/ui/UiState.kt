@@ -37,9 +37,9 @@ sealed class ObjectTypeCommand {
 }
 
 //region OBJECT TYPE HEADER (title + icon)
-data class UiTitleState(val title: String, val isEditable: Boolean) {
+data class UiTitleState(val title: String, val originalName: String, val isEditable: Boolean) {
     companion object {
-        val EMPTY = UiTitleState(title = "", isEditable = false)
+        val EMPTY = UiTitleState(title = "", originalName = "", isEditable = false)
     }
 }
 

@@ -84,7 +84,8 @@ fun IconAndTitleWidgetPreview() {
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = true),
         uiTitleState = UiTitleState(
             title = "I understand that contributing to this repository will require me to agree with the",
-            isEditable = true
+            isEditable = true,
+            originalName = "Page"
         )
     )
 }
@@ -100,7 +101,8 @@ fun IconAndTitleEmptyWidgetPreview() {
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = true),
         uiTitleState = UiTitleState(
             title = "",
-            isEditable = true
+            isEditable = true,
+            originalName = "Page"
         )
     )
 }

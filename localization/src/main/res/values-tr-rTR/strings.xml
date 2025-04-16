@@ -1739,9 +1739,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_invite_link_copied">Alan davet bağlantısı kopyalandı!</string>
     <string name="object_type_create_new_title">Yeni tür oluştur</string>
     <string name="object_type_rename_title">Türü yeniden adlandır</string>
-    <string name="object_type_create_plural_title">Liste adını yazın</string>
-    <string name="object_type_create_title_hint">Bulmaca</string>
-    <string name="object_type_create_plural_title_hint">Bulmacalar</string>
+    <string name="object_type_create_plural_title">Type Plural name</string>
+    <string name="object_type_create_title_hint">e.g. Project</string>
+    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
     <string name="object_conflict_screen_title">Düzen çakışmasını çöz</string>
     <string name="object_conflict_screen_description">Bu düzen türün varsayılanından farklıdır. Eşleşecek şekilde sıfırlansın mı?</string>
     <string name="object_conflict_screen_action_button">Varsayılana sıfırla</string>

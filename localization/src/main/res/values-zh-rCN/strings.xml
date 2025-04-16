@@ -1722,9 +1722,9 @@
     <string name="space_invite_link_copied">空间邀请链接已复制！</string>
     <string name="object_type_create_new_title">新建类型</string>
     <string name="object_type_rename_title">Rename type</string>
-    <string name="object_type_create_plural_title">Type list name</string>
-    <string name="object_type_create_title_hint">Puzzle</string>
-    <string name="object_type_create_plural_title_hint">Puzzles</string>
+    <string name="object_type_create_plural_title">Type Plural name</string>
+    <string name="object_type_create_title_hint">e.g. Project</string>
+    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
     <string name="object_conflict_screen_title">解决布局冲突</string>
     <string name="object_conflict_screen_description">此布局不同于该类型的默认值。重置为相符的？</string>
     <string name="object_conflict_screen_action_button">重置为默认值</string>

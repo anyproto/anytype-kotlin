@@ -67,6 +67,7 @@ import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
+import timber.log.Timber
 
 fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
@@ -1698,6 +1699,7 @@ fun CoroutineScope.sendDeleteWidgetEvent(
     isInEditMode: Boolean,
     isAutoCreated: Boolean?
 ) {
+    Timber.d("Sending delete widget event")
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.deleteWidget,
@@ -1711,11 +1713,13 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
                 else
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1757,11 +1761,13 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
                 else
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_HOME)
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1796,11 +1802,13 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
                 }
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1823,11 +1831,13 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                     put(WidgetAnalytics.TAB, WidgetAnalytics.CUSTOM_OBJECT_TYPE)
                 else
                     put(WidgetAnalytics.TAB, sourceObjectTypeId)
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1880,11 +1890,13 @@ fun CoroutineScope.sendReorderWidgetEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
                 }
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1909,11 +1921,12 @@ suspend fun Analytics.sendOpenSidebarObjectEvent(
         eventName = EventsDictionary.openSidebarObject,
         props = Props(
             buildMap {
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )
@@ -1927,11 +1940,12 @@ suspend fun Analytics.sendScreenWidgetMenuEvent(
         eventName = EventsDictionary.screenWidgetMenu,
         props = Props(
             buildMap {
-                if (isAutoCreated == null) return
-                if (isAutoCreated) {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
-                } else {
-                    put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                isAutoCreated?.let {
+                    if (isAutoCreated) {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_AUTO)
+                    } else {
+                        put(WidgetAnalytics.WIDGET_TYPE, WidgetAnalytics.WIDGET_TYPE_MANUAL)
+                    }
                 }
             }
         )

@@ -58,7 +58,7 @@ import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 @Composable
 fun CreateSpaceScreen(
     spaceIconView: SpaceIconView.Placeholder,
-    onCreate: (Name, ShouldCreateSpaceLevelChat) -> Unit,
+    onCreate: (Name, IsSpaceLevelChatSwitchChecked) -> Unit,
     onSpaceIconClicked: () -> Unit,
     isLoading: State<Boolean>
 ) {
@@ -330,4 +330,4 @@ fun UseCase() {
     }
 }
 
-typealias ShouldCreateSpaceLevelChat = Boolean
+typealias IsSpaceLevelChatSwitchChecked = Boolean

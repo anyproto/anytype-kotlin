@@ -1147,7 +1147,9 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
     order = orderId,
     reactions = reactions?.reactions?.mapValues { (unicode, identities) ->
         identities.ids
-    } ?: emptyMap()
+    } ?: emptyMap(),
+    read = read,
+    mentionRead = mentionRead
 )
 
 fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(

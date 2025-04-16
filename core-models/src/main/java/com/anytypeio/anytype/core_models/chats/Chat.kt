@@ -85,4 +85,18 @@ sealed class Chat {
             )
         }
     }
+
+    data class State(
+        val unreadMessages: UnreadState?,
+        val unreadMentions: UnreadState?,
+        val lastStateId: Id,
+    ) {
+        /**
+         * @property olderOrderId oldest(in the lex sorting) unread message order id. Client should ALWAYS scroll through unread messages from the oldest to the newest
+         */
+        data class UnreadState(
+            val olderOrderId: Id,
+            val counter: Int
+        )
+    }
 }

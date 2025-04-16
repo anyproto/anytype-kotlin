@@ -2775,14 +2775,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : List<Chat.Message> {
+    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : Pair<List<Chat.Message>, Chat.State?> {
         val request = Rpc.Chat.GetMessages.Request(
             chatObjectId = command.chat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatGetMessages(request) }
         logResponseIfDebug(response, time)
-        return response.messages.map { it.core() }
+        return response.messages.map { it.core() } to response.chatState?.core()
     }
 
     @Throws

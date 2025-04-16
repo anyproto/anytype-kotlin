@@ -10,10 +10,10 @@ import javax.inject.Inject
 class GetChatMessages @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-): ResultInteractor<Command.ChatCommand.GetMessages, List<Chat.Message>>(dispatchers.io) {
-    override suspend fun doWork(
-        params: Command.ChatCommand.GetMessages
-    ): List<Chat.Message> {
+): ResultInteractor<Command.ChatCommand.GetMessages, Pair<List<Chat.Message>, Chat.State?>>(dispatchers.io) {
+
+
+    override suspend fun doWork(params: Command.ChatCommand.GetMessages): Pair<List<Chat.Message>, Chat.State?> {
         return repo.getChatMessages(params)
     }
 }

@@ -1029,7 +1029,7 @@ class BlockMiddleware(
 
     override suspend fun getChatMessages(
         command: Command.ChatCommand.GetMessages
-    ): List<Chat.Message> {
+    ): Pair<List<Chat.Message>, Chat.State?> {
         return middleware.chatGetMessages(command)
     }
 

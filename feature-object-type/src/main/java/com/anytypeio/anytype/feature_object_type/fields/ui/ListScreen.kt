@@ -486,7 +486,7 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             modifier = Modifier,
-            text = uiTitleState.title,
+            text = uiTitleState.originalName,
             style = Caption1Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -842,7 +842,7 @@ fun ItemDropDownMenu(
 @Composable
 fun PreviewTypeFieldsMainScreen() {
     FieldsMainScreen(
-        uiTitleState = UiTitleState(title = "Page", isEditable = false),
+        uiTitleState = UiTitleState(title = "Pages", originalName = "Page", isEditable = false),
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(

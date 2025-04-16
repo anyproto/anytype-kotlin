@@ -200,6 +200,6 @@ fun TopToolbarPreview() {
         uiEditButtonState = UiEditButton.Visible,
         onTypeEvent = {},
         topBarScrollBehavior = topAppBarScrollBehavior,
-        uiTitleState = UiTitleState(title = "Page", isEditable = true)
+        uiTitleState = UiTitleState(title = "Pages", originalName = "Page", isEditable = true)
     )
 }

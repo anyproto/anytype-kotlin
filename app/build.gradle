@@ -142,10 +142,10 @@ android {
         // Configures multiple APKs based on ABI.
         abi {
             // Enables building multiple APKs per ABI.
-            enable true
+            enable false
             reset()
             include "armeabi-v7a", "arm64-v8a"
-            universalApk true
+            universalApk false
         }
     }
 

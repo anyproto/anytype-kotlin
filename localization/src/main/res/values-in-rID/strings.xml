@@ -1726,9 +1726,9 @@ Please provide specific details of your needs here.</string>
     <string name="space_invite_link_copied">Tautan undangan Ruang disalin!</string>
     <string name="object_type_create_new_title">Buat tipe baru</string>
     <string name="object_type_rename_title">Ganti nama tipe</string>
-    <string name="object_type_create_plural_title">Type list name</string>
-    <string name="object_type_create_title_hint">Puzzle</string>
-    <string name="object_type_create_plural_title_hint">Puzzles</string>
+    <string name="object_type_create_plural_title">Type Plural name</string>
+    <string name="object_type_create_title_hint">e.g. Project</string>
+    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
     <string name="object_conflict_screen_title">Lerai konflik tata letak</string>
     <string name="object_conflict_screen_description">Tata letak ini berbeda dengan tata letak bawaan tipe ini. Samakan?</string>
     <string name="object_conflict_screen_action_button">Atur ulang ke bawaan</string>

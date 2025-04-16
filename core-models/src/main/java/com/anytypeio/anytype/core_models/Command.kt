@@ -629,7 +629,7 @@ sealed class Command {
         ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,
-                val state: Chat.State?
+                val state: Chat.State? = null
             )
         }
 
@@ -645,7 +645,7 @@ sealed class Command {
             data class Response(
                 val messages: List<Chat.Message>,
                 val messageCountBefore: Int,
-                val chatState: Chat.State?
+                val chatState: Chat.State? = null
             )
         }
 

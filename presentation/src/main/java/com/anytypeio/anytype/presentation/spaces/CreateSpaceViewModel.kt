@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -67,7 +68,7 @@ class CreateSpaceViewModel(
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     ),
                     shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE,
-                    withChat = isSpaceLevelChatSwitchChecked
+                    withChat = BuildConfig.DEBUG && isSpaceLevelChatSwitchChecked
                 )
             ).collect { result ->
                 result.fold(

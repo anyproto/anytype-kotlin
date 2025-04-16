@@ -2775,14 +2775,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : Pair<List<Chat.Message>, Chat.State?> {
+    fun chatGetMessages(command: Command.ChatCommand.GetMessages) : Command.ChatCommand.GetMessages.Response {
         val request = Rpc.Chat.GetMessages.Request(
             chatObjectId = command.chat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatGetMessages(request) }
         logResponseIfDebug(response, time)
-        return response.messages.map { it.core() } to response.chatState?.core()
+        return Command.ChatCommand.GetMessages.Response(
+            messages = response.messages.map { it.core() },
+            state = response.chatState?.core()
+        )
     }
 
     @Throws
@@ -2821,7 +2824,8 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return Command.ChatCommand.SubscribeLastMessages.Response(
             messages = response.messages.map { it.core() },
-            messageCountBefore = response.numMessagesBefore
+            messageCountBefore = response.numMessagesBefore,
+            chatState = response.chatState?.core()
         )
     }
 

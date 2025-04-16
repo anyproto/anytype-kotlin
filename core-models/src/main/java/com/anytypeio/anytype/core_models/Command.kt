@@ -626,7 +626,12 @@ sealed class Command {
             val chat: Id,
             val beforeMessageId: Id,
             val limit: Int
-        ) : ChatCommand()
+        ) : ChatCommand() {
+            data class Response(
+                val messages: List<Chat.Message>,
+                val state: Chat.State?
+            )
+        }
 
         data class GetMessagesByIds(
             val chat: Id,
@@ -639,7 +644,8 @@ sealed class Command {
         ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,
-                val messageCountBefore: Int
+                val messageCountBefore: Int,
+                val chatState: Chat.State?
             )
         }
 

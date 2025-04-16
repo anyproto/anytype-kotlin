@@ -56,6 +56,7 @@ import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -485,7 +486,7 @@ private fun InfoBar(modifier: Modifier, uiTitleState: UiTitleState, uiIconState:
         Spacer(modifier = Modifier.width(2.dp))
         Text(
             modifier = Modifier,
-            text = uiTitleState.title,
+            text = uiTitleState.originalName,
             style = Caption1Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -790,6 +791,7 @@ fun ItemDropDownMenu(
                         },
                     )
                 }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 if (item.isPossibleToMoveToBin) {
                     DropdownMenuItem(
                         text = {
@@ -840,7 +842,7 @@ fun ItemDropDownMenu(
 @Composable
 fun PreviewTypeFieldsMainScreen() {
     FieldsMainScreen(
-        uiTitleState = UiTitleState(title = "Page", isEditable = false),
+        uiTitleState = UiTitleState(title = "Pages", originalName = "Page", isEditable = false),
         uiIconState = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false),
         uiFieldsListState = UiFieldsListState(
             items = listOf(

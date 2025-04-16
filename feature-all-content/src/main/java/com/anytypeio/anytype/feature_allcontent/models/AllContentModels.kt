@@ -196,6 +196,7 @@ suspend fun ObjectWrapper.Basic.toAllContentItem(
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.layout ?: ObjectType.Layout.BASIC
+    val isType = obj.layout == ObjectType.Layout.OBJECT_TYPE
     return UiContentItem.Item(
         id = obj.id,
         space = space,
@@ -216,7 +217,7 @@ suspend fun ObjectWrapper.Basic.toAllContentItem(
         ),
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,
-        isPossibleToDelete = isOwnerOrEditor
+        isPossibleToDelete = isOwnerOrEditor && !isType
     )
 }
 

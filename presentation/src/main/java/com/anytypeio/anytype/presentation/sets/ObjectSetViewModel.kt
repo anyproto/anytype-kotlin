@@ -2406,7 +2406,7 @@ class ObjectSetViewModel(
                 )
             } + newTemplate
         } else {
-            return blankTemplate + templates.map { objTemplate ->
+            return templates.map { objTemplate ->
                 objTemplate.toTemplateView(
                     urlBuilder = urlBuilder,
                     coverImageHashProvider = coverImageHashProvider,

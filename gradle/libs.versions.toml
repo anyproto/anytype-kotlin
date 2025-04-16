@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.40.12"
+middlewareVersion = "v0.40.14"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -13,7 +13,6 @@ composeConstraintLayoutVersion = '1.1.1'
 dokkaVersion = '1.9.20'
 
 activityComposeVersion = '1.10.1'
-composeReorderableLegacyVersion = 'e9ef693f63'
 composeReorderableVersion = '2.4.3'
 accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'

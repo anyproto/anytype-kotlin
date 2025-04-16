@@ -56,6 +56,7 @@ import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -790,6 +791,7 @@ fun ItemDropDownMenu(
                         },
                     )
                 }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 if (item.isPossibleToMoveToBin) {
                     DropdownMenuItem(
                         text = {

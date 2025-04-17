@@ -344,6 +344,24 @@ sealed class Event {
                 val id: Id,
                 val reactions: Map<String, List<Id>>
             ) : Chats()
+
+            // TODO check whether nullable state makes sense here.
+            data class UpdateState(
+                override val context: Id,
+                val state: Chat.State?
+            ) : Chats()
+
+            data class UpdateMessageReadStatus(
+                override val context: Id,
+                val messages: List<Id>,
+                val isRead: Boolean
+            ) : Chats()
+
+            data class UpdateMentionReadStatus(
+                override val context: Id,
+                val messages: List<Id>,
+                val isRead: Boolean
+            ) : Chats()
         }
     }
 }

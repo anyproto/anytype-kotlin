@@ -4,11 +4,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
@@ -17,6 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -35,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
@@ -53,10 +58,13 @@ import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 @Composable
 fun CreateSpaceScreen(
     spaceIconView: SpaceIconView.Placeholder,
-    onCreate: (Name) -> Unit,
+    onCreate: (Name, IsSpaceLevelChatSwitchChecked) -> Unit,
     onSpaceIconClicked: () -> Unit,
     isLoading: State<Boolean>
 ) {
+
+    var isSpaceLevelChatSwitchChecked = remember { mutableStateOf(false) }
+
     val input = remember {
         mutableStateOf("")
     }
@@ -91,23 +99,56 @@ fun CreateSpaceScreen(
                 input = input,
                 onActionDone = {
                     focusManager.clearFocus()
-                    onCreate(input.value)
+                    onCreate(input.value, isSpaceLevelChatSwitchChecked.value)
                 }
             )
             Divider()
             Section(title = stringResource(id = R.string.type))
             TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
             Divider()
+            if (BuildConfig.DEBUG) {
+                DebugCreateSpaceLevelChatToggle(isSpaceLevelChatSwitchChecked)
+            }
             Spacer(modifier = Modifier.height(78.dp))
         }
         CreateSpaceButton(
             onCreate = { name ->
                 focusManager.clearFocus()
-                onCreate(name)
+                onCreate(name, isSpaceLevelChatSwitchChecked.value)
             },
             input = input,
             modifier = Modifier.align(Alignment.BottomCenter),
             isLoading = isLoading
+        )
+    }
+}
+
+@Composable
+private fun DebugCreateSpaceLevelChatToggle(isChatToggleChecked: MutableState<Boolean>) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(52.dp)
+    ) {
+        Switch(
+            checked = isChatToggleChecked.value,
+            onCheckedChange = {
+                isChatToggleChecked.value = it
+            },
+            colors = SwitchDefaults.colors().copy(
+                checkedBorderColor = Color.Transparent,
+                uncheckedBorderColor = Color.Transparent,
+                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
+                uncheckedTrackColor = colorResource(R.color.shape_secondary)
+            )
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = "Enable space-level chat (dev mode)",
+            color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_primary),
+            style = BodyRegular
         )
     }
 }
@@ -288,3 +329,5 @@ fun UseCase() {
         )
     }
 }
+
+typealias IsSpaceLevelChatSwitchChecked = Boolean

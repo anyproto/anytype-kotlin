@@ -607,6 +607,7 @@ interface MiddlewareService {
     fun chatGetMessages(request: Rpc.Chat.GetMessages.Request): Rpc.Chat.GetMessages.Response
     fun chatGetMessagesByIds(request: Rpc.Chat.GetMessagesByIds.Request): Rpc.Chat.GetMessagesByIds.Response
     fun chatDeleteMessage(request: Rpc.Chat.DeleteMessage.Request): Rpc.Chat.DeleteMessage.Response
+    fun chatReadMessages(request: Rpc.Chat.ReadMessages.Request): Rpc.Chat.ReadMessages.Response
     fun chatSubscribeLastMessages(request: Rpc.Chat.SubscribeLastMessages.Request): Rpc.Chat.SubscribeLastMessages.Response
     fun chatToggleMessageReaction(request: Rpc.Chat.ToggleMessageReaction.Request): Rpc.Chat.ToggleMessageReaction.Response
     fun chatUnsubscribe(request: Rpc.Chat.Unsubscribe.Request): Rpc.Chat.Unsubscribe.Response

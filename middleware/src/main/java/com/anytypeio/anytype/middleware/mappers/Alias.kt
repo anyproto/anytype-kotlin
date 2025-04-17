@@ -39,6 +39,7 @@ typealias MBSplitMode = anytype.Rpc.Block.Split.Request.Mode
 typealias MBTableOfContents = anytype.model.Block.Content.TableOfContents
 
 typealias MChatMessage = anytype.model.ChatMessage
+typealias MChatState = anytype.model.ChatState
 typealias MChatMessageContent = anytype.model.ChatMessage.MessageContent
 typealias MChatMessageAttachment = anytype.model.ChatMessage.Attachment
 typealias MChatMessageAttachmentType = anytype.model.ChatMessage.Attachment.AttachmentType

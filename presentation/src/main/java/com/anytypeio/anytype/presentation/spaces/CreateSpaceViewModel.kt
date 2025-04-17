@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,7 +50,8 @@ class CreateSpaceViewModel(
 
     val isDismissed = MutableStateFlow(false)
 
-    fun onCreateSpace(name: String) {
+    fun onCreateSpace(name: String, isSpaceLevelChatSwitchChecked: Boolean) {
+        Timber.d("onCreateSpace, isSpaceLevelChatSwitchChecked: $isSpaceLevelChatSwitchChecked")
         if (isDismissed.value) {
             return
         }
@@ -57,7 +59,6 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        val isSingleSpace = spaceViewContainer.get().size == 1
         val numberOfActiveSpaces = spaceViewContainer.get().filter { it.isActive }.size
         viewModelScope.launch {
             createSpace.stream(
@@ -67,7 +68,7 @@ class CreateSpaceViewModel(
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     ),
                     shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE,
-                    withChat = false
+                    withChat = BuildConfig.DEBUG && isSpaceLevelChatSwitchChecked
                 )
             ).collect { result ->
                 result.fold(
@@ -82,12 +83,7 @@ class CreateSpaceViewModel(
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
                             isInProgress.value = false
-                            commands.emit(
-                                Command.SwitchSpace(
-                                    space = Space(space),
-                                    showMultiplayerTooltip = isSingleSpace
-                                )
-                            )
+                            commands.emit(Command.SwitchSpace(space = Space(space)))
                         }
                     },
                     onFailure = {
@@ -134,9 +130,7 @@ class CreateSpaceViewModel(
 
     sealed class Command {
         data class SwitchSpace(
-            val space: Space,
-            @Deprecated("Tooltip is outdated. Should be skipped for now.")
-            val showMultiplayerTooltip: Boolean
+            val space: Space
         ): Command()
     }
 

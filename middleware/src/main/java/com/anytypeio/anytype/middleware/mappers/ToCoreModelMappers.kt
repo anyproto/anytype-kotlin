@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
+import anytype.model.ChatState
 import anytype.model.NameserviceNameType
 import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
@@ -1146,13 +1147,31 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
     order = orderId,
     reactions = reactions?.reactions?.mapValues { (unicode, identities) ->
         identities.ids
-    } ?: emptyMap()
+    } ?: emptyMap(),
+    read = read,
+    mentionRead = mentionRead
 )
 
 fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
     text = text,
     style = style.toCoreModels(),
     marks = marks.map { it.toCoreModels() }
+)
+
+fun MChatState.core(): Chat.State = Chat.State(
+    unreadMessages = messages?.let { unread ->
+        Chat.State.UnreadState(
+            counter = unread.counter,
+            olderOrderId = unread.oldestOrderId
+        )
+    },
+    unreadMentions = mentions?.let { unread ->
+        Chat.State.UnreadState(
+            counter = unread.counter,
+            olderOrderId = unread.oldestOrderId
+        )
+    },
+    lastStateId = lastStateId
 )
 
 fun Rpc.History.Version.toCoreModel(): Version {

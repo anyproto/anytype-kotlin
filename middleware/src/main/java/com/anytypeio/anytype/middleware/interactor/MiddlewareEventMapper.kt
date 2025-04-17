@@ -322,6 +322,32 @@ fun anytype.Event.Message.toCoreModels(
             }
         )
     }
+    chatStateUpdate != null -> {
+        val event = chatStateUpdate
+        checkNotNull(event)
+        Event.Command.Chats.UpdateState(
+            context = context,
+            state = event.state?.core()
+        )
+    }
+    chatUpdateMessageReadStatus != null -> {
+        val event = chatUpdateMessageReadStatus
+        checkNotNull(event)
+        Event.Command.Chats.UpdateMessageReadStatus(
+            context = context,
+            messages = event.ids,
+            isRead = event.isRead
+        )
+    }
+    chatUpdateMentionReadStatus != null -> {
+        val event = chatUpdateMentionReadStatus
+        checkNotNull(event)
+        Event.Command.Chats.UpdateMentionReadStatus(
+            context = context,
+            messages = event.ids,
+            isRead = event.isRead
+        )
+    }
     spaceAutoWidgetAdded != null -> {
         val event = spaceAutoWidgetAdded
         checkNotNull(event)

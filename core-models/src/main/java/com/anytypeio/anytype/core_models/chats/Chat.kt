@@ -7,6 +7,8 @@ sealed class Chat {
 
     /**
      * @property [id] message id
+     * @property [read] whether this message is read
+     * @property [mentionRead] whether mention contained in this message read
      */
     data class Message(
         val id: Id,
@@ -18,6 +20,8 @@ sealed class Chat {
         val attachments: List<Attachment> = emptyList(),
         val reactions: Map<String, List<String>>,
         val replyToMessageId: Id? = null,
+        val read: Boolean = false,
+        val mentionRead: Boolean = false
     ) {
         data class Content(
             val text: String,
@@ -84,5 +88,19 @@ sealed class Chat {
                 order = ""
             )
         }
+    }
+
+    data class State(
+        val unreadMessages: UnreadState?,
+        val unreadMentions: UnreadState?,
+        val lastStateId: Id,
+    ) {
+        /**
+         * @property olderOrderId oldest(in the lex sorting) unread message order id. Client should ALWAYS scroll through unread messages from the oldest to the newest
+         */
+        data class UnreadState(
+            val olderOrderId: Id,
+            val counter: Int
+        )
     }
 }

@@ -175,6 +175,8 @@ class ObjectTypeViewModel(
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
     //endregion
 
+    val showPropertiesScreen = MutableStateFlow<Boolean>(false)
+
     val commands = MutableSharedFlow<ObjectTypeCommand>()
 
     //region INIT AND LIFE CYCLE
@@ -473,10 +475,8 @@ class ObjectTypeViewModel(
     fun onTypeEvent(event: TypeEvent) {
         Timber.d("onTypeEvent: $event")
         when (event) {
-            TypeEvent.OnFieldsButtonClick -> {
-                viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.OpenTypePropertiesListScreen)
-                }
+            TypeEvent.OnPropertiesButtonClick -> {
+                showPropertiesScreen.value = true
                 viewModelScope.launch {
                     sendAnalyticsShowObjectTypeScreen(
                         analytics = analytics,
@@ -551,7 +551,7 @@ class ObjectTypeViewModel(
 
             TypeEvent.OnBackClick -> {
                 viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.Back)
+                    commands.emit(Back)
                 }
             }
 
@@ -817,10 +817,9 @@ class ObjectTypeViewModel(
             }
 
             is FieldEvent.EditProperty -> proceedWithEditPropertyEvent(event)
-            FieldEvent.OnBackClick -> {
-                viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.CloseFieldsScreen)
-                }
+
+            FieldEvent.OnDismissScreen -> {
+                showPropertiesScreen.value = false
             }
         }
     }

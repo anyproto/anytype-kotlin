@@ -8,8 +8,6 @@ sealed class FieldEvent {
 
     data object OnEditPropertyScreenDismiss : FieldEvent()
 
-    data object OnBackClick : FieldEvent()
-
     data class OnFieldItemClick(val item: UiFieldsListItem) : FieldEvent()
 
     sealed class FieldItemMenu : FieldEvent() {

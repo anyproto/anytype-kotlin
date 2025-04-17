@@ -143,7 +143,7 @@ fun FieldsMainScreen(
                 uiTitleState = uiTitleState,
                 uiIconState = uiIconState,
                 onBackClick = {
-                    fieldEvent(OnBackClick)
+                    fieldEvent(FieldEvent.OnDismissScreen)
                 }
             )
         },

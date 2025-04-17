@@ -143,7 +143,6 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                 }
             }
             is ObjectSearchView.Success -> {
-                Timber.d("Updating adapter with items: ${state.objects}")
                 with(binding) {
                     hideProgress()
                     tvScreenStateMessage.invisible()

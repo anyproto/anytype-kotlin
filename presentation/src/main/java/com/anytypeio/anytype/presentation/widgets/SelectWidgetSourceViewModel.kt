@@ -116,12 +116,9 @@ class SelectWidgetSourceViewModel(
         suggested: SuggestedWidgetsState.Default,
         query: String
     ) = buildList {
-        Timber.d("Resolving suggested results for query: $query")
         val filteredSuggestedSystemSources = suggested.suggestedSystemSources.filter { source ->
             source.contains(query, ignoreCase = true)
         }
-        Timber.d("Filtered system sourced: $filteredSuggestedSystemSources")
-
         if (filteredSuggestedSystemSources.isNotEmpty()) {
             add(ObjectSearchSection.SelectWidgetSource.System)
             with(filteredSuggestedSystemSources) {
@@ -153,8 +150,6 @@ class SelectWidgetSourceViewModel(
             add(ObjectSearchSection.SelectWidgetSource.Suggested)
             addAll(filteredSuggestedObjectTypes)
         }
-    }.also {
-        Timber.d("Got suggested: $it")
     }
 
     override fun resolveViews(result: Resultat<List<DefaultObjectView>>) {

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.Resultat
@@ -26,6 +25,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -37,7 +37,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -74,47 +73,28 @@ class SelectWidgetSourceViewModel(
             .asFlow(),
         suggested.filterIsInstance<SuggestedWidgetsState.Default>()
     ) { state, suggested ->
-
-
         when(state) {
             is ObjectSearchView.Success -> {
                 state.copy(
                     objects = buildList {
-
-                        // System widgets
-
-                        if (suggested.suggestedSystemSources.isNotEmpty()) {
-                            add(ObjectSearchSection.SelectWidgetSource.System)
-                            with(suggested.suggestedSystemSources) {
-                                if (contains(BundledWidgetSourceIds.FAVORITE)) {
-                                    add(BundledWidgetSourceView.Favorites)
-                                }
-                                if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
-                                    add(BundledWidgetSourceView.AllObjects)
-                                }
-                                if (contains(BundledWidgetSourceIds.RECENT)) {
-                                    add(BundledWidgetSourceView.Recent)
-                                }
-                                if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
-                                    add(BundledWidgetSourceView.RecentLocal)
-                                }
-                                if (contains(BundledWidgetSourceIds.BIN)) {
-                                    add(BundledWidgetSourceView.Bin)
-                                }
-                            }
-                        }
-
-                        // Suggested widgets (aka object type widgets)
-                        if (suggested.suggestedObjectTypes.isNotEmpty()) {
-                            add(ObjectSearchSection.SelectWidgetSource.Suggested)
-                            addAll(suggested.suggestedObjectTypes)
-                        }
-
+                        val query = userInput.value
+                        addAll(resolveSuggestedResults(suggested, query))
                         // Widgets from existing objects
                         add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
                         addAll(state.objects)
                     }
                 )
+            }
+            is ObjectSearchView.NoResults -> {
+                val query = state.searchText
+                val result = buildList<DefaultSearchItem> {
+                    addAll(resolveSuggestedResults(suggested, query))
+                }
+                if (result.isNotEmpty()) {
+                    ObjectSearchView.Success(result)
+                } else {
+                    state
+                }
             }
             else -> state
         }
@@ -128,6 +108,49 @@ class SelectWidgetSourceViewModel(
                 .collect {
                     isDismissed.value = true
                 }
+        }
+    }
+
+    private fun resolveSuggestedResults(
+        suggested: SuggestedWidgetsState.Default,
+        query: String
+    ) = buildList {
+
+        // Adding system widgets if matched by query
+
+        val filteredSuggestedSystemSources = suggested.suggestedSystemSources.filter { source ->
+            source.contains(query, ignoreCase = true)
+        }
+        if (filteredSuggestedSystemSources.isNotEmpty()) {
+            add(ObjectSearchSection.SelectWidgetSource.System)
+            with(filteredSuggestedSystemSources) {
+                if (contains(BundledWidgetSourceIds.FAVORITE)) {
+                    add(BundledWidgetSourceView.Favorites)
+                }
+                if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
+                    add(BundledWidgetSourceView.AllObjects)
+                }
+                if (contains(BundledWidgetSourceIds.RECENT)) {
+                    add(BundledWidgetSourceView.Recent)
+                }
+                if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
+                    add(BundledWidgetSourceView.RecentLocal)
+                }
+                if (contains(BundledWidgetSourceIds.BIN)) {
+                    add(BundledWidgetSourceView.Bin)
+                }
+            }
+        }
+
+        // Adding object type widgets (aka object type widgets) if matched by query
+
+        val filteredSuggestedObjectTypes = suggested.suggestedObjectTypes.filter { type ->
+            type.name.contains(query, ignoreCase = true)
+        }
+
+        if (filteredSuggestedObjectTypes.isNotEmpty()) {
+            add(ObjectSearchSection.SelectWidgetSource.Suggested)
+            addAll(filteredSuggestedObjectTypes)
         }
     }
 

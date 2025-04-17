@@ -189,12 +189,40 @@ class ObjectItemViewHolder(view: View) : ObjectViewHolder(view) {
         override fun areItemsTheSame(
             oldItem: DefaultSearchItem,
             newItem: DefaultSearchItem
-        ): Boolean = (oldItem as? DefaultObjectView)?.id == (newItem as? DefaultObjectView)?.id
+        ): Boolean {
+            return when {
+                oldItem is DefaultObjectView && newItem is DefaultObjectView -> {
+                    oldItem.id == newItem.id
+                }
+                oldItem is SuggestWidgetObjectType && newItem is SuggestWidgetObjectType -> {
+                    oldItem.id == newItem.id
+                }
+                oldItem is BundledWidgetSourceView && newItem is BundledWidgetSourceView -> {
+                    oldItem.id == newItem.id
+                }
+                else -> {
+                    oldItem == newItem
+                }
+            }
+        }
 
         override fun areContentsTheSame(
             oldItem: DefaultSearchItem,
             newItem: DefaultSearchItem
-        ): Boolean = (oldItem as? DefaultObjectView) == (newItem as? DefaultObjectView)
+        ): Boolean {
+            return when {
+                oldItem is DefaultObjectView && newItem is DefaultObjectView -> {
+                    oldItem == newItem
+                }
+                oldItem is SuggestWidgetObjectType && newItem is SuggestWidgetObjectType -> {
+                    oldItem == newItem
+                }
+                oldItem is BundledWidgetSourceView && newItem is BundledWidgetSourceView -> {
+                    oldItem == newItem
+                }
+                else -> false
+            }
+        }
 
     }
 }

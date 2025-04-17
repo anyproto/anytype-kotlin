@@ -148,7 +148,9 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
                     recyclerView.visible()
-                    selectWidgetSourceAdapter.submitList(state.objects)
+                    selectWidgetSourceAdapter.submitList(state.objects) {
+                        recyclerView.scrollToPosition(0)
+                    }
                 }
             }
             ObjectSearchView.EmptyPages -> {

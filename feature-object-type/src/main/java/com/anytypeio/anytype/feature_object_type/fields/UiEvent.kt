@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Id
 
 sealed class FieldEvent {
 
+    data object OnDismissScreen : FieldEvent()
+
     data object OnEditPropertyScreenDismiss : FieldEvent()
 
     data object OnBackClick : FieldEvent()

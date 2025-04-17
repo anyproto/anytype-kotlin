@@ -1326,6 +1326,8 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
 
+                        FAILED_TO_LOAD = 100;
+
                     }
                 }
             }

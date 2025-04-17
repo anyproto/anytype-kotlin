@@ -67,7 +67,6 @@ fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState.SpaceSettings,
     uiEvent: (UiEvent) -> Unit
 ) {
-    val localContext = LocalContext.current
     val initialName = uiState.name
     val initialDescription = uiState.description
 

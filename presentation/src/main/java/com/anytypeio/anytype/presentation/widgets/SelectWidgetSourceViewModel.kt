@@ -82,41 +82,7 @@ class SelectWidgetSourceViewModel(
 
                         val query = userInput.value
 
-                        val filteredSuggestedSystemSources = suggested.suggestedSystemSources.filter { source ->
-                            source.contains(query, ignoreCase = true)
-                        }
-
-                        if (filteredSuggestedSystemSources.isNotEmpty()) {
-                            add(ObjectSearchSection.SelectWidgetSource.System)
-                            with(suggested.suggestedSystemSources) {
-                                if (contains(BundledWidgetSourceIds.FAVORITE)) {
-                                    add(BundledWidgetSourceView.Favorites)
-                                }
-                                if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
-                                    add(BundledWidgetSourceView.AllObjects)
-                                }
-                                if (contains(BundledWidgetSourceIds.RECENT)) {
-                                    add(BundledWidgetSourceView.Recent)
-                                }
-                                if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
-                                    add(BundledWidgetSourceView.RecentLocal)
-                                }
-                                if (contains(BundledWidgetSourceIds.BIN)) {
-                                    add(BundledWidgetSourceView.Bin)
-                                }
-                            }
-                        }
-
-                        // Suggested widgets (aka object type widgets)
-
-                        val filteredSuggestedObjectTypes = suggested.suggestedObjectTypes.filter { type ->
-                            type.name.contains(query, ignoreCase = true)
-                        }
-
-                        if (filteredSuggestedObjectTypes.isNotEmpty()) {
-                            add(ObjectSearchSection.SelectWidgetSource.Suggested)
-                            addAll(filteredSuggestedObjectTypes)
-                        }
+                        addAll(resolveSuggestedResults(suggested, query))
 
                         // Widgets from existing objects
                         add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
@@ -127,37 +93,7 @@ class SelectWidgetSourceViewModel(
             is ObjectSearchView.NoResults -> {
                 val query = state.searchText
                 val result = buildList<DefaultSearchItem> {
-                    val filteredSystemSources = suggested.suggestedSystemSources.filter { source ->
-                        source.contains(query, ignoreCase = true)
-                    }
-                    if (filteredSystemSources.isNotEmpty()) {
-                        add(ObjectSearchSection.SelectWidgetSource.System)
-                        with(filteredSystemSources) {
-                            if (contains(BundledWidgetSourceIds.FAVORITE)) {
-                                add(BundledWidgetSourceView.Favorites)
-                            }
-                            if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
-                                add(BundledWidgetSourceView.AllObjects)
-                            }
-                            if (contains(BundledWidgetSourceIds.RECENT)) {
-                                add(BundledWidgetSourceView.Recent)
-                            }
-                            if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
-                                add(BundledWidgetSourceView.RecentLocal)
-                            }
-                            if (contains(BundledWidgetSourceIds.BIN)) {
-                                add(BundledWidgetSourceView.Bin)
-                            }
-                        }
-                    }
-                    val filteredSuggestedObjectTypes = suggested.suggestedObjectTypes.filter { type ->
-                        type.name.contains(query, ignoreCase = true)
-                    }
-                    // Queried suggest object type widgets
-                    if (filteredSuggestedObjectTypes.isNotEmpty()) {
-                        add(ObjectSearchSection.SelectWidgetSource.Suggested)
-                        addAll(filteredSuggestedObjectTypes)
-                    }
+                    addAll(resolveSuggestedResults(suggested, query))
 
                 }
                 if (result.isNotEmpty()) {
@@ -179,6 +115,51 @@ class SelectWidgetSourceViewModel(
                     isDismissed.value = true
                 }
         }
+    }
+
+    private fun resolveSuggestedResults(
+        suggested: SuggestedWidgetsState.Default,
+        query: String
+    ) = buildList {
+        Timber.d("Resolving suggested results for query: $query")
+        val filteredSuggestedSystemSources = suggested.suggestedSystemSources.filter { source ->
+            source.contains(query, ignoreCase = true)
+        }
+        Timber.d("Filtered system sourced: $filteredSuggestedSystemSources")
+
+        if (filteredSuggestedSystemSources.isNotEmpty()) {
+            add(ObjectSearchSection.SelectWidgetSource.System)
+            with(filteredSuggestedSystemSources) {
+                if (contains(BundledWidgetSourceIds.FAVORITE)) {
+                    add(BundledWidgetSourceView.Favorites)
+                }
+                if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
+                    add(BundledWidgetSourceView.AllObjects)
+                }
+                if (contains(BundledWidgetSourceIds.RECENT)) {
+                    add(BundledWidgetSourceView.Recent)
+                }
+                if (contains(BundledWidgetSourceIds.RECENT_LOCAL)) {
+                    add(BundledWidgetSourceView.RecentLocal)
+                }
+                if (contains(BundledWidgetSourceIds.BIN)) {
+                    add(BundledWidgetSourceView.Bin)
+                }
+            }
+        }
+
+        // Suggested widgets (aka object type widgets)
+
+        val filteredSuggestedObjectTypes = suggested.suggestedObjectTypes.filter { type ->
+            type.name.contains(query, ignoreCase = true)
+        }
+
+        if (filteredSuggestedObjectTypes.isNotEmpty()) {
+            add(ObjectSearchSection.SelectWidgetSource.Suggested)
+            addAll(filteredSuggestedObjectTypes)
+        }
+    }.also {
+        Timber.d("Got suggested: $it")
     }
 
     override fun resolveViews(result: Resultat<List<DefaultObjectView>>) {

@@ -398,8 +398,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
+            condition = DVFilterCondition.NOT_IN,
+            value = SupportedLayouts.systemLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.TYPE_UNIQUE_KEY,
@@ -459,8 +459,8 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.LAYOUT,
-                condition = DVFilterCondition.IN,
-                value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
+                condition = DVFilterCondition.NOT_IN,
+                value = SupportedLayouts.systemLayouts.map { it.code.toDouble() }
             )
         )
         if (spaceCreationDateInSeconds != null) {
@@ -519,8 +519,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
+            condition = DVFilterCondition.NOT_IN,
+            value = SupportedLayouts.systemLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,

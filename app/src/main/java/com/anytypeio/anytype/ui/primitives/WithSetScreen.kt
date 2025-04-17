@@ -18,6 +18,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
@@ -70,6 +73,7 @@ fun WithSetScreen(
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState()
     )
+    val objectSetFragment: MutableState<ObjectSetFragment?> = remember { mutableStateOf(null) }
 
     Scaffold(
         modifier = Modifier
@@ -83,7 +87,12 @@ fun WithSetScreen(
                 uiEditButtonState = uiEditButtonState,
                 uiTitleState = uiTitleState,
                 topBarScrollBehavior = topAppBarScrollBehavior,
-                onTypeEvent = onTypeEvent
+                onTypeEvent = { typeEvent ->
+                    if (typeEvent is TypeEvent.OnBackClick) {
+                        objectSetFragment.value?.onCloseCurrentObject()
+                    }
+                    onTypeEvent(typeEvent)
+                }
             )
         },
         content = { paddingValues ->
@@ -94,7 +103,8 @@ fun WithSetScreen(
                 uiHorizontalButtonsState = uiHorizontalButtonsState,
                 objectId = objectId,
                 space = space,
-                onTypeEvent = onTypeEvent
+                onTypeEvent = onTypeEvent,
+                objectSetFragment = objectSetFragment
             )
         }
     )
@@ -136,7 +146,8 @@ private fun MainContentSet(
     uiHorizontalButtonsState: UiHorizontalButtonsState,
     objectId: String,
     space: String,
-    onTypeEvent: (TypeEvent) -> Unit
+    onTypeEvent: (TypeEvent) -> Unit,
+    objectSetFragment: MutableState<ObjectSetFragment?>
 ) {
     val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
         Modifier
@@ -182,6 +193,7 @@ private fun MainContentSet(
                 space = space
             )
         ) { fragment ->
+            objectSetFragment.value = fragment
             fragment.view?.findViewById<View>(R.id.topToolbar)?.gone()
             fragment.view?.findViewById<View>(R.id.objectHeader)?.visibility =
                 View.GONE

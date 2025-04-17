@@ -42,7 +42,6 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
-import kotlin.getValue
 import timber.log.Timber
 
 class ObjectTypeFragment : BaseComposeFragment() {

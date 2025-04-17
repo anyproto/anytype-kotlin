@@ -1569,6 +1569,9 @@ open class ObjectSetFragment :
         componentManager().objectSetComponent.release(ctx)
     }
 
+    fun onCloseCurrentObject() {
+        vm.onCloseObject()
+    }
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"

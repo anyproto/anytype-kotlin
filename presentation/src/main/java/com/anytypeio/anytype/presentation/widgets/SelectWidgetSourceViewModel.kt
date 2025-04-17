@@ -89,7 +89,6 @@ class SelectWidgetSourceViewModel(
                 val query = state.searchText
                 val result = buildList<DefaultSearchItem> {
                     addAll(resolveSuggestedResults(suggested, query))
-
                 }
                 if (result.isNotEmpty()) {
                     ObjectSearchView.Success(result)

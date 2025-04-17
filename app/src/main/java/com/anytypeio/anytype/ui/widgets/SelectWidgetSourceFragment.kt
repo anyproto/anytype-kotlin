@@ -143,12 +143,15 @@ class SelectWidgetSourceFragment : BaseBottomSheetTextInputFragment<FragmentObje
                 }
             }
             is ObjectSearchView.Success -> {
+                Timber.d("Updating adapter with items: ${state.objects}")
                 with(binding) {
                     hideProgress()
                     tvScreenStateMessage.invisible()
                     tvScreenStateSubMessage.invisible()
                     recyclerView.visible()
-                    selectWidgetSourceAdapter.submitList(state.objects)
+                    selectWidgetSourceAdapter.submitList(state.objects) {
+                        recyclerView.scrollToPosition(0)
+                    }
                 }
             }
             ObjectSearchView.EmptyPages -> {

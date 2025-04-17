@@ -77,13 +77,8 @@ class SelectWidgetSourceViewModel(
             is ObjectSearchView.Success -> {
                 state.copy(
                     objects = buildList {
-
-                        // System widgets
-
                         val query = userInput.value
-
                         addAll(resolveSuggestedResults(suggested, query))
-
                         // Widgets from existing objects
                         add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
                         addAll(state.objects)

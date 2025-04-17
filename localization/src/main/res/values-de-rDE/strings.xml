@@ -532,9 +532,9 @@
     <string name="file_delete_cancel">Abbrechen</string>
     <string name="file_delete_delete">Löschen</string>
     <string name="menu_type_change">Typ ändern</string>
-    <string name="menu_type_open">Open type</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
+    <string name="menu_type_open">Typ öffnen</string>
+    <string name="menu_type_open_set">Abfrage von %1$s öffnen</string>
+    <string name="menu_type_create_set">Abfrage von %1$s erstellen</string>
     <string name="toast_active_view_delete">Aktuelle Ansicht kann nicht gelöscht werden</string>
     <string name="type_templates_widget_title">Objekt erstellen</string>
     <string name="view_layout_widget_title">Layout</string>
@@ -677,7 +677,7 @@
     <string name="relation_open_edit">Zum Bearbeiten öffnen</string>
     <string name="remove_from_set">Aus dieser Abfrage entfernen</string>
     <string name="reset">Zurücksetzen</string>
-    <string name="search_a_relation">Search a property</string>
+    <string name="search_a_relation">Eigenschaft suchen</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Leere Werte nach ganz unten sortieren</string>
     <string name="content_desc_empty_values_top_check_icon">Leere Werte nach ganz oben sortieren</string>
@@ -699,8 +699,8 @@
     <string name="remove">Entfernen</string>
     <string name="choose_options">Optionen auswählen</string>
     <string name="search_tags">Suchterme</string>
-    <string name="choose_relation_to_filter">Choose a property to filter</string>
-    <string name="choose_relation_to_sort">Choose a property to sort</string>
+    <string name="choose_relation_to_filter">Eigenschaft zum Filtern auswählen</string>
+    <string name="choose_relation_to_sort">Eigenschaft zum Sortieren auswählen</string>
     <string name="btn_apply_new_object">Zur Liste hinzufügen</string>
     <string name="btn_add">Hinzufügen</string>
     <string name="btn_upload_gallery">Aus Galerie hochladen</string>
@@ -738,7 +738,7 @@
     <string name="object_not_exist">Dieses Objekt existiert nicht</string>
     <string name="back_to_dashboard">Zurück zum Dashboard</string>
     <string name="go_back">Zurückgehen</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">Abfrage für diesen Typ nicht gefunden.</string>
     <string name="create_new_set">Erstellen</string>
     <string name="shortcut_create_new_object_of_type">Neues Objekt „%1$s“</string>
     <string name="close">Schließen</string>
@@ -964,7 +964,7 @@
     <string name="widget_remove_widget">Widget entfernen</string>
     <string name="widget_empty_bin">Behälter leeren</string>
     <string name="widget_edit_widgets">Widgets bearbeiten</string>
-    <string name="widget_auto_created_toast">Widget %1$s has been added</string>
+    <string name="widget_auto_created_toast">Widget %1$s wurde hinzugefügt.</string>
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="library_title_types">Typen</string>
@@ -1047,7 +1047,7 @@
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
     <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
-    <string name="content_description_remove_from_set_button">Remove property from this query</string>
+    <string name="content_description_remove_from_set_button">Eigenschaft aus dieser Abfrage entfernen</string>
     <string name="content_desc_page_toolbar_search">Seiten durchsuchen</string>
     <string name="content_desc_page_toolbar_navigation">Navigation durch Seiten</string>
     <string name="content_desc_page_toolbar_add_doc">Neue Seite hinzufügen</string>
@@ -1566,7 +1566,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_my_first_space">Mein erster Space</string>
     <string name="all_content_error_unexpected_layout">Fehler: Unerwartetes Layout</string>
     <string name="all_content_toast_relation_added">Eigenschaft hinzugefügt</string>
-    <string name="all_content_toast_relation_removed">Property removed</string>
+    <string name="all_content_toast_relation_removed">Eigenschaft entfernt</string>
     <string name="all_content_toast_type_added">Objekttyp hinzugefügt</string>
     <string name="all_content_toast_type_removed">Objekttyp entfernt</string>
     <string name="all_content_toast_archived">Objekt archiviert</string>
@@ -1598,7 +1598,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_empty_items_title">Hier ist es leer.</string>
     <string name="object_type_empty_items_subtitle">Erstelle deine ersten Objekte, um loszulegen.</string>
     <string name="object_type_menu_delete">Vollständig löschen</string>
-    <string name="object_type_objects_menu_open_set">Open Query</string>
+    <string name="object_type_objects_menu_open_set">Abfrage Öffnen</string>
     <string name="object_type_objects_menu_create_set">Abfrage erstellen</string>
     <string name="object_type_templates_menu_set_default">Als Standard festlegen</string>
     <string name="object_type_templates_menu_edit">Bearbeiten</string>
@@ -1608,8 +1608,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_section_fields_menu">Properties panel</string>
     <string name="object_type_fields_section_hidden">Ausgeblendet</string>
     <string name="object_type_fields_section_file">Datei</string>
-    <string name="object_type_fields_section_local_fields">Found in objects </string>
-    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
+    <string name="object_type_fields_section_local_fields">In Objekten gefunden </string>
+    <string name="object_type_fields_section_empty_state_text">Noch keine Eigenschaften</string>
     <string name="object_type_fields_title">Eigenschaften</string>
     <string name="object_type_fields_info_text">You\'re editing type</string>
     <string name="object_type_fields_edit_field">Feld bearbeiten</string>
@@ -1617,8 +1617,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_preview_field">Vorschaufeld</string>
     <string name="object_type_fields_btn_save">Speichern</string>
     <string name="object_type_fields_menu_delete">Unlink from type</string>
-    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
-    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
+    <string name="object_type_fields_menu_remove_from_type">Aus dem Typ entfernen</string>
+    <string name="object_type_fields_menu_move_to_bin">In den Papierkorb verschieben</string>
     <string name="object_type_fields_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="object_type_fields_menu_remove">Entfernen</string>
     <string name="object_type_fields_local_info_title">In Objekten gefunden</string>
@@ -1629,8 +1629,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_properties_section_hidden">Ausgeblendet</string>
     <string name="object_properties_local_info_title">Lokale Eigenschaften</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
-    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
-    <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_properties_empty_state">Noch keine Eigenschaften. Füge welche zu diesem Typ hinzu</string>
+    <string name="object_type_open_type_error">Fehler beim Öffnen des Objekttyps</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1657,7 +1657,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_alert_delete_this_message_description">Sie kann nach der Bestätigung nicht wiederhergestellt werden</string>
     <string name="chats_alert_delete_this_message">Diese Nachricht löschen?</string>
     <string name="object_set_of_title">Abfrage von</string>
-    <string name="migration_update_is_in_progress">Update is in progress</string>
+    <string name="migration_update_is_in_progress">Aktualisierung ist im Gang</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
@@ -1711,8 +1711,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_add_property_screen_section_existing">Vorhandene Eigenschaften</string>
     <string name="object_type_add_property_screen_search_hint">Suchen oder neu erstellen</string>
     <string name="new_property_hint">Neue Eigenschaft</string>
-    <string name="edit_property_limit_objects">Limit objects to</string>
-    <string name="edit_property_limit_objects_all">Limit objects</string>
+    <string name="edit_property_limit_objects">Objekte einschränken auf</string>
+    <string name="edit_property_limit_objects_all">Objekte einschränken</string>
     <string name="edit_property_limit_all">Alle</string>
     <string name="add_property_error_create_new">Fehler beim Erstellen einer neuen Eigenschaft</string>
     <string name="add_property_error_update">Fehler beim Aktualisieren einer Eigenschaft</string>
@@ -1720,7 +1720,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="property_select_format_title">Eigenschaftsformat auswählen</string>
     <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
-    <string name="property_limit_objects_title">Limit objects</string>
+    <string name="property_limit_objects_title">Objekte einschränken</string>
     <string name="property_include_time_section">Zeit einbeziehen</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
@@ -1739,21 +1739,21 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
     <string name="object_type_create_new_title">Neuen Typ erstellen</string>
     <string name="object_type_rename_title">Typ umbenennen</string>
-    <string name="object_type_create_plural_title">Type Plural name</string>
-    <string name="object_type_create_title_hint">e.g. Project</string>
-    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
+    <string name="object_type_create_plural_title">Pluralname eingeben</string>
+    <string name="object_type_create_title_hint">z.B. Projekt</string>
+    <string name="object_type_create_plural_title_hint">z.B. Projekte</string>
     <string name="object_conflict_screen_title">Resolve layout conflict</string>
     <string name="object_conflict_screen_description">This layout differs from the type\'s default. Reset to match?</string>
     <string name="object_conflict_screen_action_button">Auf Standardeinstellung zurücksetzen</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
-    <string name="widgets_empty_state_message">There is no widgets yet</string>
+    <string name="widgets_empty_state_message">Es gibt noch keine Widgets</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Objekttypen</string>
     <string name="space_types_screen_section_my_types">Meine Typen</string>
-    <string name="space_types_screen_section_system_types">System Types</string>
+    <string name="space_types_screen_section_system_types">Systemtypen</string>
     <string name="space_properties_screen_title">Eigenschaften</string>
-    <string name="space_properties_screen_section_my_types">My Properties</string>
-    <string name="space_properties_screen_section_system_types">System Properties</string>
-    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
+    <string name="space_properties_screen_section_my_types">Meine Eigenschaften</string>
+    <string name="space_properties_screen_section_system_types">Systemeigenschaften</string>
+    <string name="space_properties_screen_menu_move_to_bin">In den Papierkorb verschieben</string>
 </resources>

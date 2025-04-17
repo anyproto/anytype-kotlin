@@ -115,6 +115,9 @@ class SelectWidgetSourceViewModel(
         suggested: SuggestedWidgetsState.Default,
         query: String
     ) = buildList {
+
+        // Adding system widgets if matched by query
+
         val filteredSuggestedSystemSources = suggested.suggestedSystemSources.filter { source ->
             source.contains(query, ignoreCase = true)
         }
@@ -139,7 +142,7 @@ class SelectWidgetSourceViewModel(
             }
         }
 
-        // Suggested widgets (aka object type widgets)
+        // Adding object type widgets (aka object type widgets) if matched by query
 
         val filteredSuggestedObjectTypes = suggested.suggestedObjectTypes.filter { type ->
             type.name.contains(query, ignoreCase = true)

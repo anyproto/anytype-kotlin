@@ -886,6 +886,25 @@ class ObjectSetViewModel(
         jobs.cancel()
     }
 
+    fun onCloseObject() {
+        Timber.d("onCloseObject, id:[${vmParams.ctx}]")
+        viewModelScope.launch {
+            closeBlock.async(
+                CloseBlock.Params(
+                    target = vmParams.ctx,
+                    space = vmParams.space
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Object [${vmParams.ctx}] closed successfully")
+                },
+                onFailure = {
+                    Timber.w(it, "Error while closing object set: ${vmParams.ctx}")
+                }
+            )
+        }
+    }
+
     fun onSystemBackPressed() {
         Timber.d("onSystemBackPressed, ")
         proceedWithClosingAndExit()

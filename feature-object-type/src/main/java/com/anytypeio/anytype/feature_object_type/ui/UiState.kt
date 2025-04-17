@@ -29,10 +29,6 @@ sealed class ObjectTypeCommand {
         val spaceId: Id
     ) : ObjectTypeCommand()
 
-    data object OpenTypePropertiesListScreen : ObjectTypeCommand()
-
-    data object CloseFieldsScreen : ObjectTypeCommand()
-
     data class OpenAddNewPropertyScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
 }
 

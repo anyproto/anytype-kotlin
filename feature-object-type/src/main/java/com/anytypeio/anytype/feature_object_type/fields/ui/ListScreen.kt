@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_object_type.fields.ui
 
 import android.os.Build
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -86,6 +87,7 @@ import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import timber.log.Timber
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -121,6 +123,11 @@ fun FieldsMainScreen(
         }
     }
 
+    BackHandler(enabled = true) {
+        Timber.d("Back pressed on Properties Screen")
+        fieldEvent.invoke(FieldEvent.OnDismissScreen)
+    }
+
     Scaffold(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -136,7 +143,7 @@ fun FieldsMainScreen(
                 uiTitleState = uiTitleState,
                 uiIconState = uiIconState,
                 onBackClick = {
-                    fieldEvent(OnBackClick)
+                    fieldEvent(FieldEvent.OnDismissScreen)
                 }
             )
         },

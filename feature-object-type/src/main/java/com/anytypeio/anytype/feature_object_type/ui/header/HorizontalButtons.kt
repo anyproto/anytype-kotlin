@@ -56,7 +56,7 @@ fun HorizontalButtons(
         if (uiPropertiesButtonState is UiPropertiesButtonState.Visible) {
             Row(
                 modifier = modifierButton.noRippleThrottledClickable {
-                    onTypeEvent(TypeEvent.OnFieldsButtonClick)
+                    onTypeEvent(TypeEvent.OnPropertiesButtonClick)
                 },
                 verticalAlignment = Alignment.CenterVertically
             ) {

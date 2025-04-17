@@ -2,7 +2,6 @@ package com.anytypeio.anytype.feature_object_type.ui
 
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
@@ -43,7 +42,7 @@ sealed class TypeEvent {
     //endregion
 
     data object OnLayoutButtonClick : TypeEvent()
-    data object OnFieldsButtonClick : TypeEvent()
+    data object OnPropertiesButtonClick : TypeEvent()
     data object OnTemplatesButtonClick : TypeEvent()
 
     //region Icon picker

@@ -1739,7 +1739,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_invite_link_copied">Alan davet bağlantısı kopyalandı!</string>
     <string name="object_type_create_new_title">Yeni tür oluştur</string>
     <string name="object_type_rename_title">Türü yeniden adlandır</string>
-    <string name="object_type_create_plural_title">Tür Çoğul isim</string>
+    <string name="object_type_create_plural_title">Çoğul ad yazın</string>
     <string name="object_type_create_title_hint">örn. Proje</string>
     <string name="object_type_create_plural_title_hint">örn. Projeler</string>
     <string name="object_conflict_screen_title">Düzen çakışmasını çöz</string>

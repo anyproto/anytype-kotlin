@@ -1,0 +1,81 @@
+name: Create Github release with the attached APKS
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Git tag for the release (e.g. v1.0.0)'
+        required: true
+        type: string
+      release_name:
+        description: 'Release title (optional)'
+        required: false
+        default: ''
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    name: Build and Upload to GitHub Release
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r23c
+          link-to-sdk: true
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      - name: Setup middleware
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+          sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
+
+      - name: Decrypt secrets
+        run: ./scripts/release/decrypt-secrets.sh
+        env:
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+
+      - name: Setup keystore
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PWD: ${{ secrets.RELEASE_KEY_PWD }}
+          RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
+        run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
+
+      - name: Prepare Android Manifest for APKs
+        run: ./scripts/release/apk.sh
+
+      - name: Build release APKs
+        run: ./gradlew :app:assembleRelease -PenableAbiSplits=true
+
+      - name: Prepare artefacts
+        run: ./scripts/release/prepare-release-artefacts.sh
+
+      - name: List prepared files
+        run: ls -lh app/build/outputs/apk/release/release-artefacts/
+
+      - name: Create and Upload GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.event.inputs.tag_name }}
+          name: ${{ github.event.inputs.release_name }}
+          files: app/build/outputs/apk/release/release-artefacts/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/release/clean-secrets.sh

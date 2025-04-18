@@ -39,7 +39,7 @@
     <string name="about_privacy_policy">Политика конфиденциальности</string>
     <string name="about_acknowledgements">Благодарности</string>
     <string name="about_meta_info">Версия приложения: %1$s\nНомер сборки: %2$d\nВерсия библиотеки: %3$s\nАккаунт\u00A0ID:\u00A0%4$s\nУстройство\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
+    <string name="about_meta_info_new">Версия приложения: %1$s\nНомер сборки: %2$d\nВерсия библиотеки: %3$s\nАккаунт\u00A0ID:\u00A0%4$s\nID\u00A0устройства:\u00A0%5$s\nID\u00A0аналитики:\u00A0%6$s\nID\u00A0ключа\u00A0Ethereum:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Устройство: %1$s\nAndroid версия: %2$d\nВерсия приложения: %3$s\nНомер сборки: %4$d\nВерсия библиотеки: %5$s\nАккаунт\u00A0ID:\u00A0%6$s\nУстройство\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
     <string name="space">Пространство</string>
@@ -101,7 +101,7 @@
     <string name="toolbar_section_tool">Инструмент</string>
     <string name="toolbar_section_media">Медиа-файлы</string>
     <string name="toolbar_section_objects">Объекты</string>
-    <string name="toolbar_section_relation">Property</string>
+    <string name="toolbar_section_relation">Свойство</string>
     <string name="toolbar_action_delete">Удалить</string>
     <string name="toolbar_action_duplicate">Дублировать</string>
     <string name="toolbar_action_mention">Упоминание</string>
@@ -321,8 +321,8 @@
     <string name="unknown_object_type">Неизвестный тип</string>
     <string name="relation_format_short_text">Короткий текст</string>
     <string name="relation_format_long_text">Текст</string>
-    <string name="set_new_relation">Set new property</string>
-    <string name="relation_deleted">Deleted property</string>
+    <string name="set_new_relation">Установить новое свойство</string>
+    <string name="relation_deleted">Удаленное свойство</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Сплошные цвета</string>
@@ -494,7 +494,7 @@
     <string name="set_by_relations">Properties: %1$s</string>
     <string name="set_by_type">Тип объекта: %1$s</string>
     <string name="my_types">Мои типы</string>
-    <string name="my_relations">My properties</string>
+    <string name="my_relations">Мои свойства</string>
     <string name="type_added">Свойство \"%1$s\" добавлено в вашу библиотеку</string>
     <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
     <string name="block_data_view_content_description_no_source">The inline query has no source</string>
@@ -534,7 +534,7 @@
     <string name="file_delete_cancel">Отмена</string>
     <string name="file_delete_delete">Удалить</string>
     <string name="menu_type_change">Изменить тип</string>
-    <string name="menu_type_open">Open type</string>
+    <string name="menu_type_open">Открыть тип</string>
     <string name="menu_type_open_set">Open query of %1$s</string>
     <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Невозможно удалить текущий вид</string>
@@ -826,7 +826,7 @@
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
     <string name="personal">По умолчанию</string>
-    <string name="create_space">Create a space</string>
+    <string name="create_space">Создать пространство</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
     <string name="type">Тип</string>
     <string name="format">Формат</string>
@@ -976,9 +976,9 @@
     <string name="library_description_types">Типы похожи на категории,которые помогают группировать и управлятьвашими объектами.</string>
     <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Создать тип</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">Создать свойство</string>
     <string name="library_subtitle_types">Мои типы</string>
-    <string name="library_subtitle_relations">My properties</string>
+    <string name="library_subtitle_relations">Мои свойства</string>
     <string name="library_subtitle_library">Библиотека</string>
     <string name="library_create_new_type">Создать тип «%1$s»</string>
     <string name="library_create_new_relation">Create a property \'%1$s\'</string>
@@ -1025,7 +1025,7 @@
     <string name="onboarding_login_or">ИЛИ</string>
     <string name="onboarding_entering_void_title">Входим в пустоту</string>
     <string name="onboarding_your_key_can_t_be_empty">Ваш ключ не может быть пустым</string>
-    <string name="onboarding_your_name">Your name</string>
+    <string name="onboarding_your_name">Ваше имя</string>
     <string name="onboarding_mnemonic_read_more">Подробнее о Ключе</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">Что такое Ключ?</string>

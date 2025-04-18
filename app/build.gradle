@@ -142,7 +142,7 @@ android {
         // Configures multiple APKs based on ABI.
         abi {
             // Enables building multiple APKs per ABI.
-            enable true
+            enable project.hasProperty("enableAbiSplits") && project.getProperty("enableAbiSplits").toBoolean()
             reset()
             include "armeabi-v7a", "arm64-v8a"
             universalApk true

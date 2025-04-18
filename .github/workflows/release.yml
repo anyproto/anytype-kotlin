@@ -60,7 +60,7 @@ jobs:
         run: ./scripts/release/apk.sh
 
       - name: Build release APKS
-        run: ./gradlew :app:assembleRelease
+        run: ./gradlew :app:assembleRelease -PenableAbiSplits=true
 
       - name: Clean secrets
         if: always()

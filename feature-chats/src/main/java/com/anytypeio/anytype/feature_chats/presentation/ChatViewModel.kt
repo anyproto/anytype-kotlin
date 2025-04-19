@@ -108,6 +108,7 @@ class ChatViewModel @Inject constructor(
                     header.value = it
                 }
         }
+
         viewModelScope.launch {
             getAccount
                 .async(Unit)
@@ -122,18 +123,6 @@ class ChatViewModel @Inject constructor(
                 chat = vmParams.ctx
             )
         }
-    }
-
-    fun onChatScrolledToTop() {
-        Timber.d("onChatScrolledToTop")
-        viewModelScope.launch {
-            chatContainer.onLoadNextPage()
-        }
-    }
-
-    fun onChatScrolledToBottom() {
-        Timber.d("onChatScrolledToBottom")
-        // TODO in the next PR
     }
 
     private suspend fun proceedWithObservingChatMessages(
@@ -899,6 +888,21 @@ class ChatViewModel @Inject constructor(
         val query = text.substring(atIndex + 1, endIndex)
         // Allow empty queries if there's no space after '@'
         return MentionPanelState.Query(query, atIndex until endIndex)
+    }
+
+    fun onChatScrolledToTop() {
+        Timber.d("onChatScrolledToTop")
+        viewModelScope.launch {
+            chatContainer.onLoadNextPage()
+        }
+    }
+
+    fun onChatScrolledToBottom() {
+        Timber.d("onChatScrolledToBottom")
+        // TODO this behavior will be enabled later.
+        viewModelScope.launch {
+            chatContainer.onLoadPreviousPage()
+        }
     }
 
     /**

@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.runningFold
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
@@ -32,6 +32,7 @@ class ChatContainer @Inject constructor(
     private val logger: Logger
 ) {
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
+    private val commands = MutableSharedFlow<Transformation.Commands>(replay = 0)
 
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
@@ -106,12 +107,50 @@ class ChatContainer @Inject constructor(
                 limit = DEFAULT_LAST_MESSAGE_COUNT
             )
         )
+
+        val inputs: Flow<Transformation> = merge(
+            channel.observe(chat).map { Transformation.Events.Payload(it) },
+            payloads.map { Transformation.Events.Payload(it) },
+            commands
+        )
+
         emitAll(
-            merge(
-                channel.observe(chat = chat),
-                payloads
-            ).scan(initial.messages) { state, events ->
-                state.reduce(events)
+            inputs.runningFold(initial.messages) { state, transform ->
+                when(transform) {
+                    Transformation.Commands.LoadNext -> {
+                        val first = state.firstOrNull()
+                        if (first != null) {
+                            val next = repo.getChatMessages(
+                                Command.ChatCommand.GetMessages(
+                                    chat = chat,
+                                    beforeOrderId = first.order,
+                                    limit = DEFAULT_LAST_MESSAGE_COUNT
+                                )
+                            )
+                            next.messages + state
+                        } else {
+                            state
+                        }
+                    }
+                    Transformation.Commands.LoadPrevious -> {
+                        val last = state.lastOrNull()
+                        if (last != null) {
+                            val next = repo.getChatMessages(
+                                Command.ChatCommand.GetMessages(
+                                    chat = chat,
+                                    beforeOrderId = last.order,
+                                    limit = DEFAULT_LAST_MESSAGE_COUNT
+                                )
+                            )
+                            state + next.messages
+                        } else {
+                            state
+                        }
+                    }
+                    is Transformation.Events.Payload -> {
+                        state.reduce(transform.events)
+                    }
+                }
             }
         )
     }.catch {
@@ -181,7 +220,25 @@ class ChatContainer @Inject constructor(
         return result
     }
 
+    suspend fun onLoadNextPage() {
+        commands.emit(Transformation.Commands.LoadNext)
+    }
+
+    suspend fun onLoadPreviousPage() {
+        commands.emit(Transformation.Commands.LoadPrevious)
+    }
+
+    sealed class Transformation {
+        sealed class Events : Transformation() {
+            data class Payload(val events: List<Event.Command.Chats>) : Events()
+        }
+        sealed class Commands : Transformation() {
+            data object LoadNext : Commands()
+            data object LoadPrevious : Commands()
+        }
+    }
+
     companion object {
-        const val DEFAULT_LAST_MESSAGE_COUNT = 0
+        const val DEFAULT_LAST_MESSAGE_COUNT = 10
     }
 }

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
+import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -88,6 +89,9 @@ class ChatViewModel @Inject constructor(
     private var account: Id = ""
 
     init {
+
+//        runDummyMessageGenerator()
+
         viewModelScope.launch {
             spaceViews
                 .observe(
@@ -120,6 +124,33 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    private fun runDummyMessageGenerator() {
+//        viewModelScope.launch {
+//            repeat(100) {
+//                addChatMessage.async(
+//                    Command.ChatCommand.AddMessage(
+//                        chat = vmParams.ctx,
+//                        message = DummyMessageGenerator.generateMessage(
+//                            text = it.toString()
+//                        )
+//                    )
+//                )
+//            }
+//        }
+    }
+
+    fun onChatScrolledToTop() {
+        Timber.d("onChatScrolledToTop")
+        viewModelScope.launch {
+            chatContainer.onLoadNextPage()
+        }
+    }
+
+    fun onChatScrolledToBottom() {
+        Timber.d("onChatScrolledToBottom")
+        // TODO
+    }
+
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
         chat: Id
@@ -130,7 +161,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
-            Timber.d("Got chat results: $result")
+            Timber.d("Got chat results: ${result.size}")
             data.value = result
             var previousDate: ChatView.DateSection? = null
             buildList<ChatView> {

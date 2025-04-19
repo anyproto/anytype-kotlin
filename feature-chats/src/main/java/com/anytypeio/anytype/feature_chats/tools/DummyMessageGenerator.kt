@@ -21,13 +21,14 @@ object DummyMessageGenerator {
     private val emojis = listOf("👍", "❤️", "😂", "😮", "🎉", "🔥")
 
     fun generateMessage(
+        text: String? = null,
         replyTo: Id? = null,
         timestamp: Long = System.currentTimeMillis()
     ): Message {
         val id = UUID.randomUUID().toString()
 
         val content = Message.Content(
-            text = sampleTexts.random(),
+            text = text ?: sampleTexts.random(),
             style = Block.Content.Text.Style.P, // paragraph only
             marks = emptyList()
         )

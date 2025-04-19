@@ -42,7 +42,6 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
-import kotlin.getValue
 import timber.log.Timber
 
 class ObjectTypeFragment : BaseComposeFragment() {
@@ -93,10 +92,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     )
                 }
 
-                ObjectTypeCommand.OpenTypePropertiesListScreen -> {
-                    navComposeController.navigate(OBJ_TYPE_PROPERTIES)
-                }
-
                 is ObjectTypeCommand.OpenAddNewPropertyScreen -> {
                     runCatching {
                         findNavController().navigate(
@@ -109,10 +104,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     }.onFailure {
                         Timber.e(it, "Error while opening edit object type properties screen")
                     }
-                }
-
-                ObjectTypeCommand.CloseFieldsScreen -> {
-                    navComposeController.popBackStack()
                 }
             }
         }
@@ -139,6 +130,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
             startDestination = OBJ_TYPE_MAIN
         ) {
             composable(route = OBJ_TYPE_MAIN) {
+                val showPropertiesScreen = vm.showPropertiesScreen.collectAsStateWithLifecycle().value
                 WithSetScreen(
                     uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
@@ -153,16 +145,16 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     space = space,
                     onTypeEvent = vm::onTypeEvent
                 )
-            }
-            composable(route = OBJ_TYPE_PROPERTIES) {
-                FieldsMainScreen(
-                    uiFieldsListState = vm.uiTypePropertiesListState.collectAsStateWithLifecycle().value,
-                    uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
-                    uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
-                    uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
-                    uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
-                    fieldEvent = vm::onFieldEvent
-                )
+                if (showPropertiesScreen) {
+                    FieldsMainScreen(
+                        uiFieldsListState = vm.uiTypePropertiesListState.collectAsStateWithLifecycle().value,
+                        uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                        uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
+                        uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
+                        uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
+                        fieldEvent = vm::onFieldEvent
+                    )
+                }
             }
         }
     }
@@ -246,7 +238,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
     companion object {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
-        private const val OBJ_TYPE_PROPERTIES = "obj_properties"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
 

@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -76,68 +77,70 @@ fun NewSpaceIcon(
             }
         )
         if (isEditEnabled) {
-            Text(
-                modifier = Modifier
-                    .padding(top = 8.dp)
-                    .noRippleThrottledClickable {
-                        if (isEditEnabled) {
-                            isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+            Box {
+                Text(
+                    modifier = Modifier
+                        .padding(top = 8.dp)
+                        .noRippleThrottledClickable {
+                            if (isEditEnabled) {
+                                isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+                            }
+                        },
+                    text = stringResource(R.string.space_settings_icon_title),
+                    style = Caption1Medium,
+                    color = colorResource(R.color.text_secondary)
+                )
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
+                ) {
+                    DropdownMenu(
+                        modifier = Modifier
+                            .background(
+                                shape = RoundedCornerShape(10.dp),
+                                color = colorResource(id = R.color.background_secondary)
+                            ),
+                        expanded = isSpaceIconMenuExpanded.value,
+                        offset = DpOffset(x = 0.dp, y = 6.dp),
+                        onDismissRequest = {
+                            isSpaceIconMenuExpanded.value = false
                         }
-                    },
-                text = stringResource(R.string.space_settings_icon_title),
-                style = Caption1Medium,
-                color = colorResource(R.color.text_secondary)
-            )
-        }
-        MaterialTheme(
-            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
-        ) {
-            DropdownMenu(
-                modifier = Modifier
-                    .background(
-                        shape = RoundedCornerShape(10.dp),
-                        color = colorResource(id = R.color.background_secondary)
-                    ),
-                expanded = isSpaceIconMenuExpanded.value,
-                offset = DpOffset(x = 0.dp, y = 6.dp),
-                onDismissRequest = {
-                    isSpaceIconMenuExpanded.value = false
-                }
-            ) {
-                if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
-                    DropdownMenuItem(
-                        onClick = {
-                            singlePhotoPickerLauncher.launch(
-                                PickVisualMediaRequest(
-                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                    ) {
+                        if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    singlePhotoPickerLauncher.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
+                                    isSpaceIconMenuExpanded.value = false
+                                },
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.space_settings_apply_upload_image),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary)
                                 )
+                            }
+                        }
+                        if (icon is SpaceIconView.Image) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                color = colorResource(id = R.color.shape_primary)
                             )
-                            isSpaceIconMenuExpanded.value = false
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.space_settings_apply_upload_image),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
-                }
-                if (icon is SpaceIconView.Image) {
-                    DropdownMenuItem(
-                        onClick = {
-                            uiEvent(UiEvent.IconMenu.OnRemoveIconClicked)
-                            isSpaceIconMenuExpanded.value = false
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.remove_image),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
+                            DropdownMenuItem(
+                                onClick = {
+                                    uiEvent(UiEvent.IconMenu.OnRemoveIconClicked)
+                                    isSpaceIconMenuExpanded.value = false
+                                },
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.remove_image),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            }
+                        }
                     }
                 }
             }

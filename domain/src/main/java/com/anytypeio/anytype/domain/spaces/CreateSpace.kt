@@ -18,7 +18,7 @@ class CreateSpace @Inject constructor(
             details = params.details,
             withChat = params.withChat,
             shouldApplyEmptyUseCase = params.shouldApplyEmptyUseCase
-        ),
+        )
     )
 
     data class Params(

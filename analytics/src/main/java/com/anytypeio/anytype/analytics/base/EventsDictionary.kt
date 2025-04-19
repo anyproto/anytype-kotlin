@@ -25,6 +25,7 @@ object EventsDictionary {
     const val clickDeleteSpaceWarning = "ClickDeleteSpaceWarning"
     const val createSpace = "CreateSpace"
     const val switchSpace = "SwitchSpace"
+    const val reorderSpace = "ReorderSpace"
     const val deleteSpace = "DeleteSpace"
     const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
 

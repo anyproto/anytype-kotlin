@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
@@ -163,11 +164,9 @@ class VaultViewModel(
     }
 
     fun onOrderChanged(order: List<Id>) {
-        viewModelScope.launch {
-            setVaultSpaceOrder.async(
-                params = order
-            )
-        }
+        Timber.d("onOrderChanged")
+        viewModelScope.launch { analytics.sendEvent(eventName = EventsDictionary.reorderSpace) }
+        viewModelScope.launch { setVaultSpaceOrder.async(params = order) }
     }
 
     fun onCreateSpaceClicked() {

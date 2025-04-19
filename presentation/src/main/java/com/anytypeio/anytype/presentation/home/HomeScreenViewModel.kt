@@ -875,6 +875,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithDeletingWidget(widget: Id) {
+        Timber.d("Proceeding with widget deletion: $widget")
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {

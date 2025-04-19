@@ -34,7 +34,6 @@ object SupportedLayouts {
     )
 
     val systemLayouts = listOf(
-        ObjectType.Layout.OBJECT_TYPE,
         ObjectType.Layout.RELATION,
         ObjectType.Layout.RELATION_OPTION,
         ObjectType.Layout.DASHBOARD,

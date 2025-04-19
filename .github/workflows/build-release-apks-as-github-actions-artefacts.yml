@@ -1,0 +1,92 @@
+name: Build release APKs and upload it as Github Actions artefacts
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Git tag to build from'
+        required: true
+        type: string
+
+jobs:
+  build-release:
+    name: Build APK from tag
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo at tag
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # needed to fetch all tags
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r23c
+          link-to-sdk: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: "zulu"
+          java-version: 17
+
+      - name: Setup middleware dependency
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+          sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
+
+      - name: Decrypt secrets
+        run: ./scripts/release/decrypt-secrets.sh
+        env:
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+
+      - name: Setup keystore
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PWD: ${{ secrets.RELEASE_KEY_PWD }}
+          RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
+        run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
+
+      - name: Checkout license repository
+        uses: actions/checkout@v3
+        with:
+          repository: anyproto/open
+          ref: refs/heads/main
+          path: ./open
+
+      - name: Check licenses
+        run: |
+          cd open
+          python3 tools/generate.py --platform android
+          cd ..
+          sudo gem install license_finder
+          license_finder ignored_dependencies add skiko --why "Excluded due to native binary license concerns"
+          license_finder inherited_decisions add open/decisions.yml
+          license_finder --gradle-command="./gradlew \
+          -Pcom.anytype.ci=true \
+          -Dorg.gradle.unsafe.configuration-cache=false"
+
+      - name: Prepare Android Manifest
+        run: ./scripts/release/apk.sh
+
+      - name: Build release APKs
+        run: ./gradlew :app:assembleRelease -PenableAbiSplits=true
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/release/clean-secrets.sh
+
+      - name: Prepare artefacts
+        run: ./scripts/release/prepare-release-artefacts.sh
+
+      - name: Upload artefacts as GitHub Actions output
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-apks-${{ github.event.inputs.tag }}
+          path: app/build/outputs/apk/release/release-artefacts/

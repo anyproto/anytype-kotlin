@@ -1,17 +1,33 @@
+name: Build release APKs and upload it as Github Actions artefacts
+
 on:
   workflow_dispatch:
-name: Build signed release APK
+    inputs:
+      tag:
+        description: 'Git tag to build from'
+        required: true
+        type: string
+
 jobs:
-  setup-android:
+  build-release:
+    name: Build APK from tag
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: nttld/setup-ndk@v1
-        id: setup-ndk
+      - name: Checkout repo at tag
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # needed to fetch all tags
+          ref: ${{ github.event.inputs.tag }}
+
+      - name: Set up Android NDK
+        uses: nttld/setup-ndk@v1
         with:
           ndk-version: r23c
           link-to-sdk: true
-      - uses: actions/setup-java@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
         with:
           distribution: "zulu"
           java-version: 17
@@ -37,9 +53,9 @@ jobs:
           RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
         run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
 
-      - uses: actions/checkout@v3
+      - name: Checkout license repository
+        uses: actions/checkout@v3
         with:
-          name: Setup license repository
           repository: anyproto/open
           ref: refs/heads/main
           path: ./open
@@ -56,10 +72,10 @@ jobs:
           -Pcom.anytype.ci=true \
           -Dorg.gradle.unsafe.configuration-cache=false"
 
-      - name: Prepare Android Manifest for APKs
+      - name: Prepare Android Manifest
         run: ./scripts/release/apk.sh
 
-      - name: Build release APKS
+      - name: Build release APKs
         run: ./gradlew :app:assembleRelease -PenableAbiSplits=true
 
       - name: Clean secrets
@@ -69,12 +85,8 @@ jobs:
       - name: Prepare artefacts
         run: ./scripts/release/prepare-release-artefacts.sh
 
-      - name: Upload to S3
-        uses: shallwefootball/s3-upload-action@v1.3.3
+      - name: Upload artefacts as GitHub Actions output
+        uses: actions/upload-artifact@v3
         with:
-          aws_key_id: ${{ secrets.AWS_KEY_ID }}
-          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY}}
-          aws_bucket: ${{ secrets.AWS_BUCKET }}
-          endpoint: ${{ secrets.AWS_ENDPOINT }}
-          source_dir: app/build/outputs/apk/release/release-artefacts/
-          destination_dir: ''
+          name: release-apks-${{ github.event.inputs.tag }}
+          path: app/build/outputs/apk/release/release-artefacts/

@@ -18,7 +18,9 @@ apply from: "$rootDir/versioning.gradle"
 
 def apikeyPropertiesFile = rootProject.file("apikeys.properties")
 def apikeyProperties = new Properties()
-apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+if (apikeyPropertiesFile.exists()) {
+    apikeyProperties.load(new FileInputStream(apikeyPropertiesFile))
+}
 
 def useReleaseKeystore = rootProject.file("scripts/release/app-release.jks").exists()
 
@@ -97,7 +99,7 @@ android {
             shrinkResources true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'] ?: "MISSING_AMPLITUDE_RELEASE_KEY")
             if (useReleaseKeystore) {
                 signingConfig signingConfigs.release
             } else {
@@ -108,7 +110,7 @@ android {
         debug {
             applicationIdSuffix ".dev"
             debuggable true
-            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
+            buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'] ?: "MISSING_AMPLITUDE_DEBUG_KEY")
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
                 artifactType = "AAB"
@@ -142,7 +144,7 @@ android {
         // Configures multiple APKs based on ABI.
         abi {
             // Enables building multiple APKs per ABI.
-            enable project.hasProperty("enableAbiSplits") && project.getProperty("enableAbiSplits").toBoolean()
+            enable true
             reset()
             include "armeabi-v7a", "arm64-v8a"
             universalApk true

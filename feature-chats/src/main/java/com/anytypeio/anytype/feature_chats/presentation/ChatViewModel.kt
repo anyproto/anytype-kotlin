@@ -124,21 +124,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun runDummyMessageGenerator() {
-//        viewModelScope.launch {
-//            repeat(100) {
-//                addChatMessage.async(
-//                    Command.ChatCommand.AddMessage(
-//                        chat = vmParams.ctx,
-//                        message = DummyMessageGenerator.generateMessage(
-//                            text = it.toString()
-//                        )
-//                    )
-//                )
-//            }
-//        }
-    }
-
     fun onChatScrolledToTop() {
         Timber.d("onChatScrolledToTop")
         viewModelScope.launch {
@@ -148,7 +133,7 @@ class ChatViewModel @Inject constructor(
 
     fun onChatScrolledToBottom() {
         Timber.d("onChatScrolledToBottom")
-        // TODO
+        // TODO in the next PR
     }
 
     private suspend fun proceedWithObservingChatMessages(
@@ -916,6 +901,23 @@ class ChatViewModel @Inject constructor(
         return MentionPanelState.Query(query, atIndex until endIndex)
     }
 
+    /**
+     * Used for testing. Will be deleted.
+     */
+    private fun generateDummyChatHistory() {
+        viewModelScope.launch {
+            repeat(100) {
+                addChatMessage.async(
+                    Command.ChatCommand.AddMessage(
+                        chat = vmParams.ctx,
+                        message = DummyMessageGenerator.generateMessage(
+                            text = it.toString()
+                        )
+                    )
+                )
+            }
+        }
+    }
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

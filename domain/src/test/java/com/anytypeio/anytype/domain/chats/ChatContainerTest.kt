@@ -357,7 +357,8 @@ class ChatContainerTest {
                     Command.ChatCommand.GetMessages(
                         chat = givenChatID,
                         beforeOrderId = firstMessage.order,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                        afterOrderId = null
                     )
                 )
             } doReturn Command.ChatCommand.GetMessages.Response(

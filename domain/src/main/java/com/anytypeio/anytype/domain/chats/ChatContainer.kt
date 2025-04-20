@@ -126,6 +126,7 @@ class ChatContainer @Inject constructor(
                                     Command.ChatCommand.GetMessages(
                                         chat = chat,
                                         beforeOrderId = first.order,
+                                        afterOrderId = null,
                                         limit = DEFAULT_CHAT_PAGING_SIZE
                                     )
                                 )
@@ -146,7 +147,8 @@ class ChatContainer @Inject constructor(
                                 val next = repo.getChatMessages(
                                     Command.ChatCommand.GetMessages(
                                         chat = chat,
-                                        beforeOrderId = last.order,
+                                        beforeOrderId = null,
+                                        afterOrderId = last.order,
                                         limit = DEFAULT_CHAT_PAGING_SIZE
                                     )
                                 )

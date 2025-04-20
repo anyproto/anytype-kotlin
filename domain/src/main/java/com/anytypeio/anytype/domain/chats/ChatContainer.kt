@@ -116,7 +116,7 @@ class ChatContainer @Inject constructor(
         )
 
         emitAll(
-            inputs.scan(initial.messages) { state, transform ->
+            inputs.scan(initial = initial.messages) { state, transform ->
                 when(transform) {
                     Transformation.Commands.LoadNext -> {
                         val first = state.firstOrNull()

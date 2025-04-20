@@ -32,6 +32,7 @@ class ChatContainer @Inject constructor(
     private val logger: Logger
 ) {
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
+    private val commands = MutableSharedFlow<Transformation.Commands>(replay = 0)
 
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
@@ -100,22 +101,75 @@ class ChatContainer @Inject constructor(
     }
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
+
         val initial = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,
-                limit = DEFAULT_LAST_MESSAGE_COUNT
+                limit = DEFAULT_CHAT_PAGING_SIZE
             )
         )
+
+        val inputs: Flow<Transformation> = merge(
+            channel.observe(chat).map { Transformation.Events.Payload(it) },
+            payloads.map { Transformation.Events.Payload(it) },
+            commands
+        )
+
         emitAll(
-            merge(
-                channel.observe(chat = chat),
-                payloads
-            ).scan(initial.messages) { state, events ->
-                state.reduce(events)
+            inputs.scan(initial = initial.messages) { state, transform ->
+                when(transform) {
+                    Transformation.Commands.LoadBefore -> {
+                        try {
+                            val first = state.firstOrNull()
+                            if (first != null) {
+                                val next = repo.getChatMessages(
+                                    Command.ChatCommand.GetMessages(
+                                        chat = chat,
+                                        beforeOrderId = first.order,
+                                        afterOrderId = null,
+                                        limit = DEFAULT_CHAT_PAGING_SIZE
+                                    )
+                                )
+                                next.messages + state
+                            } else {
+                                state
+                            }
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while loading next page")
+                            }
+                        }
+                    }
+                    Transformation.Commands.LoadAfter -> {
+                        try {
+                            val last = state.lastOrNull()
+                            if (last != null) {
+                                val next = repo.getChatMessages(
+                                    Command.ChatCommand.GetMessages(
+                                        chat = chat,
+                                        beforeOrderId = null,
+                                        afterOrderId = last.order,
+                                        limit = DEFAULT_CHAT_PAGING_SIZE
+                                    )
+                                )
+                                state + next.messages
+                            } else {
+                                state
+                            }
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while loading previous page")
+                            }
+                        }
+                    }
+                    is Transformation.Events.Payload -> {
+                        state.reduce(transform.events)
+                    }
+                }
             }
         )
     }.catch {
-        logger.logException(it)
+        logger.logException(it, "Exception in chat container")
         emit(emptyList())
     }
 
@@ -181,7 +235,32 @@ class ChatContainer @Inject constructor(
         return result
     }
 
+    suspend fun onLoadNextPage() {
+        commands.emit(Transformation.Commands.LoadBefore)
+    }
+
+    suspend fun onLoadPreviousPage() {
+        commands.emit(Transformation.Commands.LoadAfter)
+    }
+
+    internal sealed class Transformation {
+        sealed class Events : Transformation() {
+            data class Payload(val events: List<Event.Command.Chats>) : Events()
+        }
+        sealed class Commands : Transformation() {
+            /**
+             * Loading next — older — messages in history.
+             */
+            data object LoadBefore : Commands()
+
+            /**
+             * Loading next — more recent — messages in history.
+             */
+            data object LoadAfter : Commands()
+        }
+    }
+
     companion object {
-        const val DEFAULT_LAST_MESSAGE_COUNT = 0
+        const val DEFAULT_CHAT_PAGING_SIZE = 100
     }
 }

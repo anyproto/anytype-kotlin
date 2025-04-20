@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
+import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -88,6 +89,9 @@ class ChatViewModel @Inject constructor(
     private var account: Id = ""
 
     init {
+
+//        runDummyMessageGenerator()
+
         viewModelScope.launch {
             spaceViews
                 .observe(
@@ -104,6 +108,7 @@ class ChatViewModel @Inject constructor(
                     header.value = it
                 }
         }
+
         viewModelScope.launch {
             getAccount
                 .async(Unit)
@@ -130,7 +135,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
-            Timber.d("Got chat results: $result")
+            Timber.d("Got chat results: ${result.size}")
             data.value = result
             var previousDate: ChatView.DateSection? = null
             buildList<ChatView> {
@@ -885,6 +890,38 @@ class ChatViewModel @Inject constructor(
         return MentionPanelState.Query(query, atIndex until endIndex)
     }
 
+    fun onChatScrolledToTop() {
+        Timber.d("onChatScrolledToTop")
+        viewModelScope.launch {
+            chatContainer.onLoadNextPage()
+        }
+    }
+
+    fun onChatScrolledToBottom() {
+        Timber.d("onChatScrolledToBottom")
+        // TODO this behavior will be enabled later.
+        viewModelScope.launch {
+            chatContainer.onLoadPreviousPage()
+        }
+    }
+
+    /**
+     * Used for testing. Will be deleted.
+     */
+    private fun generateDummyChatHistory() {
+        viewModelScope.launch {
+            repeat(100) {
+                addChatMessage.async(
+                    Command.ChatCommand.AddMessage(
+                        chat = vmParams.ctx,
+                        message = DummyMessageGenerator.generateMessage(
+                            text = it.toString()
+                        )
+                    )
+                )
+            }
+        }
+    }
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

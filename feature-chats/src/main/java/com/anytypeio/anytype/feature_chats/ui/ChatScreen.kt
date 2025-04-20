@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -82,7 +83,11 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,7 +189,8 @@ fun ChatScreenWrapper(
                             selection = value.selection.start..value.selection.end,
                             text = value.text
                         )
-                    }
+                    },
+                    onChatScrolledToTop = vm::onChatScrolledToTop
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -249,7 +255,8 @@ fun ChatScreen(
     onViewChatReaction: (Id, String) -> Unit,
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
-    onTextChanged: (TextFieldValue) -> Unit
+    onTextChanged: (TextFieldValue) -> Unit,
+    onChatScrolledToTop: () -> Unit
 ) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -269,6 +276,30 @@ fun ChatScreen(
                 lazyListState.animateScrollToItem(0)
             }
         }
+    }
+
+
+    var isAtTop by remember { mutableStateOf(false) }
+
+    LaunchedEffect(lazyListState, messages.size) {
+        if (messages.isEmpty()) return@LaunchedEffect
+        snapshotFlow {
+            lazyListState.layoutInfo.visibleItemsInfo
+                .lastOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
+                ?.key as? String
+        }
+            .distinctUntilChanged()
+            .collect { currentTopMessageId ->
+                val isNowAtTop = currentTopMessageId != null &&
+                        currentTopMessageId == (messages.lastOrNull { it is ChatView.Message } as? ChatView.Message)?.id
+
+                if (isNowAtTop && !isAtTop) {
+                    isAtTop = true
+                    onChatScrolledToTop()
+                } else if (!isNowAtTop && isAtTop) {
+                    isAtTop = false // reset for next entry
+                }
+            }
     }
 
     Column(
@@ -481,7 +512,7 @@ fun Messages(
             messages,
             key = { _, msg ->
                 when(msg) {
-                    is ChatView.DateSection -> msg.timeInMillis
+                    is ChatView.DateSection -> "$DATE_KEY_PREFIX${msg.timeInMillis}"
                     is ChatView.Message -> msg.id
                 }
             }
@@ -663,5 +694,6 @@ fun TopDiscussionToolbarPreview() {
     TopDiscussionToolbar()
 }
 
+private const val DATE_KEY_PREFIX = "date-"
 private const val HEADER_KEY = "key.discussions.item.header"
 private val JumpToBottomThreshold = 200.dp

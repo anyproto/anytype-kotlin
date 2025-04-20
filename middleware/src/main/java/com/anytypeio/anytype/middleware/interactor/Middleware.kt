@@ -2777,7 +2777,10 @@ class Middleware @Inject constructor(
     @Throws
     fun chatGetMessages(command: Command.ChatCommand.GetMessages) : Command.ChatCommand.GetMessages.Response {
         val request = Rpc.Chat.GetMessages.Request(
-            chatObjectId = command.chat
+            chatObjectId = command.chat,
+            beforeOrderId = command.beforeOrderId.orEmpty(),
+            afterOrderId = command.afterOrderId.orEmpty(),
+            limit = command.limit
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatGetMessages(request) }

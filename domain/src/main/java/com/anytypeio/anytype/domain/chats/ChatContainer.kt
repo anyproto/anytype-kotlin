@@ -229,7 +229,7 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadPrevious)
     }
 
-    sealed class Transformation {
+    internal sealed class Transformation {
         sealed class Events : Transformation() {
             data class Payload(val events: List<Event.Command.Chats>) : Events()
         }

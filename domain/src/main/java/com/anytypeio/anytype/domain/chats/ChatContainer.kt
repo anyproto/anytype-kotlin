@@ -245,7 +245,14 @@ class ChatContainer @Inject constructor(
             data class Payload(val events: List<Event.Command.Chats>) : Events()
         }
         sealed class Commands : Transformation() {
+            /**
+             * Loading next — older — messages in history.
+             */
             data object LoadNext : Commands()
+
+            /**
+             * Loading next — more recent — messages in history.
+             */
             data object LoadPrevious : Commands()
         }
     }

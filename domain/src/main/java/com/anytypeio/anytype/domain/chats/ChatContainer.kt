@@ -100,6 +100,7 @@ class ChatContainer @Inject constructor(
     }
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
+
         val initial = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,

@@ -74,7 +74,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -138,7 +138,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -206,7 +206,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -279,7 +279,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(

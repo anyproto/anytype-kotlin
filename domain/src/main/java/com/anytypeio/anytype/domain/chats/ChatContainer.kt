@@ -104,7 +104,7 @@ class ChatContainer @Inject constructor(
         val initial = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,
-                limit = DEFAULT_LAST_MESSAGE_COUNT
+                limit = DEFAULT_CHAT_PAGING_SIZE
             )
         )
 
@@ -124,7 +124,7 @@ class ChatContainer @Inject constructor(
                                 Command.ChatCommand.GetMessages(
                                     chat = chat,
                                     beforeOrderId = first.order,
-                                    limit = DEFAULT_LAST_MESSAGE_COUNT
+                                    limit = DEFAULT_CHAT_PAGING_SIZE
                                 )
                             )
                             next.messages + state
@@ -139,7 +139,7 @@ class ChatContainer @Inject constructor(
                                 Command.ChatCommand.GetMessages(
                                     chat = chat,
                                     beforeOrderId = last.order,
-                                    limit = DEFAULT_LAST_MESSAGE_COUNT
+                                    limit = DEFAULT_CHAT_PAGING_SIZE
                                 )
                             )
                             state + next.messages
@@ -239,6 +239,6 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_LAST_MESSAGE_COUNT = 100
+        const val DEFAULT_CHAT_PAGING_SIZE = 100
     }
 }

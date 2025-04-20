@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.runningFold
+import kotlinx.coroutines.flow.scan
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
@@ -115,7 +116,7 @@ class ChatContainer @Inject constructor(
         )
 
         emitAll(
-            inputs.runningFold(initial.messages) { state, transform ->
+            inputs.scan(initial.messages) { state, transform ->
                 when(transform) {
                     Transformation.Commands.LoadNext -> {
                         val first = state.firstOrNull()

@@ -136,7 +136,7 @@ class ChatContainer @Inject constructor(
                             }
                         } catch (e: Exception) {
                             state.also {
-                                logger.logException(e, "Error while loading next page")
+                                logger.logException(e, "Error while loading next page in chat: $chat")
                             }
                         }
                     }
@@ -158,7 +158,7 @@ class ChatContainer @Inject constructor(
                             }
                         } catch (e: Exception) {
                             state.also {
-                                logger.logException(e, "Error while loading previous page")
+                                logger.logException(e, "Error while loading previous page in chat $chat")
                             }
                         }
                     }
@@ -178,57 +178,45 @@ class ChatContainer @Inject constructor(
     }
 
     fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {
-        // Naive implementation
-        var result = this
+        val result = this.toMutableList()
         events.forEach { event ->
-            when(event) {
+            when (event) {
                 is Event.Command.Chats.Add -> {
-                    if (result.isNotEmpty()) {
-                        val last = result.last()
-                        result = if (last.order < event.order)
-                            result + listOf(event.message)
-                        else {
-                            buildList {
-                                addAll(result)
-                                add(event.message)
-                            }.sortedBy { it.order }
+                    if (result.none { it.id == event.message.id }) {
+                        val insertIndex = result.indexOfFirst { it.order > event.order }
+                        if (insertIndex >= 0) {
+                            result.add(insertIndex, event.message)
+                        } else {
+                            result.add(event.message)
                         }
-                    } else {
-                        result = listOf(event.message)
                     }
                 }
                 is Event.Command.Chats.Delete -> {
-                    result = result.filter { msg ->
-                        msg.id != event.id
-                    }
+                    val index = result.indexOfFirst { it.id == event.id }
+                    if (index >= 0) result.removeAt(index)
                 }
                 is Event.Command.Chats.Update -> {
-                    result = result.map { msg ->
-                        if (msg.id == event.id)
-                            event.message
-                        else
-                            msg
+                    val index = result.indexOfFirst { it.id == event.id }
+                    if (index >= 0 && result[index] != event.message) {
+                        result[index] = event.message
                     }
                 }
                 is Event.Command.Chats.UpdateReactions -> {
-                    result = result.map { msg ->
-                        if (msg.id == event.id)
-                            msg.copy(
-                                reactions = event.reactions
-                            )
-                        else
-                            msg
+                    val index = result.indexOfFirst { it.id == event.id }
+                    if (index >= 0 && result[index].reactions != event.reactions) {
+                        result[index] = result[index].copy(reactions = event.reactions)
                     }
                 }
-
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                    // TODO handle event
+                   // TODO
                 }
+
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    // TODO handle event
+                    // TODO
                 }
+
                 is Event.Command.Chats.UpdateState -> {
-                    // TODO handle event
+                   // TODO
                 }
             }
         }

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.domain.chats
 
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -118,33 +117,45 @@ class ChatContainer @Inject constructor(
             inputs.scan(initial = initial.messages) { state, transform ->
                 when(transform) {
                     Transformation.Commands.LoadNext -> {
-                        val first = state.firstOrNull()
-                        if (first != null) {
-                            val next = repo.getChatMessages(
-                                Command.ChatCommand.GetMessages(
-                                    chat = chat,
-                                    beforeOrderId = first.order,
-                                    limit = DEFAULT_CHAT_PAGING_SIZE
+                        try {
+                            val first = state.firstOrNull()
+                            if (first != null) {
+                                val next = repo.getChatMessages(
+                                    Command.ChatCommand.GetMessages(
+                                        chat = chat,
+                                        beforeOrderId = first.order,
+                                        limit = DEFAULT_CHAT_PAGING_SIZE
+                                    )
                                 )
-                            )
-                            next.messages + state
-                        } else {
-                            state
+                                next.messages + state
+                            } else {
+                                state
+                            }
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while loading next page")
+                            }
                         }
                     }
                     Transformation.Commands.LoadPrevious -> {
-                        val last = state.lastOrNull()
-                        if (last != null) {
-                            val next = repo.getChatMessages(
-                                Command.ChatCommand.GetMessages(
-                                    chat = chat,
-                                    beforeOrderId = last.order,
-                                    limit = DEFAULT_CHAT_PAGING_SIZE
+                        try {
+                            val last = state.lastOrNull()
+                            if (last != null) {
+                                val next = repo.getChatMessages(
+                                    Command.ChatCommand.GetMessages(
+                                        chat = chat,
+                                        beforeOrderId = last.order,
+                                        limit = DEFAULT_CHAT_PAGING_SIZE
+                                    )
                                 )
-                            )
-                            state + next.messages
-                        } else {
-                            state
+                                state + next.messages
+                            } else {
+                                state
+                            }
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while loading previous page")
+                            }
                         }
                     }
                     is Transformation.Events.Payload -> {
@@ -154,7 +165,7 @@ class ChatContainer @Inject constructor(
             }
         )
     }.catch {
-        logger.logException(it)
+        logger.logException(it, "Exception in chat container")
         emit(emptyList())
     }
 

@@ -118,7 +118,7 @@ class ChatContainer @Inject constructor(
         emitAll(
             inputs.scan(initial = initial.messages) { state, transform ->
                 when(transform) {
-                    Transformation.Commands.LoadNext -> {
+                    Transformation.Commands.LoadBefore -> {
                         try {
                             val first = state.firstOrNull()
                             if (first != null) {
@@ -140,7 +140,7 @@ class ChatContainer @Inject constructor(
                             }
                         }
                     }
-                    Transformation.Commands.LoadPrevious -> {
+                    Transformation.Commands.LoadAfter -> {
                         try {
                             val last = state.lastOrNull()
                             if (last != null) {
@@ -236,11 +236,11 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun onLoadNextPage() {
-        commands.emit(Transformation.Commands.LoadNext)
+        commands.emit(Transformation.Commands.LoadBefore)
     }
 
     suspend fun onLoadPreviousPage() {
-        commands.emit(Transformation.Commands.LoadPrevious)
+        commands.emit(Transformation.Commands.LoadAfter)
     }
 
     internal sealed class Transformation {
@@ -251,12 +251,12 @@ class ChatContainer @Inject constructor(
             /**
              * Loading next — older — messages in history.
              */
-            data object LoadNext : Commands()
+            data object LoadBefore : Commands()
 
             /**
              * Loading next — more recent — messages in history.
              */
-            data object LoadPrevious : Commands()
+            data object LoadAfter : Commands()
         }
     }
 

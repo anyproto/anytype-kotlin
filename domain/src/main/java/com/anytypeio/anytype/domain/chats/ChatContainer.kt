@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.chats
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id

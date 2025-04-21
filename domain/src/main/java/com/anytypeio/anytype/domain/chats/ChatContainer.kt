@@ -135,7 +135,7 @@ class ChatContainer @Inject constructor(
         )
     }.catch { e ->
         emit(value = emptyList()).also {
-            logger.logException(e, "Exception in chat container")
+            logger.logException(e, "Exception occurred in the chat container: $chat")
         }
     }
 

@@ -162,6 +162,38 @@ class ChatContainer @Inject constructor(
                             }
                         }
                     }
+                    is Transformation.Commands.LoadTo -> {
+                        val replyMessage = repo.getChatMessagesByIds(
+                            Command.ChatCommand.GetMessagesByIds(
+                                chat = chat,
+                                messages = listOf(transform.message)
+                            )
+                        )
+
+                        val loadedMessagesBefore = repo.getChatMessages(
+                            Command.ChatCommand.GetMessages(
+                                chat = chat,
+                                beforeOrderId = transform.message,
+                                afterOrderId = null,
+                                limit = DEFAULT_CHAT_PAGING_SIZE
+                            )
+                        ).messages
+
+                        val loadedMessagesAfter = repo.getChatMessages(
+                            Command.ChatCommand.GetMessages(
+                                chat = chat,
+                                beforeOrderId = null,
+                                afterOrderId = transform.message,
+                                limit = DEFAULT_CHAT_PAGING_SIZE
+                            )
+                        ).messages
+
+                        buildList {
+                            addAll(loadedMessagesBefore)
+                            addAll(replyMessage)
+                            addAll(loadedMessagesAfter)
+                        }
+                    }
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
                     }
@@ -245,6 +277,11 @@ class ChatContainer @Inject constructor(
              * Loading next — more recent — messages in history.
              */
             data object LoadAfter : Commands()
+
+            /**
+             * Loading message before and current given (reply) message
+             */
+            data class LoadTo(val message: Id) : Commands()
         }
     }
 

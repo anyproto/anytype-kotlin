@@ -133,9 +133,10 @@ class ChatContainer @Inject constructor(
                 }
             }
         )
-    }.catch {
-        logger.logException(it, "Exception in chat container")
-        emit(emptyList())
+    }.catch { e ->
+        emit(value = emptyList()).also {
+            logger.logException(e, "Exception in chat container")
+        }
     }
 
     private suspend fun loadToMessage(

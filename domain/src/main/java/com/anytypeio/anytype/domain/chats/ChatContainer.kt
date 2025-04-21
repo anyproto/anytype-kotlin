@@ -276,12 +276,12 @@ class ChatContainer @Inject constructor(
 
             /**
              * Loading next — more recent — messages in history.
+             * Loading the next page if it exists.
              */
             data object LoadAfter : Commands()
 
             /**
              * Loading message before and current given (reply) message.
-             * Loading the next page if it exists.
              */
             data class LoadTo(val message: Id) : Commands()
         }

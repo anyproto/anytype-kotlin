@@ -270,6 +270,7 @@ class ChatContainer @Inject constructor(
         sealed class Commands : Transformation() {
             /**
              * Loading next — older — messages in history.
+             * Loading the previous page if it exists.
              */
             data object LoadBefore : Commands()
 
@@ -279,7 +280,8 @@ class ChatContainer @Inject constructor(
             data object LoadAfter : Commands()
 
             /**
-             * Loading message before and current given (reply) message
+             * Loading message before and current given (reply) message.
+             * Loading the next page if it exists.
              */
             data class LoadTo(val message: Id) : Commands()
         }

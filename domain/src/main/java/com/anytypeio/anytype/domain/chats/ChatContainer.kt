@@ -132,7 +132,9 @@ class ChatContainer @Inject constructor(
                                 )
                                 next.messages + state
                             } else {
-                                state
+                                state.also {
+                                    logger.logWarning("The first message not found in chat")
+                                }
                             }
                         } catch (e: Exception) {
                             state.also {
@@ -154,7 +156,9 @@ class ChatContainer @Inject constructor(
                                 )
                                 state + next.messages
                             } else {
-                                state
+                                state.also {
+                                    logger.logWarning("The last message not found in chat")
+                                }
                             }
                         } catch (e: Exception) {
                             state.also {

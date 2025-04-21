@@ -119,84 +119,13 @@ class ChatContainer @Inject constructor(
             inputs.scan(initial = initial.messages) { state, transform ->
                 when(transform) {
                     Transformation.Commands.LoadBefore -> {
-                        try {
-                            val first = state.firstOrNull()
-                            if (first != null) {
-                                val next = repo.getChatMessages(
-                                    Command.ChatCommand.GetMessages(
-                                        chat = chat,
-                                        beforeOrderId = first.order,
-                                        afterOrderId = null,
-                                        limit = DEFAULT_CHAT_PAGING_SIZE
-                                    )
-                                )
-                                next.messages + state
-                            } else {
-                                state.also {
-                                    logger.logWarning("The first message not found in chat")
-                                }
-                            }
-                        } catch (e: Exception) {
-                            state.also {
-                                logger.logException(e, "Error while loading next page in chat: $chat")
-                            }
-                        }
+                        loadThePreviousPage(state, chat)
                     }
                     Transformation.Commands.LoadAfter -> {
-                        try {
-                            val last = state.lastOrNull()
-                            if (last != null) {
-                                val next = repo.getChatMessages(
-                                    Command.ChatCommand.GetMessages(
-                                        chat = chat,
-                                        beforeOrderId = null,
-                                        afterOrderId = last.order,
-                                        limit = DEFAULT_CHAT_PAGING_SIZE
-                                    )
-                                )
-                                state + next.messages
-                            } else {
-                                state.also {
-                                    logger.logWarning("The last message not found in chat")
-                                }
-                            }
-                        } catch (e: Exception) {
-                            state.also {
-                                logger.logException(e, "Error while loading previous page in chat $chat")
-                            }
-                        }
+                        loadTheNextPage(state, chat)
                     }
                     is Transformation.Commands.LoadTo -> {
-                        val replyMessage = repo.getChatMessagesByIds(
-                            Command.ChatCommand.GetMessagesByIds(
-                                chat = chat,
-                                messages = listOf(transform.message)
-                            )
-                        )
-
-                        val loadedMessagesBefore = repo.getChatMessages(
-                            Command.ChatCommand.GetMessages(
-                                chat = chat,
-                                beforeOrderId = transform.message,
-                                afterOrderId = null,
-                                limit = DEFAULT_CHAT_PAGING_SIZE
-                            )
-                        ).messages
-
-                        val loadedMessagesAfter = repo.getChatMessages(
-                            Command.ChatCommand.GetMessages(
-                                chat = chat,
-                                beforeOrderId = null,
-                                afterOrderId = transform.message,
-                                limit = DEFAULT_CHAT_PAGING_SIZE
-                            )
-                        ).messages
-
-                        buildList {
-                            addAll(loadedMessagesBefore)
-                            addAll(replyMessage)
-                            addAll(loadedMessagesAfter)
-                        }
+                        loadToMessage(chat, transform)
                     }
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
@@ -207,6 +136,94 @@ class ChatContainer @Inject constructor(
     }.catch {
         logger.logException(it, "Exception in chat container")
         emit(emptyList())
+    }
+
+    private suspend fun loadToMessage(
+        chat: Id,
+        transform: Transformation.Commands.LoadTo
+    ): List<Chat.Message> {
+        val replyMessage = repo.getChatMessagesByIds(
+            Command.ChatCommand.GetMessagesByIds(
+                chat = chat,
+                messages = listOf(transform.message)
+            )
+        )
+
+        val loadedMessagesBefore = repo.getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = chat,
+                beforeOrderId = transform.message,
+                afterOrderId = null,
+                limit = DEFAULT_CHAT_PAGING_SIZE
+            )
+        ).messages
+
+        val loadedMessagesAfter = repo.getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = chat,
+                beforeOrderId = null,
+                afterOrderId = transform.message,
+                limit = DEFAULT_CHAT_PAGING_SIZE
+            )
+        ).messages
+
+        return buildList {
+            addAll(loadedMessagesBefore)
+            addAll(replyMessage)
+            addAll(loadedMessagesAfter)
+        }
+    }
+
+    private suspend fun loadTheNextPage(
+        state: List<Chat.Message>,
+        chat: Id
+    ): List<Chat.Message> = try {
+        val last = state.lastOrNull()
+        if (last != null) {
+            val next = repo.getChatMessages(
+                Command.ChatCommand.GetMessages(
+                    chat = chat,
+                    beforeOrderId = null,
+                    afterOrderId = last.order,
+                    limit = DEFAULT_CHAT_PAGING_SIZE
+                )
+            )
+            state + next.messages
+        } else {
+            state.also {
+                logger.logWarning("The last message not found in chat")
+            }
+        }
+    } catch (e: Exception) {
+        state.also {
+            logger.logException(e, "Error while loading previous page in chat $chat")
+        }
+    }
+
+    private suspend fun loadThePreviousPage(
+        state: List<Chat.Message>,
+        chat: Id
+    ): List<Chat.Message> = try {
+        val first = state.firstOrNull()
+        if (first != null) {
+            val next = repo.getChatMessages(
+                Command.ChatCommand.GetMessages(
+                    chat = chat,
+                    beforeOrderId = first.order,
+                    afterOrderId = null,
+                    limit = DEFAULT_CHAT_PAGING_SIZE
+                )
+            )
+            next.messages + state
+        } else {
+            state.also {
+                logger.logWarning("The first message not found in chat")
+            }
+        }
+    } catch (e: Exception) {
+        state.also {
+            logger.logException(e, "Error while loading next page in chat: $chat")
+        }
     }
 
     suspend fun onPayload(events: List<Event.Command.Chats>) {

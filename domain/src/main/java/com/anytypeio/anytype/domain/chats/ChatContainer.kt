@@ -244,11 +244,21 @@ class ChatContainer @Inject constructor(
                     }
                 }
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                   // TODO handle event
+                    event.messages.forEach { id ->
+                        val index = result.indexOfFirst { it.id == id }
+                        if (index >= 0 && result[index].mentionRead != event.isRead) {
+                            result[index] = result[index].copy(mentionRead = event.isRead)
+                        }
+                    }
                 }
 
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    // TODO handle event
+                    event.messages.forEach { id ->
+                        val index = result.indexOfFirst { it.id == id }
+                        if (index >= 0 && result[index].read != event.isRead) {
+                            result[index] = result[index].copy(read = event.isRead)
+                        }
+                    }
                 }
 
                 is Event.Command.Chats.UpdateState -> {

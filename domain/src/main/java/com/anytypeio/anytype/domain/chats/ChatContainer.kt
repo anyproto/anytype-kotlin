@@ -244,15 +244,15 @@ class ChatContainer @Inject constructor(
                     }
                 }
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                   // TODO
+                   // TODO handle event
                 }
 
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    // TODO
+                    // TODO handle event
                 }
 
                 is Event.Command.Chats.UpdateState -> {
-                   // TODO
+                   // TODO handle event
                 }
             }
         }

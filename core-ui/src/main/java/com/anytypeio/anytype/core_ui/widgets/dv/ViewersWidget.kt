@@ -408,7 +408,7 @@ fun ReorderableCollectionItemScope.DefaultDragAndDropModifier(
     view: View,
     onDragStopped: () -> Unit
 ): Modifier {
-    return Modifier.draggableHandle(
+    return Modifier.longPressDraggableHandle(
         onDragStarted = {
             ViewCompat.performHapticFeedback(
                 view,

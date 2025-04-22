@@ -8,6 +8,9 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
+/**
+ * returns message ID and payload commands.
+ */
 class AddChatMessage @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers

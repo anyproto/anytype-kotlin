@@ -90,7 +90,7 @@ class ChatViewModel @Inject constructor(
 
     init {
 
-//        runDummyMessageGenerator()
+//        generateDummyChatHistory()
 
         viewModelScope.launch {
             spaceViews
@@ -917,15 +917,22 @@ class ChatViewModel @Inject constructor(
      */
     private fun generateDummyChatHistory() {
         viewModelScope.launch {
-            repeat(100) {
+            var replyTo: Id? = null
+            repeat(100) { idx ->
+
                 addChatMessage.async(
                     Command.ChatCommand.AddMessage(
                         chat = vmParams.ctx,
                         message = DummyMessageGenerator.generateMessage(
-                            text = it.toString()
+                            text = idx.toString(),
+                            replyTo = if (idx == 99) replyTo else null
                         )
                     )
-                )
+                ).onSuccess { (msg, payload) ->
+                    if (idx == 0) {
+                       replyTo = msg
+                    }
+                }
             }
         }
     }

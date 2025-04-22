@@ -85,7 +85,8 @@ fun ChatPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -134,7 +135,8 @@ fun ChatPreview2() {
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -190,7 +192,8 @@ fun ChatScreenPreview() {
         mentionPanelState = ChatViewModel.MentionPanelState.Hidden,
         onTextChanged = {},
         onChatScrolledToTop = {},
-        onChatScrolledToBottom = {}
+        onChatScrolledToBottom = {},
+        onScrollToReplyClicked = {}
     )
 }
 

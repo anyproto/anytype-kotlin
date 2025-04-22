@@ -74,7 +74,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -138,7 +138,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -206,7 +206,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -279,7 +279,7 @@ class ChatContainerTest {
                 subscribeLastChatMessages(
                     Command.ChatCommand.SubscribeLastMessages(
                         chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_LAST_MESSAGE_COUNT
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
@@ -322,6 +322,71 @@ class ChatContainerTest {
                     initialMsg
                 ),
                 actual = second
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should load next messages and prepend to state`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger
+        )
+
+        val firstMessage = StubChatMessage(order = "B")
+        val nextMessage = StubChatMessage(order = "A")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(firstMessage),
+                messageCountBefore = 0
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = firstMessage.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                        afterOrderId = null
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(nextMessage)
+            )
+        }
+
+        channel.stub {
+            on {
+                observe(chat = givenChatID)
+            } doReturn flow { }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(
+                expected = listOf(firstMessage),
+                actual = initial
+            )
+
+            container.onLoadNextPage()
+
+            advanceUntilIdle()
+
+            val updated = awaitItem()
+            assertEquals(
+                expected = listOf(nextMessage, firstMessage),
+                actual = updated
             )
         }
     }

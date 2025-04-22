@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlin.math.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -145,7 +146,13 @@ class ChatContainer @Inject constructor(
                         state.reduce(transform.events)
                     }
                     is Transformation.Commands.ScrollToBottom -> {
-                        loadToEnd(chat = chat)
+                        try {
+                            loadToEnd(chat = chat)
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while scrolling to bottom")
+                            }
+                        }
                     }
                 }
             }
@@ -253,6 +260,7 @@ class ChatContainer @Inject constructor(
         }
     }
 
+    @Throws
     private suspend fun loadToEnd(chat: Id) : List<Chat.Message> {
         val last = lastMessage
         if (last != null) {
@@ -271,8 +279,7 @@ class ChatContainer @Inject constructor(
                 _replyContextState.value = ReplyContextState.Loaded(target = last.id)
             }
         } else {
-            // TODO consider throwing an exception or something else.
-            return emptyList()
+            throw IllegalStateException("Could not find the last message.")
         }
     }
 

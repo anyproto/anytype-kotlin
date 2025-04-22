@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
-import kotlin.math.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +42,7 @@ class ChatContainer @Inject constructor(
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
+    private var lastMessage : Chat.Message? = null
 
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
@@ -108,13 +108,14 @@ class ChatContainer @Inject constructor(
     }
 
     fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
-
         val initial = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,
                 limit = DEFAULT_CHAT_PAGING_SIZE
             )
-        )
+        ).also {
+            lastMessage = it.messages.lastOrNull()
+        }
 
         val inputs: Flow<Transformation> = merge(
             channel.observe(chat).map { Transformation.Events.Payload(it) },
@@ -139,6 +140,9 @@ class ChatContainer @Inject constructor(
 
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
+                    }
+                    is Transformation.Commands.ScrollToBottom -> {
+                        loadToEnd(chat = chat)
                     }
                 }
             }
@@ -229,7 +233,7 @@ class ChatContainer @Inject constructor(
     ): List<Chat.Message> = try {
         val first = state.firstOrNull()
         if (first != null) {
-            val next = repo.getChatMessages(
+            val previous = repo.getChatMessages(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     beforeOrderId = first.order,
@@ -237,7 +241,7 @@ class ChatContainer @Inject constructor(
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
             )
-            next.messages + state
+            previous.messages + state
         } else {
             state.also {
                 logger.logWarning("The first message not found in chat")
@@ -246,6 +250,29 @@ class ChatContainer @Inject constructor(
     } catch (e: Exception) {
         state.also {
             logger.logException(e, "Error while loading next page in chat: $chat")
+        }
+    }
+
+    private suspend fun loadToEnd(chat: Id) : List<Chat.Message> {
+        val last = lastMessage
+        if (last != null) {
+            _replyContextState.value = ReplyContextState.Loading(target = last.id)
+            return buildList {
+                val previous = repo.getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = chat,
+                        beforeOrderId = last.order,
+                        afterOrderId = null,
+                        limit = DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+                addAll(previous.messages)
+                add(last)
+                _replyContextState.value = ReplyContextState.Loaded(target = last.id)
+            }
+        } else {
+            // TODO consider throwing an exception or something else.
+            return emptyList()
         }
     }
 
@@ -291,7 +318,6 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
                     event.messages.forEach { id ->
                         val index = result.indexOfFirst { it.id == id }
@@ -300,7 +326,6 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-
                 is Event.Command.Chats.UpdateState -> {
                    // TODO handle event
                 }
@@ -329,6 +354,10 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadTo(message = replyMessage))
     }
 
+    suspend fun onLoadEnd() {
+        commands.emit(Transformation.Commands.ScrollToBottom)
+    }
+
     fun onResetReplyToContext() {
         _replyContextState.value = ReplyContextState.Idle
     }
@@ -354,6 +383,8 @@ class ChatContainer @Inject constructor(
              * Loading message before and current given (reply) message.
              */
             data class LoadTo(val message: Id) : Commands()
+
+            data object ScrollToBottom: Commands()
         }
     }
 

@@ -196,7 +196,8 @@ fun ChatScreenPreview() {
         onChatScrolledToBottom = {},
         onScrollToReplyClicked = {},
         replyContext = ReplyContextState.Idle,
-        onResetScrollToReply = {}
+        onResetScrollToReply = {},
+        onScrollToBottomClicked = {}
     )
 }
 

@@ -125,19 +125,22 @@ class ChatContainer @Inject constructor(
 
         emitAll(
             inputs.scan(initial = initial.messages) { state, transform ->
-                when (transform) {
+                when(transform) {
                     Transformation.Commands.LoadBefore -> {
                         loadThePreviousPage(state, chat)
                     }
-
                     Transformation.Commands.LoadAfter -> {
                         loadTheNextPage(state, chat)
                     }
-
                     is Transformation.Commands.LoadTo -> {
-                        loadToMessage(chat, transform)
+                        try {
+                            loadToMessage(chat, transform)
+                        } catch (e: Exception) {
+                            state.also {
+                                logger.logException(e, "Error while loading reply context")
+                            }
+                        }
                     }
-
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
                     }
@@ -155,6 +158,7 @@ class ChatContainer @Inject constructor(
             }
         }
 
+    @Throws
     private suspend fun loadToMessage(
         chat: Id,
         transform: Transformation.Commands.LoadTo
@@ -195,7 +199,7 @@ class ChatContainer @Inject constructor(
             }
 
         } else {
-            return emptyList()
+            throw IllegalStateException("Could not fetch replyMessage")
         }
     }
 

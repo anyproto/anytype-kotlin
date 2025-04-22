@@ -905,6 +905,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onChatScrollToReply(replyMessage: Id) {
+        Timber.d("onScrollToReply")
+        viewModelScope.launch {
+            chatContainer.onLoadToReply(replyMessage = replyMessage)
+        }
+    }
+
     /**
      * Used for testing. Will be deleted.
      */

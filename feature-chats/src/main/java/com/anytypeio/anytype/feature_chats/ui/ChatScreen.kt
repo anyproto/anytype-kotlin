@@ -191,7 +191,8 @@ fun ChatScreenWrapper(
                         )
                     },
                     onChatScrolledToTop = vm::onChatScrolledToTop,
-                    onChatScrolledToBottom = vm::onChatScrolledToBottom
+                    onChatScrolledToBottom = vm::onChatScrolledToBottom,
+                    onScrollToReplyClicked = vm::onChatScrollToReply
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -259,6 +260,7 @@ fun ChatScreen(
     onTextChanged: (TextFieldValue) -> Unit,
     onChatScrolledToTop: () -> Unit,
     onChatScrolledToBottom: () -> Unit,
+    onScrollToReplyClicked: (Id) -> Unit,
 ) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -355,7 +357,8 @@ fun ChatScreen(
                 onAddReactionClicked = onAddReactionClicked,
                 onViewChatReaction = onViewChatReaction,
                 onMemberIconClicked = onMemberIconClicked,
-                onMentionClicked = onMentionClicked
+                onMentionClicked = onMentionClicked,
+                onScrollToReplyClicked = onScrollToReplyClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -524,7 +527,8 @@ fun Messages(
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onMemberIconClicked: (Id?) -> Unit,
-    onMentionClicked: (Id) -> Unit
+    onMentionClicked: (Id) -> Unit,
+    onScrollToReplyClicked: (Id) -> Unit,
 ) {
     val scope = rememberCoroutineScope()
     LazyColumn(
@@ -602,6 +606,8 @@ fun Messages(
                                 scope.launch {
                                     scrollState.animateScrollToItem(index = idx)
                                 }
+                            } else {
+                                onScrollToReplyClicked(reply.msg)
                             }
                         },
                         onAddReactionClicked = {

@@ -300,6 +300,10 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadAfter)
     }
 
+    suspend fun onLoadToReply(replyMessage: Id) {
+        commands.emit(Transformation.Commands.LoadTo(message = replyMessage))
+    }
+
     internal sealed class Transformation {
         sealed class Events : Transformation() {
             data class Payload(val events: List<Event.Command.Chats>) : Events()

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.domain.chats.ReplyContextState
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -193,7 +194,9 @@ fun ChatScreenPreview() {
         onTextChanged = {},
         onChatScrolledToTop = {},
         onChatScrolledToBottom = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        replyContext = ReplyContextState.Idle,
+        onResetScrollToReply = {}
     )
 }
 

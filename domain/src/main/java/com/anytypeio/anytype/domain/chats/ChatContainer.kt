@@ -14,9 +14,11 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlin.math.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
@@ -31,11 +33,16 @@ class ChatContainer @Inject constructor(
     private val channel: ChatEventChannel,
     private val logger: Logger
 ) {
+
+    private val _replyContextState = MutableStateFlow<ReplyContextState>(ReplyContextState.Idle)
+    val replyContextState: StateFlow<ReplyContextState> = _replyContextState
+
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
     private val commands = MutableSharedFlow<Transformation.Commands>(replay = 0)
 
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
+
 
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
@@ -148,35 +155,45 @@ class ChatContainer @Inject constructor(
         chat: Id,
         transform: Transformation.Commands.LoadTo
     ): List<Chat.Message> {
+
+        _replyContextState.value = ReplyContextState.Loading(target = transform.message)
+
         val replyMessage = repo.getChatMessagesByIds(
             Command.ChatCommand.GetMessagesByIds(
                 chat = chat,
                 messages = listOf(transform.message)
             )
-        )
+        ).firstOrNull()
 
-        val loadedMessagesBefore = repo.getChatMessages(
-            Command.ChatCommand.GetMessages(
-                chat = chat,
-                beforeOrderId = transform.message,
-                afterOrderId = null,
-                limit = DEFAULT_CHAT_PAGING_SIZE
-            )
-        ).messages
+        if (replyMessage != null) {
+            val loadedMessagesBefore = repo.getChatMessages(
+                Command.ChatCommand.GetMessages(
+                    chat = chat,
+                    beforeOrderId = replyMessage.order,
+                    afterOrderId = null,
+                    limit = DEFAULT_CHAT_PAGING_SIZE
+                )
+            ).messages
 
-        val loadedMessagesAfter = repo.getChatMessages(
-            Command.ChatCommand.GetMessages(
-                chat = chat,
-                beforeOrderId = null,
-                afterOrderId = transform.message,
-                limit = DEFAULT_CHAT_PAGING_SIZE
-            )
-        ).messages
+            val loadedMessagesAfter = repo.getChatMessages(
+                Command.ChatCommand.GetMessages(
+                    chat = chat,
+                    beforeOrderId = null,
+                    afterOrderId = replyMessage.order,
+                    limit = DEFAULT_CHAT_PAGING_SIZE
+                )
+            ).messages
 
-        return buildList {
-            addAll(loadedMessagesBefore)
-            addAll(replyMessage)
-            addAll(loadedMessagesAfter)
+            _replyContextState.value = ReplyContextState.Loaded(target = transform.message)
+
+            return buildList {
+                addAll(loadedMessagesBefore)
+                add(replyMessage)
+                addAll(loadedMessagesAfter)
+            }
+
+        } else {
+            return emptyList()
         }
     }
 
@@ -293,15 +310,27 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun onLoadNextPage() {
-        commands.emit(Transformation.Commands.LoadBefore)
+        if (replyContextState.value !is ReplyContextState.Loading) {
+            commands.emit(Transformation.Commands.LoadBefore)
+        } else {
+            logger.logInfo("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
+        }
     }
 
     suspend fun onLoadPreviousPage() {
-        commands.emit(Transformation.Commands.LoadAfter)
+        if (replyContextState.value is ReplyContextState.Idle) {
+            commands.emit(Transformation.Commands.LoadAfter)
+        } else {
+            logger.logInfo("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
+        }
     }
 
     suspend fun onLoadToReply(replyMessage: Id) {
         commands.emit(Transformation.Commands.LoadTo(message = replyMessage))
+    }
+
+    fun onResetReplyToContext() {
+        _replyContextState.value = ReplyContextState.Idle
     }
 
     internal sealed class Transformation {
@@ -331,4 +360,11 @@ class ChatContainer @Inject constructor(
     companion object {
         const val DEFAULT_CHAT_PAGING_SIZE = 10
     }
+}
+
+sealed class ReplyContextState {
+    object Idle : ReplyContextState()
+    data class Loading(val target: Id) : ReplyContextState()
+    data class Loaded(val target: Id) : ReplyContextState()
+    data class Error(val target: Id, val throwable: Throwable) : ReplyContextState()
 }

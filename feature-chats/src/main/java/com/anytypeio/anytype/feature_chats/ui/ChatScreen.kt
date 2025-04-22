@@ -77,6 +77,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.domain.chats.ReplyContextState
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -85,6 +86,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPan
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -192,7 +195,9 @@ fun ChatScreenWrapper(
                     },
                     onChatScrolledToTop = vm::onChatScrolledToTop,
                     onChatScrolledToBottom = vm::onChatScrolledToBottom,
-                    onScrollToReplyClicked = vm::onChatScrollToReply
+                    onScrollToReplyClicked = vm::onChatScrollToReply,
+                    replyContext = vm.replyContext.collectAsStateWithLifecycle().value,
+                    onResetScrollToReply = vm::onResetReplyContext
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -234,6 +239,7 @@ fun ChatScreenWrapper(
  */
 @Composable
 fun ChatScreen(
+    replyContext: ReplyContextState,
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
@@ -261,6 +267,7 @@ fun ChatScreen(
     onChatScrolledToTop: () -> Unit,
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    onResetScrollToReply: () -> Unit
 ) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -272,6 +279,37 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
+    Timber.d("DROID-2966 Messages in COMPOSE: ${messages.filterIsInstance<ChatView.Message>().map { it.content.msg }}")
+
+//    LaunchedEffect(replyContext) {
+//        if (replyContext is ReplyContextState.Loaded) {
+//            val target = replyContext.target
+//            val index = messages.indexOfFirst { it is ChatView.Message && it.id == target }
+//            Timber.d("DROID-2966 Found reply message index to scroll: $index")
+//            if (index != -1) {
+//                val calculatedOffset = lazyListState.layoutInfo.viewportSize.height / 2
+//                lazyListState.scrollToItem(index, calculatedOffset)
+//            }
+//
+//            delay(200)
+//            onResetScrollToReply()
+//        }
+//    }
+
+    LaunchedEffect(messages, replyContext) {
+        if (replyContext is ReplyContextState.Loaded) {
+            val replyId = replyContext.target
+            val index = messages.indexOfFirst { it is ChatView.Message && it.id == replyId }
+
+            if (index >= 0) {
+                Timber.d("DROID-2966 Found item at index: $index")
+                val offset = lazyListState.layoutInfo.viewportSize.height / 2
+                lazyListState.scrollToItem(index, -offset)
+                delay(200)
+                onResetScrollToReply()
+            }
+        }
+    }
 
     // Scrolling to bottom when list size changes and we are at the bottom of the list
     LaunchedEffect(messages.size) {

@@ -86,6 +86,8 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
+    val replyContext = chatContainer.replyContextState
+
     private var account: Id = ""
 
     init {
@@ -135,7 +137,8 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
-            Timber.d("Got chat results: ${result.size}")
+            Timber.d("DROID-2966 Got chat results: ${result.map { it.content?.text }}")
+            Timber.d("DROID-2966 Got chat results IDS: ${result.map { it.id }}")
             data.value = result
             var previousDate: ChatView.DateSection? = null
             buildList<ChatView> {
@@ -891,24 +894,34 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatScrolledToTop() {
-        Timber.d("onChatScrolledToTop")
+        Timber.d("DROID-2966 onChatScrolledToTop, context: ${replyContext.value}")
         viewModelScope.launch {
             chatContainer.onLoadNextPage()
         }
     }
 
     fun onChatScrolledToBottom() {
-        Timber.d("onChatScrolledToBottom")
-        // TODO this behavior will be enabled later.
+        Timber.d("DROID-2966 onChatScrolledToBottom, context: ${replyContext.value}")
         viewModelScope.launch {
             chatContainer.onLoadPreviousPage()
         }
     }
 
     fun onChatScrollToReply(replyMessage: Id) {
-        Timber.d("onScrollToReply")
+        Timber.d("DROID-2966 onScrollToReply: $replyMessage")
         viewModelScope.launch {
             chatContainer.onLoadToReply(replyMessage = replyMessage)
+        }
+    }
+
+    fun onScrollToBottom() {
+
+    }
+
+    fun onResetReplyContext() {
+        Timber.d("DROID-2966 onResetReplyContext")
+        viewModelScope.launch {
+            chatContainer.onResetReplyToContext()
         }
     }
 

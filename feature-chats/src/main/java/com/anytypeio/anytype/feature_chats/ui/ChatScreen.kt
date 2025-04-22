@@ -190,7 +190,8 @@ fun ChatScreenWrapper(
                             text = value.text
                         )
                     },
-                    onChatScrolledToTop = vm::onChatScrolledToTop
+                    onChatScrolledToTop = vm::onChatScrolledToTop,
+                    onChatScrolledToBottom = vm::onChatScrolledToBottom
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -256,7 +257,8 @@ fun ChatScreen(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit,
-    onChatScrolledToTop: () -> Unit
+    onChatScrolledToTop: () -> Unit,
+    onChatScrolledToBottom: () -> Unit,
 ) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -280,24 +282,46 @@ fun ChatScreen(
 
 
     var isAtTop by remember { mutableStateOf(false) }
+    var isAtBottom by remember { mutableStateOf(false) }
 
     LaunchedEffect(lazyListState, messages.size) {
         if (messages.isEmpty()) return@LaunchedEffect
+
         snapshotFlow {
-            lazyListState.layoutInfo.visibleItemsInfo
+            val info = lazyListState.layoutInfo.visibleItemsInfo
+
+            val topKey = info
                 .lastOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
                 ?.key as? String
+
+            val bottomKey = info
+                .firstOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
+                ?.key as? String
+
+            Pair(topKey, bottomKey)
         }
             .distinctUntilChanged()
-            .collect { currentTopMessageId ->
-                val isNowAtTop = currentTopMessageId != null &&
-                        currentTopMessageId == (messages.lastOrNull { it is ChatView.Message } as? ChatView.Message)?.id
+            .collect { (topKey, bottomKey) ->
+                // Top detection
+                val topTarget = messages.lastOrNull { it is ChatView.Message } as? ChatView.Message
+                val isNowAtTop = topKey != null && topKey == topTarget?.id
 
                 if (isNowAtTop && !isAtTop) {
                     isAtTop = true
                     onChatScrolledToTop()
                 } else if (!isNowAtTop && isAtTop) {
-                    isAtTop = false // reset for next entry
+                    isAtTop = false
+                }
+
+                // Bottom detection
+                val bottomTarget = messages.firstOrNull { it is ChatView.Message } as? ChatView.Message
+                val isNowAtBottom = bottomKey != null && bottomKey == bottomTarget?.id
+
+                if (isNowAtBottom && !isAtBottom) {
+                    isAtBottom = true
+                    onChatScrolledToBottom()
+                } else if (!isNowAtBottom && isAtBottom) {
+                    isAtBottom = false
                 }
             }
     }

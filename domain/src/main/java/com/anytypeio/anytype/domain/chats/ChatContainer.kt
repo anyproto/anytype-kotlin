@@ -117,27 +117,32 @@ class ChatContainer @Inject constructor(
 
         emitAll(
             inputs.scan(initial = initial.messages) { state, transform ->
-                when(transform) {
+                when (transform) {
                     Transformation.Commands.LoadBefore -> {
                         loadThePreviousPage(state, chat)
                     }
+
                     Transformation.Commands.LoadAfter -> {
                         loadTheNextPage(state, chat)
                     }
+
                     is Transformation.Commands.LoadTo -> {
                         loadToMessage(chat, transform)
                     }
+
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
                     }
                 }
             }
         )
-    }.catch { e ->
-        emit(value = emptyList()).also {
-            logger.logException(e, "Exception occurred in the chat container: $chat")
-        }
     }
+        .distinctUntilChanged()
+        .catch { e ->
+            emit(value = emptyList()).also {
+                logger.logException(e, "Exception occurred in the chat container: $chat")
+            }
+        }
 
     private suspend fun loadToMessage(
         chat: Id,

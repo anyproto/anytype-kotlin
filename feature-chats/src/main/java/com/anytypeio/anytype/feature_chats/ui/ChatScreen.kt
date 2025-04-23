@@ -86,6 +86,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPan
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -232,6 +234,49 @@ fun ChatScreenWrapper(
     }
 }
 
+@Composable
+fun ChatScrollListener(
+    lazyListState: LazyListState,
+    messages: List<ChatView>,
+    onScrolledToTop: () -> Unit,
+    onScrolledToBottom: () -> Unit
+) {
+    LaunchedEffect(lazyListState) {
+        val threshold = 2
+        var hasTriggeredTop = false
+        var hasTriggeredBottom = false
+
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .drop(1)                     // ignore the very first (initial) false
+            .distinctUntilChanged()      // only when the flag actually flips
+            .filter { isScrolling -> !isScrolling }  // only when a drag/fling has just ended
+            .collect {
+                // bail if there’s nothing to page
+                if (messages.isEmpty()) return@collect
+
+                val idx         = lazyListState.firstVisibleItemIndex
+                val atBottom    = idx <= threshold
+                val atTop       = idx >= messages.size - 1 - threshold
+
+                if (atBottom && !hasTriggeredBottom) {
+                    hasTriggeredBottom = true
+                    hasTriggeredTop    = false
+                    onScrolledToBottom()
+                } else if (!atBottom) {
+                    hasTriggeredBottom = false
+                }
+
+                if (atTop && !hasTriggeredTop) {
+                    hasTriggeredTop     = true
+                    hasTriggeredBottom  = false
+                    onScrolledToTop()
+                } else if (!atTop) {
+                    hasTriggeredTop = false
+                }
+            }
+    }
+}
+
 /**
  * TODO: do date formating before rendering?
  */
@@ -304,51 +349,12 @@ fun ChatScreen(
         }
     }
 
-
-    var isAtTop by remember { mutableStateOf(false) }
-    var isAtBottom by remember { mutableStateOf(false) }
-
-    LaunchedEffect(lazyListState, messages.size) {
-        if (messages.isEmpty()) return@LaunchedEffect
-
-        snapshotFlow {
-            val info = lazyListState.layoutInfo.visibleItemsInfo
-
-            val topKey = info
-                .lastOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
-                ?.key as? String
-
-            val bottomKey = info
-                .firstOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
-                ?.key as? String
-
-            Pair(topKey, bottomKey)
-        }
-            .distinctUntilChanged()
-            .collect { (topKey, bottomKey) ->
-                // Top detection
-                val topTarget = messages.lastOrNull { it is ChatView.Message } as? ChatView.Message
-                val isNowAtTop = topKey != null && topKey == topTarget?.id
-
-                if (isNowAtTop && !isAtTop) {
-                    isAtTop = true
-                    onChatScrolledToTop()
-                } else if (!isNowAtTop && isAtTop) {
-                    isAtTop = false
-                }
-
-                // Bottom detection
-                val bottomTarget = messages.firstOrNull { it is ChatView.Message } as? ChatView.Message
-                val isNowAtBottom = bottomKey != null && bottomKey == bottomTarget?.id
-
-                if (isNowAtBottom && !isAtBottom) {
-                    isAtBottom = true
-                    onChatScrolledToBottom()
-                } else if (!isNowAtBottom && isAtBottom) {
-                    isAtBottom = false
-                }
-            }
-    }
+    ChatScrollListener(
+        lazyListState = lazyListState,
+        messages = messages,
+        onScrolledToTop = onChatScrolledToTop,
+        onScrolledToBottom = onChatScrolledToBottom
+    )
 
     Column(
         modifier = Modifier.fillMaxSize()

@@ -138,7 +138,6 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
             Timber.d("DROID-2966 Got chat results: ${result.map { it.content?.text }}")
-            Timber.d("DROID-2966 Got chat results IDS: ${result.map { it.id }}")
             data.value = result
             var previousDate: ChatView.DateSection? = null
             buildList<ChatView> {

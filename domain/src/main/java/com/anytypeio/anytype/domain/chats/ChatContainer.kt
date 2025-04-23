@@ -122,13 +122,13 @@ class ChatContainer @Inject constructor(
         emitAll(
             inputs.scan(initial = initial.messages) { state, transform ->
                 when(transform) {
-                    Transformation.Commands.LoadBefore -> {
+                    Transformation.Commands.LoadPrevious -> {
                         loadThePreviousPage(state, chat)
                     }
-                    Transformation.Commands.LoadAfter -> {
+                    Transformation.Commands.LoadNext -> {
                         loadTheNextPage(state, chat)
                     }
-                    is Transformation.Commands.LoadTo -> {
+                    is Transformation.Commands.LoadAround -> {
                         try {
                             loadToMessage(chat, transform)
                         } catch (e: Exception) {
@@ -140,7 +140,7 @@ class ChatContainer @Inject constructor(
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
                     }
-                    is Transformation.Commands.ScrollToBottom -> {
+                    is Transformation.Commands.LoadTail -> {
                         try {
                             loadToEnd(chat = chat)
                         } catch (e: Exception) {
@@ -162,7 +162,7 @@ class ChatContainer @Inject constructor(
     @Throws
     private suspend fun loadToMessage(
         chat: Id,
-        transform: Transformation.Commands.LoadTo
+        transform: Transformation.Commands.LoadAround
     ): List<Chat.Message> {
 
         _replyContextState.value = ReplyContextState.Loading(target = transform.message)
@@ -302,14 +302,10 @@ class ChatContainer @Inject constructor(
                             result.add(event.message)
                         }
                     }
-                    lastKnownMessage = event.message
                 }
                 is Event.Command.Chats.Delete -> {
                     val index = result.indexOfFirst { it.id == event.id }
                     if (index >= 0) result.removeAt(index)
-                    if (event.id == lastKnownMessage?.id) {
-                        lastKnownMessage = null
-                    }
                 }
                 is Event.Command.Chats.Update -> {
                     val index = result.indexOfFirst { it.id == event.id }
@@ -349,7 +345,7 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadNextPage() {
         if (replyContextState.value !is ReplyContextState.Loading) {
-            commands.emit(Transformation.Commands.LoadBefore)
+            commands.emit(Transformation.Commands.LoadPrevious)
         } else {
             logger.logInfo("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
         }
@@ -357,18 +353,18 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadPreviousPage() {
         if (replyContextState.value is ReplyContextState.Idle) {
-            commands.emit(Transformation.Commands.LoadAfter)
+            commands.emit(Transformation.Commands.LoadNext)
         } else {
             logger.logInfo("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
         }
     }
 
     suspend fun onLoadToReply(replyMessage: Id) {
-        commands.emit(Transformation.Commands.LoadTo(message = replyMessage))
+        commands.emit(Transformation.Commands.LoadAround(message = replyMessage))
     }
 
     suspend fun onLoadEnd() {
-        commands.emit(Transformation.Commands.ScrollToBottom)
+        commands.emit(Transformation.Commands.LoadTail)
     }
 
     fun onResetReplyToContext() {
@@ -384,20 +380,20 @@ class ChatContainer @Inject constructor(
              * Loading next — older — messages in history.
              * Loading the previous page if it exists.
              */
-            data object LoadBefore : Commands()
+            data object LoadPrevious : Commands()
 
             /**
              * Loading next — more recent — messages in history.
              * Loading the next page if it exists.
              */
-            data object LoadAfter : Commands()
+            data object LoadNext : Commands()
 
             /**
              * Loading message before and current given (reply) message.
              */
-            data class LoadTo(val message: Id) : Commands()
+            data class LoadAround(val message: Id) : Commands()
 
-            data object ScrollToBottom: Commands()
+            data object LoadTail: Commands()
         }
     }
 

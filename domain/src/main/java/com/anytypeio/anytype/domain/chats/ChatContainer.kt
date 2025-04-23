@@ -345,19 +345,19 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadPrevious() {
         if (replyContextState.value !is ReplyContextState.Loading) {
-            logger.logInfo("DROID-2966 emitting onLoadNextPage")
+            logger.logInfo("DROID-2966 emitting onLoadPrevious")
             commands.emit(Transformation.Commands.LoadPrevious)
         } else {
-            logger.logInfo("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
+            logger.logInfo("DROID-2966 onLoadPrevious, scroll suppressed, state: ${replyContextState.value}")
         }
     }
 
     suspend fun onLoadNext() {
         if (replyContextState.value is ReplyContextState.Idle) {
-            logger.logInfo("DROID-2966 emitting onLoadPreviousPage")
+            logger.logInfo("DROID-2966 emitting onLoadNext")
             commands.emit(Transformation.Commands.LoadNext)
         } else {
-            logger.logInfo("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
+            logger.logInfo("DROID-2966 onLoadNext, scroll suppressed, state: ${replyContextState.value} ")
         }
     }
 
@@ -367,7 +367,7 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun onLoadEnd() {
-        logger.logInfo("DROID-2966 emitting onLoadToEnd")
+        logger.logInfo("DROID-2966 emitting onLoadEnd")
         commands.emit(Transformation.Commands.LoadEnd)
     }
 

@@ -42,11 +42,6 @@ class ChatContainer @Inject constructor(
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
-    /**
-     * Keeping track of the last message in the chat for scroll-to-bottom behavior.
-     */
-    private var lastKnownMessage : Chat.Message? = null
-
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
             .map { ids ->
@@ -116,9 +111,7 @@ class ChatContainer @Inject constructor(
                 chat = chat,
                 limit = DEFAULT_CHAT_PAGING_SIZE
             )
-        ).also {
-            lastKnownMessage = it.messages.lastOrNull()
-        }
+        )
 
         val inputs: Flow<Transformation> = merge(
             channel.observe(chat).map { Transformation.Events.Payload(it) },
@@ -263,49 +256,31 @@ class ChatContainer @Inject constructor(
 
     @Throws
     private suspend fun loadToEnd(chat: Id) : List<Chat.Message> {
-        val last = lastKnownMessage
-        if (last != null) {
-            _replyContextState.value = ReplyContextState.Loading(target = last.id)
-            return buildList {
-                val previous = repo.getChatMessages(
-                    Command.ChatCommand.GetMessages(
-                        chat = chat,
-                        beforeOrderId = last.order,
-                        afterOrderId = null,
-                        limit = DEFAULT_CHAT_PAGING_SIZE
-                    )
-                )
-                addAll(previous.messages)
-                add(last)
-                _replyContextState.value = ReplyContextState.Loaded(target = last.id)
-            }
+        val lastFetched = repo.getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = chat,
+                beforeOrderId = null,
+                afterOrderId = null,
+                limit = 1
+            )
+        ).messages.firstOrNull()
+
+        if (lastFetched == null) {
+            // Chat is empty
+            return emptyList()
         } else {
-            val lastFetched = repo.getChatMessages(
+            val previous = repo.getChatMessages(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
-                    beforeOrderId = null,
+                    beforeOrderId = lastFetched.order,
                     afterOrderId = null,
-                    limit = 1
+                    limit = DEFAULT_CHAT_PAGING_SIZE
                 )
-            ).messages.firstOrNull()
-
-            if (lastFetched == null) {
-                // Chat is empty
-                return emptyList()
-            } else {
-                return buildList {
-                    val previous = repo.getChatMessages(
-                        Command.ChatCommand.GetMessages(
-                            chat = chat,
-                            beforeOrderId = lastFetched.order,
-                            afterOrderId = null,
-                            limit = DEFAULT_CHAT_PAGING_SIZE
-                        )
-                    )
-                    addAll(previous.messages)
-                    add(lastFetched)
-                    _replyContextState.value = ReplyContextState.Loaded(target = lastFetched.id)
-                }
+            )
+            return buildList {
+                addAll(previous.messages)
+                add(lastFetched)
+                _replyContextState.value = ReplyContextState.Loaded(target = lastFetched.id)
             }
         }
     }

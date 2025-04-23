@@ -134,7 +134,7 @@ class ChatContainer @Inject constructor(
                             loadToMessage(chat, transform)
                         } catch (e: Exception) {
                             state.also {
-                                logger.logException(e, "Error while loading reply context")
+                                logger.logException(e, "DROID-2966 Error while loading reply context")
                             }
                         }
                     }
@@ -146,7 +146,7 @@ class ChatContainer @Inject constructor(
                             loadToEnd(chat = chat)
                         } catch (e: Exception) {
                             state.also {
-                                logger.logException(e, "Error while scrolling to bottom")
+                                logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                             }
                         }
                     }
@@ -155,7 +155,7 @@ class ChatContainer @Inject constructor(
         )
     }.catch { e ->
             emit(value = emptyList()).also {
-                logger.logException(e, "Exception occurred in the chat container: $chat")
+                logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
             }
     }
 
@@ -200,7 +200,7 @@ class ChatContainer @Inject constructor(
             }
 
         } else {
-            throw IllegalStateException("Could not fetch replyMessage")
+            throw IllegalStateException("DROID-2966 Could not fetch replyMessage")
         }
     }
 
@@ -220,12 +220,12 @@ class ChatContainer @Inject constructor(
             state + next.messages
         } else {
             state.also {
-                logger.logWarning("The last message not found in chat")
+                logger.logWarning("DROID-2966 The last message not found in chat")
             }
         }
     } catch (e: Exception) {
         state.also {
-            logger.logException(e, "Error while loading previous page in chat $chat")
+            logger.logException(e, "DROID-2966 Error while loading previous page in chat $chat")
         }
     }
 
@@ -245,12 +245,12 @@ class ChatContainer @Inject constructor(
             previous.messages + state
         } else {
             state.also {
-                logger.logWarning("The first message not found in chat")
+                logger.logWarning("DROID-2966 The first message not found in chat")
             }
         }
     } catch (e: Exception) {
         state.also {
-            logger.logException(e, "Error while loading next page in chat: $chat")
+            logger.logException(e, "DROID-2966 Error while loading next page in chat: $chat")
         }
     }
 
@@ -345,17 +345,19 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadNextPage() {
         if (replyContextState.value !is ReplyContextState.Loading) {
+            logger.logWarning("DROID-2966 emitting onLoadNextPage")
             commands.emit(Transformation.Commands.LoadPrevious)
         } else {
-            logger.logInfo("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
+            logger.logWarning("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
         }
     }
 
     suspend fun onLoadPreviousPage() {
         if (replyContextState.value is ReplyContextState.Idle) {
+            logger.logWarning("DROID-2966 emitting onLoadPreviousPage")
             commands.emit(Transformation.Commands.LoadNext)
         } else {
-            logger.logInfo("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
+            logger.logWarning("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
         }
     }
 

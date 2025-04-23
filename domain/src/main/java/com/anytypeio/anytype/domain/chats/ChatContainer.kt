@@ -43,6 +43,9 @@ class ChatContainer @Inject constructor(
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
+    /**
+     * Keeping track of the last message in the chat for scroll-to-bottom behavior.
+     */
     private var lastMessage : Chat.Message? = null
 
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
@@ -155,10 +158,9 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-            }
+            }.distinctUntilChanged()
         )
     }
-        .distinctUntilChanged()
         .catch { e ->
             emit(value = emptyList()).also {
                 logger.logException(e, "Exception occurred in the chat container: $chat")

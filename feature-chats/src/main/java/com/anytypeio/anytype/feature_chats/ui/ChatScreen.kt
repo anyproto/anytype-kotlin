@@ -729,17 +729,12 @@ fun Messages(
                         },
                         reply = msg.reply,
                         onScrollToReplyClicked = { reply ->
-//                            // Naive implementation
-//                            val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
-//                            if (idx != -1) {
-//                                scope.launch {
-//                                    scrollState.animateScrollToItem(index = idx)
-//                                }
-//                            } else {
-//                                onScrollToReplyClicked(reply.msg)
-//                            }
-
-                            onScrollToReplyClicked(reply.msg)
+                            val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
+                            if (idx != -1) {
+                                scope.launch { scrollState.animateScrollToItem(index = idx) }
+                            } else {
+                                onScrollToReplyClicked(reply.msg)
+                            }
                         },
                         onAddReactionClicked = {
                             onAddReactionClicked(msg.id)

@@ -60,7 +60,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -68,13 +67,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
-import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -236,57 +231,12 @@ fun ChatScreenWrapper(
 }
 
 @Composable
-fun ChatScrollListener(
-    lazyListState: LazyListState,
-    messages: List<ChatView>,
-    onScrolledToTop: () -> Unit,
-    onScrolledToBottom: () -> Unit
-) {
-    Timber.d("DROID-2966 Setting chat scroll listener")
-    LaunchedEffect(lazyListState) {
-        val threshold = 2
-        var hasTriggeredTop = false
-        var hasTriggeredBottom = false
-
-        snapshotFlow { lazyListState.isScrollInProgress }
-            .drop(1)                     // ignore the very first (initial) false
-            .distinctUntilChanged()      // only when the flag actually flips
-            .filter { isScrolling -> !isScrolling }  // only when a drag/fling has just ended
-            .collect {
-                // bail if there’s nothing to page
-                if (messages.isEmpty()) return@collect
-
-                val idx         = lazyListState.firstVisibleItemIndex
-                val atBottom    = idx <= threshold
-                val atTop       = idx >= messages.size - 1 - threshold
-
-                if (atBottom && !hasTriggeredBottom) {
-                    hasTriggeredBottom = true
-                    hasTriggeredTop    = false
-                    onScrolledToBottom()
-                } else if (!atBottom) {
-                    hasTriggeredBottom = false
-                }
-
-                if (atTop && !hasTriggeredTop) {
-                    hasTriggeredTop     = true
-                    hasTriggeredBottom  = false
-                    onScrolledToTop()
-                } else if (!atTop) {
-                    hasTriggeredTop = false
-                }
-            }
-    }
-}
-
-@Composable
 fun LazyListState.OnBottomReached(
     thresholdItems: Int = 0,
-    loadMore: () -> Unit
+    onBottomReached: () -> Unit
 ) {
     LaunchedEffect(this) {
         var prevIndex = firstVisibleItemIndex
-
         snapshotFlow { firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { index ->
@@ -299,7 +249,7 @@ fun LazyListState.OnBottomReached(
                 val atBottom = index <= thresholdItems
 
                 if (scrollingDown && atBottom) {
-                    loadMore()
+                    onBottomReached()
                 }
                 prevIndex = index
             }
@@ -308,71 +258,24 @@ fun LazyListState.OnBottomReached(
 
 @Composable
 private fun LazyListState.OnTopReached(
-    loadMore : () -> Unit
-){
-    val shouldLoadMore = remember {
+    thresholdItems: Int = 0,
+    onTopReached: () -> Unit
+) {
+    val isReached = remember {
         derivedStateOf {
             val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
             if (lastVisibleItem != null) {
-                lastVisibleItem.index == layoutInfo.totalItemsCount - 1
+                lastVisibleItem.index >= layoutInfo.totalItemsCount - 1 - thresholdItems
             } else {
                 false
             }
         }
     }
 
-    // Convert the state into a cold flow and collect
-    LaunchedEffect(shouldLoadMore){
-        snapshotFlow { shouldLoadMore.value }
-            .collect {
-                // if should load more, then invoke loadMore
-                if (it) loadMore()
-            }
-    }
-}
-
-@Composable
-fun ChatScrollListener2(
-    lazyListState: LazyListState,
-    onScrolledToTop: () -> Unit,   // load older (at top)
-    onScrolledToBottom: () -> Unit,       // load newer (at bottom)
-    distanceForLoadDp: Dp = 200.dp
-) {
-    // convert the threshold into pixels
-    val density = LocalDensity.current
-    val thresholdPx = with(density) { distanceForLoadDp.toPx() }
-
-
-    LaunchedEffect(lazyListState) {
-        // only when the user's finger/fling comes to rest
-        snapshotFlow { lazyListState.isScrollInProgress }
+    LaunchedEffect(isReached) {
+        snapshotFlow { isReached.value }
             .distinctUntilChanged()
-            .filter { !it }  // only when scroll/fling stops
-            .collect {
-                val info = lazyListState.layoutInfo
-                if (info.totalItemsCount == 0) return@collect
-
-                // 1) how far have we scrolled from the very top?
-                //    that's the offset of the first item
-                val first = info.visibleItemsInfo.firstOrNull()
-                val distanceToTop = first?.offset ?: 0
-
-                // 2) how far are we from the very bottom?
-                //    viewport height minus (offset + size) of last visible item
-                val last = info.visibleItemsInfo.lastOrNull()
-                val distanceToBottom = if (last != null) {
-                    (info.viewportSize.height - (last.offset + last.size)).toFloat()
-                } else {
-                    Float.POSITIVE_INFINITY
-                }
-
-                // 3) if we're close enough, fire the appropriate callback
-                if (distanceToTop < thresholdPx) {
-                    onScrolledToTop()
-                } else if (distanceToBottom < thresholdPx) {
-                    onScrolledToBottom()
-                }
-            }
+            .collect { if (it) onTopReached() }
     }
 }
 
@@ -449,12 +352,16 @@ fun ChatScreen(
         }
     }
 
-    lazyListState.OnBottomReached {
+    lazyListState.OnBottomReached(
+        thresholdItems = 3
+    ) {
         Timber.d("DROID-2966 onBottomReached")
         onChatScrolledToBottom()
     }
 
-    lazyListState.OnTopReached {
+    lazyListState.OnTopReached(
+        thresholdItems = 3
+    ) {
         Timber.d("DROID-2966 onTopReached")
         onChatScrolledToTop()
     }
@@ -549,7 +456,8 @@ fun ChatScreen(
 
                                         val replacementText = member.name + " "
 
-                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first + 1)
+                                        val lengthDifference =
+                                            replacementText.length - (query.range.last - query.range.first + 1)
 
                                         val updatedText = input.replaceRange(
                                             query.range,
@@ -560,7 +468,7 @@ fun ChatScreen(
 
                                         val updatedSpans = spans.map { span ->
                                             if (span.start > query.range.last) {
-                                                when(span) {
+                                                when (span) {
                                                     is ChatBoxSpan.Mention -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,

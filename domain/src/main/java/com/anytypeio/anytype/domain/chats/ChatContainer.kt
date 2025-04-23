@@ -343,7 +343,7 @@ class ChatContainer @Inject constructor(
         return result
     }
 
-    suspend fun onLoadNextPage() {
+    suspend fun onLoadPrevious() {
         if (replyContextState.value !is ReplyContextState.Loading) {
             logger.logWarning("DROID-2966 emitting onLoadNextPage")
             commands.emit(Transformation.Commands.LoadPrevious)
@@ -352,7 +352,7 @@ class ChatContainer @Inject constructor(
         }
     }
 
-    suspend fun onLoadPreviousPage() {
+    suspend fun onLoadNext() {
         if (replyContextState.value is ReplyContextState.Idle) {
             logger.logWarning("DROID-2966 emitting onLoadPreviousPage")
             commands.emit(Transformation.Commands.LoadNext)

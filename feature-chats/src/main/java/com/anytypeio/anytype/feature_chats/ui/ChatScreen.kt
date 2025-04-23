@@ -60,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
@@ -241,6 +242,7 @@ fun ChatScrollListener(
     onScrolledToTop: () -> Unit,
     onScrolledToBottom: () -> Unit
 ) {
+    Timber.d("DROID-2966 Setting chat scroll listener")
     LaunchedEffect(lazyListState) {
         val threshold = 2
         var hasTriggeredTop = false
@@ -272,6 +274,103 @@ fun ChatScrollListener(
                     onScrolledToTop()
                 } else if (!atTop) {
                     hasTriggeredTop = false
+                }
+            }
+    }
+}
+
+@Composable
+fun LazyListState.OnBottomReached(
+    thresholdItems: Int = 0,
+    loadMore: () -> Unit
+) {
+    LaunchedEffect(this) {
+        var prevIndex = firstVisibleItemIndex
+
+        snapshotFlow { firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { index ->
+                val isDragging = isScrollInProgress
+
+                // Are we scrolling *toward* the bottom edge?
+                val scrollingDown = isDragging && prevIndex > index
+
+                // Have we crossed into the threshold zone?
+                val atBottom = index <= thresholdItems
+
+                if (scrollingDown && atBottom) {
+                    loadMore()
+                }
+                prevIndex = index
+            }
+    }
+}
+
+@Composable
+private fun LazyListState.OnTopReached(
+    loadMore : () -> Unit
+){
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            if (lastVisibleItem != null) {
+                lastVisibleItem.index == layoutInfo.totalItemsCount - 1
+            } else {
+                false
+            }
+        }
+    }
+
+    // Convert the state into a cold flow and collect
+    LaunchedEffect(shouldLoadMore){
+        snapshotFlow { shouldLoadMore.value }
+            .collect {
+                // if should load more, then invoke loadMore
+                if (it) loadMore()
+            }
+    }
+}
+
+@Composable
+fun ChatScrollListener2(
+    lazyListState: LazyListState,
+    onScrolledToTop: () -> Unit,   // load older (at top)
+    onScrolledToBottom: () -> Unit,       // load newer (at bottom)
+    distanceForLoadDp: Dp = 200.dp
+) {
+    // convert the threshold into pixels
+    val density = LocalDensity.current
+    val thresholdPx = with(density) { distanceForLoadDp.toPx() }
+
+
+    LaunchedEffect(lazyListState) {
+        // only when the user's finger/fling comes to rest
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .filter { !it }  // only when scroll/fling stops
+            .collect {
+                val info = lazyListState.layoutInfo
+                if (info.totalItemsCount == 0) return@collect
+
+                // 1) how far have we scrolled from the very top?
+                //    that's the offset of the first item
+                val first = info.visibleItemsInfo.firstOrNull()
+                val distanceToTop = first?.offset ?: 0
+
+                // 2) how far are we from the very bottom?
+                //    viewport height minus (offset + size) of last visible item
+                val last = info.visibleItemsInfo.lastOrNull()
+                val distanceToBottom = if (last != null) {
+                    (info.viewportSize.height - (last.offset + last.size)).toFloat()
+                } else {
+                    Float.POSITIVE_INFINITY
+                }
+
+                // 3) if we're close enough, fire the appropriate callback
+                if (distanceToTop < thresholdPx) {
+                    onScrolledToTop()
+                } else if (distanceToBottom < thresholdPx) {
+                    onScrolledToBottom()
                 }
             }
     }
@@ -325,13 +424,23 @@ fun ChatScreen(
 
     Timber.d("DROID-2966 Messages in COMPOSE: ${messages.filterIsInstance<ChatView.Message>().map { it.content.msg }}")
 
+//     Scrolling to bottom when list size changes and we are at the bottom of the list
+//    LaunchedEffect(messages.size) {
+//        if (lazyListState.firstVisibleItemScrollOffset == 0) {
+//            Timber.d("DROID-2966 Scrolling to the bottom due to list update when we were at the bottom already.")
+//            scope.launch {
+//                lazyListState.animateScrollToItem(0)
+//            }
+//        }
+//    }
+
     LaunchedEffect(messages, replyContext) {
         if (replyContext is ReplyContextState.Loaded) {
             val replyId = replyContext.target
             val index = messages.indexOfFirst { it is ChatView.Message && it.id == replyId }
 
             if (index >= 0) {
-                Timber.d("DROID-2966 Found item at index: $index")
+                Timber.d("DROID-2966 Found item at index for scroll-to-reply: $index")
                 val offset = lazyListState.layoutInfo.viewportSize.height / 2
                 lazyListState.scrollToItem(index, -offset)
                 delay(200)
@@ -340,21 +449,15 @@ fun ChatScreen(
         }
     }
 
-    // Scrolling to bottom when list size changes and we are at the bottom of the list
-    LaunchedEffect(messages.size) {
-        if (lazyListState.firstVisibleItemScrollOffset == 0) {
-            scope.launch {
-                lazyListState.animateScrollToItem(0)
-            }
-        }
+    lazyListState.OnBottomReached {
+        Timber.d("DROID-2966 onBottomReached")
+        onChatScrolledToBottom()
     }
 
-    ChatScrollListener(
-        lazyListState = lazyListState,
-        messages = messages,
-        onScrolledToTop = onChatScrolledToTop,
-        onScrolledToBottom = onChatScrolledToBottom
-    )
+    lazyListState.OnTopReached {
+        Timber.d("DROID-2966 onTopReached")
+        onChatScrolledToTop()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -626,15 +729,17 @@ fun Messages(
                         },
                         reply = msg.reply,
                         onScrollToReplyClicked = { reply ->
-                            // Naive implementation
-                            val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
-                            if (idx != -1) {
-                                scope.launch {
-                                    scrollState.animateScrollToItem(index = idx)
-                                }
-                            } else {
-                                onScrollToReplyClicked(reply.msg)
-                            }
+//                            // Naive implementation
+//                            val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
+//                            if (idx != -1) {
+//                                scope.launch {
+//                                    scrollState.animateScrollToItem(index = idx)
+//                                }
+//                            } else {
+//                                onScrollToReplyClicked(reply.msg)
+//                            }
+
+                            onScrollToReplyClicked(reply.msg)
                         },
                         onAddReactionClicked = {
                             onAddReactionClicked(msg.id)
@@ -660,39 +765,39 @@ fun Messages(
                 )
             }
         }
-        if (messages.isEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                    ) {
-                        AlertIcon(
-                            icon = AlertConfig.Icon(
-                                gradient = GRADIENT_TYPE_BLUE,
-                                icon = R.drawable.ic_alert_message
-                            )
-                        )
-                        Text(
-                            text = stringResource(R.string.chat_empty_state_message),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    top = 12.dp
-                                )
-                        )
-                    }
-                }
-            }
-        }
+//        if (messages.isEmpty()) {
+//            item {
+//                Box(
+//                    modifier = Modifier
+//                        .fillParentMaxSize()
+//                ) {
+//                    Column(
+//                        modifier = Modifier
+//                            .align(Alignment.CenterStart)
+//                    ) {
+//                        AlertIcon(
+//                            icon = AlertConfig.Icon(
+//                                gradient = GRADIENT_TYPE_BLUE,
+//                                icon = R.drawable.ic_alert_message
+//                            )
+//                        )
+//                        Text(
+//                            text = stringResource(R.string.chat_empty_state_message),
+//                            style = Caption1Regular,
+//                            color = colorResource(id = R.color.text_secondary),
+//                            textAlign = TextAlign.Center,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(
+//                                    start = 20.dp,
+//                                    end = 20.dp,
+//                                    top = 12.dp
+//                                )
+//                        )
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

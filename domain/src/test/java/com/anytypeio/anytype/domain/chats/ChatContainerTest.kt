@@ -379,7 +379,7 @@ class ChatContainerTest {
                 actual = initial
             )
 
-            container.onLoadNextPage()
+            container.onLoadPrevious()
 
             advanceUntilIdle()
 

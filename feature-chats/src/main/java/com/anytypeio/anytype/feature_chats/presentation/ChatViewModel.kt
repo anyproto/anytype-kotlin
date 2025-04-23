@@ -895,14 +895,14 @@ class ChatViewModel @Inject constructor(
     fun onChatScrolledToTop() {
         Timber.d("DROID-2966 onChatScrolledToTop, context: ${replyContext.value}")
         viewModelScope.launch {
-            chatContainer.onLoadNextPage()
+            chatContainer.onLoadPrevious()
         }
     }
 
     fun onChatScrolledToBottom() {
         Timber.d("DROID-2966 onChatScrolledToBottom, context: ${replyContext.value}")
         viewModelScope.launch {
-            chatContainer.onLoadPreviousPage()
+            chatContainer.onLoadNext()
         }
     }
 

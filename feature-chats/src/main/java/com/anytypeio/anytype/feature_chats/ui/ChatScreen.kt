@@ -325,8 +325,6 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
-    Timber.d("DROID-2966 Messages in COMPOSE: ${messages.filterIsInstance<ChatView.Message>().map { it.content.msg }}")
-
 //     Scrolling to bottom when list size changes and we are at the bottom of the list
 //    LaunchedEffect(messages.size) {
 //        if (lazyListState.firstVisibleItemScrollOffset == 0) {
@@ -355,14 +353,14 @@ fun ChatScreen(
     lazyListState.OnBottomReached(
         thresholdItems = 3
     ) {
-        Timber.d("DROID-2966 onBottomReached")
+        Timber.d("DROID-2966 onBottomReached for LazyListState")
         onChatScrolledToBottom()
     }
 
     lazyListState.OnTopReached(
         thresholdItems = 3
     ) {
-        Timber.d("DROID-2966 onTopReached")
+        Timber.d("DROID-2966 onTopReached for LazyListState")
         onChatScrolledToTop()
     }
 

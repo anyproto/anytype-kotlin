@@ -141,7 +141,7 @@ class ChatContainer @Inject constructor(
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
                     }
-                    is Transformation.Commands.LoadTail -> {
+                    is Transformation.Commands.LoadEnd -> {
                         try {
                             loadToEnd(chat = chat)
                         } catch (e: Exception) {
@@ -368,7 +368,7 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadEnd() {
         logger.logInfo("DROID-2966 emitting onLoadToEnd")
-        commands.emit(Transformation.Commands.LoadTail)
+        commands.emit(Transformation.Commands.LoadEnd)
     }
 
     fun onResetReplyToContext() {
@@ -398,7 +398,7 @@ class ChatContainer @Inject constructor(
              */
             data class LoadAround(val message: Id) : Commands()
 
-            data object LoadTail: Commands()
+            data object LoadEnd: Commands()
         }
     }
 

@@ -42,6 +42,7 @@ class ChatContainer @Inject constructor(
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
+    // TODO Naive implementation. Add caching logic
     fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
             .map { ids ->
@@ -70,7 +71,7 @@ class ChatContainer @Inject constructor(
             .map { wrappers -> wrappers.associate { it.id to it } }
     }
 
-    @Deprecated("Naive implementation. Add caching logic")
+    // TODO Naive implementation. Add caching logic
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
         return replies
             .map { ids ->
@@ -152,12 +153,11 @@ class ChatContainer @Inject constructor(
                 }
             }.distinctUntilChanged()
         )
-    }
-        .catch { e ->
+    }.catch { e ->
             emit(value = emptyList()).also {
                 logger.logException(e, "Exception occurred in the chat container: $chat")
             }
-        }
+    }
 
     @Throws
     private suspend fun loadToMessage(

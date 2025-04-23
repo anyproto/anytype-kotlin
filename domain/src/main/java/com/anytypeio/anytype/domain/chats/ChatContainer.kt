@@ -345,31 +345,34 @@ class ChatContainer @Inject constructor(
 
     suspend fun onLoadPrevious() {
         if (replyContextState.value !is ReplyContextState.Loading) {
-            logger.logWarning("DROID-2966 emitting onLoadNextPage")
+            logger.logInfo("DROID-2966 emitting onLoadNextPage")
             commands.emit(Transformation.Commands.LoadPrevious)
         } else {
-            logger.logWarning("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
+            logger.logInfo("DROID-2966 onLoadNextPage: scroll suppressed, state: ${replyContextState.value}")
         }
     }
 
     suspend fun onLoadNext() {
         if (replyContextState.value is ReplyContextState.Idle) {
-            logger.logWarning("DROID-2966 emitting onLoadPreviousPage")
+            logger.logInfo("DROID-2966 emitting onLoadPreviousPage")
             commands.emit(Transformation.Commands.LoadNext)
         } else {
-            logger.logWarning("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
+            logger.logInfo("DROID-2966 onLoadPreviousPage: scroll suppressed, state: ${replyContextState.value} ")
         }
     }
 
     suspend fun onLoadToReply(replyMessage: Id) {
+        logger.logInfo("DROID-2966 emitting onLoadToReply")
         commands.emit(Transformation.Commands.LoadAround(message = replyMessage))
     }
 
     suspend fun onLoadEnd() {
+        logger.logInfo("DROID-2966 emitting onLoadToEnd")
         commands.emit(Transformation.Commands.LoadTail)
     }
 
     fun onResetReplyToContext() {
+        logger.logInfo("DROID-2966 resetting reply context")
         _replyContextState.value = ReplyContextState.Idle
     }
 

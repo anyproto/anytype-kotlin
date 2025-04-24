@@ -65,7 +65,7 @@ class SpaceTypesViewModel(
                         storeOfObjectTypes.getAll().mapNotNull { objectType ->
                             val resolvedLayout =
                                 objectType.recommendedLayout ?: return@mapNotNull null
-                            if (notAllowedTypesLayouts.contains(resolvedLayout)) {
+                            if (notAllowedTypesLayouts.contains(resolvedLayout) || objectType.isArchived == true) {
                                 return@mapNotNull null
                             } else {
                                 objectType

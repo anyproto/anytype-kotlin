@@ -199,8 +199,8 @@ class FieldParserImpl @Inject constructor(
     }
 
     override fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic): String {
-        val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: objectWrapper.name
-        return if (name.isNullOrBlank()) {
+        val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: getObjectName(objectWrapper)
+        return if (name.isEmpty()) {
             stringResourceProvider.getUntitledObjectTitle()
         } else {
             name

@@ -3108,6 +3108,8 @@ message Rpc {
                     GET_STARTED = 1;
                     EMPTY = 2;
                     GUIDE_ONLY = 3; // only the guide without other tables
+                    GET_STARTED_MOBILE = 4;
+                    EMPTY_MOBILE = 5;
                 }
             }
 

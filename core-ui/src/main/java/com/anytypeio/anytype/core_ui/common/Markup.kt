@@ -497,11 +497,19 @@ fun Editable.proceedWithSettingMentionSpan(
         }
         is Markup.Mark.Mention.ObjectType -> {
             val (drawableRes, tint) = mark.icon.getDrawableAndTintColor(context)
-            val drawable = ContextCompat.getDrawable(context, drawableRes)?.mutate()
-            if (drawable != null) {
-                DrawableCompat.setTint(drawable, tint)
+
+            val baseDrawable = when {
+                drawableRes == 0 -> null
+                else -> try {
+                    context.drawable(drawableRes).mutate().apply {
+                        DrawableCompat.setTint(this, tint)
+                    }
+                } catch (e: Exception) {
+                    null
+                }
             }
-            val finalDrawable = drawable ?: ContextCompat.getDrawable(context, R.drawable.ic_empty_state_type)
+
+            val finalDrawable = baseDrawable ?: context.drawable(R.drawable.ic_empty_state_type)
             setSpan(
                 MentionSpan(
                     onImageResourceReady = onImageReady,

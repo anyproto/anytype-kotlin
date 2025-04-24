@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import timber.log.Timber
 
 @Composable
 fun HomeScreenToolbar(
@@ -84,16 +86,24 @@ fun HomeScreenToolbar(
             overflow = TextOverflow.Ellipsis
         )
 
+        val context = LocalContext.current
+        val locale = context.resources.configuration.locales[0]
+        val text = if (locale != null && membersCount > 0) {
+            pluralStringResource(
+                id = R.plurals.multiplayer_number_of_space_members,
+                membersCount,
+                membersCount,
+                membersCount
+            )
+        } else {
+            if (locale == null) {
+                Timber.e("Error getting the locale")
+            }
+            stringResource(id = R.string.three_dots_text_placeholder)
+        }
+
         Text(
-            text = if (membersCount > 0 ) {
-                pluralStringResource(
-                    id = R.plurals.multiplayer_number_of_space_members,
-                    membersCount,
-                    membersCount,
-                    membersCount
-                )
-            } else
-                stringResource(id = R.string.three_dots_text_placeholder),
+            text = text,
             style = Relations2,
             color = colorResource(R.color.transparent_active),
             modifier = Modifier

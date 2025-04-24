@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import timber.log.Timber
 
 
 @Composable
@@ -116,6 +117,9 @@ fun SpaceWidgetCard(
                         membersCount
                     )
                 } else {
+                    if (locale == null) {
+                        Timber.e("Error getting the locale")
+                    }
                     stringResource(id = R.string.three_dots_text_placeholder)
                 }
             }

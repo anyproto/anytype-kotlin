@@ -5084,7 +5084,7 @@ class EditorViewModel(
             }
             is SlashItem.Main.Color -> {
                 val block = blocks.find { it.id == targetId }
-                if (block != null) {
+                if (block == null) {
                     Timber.d("Could not find target block for slash item action: color")
                     return
                 }
@@ -5104,7 +5104,7 @@ class EditorViewModel(
             }
             is SlashItem.Main.Background -> {
                 val block = blocks.find { it.id == targetId }
-                if (block != null) {
+                if (block == null) {
                     Timber.d("Could not find target block for slash item action: background")
                     return
                 }

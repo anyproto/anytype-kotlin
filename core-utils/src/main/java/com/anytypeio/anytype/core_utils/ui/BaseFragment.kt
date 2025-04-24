@@ -90,7 +90,7 @@ abstract class BaseFragment<T : ViewBinding>(
     }
 
     open fun onApplyWindowRootInsets() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = WindowInsetsCompat.Type.ime()

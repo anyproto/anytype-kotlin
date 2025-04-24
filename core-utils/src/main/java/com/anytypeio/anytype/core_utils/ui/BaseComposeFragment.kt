@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import timber.log.Timber
 
 abstract class BaseComposeFragment : Fragment() {
 
@@ -42,7 +43,7 @@ abstract class BaseComposeFragment : Fragment() {
     }
 
     open fun onApplyWindowRootInsets(view: View) {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = WindowInsetsCompat.Type.ime()
@@ -54,9 +55,12 @@ abstract class BaseComposeFragment : Fragment() {
     }
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
-        show(this@BaseComposeFragment.childFragmentManager, tag)
+        try {
+            show(this@BaseComposeFragment.childFragmentManager, tag)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while showing child fragment")
+        }
     }
-
 
     abstract fun injectDependencies()
     abstract fun releaseDependencies()

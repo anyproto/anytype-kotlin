@@ -181,7 +181,7 @@ class ObjectTypeViewModel(
 
     //region INIT AND LIFE CYCLE
     init {
-        Timber.d("init, vmParams: $vmParams")
+        Timber.i("ObjectTypeViewModel init, vmParams: $vmParams")
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
         proceedWithGetObjectTypeConflictingFields()

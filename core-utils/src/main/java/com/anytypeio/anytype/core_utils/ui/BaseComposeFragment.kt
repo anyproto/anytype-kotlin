@@ -48,7 +48,6 @@ abstract class BaseComposeFragment : Fragment() {
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = WindowInsetsCompat.Type.ime()
             )
-
             ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
             ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
         }
@@ -67,5 +66,14 @@ abstract class BaseComposeFragment : Fragment() {
 }
 
 fun <T> BaseComposeFragment.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow
+        .cancellable()
+        .onEach {
+            try {
+                body(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Unhandled exception in proceed flow")
+            }
+        }
+        .launchIn(lifecycleScope)
 }

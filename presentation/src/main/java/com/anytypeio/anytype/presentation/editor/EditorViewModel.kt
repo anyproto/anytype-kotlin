@@ -3334,11 +3334,16 @@ class EditorViewModel(
     private fun onAddNewObjectClicked(
         objectTypeView: ObjectTypeView
     ) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-
         val position: Position
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().targetOrNull() }
+        val focused = blocks.find { it.id == orchestrator.stores.focus.current().targetOrNull() }
+
+        if (focused == null) {
+            Timber.e("Error while trying to add new object: focused block is null, target is unknown.")
+            return
+        }
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         var target = focused.id
 
@@ -3741,7 +3746,9 @@ class EditorViewModel(
 
             if (target == context) {
                 position = Position.TOP
-                moveTarget = targetBlock.children.first()
+                moveTarget = targetBlock.children.firstOrNull().orEmpty().also {
+                    Timber.e("Could not find move target in target block's children")
+                }
             }
 
             blocks.filter { selected.contains(it.id) }.forEach { block ->

@@ -51,6 +51,7 @@ class KeystoreManager(private val context: Context) {
     }
 
     private fun recoverEncryptedPreferences(): SharedPreferences {
+
         try {
             val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER)
             keyStore.load(null)
@@ -62,7 +63,9 @@ class KeystoreManager(private val context: Context) {
         }
 
         context.getSharedPreferences(ENCRYPTED_PREFS_NAME, Context.MODE_PRIVATE)
-            .edit().clear().commit()
+            .edit()
+            .clear()
+            .commit()
 
         return EncryptedSharedPreferences.create(
             ENCRYPTED_PREFS_NAME,

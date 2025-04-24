@@ -215,7 +215,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                                     )
                                                 )
                                             } else {
-                                                controller.navigate(R.id.actionOpenSpaceFromVault)
+                                                controller.navigate(
+                                                    R.id.actionOpenSpaceFromVault,
+                                                    HomeScreenFragment.args(
+                                                        space = command.space,
+                                                        deeplink = null
+                                                    )
+                                                )
                                             }
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {

@@ -90,7 +90,7 @@ abstract class BaseFragment<T : ViewBinding>(
     }
 
     open fun onApplyWindowRootInsets() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
                 persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
                 deferredInsetTypes = WindowInsetsCompat.Type.ime()
@@ -102,17 +102,21 @@ abstract class BaseFragment<T : ViewBinding>(
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
         jobs += this@BaseFragment.lifecycleScope.launch {
-            throttleFlow.emit {
-                runCatching {
-                    show(this@BaseFragment.childFragmentManager, tag)
-                }.fold(
-                    onSuccess = {
-                        // Do nothing.
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while navigation")
-                    }
-                )
+            try {
+                throttleFlow.emit {
+                    runCatching {
+                        show(this@BaseFragment.childFragmentManager, tag)
+                    }.fold(
+                        onSuccess = {
+                            // Do nothing.
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while navigation")
+                        }
+                    )
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error while navigation")
             }
         }
     }
@@ -126,7 +130,16 @@ abstract class BaseFragment<T : ViewBinding>(
 }
 
 fun <T> BaseFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow
+        .cancellable()
+        .onEach {
+            try {
+                body(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Unhandled exception in proceed flow")
+            }
+        }
+        .launchIn(lifecycleScope)
 }
 
 const val THROTTLE_DURATION = 300L

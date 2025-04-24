@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -105,15 +106,18 @@ fun SpaceWidgetCard(
             DEFAULT_SPACE_TYPE -> stringResource(id = R.string.space_type_default_space)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private_space)
             SHARED_SPACE_TYPE -> {
-                if (membersCount > 0 ) {
+                val context = LocalContext.current
+                val locale = context.resources.configuration.locales[0]
+                if (locale != null && membersCount > 0) {
                     pluralStringResource(
                         id = R.plurals.multiplayer_number_of_space_members,
                         membersCount,
                         membersCount,
                         membersCount
                     )
-                } else
+                } else {
                     stringResource(id = R.string.three_dots_text_placeholder)
+                }
             }
             else -> stringResource(id = R.string.space_type_unknown)
         }

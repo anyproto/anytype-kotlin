@@ -421,7 +421,7 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
-        private const val DEFAULT_CHAT_PAGING_SIZE = 100
+        const val DEFAULT_CHAT_PAGING_SIZE = 100
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
     }

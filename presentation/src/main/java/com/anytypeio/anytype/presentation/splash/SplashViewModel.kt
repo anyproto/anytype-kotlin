@@ -364,6 +364,7 @@ class SplashViewModel(
         Timber.d("proceedWithVaultNavigation deep link: $deeplink")
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
+            Timber.d("Got last opened space: ${space.id}")
             spaceManager
                 .observe()
                 .take(1)
@@ -373,7 +374,7 @@ class SplashViewModel(
                         .take(1)
                 }
                 .collect { view ->
-                    if (view.isActive) {
+                    if (view.isActive || view.isLoading) {
                         val chat = view.chatId
                         if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
                             commands.emit(
@@ -392,6 +393,7 @@ class SplashViewModel(
                             )
                         }
                     } else {
+                        Timber.w("Space view is not active, navigating to the vault")
                         commands.emit(Command.NavigateToVault(deeplink))
                     }
                 }

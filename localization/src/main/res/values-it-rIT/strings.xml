@@ -1632,6 +1632,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
     <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
     <string name="day_of_week_wednesday">Mercoledì</string>

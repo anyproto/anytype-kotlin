@@ -38,6 +38,7 @@ import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
@@ -67,6 +68,7 @@ class DefaultUserSettingsCache(
     )
 
     override suspend fun setCurrentSpace(space: SpaceId) {
+        Timber.d("Setting current space in settings: ${space.id}")
         prefs.edit()
             .putString(CURRENT_SPACE_KEY, space.id)
             .apply()
@@ -81,6 +83,7 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun clearCurrentSpace() {
+        Timber.d("Clearing current space in settings")
         prefs.edit()
             .putString(CURRENT_SPACE_KEY, "")
             .apply()
@@ -300,6 +303,7 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {
+        Timber.d("Setting last opened object for space: ${space.id}")
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
@@ -330,6 +334,7 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun clearLastOpenedObject(space: SpaceId) {
+        Timber.d("Clearing last opened object for space: ${space.id}")
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences

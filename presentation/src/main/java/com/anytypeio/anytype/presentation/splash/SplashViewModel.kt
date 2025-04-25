@@ -367,7 +367,7 @@ class SplashViewModel(
         Timber.d("proceedWithVaultNavigation deep link: $deeplink")
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
-            Timber.d("Got last opened space: ${space.id}")
+            Timber.d("Got the last opened space from settings: ${space.id}")
             spaceManager
                 .observe()
                 .take(1)

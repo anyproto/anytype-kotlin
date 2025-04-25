@@ -82,6 +82,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -331,25 +332,42 @@ fun ChatScreen(
         Timber.d("DROID-2966 Calling intent: ${uiMessageState.intent}")
         when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
-                val index = uiMessageState.messages.indexOfFirst { it is ChatView.Message && it.id == intent.id }
+                val index = uiMessageState.messages.indexOfFirst {
+                    it is ChatView.Message && it.id == intent.id
+                }
+
                 if (index >= 0) {
+                    Timber.d("DROID-2966 Waiting for layout to stabilize...")
+
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
 
-                    Timber.d("DROID-2966 Waiting before scroll")
+                    lazyListState.scrollToItem(index)
 
-                    delay(1350)
+                    awaitFrame()
 
-                    val offset = lazyListState.layoutInfo.viewportSize.height / 2
-                    lazyListState.animateScrollToItem(index, -offset)
+                    val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+                    if (itemInfo != null) {
+                        val viewportHeight = lazyListState.layoutInfo.viewportSize.height
 
-                    Timber.d("DROID-2966 Waiting after scroll")
+                        // Centering calculation:
+                        // itemCenter relative to viewport top
+                        val itemCenterFromTop = itemInfo.offset + (itemInfo.size / 2)
+                        val viewportCenter = viewportHeight / 2
 
-                    delay(1000)
+                        val delta = itemCenterFromTop - viewportCenter
 
-                    Timber.d("DROID-2966 Clearing intent")
+                        Timber.d("DROID-2966 Calculated delta for centering (reverseLayout-aware): $delta")
 
-                    onClearIntent()
+                        // move negatively because reverseLayout flips
+                        lazyListState.animateScrollBy(delta.toFloat())
+
+                        Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
+
+                        onClearIntent()
+                    } else {
+                        Timber.w("DROID-2966 Target item not found after scroll!")
+                    }
                 }
             }
             is ChatContainer.Intent.ScrollToBottom -> {
@@ -580,7 +598,7 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
 ) {
-    Timber.d("DROID-2966 Messages composition")
+    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,

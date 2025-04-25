@@ -33,6 +33,8 @@ class ChatContainer @Inject constructor(
     private val logger: Logger
 ) {
 
+    private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
+
     private val _replyContextState = MutableStateFlow<ReplyContextState>(ReplyContextState.Idle)
     val replyContextState: StateFlow<ReplyContextState> = _replyContextState
 
@@ -112,7 +114,9 @@ class ChatContainer @Inject constructor(
                 chat = chat,
                 limit = DEFAULT_CHAT_PAGING_SIZE
             )
-        )
+        ).also { result ->
+            cacheLastMessages(result.messages)
+        }
 
         val inputs: Flow<Transformation> = merge(
             channel.observe(chat).map { Transformation.Events.Payload(it) },
@@ -255,35 +259,18 @@ class ChatContainer @Inject constructor(
     }
 
     @Throws
-    private suspend fun loadToEnd(chat: Id) : List<Chat.Message> {
-        val lastFetched = repo.getChatMessages(
+    private suspend fun loadToEnd(chat: Id): List<Chat.Message> {
+        return repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 beforeOrderId = null,
                 afterOrderId = null,
-                limit = 1
+                limit = DEFAULT_CHAT_PAGING_SIZE
             )
-        ).messages.firstOrNull()
-
-        if (lastFetched == null) {
-            // Chat is empty
-            return emptyList()
-        } else {
-            val previous = repo.getChatMessages(
-                Command.ChatCommand.GetMessages(
-                    chat = chat,
-                    beforeOrderId = lastFetched.order,
-                    afterOrderId = null,
-                    limit = DEFAULT_CHAT_PAGING_SIZE
-                )
-            )
-            return buildList {
-                addAll(previous.messages)
-                add(lastFetched)
-                _replyContextState.value = ReplyContextState.Loaded(target = lastFetched.id)
-            }
-        }
+        ).messages
     }
+
+
 
     suspend fun onPayload(events: List<Event.Command.Chats>) {
         payloads.emit(events)
@@ -302,16 +289,19 @@ class ChatContainer @Inject constructor(
                             result.add(event.message)
                         }
                     }
+                    cacheLastMessage(event.message)
                 }
                 is Event.Command.Chats.Delete -> {
                     val index = result.indexOfFirst { it.id == event.id }
                     if (index >= 0) result.removeAt(index)
+                    lastMessages.remove(event.id)
                 }
                 is Event.Command.Chats.Update -> {
                     val index = result.indexOfFirst { it.id == event.id }
                     if (index >= 0 && result[index] != event.message) {
                         result[index] = event.message
                     }
+                    cacheLastMessage(event.message)
                 }
                 is Event.Command.Chats.UpdateReactions -> {
                     val index = result.indexOfFirst { it.id == event.id }
@@ -376,6 +366,25 @@ class ChatContainer @Inject constructor(
         _replyContextState.value = ReplyContextState.Idle
     }
 
+    private fun cacheLastMessages(messages: List<Chat.Message>) {
+        messages.sortedByDescending { it.order } // Newest first
+            .take(LAST_MESSAGES_MAX_SIZE)
+            .forEach { cacheLastMessage(it) }
+    }
+
+    private fun cacheLastMessage(message: Chat.Message) {
+        lastMessages[message.id] = ChatMessageMeta(message.id, message.order)
+        // Ensure insertion order is preserved while trimming old entries
+        if (lastMessages.size > LAST_MESSAGES_MAX_SIZE) {
+            val oldestEntry = lastMessages.entries.first()
+            lastMessages.remove(oldestEntry.key)
+        }
+    }
+
+    private fun getMostRecentMessage(): ChatMessageMeta? {
+        return lastMessages.values.maxByOrNull { it.order }
+    }
+
     internal sealed class Transformation {
         sealed class Events : Transformation() {
             data class Payload(val events: List<Event.Command.Chats>) : Events()
@@ -398,14 +407,20 @@ class ChatContainer @Inject constructor(
              */
             data class LoadAround(val message: Id) : Commands()
 
+            /**
+             * Scroll-to-bottom behavior.
+             */
             data object LoadEnd: Commands()
         }
     }
 
     companion object {
-        const val DEFAULT_CHAT_PAGING_SIZE = 100
-        const val MAX_CHAT_CACHE_SIZE = 1000
+        private const val DEFAULT_CHAT_PAGING_SIZE = 100
+        private const val MAX_CHAT_CACHE_SIZE = 1000
+        private const val LAST_MESSAGES_MAX_SIZE = 10
     }
+
+    data class ChatMessageMeta(val id: Id, val order: String)
 }
 
 sealed class ReplyContextState {

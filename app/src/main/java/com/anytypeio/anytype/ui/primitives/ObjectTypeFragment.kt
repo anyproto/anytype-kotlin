@@ -181,6 +181,14 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         onDismissRequest = vm::hideError
                     )
                 }
+                UiErrorState.Reason.ErrorEditingTypeDetails -> {
+                    BaseAlertDialog(
+                        dialogText = stringResource(R.string.object_type_edit_type_details_error),
+                        buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                        onButtonClick = vm::hideError,
+                        onDismissRequest = vm::hideError
+                    )
+                }
             }
         }
     }

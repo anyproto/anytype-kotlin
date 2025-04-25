@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededExcept
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -41,6 +42,8 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -371,6 +374,11 @@ class SplashViewModel(
                 .flatMapLatest { config ->
                     spaceViews
                         .observe(SpaceId(config.space))
+                        .filterNot { view ->
+                            // Wait until the space view is no longer in a fully UNKNOWN state
+                            view.spaceLocalStatus == SpaceStatus.UNKNOWN
+                                    && view.spaceAccountStatus == SpaceStatus.UNKNOWN
+                        }
                         .take(1)
                 }
                 .collect { view ->
@@ -393,7 +401,6 @@ class SplashViewModel(
                             )
                         }
                     } else {
-                        Timber.w("Space view is not active, navigating to the vault")
                         commands.emit(Command.NavigateToVault(deeplink))
                     }
                 }

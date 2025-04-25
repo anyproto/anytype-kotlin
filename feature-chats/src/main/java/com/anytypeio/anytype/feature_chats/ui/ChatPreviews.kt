@@ -146,7 +146,7 @@ fun ChatPreview2() {
 @Composable
 fun ChatScreenPreview() {
     ChatScreen(
-        messages = ChatViewState(
+        uiMessageState = ChatViewState(
             messages = buildList {
                 repeat(30) { idx ->
                     add(

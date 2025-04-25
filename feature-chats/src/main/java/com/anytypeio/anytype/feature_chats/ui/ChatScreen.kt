@@ -82,7 +82,9 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -117,7 +119,7 @@ fun ChatScreenWrapper(
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    messages = vm.uiState.collectAsState().value,
+                    uiMessageState = vm.uiState.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = { text, spans ->
                         vm.onMessageSent(
@@ -285,7 +287,7 @@ fun ChatScreen(
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
-    messages: ChatViewState,
+    uiMessageState: ChatViewState,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
@@ -312,6 +314,9 @@ fun ChatScreen(
     onClearIntent: () -> Unit,
     onScrollToBottomClicked: () -> Unit
 ) {
+
+    Timber.d("DROID-2966 Render called with state")
+
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -322,13 +327,29 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
-    LaunchedEffect(messages.intent) {
-        when (val intent = messages.intent) {
+    LaunchedEffect(uiMessageState.intent) {
+        Timber.d("DROID-2966 Calling intent: ${uiMessageState.intent}")
+        when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
-                val index = messages.messages.indexOfFirst { it is ChatView.Message && it.id == intent.id }
+                val index = uiMessageState.messages.indexOfFirst { it is ChatView.Message && it.id == intent.id }
                 if (index >= 0) {
+                    snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
+                        .first { it > index }
+
+                    Timber.d("DROID-2966 Waiting before scroll")
+
+                    delay(1350)
+
                     val offset = lazyListState.layoutInfo.viewportSize.height / 2
                     lazyListState.animateScrollToItem(index, -offset)
+
+                    Timber.d("DROID-2966 Waiting after scroll")
+
+                    delay(1000)
+
+                    Timber.d("DROID-2966 Clearing intent")
+
+                    onClearIntent()
                 }
             }
             is ChatContainer.Intent.ScrollToBottom -> {
@@ -341,7 +362,7 @@ fun ChatScreen(
         }
 
         // Once consumed, reset intent (e.g. via ViewModel command)
-        onClearIntent()
+//        onClearIntent()
     }
 
     lazyListState.OnBottomReached(
@@ -364,7 +385,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f)) {
             Messages(
                 modifier = Modifier.fillMaxSize(),
-                messages = messages.messages,
+                messages = uiMessageState.messages,
                 scrollState = lazyListState,
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
@@ -559,6 +580,7 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
 ) {
+    Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,

@@ -50,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
@@ -132,9 +133,10 @@ class ChatViewModel @Inject constructor(
     ) {
         combine(
             chatContainer
-                .watchWhileTrackingAttachments(chat = chat),
-            chatContainer.fetchAttachments(vmParams.space),
-            chatContainer.fetchReplies(chat = chat)
+                .watchWhileTrackingAttachments(chat = chat).distinctUntilChanged()
+            ,
+            chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
+            chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
             Timber.d("DROID-2966 Got chat results: ${result.messages.map { it.content?.text }}")
             data.value = result.messages
@@ -300,7 +302,7 @@ class ChatViewModel @Inject constructor(
                 messages = msgs,
                 result.intent
             )
-        }.flowOn(dispatchers.io).collect {
+        }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it
         }
     }
@@ -927,9 +929,9 @@ class ChatViewModel @Inject constructor(
     fun onClearChatViewStateIntent() {
         Timber.d("DROID-2966 onResetReplyContext")
         viewModelScope.launch {
-            uiState.update { current ->
-                current.copy(intent = ChatContainer.Intent.None)
-            }
+//            uiState.update { current ->
+//                current.copy(intent = ChatContainer.Intent.None)
+//            }
         }
     }
 

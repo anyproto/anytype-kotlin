@@ -35,9 +35,6 @@ class ChatContainer @Inject constructor(
 
     private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
 
-    private val _replyContextState = MutableStateFlow<ReplyContextState>(ReplyContextState.Idle)
-    val replyContextState: StateFlow<ReplyContextState> = _replyContextState
-
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
     private val commands = MutableSharedFlow<Transformation.Commands>(replay = 0)
 
@@ -92,9 +89,10 @@ class ChatContainer @Inject constructor(
             .map { messages -> messages.associate { it.id to it } }
     }
 
-    fun watchWhileTrackingAttachments(chat: Id): Flow<List<Chat.Message>> {
+    fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {
         return watch(chat)
-            .onEach { messages ->
+            .onEach { state ->
+                val messages = state.messages
                 val repliesIds = mutableSetOf<Id>()
                 val attachmentsIds = mutableSetOf<Id>()
                 messages.forEach { msg ->
@@ -108,7 +106,7 @@ class ChatContainer @Inject constructor(
             }
     }
 
-    fun watch(chat: Id): Flow<List<Chat.Message>> = flow {
+    fun watch(chat: Id): Flow<ChatStreamState> = flow {
         val initial = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,
@@ -125,42 +123,50 @@ class ChatContainer @Inject constructor(
         )
 
         emitAll(
-            inputs.scan(initial = initial.messages) { state, transform ->
-                when(transform) {
+            inputs.scan(initial = ChatStreamState(initial.messages)) { state, transform ->
+                when (transform) {
                     Transformation.Commands.LoadPrevious -> {
-                        loadThePreviousPage(state, chat)
+                        val msgs = loadThePreviousPage(state.messages, chat)
+                        ChatStreamState(msgs)
                     }
                     Transformation.Commands.LoadNext -> {
-                        loadTheNextPage(state, chat)
+                        val msgs = loadTheNextPage(state.messages, chat)
+                        ChatStreamState(msgs)
                     }
                     is Transformation.Commands.LoadAround -> {
-                        try {
+                        val msgs = try {
                             loadToMessage(chat, transform)
                         } catch (e: Exception) {
-                            state.also {
-                                logger.logException(e, "DROID-2966 Error while loading reply context")
-                            }
+                            logger.logException(e, "DROID-2966 Error while loading reply context")
+                            state.messages
                         }
-                    }
-                    is Transformation.Events.Payload -> {
-                        state.reduce(transform.events)
+                        ChatStreamState(
+                            messages = msgs,
+                            intent = Intent.ScrollToMessage(transform.message)
+                        )
                     }
                     is Transformation.Commands.LoadEnd -> {
-                        try {
-                            loadToEnd(chat = chat)
+                        val msgs = try {
+                            loadToEnd(chat)
                         } catch (e: Exception) {
-                            state.also {
-                                logger.logException(e, "DROID-2966 Error while scrolling to bottom")
-                            }
+                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                            state.messages
                         }
+                        ChatStreamState(msgs)
+                    }
+                    is Transformation.Events.Payload -> {
+                        val updated = state.messages.reduce(transform.events)
+                        ChatStreamState(updated)
                     }
                 }
             }.distinctUntilChanged()
         )
     }.catch { e ->
-            emit(value = emptyList()).also {
-                logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
-            }
+        emit(
+            value = ChatStreamState(emptyList())
+        ).also {
+            logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
+        }
     }
 
     @Throws
@@ -168,8 +174,6 @@ class ChatContainer @Inject constructor(
         chat: Id,
         transform: Transformation.Commands.LoadAround
     ): List<Chat.Message> {
-
-        _replyContextState.value = ReplyContextState.Loading(target = transform.message)
 
         val replyMessage = repo.getChatMessagesByIds(
             Command.ChatCommand.GetMessagesByIds(
@@ -194,8 +198,6 @@ class ChatContainer @Inject constructor(
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
             ).messages
-
-            _replyContextState.value = ReplyContextState.Loaded(target = transform.message)
 
             return buildList {
                 addAll(loadedMessagesBefore)
@@ -270,8 +272,6 @@ class ChatContainer @Inject constructor(
         ).messages
     }
 
-
-
     suspend fun onPayload(events: List<Event.Command.Chats>) {
         payloads.emit(events)
     }
@@ -281,7 +281,7 @@ class ChatContainer @Inject constructor(
         events.forEach { event ->
             when (event) {
                 is Event.Command.Chats.Add -> {
-                    if (result.none { it.id == event.message.id }) {
+                    if (!result.isInCurrentWindow(event.message.id)) {
                         val insertIndex = result.indexOfFirst { it.order > event.order }
                         if (insertIndex >= 0) {
                             result.add(insertIndex, event.message)
@@ -289,66 +289,72 @@ class ChatContainer @Inject constructor(
                             result.add(event.message)
                         }
                     }
+                    // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
-                is Event.Command.Chats.Delete -> {
-                    val index = result.indexOfFirst { it.id == event.id }
-                    if (index >= 0) result.removeAt(index)
-                    lastMessages.remove(event.id)
-                }
+
                 is Event.Command.Chats.Update -> {
-                    val index = result.indexOfFirst { it.id == event.id }
-                    if (index >= 0 && result[index] != event.message) {
+                    if (result.isInCurrentWindow(event.id)) {
+                        val index = result.indexOfFirst { it.id == event.id }
                         result[index] = event.message
                     }
+                    // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
+
+                is Event.Command.Chats.Delete -> {
+                    if (result.isInCurrentWindow(event.id)) {
+                        val index = result.indexOfFirst { it.id == event.id }
+                        result.removeAt(index)
+                    }
+                    // Tracking the last message in the chat tail
+                    lastMessages.remove(event.id)
+                }
+
                 is Event.Command.Chats.UpdateReactions -> {
-                    val index = result.indexOfFirst { it.id == event.id }
-                    if (index >= 0 && result[index].reactions != event.reactions) {
-                        result[index] = result[index].copy(reactions = event.reactions)
+                    if (result.isInCurrentWindow(event.id)) {
+                        val index = result.indexOfFirst { it.id == event.id }
+                        if (result[index].reactions != event.reactions) {
+                            result[index] = result[index].copy(reactions = event.reactions)
+                        }
                     }
                 }
+
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                    event.messages.forEach { id ->
+                    val idsInWindow = event.messages.filter { result.isInCurrentWindow(it) }
+                    idsInWindow.forEach { id ->
                         val index = result.indexOfFirst { it.id == id }
-                        if (index >= 0 && result[index].mentionRead != event.isRead) {
+                        if (result[index].mentionRead != event.isRead) {
                             result[index] = result[index].copy(mentionRead = event.isRead)
                         }
                     }
                 }
+
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    event.messages.forEach { id ->
+                    val idsInWindow = event.messages.filter { result.isInCurrentWindow(it) }
+                    idsInWindow.forEach { id ->
                         val index = result.indexOfFirst { it.id == id }
-                        if (index >= 0 && result[index].read != event.isRead) {
+                        if (result[index].read != event.isRead) {
                             result[index] = result[index].copy(read = event.isRead)
                         }
                     }
                 }
+
                 is Event.Command.Chats.UpdateState -> {
-                   // TODO handle event
+                    // TODO handle later
                 }
             }
         }
+
         return result
     }
 
     suspend fun onLoadPrevious() {
-        if (replyContextState.value !is ReplyContextState.Loading) {
-            logger.logInfo("DROID-2966 emitting onLoadPrevious")
-            commands.emit(Transformation.Commands.LoadPrevious)
-        } else {
-            logger.logInfo("DROID-2966 onLoadPrevious, scroll suppressed, state: ${replyContextState.value}")
-        }
+        commands.emit(Transformation.Commands.LoadPrevious)
     }
 
     suspend fun onLoadNext() {
-        if (replyContextState.value is ReplyContextState.Idle) {
-            logger.logInfo("DROID-2966 emitting onLoadNext")
-            commands.emit(Transformation.Commands.LoadNext)
-        } else {
-            logger.logInfo("DROID-2966 onLoadNext, scroll suppressed, state: ${replyContextState.value} ")
-        }
+        commands.emit(Transformation.Commands.LoadNext)
     }
 
     suspend fun onLoadToReply(replyMessage: Id) {
@@ -361,10 +367,10 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadEnd)
     }
 
-    fun onResetReplyToContext() {
-        logger.logInfo("DROID-2966 resetting reply context")
-        _replyContextState.value = ReplyContextState.Idle
-    }
+//    fun onResetReplyToContext() {
+//        logger.logInfo("DROID-2966 resetting reply context")
+//        _replyContextState.value = ReplyContextState.Idle
+//    }
 
     private fun cacheLastMessages(messages: List<Chat.Message>) {
         messages.sortedByDescending { it.order } // Newest first
@@ -421,11 +427,19 @@ class ChatContainer @Inject constructor(
     }
 
     data class ChatMessageMeta(val id: Id, val order: String)
+
+    data class ChatStreamState(
+        val messages: List<Chat.Message>,
+        val intent: Intent = Intent.None
+    )
+
+    sealed class Intent {
+        data class ScrollToMessage(val id: Id) : Intent()
+        data class Highlight(val id: Id) : Intent()
+        data object None : Intent()
+    }
 }
 
-sealed class ReplyContextState {
-    object Idle : ReplyContextState()
-    data class Loading(val target: Id) : ReplyContextState()
-    data class Loaded(val target: Id) : ReplyContextState()
-    data class Error(val target: Id, val throwable: Throwable) : ReplyContextState()
+private fun List<Chat.Message>.isInCurrentWindow(id: Id): Boolean {
+    return this.any { it.id == id }
 }

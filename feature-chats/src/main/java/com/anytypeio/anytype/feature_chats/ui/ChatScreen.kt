@@ -73,17 +73,15 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.domain.chats.ReplyContextState
+import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
-import kotlinx.coroutines.delay
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -118,7 +116,7 @@ fun ChatScreenWrapper(
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    messages = vm.messages.collectAsState().value,
+                    messages = vm.uiState.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = { text, spans ->
                         vm.onMessageSent(
@@ -191,8 +189,7 @@ fun ChatScreenWrapper(
                     onChatScrolledToTop = vm::onChatScrolledToTop,
                     onChatScrolledToBottom = vm::onChatScrolledToBottom,
                     onScrollToReplyClicked = vm::onChatScrollToReply,
-                    replyContext = vm.replyContext.collectAsStateWithLifecycle().value,
-                    onResetScrollToReply = vm::onResetReplyContext,
+                    onClearIntent = vm::onClearChatViewStateIntent,
                     onScrollToBottomClicked = vm::onScrollToBottomClicked
                 )
                 LaunchedEffect(Unit) {
@@ -284,11 +281,10 @@ private fun LazyListState.OnTopReached(
  */
 @Composable
 fun ChatScreen(
-    replyContext: ReplyContextState,
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
-    messages: List<ChatView>,
+    messages: ChatViewState,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
@@ -312,7 +308,7 @@ fun ChatScreen(
     onChatScrolledToTop: () -> Unit,
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
-    onResetScrollToReply: () -> Unit,
+    onClearIntent: () -> Unit,
     onScrollToBottomClicked: () -> Unit
 ) {
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -335,19 +331,37 @@ fun ChatScreen(
 //        }
 //    }
 
-    LaunchedEffect(messages, replyContext) {
-        if (replyContext is ReplyContextState.Loaded) {
-            val replyId = replyContext.target
-            val index = messages.indexOfFirst { it is ChatView.Message && it.id == replyId }
+//    LaunchedEffect(messages, replyContext) {
+//        if (replyContext is ReplyContextState.Loaded) {
+//            val replyId = replyContext.target
+//            val index = messages.indexOfFirst { it is ChatView.Message && it.id == replyId }
+//
+//            if (index >= 0) {
+//                Timber.d("DROID-2966 Found item at index for scroll-to-reply: $index")
+//                val offset = lazyListState.layoutInfo.viewportSize.height / 2
+//                lazyListState.scrollToItem(index, -offset)
+//                delay(200)
+//                onResetScrollToReply()
+//            }
+//        }
+//    }
 
-            if (index >= 0) {
-                Timber.d("DROID-2966 Found item at index for scroll-to-reply: $index")
-                val offset = lazyListState.layoutInfo.viewportSize.height / 2
-                lazyListState.scrollToItem(index, -offset)
-                delay(200)
-                onResetScrollToReply()
+    LaunchedEffect(messages.intent) {
+        when (val intent = messages.intent) {
+            is ChatContainer.Intent.ScrollToMessage -> {
+                val index = messages.messages.indexOfFirst { it is ChatView.Message && it.id == intent.id }
+                if (index >= 0) {
+                    lazyListState.scrollToItem(index)
+                }
             }
+            is ChatContainer.Intent.Highlight -> {
+                // maybe flash background, etc.
+            }
+            ChatContainer.Intent.None -> Unit
         }
+
+        // Once consumed, reset intent (e.g. via ViewModel command)
+        onClearIntent()
     }
 
     lazyListState.OnBottomReached(
@@ -370,7 +384,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f)) {
             Messages(
                 modifier = Modifier.fillMaxSize(),
-                messages = messages,
+                messages = messages.messages,
                 scrollState = lazyListState,
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,

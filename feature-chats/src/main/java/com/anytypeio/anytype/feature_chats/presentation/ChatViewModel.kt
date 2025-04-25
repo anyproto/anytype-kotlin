@@ -52,6 +52,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -75,7 +76,7 @@ class ChatViewModel @Inject constructor(
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
-    val messages = MutableStateFlow<List<ChatView>>(emptyList())
+    val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
@@ -85,8 +86,6 @@ class ChatViewModel @Inject constructor(
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
-
-    val replyContext = chatContainer.replyContextState
 
     private var account: Id = ""
 
@@ -137,11 +136,12 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space),
             chatContainer.fetchReplies(chat = chat)
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Got chat results: ${result.map { it.content?.text }}")
-            data.value = result
+            Timber.d("DROID-2966 Got chat results: ${result.messages.map { it.content?.text }}")
+            data.value = result.messages
+
             var previousDate: ChatView.DateSection? = null
-            buildList<ChatView> {
-                result.forEach { msg ->
+            val msgs = buildList<ChatView> {
+                result.messages.forEach { msg ->
                     val allMembers = members.get()
                     val member = allMembers.let { type ->
                         when (type) {
@@ -296,8 +296,12 @@ class ChatViewModel @Inject constructor(
                     add(view)
                 }
             }.reversed()
+            ChatViewState(
+                messages = msgs,
+                result.intent
+            )
         }.flowOn(dispatchers.io).collect {
-            messages.value = it
+            uiState.value = it
         }
     }
     
@@ -657,7 +661,7 @@ class ChatViewModel @Inject constructor(
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {
-            val message = messages.value.find { it is ChatView.Message && it.id == msg }
+            val message = uiState.value.messages.find { it is ChatView.Message && it.id == msg }
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
@@ -893,14 +897,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatScrolledToTop() {
-        Timber.d("DROID-2966 onChatScrolledToTop, context: ${replyContext.value}")
+        Timber.d("DROID-2966 onChatScrolledToTop")
         viewModelScope.launch {
             chatContainer.onLoadPrevious()
         }
     }
 
     fun onChatScrolledToBottom() {
-        Timber.d("DROID-2966 onChatScrolledToBottom, context: ${replyContext.value}")
+        Timber.d("DROID-2966 onChatScrolledToBottom")
         viewModelScope.launch {
             chatContainer.onLoadNext()
         }
@@ -920,10 +924,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onResetReplyContext() {
+    fun onClearChatViewStateIntent() {
         Timber.d("DROID-2966 onResetReplyContext")
         viewModelScope.launch {
-            chatContainer.onResetReplyToContext()
+            uiState.update { current ->
+                current.copy(intent = ChatContainer.Intent.None)
+            }
         }
     }
 

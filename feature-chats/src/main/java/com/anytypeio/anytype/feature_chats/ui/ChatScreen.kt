@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -321,38 +322,17 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
-//     Scrolling to bottom when list size changes and we are at the bottom of the list
-//    LaunchedEffect(messages.size) {
-//        if (lazyListState.firstVisibleItemScrollOffset == 0) {
-//            Timber.d("DROID-2966 Scrolling to the bottom due to list update when we were at the bottom already.")
-//            scope.launch {
-//                lazyListState.animateScrollToItem(0)
-//            }
-//        }
-//    }
-
-//    LaunchedEffect(messages, replyContext) {
-//        if (replyContext is ReplyContextState.Loaded) {
-//            val replyId = replyContext.target
-//            val index = messages.indexOfFirst { it is ChatView.Message && it.id == replyId }
-//
-//            if (index >= 0) {
-//                Timber.d("DROID-2966 Found item at index for scroll-to-reply: $index")
-//                val offset = lazyListState.layoutInfo.viewportSize.height / 2
-//                lazyListState.scrollToItem(index, -offset)
-//                delay(200)
-//                onResetScrollToReply()
-//            }
-//        }
-//    }
-
     LaunchedEffect(messages.intent) {
         when (val intent = messages.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 val index = messages.messages.indexOfFirst { it is ChatView.Message && it.id == intent.id }
                 if (index >= 0) {
-                    lazyListState.scrollToItem(index)
+                    val offset = lazyListState.layoutInfo.viewportSize.height / 2
+                    lazyListState.animateScrollToItem(index, -offset)
                 }
+            }
+            is ChatContainer.Intent.ScrollToBottom -> {
+                smoothScrollToBottom(lazyListState)
             }
             is ChatContainer.Intent.Highlight -> {
                 // maybe flash background, etc.
@@ -760,6 +740,17 @@ fun TopDiscussionToolbar(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+    }
+}
+
+suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
+    if (lazyListState.firstVisibleItemIndex > 0) {
+        lazyListState.scrollToItem(0)
+        return
+    }
+    while (lazyListState.firstVisibleItemScrollOffset > 0) {
+        val delta = (-lazyListState.firstVisibleItemScrollOffset).coerceAtLeast(-40)
+        lazyListState.animateScrollBy(delta.toFloat())
     }
 }
 

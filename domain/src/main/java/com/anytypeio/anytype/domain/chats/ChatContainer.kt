@@ -126,37 +126,40 @@ class ChatContainer @Inject constructor(
             inputs.scan(initial = ChatStreamState(initial.messages)) { state, transform ->
                 when (transform) {
                     Transformation.Commands.LoadPrevious -> {
-                        val msgs = loadThePreviousPage(state.messages, chat)
-                        ChatStreamState(msgs)
+                        val messages = loadThePreviousPage(state.messages, chat)
+                        ChatStreamState(messages = messages)
                     }
                     Transformation.Commands.LoadNext -> {
-                        val msgs = loadTheNextPage(state.messages, chat)
-                        ChatStreamState(msgs)
+                        val messages = loadTheNextPage(state.messages, chat)
+                        ChatStreamState(messages = messages)
                     }
                     is Transformation.Commands.LoadAround -> {
-                        val msgs = try {
+                        val messages = try {
                             loadToMessage(chat, transform)
                         } catch (e: Exception) {
                             logger.logException(e, "DROID-2966 Error while loading reply context")
                             state.messages
                         }
                         ChatStreamState(
-                            messages = msgs,
+                            messages = messages,
                             intent = Intent.ScrollToMessage(transform.message)
                         )
                     }
                     is Transformation.Commands.LoadEnd -> {
-                        val msgs = try {
+                        val messages = try {
                             loadToEnd(chat)
                         } catch (e: Exception) {
                             logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                             state.messages
                         }
-                        ChatStreamState(msgs)
+                        ChatStreamState(
+                            messages = messages,
+                            intent = Intent.ScrollToBottom
+                        )
                     }
                     is Transformation.Events.Payload -> {
                         val updated = state.messages.reduce(transform.events)
-                        ChatStreamState(updated)
+                        ChatStreamState(messages = updated)
                     }
                 }
             }.distinctUntilChanged()
@@ -198,6 +201,9 @@ class ChatContainer @Inject constructor(
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
             ).messages
+
+            logger.logInfo("DROID-2966, loaded before: ${loadedMessagesBefore.map { it.content?.text }}")
+            logger.logInfo("DROID-2966, loaded after: ${loadedMessagesAfter.map { it.content?.text }}")
 
             return buildList {
                 addAll(loadedMessagesBefore)
@@ -367,11 +373,6 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadEnd)
     }
 
-//    fun onResetReplyToContext() {
-//        logger.logInfo("DROID-2966 resetting reply context")
-//        _replyContextState.value = ReplyContextState.Idle
-//    }
-
     private fun cacheLastMessages(messages: List<Chat.Message>) {
         messages.sortedByDescending { it.order } // Newest first
             .take(LAST_MESSAGES_MAX_SIZE)
@@ -421,7 +422,7 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_CHAT_PAGING_SIZE = 100
+        const val DEFAULT_CHAT_PAGING_SIZE = 10
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
     }
@@ -436,6 +437,7 @@ class ChatContainer @Inject constructor(
     sealed class Intent {
         data class ScrollToMessage(val id: Id) : Intent()
         data class Highlight(val id: Id) : Intent()
+        data object ScrollToBottom : Intent()
         data object None : Intent()
     }
 }

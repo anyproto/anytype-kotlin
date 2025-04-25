@@ -36,14 +36,18 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
         args: Bundle? = null
     ) {
         jobs += this.lifecycleScope.launch {
-            throttleFlow.emit {
-                if (currentNavigationId == getNavigationId()) {
-                    try {
-                        findNavController().navigate(id, args)
-                    } catch (e: Exception) {
-                        Timber.e(e, "safeNavigateMethod is not safe!")
+            try {
+                throttleFlow.emit {
+                    if (currentNavigationId == getNavigationId()) {
+                        try {
+                            findNavController().navigate(id, args)
+                        } catch (e: Exception) {
+                            Timber.e(e, "safeNavigateMethod is not safe!")
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Timber.e(e, "Error during emit in safeNavigate")
             }
         }
     }
@@ -70,11 +74,16 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
         jobs += this@BaseBottomSheetComposeFragment.lifecycleScope.launch {
-            throttleFlow.emit {
-                show(
-                    this@BaseBottomSheetComposeFragment.childFragmentManager,
-                    tag
-                )
+            try {
+                throttleFlow.emit {
+                    try {
+                        show(this@BaseBottomSheetComposeFragment.childFragmentManager, tag)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while showing child dialog")
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error during emit in showChildFragment")
             }
         }
     }
@@ -118,5 +127,14 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 fun Fragment.getNavigationId() = findNavController().currentDestination?.id
 
 fun <T> BaseBottomSheetComposeFragment.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow
+        .cancellable()
+        .onEach {
+            try {
+                body(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Unhandled exception in proceed flow")
+            }
+        }
+        .launchIn(lifecycleScope)
 }

@@ -22,7 +22,7 @@ abstract class BaseBottomSheetTextInputFragment<T : ViewBinding>(
     }
 
     private fun setupWindowInsetAnimation() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             textInput.syncFocusWithImeVisibility()
         }
     }

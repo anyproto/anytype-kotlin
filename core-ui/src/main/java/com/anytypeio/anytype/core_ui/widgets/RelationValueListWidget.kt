@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
+import timber.log.Timber
 
 class RelationValueListWidget @JvmOverloads constructor(
     context: Context,
@@ -418,27 +419,35 @@ class RelationValueListWidget @JvmOverloads constructor(
     private fun setLinksRelation(relation: ObjectRelationView.Links) {
         when (relation) {
             is ObjectRelationView.Links.From -> {
-                val count = context.resources.getQuantityString(
-                    R.plurals.links_from_count,
-                    relation.count,
-                    relation.count
-                )
-                setupSingleTextItem(
-                    name = count,
-                    textColor = textColorPrimary
-                )
+                try {
+                    val count = context.resources.getQuantityString(
+                        R.plurals.links_from_count,
+                        relation.count,
+                        relation.count
+                    )
+                    setupSingleTextItem(
+                        name = count,
+                        textColor = textColorPrimary
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while trying to show links in featured properties")
+                }
             }
 
             is ObjectRelationView.Links.Backlinks -> {
-                val count = context.resources.getQuantityString(
-                    R.plurals.backlinks_count,
-                    relation.count,
-                    relation.count
-                )
-                setupSingleTextItem(
-                    name = count,
-                    textColor = textColorPrimary
-                )
+                try {
+                    val count = context.resources.getQuantityString(
+                        R.plurals.backlinks_count,
+                        relation.count,
+                        relation.count
+                    )
+                    setupSingleTextItem(
+                        name = count,
+                        textColor = textColorPrimary
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while trying to show backlinks in featured properties")
+                }
             }
         }
     }

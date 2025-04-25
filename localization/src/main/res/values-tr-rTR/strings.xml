@@ -1631,6 +1631,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="object_properties_local_info_description">Bu özellikler yalnızca bu nesnede bulunur ve türünün bir parçası değildir. Tüm nesnelerde kullanılacak türe ekleyin veya kaldırın.</string>
     <string name="object_properties_empty_state">Henüz özellik yok. Bu türe bazılarını ekleyin.</string>
     <string name="object_type_open_type_error">Nesne türü açılamadı</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
     <string name="day_of_week_monday">Pazartesi</string>
     <string name="day_of_week_tuesday">Salı</string>
     <string name="day_of_week_wednesday">Çarşamba</string>

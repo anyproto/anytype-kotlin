@@ -1631,6 +1631,7 @@ En concreto,
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
     <string name="object_properties_empty_state">Aún no hay propiedades. Añade algunas a este tipo.</string>
     <string name="object_type_open_type_error">Error al abrir el tipo de objeto</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>
     <string name="day_of_week_wednesday">Miércoles</string>

@@ -211,6 +211,7 @@ sealed class UiErrorState {
 
     sealed class Reason {
         data class ErrorGettingObjects(val msg: String) : Reason()
+        data object ErrorEditingTypeDetails : Reason()
         data class Other(val msg: String) : Reason()
     }
 }

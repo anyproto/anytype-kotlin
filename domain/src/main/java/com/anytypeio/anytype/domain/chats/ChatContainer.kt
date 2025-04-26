@@ -125,16 +125,14 @@ class ChatContainer @Inject constructor(
             inputs.scan(initial = ChatStreamState(initial.messages)) { state, transform ->
                 when (transform) {
                     Transformation.Commands.LoadPrevious -> {
-                        val messages = loadThePreviousPage(state.messages, chat)
                         ChatStreamState(
-                            messages = messages,
+                            messages = loadThePreviousPage(state.messages, chat),
                             intent = Intent.None
                         )
                     }
                     Transformation.Commands.LoadNext -> {
-                        val messages = loadTheNextPage(state.messages, chat)
                         ChatStreamState(
-                            messages = messages,
+                            messages = loadTheNextPage(state.messages, chat),
                             intent = Intent.None
                         )
                     }
@@ -163,9 +161,8 @@ class ChatContainer @Inject constructor(
                         )
                     }
                     is Transformation.Events.Payload -> {
-                        val updated = state.messages.reduce(transform.events)
                         ChatStreamState(
-                            messages = updated,
+                            messages = state.messages.reduce(transform.events),
                             intent = Intent.None
                         )
                     }

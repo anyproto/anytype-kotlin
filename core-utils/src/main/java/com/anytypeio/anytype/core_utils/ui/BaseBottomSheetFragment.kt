@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import com.google.android.material.R.id.design_bottom_sheet as BOTTOM_SHEET_ID
 
 abstract class BaseBottomSheetFragment<T : ViewBinding>(
@@ -33,12 +34,17 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
     val sheet: FrameLayout? get() = dialog?.findViewById(BOTTOM_SHEET_ID)
 
     private val throttleFlow = MutableSharedFlow<() -> Unit>(0)
+    val jobs = mutableListOf<Job>()
 
     protected fun throttle(task: () -> Unit) {
-        jobs += this.lifecycleScope.launch { throttleFlow.emit { task() } }
+        jobs += this.lifecycleScope.launch {
+            try {
+                throttleFlow.emit { task() }
+            } catch (e: Exception) {
+                Timber.e(e, "Error during emit in throttle()")
+            }
+        }
     }
-
-    val jobs = mutableListOf<Job>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,7 +70,13 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
         if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
             expand()
         }
-        proceed(throttleFlow.throttleFirst(LONG_THROTTLE_DURATION)) { it() }
+        proceed(throttleFlow.throttleFirst(LONG_THROTTLE_DURATION)) {
+            try {
+                it()
+            } catch (e: Exception) {
+                Timber.e(e, "Unhandled exception in throttled flow execution")
+            }
+        }
     }
 
     override fun onStop() {
@@ -77,7 +89,17 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
         jobs += this@BaseBottomSheetFragment.lifecycleScope.launch {
-            throttleFlow.emit { show(this@BaseBottomSheetFragment.childFragmentManager, tag) }
+            try {
+                throttleFlow.emit {
+                    try {
+                        show(this@BaseBottomSheetFragment.childFragmentManager, tag)
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while showing child dialog")
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error during emit in showChildFragment")
+            }
         }
     }
 
@@ -87,18 +109,14 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
     }
 
     fun skipCollapsed() {
-        sheet?.let { sheet ->
-            BottomSheetBehavior.from(sheet).apply {
-                skipCollapsed = true
-            }
+        sheet?.let {
+            BottomSheetBehavior.from(it).skipCollapsed = true
         }
     }
 
     fun expand() {
-        sheet?.let { sheet ->
-            BottomSheetBehavior.from(sheet).apply {
-                state = BottomSheetBehavior.STATE_EXPANDED
-            }
+        sheet?.let {
+            BottomSheetBehavior.from(it).state = BottomSheetBehavior.STATE_EXPANDED
         }
     }
 
@@ -106,17 +124,25 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
         sheet?.layoutParams?.height = ViewGroup.LayoutParams.MATCH_PARENT
     }
 
-    abstract fun injectDependencies()
-    abstract fun releaseDependencies()
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
+    abstract fun injectDependencies()
+    abstract fun releaseDependencies()
     protected abstract fun inflateBinding(inflater: LayoutInflater, container: ViewGroup?): T
 }
 
 fun <T> BaseBottomSheetFragment<*>.proceed(flow: Flow<T>, body: suspend (T) -> Unit) {
-    jobs += flow.cancellable().onEach { body(it) }.launchIn(lifecycleScope)
+    jobs += flow
+        .cancellable()
+        .onEach {
+            try {
+                body(it)
+            } catch (e: Exception) {
+                Timber.e(e, "Unhandled exception in proceed flow")
+            }
+        }
+        .launchIn(lifecycleScope)
 }

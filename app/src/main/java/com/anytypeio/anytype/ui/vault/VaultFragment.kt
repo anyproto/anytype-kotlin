@@ -150,7 +150,13 @@ class VaultFragment : BaseComposeFragment() {
     private fun proceed(destination: Navigation) {
         when (destination) {
             is Navigation.OpenObject -> runCatching {
-                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                findNavController().navigate(
+                    R.id.actionOpenSpaceFromVault,
+                    HomeScreenFragment.args(
+                        space = destination.space,
+                        deeplink = null
+                    )
+                )
                 navigation().openDocument(
                     target = destination.ctx,
                     space = destination.space
@@ -159,7 +165,13 @@ class VaultFragment : BaseComposeFragment() {
                 Timber.e(it, "Error while opening object from vault")
             }
             is Navigation.OpenSet -> runCatching {
-                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                findNavController().navigate(
+                    R.id.actionOpenSpaceFromVault,
+                    HomeScreenFragment.args(
+                        space = destination.space,
+                        deeplink = null
+                    )
+                )
                 navigation().openObjectSet(
                     target = destination.ctx,
                     space = destination.space,
@@ -169,7 +181,13 @@ class VaultFragment : BaseComposeFragment() {
                 Timber.e(it, "Error while opening set or collection from vault")
             }
             is Navigation.OpenChat -> {
-                findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                findNavController().navigate(
+                    R.id.actionOpenSpaceFromVault,
+                    HomeScreenFragment.args(
+                        space = destination.space,
+                        deeplink = null
+                    )
+                )
                 navigation().openChat(
                     target = destination.ctx,
                     space = destination.space
@@ -177,7 +195,13 @@ class VaultFragment : BaseComposeFragment() {
             }
             is Navigation.OpenDateObject -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
+                    )
                     navigation().openDateObject(
                         objectId = destination.ctx,
                         space = destination.space
@@ -189,7 +213,13 @@ class VaultFragment : BaseComposeFragment() {
 
             is Navigation.OpenParticipant -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenSpaceFromVault)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        HomeScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
+                    )
                     navigation().openParticipantObject(
                         objectId = destination.ctx,
                         space = destination.space
@@ -205,7 +235,7 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     override fun onApplyWindowRootInsets(view: View) {
-        if (USE_EDGE_TO_EDGE && SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             // Do nothing.
         } else {
             super.onApplyWindowRootInsets(view)

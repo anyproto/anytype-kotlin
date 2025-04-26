@@ -58,6 +58,7 @@ import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
+import com.anytypeio.anytype.security.KeystoreManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -171,37 +172,8 @@ object DataModule {
     @Singleton
     @Named("encrypted")
     fun provideEncryptedSharedPreferences(
-        context: Context
-    ): SharedPreferences = try {
-        initializeEncryptedPrefs(context)
-    } catch (e: GeneralSecurityException) {
-        // https://issuetracker.google.com/issues/164901843
-        Timber.e(e, "Security error while initializing encrypted prefs")
-        // Clearing pre-existing prefs
-        retryInstantiatingEncryptedPrefs(context)
-    } catch (e: Exception) {
-        // https://issuetracker.google.com/issues/164901843
-        Timber.e(e, "Unknown error while initializing encrypted prefs")
-        // Clearing pre-existing prefs
-        retryInstantiatingEncryptedPrefs(context)
-    }
-
-    private fun retryInstantiatingEncryptedPrefs(context: Context): SharedPreferences {
-        context
-            .getSharedPreferences(ENCRYPTED_PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .clear()
-            .commit()
-        return initializeEncryptedPrefs(context)
-    }
-
-    private fun initializeEncryptedPrefs(context: Context) = EncryptedSharedPreferences.create(
-        ENCRYPTED_PREFS_NAME,
-        MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-        context,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+        keystoreManager: KeystoreManager
+    ): SharedPreferences = keystoreManager.initializeEncryptedPreferences()
 
     @JvmStatic
     @Provides
@@ -349,6 +321,10 @@ object DataModule {
     ): AppDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(
         localeProvider = localeProvider
     )
+
+    @Provides
+    @Singleton
+    fun provideKeystoreManager(context: Context): KeystoreManager = KeystoreManager(context)
 
     @Module
     interface Bindings {

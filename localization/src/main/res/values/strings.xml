@@ -1265,13 +1265,13 @@
     <!--endregion-->
 
     <plurals name="backlinks_count">
-        <item quantity="zero">$d backlinks</item>
+        <item quantity="zero">%d backlinks</item>
         <item quantity="one">%d backlink</item>
         <item quantity="other">%d backlinks</item>
     </plurals>
 
     <plurals name="links_from_count">
-        <item quantity="zero">$d links</item>
+        <item quantity="zero">%d links</item>
         <item quantity="one">%d link</item>
         <item quantity="other">%d links</item>
     </plurals>
@@ -1901,6 +1901,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
 
     <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
 
     <string name="day_of_week_monday">Monday</string>
     <string name="day_of_week_tuesday">Tuesday</string>

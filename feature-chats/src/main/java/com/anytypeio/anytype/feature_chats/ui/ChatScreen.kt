@@ -329,7 +329,6 @@ fun ChatScreen(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(uiMessageState.intent) {
-        Timber.d("DROID-2966 Calling intent: ${uiMessageState.intent}")
         when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 val index = uiMessageState.messages.indexOfFirst {
@@ -372,28 +371,24 @@ fun ChatScreen(
             }
             is ChatContainer.Intent.ScrollToBottom -> {
                 smoothScrollToBottom(lazyListState)
+                onClearIntent()
             }
             is ChatContainer.Intent.Highlight -> {
                 // maybe flash background, etc.
             }
             ChatContainer.Intent.None -> Unit
         }
-
-        // Once consumed, reset intent (e.g. via ViewModel command)
-//        onClearIntent()
     }
 
     lazyListState.OnBottomReached(
         thresholdItems = 3
     ) {
-        Timber.d("DROID-2966 onBottomReached for LazyListState")
         onChatScrolledToBottom()
     }
 
     lazyListState.OnTopReached(
         thresholdItems = 3
     ) {
-        Timber.d("DROID-2966 onTopReached for LazyListState")
         onChatScrolledToTop()
     }
 

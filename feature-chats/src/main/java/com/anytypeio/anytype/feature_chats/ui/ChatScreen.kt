@@ -68,9 +68,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -695,39 +699,39 @@ fun Messages(
                 )
             }
         }
-//        if (messages.isEmpty()) {
-//            item {
-//                Box(
-//                    modifier = Modifier
-//                        .fillParentMaxSize()
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .align(Alignment.CenterStart)
-//                    ) {
-//                        AlertIcon(
-//                            icon = AlertConfig.Icon(
-//                                gradient = GRADIENT_TYPE_BLUE,
-//                                icon = R.drawable.ic_alert_message
-//                            )
-//                        )
-//                        Text(
-//                            text = stringResource(R.string.chat_empty_state_message),
-//                            style = Caption1Regular,
-//                            color = colorResource(id = R.color.text_secondary),
-//                            textAlign = TextAlign.Center,
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(
-//                                    start = 20.dp,
-//                                    end = 20.dp,
-//                                    top = 12.dp
-//                                )
-//                        )
-//                    }
-//                }
-//            }
-//        }
+        if (messages.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                    ) {
+                        AlertIcon(
+                            icon = AlertConfig.Icon(
+                                gradient = GRADIENT_TYPE_BLUE,
+                                icon = R.drawable.ic_alert_message
+                            )
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_message),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp,
+                                    top = 12.dp
+                                )
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

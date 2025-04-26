@@ -17,7 +17,6 @@ import kotlin.collections.toList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
@@ -127,11 +126,17 @@ class ChatContainer @Inject constructor(
                 when (transform) {
                     Transformation.Commands.LoadPrevious -> {
                         val messages = loadThePreviousPage(state.messages, chat)
-                        ChatStreamState(messages = messages)
+                        ChatStreamState(
+                            messages = messages,
+                            intent = Intent.None
+                        )
                     }
                     Transformation.Commands.LoadNext -> {
                         val messages = loadTheNextPage(state.messages, chat)
-                        ChatStreamState(messages = messages)
+                        ChatStreamState(
+                            messages = messages,
+                            intent = Intent.None
+                        )
                     }
                     is Transformation.Commands.LoadAround -> {
                         val messages = try {
@@ -159,7 +164,10 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Events.Payload -> {
                         val updated = state.messages.reduce(transform.events)
-                        ChatStreamState(messages = updated)
+                        ChatStreamState(
+                            messages = updated,
+                            intent = Intent.None
+                        )
                     }
                 }
             }.distinctUntilChanged()
@@ -202,15 +210,11 @@ class ChatContainer @Inject constructor(
                 )
             ).messages
 
-            logger.logInfo("DROID-2966, loaded before: ${loadedMessagesBefore.map { it.content?.text }}")
-            logger.logInfo("DROID-2966, loaded after: ${loadedMessagesAfter.map { it.content?.text }}")
-
             return buildList {
                 addAll(loadedMessagesBefore)
                 add(replyMessage)
                 addAll(loadedMessagesAfter)
             }
-
         } else {
             throw IllegalStateException("DROID-2966 Could not fetch replyMessage")
         }
@@ -368,7 +372,7 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadAround(message = replyMessage))
     }
 
-    suspend fun onLoadEnd() {
+    suspend fun onLoadChatTail() {
         logger.logInfo("DROID-2966 emitting onLoadEnd")
         commands.emit(Transformation.Commands.LoadEnd)
     }
@@ -386,10 +390,6 @@ class ChatContainer @Inject constructor(
             val oldestEntry = lastMessages.entries.first()
             lastMessages.remove(oldestEntry.key)
         }
-    }
-
-    private fun getMostRecentMessage(): ChatMessageMeta? {
-        return lastMessages.values.maxByOrNull { it.order }
     }
 
     internal sealed class Transformation {

@@ -922,16 +922,16 @@ class ChatViewModel @Inject constructor(
     fun onScrollToBottomClicked() {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
-            chatContainer.onLoadEnd()
+            chatContainer.onLoadChatTail()
         }
     }
 
     fun onClearChatViewStateIntent() {
-        Timber.d("DROID-2966 onResetReplyContext")
+        Timber.d("DROID-2966 onClearChatViewStateIntent")
         viewModelScope.launch {
-//            uiState.update { current ->
-//                current.copy(intent = ChatContainer.Intent.None)
-//            }
+            uiState.update { current ->
+                current.copy(intent = ChatContainer.Intent.None)
+            }
         }
     }
 

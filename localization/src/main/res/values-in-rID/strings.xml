@@ -1618,7 +1618,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
     <string name="object_properties_empty_state">Belum ada properti. Tambahkan beberapa untuk tipe ini</string>
     <string name="object_type_open_type_error">Gagal membuka tipe objek</string>
-    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
+    <string name="object_type_edit_type_details_error">Penyuntingan tipe ini tidak diizinkan.</string>
     <string name="day_of_week_monday">Senin</string>
     <string name="day_of_week_tuesday">Selasa</string>
     <string name="day_of_week_wednesday">Rabu</string>

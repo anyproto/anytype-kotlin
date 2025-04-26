@@ -797,9 +797,9 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Rimuovi</string>
     <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
-    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
+    <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
     <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
-    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
+    <string name="empty_list_widget_no_objects">Non ci sono ancora oggetti in questo widget.</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1659,7 +1659,7 @@ Please provide specific details of your needs here.</string>
     <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
     <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
     <string name="object_set_of_title">Query of</string>
-    <string name="migration_update_is_in_progress">Update is in progress</string>
+    <string name="migration_update_is_in_progress">Aggiornamento in corso</string>
     <string name="migration_this_shouldn_t_take_long">Questo potrebbe richiedere un po \'di tempo. Si prega di non chiudere l\'app fino a quando il processo è completato.</string>
     <string name="migration_error_try_again">Riprova</string>
     <string name="migration_migration_failed">Migrazione fallita</string>
@@ -1741,9 +1741,9 @@ Please provide specific details of your needs here.</string>
     <string name="space_invite_link_copied">Il link dell\'invito allo spazio è stato copiato!</string>
     <string name="object_type_create_new_title">Crea nuovo tipo</string>
     <string name="object_type_rename_title">Rename type</string>
-    <string name="object_type_create_plural_title">Type Plural name</string>
-    <string name="object_type_create_title_hint">e.g. Project</string>
-    <string name="object_type_create_plural_title_hint">e.g. Projects</string>
+    <string name="object_type_create_plural_title">Nome Tipo al plurale</string>
+    <string name="object_type_create_title_hint">es. Progetto</string>
+    <string name="object_type_create_plural_title_hint">es. Progetti</string>
     <string name="object_conflict_screen_title">Risolvi il conflitto di layout</string>
     <string name="object_conflict_screen_description">Questo layout differisce da quello predefinito del tipo. Ripristinare la corrispondenza?</string>
     <string name="object_conflict_screen_action_button">Ripristina predefinito</string>
@@ -1753,9 +1753,9 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">I miei Tipi</string>
-    <string name="space_types_screen_section_system_types">System Types</string>
+    <string name="space_types_screen_section_system_types">Tipi Di Sistema</string>
     <string name="space_properties_screen_title">Proprietà</string>
-    <string name="space_properties_screen_section_my_types">My Properties</string>
-    <string name="space_properties_screen_section_system_types">System Properties</string>
-    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
+    <string name="space_properties_screen_section_my_types">Le mie Proprietà</string>
+    <string name="space_properties_screen_section_system_types">Proprietà Di Sistema</string>
+    <string name="space_properties_screen_menu_move_to_bin">Sposta nel cestino</string>
 </resources>

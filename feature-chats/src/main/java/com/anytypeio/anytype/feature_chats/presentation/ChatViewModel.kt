@@ -86,7 +86,6 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
-    private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
     private var account: Id = ""
 
@@ -138,11 +137,9 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Got chat results: ${result.messages.map { it.content?.text }}")
-            data.value = result.messages
-
+            Timber.d("DROID-2966 Got chat results: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
-            val msgs = buildList<ChatView> {
+            val messageViews = buildList<ChatView> {
                 result.messages.forEach { msg ->
                     val allMembers = members.get()
                     val member = allMembers.let { type ->
@@ -299,7 +296,7 @@ class ChatViewModel @Inject constructor(
                 }
             }.reversed()
             ChatViewState(
-                messages = msgs,
+                messages = messageViews,
                 result.intent
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {

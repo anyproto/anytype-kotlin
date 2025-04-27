@@ -175,7 +175,7 @@
     <string name="hint_paste_link">Tempelkan tautan</string>
     <string name="empty_tap_to_create_new_block">Kosong. Sentuh untuk membuat blok baru.</string>
     <string name="untitled">Nirjudul</string>
-    <string name="untitled_set">Untitled query</string>
+    <string name="untitled_set">Kueri tak berjudul</string>
     <string name="untitled_collection">Koleksi tidak berjudul</string>
     <string name="archived">Diarsipkan</string>
     <string name="loading">Memuat ...</string>
@@ -233,7 +233,7 @@
     <string name="search">Telusuri</string>
     <string name="search_hint">Telusuri ...</string>
     <string name="relations">Properti</string>
-    <string name="fields">Fields</string>
+    <string name="fields">Kolom</string>
     <string name="download">Unduh</string>
     <string name="view">Tampilan</string>
     <string name="views">Tampilan</string>
@@ -257,7 +257,7 @@
     <string name="your_search_query">Telusuri</string>
     <string name="syncing">Menyinkronkan …</string>
     <string name="choose_a_object_type_for_this_set">Pilih tipe objek untuk kueri ini</string>
-    <string name="new_set">New query</string>
+    <string name="new_set">Kueri baru</string>
     <string name="create_new_object_type">Buat tipe objek baru</string>
     <plurals name="page_selected">
         <item quantity="other">%d halaman terpilih</item>
@@ -318,7 +318,7 @@
     <string name="unknown_object_type">Unknown type</string>
     <string name="relation_format_short_text">Teks pendek</string>
     <string name="relation_format_long_text">Teks</string>
-    <string name="set_new_relation">Set new property</string>
+    <string name="set_new_relation">Atur atribut baru</string>
     <string name="relation_deleted">Properti terhapus</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
@@ -356,7 +356,7 @@
     <string name="select_date">Pilih tanggal</string>
     <string name="no_value">Tak bernilai</string>
     <string name="source">Sumber</string>
-    <string name="query">Query</string>
+    <string name="query">Kueri</string>
     <string name="select_query">Pilih kueri</string>
     <string name="objects">Objek</string>
     <string name="your_objects">Objekmu</string>
@@ -428,7 +428,7 @@
     <string name="card">Kartu</string>
     <string name="inline">Dalam barisan</string>
     <string name="set_view">Set View</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Kueri dalam baris</string>
     <string name="inline_collection">Koleksi dalam baris</string>
     <string name="fit_image">Paskan gambar</string>
     <string name="image_preview">Pratinjau gambar</string>
@@ -513,8 +513,8 @@
     <string name="set_no_items_title">Tidak ada objek</string>
     <string name="set_no_items_description">Buatlah objek pertama dulu</string>
     <string name="set_no_items_button">Buat objek</string>
-    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Turn Query into Collection</string>
+    <string name="set_collection_view_not_present">Tampilan tidak ada di Kueri atau Koleksi, harap buat ulang objek</string>
+    <string name="menu_turn_to_collection">Ubah Kueri menjadi Koleksi</string>
     <string name="menu_change_query">Ubah kueri</string>
     <string name="collections">Koleksi</string>
     <string name="collection_widget_description">Your collections of objects</string>
@@ -532,8 +532,8 @@
     <string name="file_delete_delete">Hapus</string>
     <string name="menu_type_change">Ubah tipe</string>
     <string name="menu_type_open">Buka tipe</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
+    <string name="menu_type_open_set">Buka kueri dari %1$s</string>
+    <string name="menu_type_create_set">Buat kueri dari %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Buat objek</string>
     <string name="view_layout_widget_title">Tata letak</string>
@@ -698,8 +698,8 @@
     <string name="remove">Hapus</string>
     <string name="choose_options">Choose options</string>
     <string name="search_tags">Search tags</string>
-    <string name="choose_relation_to_filter">Choose a property to filter</string>
-    <string name="choose_relation_to_sort">Choose a property to sort</string>
+    <string name="choose_relation_to_filter">Pilih atribut untuk memfilter</string>
+    <string name="choose_relation_to_sort">Pilih atribut untuk mengurutkan</string>
     <string name="btn_apply_new_object">Add to list</string>
     <string name="btn_add">Tambah</string>
     <string name="btn_upload_gallery">Upload from Gallery</string>
@@ -708,7 +708,7 @@
     <string name="alert_qr_camera">Pergi ke Pengaturan – Kunci di versi Desktop untuk menemukan kode QR masuk.</string>
     <string name="alert_qr_camera_ok">Oke</string>
     <string name="choose_option">Choose option</string>
-    <string name="find_a_relation">Find a property</string>
+    <string name="find_a_relation">Cari atribut</string>
     <string name="inbox">Kotak masuk</string>
     <string name="unknown_type">Unknown type</string>
     <string name="collection">Koleksi</string>
@@ -737,7 +737,7 @@
     <string name="object_not_exist">Objek ini tidak ada</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Kembali</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">Kueri tidak ditemukan untuk tipe ini</string>
     <string name="create_new_set">Buat</string>
     <string name="shortcut_create_new_object_of_type">%1$s baru</string>
     <string name="close">Tutup</string>
@@ -769,7 +769,7 @@
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Jangan lupa menyimpan kuncimu dari pengaturan</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Buka kunci objek Anda untuk menambah atribut baru</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Pilih jenis properti</string>
     <string name="fragment_dashboard_restore">Pulihkan</string>
@@ -955,7 +955,7 @@
     <string name="widget_type_compact_list_description">Gawit dengan tampilan daftar ringkas</string>
     <string name="widget_type_list">Daftar</string>
     <string name="widget_type_view">Tampilan</string>
-    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
+    <string name="widget_type_view_description">Widget dengan tata letak Kuery atau Koleksi</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Ubah sumber</string>
     <string name="widget_change_type">Change Type</string>
@@ -1023,10 +1023,10 @@
     <string name="onboarding_mnemonic_read_more">Lebih lanjut tentang Kunci</string>
     <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan aplikasi</string>
     <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
-    <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description">Ini dalam bentuk frasa pemulihan - 12 kata acak yang secara ajaib menghasilkan brankas Anda di perangkat ini.</string>
     <string name="onboarding_recovery_phrase_description_2">Siapapun yang mengetahui kombinasi kata-kata ini memiliki kontrol penuh terhadap brankasmu.</string>
     <string name="onboarding_recovery_phrase_description_3">Saat ini, hanya kamu satu-satunya di dunia yang mengetahuinya.</string>
-    <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
+    <string name="onboarding_recovery_phrase_description_4">Semua sumber daya komputasi di Bumi tidak cukup untuk membobolnya. Jika Anda kehilangannya, maka tidak dapat dipulihkan. Jadi, sembunyikan di tempat yang aman!</string>
     <string name="onboarding_how_to_save_my_phrase">Bagaimana cara menyimpan kunciku?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Cara termudah untuk menyimpan kuncimu adalah dengan menyimpannya di aplikasi pengelola sandi.</string>
     <string name="onboarding_how_to_save_my_phrase_3">Sedangkan, cara yang paling aman adalah dengan menuliskannya pada secarik kertas dan menyimpan kertas itu di tempat yang aman.</string>
@@ -1037,15 +1037,15 @@
     <string name="object_action_download">Unduh</string>
     <!--endregion-->
     <!--region SEARCH -->
-    <string name="nothing_found">Nothing found</string>
+    <string name="nothing_found">Tidak ada yang ditemukan</string>
     <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
     <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>
     <string name="content_description_duplicate_button">Duplicate button</string>
     <string name="content_description_edit_view_button">Edit-view button</string>
-    <string name="content_description_open_to_edit_view_button">Open to edit property button</string>
-    <string name="content_description_remove_from_set_button">Remove property from this query</string>
+    <string name="content_description_open_to_edit_view_button">Buka untuk mengedit tombol atribut</string>
+    <string name="content_description_remove_from_set_button">Hapus atribut dari kueri ini</string>
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Add new page</string>
@@ -1167,7 +1167,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Anggota</string>
-    <string name="multiplayer_cant_add_members">You can’t add more members</string>
+    <string name="multiplayer_cant_add_members">Anda tidak dapat menambah anggota lagi</string>
     <string name="multiplayer_cant_add_editors">Kamu tidak bisa menambah penyunting lagi</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
     <string name="multiplayer_upgrade_button_request">✦ Tingkatkan untuk menambah lebih banyak anggota</string>
@@ -1237,9 +1237,9 @@
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
     <string name="multiplayer_toast_permission_not_allowed">Mengubah izin tidak diperbolehkan</string>
     <string name="multiplayer_toast_share_limit_reached">Batas berbagi tercapai</string>
-    <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
+    <string name="multiplayer_deeplink_to_your_object">Tautkan dalam ke objek Anda</string>
     <string name="multiplayer_deeplink_to_your_object_error">Objek tidak tersedia. Mintalah pemiliknya untuk membagikannya.</string>
-    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
+    <string name="multiplayer_collaborate_on_spaces">Berkolaborasi dalam ruang</string>
     <string name="multiplayer_collaborate_step_1">1. Ketuk gawit Ruang untuk mengakses setelan</string>
     <string name="multiplayer_collaborate_step_2">2. Buka bagian Bagikan</string>
     <string name="multiplayer_collaborate_step_3">3. Buat tautan undangan lalu bagikan</string>
@@ -1261,7 +1261,7 @@
     <string name="multiplayer_error_invite_not_found">Undangan ini tidak ada. Pastikan perangkatmu tersinkronisasi.</string>
     <string name="multiplayer_error_invite_bad_content">Tautan undangan tidak dapat digunakan. Mungkin terdapat kesalahan format atau data yang tak valid.</string>
     <string name="multiplayer_error_space_is_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
-    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_limit_reached">Batas sudah tercapai untuk ruang ini. Harap tingkatkan keanggotaan Anda atau hubungi dukungan untuk mendapatkan bantuan.</string>
     <string name="multiplayer_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
     <string name="multiplayer_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Sepertinya tautan ini tidak bisa digunakan</string>
@@ -1271,22 +1271,22 @@
     <!--region PAYMENTS -->
     <string name="payments_header">Langganan</string>
     <string name="payments_subheader">Bergabung dengan jaringan Anytype berarti turut berkontribusi pada kisahnya</string>
-    <string name="payments_card_text_1">Co-create the Vision</string>
-    <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
-    <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
-    <string name="payments_card_text_3">Support Digital Independence</string>
-    <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
+    <string name="payments_card_text_1">Bersama Menciptakan Visi</string>
+    <string name="payments_card_description_1">Sebagai pelanggan terhormat, suara Anda sangat berarti! Terlibat dalam acara eksklusif, menentukan pilihan strategis, dan memengaruhi peta jalan kami.</string>
+    <string name="payments_card_text_2">Dapatkan Keuntungan sebagai Anggota</string>
+    <string name="payments_card_description_2">Pelanggan dapat menikmati penyimpanan cadangan &amp; batas sinkronisasi yang lebih tinggi, undangan bagi banyak pengguna untuk berkolaborasi di ruang bersama, dan identitas unik di Jaringan Anytype.</string>
+    <string name="payments_card_text_3">Dukung Kemerdekaan Digital</string>
+    <string name="payments_card_description_3">Kontribusi Anda mendukung tim kami dan mendukung visi kami atas jaringan digital yang sepenuhnya dimiliki pengguna, aman, dan kolaboratif.</string>
     <string name="payments_card_text_4">Berinvestasilah pada Konektivitas</string>
-    <string name="payments_card_description_4">Our network\'s value exceeds the sum of its parts. Your membership sustains the infrastructure for its growth which underpins this network.</string>
+    <string name="payments_card_description_4">Nilai jaringan kami melampaui jumlah bagian-bagiannya. Keanggotaan Anda menjaga infrastruktur untuk terus berkembang dan menopang jaringan ini.</string>
     <string name="payments_tier_explorer">Penjelajah</string>
     <string name="payments_tier_explorer_description">Masuki dalam jaringan dan nikmati keseruan kolaborasi one-on-one</string>
     <string name="payments_tier_builder">Pembangun</string>
     <string name="payments_tier_builder_description">Dapatkan keajaiban kolaborasi multi-party dan nikmati dukungan tertinggi</string>
     <string name="payments_tier_cocreator">Pencipta Bersama</string>
     <string name="payments_tier_cocreator_description">Dukung petualangan kami dan dapatkan akses dan manfaat eksklusif</string>
-    <string name="payments_tier_custom">Custom</string>
-    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_tier_custom">Sesuaikan</string>
+    <string name="payments_tier_custom_description">Keanggotaan yang disesuaikan dengan kebutuhan dan selera Anda</string>
     <string name="payments_button_learn">Pelajari lebih lanjut</string>
     <string name="payments_button_manage">Kelola pembayaran</string>
     <string name="payments_button_contact">Kontak</string>
@@ -1299,14 +1299,14 @@
     <string name="payments_terms_link">Syarat dan ketentuan</string>
     <string name="payments_let_us_link_start">Apakah Anda ingin menggunakan Anytype untuk bisnis, pendidikan, dll.?</string>
     <string name="payments_let_us_link_end">Silakan beri tahu kami di sini.</string>
-    <string name="payments_current_label">Current</string>
+    <string name="payments_current_label">Saat ini</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Pilih nama unikmu</string>
-    <string name="payments_tier_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
+    <string name="payments_tier_details_name_subtitle">Ini adalah nama unik Anda di jaringan Anytype, yang mengonfirmasi Keanggotaan Anda. Nama ini berfungsi sebagai domain pribadi Anda dan tidak dapat diubah.</string>
     <string name="payments_tier_details_name_hint">Aku sendiri</string>
     <string name="payments_tier_details_name_min">Minimal 7 karakter</string>
     <string name="payments_tier_details_name_error">Nama ini sudah dipakai!</string>
-    <string name="payments_tier_details_name_validated">This name [%1$s] is up for grabs!</string>
+    <string name="payments_tier_details_name_validated">Nama [%1$s] ini dapat Anda ambil!</string>
     <string name="payments_tier_details_name_validating">Memvalidasi nama</string>
     <string name="payments_tier_details_free_forever">Selamanya</string>
     <string name="payments_tier_details_valid_until">Berlaku hingga %1$s</string>
@@ -1334,8 +1334,8 @@
     <string name="payments_detials_button_pay">Bayar via kartu</string>
     <string name="payments_detials_button_submit">Kirim</string>
     <string name="payments_details_whats_included">Apa saja yang termasuk</string>
-    <string name="payments_email_title">Get updates and enjoy free perks!</string>
-    <string name="payments_email_subtitle">It is not linked to your account in any way.</string>
+    <string name="payments_email_title">Dapatkan pembaruan dan nikmati beragam keuntungan gratis!</string>
+    <string name="payments_email_subtitle">Ini tidak ditautkan ke akun Anda dengan cara apa pun.</string>
     <string name="payments_email_checkbox_text">Saya ingin mendapatkan pembaruan pada produk-produk dan menikmati manfaat gratis!</string>
     <string name="payments_email_hint">Surel</string>
     <string name="payments_tier_current_title">Statusmu saat ini:</string>
@@ -1346,21 +1346,21 @@
     <string name="payments_tier_current_paid_by_apple">Langganan Apple</string>
     <string name="payments_tier_current_paid_by_google">Langganan Google</string>
     <string name="payments_tier_current_button">Kelola pembayaran</string>
-    <string name="membership_manage_tier_desktop">You can manage tier on Desktop platform</string>
-    <string name="membership_manage_tier_ios">You can manage tier on iOS platform</string>
-    <string name="membership_manage_tier_another_account">You can manage tier on another Google account</string>
+    <string name="membership_manage_tier_desktop">Anda dapat mengelola jenjang pada platform Desktop</string>
+    <string name="membership_manage_tier_ios">Anda dapat mengelola jenjang pada platform iOS</string>
+    <string name="membership_manage_tier_another_account">Anda dapat mengelola jenjang pada akun Google lainnya</string>
     <string name="payments_tier_current_change_email_button">Ganti surel</string>
     <!-- Payments Code -->
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>
     <string name="payments_code_resend">Kirim ulang</string>
     <string name="payments_code_resend_in">Kirim ulang dalam %1$d detik</string>
     <!-- Membership Welcome -->
-    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
-    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_title">Selamat datang di jaringan,\n%1$s</string>
+    <string name="payments_welcome_subtitle">Tepuk tangan yang meriah untuk rasa ingin tahu Anda!</string>
     <string name="payments_welcome_button">Lanjutkan</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Laporan Gangguan Tampilan Keanggotaan - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1379,20 +1379,20 @@
         Best regards,       \n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
+    <string name="payments_email_subject">Tingkatkan %1$s</string>
+    <string name="payments_email_body">Halo tim Anytype! Saya ingin memperpanjang masa berlangganan saya saat ini (pilih salah satu opsi):\n
+- Ekstra penyimpanan daring\n
+- Lebih banyak editor\n
+- Ruang bersama tambahan\n
+Secara khusus,
+Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Ada yang salah dengan masukan, coba lagi</string>
-    <string name="membership_name_cache_error">Error on our side, try again later</string>
-    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
+    <string name="membership_name_cache_error">Gangguan dari pihak kami, coba lagi nanti</string>
+    <string name="membership_name_cant_connect">Tidak dapat terhubung, cek koneksi internet Anda</string>
     <string name="membership_name_invalid_chars">Nama mengandung karakter tidak valid</string>
-    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
+    <string name="membership_name_not_logged">Anda belum masuk! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Gangguan dari pihak kami, coba lagi nanti</string>
     <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
     <string name="membership_name_tier_not_found">Tier not found, try again later</string>
     <string name="membership_name_too_long">Nama terlalu panjang</string>

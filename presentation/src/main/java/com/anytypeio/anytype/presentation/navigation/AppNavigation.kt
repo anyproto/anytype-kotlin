@@ -54,8 +54,8 @@ interface AppNavigation {
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectSet(target: Id, space: Id)
 
-    fun exit()
-    fun exitToDesktop()
+    fun exit(space: Id)
+    fun exitToDesktop(space: Id)
     fun exitToVault()
     fun exitToSpaceHome()
     fun openGlobalSearch(space: Id)

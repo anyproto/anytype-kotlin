@@ -105,7 +105,7 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 target = command.target,
                 space = command.space
             )
-            is Command.ToDesktop -> navigation.exitToDesktop()
+            is Command.ToDesktop -> navigation.exitToDesktop(space = space)
             is Command.ToSearch -> navigation.openGlobalSearch(
                 space = command.space
             )
@@ -173,7 +173,7 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     private fun exit() {
-        navigation.exit()
+        navigation.exit(space)
     }
 
     private fun launchObjectSet(target: Id, space: Id) {

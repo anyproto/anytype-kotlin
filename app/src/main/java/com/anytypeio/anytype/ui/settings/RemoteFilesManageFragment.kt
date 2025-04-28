@@ -94,7 +94,7 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 space = command.space,
                 target = command.target
             )
-            is CollectionViewModel.Command.ToDesktop -> navigation.exitToDesktop()
+            is CollectionViewModel.Command.ToDesktop -> navigation.exitToDesktop(space)
             is CollectionViewModel.Command.ToSearch -> {
                 // Do nothing.
             }
@@ -127,7 +127,7 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun exit() {
-        navigation.exit()
+        navigation.exit(space)
     }
 
     private fun launchObjectSet(target: Id, space: Id) {

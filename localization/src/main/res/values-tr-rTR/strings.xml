@@ -1757,5 +1757,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_properties_screen_section_my_types">Özelliklerim</string>
     <string name="space_properties_screen_section_system_types">Sistem Özellikleri</string>
     <string name="space_properties_screen_menu_move_to_bin">Çöpe taşı</string>
-    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Hesap oluşturulurken hata oluştu: alan eksik</string>
 </resources>

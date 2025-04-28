@@ -1,16 +1,21 @@
 package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import app.cash.turbine.test
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -23,7 +28,13 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import java.util.Locale
+import kotlin.test.assertEquals
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -183,6 +194,166 @@ class SplashViewModelTest {
         runBlocking {
             verify(launchWallet, times(1)).invoke(any())
             verify(launchAccount, times(1)).invoke(any())
+        }
+    }
+
+    @Test
+    fun `should navigate to vault if space view loading times out`() = runTest {
+        // GIVEN
+
+        val deeplink = "test-deeplink"
+
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        val space = defaultSpaceConfig.space
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking {
+                async(Unit)
+            } doReturn Resultat.Success(
+                SpaceId(space)
+            )
+        }
+
+        initViewModel()
+
+        // WHEN
+        // simulate spaceManager.observe() never emits a valid space view (simulate timeout)
+        spaceManager.stub {
+            on { observe() } doReturn flow { /* no emission */ }
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe() } doReturn flow { /* no emission */ }
+        }
+
+        vm.commands.test {
+            // Act: manually trigger proceedWithVaultNavigation
+            vm.onDeepLinkLaunch(deeplink)
+
+            // THEN
+            // small delay to allow the coroutine to timeout internally
+            delay(SplashViewModel.SPACE_LOADING_TIMEOUT + 100)
+
+
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToVault(deeplink),
+                actual = first
+            )
+        }
+    }
+
+    @Test
+    fun `should navigate to space view when space is restored`() = runTest {
+        // GIVEN
+
+        val deeplink = "test-deeplink"
+
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        val space = defaultSpaceConfig.space
+
+        val spaceView = StubSpaceView(
+            targetSpaceId = space,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.OK
+        )
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking {
+                async(Unit)
+            } doReturn Resultat.Success(
+                SpaceId(space)
+            )
+        }
+
+        initViewModel()
+
+        // WHEN
+        // simulate spaceManager.observe() never emits a valid space view (simulate timeout)
+        spaceManager.stub {
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(spaceView)
+        }
+
+        vm.commands.test {
+            // Act: manually trigger proceedWithVaultNavigation
+            vm.onDeepLinkLaunch(deeplink)
+
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToWidgets(
+                    space = defaultSpaceConfig.space,
+                    deeplink
+                ),
+                actual = first
+            )
+        }
+    }
+
+    @Test
+    fun `should navigate to space-level chat if chat is available`() = runTest {
+        // GIVEN
+        val deeplink = "test-deeplink"
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        val space = defaultSpaceConfig.space
+        val chatId = "chat-id"
+
+        val spaceView = StubSpaceView(
+            targetSpaceId = space,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.OK,
+            chatId = chatId
+        )
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking { async(Unit) } doReturn Resultat.Success(SpaceId(space))
+        }
+
+        initViewModel()
+
+        // WHEN
+        spaceManager.stub {
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(spaceView)
+        }
+
+        vm.commands.test {
+            // Act
+            vm.onDeepLinkLaunch(deeplink)
+
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToSpaceLevelChat(
+                    space = space,
+                    chat = chatId,
+                    deeplink = deeplink
+                ),
+                actual = first
+            )
         }
     }
 

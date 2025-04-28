@@ -354,6 +354,12 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus != SpaceStatus.SPACE_REMOVING
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }
+
+        val isUnknown: Boolean
+            get() {
+                return spaceLocalStatus == SpaceStatus.UNKNOWN
+                        && spaceAccountStatus == SpaceStatus.UNKNOWN
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

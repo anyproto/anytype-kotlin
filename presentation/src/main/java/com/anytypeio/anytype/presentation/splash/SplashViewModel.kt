@@ -40,13 +40,16 @@ import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 /**
@@ -307,7 +310,7 @@ class SplashViewModel(
                                     .observe(SpaceId(space))
                                     .take(1)
                                     .collect { view ->
-                                        if (view.isActive) {
+                                        if (view.isActive || view.isLoading) {
                                             when (response.obj.layout) {
                                                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
                                                     commands.emit(
@@ -367,43 +370,50 @@ class SplashViewModel(
         Timber.d("proceedWithVaultNavigation deep link: $deeplink")
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
-            Timber.d("Got the last opened space from settings: ${space.id}")
-            spaceManager
-                .observe()
-                .take(1)
-                .flatMapLatest { config ->
-                    spaceViews
-                        .observe(SpaceId(config.space))
-                        .filterNot { view ->
-                            // Wait until the space view is no longer in a fully UNKNOWN state
-                            view.spaceLocalStatus == SpaceStatus.UNKNOWN
-                                    && view.spaceAccountStatus == SpaceStatus.UNKNOWN
-                        }
-                        .take(1)
-                }
-                .collect { view ->
-                    if (view.isActive || view.isLoading) {
-                        val chat = view.chatId
-                        if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
-                            commands.emit(
-                                Command.NavigateToWidgets(
-                                    space = space.id,
-                                    deeplink = deeplink
-                                )
-                            )
-                        } else {
-                            commands.emit(
-                                Command.NavigateToSpaceLevelChat(
-                                    space = space.id,
-                                    chat = chat,
-                                    deeplink = deeplink
-                                )
-                            )
-                        }
-                    } else {
-                        commands.emit(Command.NavigateToVault(deeplink))
+            val view = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
+                spaceManager
+                    .observe()
+                    .take(1)
+                    .flatMapLatest { config ->
+                        spaceViews
+                            .observe(SpaceId(config.space))
+                            .filterNot { view ->
+                                if (view.isUnknown) {
+                                    Timber.w("View is unknown during restoration of the last opened space")
+                                }
+                                view.isUnknown
+                            }
+                            .take(1)
                     }
+                    .firstOrNull()
+            }
+
+            if (view != null) {
+                if (view.isActive || view.isLoading) {
+                    val chat = view.chatId
+                    if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
+                        commands.emit(
+                            Command.NavigateToWidgets(
+                                space = space.id,
+                                deeplink = deeplink
+                            )
+                        )
+                    } else {
+                        commands.emit(
+                            Command.NavigateToSpaceLevelChat(
+                                space = space.id,
+                                chat = chat,
+                                deeplink = deeplink
+                            )
+                        )
+                    }
+                } else {
+                    commands.emit(Command.NavigateToVault(deeplink))
                 }
+            } else {
+                Timber.w("Timeout while waiting for space view. Navigating to vault.")
+                commands.emit(Command.NavigateToVault(deeplink))
+            }
         } else {
             commands.emit(Command.NavigateToVault(deeplink))
         }
@@ -454,6 +464,7 @@ class SplashViewModel(
         const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
         const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
+        const val SPACE_LOADING_TIMEOUT = 5000L
     }
 
     sealed class State {

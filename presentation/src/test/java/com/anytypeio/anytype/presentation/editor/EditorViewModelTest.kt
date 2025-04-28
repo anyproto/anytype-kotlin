@@ -612,7 +612,7 @@ open class EditorViewModelTest {
 
         testObserver
             .assertHasValue()
-            .assertValue { value -> value.peekContent() == AppNavigation.Command.Exit }
+            .assertValue { value -> value.peekContent() == AppNavigation.Command.Exit(spaceId.id) }
     }
 
     @Test

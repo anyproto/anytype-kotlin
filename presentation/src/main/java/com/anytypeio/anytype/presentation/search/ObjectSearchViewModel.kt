@@ -290,7 +290,7 @@ open class ObjectSearchViewModel(
     )
 
     override fun onDialogCancelled() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
+        navigation.postValue(EventWrapper(AppNavigation.Command.Exit(vmParams.space.id)))
     }
 
     companion object {

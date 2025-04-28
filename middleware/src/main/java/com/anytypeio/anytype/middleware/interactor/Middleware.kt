@@ -1598,7 +1598,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectImportUseCaseGetStarted(space: Id) {
+    fun objectImportUseCaseGetStarted(space: Id) : Id? {
         val request = Rpc.Object.ImportUseCase.Request(
             spaceId = space,
             useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
@@ -1606,6 +1606,7 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectImportUseCase(request) }
         logResponseIfDebug(response, time)
+        return response.startingObjectId.ifEmpty { null }
     }
 
     @Throws(Exception::class)

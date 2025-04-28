@@ -147,7 +147,10 @@ interface BlockRepository {
 
     suspend fun undo(command: Command.Undo): Undo.Result
 
-    suspend fun importGetStartedUseCase(space: Id)
+    /**
+     * Return optional starting object ID
+     */
+    suspend fun importGetStartedUseCase(space: Id): Id?
 
     suspend fun redo(command: Command.Redo): Redo.Result
 

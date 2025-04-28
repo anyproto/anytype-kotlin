@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.ColorBackgroundField
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
@@ -52,6 +53,8 @@ import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 
 @Composable
 fun MnemonicPhraseScreenWrapper(
+    space: Id,
+    startingObject: Id?,
     viewModel: OnboardingMnemonicViewModel,
     copyMnemonicToClipboard: (String) -> Unit,
     vm: OnboardingMnemonicViewModel,
@@ -64,7 +67,12 @@ fun MnemonicPhraseScreenWrapper(
         onCheckLaterClicked = vm::onCheckLaterClicked,
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         mnemonicColorPalette = mnemonicColorPalette,
-        onGoToAppClicked = vm::onGoToTheAppClicked
+        onGoToAppClicked = {
+            vm.onGoToTheAppClicked(
+                space = space,
+                startingObject = startingObject
+            )
+        }
     )
 }
 

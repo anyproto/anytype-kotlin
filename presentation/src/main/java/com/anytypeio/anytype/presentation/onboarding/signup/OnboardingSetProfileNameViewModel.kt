@@ -153,7 +153,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     private fun proceedWithSettingAccountName(
         name: String,
-        spaceName: String
+        spaceName: String,
+        startingObjectId: Id?
     ) {
         val config = configStorage.getOrNull()
         if (config != null) {
@@ -176,13 +177,23 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 ).fold(
                     onFailure = {
                         Timber.e(it, "Error while setting profile name details")
-                        navigation.emit(Navigation.NavigateToMnemonic)
+                        navigation.emit(
+                            Navigation.NavigateToMnemonic(
+                                space = SpaceId(config.space),
+                                startingObject = startingObjectId
+                            )
+                        )
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
                     },
                     onSuccess = {
-                        navigation.emit(Navigation.NavigateToMnemonic)
+                        navigation.emit(
+                            Navigation.NavigateToMnemonic(
+                                space = SpaceId(config.space),
+                                startingObject = startingObjectId
+                            )
+                        )
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
@@ -217,13 +228,15 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 onFailure = {
                     proceedWithSettingAccountName(
                         name = name,
-                        spaceName = spaceName
+                        spaceName = spaceName,
+                        startingObjectId = null
                     )
                 },
-                onSuccess = {
+                onSuccess = { startingObject: Id? ->
                     proceedWithSettingAccountName(
                         name = name,
-                        spaceName = spaceName
+                        spaceName = spaceName,
+                        startingObjectId = startingObject
                     )
                 }
             )
@@ -271,7 +284,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     sealed class Navigation {
-        data object NavigateToMnemonic: Navigation()
+        data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
         data object GoBack: Navigation()
     }
 

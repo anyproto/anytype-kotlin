@@ -7,13 +7,15 @@ import com.anytypeio.anytype.core_models.Id
 data class VaultSettings(
     val orderOfSpaces: List<Id> = emptyList(),
     val isRelativeDates: Boolean,
-    val dateFormat: String
+    val dateFormat: String,
+    val hasCreatedFirstSpace: Boolean = false
 ) {
     companion object {
         fun default() : VaultSettings = VaultSettings(
             orderOfSpaces = emptyList(),
             isRelativeDates = DEFAULT_RELATIVE_DATES,
-            dateFormat = FALLBACK_DATE_PATTERN
+            dateFormat = FALLBACK_DATE_PATTERN,
+            hasCreatedFirstSpace = false
         )
     }
 }

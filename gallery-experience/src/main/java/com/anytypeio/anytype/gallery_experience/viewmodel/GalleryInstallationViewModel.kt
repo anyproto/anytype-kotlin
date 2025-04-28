@@ -132,9 +132,7 @@ class GalleryInstallationViewModel(
                     Relations.NAME to manifestInfo.title,
                     Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
                 ),
-                shouldApplyEmptyUseCase = spacesViewState.value.spaces.count { item ->
-                    item.obj.isActive
-                } >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
+                shouldApplyEmptyUseCase = true
             )
             createSpace.async(params).fold(
                 onSuccess = { result ->

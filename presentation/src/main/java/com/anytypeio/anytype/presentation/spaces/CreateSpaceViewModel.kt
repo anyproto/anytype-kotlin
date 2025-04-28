@@ -57,8 +57,6 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        val isSingleSpace = spaceViewContainer.get().size == 1
-        val numberOfActiveSpaces = spaceViewContainer.get().filter { it.isActive }.size
         viewModelScope.launch {
             createSpace.stream(
                 CreateSpace.Params(
@@ -66,7 +64,7 @@ class CreateSpaceViewModel(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     ),
-                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE,
+                    shouldApplyEmptyUseCase = true,
                     withChat = false
                 )
             ).collect { result ->
@@ -134,9 +132,5 @@ class CreateSpaceViewModel(
 
     sealed class Command {
         data class SwitchSpace(val space: Space): Command()
-    }
-
-    companion object {
-        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 0
     }
 }

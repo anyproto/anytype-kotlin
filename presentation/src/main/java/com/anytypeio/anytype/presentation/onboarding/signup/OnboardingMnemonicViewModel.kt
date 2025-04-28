@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClickEvent
@@ -46,7 +48,10 @@ class OnboardingMnemonicViewModel @Inject constructor(
         )
     }
 
-    fun onCheckLaterClicked() {
+    fun onCheckLaterClicked(
+        space: Id,
+        startingObject: Id?,
+    ) {
         viewModelScope.sendAnalyticsOnboardingClickEvent(
             analytics = analytics,
             type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
@@ -61,11 +66,23 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
-            commands.emit(Command.OpenVault)
+            if (!startingObject.isNullOrEmpty()) {
+                commands.emit(
+                    Command.OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                commands.emit(Command.OpenVault)
+            }
         }
     }
 
-    fun onGoToTheAppClicked() {
+    fun onGoToTheAppClicked(
+        space: Id,
+        startingObject: Id?,
+    ) {
         viewModelScope.launch {
             val config = configStorage.getOrNull()
             if (config != null) {
@@ -75,7 +92,16 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
-            commands.emit(Command.OpenVault)
+            if (!startingObject.isNullOrEmpty()) {
+                commands.emit(
+                    Command.OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                commands.emit(Command.OpenVault)
+            }
         }
     }
 
@@ -115,5 +141,9 @@ class OnboardingMnemonicViewModel @Inject constructor(
 
     sealed class Command {
         data object OpenVault : Command()
+        data class OpenStartingObject(
+            val space: SpaceId,
+            val startingObject: Id
+        ) : Command()
     }
 }

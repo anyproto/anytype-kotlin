@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -63,6 +64,17 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                             deeplink = null
                                         )
                                     )
+                                    command.startingObject
+                                        ?.takeIf { it.isNotEmpty() }
+                                        ?.let { startingObject ->
+                                            findNavController().navigate(
+                                                R.id.objectNavigation,
+                                                EditorFragment.args(
+                                                    ctx = startingObject,
+                                                    space = command.space.id
+                                                )
+                                            )
+                                        }
                                 }.onFailure {
                                     Timber.e(it, "Error while exiting to vault or opening created space")
                                 }

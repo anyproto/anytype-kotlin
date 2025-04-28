@@ -11,14 +11,14 @@ import javax.inject.Inject
 class CreateSpace @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<CreateSpace.Params, Id>(dispatchers.io) {
+) : ResultInteractor<CreateSpace.Params, Command.CreateSpace.Result>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Id = repo.createWorkspace(
+    override suspend fun doWork(params: Params) = repo.createWorkspace(
         command = Command.CreateSpace(
             details = params.details,
             withChat = params.withChat,
             shouldApplyEmptyUseCase = params.shouldApplyEmptyUseCase
-        ),
+        )
     )
 
     data class Params(

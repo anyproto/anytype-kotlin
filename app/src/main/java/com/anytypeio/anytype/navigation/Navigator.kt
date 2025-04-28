@@ -15,6 +15,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
@@ -150,17 +151,26 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun exit() {
+    override fun exit(space: Id) {
         val popped = navController?.popBackStack()
         if (popped == false) {
-            navController?.navigate(R.id.homeScreen)
+            navController?.navigate(
+                R.id.homeScreen,
+                HomeScreenFragment.args(space = space)
+            )
         }
     }
 
-    override fun exitToDesktop() {
-        val popped = navController?.popBackStack(R.id.homeScreen, false)
+    override fun exitToDesktop(space: Id) {
+        val popped = navController?.popBackStack(R
+            .id.homeScreen,
+            false
+        )
         if (popped == false) {
-            navController?.navigate(R.id.homeScreen)
+            navController?.navigate(
+                R.id.homeScreen,
+                HomeScreenFragment.args(space = space)
+            )
         }
     }
 

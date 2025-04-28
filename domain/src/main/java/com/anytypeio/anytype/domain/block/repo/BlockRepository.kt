@@ -147,7 +147,7 @@ interface BlockRepository {
 
     suspend fun undo(command: Command.Undo): Undo.Result
 
-    suspend fun importGetStartedUseCase(space: Id)
+    suspend fun importGetStartedUseCase(space: Id): Command.ImportUseCase.Result
 
     suspend fun redo(command: Command.Redo): Redo.Result
 
@@ -392,7 +392,7 @@ interface BlockRepository {
     ): Payload
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun createWorkspace(command: Command.CreateSpace): Id
+    suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
     suspend fun getSpaceConfig(space: Id): Config
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id) : List<Id>
     suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, Struct?>

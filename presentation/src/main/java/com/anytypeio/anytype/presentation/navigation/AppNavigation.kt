@@ -76,8 +76,9 @@ interface AppNavigation {
 
     sealed class Command {
 
-        data object Exit : Command()
-        data object ExitToDesktop : Command()
+        @Deprecated("To be deleted. Too generic and confusing.")
+        data class Exit(val space: Id) : Command()
+        data class ExitToDesktop(val space: Id) : Command()
         data object ExitToVault : Command()
         data object ExitToSpaceHome : Command()
         data class OpenObject(val target: Id, val space: Id) : Command()

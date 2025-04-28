@@ -85,8 +85,7 @@ class CreateSpaceViewModel(
                             isInProgress.value = false
                             commands.emit(
                                 Command.SwitchSpace(
-                                    space = Space(space),
-                                    showMultiplayerTooltip = isSingleSpace
+                                    space = Space(space)
                                 )
                             )
                         }
@@ -134,15 +133,10 @@ class CreateSpaceViewModel(
     }
 
     sealed class Command {
-        data class SwitchSpace(
-            val space: Space,
-            @Deprecated("Tooltip is outdated. Should be skipped for now.")
-            val showMultiplayerTooltip: Boolean
-        ): Command()
+        data class SwitchSpace(val space: Space): Command()
     }
 
     companion object {
-        // Always applying "empty" use-case when creating new space
         const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 0
     }
 }

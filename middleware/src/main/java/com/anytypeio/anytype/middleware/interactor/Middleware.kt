@@ -1966,7 +1966,7 @@ class Middleware @Inject constructor(
             useCase = if (command.shouldApplyEmptyUseCase)
                 Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
             else
-               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
+               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE,
             withChat = command.withChat
         )
         logRequestIfDebug(request)

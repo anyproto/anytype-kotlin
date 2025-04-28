@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.os.bundleOf
@@ -72,6 +74,7 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -326,11 +329,23 @@ class OnboardingFragment : Fragment() {
                 }
                 val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
                 val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
-                Mnemonic(
-                    mnemonicColorPalette = mnemonicColorPalette,
-                    space = spaceId.orEmpty(),
-                    startingObject = startingObjectId
-                )
+                if (!spaceId.isNullOrEmpty()) {
+                    Mnemonic(
+                        mnemonicColorPalette = mnemonicColorPalette,
+                        space = spaceId,
+                        startingObject = startingObjectId
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 BackHandler {
                     toast("You're just one step away from finishing this registration.")
                 }

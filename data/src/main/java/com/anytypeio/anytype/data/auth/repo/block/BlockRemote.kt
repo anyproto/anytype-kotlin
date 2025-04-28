@@ -89,7 +89,7 @@ interface BlockRemote {
     suspend fun createBookmarkObject(space: Id, url: Url, details: Struct): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
-    suspend fun importGetStartedUseCase(space: Id) : Id?
+    suspend fun importGetStartedUseCase(space: Id) : Command.ImportUseCase.Result
     suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste

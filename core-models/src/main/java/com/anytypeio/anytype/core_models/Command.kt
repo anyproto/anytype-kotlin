@@ -485,6 +485,12 @@ sealed class Command {
         )
     }
 
+    data object ImportUseCase {
+        data class Result(
+            val startingObject: Id? = null
+        )
+    }
+
     data class CreateObjectType(
         val details: Struct,
         val spaceId: Id,

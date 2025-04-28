@@ -150,7 +150,7 @@ interface BlockRepository {
     /**
      * Return optional starting object ID
      */
-    suspend fun importGetStartedUseCase(space: Id): Id?
+    suspend fun importGetStartedUseCase(space: Id): Command.ImportUseCase.Result
 
     suspend fun redo(command: Command.Redo): Redo.Result
 

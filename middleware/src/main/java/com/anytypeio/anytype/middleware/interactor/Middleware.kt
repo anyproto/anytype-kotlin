@@ -1598,7 +1598,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectImportUseCaseGetStarted(space: Id) : Id? {
+    fun objectImportUseCaseGetStarted(space: Id) : Command.ImportUseCase.Result {
         val request = Rpc.Object.ImportUseCase.Request(
             spaceId = space,
             useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
@@ -1606,7 +1606,9 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectImportUseCase(request) }
         logResponseIfDebug(response, time)
-        return response.startingObjectId.ifEmpty { null }
+        return Command.ImportUseCase.Result(
+            startingObject = response.startingObjectId.ifEmpty { null }
+        )
     }
 
     @Throws(Exception::class)
@@ -1965,7 +1967,7 @@ class Middleware @Inject constructor(
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
             useCase = if (command.shouldApplyEmptyUseCase)
-                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
             else
                Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE,
             withChat = command.withChat

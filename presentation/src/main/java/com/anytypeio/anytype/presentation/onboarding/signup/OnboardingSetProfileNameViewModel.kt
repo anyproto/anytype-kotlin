@@ -232,11 +232,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         startingObjectId = null
                     )
                 },
-                onSuccess = { startingObject: Id? ->
+                onSuccess = { result ->
                     proceedWithSettingAccountName(
                         name = name,
                         spaceName = spaceName,
-                        startingObjectId = startingObject
+                        startingObjectId = result.startingObject
                     )
                 }
             )

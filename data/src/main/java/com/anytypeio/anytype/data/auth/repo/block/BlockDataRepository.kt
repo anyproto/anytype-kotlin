@@ -244,7 +244,7 @@ class BlockDataRepository(
         Undo.Result.Exhausted
     }
 
-    override suspend fun importGetStartedUseCase(space: Id): Id? = remote.importGetStartedUseCase(space = space)
+    override suspend fun importGetStartedUseCase(space: Id): Command.ImportUseCase.Result = remote.importGetStartedUseCase(space = space)
 
     override suspend fun redo(
         command: Command.Redo

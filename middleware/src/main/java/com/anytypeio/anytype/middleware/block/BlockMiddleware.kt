@@ -214,7 +214,7 @@ class BlockMiddleware(
 
     override suspend fun importGetStartedUseCase(
         space: Id
-    ): Id? = middleware.objectImportUseCaseGetStarted(
+    ): Command.ImportUseCase.Result = middleware.objectImportUseCaseGetStarted(
         space = space
     )
 

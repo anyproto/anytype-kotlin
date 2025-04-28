@@ -39,9 +39,9 @@
     <string name="about_privacy_policy">Privacybeleid</string>
     <string name="about_acknowledgements">Erkenningen</string>
     <string name="about_meta_info">App versie: %1$s\nBuild nummer: %2$d\Bibliotheek versie: %3$s\nAccount\u00A0ID:\u00A0%4$s\Apparaat\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
+    <string name="about_meta_info_new">Appversie: %1$s\nBuildnummer: %2$d\Bibliotheekversie: %3$s\nAccount\u00A0ID:\u00A0%4$s\Apparaat\u00A0ID:\u00A0%5$s\Analyse\u00A0ID:\u00A0%6$s\nEthereum sleutel\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Apparaat: %1$s\nAndroid versie: %2$d\nApp versie: %3$s\nBuild nummer: %4$d\nbibliotheek versie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
+    <string name="about_meta_info_for_copy_new">Apparaat: %1$s\nAndroidversie: %2$d\nAppversie: %3$s\nBuildnummer: %4$d\nBibliotheekversie: %5$s\nAccount:\u00A0ID:\u00A0%6$s\nApparaat\u00A0ID:\u00A0%7$s\nAnalyse\u00A0ID:\u00A0%8$s\nEthereum sleutel\u00A0ID:\u00A0%9$s</string>
     <string name="space">Ruimte</string>
     <string name="space_name">Naam ruimte</string>
     <string name="default_space">Standaard ruimte</string>

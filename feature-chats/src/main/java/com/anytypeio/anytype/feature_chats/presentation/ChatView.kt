@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -146,3 +147,8 @@ sealed interface ChatView {
         }
     }
 }
+
+data class ChatViewState(
+    val messages: List<ChatView> = emptyList(),
+    val intent: ChatContainer.Intent = ChatContainer.Intent.None
+)

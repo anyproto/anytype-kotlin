@@ -50,8 +50,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -75,7 +77,7 @@ class ChatViewModel @Inject constructor(
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
-    val messages = MutableStateFlow<List<ChatView>>(emptyList())
+    val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
@@ -84,13 +86,12 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
-    private val data = MutableStateFlow<List<Chat.Message>>(emptyList())
 
     private var account: Id = ""
 
     init {
 
-//        runDummyMessageGenerator()
+//        generateDummyChatHistory()
 
         viewModelScope.launch {
             spaceViews
@@ -131,15 +132,15 @@ class ChatViewModel @Inject constructor(
     ) {
         combine(
             chatContainer
-                .watchWhileTrackingAttachments(chat = chat),
-            chatContainer.fetchAttachments(vmParams.space),
-            chatContainer.fetchReplies(chat = chat)
+                .watchWhileTrackingAttachments(chat = chat).distinctUntilChanged()
+            ,
+            chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
+            chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("Got chat results: ${result.size}")
-            data.value = result
+            Timber.d("DROID-2966 Got chat results: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
-            buildList<ChatView> {
-                result.forEach { msg ->
+            val messageViews = buildList<ChatView> {
+                result.messages.forEach { msg ->
                     val allMembers = members.get()
                     val member = allMembers.let { type ->
                         when (type) {
@@ -294,8 +295,12 @@ class ChatViewModel @Inject constructor(
                     add(view)
                 }
             }.reversed()
-        }.flowOn(dispatchers.io).collect {
-            messages.value = it
+            ChatViewState(
+                messages = messageViews,
+                result.intent
+            )
+        }.flowOn(dispatchers.io).distinctUntilChanged().collect {
+            uiState.value = it
         }
     }
     
@@ -655,7 +660,7 @@ class ChatViewModel @Inject constructor(
     fun onReacted(msg: Id, reaction: String) {
         Timber.d("onReacted")
         viewModelScope.launch {
-            val message = messages.value.find { it is ChatView.Message && it.id == msg }
+            val message = uiState.value.messages.find { it is ChatView.Message && it.id == msg }
             if (message != null) {
                 toggleChatMessageReaction.async(
                     Command.ChatCommand.ToggleMessageReaction(
@@ -891,17 +896,39 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatScrolledToTop() {
-        Timber.d("onChatScrolledToTop")
+        Timber.d("DROID-2966 onChatScrolledToTop")
         viewModelScope.launch {
-            chatContainer.onLoadNextPage()
+            chatContainer.onLoadPrevious()
         }
     }
 
     fun onChatScrolledToBottom() {
-        Timber.d("onChatScrolledToBottom")
-        // TODO this behavior will be enabled later.
+        Timber.d("DROID-2966 onChatScrolledToBottom")
         viewModelScope.launch {
-            chatContainer.onLoadPreviousPage()
+            chatContainer.onLoadNext()
+        }
+    }
+
+    fun onChatScrollToReply(replyMessage: Id) {
+        Timber.d("DROID-2966 onScrollToReply: $replyMessage")
+        viewModelScope.launch {
+            chatContainer.onLoadToReply(replyMessage = replyMessage)
+        }
+    }
+
+    fun onScrollToBottomClicked() {
+        Timber.d("DROID-2966 onScrollToBottom")
+        viewModelScope.launch {
+            chatContainer.onLoadChatTail()
+        }
+    }
+
+    fun onClearChatViewStateIntent() {
+        Timber.d("DROID-2966 onClearChatViewStateIntent")
+        viewModelScope.launch {
+            uiState.update { current ->
+                current.copy(intent = ChatContainer.Intent.None)
+            }
         }
     }
 
@@ -910,15 +937,22 @@ class ChatViewModel @Inject constructor(
      */
     private fun generateDummyChatHistory() {
         viewModelScope.launch {
-            repeat(100) {
+            var replyTo: Id? = null
+            repeat(100) { idx ->
+
                 addChatMessage.async(
                     Command.ChatCommand.AddMessage(
                         chat = vmParams.ctx,
                         message = DummyMessageGenerator.generateMessage(
-                            text = it.toString()
+                            text = idx.toString(),
+                            replyTo = if (idx == 99) replyTo else null
                         )
                     )
-                )
+                ).onSuccess { (msg, payload) ->
+                    if (idx == 0) {
+                       replyTo = msg
+                    }
+                }
             }
         }
     }

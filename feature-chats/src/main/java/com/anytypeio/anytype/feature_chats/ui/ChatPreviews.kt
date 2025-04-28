@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
@@ -85,7 +86,8 @@ fun ChatPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -134,7 +136,8 @@ fun ChatPreview2() {
         onAddReactionClicked = {},
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onScrollToReplyClicked = {}
     )
 }
 
@@ -143,29 +146,31 @@ fun ChatPreview2() {
 @Composable
 fun ChatScreenPreview() {
     ChatScreen(
-        messages = buildList {
-            repeat(30) { idx ->
-                add(
-                    ChatView.Message(
-                        id = idx.toString(),
-                        content = ChatView.Message.Content(
-                            msg = stringResource(id = R.string.default_text_placeholder),
-                            parts = listOf(
-                                ChatView.Message.Content.Part(
-                                    part = stringResource(id = R.string.default_text_placeholder)
+        uiMessageState = ChatViewState(
+            messages = buildList {
+                repeat(30) { idx ->
+                    add(
+                        ChatView.Message(
+                            id = idx.toString(),
+                            content = ChatView.Message.Content(
+                                msg = stringResource(id = R.string.default_text_placeholder),
+                                parts = listOf(
+                                    ChatView.Message.Content.Part(
+                                        part = stringResource(id = R.string.default_text_placeholder)
+                                    )
                                 )
-                            )
-                        ),
-                        author = "User ${idx.inc()}",
-                        timestamp =
-                        System.currentTimeMillis()
-                                - 30.toDuration(DurationUnit.DAYS).inWholeMilliseconds
-                                + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds,
-                        creator = "random id"
+                            ),
+                            author = "User ${idx.inc()}",
+                            timestamp =
+                            System.currentTimeMillis()
+                                    - 30.toDuration(DurationUnit.DAYS).inWholeMilliseconds
+                                    + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds,
+                            creator = "random id"
+                        )
                     )
-                )
-            }
-        }.reversed(),
+                }
+            }.reversed()
+        ),
         onMessageSent = { a, b -> },
         attachments = emptyList(),
         onClearAttachmentClicked = {},
@@ -189,7 +194,11 @@ fun ChatScreenPreview() {
         onMentionClicked = {},
         mentionPanelState = ChatViewModel.MentionPanelState.Hidden,
         onTextChanged = {},
-        onChatScrolledToTop = {}
+        onChatScrolledToTop = {},
+        onChatScrolledToBottom = {},
+        onScrollToReplyClicked = {},
+        onClearIntent = {},
+        onScrollToBottomClicked = {}
     )
 }
 

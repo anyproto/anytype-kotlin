@@ -624,8 +624,8 @@ sealed class Command {
 
         data class GetMessages(
             val chat: Id,
-            val beforeOrderId: Id?,
-            val afterOrderId: Id?,
+            val beforeOrderId: Id? = null,
+            val afterOrderId: Id? = null,
             val limit: Int
         ) : ChatCommand() {
             data class Response(

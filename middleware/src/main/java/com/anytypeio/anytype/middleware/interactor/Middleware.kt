@@ -1974,7 +1974,7 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return Command.CreateSpace.Result(
             space = SpaceId(response.spaceId),
-            startingObject = response.startingObjectId
+            startingObject = response.startingObjectId.ifEmpty { null }
         )
     }
 

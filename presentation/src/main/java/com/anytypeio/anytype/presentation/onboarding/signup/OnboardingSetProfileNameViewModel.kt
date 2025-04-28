@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -44,7 +45,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val crashReporter: CrashReporter,
     private val localeProvider: LocaleProvider,
-    private val globalSubscriptionManager: GlobalSubscriptionManager
+    private val globalSubscriptionManager: GlobalSubscriptionManager,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     init {
@@ -133,6 +135,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     val config = configStorage.getOrNull()
                     if (config != null) {
                         crashReporter.setUser(config.analytics)
+                        spaceManager.set(config.space).onFailure {
+                            Timber.e(it, "Error while setting current space during sign-up onboarding")
+                        }
                         setupGlobalSubscriptions()
                         proceedWithSettingUpMobileUseCase(
                             space = config.space,
@@ -153,7 +158,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     private fun proceedWithSettingAccountName(
         name: String,
-        spaceName: String
+        spaceName: String,
+        startingObjectId: Id?
     ) {
         val config = configStorage.getOrNull()
         if (config != null) {
@@ -176,13 +182,23 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 ).fold(
                     onFailure = {
                         Timber.e(it, "Error while setting profile name details")
-                        navigation.emit(Navigation.NavigateToMnemonic)
+                        navigation.emit(
+                            Navigation.NavigateToMnemonic(
+                                space = SpaceId(config.space),
+                                startingObject = startingObjectId
+                            )
+                        )
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
                     },
                     onSuccess = {
-                        navigation.emit(Navigation.NavigateToMnemonic)
+                        navigation.emit(
+                            Navigation.NavigateToMnemonic(
+                                space = SpaceId(config.space),
+                                startingObject = startingObjectId
+                            )
+                        )
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
@@ -217,13 +233,15 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 onFailure = {
                     proceedWithSettingAccountName(
                         name = name,
-                        spaceName = spaceName
+                        spaceName = spaceName,
+                        startingObjectId = null
                     )
                 },
-                onSuccess = {
+                onSuccess = { result ->
                     proceedWithSettingAccountName(
                         name = name,
-                        spaceName = spaceName
+                        spaceName = spaceName,
+                        startingObjectId = result.startingObject
                     )
                 }
             )
@@ -242,7 +260,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val importGetStartedUseCase: ImportGetStartedUseCase,
         private val crashReporter: CrashReporter,
         private val localeProvider: LocaleProvider,
-        private val globalSubscriptionManager: GlobalSubscriptionManager
+        private val globalSubscriptionManager: GlobalSubscriptionManager,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -258,7 +277,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 spaceGradientProvider = spaceGradientProvider,
                 crashReporter = crashReporter,
                 localeProvider = localeProvider,
-                globalSubscriptionManager = globalSubscriptionManager
+                globalSubscriptionManager = globalSubscriptionManager,
+                spaceManager = spaceManager
             ) as T
         }
     }
@@ -271,7 +291,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     sealed class Navigation {
-        data object NavigateToMnemonic: Navigation()
+        data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
         data object GoBack: Navigation()
     }
 

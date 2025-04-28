@@ -482,6 +482,7 @@
             app:enterAnim="@anim/fade_in"
             app:popUpTo="@id/authStartScreen"
             app:popUpToInclusive="true" />
+
     </navigation>
 
     <fragment

@@ -244,7 +244,7 @@ class BlockDataRepository(
         Undo.Result.Exhausted
     }
 
-    override suspend fun importGetStartedUseCase(space: Id) = remote.importGetStartedUseCase(space = space)
+    override suspend fun importGetStartedUseCase(space: Id): Command.ImportUseCase.Result = remote.importGetStartedUseCase(space = space)
 
     override suspend fun redo(
         command: Command.Redo
@@ -761,7 +761,7 @@ class BlockDataRepository(
         remote.deleteSpace(space)
     }
 
-    override suspend fun createWorkspace(command: Command.CreateSpace): Id = remote.createWorkspace(
+    override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = remote.createWorkspace(
         command = command
     )
 

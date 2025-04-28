@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -48,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.os.bundleOf
@@ -58,17 +60,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -83,6 +89,8 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
@@ -285,7 +293,15 @@ class OnboardingFragment : Fragment() {
                 Recovery(navController)
             }
             composable(
-                route = OnboardingNavigation.mnemonic,
+                route = "${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
+                arguments = listOf(
+                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
+                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
                 enterTransition = {
                     when (initialState.destination.route) {
                         OnboardingNavigation.setProfileName -> {
@@ -311,9 +327,25 @@ class OnboardingFragment : Fragment() {
                 backButtonCallback.value = {
                     // Do nothing
                 }
-                Mnemonic(
-                    mnemonicColorPalette = mnemonicColorPalette
-                )
+                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
+                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
+                if (!spaceId.isNullOrEmpty()) {
+                    Mnemonic(
+                        mnemonicColorPalette = mnemonicColorPalette,
+                        space = spaceId,
+                        startingObject = startingObjectId
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 BackHandler {
                     toast("You're just one step away from finishing this registration.")
                 }
@@ -511,8 +543,13 @@ class OnboardingFragment : Fragment() {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
+                        val space = command.space
+                        val startingObject = command.startingObject
                         navController.navigate(
-                            route = OnboardingNavigation.mnemonic
+                            route = buildString {
+                                append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${space.id}")
+                                startingObject?.let { append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") }
+                            }
                         )
                     }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
@@ -533,11 +570,15 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun Mnemonic(
-        mnemonicColorPalette: List<Color>
+        mnemonicColorPalette: List<Color>,
+        space: Id,
+        startingObject: Id?
     ) {
         val component = componentManager().onboardingMnemonicComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
+            space = space,
+            startingObject = startingObject,
             viewModel = vm,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
@@ -554,6 +595,30 @@ class OnboardingFragment : Fragment() {
                             findNavController().navigate(
                                 R.id.actionOpenVault,
                                 VaultFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                    is OnboardingMnemonicViewModel.Command.OpenStartingObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                            findNavController().navigate(
+                                R.id.actionOpenSpaceFromVault,
+                                HomeScreenFragment.args(
+                                    space = command.space.id,
+                                    deeplink = null
+                                )
+                            )
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = command.startingObject,
+                                    space = command.space.id,
+                                )
                             )
                         }.onFailure {
                             Timber.e(it, "Error while navigation to vault")
@@ -704,6 +769,9 @@ class OnboardingFragment : Fragment() {
             ONBOARDING_DEEP_LINK_KEY to deepLink
         )
         private const val ONBOARDING_DEEP_LINK_KEY = "arg.onboarding.deep-link-key"
+
+        private const val ONBOARDING_SPACE_PARAM = "space"
+        private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
     }
 }
 

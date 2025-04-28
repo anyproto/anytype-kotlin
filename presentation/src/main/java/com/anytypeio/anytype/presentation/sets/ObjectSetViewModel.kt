@@ -2386,7 +2386,14 @@ class ObjectSetViewModel(
 
         val isTemplatesAllowed = viewerDefType.isTemplatesAllowed()
 
-        typeTemplatesWidgetState.value = when (val state = typeTemplatesWidgetState.value) {
+        val state = typeTemplatesWidgetState.value
+
+        val isPossibleToChangeType = when (state) {
+            is TypeTemplatesWidgetUI.Data -> state.isPossibleToChangeType
+            is TypeTemplatesWidgetUI.Init -> false
+        }
+
+        typeTemplatesWidgetState.value = when (state) {
             is TypeTemplatesWidgetUI.Data -> state.copy(
                 isPossibleToChangeTemplate = isTemplatesAllowed
             )
@@ -2405,18 +2412,17 @@ class ObjectSetViewModel(
             )
         }
 
-        val blankTemplate = listOf(
-            TemplateView.Blank(
-                id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
-                targetTypeId = TypeId(viewerDefTypeId),
-                targetTypeKey = viewerDefTypeKey,
-                layout = viewerDefType.recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
-                isDefault = viewerDefTemplate.isNullOrEmpty()
-                        || viewerDefTemplate == TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
-            )
+        val blankTemplate = TemplateView.Blank(
+            id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
+            targetTypeId = TypeId(viewerDefTypeId),
+            targetTypeKey = viewerDefTypeKey,
+            layout = viewerDefType.recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
+            isDefault = viewerDefTemplate.isNullOrEmpty()
+                    || viewerDefTemplate == TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
         )
-        if (templates.size == 1 && templates.first().id == viewerDefTemplate) {
-            return templates.map { objTemplate ->
+
+        return if (templates.size == 1 && templates.first().id == viewerDefTemplate) {
+            templates.map { objTemplate ->
                 objTemplate.toTemplateView(
                     urlBuilder = urlBuilder,
                     coverImageHashProvider = coverImageHashProvider,
@@ -2425,14 +2431,22 @@ class ObjectSetViewModel(
                 )
             } + newTemplate
         } else {
-            return templates.map { objTemplate ->
-                objTemplate.toTemplateView(
-                    urlBuilder = urlBuilder,
-                    coverImageHashProvider = coverImageHashProvider,
-                    viewerDefTemplateId = viewerDefTemplate,
-                    viewerDefTypeKey = viewerDefTypeKey
+            buildList {
+                if (isPossibleToChangeType) {
+                    add(blankTemplate)
+                }
+                addAll(
+                    templates.map { objTemplate ->
+                        objTemplate.toTemplateView(
+                            urlBuilder = urlBuilder,
+                            coverImageHashProvider = coverImageHashProvider,
+                            viewerDefTemplateId = viewerDefTemplate,
+                            viewerDefTypeKey = viewerDefTypeKey
+                        )
+                    }
                 )
-            } + newTemplate
+                addAll(newTemplate)
+            }
         }
     }
 

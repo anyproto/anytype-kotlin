@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.domain.chats
 
-class ReadMessages {
-}
+import com.anytypeio.anytype.domain.base.ResultInteractor
+
+class ReadMessages

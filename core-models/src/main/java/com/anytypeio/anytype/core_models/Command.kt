@@ -618,6 +618,12 @@ sealed class Command {
     }
 
     sealed class ChatCommand {
+
+        data class ReadMessages(
+            val chat: Id,
+            // TODO
+        )
+
         data class AddMessage(
             val chat: Id,
             val message: Chat.Message,

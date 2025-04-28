@@ -288,17 +288,17 @@ class ChatContainer @Inject constructor(
     fun ChatStreamState.reduce(
         events: List<Event.Command.Chats>
     ): ChatStreamState {
-        val messages = this.messages.toMutableList()
-        var state = this.state
+        val messageList = this.messages.toMutableList()
+        var countersState = this.state
         events.forEach { event ->
             when (event) {
                 is Event.Command.Chats.Add -> {
-                    if (!messages.isInCurrentWindow(event.message.id)) {
-                        val insertIndex = messages.indexOfFirst { it.order > event.order }
+                    if (!messageList.isInCurrentWindow(event.message.id)) {
+                        val insertIndex = messageList.indexOfFirst { it.order > event.order }
                         if (insertIndex >= 0) {
-                            messages.add(insertIndex, event.message)
+                            messageList.add(insertIndex, event.message)
                         } else {
-                            messages.add(event.message)
+                            messageList.add(event.message)
                         }
                     }
                     // Tracking the last message in the chat tail
@@ -306,61 +306,66 @@ class ChatContainer @Inject constructor(
                 }
 
                 is Event.Command.Chats.Update -> {
-                    if (messages.isInCurrentWindow(event.id)) {
-                        val index = messages.indexOfFirst { it.id == event.id }
-                        messages[index] = event.message
+                    if (messageList.isInCurrentWindow(event.id)) {
+                        val index = messageList.indexOfFirst { it.id == event.id }
+                        messageList[index] = event.message
                     }
                     // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
 
                 is Event.Command.Chats.Delete -> {
-                    if (messages.isInCurrentWindow(event.id)) {
-                        val index = messages.indexOfFirst { it.id == event.id }
-                        messages.removeAt(index)
+                    if (messageList.isInCurrentWindow(event.id)) {
+                        val index = messageList.indexOfFirst { it.id == event.id }
+                        messageList.removeAt(index)
                     }
                     // Tracking the last message in the chat tail
                     lastMessages.remove(event.id)
                 }
 
                 is Event.Command.Chats.UpdateReactions -> {
-                    if (messages.isInCurrentWindow(event.id)) {
-                        val index = messages.indexOfFirst { it.id == event.id }
-                        if (messages[index].reactions != event.reactions) {
-                            messages[index] = messages[index].copy(reactions = event.reactions)
+                    if (messageList.isInCurrentWindow(event.id)) {
+                        val index = messageList.indexOfFirst { it.id == event.id }
+                        if (messageList[index].reactions != event.reactions) {
+                            messageList[index] = messageList[index].copy(reactions = event.reactions)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                    val idsInWindow = event.messages.filter { messages.isInCurrentWindow(it) }
+                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
                     idsInWindow.forEach { id ->
-                        val index = messages.indexOfFirst { it.id == id }
-                        if (messages[index].mentionRead != event.isRead) {
-                            messages[index] = messages[index].copy(mentionRead = event.isRead)
+                        val index = messageList.indexOfFirst { it.id == id }
+                        if (messageList[index].mentionRead != event.isRead) {
+                            messageList[index] = messageList[index].copy(mentionRead = event.isRead)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    val idsInWindow = event.messages.filter { messages.isInCurrentWindow(it) }
+                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
                     idsInWindow.forEach { id ->
-                        val index = messages.indexOfFirst { it.id == id }
-                        if (messages[index].read != event.isRead) {
-                            messages[index] = messages[index].copy(read = event.isRead)
+                        val index = messageList.indexOfFirst { it.id == id }
+                        if (messageList[index].read != event.isRead) {
+                            messageList[index] = messageList[index].copy(read = event.isRead)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateState -> {
-                    state = event.state ?: Chat.State()
+                    logger.logWarning(
+                        "DROID-2966 Updating chat state, " +
+                                "last state: ${this.state.lastStateId}, " +
+                                "new state: ${event.state?.lastStateId}"
+                    )
+                    countersState = event.state ?: Chat.State()
                 }
             }
         }
 
         return ChatStreamState(
-            messages = messages,
-            state = state
+            messages = messageList,
+            state = countersState
         )
     }
 

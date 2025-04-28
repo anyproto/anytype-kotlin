@@ -137,6 +137,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
+            Timber.d("DROID-2966 Chat counter state: ${result.state}")
             Timber.d("DROID-2966 Got chat results: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList<ChatView> {
@@ -502,7 +503,7 @@ class ChatViewModel @Inject constructor(
                                         )
                                     }
                                 }.onFailure {
-                                    Timber.e(it, "Error while uploading file as attachment")
+                                    Timber.e(it, "DROID-2966 Error while uploading file as attachment")
                                     chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                         set(
                                             index = idx,
@@ -530,6 +531,7 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
+                        Timber.d("DROID-2966 onPayload: $payload")
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)

@@ -321,6 +321,7 @@ sealed class Event {
         }
 
         sealed class Chats : Command() {
+
             data class Add(
                 override val context: Id,
                 val id: Id,

@@ -478,7 +478,12 @@ sealed class Command {
         val details: Struct,
         val withChat: Boolean,
         val shouldApplyEmptyUseCase: Boolean
-    )
+    ) {
+        data class Result(
+            val space: SpaceId,
+            val startingObject: Id? = null
+        )
+    }
 
     data class CreateObjectType(
         val details: Struct,

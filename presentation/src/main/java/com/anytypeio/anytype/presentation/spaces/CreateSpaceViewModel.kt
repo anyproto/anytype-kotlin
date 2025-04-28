@@ -72,7 +72,8 @@ class CreateSpaceViewModel(
             ).collect { result ->
                 result.fold(
                     onLoading = { isInProgress.value = true },
-                    onSuccess = { space: Id ->
+                    onSuccess = { response ->
+                        val space = response.space.id
                         analytics.sendEvent(
                             eventName = EventsDictionary.createSpace,
                             props = Props(

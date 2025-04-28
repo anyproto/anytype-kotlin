@@ -1960,7 +1960,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceCreate(command: Command.CreateSpace): Id {
+    fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
             useCase = if (command.shouldApplyEmptyUseCase)
@@ -1972,7 +1972,10 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
         logResponseIfDebug(response, time)
-        return response.spaceId
+        return Command.CreateSpace.Result(
+            space = SpaceId(response.spaceId),
+            startingObject = response.startingObjectId
+        )
     }
 
     @Throws(Exception::class)

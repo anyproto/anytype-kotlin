@@ -761,7 +761,7 @@ class BlockDataRepository(
         remote.deleteSpace(space)
     }
 
-    override suspend fun createWorkspace(command: Command.CreateSpace): Id = remote.createWorkspace(
+    override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = remote.createWorkspace(
         command = command
     )
 

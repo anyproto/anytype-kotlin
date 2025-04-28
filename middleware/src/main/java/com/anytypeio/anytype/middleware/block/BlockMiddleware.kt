@@ -728,7 +728,7 @@ class BlockMiddleware(
         middleware.spaceDelete(space)
     }
 
-    override suspend fun createWorkspace(command: Command.CreateSpace): Id = middleware.workspaceCreate(
+    override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = middleware.workspaceCreate(
         command = command
     )
 

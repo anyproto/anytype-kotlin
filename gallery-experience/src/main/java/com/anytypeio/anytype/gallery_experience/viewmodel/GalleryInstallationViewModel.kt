@@ -137,7 +137,8 @@ class GalleryInstallationViewModel(
                 } >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
             )
             createSpace.async(params).fold(
-                onSuccess = { space ->
+                onSuccess = { result ->
+                    val space = result.space.id
                     Timber.d("CreateSpace success, space: $space")
                     analytics.sendEvent(
                         eventName = EventsDictionary.clickGalleryInstallSpace,

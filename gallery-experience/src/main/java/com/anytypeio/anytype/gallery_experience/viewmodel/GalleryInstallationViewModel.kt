@@ -33,7 +33,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 

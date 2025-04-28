@@ -67,13 +67,14 @@ class CreateSpaceViewModel(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
                     ),
-                    shouldApplyEmptyUseCase = numberOfActiveSpaces >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE,
+                    shouldApplyEmptyUseCase = true,
                     withChat = BuildConfig.DEBUG && isSpaceLevelChatSwitchChecked
                 )
             ).collect { result ->
                 result.fold(
                     onLoading = { isInProgress.value = true },
-                    onSuccess = { space: Id ->
+                    onSuccess = { response ->
+                        val space = response.space.id
                         analytics.sendEvent(
                             eventName = EventsDictionary.createSpace,
                             props = Props(
@@ -83,7 +84,12 @@ class CreateSpaceViewModel(
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
                             isInProgress.value = false
-                            commands.emit(Command.SwitchSpace(space = Space(space)))
+                            commands.emit(
+                                Command.SwitchSpace(
+                                    space = Space(space),
+                                    startingObject = response.startingObject
+                                )
+                            )
                         }
                     },
                     onFailure = {
@@ -130,12 +136,8 @@ class CreateSpaceViewModel(
 
     sealed class Command {
         data class SwitchSpace(
-            val space: Space
+            val space: Space,
+            val startingObject: Id?
         ): Command()
-    }
-
-    companion object {
-        // Always applying "empty" use-case when creating new space
-        const val MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE = 0
     }
 }

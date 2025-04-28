@@ -1598,14 +1598,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectImportUseCaseGetStarted(space: Id) {
+    fun objectImportUseCaseGetStarted(space: Id) : Command.ImportUseCase.Result {
         val request = Rpc.Object.ImportUseCase.Request(
             spaceId = space,
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectImportUseCase(request) }
         logResponseIfDebug(response, time)
+        return Command.ImportUseCase.Result(
+            startingObject = response.startingObjectId.ifEmpty { null }
+        )
     }
 
     @Throws(Exception::class)
@@ -1960,19 +1963,22 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceCreate(command: Command.CreateSpace): Id {
+    fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
             useCase = if (command.shouldApplyEmptyUseCase)
-                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
             else
-               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED,
+               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE,
             withChat = command.withChat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
         logResponseIfDebug(response, time)
-        return response.spaceId
+        return Command.CreateSpace.Result(
+            space = SpaceId(response.spaceId),
+            startingObject = response.startingObjectId.ifEmpty { null }
+        )
     }
 
     @Throws(Exception::class)

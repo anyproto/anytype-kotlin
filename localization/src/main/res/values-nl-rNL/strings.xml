@@ -1631,6 +1631,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_properties_local_info_description">Deze eigenschappen bestaan alleen in dit object en maken geen deel uit van het type. Voeg toe aan het type om te gebruiken in alle objecten, of verwijder.</string>
     <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
     <string name="day_of_week_monday">Maandag</string>
     <string name="day_of_week_tuesday">Dinsdag</string>
     <string name="day_of_week_wednesday">Woensdag</string>

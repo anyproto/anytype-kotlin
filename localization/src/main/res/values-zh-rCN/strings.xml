@@ -1614,6 +1614,7 @@
     <string name="object_properties_local_info_description">这些属性仅存在于该对象中，不是其类型的一部分。添加到该类型可供在所有对象中使用，或者移除.</string>
     <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
     <string name="day_of_week_monday">星期一</string>
     <string name="day_of_week_tuesday">星期二</string>
     <string name="day_of_week_wednesday">星期三</string>

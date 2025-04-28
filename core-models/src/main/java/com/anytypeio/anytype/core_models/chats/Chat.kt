@@ -91,9 +91,9 @@ sealed class Chat {
     }
 
     data class State(
-        val unreadMessages: UnreadState?,
-        val unreadMentions: UnreadState?,
-        val lastStateId: Id,
+        val unreadMessages: UnreadState? = null,
+        val unreadMentions: UnreadState? = null,
+        val lastStateId: Id? = null,
     ) {
         /**
          * @property olderOrderId oldest(in the lex sorting) unread message order id. Client should ALWAYS scroll through unread messages from the oldest to the newest

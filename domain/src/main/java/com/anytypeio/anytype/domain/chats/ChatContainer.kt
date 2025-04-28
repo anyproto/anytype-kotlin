@@ -122,7 +122,12 @@ class ChatContainer @Inject constructor(
         )
 
         emitAll(
-            inputs.scan(initial = ChatStreamState(initial.messages)) { state, transform ->
+            inputs.scan(
+                initial = ChatStreamState(
+                    messages = initial.messages,
+                    state = initial.chatState ?: Chat.State()
+                )
+            ) { state, transform ->
                 when (transform) {
                     Transformation.Commands.LoadPrevious -> {
                         ChatStreamState(
@@ -161,10 +166,7 @@ class ChatContainer @Inject constructor(
                         )
                     }
                     is Transformation.Events.Payload -> {
-                        ChatStreamState(
-                            messages = state.messages.reduce(transform.events),
-                            intent = Intent.None
-                        )
+                        state.reduce(transform.events)
                     }
                 }
             }.distinctUntilChanged()
@@ -283,17 +285,20 @@ class ChatContainer @Inject constructor(
         payloads.emit(events)
     }
 
-    fun List<Chat.Message>.reduce(events: List<Event.Command.Chats>): List<Chat.Message> {
-        val result = this.toMutableList()
+    fun ChatStreamState.reduce(
+        events: List<Event.Command.Chats>
+    ): ChatStreamState {
+        val messages = this.messages.toMutableList()
+        var state = this.state
         events.forEach { event ->
             when (event) {
                 is Event.Command.Chats.Add -> {
-                    if (!result.isInCurrentWindow(event.message.id)) {
-                        val insertIndex = result.indexOfFirst { it.order > event.order }
+                    if (!messages.isInCurrentWindow(event.message.id)) {
+                        val insertIndex = messages.indexOfFirst { it.order > event.order }
                         if (insertIndex >= 0) {
-                            result.add(insertIndex, event.message)
+                            messages.add(insertIndex, event.message)
                         } else {
-                            result.add(event.message)
+                            messages.add(event.message)
                         }
                     }
                     // Tracking the last message in the chat tail
@@ -301,59 +306,62 @@ class ChatContainer @Inject constructor(
                 }
 
                 is Event.Command.Chats.Update -> {
-                    if (result.isInCurrentWindow(event.id)) {
-                        val index = result.indexOfFirst { it.id == event.id }
-                        result[index] = event.message
+                    if (messages.isInCurrentWindow(event.id)) {
+                        val index = messages.indexOfFirst { it.id == event.id }
+                        messages[index] = event.message
                     }
                     // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
 
                 is Event.Command.Chats.Delete -> {
-                    if (result.isInCurrentWindow(event.id)) {
-                        val index = result.indexOfFirst { it.id == event.id }
-                        result.removeAt(index)
+                    if (messages.isInCurrentWindow(event.id)) {
+                        val index = messages.indexOfFirst { it.id == event.id }
+                        messages.removeAt(index)
                     }
                     // Tracking the last message in the chat tail
                     lastMessages.remove(event.id)
                 }
 
                 is Event.Command.Chats.UpdateReactions -> {
-                    if (result.isInCurrentWindow(event.id)) {
-                        val index = result.indexOfFirst { it.id == event.id }
-                        if (result[index].reactions != event.reactions) {
-                            result[index] = result[index].copy(reactions = event.reactions)
+                    if (messages.isInCurrentWindow(event.id)) {
+                        val index = messages.indexOfFirst { it.id == event.id }
+                        if (messages[index].reactions != event.reactions) {
+                            messages[index] = messages[index].copy(reactions = event.reactions)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                    val idsInWindow = event.messages.filter { result.isInCurrentWindow(it) }
+                    val idsInWindow = event.messages.filter { messages.isInCurrentWindow(it) }
                     idsInWindow.forEach { id ->
-                        val index = result.indexOfFirst { it.id == id }
-                        if (result[index].mentionRead != event.isRead) {
-                            result[index] = result[index].copy(mentionRead = event.isRead)
+                        val index = messages.indexOfFirst { it.id == id }
+                        if (messages[index].mentionRead != event.isRead) {
+                            messages[index] = messages[index].copy(mentionRead = event.isRead)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    val idsInWindow = event.messages.filter { result.isInCurrentWindow(it) }
+                    val idsInWindow = event.messages.filter { messages.isInCurrentWindow(it) }
                     idsInWindow.forEach { id ->
-                        val index = result.indexOfFirst { it.id == id }
-                        if (result[index].read != event.isRead) {
-                            result[index] = result[index].copy(read = event.isRead)
+                        val index = messages.indexOfFirst { it.id == id }
+                        if (messages[index].read != event.isRead) {
+                            messages[index] = messages[index].copy(read = event.isRead)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateState -> {
-                    // TODO handle later
+                    state = event.state ?: Chat.State()
                 }
             }
         }
 
-        return result
+        return ChatStreamState(
+            messages = messages,
+            state = state
+        )
     }
 
     suspend fun onLoadPrevious() {
@@ -428,6 +436,7 @@ class ChatContainer @Inject constructor(
 
     data class ChatStreamState(
         val messages: List<Chat.Message>,
+        val state: Chat.State = Chat.State(),
         val intent: Intent = Intent.None
     )
 

@@ -28,13 +28,11 @@ import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationNaviga
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
-import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel.Companion.MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -132,12 +130,11 @@ class GalleryInstallationViewModel(
                     Relations.NAME to manifestInfo.title,
                     Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
                 ),
-                shouldApplyEmptyUseCase = spacesViewState.value.spaces.count { item ->
-                    item.obj.isActive
-                } >= MAX_SPACE_COUNT_WITH_GET_STARTED_USE_CASE
+                shouldApplyEmptyUseCase = true
             )
             createSpace.async(params).fold(
-                onSuccess = { space ->
+                onSuccess = { result ->
+                    val space = result.space.id
                     Timber.d("CreateSpace success, space: $space")
                     analytics.sendEvent(
                         eventName = EventsDictionary.clickGalleryInstallSpace,

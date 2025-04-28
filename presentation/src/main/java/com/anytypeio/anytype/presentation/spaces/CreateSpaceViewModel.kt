@@ -83,7 +83,8 @@ class CreateSpaceViewModel(
                             isInProgress.value = false
                             commands.emit(
                                 Command.SwitchSpace(
-                                    space = Space(space)
+                                    space = Space(space),
+                                    startingObject = response.startingObject
                                 )
                             )
                         }
@@ -131,6 +132,9 @@ class CreateSpaceViewModel(
     }
 
     sealed class Command {
-        data class SwitchSpace(val space: Space): Command()
+        data class SwitchSpace(
+            val space: Space,
+            val startingObject: Id?
+        ): Command()
     }
 }

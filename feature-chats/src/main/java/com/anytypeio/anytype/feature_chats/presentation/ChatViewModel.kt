@@ -531,7 +531,6 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        Timber.d("DROID-2966 onPayload: $payload")
                         chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)

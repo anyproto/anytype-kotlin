@@ -104,9 +104,6 @@ import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TemplateClick
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -575,7 +572,6 @@ private fun ColumnScope.TemplateHeaderBasic(item: TemplateView.Template) {
     )
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ColumnScope.TemplateHeaderProfile(item: TemplateView.Template) {
     if (item.isCoverPresent()) {
@@ -593,7 +589,6 @@ private fun ColumnScope.TemplateHeaderProfile(item: TemplateView.Template) {
     )
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ProfileIcon(
     modifier: Modifier = Modifier,
@@ -608,8 +603,8 @@ private fun ProfileIcon(
             )
     ) {
         if (item.image != null) {
-            GlideImage(
-                model = item.image,
+            Image(
+                painter = rememberAsyncImagePainter(model = item.image),
                 contentDescription = "Custom image template's icon",
                 modifier = Modifier
                     .size(40.dp)
@@ -638,7 +633,6 @@ private fun ColumnScope.TemplateHeaderTask(item: TemplateView.Template) {
     TemplateItemTodoTitle(text = item.name)
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemIconOrImage(
     item: TemplateView.Template,
@@ -654,9 +648,12 @@ private fun TemplateItemIconOrImage(
                     shape = RoundedCornerShape(5.dp)
                 )
         ) {
-            GlideImage(
-                model = it,
-                failure = placeholder(painterResource(id = R.drawable.ic_home_widget_space)),
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = it,
+                    fallback = painterResource(id = R.drawable.ic_home_widget_space),
+                    error = painterResource(id = R.drawable.ic_home_widget_space)
+                ),
                 contentDescription = "Custom image template's icon",
                 modifier = Modifier
                     .size(40.dp)
@@ -690,7 +687,6 @@ private fun TemplateItemIconOrImage(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
     Box(

@@ -75,19 +75,13 @@ class ObjectTypesSubscriptionManager (
                         value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
                     ),
                     DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = config.space
-                    ),
-                    DVFilter(
                         relation = Relations.IS_DELETED,
                         condition = DVFilterCondition.NOT_EQUAL,
                         value = true
                     ),
                     DVFilter(
                         relation = Relations.IS_ARCHIVED,
-                        condition = DVFilterCondition.NOT_EQUAL,
-                        value = true
+                        condition = DVFilterCondition.NONE
                     ),
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
@@ -124,6 +118,7 @@ class ObjectTypesSubscriptionManager (
                     Relations.RECOMMENDED_FEATURED_RELATIONS,
                     Relations.RECOMMENDED_HIDDEN_RELATIONS,
                     Relations.RECOMMENDED_FILE_RELATIONS,
+                    Relations.IS_ARCHIVED
                     ),
                 ignoreWorkspace = true
             )

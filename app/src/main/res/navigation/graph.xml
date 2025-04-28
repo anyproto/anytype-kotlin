@@ -402,15 +402,6 @@
         android:label="SplashFragment"
         tools:layout="@layout/fragment_splash">
         <action
-            android:id="@+id/action_splashScreen_to_homeScreen"
-            app:destination="@id/homeScreen"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/splashScreen"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/actionOpenVaultFromSplash"
             app:destination="@id/vaultScreen"
             app:enterAnim="@anim/nav_default_enter_anim"

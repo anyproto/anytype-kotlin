@@ -3334,11 +3334,16 @@ class EditorViewModel(
     private fun onAddNewObjectClicked(
         objectTypeView: ObjectTypeView
     ) {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
-
         val position: Position
 
-        val focused = blocks.first { it.id == orchestrator.stores.focus.current().targetOrNull() }
+        val focused = blocks.find { it.id == orchestrator.stores.focus.current().targetOrNull() }
+
+        if (focused == null) {
+            Timber.e("Error while trying to add new object: focused block is null, target is unknown.")
+            return
+        }
+
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         var target = focused.id
 
@@ -3741,7 +3746,9 @@ class EditorViewModel(
 
             if (target == context) {
                 position = Position.TOP
-                moveTarget = targetBlock.children.first()
+                moveTarget = targetBlock.children.firstOrNull().orEmpty().also {
+                    Timber.e("Could not find move target in target block's children")
+                }
             }
 
             blocks.filter { selected.contains(it.id) }.forEach { block ->
@@ -5076,7 +5083,11 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Color -> {
-                val block = blocks.first { it.id == targetId }
+                val block = blocks.find { it.id == targetId }
+                if (block == null) {
+                    Timber.d("Could not find target block for slash item action: color")
+                    return
+                }
                 val blockColor = block.content.asText().color
                 val color = if (blockColor != null) {
                     ThemeColor.valueOf(blockColor.toUpperCase())
@@ -5092,7 +5103,11 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Background -> {
-                val block = blocks.first { it.id == targetId }
+                val block = blocks.find { it.id == targetId }
+                if (block == null) {
+                    Timber.d("Could not find target block for slash item action: background")
+                    return
+                }
                 val blockBackground = block.backgroundColor
                 val background = if (blockBackground == null) {
                     ThemeColor.DEFAULT
@@ -5977,12 +5992,16 @@ class EditorViewModel(
     private fun onMultiSelectAddBelow() {
         mode = EditorMode.Edit
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.MultiSelect.OnExit)
-        val target = currentSelection().first()
-        clearSelections()
-        proceedWithCreatingNewTextBlock(
-            target = target,
-            style = Content.Text.Style.P
-        )
+        val target = currentSelection().firstOrNull()
+        if (target != null) {
+            clearSelections()
+            proceedWithCreatingNewTextBlock(
+                target = target,
+                style = Content.Text.Style.P
+            )
+        } else {
+            Timber.e("Could not define target in onMultiSelectAddBelow()")
+        }
     }
 
     fun onMultiSelectModeDeleteClicked() {

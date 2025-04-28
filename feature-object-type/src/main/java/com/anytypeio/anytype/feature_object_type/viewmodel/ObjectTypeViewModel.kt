@@ -181,7 +181,7 @@ class ObjectTypeViewModel(
 
     //region INIT AND LIFE CYCLE
     init {
-        Timber.d("init, vmParams: $vmParams")
+        Timber.i("ObjectTypeViewModel init, vmParams: $vmParams")
         proceedWithObservingSyncStatus()
         proceedWithObservingObjectType()
         proceedWithGetObjectTypeConflictingFields()
@@ -1172,6 +1172,11 @@ class ObjectTypeViewModel(
             "showTitleAndIconUpdateScreen, initialIcon: $initialIcon, " +
                     "initialTitle: $initialTitle, initialPlural: $initialPlural"
         )
+        val isPossibleToUpdateTitle = _objectTypePermissionsState.value?.canEditDetails == true
+        if (!isPossibleToUpdateTitle) {
+            errorState.value = Show(ErrorEditingTypeDetails)
+            return
+        }
         uiTitleAndIconUpdateState.value = UiTypeSetupTitleAndIconState.Visible.EditType(
             icon = initialIcon,
             initialTitle = initialTitle,

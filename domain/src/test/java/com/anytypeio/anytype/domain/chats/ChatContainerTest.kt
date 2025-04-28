@@ -105,7 +105,7 @@ class ChatContainerTest {
             val first = awaitItem()
             assertEquals(
                 expected = emptyList(),
-                actual = first
+                actual = first.messages
             )
             advanceUntilIdle()
             val second = awaitItem()
@@ -113,7 +113,7 @@ class ChatContainerTest {
                 expected = listOf(
                     msg
                 ),
-                actual = second
+                actual = second.messages
             )
         }
     }
@@ -169,13 +169,13 @@ class ChatContainerTest {
                 expected = listOf(
                     initialMsg
                 ),
-                actual = first
+                actual = first.messages
             )
             advanceUntilIdle()
             val second = awaitItem()
             assertEquals(
                 expected = emptyList(),
-                actual = second
+                actual = second.messages
             )
         }
     }
@@ -238,7 +238,7 @@ class ChatContainerTest {
                 expected = listOf(
                     initialMsg
                 ),
-                actual = first
+                actual = first.messages
             )
             advanceUntilIdle()
             val second = awaitItem()
@@ -246,7 +246,7 @@ class ChatContainerTest {
                 expected = listOf(
                     msgAfterUpdate
                 ),
-                actual = second
+                actual = second.messages
             )
         }
     }
@@ -312,7 +312,7 @@ class ChatContainerTest {
                 expected = listOf(
                     initialMsg
                 ),
-                actual = first
+                actual = first.messages
             )
             advanceUntilIdle()
             val second = awaitItem()
@@ -321,7 +321,7 @@ class ChatContainerTest {
                     newMsg,
                     initialMsg
                 ),
-                actual = second
+                actual = second.messages
             )
         }
     }
@@ -376,17 +376,17 @@ class ChatContainerTest {
             val initial = awaitItem()
             assertEquals(
                 expected = listOf(firstMessage),
-                actual = initial
+                actual = initial.messages
             )
 
-            container.onLoadNextPage()
+            container.onLoadPrevious()
 
             advanceUntilIdle()
 
             val updated = awaitItem()
             assertEquals(
                 expected = listOf(nextMessage, firstMessage),
-                actual = updated
+                actual = updated.messages
             )
         }
     }

@@ -48,7 +48,10 @@ class OnboardingMnemonicViewModel @Inject constructor(
         )
     }
 
-    fun onCheckLaterClicked() {
+    fun onCheckLaterClicked(
+        space: Id,
+        startingObject: Id?,
+    ) {
         viewModelScope.sendAnalyticsOnboardingClickEvent(
             analytics = analytics,
             type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
@@ -63,7 +66,16 @@ class OnboardingMnemonicViewModel @Inject constructor(
             } else {
                 Timber.w("config was missing before the end of onboarding")
             }
-            commands.emit(Command.OpenVault)
+            if (!startingObject.isNullOrEmpty()) {
+                commands.emit(
+                    Command.OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                commands.emit(Command.OpenVault)
+            }
         }
     }
 

@@ -64,7 +64,12 @@ fun MnemonicPhraseScreenWrapper(
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        onCheckLaterClicked = vm::onCheckLaterClicked,
+        onCheckLaterClicked = {
+            vm.onCheckLaterClicked(
+                space = space,
+                startingObject = startingObject
+            )
+        },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         mnemonicColorPalette = mnemonicColorPalette,
         onGoToAppClicked = {

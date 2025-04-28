@@ -574,7 +574,7 @@ class ObjectSetViewModel(
                                 }
                                 Error.NotFoundObject -> {
                                     toast(TOAST_SET_NOT_EXIST).also {
-                                        dispatch(AppNavigation.Command.Exit)
+                                        dispatch(AppNavigation.Command.Exit(vmParams.space.id))
                                     }
                                 }
                             }
@@ -929,10 +929,10 @@ class ObjectSetViewModel(
                     space = vmParams.space
                 )
             ).fold(
-                onSuccess = { dispatch(AppNavigation.Command.Exit) },
+                onSuccess = { dispatch(AppNavigation.Command.Exit(vmParams.space.id)) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: ${vmParams.ctx}").also {
-                        dispatch(AppNavigation.Command.Exit)
+                        dispatch(AppNavigation.Command.Exit(vmParams.space.id))
                     }
                 }
             )

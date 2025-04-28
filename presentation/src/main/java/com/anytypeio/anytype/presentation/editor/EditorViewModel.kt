@@ -1256,8 +1256,8 @@ class EditorViewModel(
 
     private fun exitBack() {
         when (session.value) {
-            Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit))
-            Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
+            Session.ERROR -> navigate(EventWrapper(AppNavigation.Command.Exit(vmParams.space.id)))
+            Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit(vmParams.space.id)))
             Session.OPEN -> {
                 viewModelScope.launch {
                     closePage.async(
@@ -1266,10 +1266,10 @@ class EditorViewModel(
                             vmParams.space
                         )
                     ).fold(
-                        onSuccess = { navigate(EventWrapper(AppNavigation.Command.Exit)) },
+                        onSuccess = { navigate(EventWrapper(AppNavigation.Command.Exit(vmParams.space.id))) },
                         onFailure = {
                             Timber.e(it, "Error while closing document: $context")
-                            navigate(EventWrapper(AppNavigation.Command.Exit))
+                            navigate(EventWrapper(AppNavigation.Command.Exit(vmParams.space.id)))
                         }
                     )
                 }

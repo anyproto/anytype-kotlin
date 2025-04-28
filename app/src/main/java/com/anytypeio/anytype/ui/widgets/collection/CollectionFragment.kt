@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -104,7 +105,7 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 target = command.target,
                 space = command.space
             )
-            is Command.ToDesktop -> navigation.exitToDesktop()
+            is Command.ToDesktop -> navigation.exitToDesktop(space = space)
             is Command.ToSearch -> navigation.openGlobalSearch(
                 space = command.space
             )
@@ -113,7 +114,10 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             }
             is Command.ExitToSpaceWidgets -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionExitToSpaceWidgets)
+                    findNavController().navigate(
+                        R.id.actionExitToSpaceWidgets,
+                        HomeScreenFragment.args(space = space)
+                    )
                 }.onFailure {
                     Timber.e(it, "Error while opening space switcher from full-screen widget")
                 }
@@ -169,7 +173,7 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     }
 
     private fun exit() {
-        navigation.exit()
+        navigation.exit(space)
     }
 
     private fun launchObjectSet(target: Id, space: Id) {

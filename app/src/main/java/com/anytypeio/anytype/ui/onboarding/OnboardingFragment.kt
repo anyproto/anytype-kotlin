@@ -324,11 +324,11 @@ class OnboardingFragment : Fragment() {
                 backButtonCallback.value = {
                     // Do nothing
                 }
-                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)!!
+                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
                 val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
                 Mnemonic(
                     mnemonicColorPalette = mnemonicColorPalette,
-                    space = spaceId,
+                    space = spaceId.orEmpty(),
                     startingObject = startingObjectId
                 )
                 BackHandler {

@@ -103,11 +103,13 @@ fun StubSpaceView(
     spaceAccessType: SpaceAccessType = SpaceAccessType.DEFAULT,
     sharedSpaceLimit: Int? = null,
     spaceAccountStatus: SpaceStatus? = null,
-    spaceLocalStatus: SpaceStatus? = null
+    spaceLocalStatus: SpaceStatus? = null,
+    chatId: Id? = null
 
 ) = ObjectWrapper.SpaceView(
     map = mapOf(
         Relations.ID to id,
+        Relations.CHAT_ID to chatId,
         Relations.TARGET_SPACE_ID to targetSpaceId,
         Relations.SPACE_ACCESS_TYPE to spaceAccessType.code.toDouble(),
         Relations.SHARED_SPACES_LIMIT to sharedSpaceLimit?.toDouble(),

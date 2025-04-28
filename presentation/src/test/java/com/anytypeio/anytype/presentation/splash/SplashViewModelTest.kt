@@ -305,6 +305,58 @@ class SplashViewModelTest {
         }
     }
 
+    @Test
+    fun `should navigate to space-level chat if chat is available`() = runTest {
+        // GIVEN
+        val deeplink = "test-deeplink"
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        val space = defaultSpaceConfig.space
+        val chatId = "chat-id"
+
+        val spaceView = StubSpaceView(
+            targetSpaceId = space,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.OK,
+            chatId = chatId
+        )
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking { async(Unit) } doReturn Resultat.Success(SpaceId(space))
+        }
+
+        initViewModel()
+
+        // WHEN
+        spaceManager.stub {
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(spaceView)
+        }
+
+        vm.commands.test {
+            // Act
+            vm.onDeepLinkLaunch(deeplink)
+
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToSpaceLevelChat(
+                    space = space,
+                    chat = chatId,
+                    deeplink = deeplink
+                ),
+                actual = first
+            )
+        }
+    }
+
     private fun stubCheckAuthStatus(response: Either.Right<AuthStatus>) {
         checkAuthorizationStatus.stub {
             onBlocking { invoke(eq(Unit)) } doReturn response

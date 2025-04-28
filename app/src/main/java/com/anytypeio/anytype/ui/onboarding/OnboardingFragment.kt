@@ -290,7 +290,7 @@ class OnboardingFragment : Fragment() {
                 Recovery(navController)
             }
             composable(
-                route = OnboardingNavigation.mnemonic,
+                route = "${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
                 arguments = listOf(
                     navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
                     navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {

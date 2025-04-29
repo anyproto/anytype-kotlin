@@ -478,7 +478,18 @@ sealed class Command {
         val details: Struct,
         val withChat: Boolean,
         val shouldApplyEmptyUseCase: Boolean
-    )
+    ) {
+        data class Result(
+            val space: SpaceId,
+            val startingObject: Id? = null
+        )
+    }
+
+    data object ImportUseCase {
+        data class Result(
+            val startingObject: Id? = null
+        )
+    }
 
     data class CreateObjectType(
         val details: Struct,
@@ -624,8 +635,8 @@ sealed class Command {
 
         data class GetMessages(
             val chat: Id,
-            val beforeOrderId: Id?,
-            val afterOrderId: Id?,
+            val beforeOrderId: Id? = null,
+            val afterOrderId: Id? = null,
             val limit: Int
         ) : ChatCommand() {
             data class Response(

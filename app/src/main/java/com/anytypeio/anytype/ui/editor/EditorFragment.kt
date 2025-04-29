@@ -1051,7 +1051,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
                         AlertUpdateAppFragment().apply {
-                            onCancel = { navigation().exit() }
+                            onCancel = { navigation().exit(space) }
                         }.showChildFragment(TAG_ALERT)
                     } else {
                         // Do nothing

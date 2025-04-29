@@ -18,7 +18,7 @@ sealed class Chat {
         val modifiedAt: Long,
         val content: Content?,
         val attachments: List<Attachment> = emptyList(),
-        val reactions: Map<String, List<String>>,
+        val reactions: Map<String, List<String>> = emptyMap(),
         val replyToMessageId: Id? = null,
         val read: Boolean = false,
         val mentionRead: Boolean = false

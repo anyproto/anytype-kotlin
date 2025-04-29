@@ -6,6 +6,7 @@ import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -77,15 +78,18 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
+import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -120,7 +124,7 @@ fun ChatScreenWrapper(
 
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    messages = vm.messages.collectAsState().value,
+                    uiMessageState = vm.uiState.collectAsState().value,
                     attachments = vm.chatBoxAttachments.collectAsState().value,
                     onMessageSent = { text, spans ->
                         vm.onMessageSent(
@@ -190,7 +194,11 @@ fun ChatScreenWrapper(
                             text = value.text
                         )
                     },
-                    onChatScrolledToTop = vm::onChatScrolledToTop
+                    onChatScrolledToTop = vm::onChatScrolledToTop,
+                    onChatScrolledToBottom = vm::onChatScrolledToBottom,
+                    onScrollToReplyClicked = vm::onChatScrollToReply,
+                    onClearIntent = vm::onClearChatViewStateIntent,
+                    onScrollToBottomClicked = vm::onScrollToBottomClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -227,6 +235,55 @@ fun ChatScreenWrapper(
     }
 }
 
+@Composable
+fun LazyListState.OnBottomReached(
+    thresholdItems: Int = 0,
+    onBottomReached: () -> Unit
+) {
+    LaunchedEffect(this) {
+        var prevIndex = firstVisibleItemIndex
+        snapshotFlow { firstVisibleItemIndex }
+            .distinctUntilChanged()
+            .collect { index ->
+                val isDragging = isScrollInProgress
+
+                // Are we scrolling *toward* the bottom edge?
+                val scrollingDown = isDragging && prevIndex > index
+
+                // Have we crossed into the threshold zone?
+                val atBottom = index <= thresholdItems
+
+                if (scrollingDown && atBottom) {
+                    onBottomReached()
+                }
+                prevIndex = index
+            }
+    }
+}
+
+@Composable
+private fun LazyListState.OnTopReached(
+    thresholdItems: Int = 0,
+    onTopReached: () -> Unit
+) {
+    val isReached = remember {
+        derivedStateOf {
+            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
+            if (lastVisibleItem != null) {
+                lastVisibleItem.index >= layoutInfo.totalItemsCount - 1 - thresholdItems
+            } else {
+                false
+            }
+        }
+    }
+
+    LaunchedEffect(isReached) {
+        snapshotFlow { isReached.value }
+            .distinctUntilChanged()
+            .collect { if (it) onTopReached() }
+    }
+}
+
 /**
  * TODO: do date formating before rendering?
  */
@@ -235,7 +292,7 @@ fun ChatScreen(
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
-    messages: List<ChatView>,
+    uiMessageState: ChatViewState,
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onMessageSent: (String, List<ChatBoxSpan>) -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
@@ -256,8 +313,15 @@ fun ChatScreen(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onTextChanged: (TextFieldValue) -> Unit,
-    onChatScrolledToTop: () -> Unit
+    onChatScrolledToTop: () -> Unit,
+    onChatScrolledToBottom: () -> Unit,
+    onScrollToReplyClicked: (Id) -> Unit,
+    onClearIntent: () -> Unit,
+    onScrollToBottomClicked: () -> Unit
 ) {
+
+    Timber.d("DROID-2966 Render called with state")
+
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -268,38 +332,68 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
+    LaunchedEffect(uiMessageState.intent) {
+        when (val intent = uiMessageState.intent) {
+            is ChatContainer.Intent.ScrollToMessage -> {
+                val index = uiMessageState.messages.indexOfFirst {
+                    it is ChatView.Message && it.id == intent.id
+                }
 
-    // Scrolling to bottom when list size changes and we are at the bottom of the list
-    LaunchedEffect(messages.size) {
-        if (lazyListState.firstVisibleItemScrollOffset == 0) {
-            scope.launch {
-                lazyListState.animateScrollToItem(0)
+                if (index >= 0) {
+                    Timber.d("DROID-2966 Waiting for layout to stabilize...")
+
+                    snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
+                        .first { it > index }
+
+                    lazyListState.scrollToItem(index)
+
+                    awaitFrame()
+
+                    val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+                    if (itemInfo != null) {
+                        val viewportHeight = lazyListState.layoutInfo.viewportSize.height
+
+                        // Centering calculation:
+                        // itemCenter relative to viewport top
+                        val itemCenterFromTop = itemInfo.offset + (itemInfo.size / 2)
+                        val viewportCenter = viewportHeight / 2
+
+                        val delta = itemCenterFromTop - viewportCenter
+
+                        Timber.d("DROID-2966 Calculated delta for centering (reverseLayout-aware): $delta")
+
+                        // move negatively because reverseLayout flips
+                        lazyListState.animateScrollBy(delta.toFloat())
+
+                        Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
+
+                        onClearIntent()
+                    } else {
+                        Timber.w("DROID-2966 Target item not found after scroll!")
+                    }
+                }
             }
+            is ChatContainer.Intent.ScrollToBottom -> {
+                smoothScrollToBottom(lazyListState)
+                onClearIntent()
+            }
+            is ChatContainer.Intent.Highlight -> {
+                // maybe flash background, etc.
+            }
+            ChatContainer.Intent.None -> Unit
         }
     }
 
+    lazyListState.OnBottomReached(
+        thresholdItems = 3
+    ) {
+        onChatScrolledToBottom()
+    }
 
-    var isAtTop by remember { mutableStateOf(false) }
-
-    LaunchedEffect(lazyListState, messages.size) {
-        if (messages.isEmpty()) return@LaunchedEffect
-        snapshotFlow {
-            lazyListState.layoutInfo.visibleItemsInfo
-                .lastOrNull { it.key is String && !(it.key as String).startsWith(DATE_KEY_PREFIX) }
-                ?.key as? String
-        }
-            .distinctUntilChanged()
-            .collect { currentTopMessageId ->
-                val isNowAtTop = currentTopMessageId != null &&
-                        currentTopMessageId == (messages.lastOrNull { it is ChatView.Message } as? ChatView.Message)?.id
-
-                if (isNowAtTop && !isAtTop) {
-                    isAtTop = true
-                    onChatScrolledToTop()
-                } else if (!isNowAtTop && isAtTop) {
-                    isAtTop = false // reset for next entry
-                }
-            }
+    lazyListState.OnTopReached(
+        thresholdItems = 3
+    ) {
+        onChatScrolledToTop()
     }
 
     Column(
@@ -308,7 +402,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f)) {
             Messages(
                 modifier = Modifier.fillMaxSize(),
-                messages = messages,
+                messages = uiMessageState.messages,
                 scrollState = lazyListState,
                 onReacted = onReacted,
                 onCopyMessage = onCopyMessage,
@@ -331,7 +425,8 @@ fun ChatScreen(
                 onAddReactionClicked = onAddReactionClicked,
                 onViewChatReaction = onViewChatReaction,
                 onMemberIconClicked = onMemberIconClicked,
-                onMentionClicked = onMentionClicked
+                onMentionClicked = onMentionClicked,
+                onScrollToReplyClicked = onScrollToReplyClicked
             )
             // Jump to bottom button shows up when user scrolls past a threshold.
             // Convert to pixels:
@@ -353,9 +448,7 @@ fun ChatScreen(
                     .align(Alignment.BottomEnd)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
-                    scope.launch {
-                        lazyListState.animateScrollToItem(index = 0)
-                    }
+                    onScrollToBottomClicked()
                 },
                 enabled = jumpToBottomButtonEnabled
             )
@@ -393,7 +486,8 @@ fun ChatScreen(
 
                                         val replacementText = member.name + " "
 
-                                        val lengthDifference = replacementText.length - (query.range.last - query.range.first + 1)
+                                        val lengthDifference =
+                                            replacementText.length - (query.range.last - query.range.first + 1)
 
                                         val updatedText = input.replaceRange(
                                             query.range,
@@ -404,7 +498,7 @@ fun ChatScreen(
 
                                         val updatedSpans = spans.map { span ->
                                             if (span.start > query.range.last) {
-                                                when(span) {
+                                                when (span) {
                                                     is ChatBoxSpan.Mention -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,
@@ -500,8 +594,10 @@ fun Messages(
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onMemberIconClicked: (Id?) -> Unit,
-    onMentionClicked: (Id) -> Unit
+    onMentionClicked: (Id) -> Unit,
+    onScrollToReplyClicked: (Id) -> Unit,
 ) {
+    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,
@@ -572,12 +668,11 @@ fun Messages(
                         },
                         reply = msg.reply,
                         onScrollToReplyClicked = { reply ->
-                            // Naive implementation
                             val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
                             if (idx != -1) {
-                                scope.launch {
-                                    scrollState.animateScrollToItem(index = idx)
-                                }
+                                scope.launch { scrollState.animateScrollToItem(index = idx) }
+                            } else {
+                                onScrollToReplyClicked(reply.msg)
                             }
                         },
                         onAddReactionClicked = {
@@ -684,6 +779,17 @@ fun TopDiscussionToolbar(
                 modifier = Modifier.align(Alignment.Center)
             )
         }
+    }
+}
+
+suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
+    if (lazyListState.firstVisibleItemIndex > 0) {
+        lazyListState.scrollToItem(0)
+        return
+    }
+    while (lazyListState.firstVisibleItemScrollOffset > 0) {
+        val delta = (-lazyListState.firstVisibleItemScrollOffset).coerceAtLeast(-40)
+        lazyListState.animateScrollBy(delta.toFloat())
     }
 }
 

@@ -67,6 +67,7 @@ fun TypeIconView(
             val emoji = Emojifier.safeUri(icon.unicode)
             if (emoji != Emojifier.Config.EMPTY_URI) {
                 EmojiIconView(
+                    modifier = modifier,
                     icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode),
                     backgroundSize = backgroundSize,
                     iconWithoutBackgroundMaxSize = 120.dp,

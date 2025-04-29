@@ -102,5 +102,9 @@ sealed class Chat {
             val olderOrderId: Id,
             val counter: Int
         )
+
+        val hasUnReadMessages: Boolean get() {
+            return unreadMessages?.counter != null && unreadMessages.counter > 0
+        }
     }
 }

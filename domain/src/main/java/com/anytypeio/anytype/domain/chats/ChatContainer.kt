@@ -161,6 +161,7 @@ class ChatContainer @Inject constructor(
                             val lastShown = state.messages.last().id
                             val lastTracked = lastMessages.entries.first().value.id
                             if (lastShown == lastTracked) {
+                                // No need to paginate.
                                 state.copy(
                                     intent = Intent.ScrollToBottom
                                 )
@@ -172,7 +173,7 @@ class ChatContainer @Inject constructor(
                                         logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                                     }
                                 }
-                                if (messages.isNotEmpty()) {
+                                if (messages.isNotEmpty() && state.state.hasUnReadMessages) {
                                     runCatching {
                                         repo.readChatMessages(
                                             Command.ChatCommand.ReadMessages(

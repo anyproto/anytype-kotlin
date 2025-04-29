@@ -936,6 +936,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onVisibleRangeChanged(
+
+    ) {
+        // TODO implement read messages
+    }
+
     /**
      * Used for testing. Will be deleted.
      */

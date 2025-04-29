@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -255,16 +256,14 @@ private fun Topbar(
         Box(
             modifier = Modifier
                 .width(56.dp)
-                .height(48.dp)
-                .align(Alignment.CenterStart)
+                .fillMaxHeight()
                 .noRippleThrottledClickable {
                     onBackPressed()
                 },
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 modifier = Modifier
-                    .padding(start = 12.dp)
                     .wrapContentSize(),
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)

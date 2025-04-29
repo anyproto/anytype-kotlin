@@ -274,11 +274,10 @@ private fun Topbar(
                 .noRippleThrottledClickable {
                     onBackPressed()
                 },
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 modifier = Modifier
-                    .padding(start = 12.dp)
                     .wrapContentSize(),
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)

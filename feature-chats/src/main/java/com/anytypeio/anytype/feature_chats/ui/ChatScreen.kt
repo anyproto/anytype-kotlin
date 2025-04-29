@@ -421,7 +421,7 @@ fun ChatScreen(
                 }
             }
             is ChatContainer.Intent.ScrollToBottom -> {
-                smoothScrollToBottom(lazyListState)
+                smoothScrollToBottom2(lazyListState)
                 onClearIntent()
             }
             is ChatContainer.Intent.Highlight -> {
@@ -437,10 +437,7 @@ fun ChatScreen(
         thresholdItems = 3
     ) {
         if (latestMessages.isNotEmpty()) {
-            Timber.d("DROID-2966 onBottomReached for LazyListState")
             onChatScrolledToBottom()
-        } else {
-            Timber.d("DROID-2966 onBottomReached called from empty messages")
         }
     }
 
@@ -448,10 +445,7 @@ fun ChatScreen(
         thresholdItems = 3
     ) {
         if (latestMessages.isNotEmpty()) {
-            Timber.d("DROID-2966 onTopReached for LazyListState")
             onChatScrolledToTop()
-        } else {
-            Timber.d("DROID-2966 onTopReached called from empty messages")
         }
     }
 
@@ -779,39 +773,39 @@ fun Messages(
                 )
             }
         }
-//        if (messages.isEmpty()) {
-//            item {
-//                Box(
-//                    modifier = Modifier
-//                        .fillParentMaxSize()
-//                ) {
-//                    Column(
-//                        modifier = Modifier
-//                            .align(Alignment.CenterStart)
-//                    ) {
-//                        AlertIcon(
-//                            icon = AlertConfig.Icon(
-//                                gradient = GRADIENT_TYPE_BLUE,
-//                                icon = R.drawable.ic_alert_message
-//                            )
-//                        )
-//                        Text(
-//                            text = stringResource(R.string.chat_empty_state_message),
-//                            style = Caption1Regular,
-//                            color = colorResource(id = R.color.text_secondary),
-//                            textAlign = TextAlign.Center,
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .padding(
-//                                    start = 20.dp,
-//                                    end = 20.dp,
-//                                    top = 12.dp
-//                                )
-//                        )
-//                    }
-//                }
-//            }
-//        }
+        if (messages.isEmpty()) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillParentMaxSize()
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                    ) {
+                        AlertIcon(
+                            icon = AlertConfig.Icon(
+                                gradient = GRADIENT_TYPE_BLUE,
+                                icon = R.drawable.ic_alert_message
+                            )
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_message),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(
+                                    start = 20.dp,
+                                    end = 20.dp,
+                                    top = 12.dp
+                                )
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -870,6 +864,20 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     while (lazyListState.firstVisibleItemScrollOffset > 0) {
         val delta = (-lazyListState.firstVisibleItemScrollOffset).coerceAtLeast(-40)
         lazyListState.animateScrollBy(delta.toFloat())
+    }
+}
+
+suspend fun smoothScrollToBottom2(lazyListState: LazyListState) {
+    lazyListState.scrollToItem(0)
+
+    // Wait for the layout to settle after scrolling
+    awaitFrame()
+
+    while (lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset > 0) {
+        val offset = lazyListState.firstVisibleItemScrollOffset
+        val delta = (-offset).coerceAtLeast(-80)
+        lazyListState.animateScrollBy(delta.toFloat())
+        awaitFrame() // Yield to UI again
     }
 }
 

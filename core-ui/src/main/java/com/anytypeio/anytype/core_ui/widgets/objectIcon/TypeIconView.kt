@@ -68,7 +68,8 @@ fun TypeIconView(
             if (emoji != Emojifier.Config.EMPTY_URI) {
                 EmojiIconView(
                     icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode),
-                    backgroundSize = backgroundSize
+                    backgroundSize = backgroundSize,
+                    iconWithoutBackgroundMaxSize = 120.dp,
                 )
             } else {
                 val (imageVector, tint) = getDefaultIconAndTint(icon)

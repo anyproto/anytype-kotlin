@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -63,8 +65,8 @@ fun TopToolbar(
             if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
                 Box(
                     modifier = Modifier
-                        .height(48.dp)
-                        .width(56.dp)
+                        .wrapContentSize()
+                        .padding(end = 14.dp)
                         .noRippleThrottledClickable {
                             onTypeEvent(
                                 TypeEvent.OnSyncStatusClick(
@@ -76,6 +78,7 @@ fun TopToolbar(
                     StatusBadge(
                         status = uiSyncStatusBadgeState.status,
                         modifier = Modifier
+                            .size(28.dp)
                             .align(Alignment.Center)
                     )
                 }

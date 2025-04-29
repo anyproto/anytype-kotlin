@@ -184,9 +184,6 @@ open class ObjectSetFragment :
     private val topToolbarThreeDotsIcon: ImageView
         get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
 
-    private val topToolbarStatusText: TextView
-        get() = binding.topToolbar.root.findViewById(R.id.tvStatus)
-
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
 
@@ -1046,7 +1043,6 @@ open class ObjectSetFragment :
             setBackgroundResource(R.drawable.rect_object_menu_button_default)
         }
         if (binding.root.currentState == R.id.start) {
-            topToolbarStatusText.setTextColor(Color.WHITE)
             topToolbarThreeDotsIcon.apply {
                 imageTintList = ColorStateList.valueOf(Color.WHITE)
             }
@@ -1057,7 +1053,6 @@ open class ObjectSetFragment :
         topToolbarThreeDotsButton.background = null
         topToolbarThreeDotsIcon.imageTintList = null
         topToolbarStatusContainer.background = null
-        topToolbarStatusText.setTextColor(requireContext().getColor(R.color.default_status_text_color))
     }
 
     private fun observeCommands(command: ObjectSetCommand) {
@@ -1327,7 +1322,6 @@ open class ObjectSetFragment :
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.pauseTextWatchers { title.enableEditMode() }
-                topToolbarStatusText.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarThreeDotsButton.apply {
                     if (background != null) {
@@ -1340,13 +1334,11 @@ open class ObjectSetFragment :
                 topToolbarStatusContainer.apply {
                     if (background != null) {
                         background?.alpha = DRAWABLE_ALPHA_FULL
-                        topToolbarStatusText.setTextColor(Color.WHITE)
                     }
                 }
             }
             if (id == R.id.end) {
                 title.pauseTextWatchers { title.enableReadMode() }
-                topToolbarStatusText.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
                     imageTintList = null
@@ -1356,9 +1348,6 @@ open class ObjectSetFragment :
                 }
                 topToolbarStatusContainer.apply {
                     background?.alpha = DRAWABLE_ALPHA_ZERO
-                    topToolbarStatusText.setTextColor(
-                        context.getColor(R.color.default_status_text_color)
-                    )
                 }
             }
         }

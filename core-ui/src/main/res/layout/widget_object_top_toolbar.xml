@@ -89,7 +89,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="12dp">
+        android:layout_marginEnd="14dp">
 
         <ImageView
             android:id="@+id/ivThreeDots"

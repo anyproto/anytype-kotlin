@@ -158,10 +158,23 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.LoadEnd -> {
                         if (state.messages.isNotEmpty()) {
-                            val lastShown = state.messages.last().id
-                            val lastTracked = lastMessages.entries.first().value.id
-                            if (lastShown == lastTracked) {
+                            val lastShown = state.messages.last()
+                            val lastTracked = lastMessages.entries.first().value
+                            if (lastShown.id == lastTracked.id) {
                                 // No need to paginate.
+                                if (state.state.hasUnReadMessages) {
+                                    runCatching {
+                                        repo.readChatMessages(
+                                            Command.ChatCommand.ReadMessages(
+                                                chat = chat,
+                                                beforeOrderId = lastTracked.order,
+                                                lastStateId = state.state.lastStateId
+                                            )
+                                        )
+                                    }.onFailure {
+                                        logger.logException(it, "DROID-2966 Error while reading messages")
+                                    }
+                                }
                                 state.copy(
                                     intent = Intent.ScrollToBottom
                                 )

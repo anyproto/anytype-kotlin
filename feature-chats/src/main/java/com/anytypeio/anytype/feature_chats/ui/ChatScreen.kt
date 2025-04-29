@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -496,27 +498,6 @@ fun ChatScreen(
                 }
             }
 
-            if (uiMessageState.counter.count > 0) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(bottom = 12.dp, end = 12.dp)
-                        .background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        ),
-                ) {
-                    Text(
-                        text = uiMessageState.counter.count.toString(),
-                        modifier = Modifier.padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
-                        color = colorResource(R.color.glyph_white)
-                    )
-                }
-            }
-
             GoToBottomButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -526,6 +507,29 @@ fun ChatScreen(
                 },
                 enabled = jumpToBottomButtonEnabled
             )
+
+            if (uiMessageState.counter.count > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                        .padding(bottom = 46.dp, end = 2.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        )
+                ) {
+                    Text(
+                        text = uiMessageState.counter.count.toString(),
+                        modifier = Modifier.align(Alignment.Center).padding(
+                            horizontal = 5.dp,
+                            vertical = 2.dp
+                        ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
+                }
+            }
 
             when(mentionPanelState) {
                 MentionPanelState.Hidden -> {

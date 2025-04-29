@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
+import anytype.Rpc.Chat.ReadMessages.ReadType
 import anytype.model.Block
 import anytype.model.ParticipantPermissionChange
 import anytype.model.Range
@@ -2815,7 +2816,8 @@ class Middleware @Inject constructor(
             chatObjectId = command.chat,
             afterOrderId = command.afterOrderId.orEmpty(),
             beforeOrderId = command.beforeOrderId.orEmpty(),
-            lastStateId = command.lastStateId.orEmpty()
+            lastStateId = command.lastStateId.orEmpty(),
+            type = ReadType.Messages
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatReadMessages(request) }

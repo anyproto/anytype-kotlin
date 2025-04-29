@@ -40,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -89,6 +90,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -245,6 +247,7 @@ fun LazyListState.OnBottomReached(
         snapshotFlow { firstVisibleItemIndex }
             .distinctUntilChanged()
             .collect { index ->
+                Timber.d("DROID-2966 OnBottomReached scroll index: $index")
                 val isDragging = isScrollInProgress
 
                 // Are we scrolling *toward* the bottom edge?
@@ -281,6 +284,50 @@ private fun LazyListState.OnTopReached(
         snapshotFlow { isReached.value }
             .distinctUntilChanged()
             .collect { if (it) onTopReached() }
+    }
+}
+
+@Composable
+private fun LazyListState.OnTopReachedSafely(
+    thresholdItems: Int = 0,
+    onTopReached: () -> Unit
+) {
+    LaunchedEffect(this) {
+        snapshotFlow { layoutInfo }
+            .filter { it.totalItemsCount > 0 && it.visibleItemsInfo.isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { info ->
+                val lastVisibleItem = info.visibleItemsInfo.lastOrNull()
+                if (lastVisibleItem != null) {
+                    val isTop = lastVisibleItem.index >= info.totalItemsCount - 1 - thresholdItems
+                    if (isTop) {
+                        Timber.d("DROID-2966 Safe onTopReached triggered")
+                        onTopReached()
+                    }
+                }
+            }
+    }
+}
+
+@Composable
+private fun LazyListState.OnBottomReachedSafely(
+    thresholdItems: Int = 0,
+    onBottomReached: () -> Unit
+) {
+    LaunchedEffect(this) {
+        snapshotFlow { layoutInfo }
+            .filter { it.totalItemsCount > 0 && it.visibleItemsInfo.isNotEmpty() }
+            .distinctUntilChanged()
+            .collect { info ->
+                val firstVisibleItem = info.visibleItemsInfo.firstOrNull()
+                if (firstVisibleItem != null) {
+                    val isBottom = firstVisibleItem.index <= thresholdItems
+                    if (isBottom) {
+                        Timber.d("DROID-2966 Safe onBottomReached triggered")
+                        onBottomReached()
+                    }
+                }
+            }
     }
 }
 
@@ -384,16 +431,28 @@ fun ChatScreen(
         }
     }
 
-    lazyListState.OnBottomReached(
+    val latestMessages by rememberUpdatedState(uiMessageState.messages)
+
+    lazyListState.OnBottomReachedSafely(
         thresholdItems = 3
     ) {
-        onChatScrolledToBottom()
+        if (latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 onBottomReached for LazyListState")
+            onChatScrolledToBottom()
+        } else {
+            Timber.d("DROID-2966 onBottomReached called from empty messages")
+        }
     }
 
-    lazyListState.OnTopReached(
+    lazyListState.OnTopReachedSafely(
         thresholdItems = 3
     ) {
-        onChatScrolledToTop()
+        if (latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 onTopReached for LazyListState")
+            onChatScrolledToTop()
+        } else {
+            Timber.d("DROID-2966 onTopReached called from empty messages")
+        }
     }
 
     Column(
@@ -720,39 +779,39 @@ fun Messages(
                 )
             }
         }
-        if (messages.isEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                    ) {
-                        AlertIcon(
-                            icon = AlertConfig.Icon(
-                                gradient = GRADIENT_TYPE_BLUE,
-                                icon = R.drawable.ic_alert_message
-                            )
-                        )
-                        Text(
-                            text = stringResource(R.string.chat_empty_state_message),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    top = 12.dp
-                                )
-                        )
-                    }
-                }
-            }
-        }
+//        if (messages.isEmpty()) {
+//            item {
+//                Box(
+//                    modifier = Modifier
+//                        .fillParentMaxSize()
+//                ) {
+//                    Column(
+//                        modifier = Modifier
+//                            .align(Alignment.CenterStart)
+//                    ) {
+//                        AlertIcon(
+//                            icon = AlertConfig.Icon(
+//                                gradient = GRADIENT_TYPE_BLUE,
+//                                icon = R.drawable.ic_alert_message
+//                            )
+//                        )
+//                        Text(
+//                            text = stringResource(R.string.chat_empty_state_message),
+//                            style = Caption1Regular,
+//                            color = colorResource(id = R.color.text_secondary),
+//                            textAlign = TextAlign.Center,
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .padding(
+//                                    start = 20.dp,
+//                                    end = 20.dp,
+//                                    top = 12.dp
+//                                )
+//                        )
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

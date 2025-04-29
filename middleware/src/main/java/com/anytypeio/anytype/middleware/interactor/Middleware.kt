@@ -2810,6 +2810,19 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun chatReadMessages(command: Command.ChatCommand.ReadMessages) {
+        val request = Rpc.Chat.ReadMessages.Request(
+            chatObjectId = command.chat,
+            afterOrderId = command.afterOrderId.orEmpty(),
+            beforeOrderId = command.beforeOrderId.orEmpty(),
+            lastStateId = command.lastStateId.orEmpty()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatReadMessages(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun chatDeleteMessage(command: Command.ChatCommand.DeleteMessage) {
         val request = Rpc.Chat.DeleteMessage.Request(
             chatObjectId = command.chat,

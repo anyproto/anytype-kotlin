@@ -132,13 +132,15 @@ class ChatContainer @Inject constructor(
                     Transformation.Commands.LoadPrevious -> {
                         ChatStreamState(
                             messages = loadThePreviousPage(state.messages, chat),
-                            intent = Intent.None
+                            intent = Intent.None,
+                            state = state.state
                         )
                     }
                     Transformation.Commands.LoadNext -> {
                         ChatStreamState(
                             messages = loadTheNextPage(state.messages, chat),
-                            intent = Intent.None
+                            intent = Intent.None,
+                            state = state.state
                         )
                     }
                     is Transformation.Commands.LoadAround -> {
@@ -150,19 +152,35 @@ class ChatContainer @Inject constructor(
                         }
                         ChatStreamState(
                             messages = messages,
-                            intent = Intent.ScrollToMessage(transform.message)
+                            intent = Intent.ScrollToMessage(transform.message),
+                            state = state.state
                         )
                     }
                     is Transformation.Commands.LoadEnd -> {
                         val messages = try {
                             loadToEnd(chat)
                         } catch (e: Exception) {
-                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
-                            state.messages
+                            state.messages.also {
+                                logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                            }
+                        }
+                        if (messages.isNotEmpty()) {
+                            runCatching {
+                                repo.readChatMessages(
+                                    Command.ChatCommand.ReadMessages(
+                                        chat = chat,
+                                        beforeOrderId = messages.last().order,
+                                        lastStateId = state.state.lastStateId
+                                    )
+                                )
+                            }.onFailure {
+                                logger.logException(it, "DROID-2966 Error while reading messages")
+                            }
                         }
                         ChatStreamState(
                             messages = messages,
-                            intent = Intent.ScrollToBottom
+                            intent = Intent.ScrollToBottom,
+                            state = state.state
                         )
                     }
                     is Transformation.Events.Payload -> {

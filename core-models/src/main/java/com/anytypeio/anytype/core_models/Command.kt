@@ -621,7 +621,9 @@ sealed class Command {
 
         data class ReadMessages(
             val chat: Id,
-            // TODO
+            val afterOrderId: Id? = null,
+            val beforeOrderId: Id? = null,
+            val lastStateId: Id? = null
         )
 
         data class AddMessage(

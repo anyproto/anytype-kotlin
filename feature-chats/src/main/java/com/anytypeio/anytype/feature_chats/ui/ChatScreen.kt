@@ -443,6 +443,27 @@ fun ChatScreen(
                 }
             }
 
+            if (uiMessageState.counter.count > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(bottom = 12.dp, end = 12.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        ),
+                ) {
+                    Text(
+                        text = uiMessageState.counter.count.toString(),
+                        modifier = Modifier.padding(
+                            horizontal = 5.dp,
+                            vertical = 2.dp
+                        ),
+                        color = colorResource(R.color.glyph_white)
+                    )
+                }
+            }
+
             GoToBottomButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

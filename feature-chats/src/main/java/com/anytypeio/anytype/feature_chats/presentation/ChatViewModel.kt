@@ -298,7 +298,10 @@ class ChatViewModel @Inject constructor(
             }.reversed()
             ChatViewState(
                 messages = messageViews,
-                result.intent
+                intent = result.intent,
+                counter = ChatViewState.Counter(
+                    count = result.state.unreadMessages?.counter ?: 0
+                )
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it

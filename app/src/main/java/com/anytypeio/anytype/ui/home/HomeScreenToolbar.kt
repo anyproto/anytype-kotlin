@@ -46,7 +46,7 @@ fun HomeScreenToolbar(
     ) {
 
         Image(
-            painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+            painter = painterResource(R.drawable.ic_default_top_back),
             contentDescription = "Back button",
             modifier = Modifier
                 .padding(start = 16.dp)

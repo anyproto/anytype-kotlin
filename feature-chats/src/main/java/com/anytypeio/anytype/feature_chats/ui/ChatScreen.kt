@@ -435,6 +435,15 @@ fun ChatScreen(
 
     val latestMessages by rememberUpdatedState(uiMessageState.messages)
 
+    // Scrolling to bottom when list size changes and we are at the bottom of the list
+    LaunchedEffect(latestMessages) {
+        if (lazyListState.firstVisibleItemScrollOffset == 0) {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
     lazyListState.OnBottomReachedSafely(
         thresholdItems = 3
     ) {
@@ -875,6 +884,7 @@ suspend fun smoothScrollToBottom2(lazyListState: LazyListState) {
     lazyListState.scrollToItem(0)
 
     // Wait for the layout to settle after scrolling
+    awaitFrame()
     awaitFrame()
 
     while (lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset > 0) {

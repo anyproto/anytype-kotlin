@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -163,6 +164,7 @@ class ChatContainer @Inject constructor(
                             if (lastShown.id == lastTracked.id) {
                                 // No need to paginate.
                                 if (state.state.hasUnReadMessages) {
+                                    // TODO Fix race condition here
                                     runCatching {
                                         repo.readChatMessages(
                                             Command.ChatCommand.ReadMessages(
@@ -188,6 +190,7 @@ class ChatContainer @Inject constructor(
                                 }
                                 if (messages.isNotEmpty() && state.state.hasUnReadMessages) {
                                     runCatching {
+                                        // TODO Fix race condition here
                                         repo.readChatMessages(
                                             Command.ChatCommand.ReadMessages(
                                                 chat = chat,
@@ -476,7 +479,7 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
-        const val DEFAULT_CHAT_PAGING_SIZE = 10
+        const val DEFAULT_CHAT_PAGING_SIZE = 100
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
     }

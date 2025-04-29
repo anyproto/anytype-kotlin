@@ -9,12 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,24 +26,15 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
-import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
-import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopToolbar(
-    modifier: Modifier,
-    uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
-    topBarScrollBehavior: TopAppBarScrollBehavior,
-    uiTitleState: UiTitleState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
-    val isIconMenuExpanded = remember {
-        mutableStateOf(false)
-    }
 
     Box(
         modifier = Modifier
@@ -146,9 +132,6 @@ fun TopToolbar(
 @Composable
 @DefaultPreviews
 fun TopToolbarPreview() {
-    val topAppBarScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(
-        state = rememberTopAppBarState()
-    )
     val spaceSyncUpdate = SpaceSyncUpdate.Update(
         id = "1",
         status = SpaceSyncStatus.SYNCING,
@@ -157,16 +140,12 @@ fun TopToolbarPreview() {
         syncingObjectsCounter = 2
     )
     TopToolbar(
-        modifier = Modifier.fillMaxWidth(),
         uiSyncStatusBadgeState = UiSyncStatusBadgeState.Visible(
             status = SpaceSyncAndP2PStatusState.Success(
                 spaceSyncUpdate = spaceSyncUpdate,
                 p2PStatusUpdate = P2PStatusUpdate.Initial
             )
         ),
-        uiEditButtonState = UiEditButton.Visible,
         onTypeEvent = {},
-        topBarScrollBehavior = topAppBarScrollBehavior,
-        uiTitleState = UiTitleState(title = "Pages", originalName = "Page", isEditable = true)
     )
 }

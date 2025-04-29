@@ -122,7 +122,7 @@ fun HomeScreenToolbar(
             contentDescription = "Settings icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
+                .padding(end = 17.dp)
                 .noRippleClickable {
                     onSettingsClicked()
                 }

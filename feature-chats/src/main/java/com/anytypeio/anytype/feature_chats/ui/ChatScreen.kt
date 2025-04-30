@@ -340,47 +340,25 @@ fun ChatScreen(
                 val index = uiMessageState.messages.indexOfFirst {
                     it is ChatView.Message && it.id == intent.id
                 }
-
                 if (index >= 0) {
                     Timber.d("DROID-2966 Found the scrolling target at index: $index. Waiting for layout to stabilize...")
-
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
-
-                    lazyListState.scrollToItem(index)
-
+                    lazyListState.animateScrollToItem(index)
                     awaitFrame()
-
-                    val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
-                    if (itemInfo != null) {
-                        val viewportHeight = lazyListState.layoutInfo.viewportSize.height
-
-                        // Centering calculation:
-                        // itemCenter relative to viewport top
-                        val itemCenterFromTop = itemInfo.offset + (itemInfo.size / 2)
-                        val viewportCenter = viewportHeight / 2
-
-                        val delta = itemCenterFromTop - viewportCenter
-
-                        Timber.d("DROID-2966 Found scroll-target item info and Calculated delta for centering (reverseLayout-aware): $delta")
-
-                        // move negatively because reverseLayout flips
-//                        lazyListState.animateScrollBy(delta.toFloat())
-
-                        Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
-
-                    } else {
-                        Timber.w("DROID-2966 Target item not found after scroll!")
-                    }
+                    Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
                 } else {
                     Timber.d("DROID-2966 Could not found the scrolling target for the intent")
                 }
-//                onClearIntent()
+                onClearIntent()
                 isPerformingScrollIntent.value = false
             }
             is ChatContainer.Intent.ScrollToBottom -> {
                 Timber.d("DROID-2966 COMPOSE scroll to bottom")
+                isPerformingScrollIntent.value = true
                 smoothScrollToBottom2(lazyListState)
+                awaitFrame()
+                isPerformingScrollIntent.value = false
                 onClearIntent()
             }
             is ChatContainer.Intent.Highlight -> {
@@ -391,35 +369,35 @@ fun ChatScreen(
     }
 
     // Scrolling to bottom when list size changes and we are at the bottom of the list
-//    LaunchedEffect(latestMessages) {
-//        if (lazyListState.firstVisibleItemScrollOffset == 0) {
-//            scope.launch {
-//                lazyListState.animateScrollToItem(0)
-//            }
-//        }
-//    }
+    LaunchedEffect(latestMessages) {
+        if (lazyListState.firstVisibleItemScrollOffset == 0 && !isPerformingScrollIntent.value) {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
 
-//    lazyListState.OnBottomReachedSafely(
-//        thresholdItems = 3
-//    ) {
-//        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
-//            Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
-//            onChatScrolledToBottom()
-//        } else {
+    lazyListState.OnBottomReachedSafely(
+        thresholdItems = 3
+    ) {
+        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
+            onChatScrolledToBottom()
+        } else {
 //            Timber.d("DROID-2966 Safe onBottomReached skipped")
-//        }
-//    }
-//
-//    lazyListState.OnTopReachedSafely(
-//        thresholdItems = 3
-//    ) {
-//        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
-//            Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
-//            onChatScrolledToTop()
-//        } else {
+        }
+    }
+
+    lazyListState.OnTopReachedSafely(
+        thresholdItems = 3
+    ) {
+        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
+            onChatScrolledToTop()
+        } else {
 //            Timber.d("DROID-2966 Safe onTopReached skipped")
-//        }
-//    }
+        }
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()

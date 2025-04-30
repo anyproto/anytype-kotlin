@@ -1631,7 +1631,7 @@ En concreto,
     <string name="object_properties_local_info_description">Estas propiedades solo existen en este objeto y no forman parte de su tipo. Añádelas al tipo para usarlas en todos los objetos de ese tipo o elimínalas.</string>
     <string name="object_properties_empty_state">Aún no hay propiedades. Añade algunas a este tipo.</string>
     <string name="object_type_open_type_error">Error al abrir el tipo de objeto</string>
-    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
+    <string name="object_type_edit_type_details_error">No se permite editar este tipo.</string>
     <string name="day_of_week_monday">Lunes</string>
     <string name="day_of_week_tuesday">Martes</string>
     <string name="day_of_week_wednesday">Miércoles</string>
@@ -1757,4 +1757,5 @@ En concreto,
     <string name="space_properties_screen_section_my_types">Mis propiedades</string>
     <string name="space_properties_screen_section_system_types">Propiedades del sistema</string>
     <string name="space_properties_screen_menu_move_to_bin">Mover a la papelera</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Error al crear la cuenta: falta el espacio</string>
 </resources>

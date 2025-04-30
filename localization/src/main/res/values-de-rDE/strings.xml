@@ -1757,4 +1757,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_properties_screen_section_my_types">Meine Eigenschaften</string>
     <string name="space_properties_screen_section_system_types">Systemeigenschaften</string>
     <string name="space_properties_screen_menu_move_to_bin">In den Papierkorb verschieben</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
 </resources>

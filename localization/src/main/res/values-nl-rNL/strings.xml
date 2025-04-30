@@ -1757,4 +1757,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_properties_screen_section_my_types">Mijn eigenschappen</string>
     <string name="space_properties_screen_section_system_types">Systeemeigenschappen</string>
     <string name="space_properties_screen_menu_move_to_bin">Verplaats naar prullenbak</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
 </resources>

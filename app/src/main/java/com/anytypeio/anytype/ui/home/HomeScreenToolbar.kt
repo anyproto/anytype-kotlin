@@ -46,7 +46,7 @@ fun HomeScreenToolbar(
     ) {
 
         Image(
-            painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+            painter = painterResource(R.drawable.ic_default_top_back),
             contentDescription = "Back button",
             modifier = Modifier
                 .padding(start = 16.dp)
@@ -122,7 +122,7 @@ fun HomeScreenToolbar(
             contentDescription = "Settings icon",
             modifier = Modifier
                 .align(Alignment.CenterEnd)
-                .padding(end = 16.dp)
+                .padding(end = 17.dp)
                 .noRippleClickable {
                     onSettingsClicked()
                 }

@@ -274,11 +274,10 @@ private fun Topbar(
                 .noRippleThrottledClickable {
                     onBackPressed()
                 },
-            contentAlignment = Alignment.CenterStart
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 modifier = Modifier
-                    .padding(start = 12.dp)
                     .wrapContentSize(),
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
@@ -293,8 +292,9 @@ private fun Topbar(
         )
         Box(
             modifier = Modifier
-                .width(56.dp)
+                .wrapContentSize()
                 .height(48.dp)
+                .padding(end = 12.dp)
                 .align(Alignment.CenterEnd)
                 .noRippleThrottledClickable {
                     onAddIconClicked()
@@ -303,10 +303,10 @@ private fun Topbar(
         ) {
             Image(
                 modifier = Modifier
-                    .padding(start = 12.dp)
-                    .wrapContentSize(),
+                    .size(32.dp),
                 painter = painterResource(R.drawable.ic_default_plus),
-                contentDescription = "Add new type"
+                contentDescription = "Add new property",
+                contentScale = ContentScale.Inside
             )
         }
     }

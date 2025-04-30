@@ -49,15 +49,6 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
             }
             return@forEach
         }
-        if (obj.recommendedLayout == ObjectType.Layout.SET
-            || obj.recommendedLayout == ObjectType.Layout.COLLECTION
-        ) {
-            if (isWithCollection) {
-                val objTypeView = obj.toObjectTypeView(selectedTypes)
-                result.add(objTypeView)
-            }
-            return@forEach
-        }
         if (obj.uniqueKey == BOOKMARK) {
             if (isWithBookmark) {
                 val objTypeView = obj.toObjectTypeView(selectedTypes)

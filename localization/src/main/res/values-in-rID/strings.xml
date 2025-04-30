@@ -1472,7 +1472,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     </plurals>
     <string name="membership_error_button_text_action">Hubungi kami</string>
     <string name="membership_error_button_text_dismiss">Oke</string>
-    <string name="error_login_network_id_mismatch">Network ID mismatch detected. Please verify your network configuration.</string>
+    <string name="error_login_network_id_mismatch">Ketidakcocokan ID jaringan terdeteksi. Harap verifikasi konfigurasi jaringan Anda.</string>
     <string name="error_login_select_vault_error">Memilih akun salah.</string>
     <string name="error_login_account_deleted_error">Akun ini sudah dihapus. Coba gunakan akun lain atau buat yang baru.</string>
     <string name="error_login_account_need_update_error">Tidak dapat mengambil data akun. Silakan perbarui Anytype ke versi terbaru.</string>
@@ -1488,19 +1488,19 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="sync_status_self_host">Swaladen</string>
     <string name="sync_status_self_host_synced">Tersinkron</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="other">%1$d menyinkronkan item</item>
     </plurals>
     <string name="sync_status_p2p">Koneksi P2P</string>
     <plurals name="sync_status_p2p_devices">
         <item quantity="other">%1$d perangkat terhubung</item>
     </plurals>
     <string name="sync_status_p2p_disabled">Koneksi tidak memungkinkan</string>
-    <string name="sync_status_p2p_restricted">Restricted. Check device settings.</string>
+    <string name="sync_status_p2p_restricted">Dibatasi. Periksa pengaturan perangkat.</string>
     <string name="sync_status_p2p_not_connected">Tidak terhubung</string>
     <string name="sync_status_anytype_network">Jaringan Anytype</string>
     <string name="sync_status_anytype_end_to_end">Terenkripsi end-to-end</string>
     <plurals name="sync_status_network_items">
-        <item quantity="other">%1$d items syncing...</item>
+        <item quantity="other">%1$d menyinkronkan item</item>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Menghubungkan ke Jaringan ...</string>
     <string name="sync_status_anytype_network_no_connecting">Tak ada koneksi</string>
@@ -1516,8 +1516,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">Ruangku</string>
     <string name="all_content_title_all_content">Semua Objek</string>
-    <string name="all_content_title_only_unlinked">Only unlinked</string>
-    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
+    <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
     <string name="all_content_view_bin">Lihat Bak Sampah</string>
     <string name="all_content_title_tab_pages">Halaman</string>
     <string name="all_content_title_tab_lists">Grup</string>
@@ -1541,13 +1541,13 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="allContent_group_prev_7">7 hari terakhir</string>
     <string name="allContent_group_prev_14">14 hari terakhir</string>
     <string name="introduce_vault_text_1">Brankas adalah rumah baru semua Ruangmu.\nMembuat, bergabung, atau berbagi Ruang—semuanya disimpan dengan aman di sini.</string>
-    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
+    <string name="introduce_vault_text_2">Sekarang Anda dapat dengan mudah menyusun ulang Ruang dengan menyeret dan melepaskan serta menavigasinya dengan lebih mudah.</string>
+    <string name="introduce_vault_text_3">Secara standar, kami memburamkan ikon ruang Anda sebagai latar belakang. Jika perlu, Anda dapat mengubahnya di pengaturan ruang.</string>
     <string name="introduce_vault_welcome_to_the_vault">Selamat datang di Brankas</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Sederhana dan Fleksibel]]></string>
     <string name="allContent_empty_state_title">Di sini kosong.</string>
     <string name="allContent_empty_state_description">Buat objek pertamamu untuk memulai.</string>
-    <string name="all_content_no_results_title">No results found.</string>
+    <string name="all_content_no_results_title">Tidak ada hasil yang ditemukan.</string>
     <string name="all_content_no_results_description">Coba cari dengan kata kunci yang lain.</string>
     <string name="all_content_error_title">Ada yang salah.</string>
     <string name="onboarding_my_first_space">Ruang Pertamaku</string>
@@ -1559,7 +1559,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="all_content_toast_archived">Objek diarsipkan</string>
     <string name="all_content_new_relation">Properti baru</string>
     <string name="all_content_new_type">New type</string>
-    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
     <string name="all_content_snackbar_title">dipindahkan ke bak sampah</string>
     <string name="main_navigation_content_desc_back_button">Tombol kembali</string>
     <string name="main_navigation_content_desc_members_button">Tombol bagikan dan anggota</string>
@@ -1744,5 +1744,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_properties_screen_section_my_types">Propertiku</string>
     <string name="space_properties_screen_section_system_types">Properti Sistem</string>
     <string name="space_properties_screen_menu_move_to_bin">Pindah ke bak sampah</string>
-    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Terjadi kesalahan saat membuat akun: tidak ada ruang</string>
 </resources>

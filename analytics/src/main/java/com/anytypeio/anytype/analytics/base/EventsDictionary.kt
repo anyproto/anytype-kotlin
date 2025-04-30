@@ -166,6 +166,7 @@ object EventsDictionary {
     const val editTemplate = "EditTemplate"
     const val duplicateTemplate = "DuplicateTemplate"
     const val createTemplate = "CreateTemplate"
+    const val logScreenTemplateSelector = "ScreenTemplateSelector"
 
     // Onboarding events
     const val screenOnboarding = "ScreenOnboarding"
@@ -178,6 +179,7 @@ object EventsDictionary {
     const val logClickConflictFieldHelp = "ClickConflictFieldHelp"
     const val logAddConflictRelation = "AddConflictRelation"
     const val logResetToTypeDefault = "ResetToTypeDefault"
+    const val logScreenTypeTemplateSelector = "ScreenTypeTemplateSelector"
 
     // Vault events
 

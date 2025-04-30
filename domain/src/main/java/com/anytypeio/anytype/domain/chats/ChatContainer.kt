@@ -120,8 +120,8 @@ class ChatContainer @Inject constructor(
         var intent: Intent = Intent.None
 
         val initial = buildList<Chat.Message> {
-            if (false) {
-                val aroundUnread = loadToMessageOrder(
+            if (state.hasUnReadMessages && !state.olderMessageOrderId.isNullOrEmpty()) {
+                val aroundUnread = loadAroundMessageOrder(
                     chat = chat,
                     order = state.olderMessageOrderId.orEmpty()
                 ).also {
@@ -167,7 +167,7 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.LoadAround -> {
                         val messages = try {
-                            loadToMessage(chat, transform.message)
+                            loadAroundMessage(chat, transform.message)
                         } catch (e: Exception) {
                             logger.logException(e, "DROID-2966 Error while loading reply context")
                             state.messages
@@ -248,7 +248,7 @@ class ChatContainer @Inject constructor(
     }
 
     @Throws
-    private suspend fun loadToMessage(
+    private suspend fun loadAroundMessage(
         chat: Id,
         msg: Id
     ): List<Chat.Message> {
@@ -288,7 +288,7 @@ class ChatContainer @Inject constructor(
     }
 
     @Throws
-    private suspend fun loadToMessageOrder(
+    private suspend fun loadAroundMessageOrder(
         chat: Id,
         order: Id
     ): List<Chat.Message> {
@@ -304,7 +304,8 @@ class ChatContainer @Inject constructor(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 afterOrderId = order,
-                limit = DEFAULT_CHAT_PAGING_SIZE
+                limit = DEFAULT_CHAT_PAGING_SIZE,
+                includeBoundary = true
             )
         ).messages
 

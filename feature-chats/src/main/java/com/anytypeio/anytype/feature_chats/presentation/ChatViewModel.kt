@@ -137,8 +137,9 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Chat counter state: ${result.state}")
-            Timber.d("DROID-2966 Got chat results: ${result.messages.size}")
+            Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
+            Timber.d("DROID-2966 Intent from container: ${result.intent}")
+            Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList<ChatView> {
                 result.messages.forEach { msg ->

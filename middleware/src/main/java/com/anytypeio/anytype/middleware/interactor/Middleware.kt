@@ -2787,7 +2787,8 @@ class Middleware @Inject constructor(
             chatObjectId = command.chat,
             beforeOrderId = command.beforeOrderId.orEmpty(),
             afterOrderId = command.afterOrderId.orEmpty(),
-            limit = command.limit
+            limit = command.limit,
+            includeBoundary = command.includeBoundary
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatGetMessages(request) }

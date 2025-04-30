@@ -240,56 +240,6 @@ fun ChatScreenWrapper(
 }
 
 @Composable
-fun LazyListState.OnBottomReached(
-    thresholdItems: Int = 0,
-    onBottomReached: () -> Unit
-) {
-    LaunchedEffect(this) {
-        var prevIndex = firstVisibleItemIndex
-        snapshotFlow { firstVisibleItemIndex }
-            .distinctUntilChanged()
-            .collect { index ->
-                Timber.d("DROID-2966 OnBottomReached scroll index: $index")
-                val isDragging = isScrollInProgress
-
-                // Are we scrolling *toward* the bottom edge?
-                val scrollingDown = isDragging && prevIndex > index
-
-                // Have we crossed into the threshold zone?
-                val atBottom = index <= thresholdItems
-
-                if (scrollingDown && atBottom) {
-                    onBottomReached()
-                }
-                prevIndex = index
-            }
-    }
-}
-
-@Composable
-private fun LazyListState.OnTopReached(
-    thresholdItems: Int = 0,
-    onTopReached: () -> Unit
-) {
-    val isReached = remember {
-        derivedStateOf {
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-            if (lastVisibleItem != null) {
-                lastVisibleItem.index >= layoutInfo.totalItemsCount - 1 - thresholdItems
-            } else {
-                false
-            }
-        }
-    }
-
-    LaunchedEffect(isReached) {
-        snapshotFlow { isReached.value }
-            .distinctUntilChanged()
-            .collect { if (it) onTopReached() }
-    }
-}
-
-@Composable
 private fun LazyListState.OnTopReachedSafely(
     thresholdItems: Int = 0,
     onTopReached: () -> Unit
@@ -303,7 +253,6 @@ private fun LazyListState.OnTopReachedSafely(
                 if (lastVisibleItem != null) {
                     val isTop = lastVisibleItem.index >= info.totalItemsCount - 1 - thresholdItems
                     if (isTop) {
-                        Timber.d("DROID-2966 Safe onTopReached triggered")
                         onTopReached()
                     }
                 }
@@ -325,7 +274,6 @@ private fun LazyListState.OnBottomReachedSafely(
                 if (firstVisibleItem != null) {
                     val isBottom = firstVisibleItem.index <= thresholdItems
                     if (isBottom) {
-                        Timber.d("DROID-2966 Safe onBottomReached triggered")
                         onBottomReached()
                     }
                 }
@@ -369,7 +317,7 @@ fun ChatScreen(
     onScrollToBottomClicked: () -> Unit
 ) {
 
-    Timber.d("DROID-2966 Render called with state")
+    Timber.d("DROID-2966 Render called with state, number of messages: ${uiMessageState.messages.size}")
 
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -381,15 +329,20 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
+    val latestMessages by rememberUpdatedState(uiMessageState.messages)
+
+    val isPerformingScrollIntent = remember { mutableStateOf(false) }
+
     LaunchedEffect(uiMessageState.intent) {
         when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
+                isPerformingScrollIntent.value = true
                 val index = uiMessageState.messages.indexOfFirst {
                     it is ChatView.Message && it.id == intent.id
                 }
 
                 if (index >= 0) {
-                    Timber.d("DROID-2966 Waiting for layout to stabilize...")
+                    Timber.d("DROID-2966 Found the scrolling target at index: $index. Waiting for layout to stabilize...")
 
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
@@ -409,20 +362,24 @@ fun ChatScreen(
 
                         val delta = itemCenterFromTop - viewportCenter
 
-                        Timber.d("DROID-2966 Calculated delta for centering (reverseLayout-aware): $delta")
+                        Timber.d("DROID-2966 Found scroll-target item info and Calculated delta for centering (reverseLayout-aware): $delta")
 
                         // move negatively because reverseLayout flips
-                        lazyListState.animateScrollBy(delta.toFloat())
+//                        lazyListState.animateScrollBy(delta.toFloat())
 
                         Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
 
-                        onClearIntent()
                     } else {
                         Timber.w("DROID-2966 Target item not found after scroll!")
                     }
+                } else {
+                    Timber.d("DROID-2966 Could not found the scrolling target for the intent")
                 }
+//                onClearIntent()
+                isPerformingScrollIntent.value = false
             }
             is ChatContainer.Intent.ScrollToBottom -> {
+                Timber.d("DROID-2966 COMPOSE scroll to bottom")
                 smoothScrollToBottom2(lazyListState)
                 onClearIntent()
             }
@@ -433,32 +390,36 @@ fun ChatScreen(
         }
     }
 
-    val latestMessages by rememberUpdatedState(uiMessageState.messages)
-
     // Scrolling to bottom when list size changes and we are at the bottom of the list
-    LaunchedEffect(latestMessages) {
-        if (lazyListState.firstVisibleItemScrollOffset == 0) {
-            scope.launch {
-                lazyListState.animateScrollToItem(0)
-            }
-        }
-    }
+//    LaunchedEffect(latestMessages) {
+//        if (lazyListState.firstVisibleItemScrollOffset == 0) {
+//            scope.launch {
+//                lazyListState.animateScrollToItem(0)
+//            }
+//        }
+//    }
 
-    lazyListState.OnBottomReachedSafely(
-        thresholdItems = 3
-    ) {
-        if (latestMessages.isNotEmpty()) {
-            onChatScrolledToBottom()
-        }
-    }
-
-    lazyListState.OnTopReachedSafely(
-        thresholdItems = 3
-    ) {
-        if (latestMessages.isNotEmpty()) {
-            onChatScrolledToTop()
-        }
-    }
+//    lazyListState.OnBottomReachedSafely(
+//        thresholdItems = 3
+//    ) {
+//        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+//            Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
+//            onChatScrolledToBottom()
+//        } else {
+//            Timber.d("DROID-2966 Safe onBottomReached skipped")
+//        }
+//    }
+//
+//    lazyListState.OnTopReachedSafely(
+//        thresholdItems = 3
+//    ) {
+//        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+//            Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
+//            onChatScrolledToTop()
+//        } else {
+//            Timber.d("DROID-2966 Safe onTopReached skipped")
+//        }
+//    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -684,7 +645,7 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
 ) {
-    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
+//    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,

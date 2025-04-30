@@ -650,7 +650,7 @@ sealed class Command {
             val beforeOrderId: Id? = null,
             val afterOrderId: Id? = null,
             val limit: Int,
-            val includeBoundary: Boolean
+            val includeBoundary: Boolean = false
         ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,

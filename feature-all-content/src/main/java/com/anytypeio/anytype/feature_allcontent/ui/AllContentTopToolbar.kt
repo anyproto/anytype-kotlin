@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,11 +16,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -59,54 +57,42 @@ fun AllContentTopBarContainer(
     onBinClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    var isMenuExpanded by remember { mutableStateOf(false) }
-
-    CenterAlignedTopAppBar(
-        modifier = Modifier.fillMaxWidth(),
-        expandedHeight = 48.dp,
-        title = { AllContentTitle(state = titleState) },
-        navigationIcon = {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .width(56.dp)
+                .fillMaxHeight()
+                .noRippleThrottledClickable {
+                    onBackClick()
+                },
+            contentAlignment = Alignment.Center
+        ) {
             Image(
-                modifier = Modifier
-                    .padding(start = 16.dp)
-                    .noRippleClickable {
-                        onBackClick()
-                    }
-                ,
+                modifier = Modifier.wrapContentSize(),
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
             )
-        },
-        actions = {
-            AllContentMenuButton(
-                onClick = { isMenuExpanded = true }
-            )
-            if (uiMenuState is UiMenuState.Visible) {
-                DropdownMenu(
-                    modifier = Modifier.width(252.dp),
-                    expanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false },
-                    shape = RoundedCornerShape(size = 16.dp),
-                    containerColor = colorResource(id = R.color.background_primary),
-                    shadowElevation = 5.dp,
-                    border = BorderStroke(
-                        width = 0.5.dp,
-                        color = colorResource(id = R.color.background_secondary)
-                    )
-                ) {
-                    AllContentMenu(
-                        uiMenuState = uiMenuState,
-                        onModeClick = onModeClick,
-                        onSortClick = onSortClick,
-                        onBinClick = onBinClick
-                    )
-                }
-            }
-        },
-        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = colorResource(id = R.color.background_primary)
-        ),
-    )
+        }
+
+        AllContentTitle(
+            modifier = Modifier
+                .wrapContentSize()
+                .align(Alignment.Center),
+            state = titleState
+        )
+
+        AllContentMenuButton(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            onModeClick = onModeClick,
+            onSortClick = onSortClick,
+            onBinClick = onBinClick,
+            uiMenuState = uiMenuState,
+        )
+    }
 }
 
 @DefaultPreviews
@@ -150,11 +136,11 @@ private fun AllContentTopBarContainerPreview() {
 
 //region AllContentTitle
 @Composable
-fun AllContentTitle(state: UiTitleState) {
+fun AllContentTitle(modifier: Modifier, state: UiTitleState) {
     when (state) {
         UiTitleState.AllContent -> {
             Text(
-                modifier = Modifier
+                modifier = modifier
                     .wrapContentSize(),
                 text = stringResource(id = R.string.all_content_title_all_content),
                 style = Title1,
@@ -164,7 +150,7 @@ fun AllContentTitle(state: UiTitleState) {
 
         UiTitleState.OnlyUnlinked -> {
             Text(
-                modifier = Modifier
+                modifier = modifier
                     .wrapContentSize(),
                 text = stringResource(id = R.string.all_content_title_only_unlinked),
                 style = Title1,
@@ -177,16 +163,46 @@ fun AllContentTitle(state: UiTitleState) {
 
 //region AllContentMenuButton
 @Composable
-fun AllContentMenuButton(onClick: () -> Unit) {
+fun AllContentMenuButton(
+    modifier: Modifier,
+    uiMenuState: UiMenuState,
+    onModeClick: (AllContentMenuMode) -> Unit,
+    onSortClick: (ObjectsListSort) -> Unit,
+    onBinClick: () -> Unit,
+) {
+
+    var isMenuExpanded by remember { mutableStateOf(false) }
+
     Image(
-        modifier = Modifier
+        modifier = modifier
             .padding(end = 12.dp)
             .size(32.dp)
-            .bouncingClickable { onClick() },
+            .bouncingClickable { isMenuExpanded = true },
         painter = painterResource(id = R.drawable.ic_space_list_dots),
         contentDescription = "Menu icon",
         contentScale = ContentScale.Inside
     )
+    if (uiMenuState is UiMenuState.Visible) {
+        DropdownMenu(
+            modifier = Modifier.width(252.dp),
+            expanded = isMenuExpanded,
+            onDismissRequest = { isMenuExpanded = false },
+            shape = RoundedCornerShape(size = 16.dp),
+            containerColor = colorResource(id = R.color.background_primary),
+            shadowElevation = 5.dp,
+            border = BorderStroke(
+                width = 0.5.dp,
+                color = colorResource(id = R.color.background_secondary)
+            )
+        ) {
+            AllContentMenu(
+                uiMenuState = uiMenuState,
+                onModeClick = onModeClick,
+                onSortClick = onSortClick,
+                onBinClick = onBinClick
+            )
+        }
+    }
 }
 //endregion
 

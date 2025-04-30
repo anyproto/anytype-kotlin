@@ -132,7 +132,6 @@ class ObjectTypeFragment : BaseComposeFragment() {
             composable(route = OBJ_TYPE_MAIN) {
                 val showPropertiesScreen = vm.showPropertiesScreen.collectAsStateWithLifecycle().value
                 WithSetScreen(
-                    uiEditButtonState = vm.uiEditButtonState.collectAsStateWithLifecycle().value,
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,

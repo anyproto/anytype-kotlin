@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -37,6 +38,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -85,6 +87,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -172,19 +175,27 @@ fun TopBar(
 ) {
     Box(
         modifier = Modifier
-            .padding(16.dp, 0.dp)
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_default_top_back),
-            contentDescription = stringResource(R.string.content_desc_back_button),
+        Box(
             modifier = Modifier
-                .align(Alignment.CenterStart)
-                .noRippleClickable { vm.onPrevClicked() }
-        )
+                .width(56.dp)
+                .fillMaxHeight()
+                .noRippleThrottledClickable {
+                    vm.onPrevClicked()
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier.wrapContentSize(),
+                painter = painterResource(R.drawable.ic_default_top_back),
+                contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+        }
         Text(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center),
             text = uiState.collectionName,
             style = Title1,
             color = colorResource(id = R.color.text_primary)
@@ -194,7 +205,7 @@ fun TopBar(
                 modifier = Modifier
                     .align(CenterEnd)
                     .noRippleClickable { vm.onActionClicked() }
-                    .padding(start = 16.dp, top = 12.dp, bottom = 12.dp),
+                    .padding(start = 16.dp, top = 12.dp, bottom = 12.dp, end = 16.dp),
                 text = uiState.actionName,
                 style = UXBody,
                 color = colorResource(id = R.color.glyph_active)
@@ -396,7 +407,7 @@ fun SearchBar(
 
     AndroidView(
         modifier = Modifier
-            .padding(16.dp, 6.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
             .fillMaxWidth(),
         factory = { context ->
             val view = LayoutInflater.from(context)

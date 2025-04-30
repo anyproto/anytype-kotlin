@@ -28,6 +28,8 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
+    imageMultiplier: Float = 0.625f,
+    iconWithoutBackgroundMaxSize: Dp = 20.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
     backgroundColor: Int = R.color.shape_tertiary
 ) {
@@ -45,7 +47,9 @@ fun ListWidgetObjectIcon(
                 icon = icon,
                 backgroundSize = iconSize,
                 modifier = modifier,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
 
@@ -54,6 +58,8 @@ fun ListWidgetObjectIcon(
                 icon = icon,
                 backgroundSize = iconSize,
                 modifier = modifier,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
 
@@ -61,7 +67,9 @@ fun ListWidgetObjectIcon(
             BookmarkIconView(
                 modifier = modifier,
                 icon = icon,
-                backgroundSize = iconSize
+                backgroundSize = iconSize,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
 
@@ -95,7 +103,9 @@ fun ListWidgetObjectIcon(
                 icon = icon,
                 backgroundSize = iconSize,
                 modifier = modifier,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColor,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
 
         is ObjectIcon.Checkbox -> {

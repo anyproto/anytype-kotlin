@@ -21,6 +21,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 fun ImageIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.Basic.Image,
+    imageMultiplier: Float,
+    iconWithoutBackgroundMaxSize: Dp,
     backgroundSize: Dp
 ) {
 
@@ -40,7 +42,9 @@ fun ImageIconView(
             TypeIconView(
                 modifier = modifier,
                 icon = icon.fallback,
-                backgroundSize = backgroundSize
+                backgroundSize = backgroundSize,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
 

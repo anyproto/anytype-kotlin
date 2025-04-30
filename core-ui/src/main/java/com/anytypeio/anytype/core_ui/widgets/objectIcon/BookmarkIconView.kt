@@ -19,7 +19,9 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 fun BookmarkIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.Bookmark,
+    imageMultiplier: Float,
     backgroundSize: Dp,
+    iconWithoutBackgroundMaxSize: Dp
 ) {
 
     val painter = rememberAsyncImagePainter(model = icon.image)
@@ -37,7 +39,9 @@ fun BookmarkIconView(
             TypeIconView(
                 modifier = modifier,
                 icon = icon.fallback,
-                backgroundSize = backgroundSize
+                backgroundSize = backgroundSize,
+                imageMultiplier = imageMultiplier,
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
         is AsyncImagePainter.State.Success -> {

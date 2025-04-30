@@ -29,7 +29,8 @@ fun TypeIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.TypeIcon,
     backgroundSize: Dp,
-    iconWithoutBackgroundMaxSize: Dp = 20.dp,
+    iconWithoutBackgroundMaxSize: Dp,
+    imageMultiplier: Float,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
     when (icon) {
@@ -67,8 +68,11 @@ fun TypeIconView(
             val emoji = Emojifier.safeUri(icon.unicode)
             if (emoji != Emojifier.Config.EMPTY_URI) {
                 EmojiIconView(
+                    modifier = modifier,
                     icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode),
-                    backgroundSize = backgroundSize
+                    backgroundSize = backgroundSize,
+                    iconWithoutBackgroundMaxSize = 120.dp,
+                    imageMultiplier = imageMultiplier
                 )
             } else {
                 val (imageVector, tint) = getDefaultIconAndTint(icon)

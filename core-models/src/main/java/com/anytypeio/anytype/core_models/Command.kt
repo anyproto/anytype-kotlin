@@ -641,11 +641,16 @@ sealed class Command {
             val message: Chat.Message
         ) : ChatCommand()
 
+        /**
+         * @property [includeBoundary] defines whether the message corresponding to the order ID
+         * in [afterOrderId] or [beforeOrderId] should be included in results.
+         */
         data class GetMessages(
             val chat: Id,
             val beforeOrderId: Id? = null,
             val afterOrderId: Id? = null,
-            val limit: Int
+            val limit: Int,
+            val includeBoundary: Boolean
         ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,

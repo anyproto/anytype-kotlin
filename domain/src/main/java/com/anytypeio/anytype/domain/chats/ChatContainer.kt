@@ -117,12 +117,19 @@ class ChatContainer @Inject constructor(
 
         val state = response.chatState ?: Chat.State()
 
+        var intent: Intent = Intent.None
+
         val initial = buildList<Chat.Message> {
-            if (state.hasUnReadMessages && !state.olderMessageOrderId.isNullOrEmpty()) {
-                val aroundUnread = loadToMessage(
+            if (false) {
+                val aroundUnread = loadToMessageOrder(
                     chat = chat,
-                    msg = state.olderMessageOrderId.orEmpty()
-                )
+                    order = state.olderMessageOrderId.orEmpty()
+                ).also {
+                    val target = it.find { it.order == state.olderMessageOrderId }
+                    if (target != null) {
+                        intent = Intent.ScrollToMessage(target.id)
+                    }
+                }
                 addAll(aroundUnread)
             } else {
                 addAll(response.messages)
@@ -139,7 +146,8 @@ class ChatContainer @Inject constructor(
             inputs.scan(
                 initial = ChatStreamState(
                     messages = initial,
-                    state = state
+                    state = state,
+                    intent = intent
                 )
             ) { state, transform ->
                 when (transform) {
@@ -276,6 +284,33 @@ class ChatContainer @Inject constructor(
             }
         } else {
             throw IllegalStateException("DROID-2966 Could not fetch replyMessage")
+        }
+    }
+
+    @Throws
+    private suspend fun loadToMessageOrder(
+        chat: Id,
+        order: Id
+    ): List<Chat.Message> {
+        val loadedMessagesBefore = repo.getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = chat,
+                beforeOrderId = order,
+                limit = DEFAULT_CHAT_PAGING_SIZE
+            )
+        ).messages
+
+        val loadedMessagesAfter = repo.getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = chat,
+                afterOrderId = order,
+                limit = DEFAULT_CHAT_PAGING_SIZE
+            )
+        ).messages
+
+        return buildList {
+            addAll(loadedMessagesBefore)
+            addAll(loadedMessagesAfter)
         }
     }
 

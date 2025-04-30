@@ -6564,9 +6564,10 @@ class EditorViewModel(
                     objectTypeKey = objType.uniqueKey
                 )
             ).fold(
-                onFailure = {
+                onFailure = { error ->
+                    sendToast("Error while updating object type: ${error.message}")
                     Timber.e(
-                        it,
+                        error,
                         "Error while updating object type: [${objType.uniqueKey}]"
                     )
                 },

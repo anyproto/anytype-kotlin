@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -107,13 +106,27 @@ class ChatContainer @Inject constructor(
     }
 
     fun watch(chat: Id): Flow<ChatStreamState> = flow {
-        val initial = repo.subscribeLastChatMessages(
+        val response = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
                 chat = chat,
                 limit = DEFAULT_CHAT_PAGING_SIZE
             )
         ).also { result ->
             cacheLastMessages(result.messages)
+        }
+
+        val state = response.chatState ?: Chat.State()
+
+        val initial = buildList<Chat.Message> {
+            if (state.hasUnReadMessages && !state.olderMessageOrderId.isNullOrEmpty()) {
+                val aroundUnread = loadToMessage(
+                    chat = chat,
+                    msg = state.olderMessageOrderId.orEmpty()
+                )
+                addAll(aroundUnread)
+            } else {
+                addAll(response.messages)
+            }
         }
 
         val inputs: Flow<Transformation> = merge(
@@ -125,8 +138,8 @@ class ChatContainer @Inject constructor(
         emitAll(
             inputs.scan(
                 initial = ChatStreamState(
-                    messages = initial.messages,
-                    state = initial.chatState ?: Chat.State()
+                    messages = initial,
+                    state = state
                 )
             ) { state, transform ->
                 when (transform) {
@@ -146,7 +159,7 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.LoadAround -> {
                         val messages = try {
-                            loadToMessage(chat, transform)
+                            loadToMessage(chat, transform.message)
                         } catch (e: Exception) {
                             logger.logException(e, "DROID-2966 Error while loading reply context")
                             state.messages
@@ -229,13 +242,13 @@ class ChatContainer @Inject constructor(
     @Throws
     private suspend fun loadToMessage(
         chat: Id,
-        transform: Transformation.Commands.LoadAround
+        msg: Id
     ): List<Chat.Message> {
 
         val replyMessage = repo.getChatMessagesByIds(
             Command.ChatCommand.GetMessagesByIds(
                 chat = chat,
-                messages = listOf(transform.message)
+                messages = listOf(msg)
             )
         ).firstOrNull()
 

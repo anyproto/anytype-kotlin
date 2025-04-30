@@ -170,7 +170,8 @@ private fun TreeWidgetTreeItems(
                         Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
                     else
                         Modifier
-                )
+                ),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (element.indent > 0) {
                 Spacer(
@@ -224,6 +225,8 @@ private fun TreeWidgetTreeItems(
                 ListWidgetObjectIcon(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
+                    imageMultiplier = 1.0f,
+                    iconWithoutBackgroundMaxSize = 200.dp,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.id, isChecked)

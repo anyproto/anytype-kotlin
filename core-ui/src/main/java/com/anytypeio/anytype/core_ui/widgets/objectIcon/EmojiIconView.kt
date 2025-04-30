@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.cornerRadius
@@ -22,8 +21,8 @@ fun EmojiIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.Basic.Emoji,
     backgroundSize: Dp,
-    iconWithoutBackgroundMaxSize: Dp = 20.dp,
-    imageMultiplier: Float = 0.625f,
+    iconWithoutBackgroundMaxSize: Dp,
+    imageMultiplier: Float,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
     val (containerModifier, iconModifier) = if (backgroundSize > iconWithoutBackgroundMaxSize) {
@@ -60,7 +59,9 @@ fun EmojiIconView(
         TypeIconView(
             modifier = modifier,
             icon = icon.fallback,
-            backgroundSize = backgroundSize
+            backgroundSize = backgroundSize,
+            imageMultiplier = imageMultiplier,
+            iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
         )
     }
 }

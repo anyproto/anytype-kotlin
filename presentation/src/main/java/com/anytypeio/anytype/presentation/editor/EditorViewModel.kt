@@ -262,6 +262,7 @@ import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.O
 import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
 import com.anytypeio.anytype.presentation.extension.getTypeForObject
 import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenTemplateSelectorEvent
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
@@ -4661,7 +4662,7 @@ class EditorViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = key,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(vmParams.space.id)
                     )
                 },
                 failure = {
@@ -6831,7 +6832,11 @@ class EditorViewModel(
                 EventWrapper(
                     AppNavigation.Command.OpenTemplates(typeId = state.typeId)
                 )
-            )
+            ).also {
+                viewModelScope.launch {
+                    sendAnalyticsScreenTemplateSelectorEvent(analytics, provideParams(vmParams.space.id))
+                }
+            }
         } else {
             Timber.e("State of templates widget is invalid when clicked, should be SelectTemplateViewState.Activ")
         }
@@ -7526,7 +7531,7 @@ class EditorViewModel(
                     eventName = EventsDictionary.relationAdd,
                     storeOfRelations = storeOfRelations,
                     relationKey = view.key,
-                    spaceParams = provideParams(spaceManager.get())
+                    spaceParams = provideParams(vmParams.space.id)
                 )
                 action.invoke()
             }

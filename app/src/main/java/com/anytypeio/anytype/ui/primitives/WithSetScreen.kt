@@ -52,7 +52,6 @@ import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 @Composable
 fun WithSetScreen(
     //top bar
-    uiEditButtonState: UiEditButton,
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiSyncStatusState: SyncStatusWidgetState,
     //header
@@ -84,9 +83,6 @@ fun WithSetScreen(
         topBar = {
             TopBarContent(
                 uiSyncStatusBadgeState = uiSyncStatusBadgeState,
-                uiEditButtonState = uiEditButtonState,
-                uiTitleState = uiTitleState,
-                topBarScrollBehavior = topAppBarScrollBehavior,
                 onTypeEvent = { typeEvent ->
                     if (typeEvent is TypeEvent.OnBackClick) {
                         objectSetFragment.value?.onCloseCurrentObject()

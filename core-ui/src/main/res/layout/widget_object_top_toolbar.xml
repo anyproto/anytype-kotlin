@@ -5,10 +5,9 @@
 
     <FrameLayout
         android:id="@+id/topBackButton"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_gravity="center_vertical"
-        android:layout_marginStart="16dp">
+        android:layout_width="56dp"
+        android:layout_height="48dp"
+        android:layout_gravity="center_vertical">
 
         <ImageView
             android:id="@+id/ivTopBackButton"
@@ -90,7 +89,7 @@
         android:layout_width="28dp"
         android:layout_height="28dp"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="12dp">
+        android:layout_marginEnd="14dp">
 
         <ImageView
             android:id="@+id/ivThreeDots"

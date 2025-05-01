@@ -16,6 +16,7 @@ import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
 import kotlin.math.log
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,7 +35,6 @@ class ChatContainer @Inject constructor(
     private val channel: ChatEventChannel,
     private val logger: Logger
 ) {
-
 
     private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
 
@@ -236,6 +236,31 @@ class ChatContainer @Inject constructor(
                         } else {
                             state
                         }
+                    }
+                    is Transformation.Commands.UpdateVisibleRange -> {
+                        val unread = state.state
+                        val toMessage = state.messages.find { it.id == transform.to }
+                        if (
+                            unread.hasUnReadMessages &&
+                            !unread.oldestMessageOrderId.isNullOrEmpty() &&
+                            toMessage != null &&
+                            toMessage.order >= unread.oldestMessageOrderId!!
+                        ) {
+                            runCatching {
+                                repo.readChatMessages(
+                                    command = Command.ChatCommand.ReadMessages(
+                                        chat = chat,
+                                        beforeOrderId = toMessage.order,
+                                        lastStateId = unread.lastStateId.orEmpty()
+                                    )
+                                )
+                            }.onFailure {
+                                logger.logException(it, "Error while reading messages")
+                            }.onFailure {
+                                logger.logInfo("Read messages")
+                            }
+                        }
+                        state
                     }
                     is Transformation.Events.Payload -> {
                         state.reduce(transform.events)
@@ -487,22 +512,8 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadEnd)
     }
 
-    suspend fun onReadUntil(chat: Id, toOrderId: Id, lastStateId: Id) {
-        logger.logInfo("DROID-2966 onReadUntil: $toOrderId")
-        // TODo change dispatcher
-        withContext(Dispatchers.IO) {
-            runCatching {
-                repo.readChatMessages(
-                    command = Command.ChatCommand.ReadMessages(
-                        chat = chat,
-                        beforeOrderId = toOrderId,
-                        lastStateId = lastStateId
-                    )
-                )
-            }.onFailure {
-                logger.logException(it, "Error while reading messages")
-            }
-        }
+    suspend fun onVisibleRangeChanged(from: Id, to: Id) {
+        commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
     }
 
     private fun cacheLastMessages(messages: List<Chat.Message>) {
@@ -546,6 +557,8 @@ class ChatContainer @Inject constructor(
              * Scroll-to-bottom behavior.
              */
             data object LoadEnd: Commands()
+
+            data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
         }
     }
 

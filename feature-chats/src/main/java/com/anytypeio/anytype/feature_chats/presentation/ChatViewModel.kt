@@ -46,10 +46,12 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -75,6 +77,12 @@ class ChatViewModel @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+
+    private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
@@ -110,6 +118,15 @@ class ChatViewModel @Inject constructor(
                 }.collect {
                     header.value = it
                 }
+
+            viewModelScope.launch {
+                visibleRangeUpdates
+                    .debounce(300) // Delay to avoid spamming
+                    .distinctUntilChanged()
+                    .collect { (from, to) ->
+                        chatContainer.onVisibleRangeChanged(from, to)
+                    }
+            }
         }
 
         viewModelScope.launch {
@@ -946,24 +963,25 @@ class ChatViewModel @Inject constructor(
         to: Id
     ) {
         Timber.d("onVisibleRangeChanged, from: $from, to: $to")
-        val state = chatState
-        if (state != null && state.hasUnReadMessages) {
-            val to = uiState.value.messages.find { it is ChatView.Message && it.id == from }
-            if (to != null && to is ChatView.Message) {
-                if (to.order >= state.oldestMessageOrderId.orEmpty()) {
-                    Timber.d("DROID-2966 Doing reading: ${to.content.msg}")
-                    viewModelScope.launch {
-                        chatContainer.onReadUntil(
-                            chat = vmParams.ctx,
-                            toOrderId = to.order,
-                            lastStateId = state.lastStateId.orEmpty()
-                        )
-                    }
-                } else {
-                    Timber.d("DROID-2966 Skipping reading: ${to.content.msg}")
-                }
-            }
-        }
+        visibleRangeUpdates.tryEmit(from to to)
+//        val state = chatState
+//        if (state != null && state.hasUnReadMessages) {
+//            val to = uiState.value.messages.find { it is ChatView.Message && it.id == from }
+//            if (to != null && to is ChatView.Message) {
+//                if (to.order >= state.oldestMessageOrderId.orEmpty()) {
+//                    Timber.d("DROID-2966 Doing reading: ${to.content.msg}")
+//                    viewModelScope.launch {
+//                        chatContainer.onReadUntil(
+//                            chat = vmParams.ctx,
+//                            toOrderId = to.order,
+//                            lastStateId = state.lastStateId.orEmpty()
+//                        )
+//                    }
+//                } else {
+//                    Timber.d("DROID-2966 Skipping reading: ${to.content.msg}")
+//                }
+//            }
+//        }
     }
 
     /**

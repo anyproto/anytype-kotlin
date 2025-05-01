@@ -91,6 +91,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -244,16 +245,15 @@ private fun LazyListState.OnTopReachedSafely(
     onTopReached: () -> Unit
 ) {
     LaunchedEffect(this) {
-        snapshotFlow { layoutInfo }
-            .filter { it.totalItemsCount > 0 && it.visibleItemsInfo.isNotEmpty() }
+        snapshotFlow {
+            layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+            .filterNotNull()
             .distinctUntilChanged()
-            .collect { info ->
-                val lastVisibleItem = info.visibleItemsInfo.lastOrNull()
-                if (lastVisibleItem != null) {
-                    val isTop = lastVisibleItem.index >= info.totalItemsCount - 1 - thresholdItems
-                    if (isTop) {
-                        onTopReached()
-                    }
+            .collect { lastVisibleIndex ->
+                val isTop = lastVisibleIndex >= layoutInfo.totalItemsCount - 1 - thresholdItems
+                if (isTop) {
+                    onTopReached()
                 }
             }
     }
@@ -265,16 +265,14 @@ private fun LazyListState.OnBottomReachedSafely(
     onBottomReached: () -> Unit
 ) {
     LaunchedEffect(this) {
-        snapshotFlow { layoutInfo }
-            .filter { it.totalItemsCount > 0 && it.visibleItemsInfo.isNotEmpty() }
+        snapshotFlow {
+            layoutInfo.visibleItemsInfo.firstOrNull()?.index
+        }
+            .filterNotNull()
             .distinctUntilChanged()
-            .collect { info ->
-                val firstVisibleItem = info.visibleItemsInfo.firstOrNull()
-                if (firstVisibleItem != null) {
-                    val isBottom = firstVisibleItem.index <= thresholdItems
-                    if (isBottom) {
-                        onBottomReached()
-                    }
+            .collect { index ->
+                if (index <= thresholdItems) {
+                    onBottomReached()
                 }
             }
     }
@@ -402,18 +400,14 @@ fun ChatScreen(
         }
     }
 
-    lazyListState.OnBottomReachedSafely(
-        thresholdItems = 3
-    ) {
+    lazyListState.OnBottomReachedSafely {
         if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
             onChatScrolledToBottom()
         }
     }
 
-    lazyListState.OnTopReachedSafely(
-        thresholdItems = 3
-    ) {
+    lazyListState.OnTopReachedSafely {
         if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
             onChatScrolledToTop()

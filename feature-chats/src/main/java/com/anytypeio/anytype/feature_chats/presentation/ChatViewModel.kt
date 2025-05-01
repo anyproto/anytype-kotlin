@@ -97,8 +97,6 @@ class ChatViewModel @Inject constructor(
 
     private var account: Id = ""
 
-    private var chatState: Chat.State? = null
-
     init {
 
 //        generateDummyChatHistory()
@@ -159,7 +157,6 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
-            chatState = result.state
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList<ChatView> {
                 result.messages.forEach { msg ->

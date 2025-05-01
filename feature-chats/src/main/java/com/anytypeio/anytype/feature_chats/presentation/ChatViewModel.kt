@@ -89,6 +89,8 @@ class ChatViewModel @Inject constructor(
 
     private var account: Id = ""
 
+    private var chatState: Chat.State? = null
+
     init {
 
 //        generateDummyChatHistory()
@@ -140,6 +142,7 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
+            chatState = result.state
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList<ChatView> {
                 result.messages.forEach { msg ->
@@ -197,6 +200,7 @@ class ChatViewModel @Inject constructor(
 
                     val view = ChatView.Message(
                         id = msg.id,
+                        order = msg.order,
                         timestamp = msg.createdAt * 1000,
                         content = ChatView.Message.Content(
                             msg = content?.text.orEmpty(),
@@ -938,9 +942,28 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onVisibleRangeChanged(
-
+        from: Id,
+        to: Id
     ) {
-        // TODO implement read messages
+        Timber.d("onVisibleRangeChanged, from: $from, to: $to")
+        val state = chatState
+        if (state != null && state.hasUnReadMessages) {
+            val to = uiState.value.messages.find { it is ChatView.Message && it.id == from }
+            if (to != null && to is ChatView.Message) {
+                if (to.order >= state.oldestMessageOrderId.orEmpty()) {
+                    Timber.d("DROID-2966 Doing reading: ${to.content.msg}")
+                    viewModelScope.launch {
+                        chatContainer.onReadUntil(
+                            chat = vmParams.ctx,
+                            toOrderId = to.order,
+                            lastStateId = state.lastStateId.orEmpty()
+                        )
+                    }
+                } else {
+                    Timber.d("DROID-2966 Skipping reading: ${to.content.msg}")
+                }
+            }
+        }
     }
 
     /**

@@ -14,6 +14,8 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlin.math.log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,12 +27,14 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.withContext
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
     private val channel: ChatEventChannel,
     private val logger: Logger
 ) {
+
 
     private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
 
@@ -120,12 +124,12 @@ class ChatContainer @Inject constructor(
         var intent: Intent = Intent.None
 
         val initial = buildList<Chat.Message> {
-            if (state.hasUnReadMessages && !state.olderMessageOrderId.isNullOrEmpty()) {
+            if (state.hasUnReadMessages && !state.oldestMessageOrderId.isNullOrEmpty()) {
                 val aroundUnread = loadAroundMessageOrder(
                     chat = chat,
-                    order = state.olderMessageOrderId.orEmpty()
+                    order = state.oldestMessageOrderId.orEmpty()
                 ).also {
-                    val target = it.find { it.order == state.olderMessageOrderId }
+                    val target = it.find { it.order == state.oldestMessageOrderId }
                     if (target != null) {
                         intent = Intent.ScrollToMessage(target.id)
                     }
@@ -481,6 +485,24 @@ class ChatContainer @Inject constructor(
     suspend fun onLoadChatTail() {
         logger.logInfo("DROID-2966 emitting onLoadEnd")
         commands.emit(Transformation.Commands.LoadEnd)
+    }
+
+    suspend fun onReadUntil(chat: Id, toOrderId: Id, lastStateId: Id) {
+        logger.logInfo("DROID-2966 onReadUntil: $toOrderId")
+        // TODo change dispatcher
+        withContext(Dispatchers.IO) {
+            runCatching {
+                repo.readChatMessages(
+                    command = Command.ChatCommand.ReadMessages(
+                        chat = chat,
+                        beforeOrderId = toOrderId,
+                        lastStateId = lastStateId
+                    )
+                )
+            }.onFailure {
+                logger.logException(it, "Error while reading messages")
+            }
+        }
     }
 
     private fun cacheLastMessages(messages: List<Chat.Message>) {

@@ -202,7 +202,8 @@ fun ChatScreenWrapper(
                     onChatScrolledToBottom = vm::onChatScrolledToBottom,
                     onScrollToReplyClicked = vm::onChatScrollToReply,
                     onClearIntent = vm::onClearChatViewStateIntent,
-                    onScrollToBottomClicked = vm::onScrollToBottomClicked
+                    onScrollToBottomClicked = vm::onScrollToBottomClicked,
+                    onVisibleRangeChanged = vm::onVisibleRangeChanged
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -314,7 +315,8 @@ fun ChatScreen(
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
-    onScrollToBottomClicked: () -> Unit
+    onScrollToBottomClicked: () -> Unit,
+    onVisibleRangeChanged: (Id, Id) -> Unit
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${uiMessageState.messages.size}")
@@ -366,6 +368,32 @@ fun ChatScreen(
             }
             ChatContainer.Intent.None -> Unit
         }
+    }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow {
+            lazyListState.layoutInfo.visibleItemsInfo.map {
+                it.index
+            }
+        }.distinctUntilChanged()
+            .collect { visibleIndices ->
+                if (visibleIndices.isNotEmpty()) {
+                    val visibleMessages = visibleIndices
+                        .mapNotNull { index -> latestMessages.getOrNull(index) }
+                        .filterIsInstance<ChatView.Message>()
+
+                    if (visibleMessages.isNotEmpty()) {
+                        val firstVisible = visibleMessages.first()
+                        val lastVisible = visibleMessages.last()
+                        Timber.d("First visible: ${firstVisible.content.msg}")
+                        Timber.d("Last visible: ${firstVisible.content.msg}")
+                        onVisibleRangeChanged(
+                            firstVisible.id,
+                            lastVisible.id
+                        )
+                    }
+                }
+            }
     }
 
     // Scrolling to bottom when list size changes and we are at the bottom of the list

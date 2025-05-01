@@ -19,6 +19,7 @@ sealed interface ChatView {
 
     data class Message(
         val id: String,
+        val order: Id = "",
         val content: Content,
         val author: String,
         val creator: Id?,

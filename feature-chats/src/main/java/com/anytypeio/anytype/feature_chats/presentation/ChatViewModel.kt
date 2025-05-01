@@ -964,24 +964,6 @@ class ChatViewModel @Inject constructor(
     ) {
         Timber.d("onVisibleRangeChanged, from: $from, to: $to")
         visibleRangeUpdates.tryEmit(from to to)
-//        val state = chatState
-//        if (state != null && state.hasUnReadMessages) {
-//            val to = uiState.value.messages.find { it is ChatView.Message && it.id == from }
-//            if (to != null && to is ChatView.Message) {
-//                if (to.order >= state.oldestMessageOrderId.orEmpty()) {
-//                    Timber.d("DROID-2966 Doing reading: ${to.content.msg}")
-//                    viewModelScope.launch {
-//                        chatContainer.onReadUntil(
-//                            chat = vmParams.ctx,
-//                            toOrderId = to.order,
-//                            lastStateId = state.lastStateId.orEmpty()
-//                        )
-//                    }
-//                } else {
-//                    Timber.d("DROID-2966 Skipping reading: ${to.content.msg}")
-//                }
-//            }
-//        }
     }
 
     /**

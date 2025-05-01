@@ -333,6 +333,7 @@ fun ChatScreen(
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
+    // Applying view model intents
     LaunchedEffect(uiMessageState.intent) {
         when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
@@ -341,14 +342,12 @@ fun ChatScreen(
                     it is ChatView.Message && it.id == intent.id
                 }
                 if (index >= 0) {
-                    Timber.d("DROID-2966 Found the scrolling target at index: $index. Waiting for layout to stabilize...")
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
                     lazyListState.animateScrollToItem(index)
                     awaitFrame()
-                    Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
                 } else {
-                    Timber.d("DROID-2966 Could not found the scrolling target for the intent")
+                    Timber.d("DROID-2966 COMPOSE Could not found the scrolling target for the intent")
                 }
                 onClearIntent()
                 isPerformingScrollIntent.value = false
@@ -368,6 +367,7 @@ fun ChatScreen(
         }
     }
 
+    // Tracking visible range
     LaunchedEffect(lazyListState) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.map {
@@ -381,10 +381,9 @@ fun ChatScreen(
                         .filterIsInstance<ChatView.Message>()
 
                     if (visibleMessages.isNotEmpty()) {
+                        // TODO could be optimised by passing order ID
                         val firstVisible = visibleMessages.first()
                         val lastVisible = visibleMessages.last()
-                        Timber.d("First visible: ${firstVisible.content.msg}")
-                        Timber.d("Last visible: ${firstVisible.content.msg}")
                         onVisibleRangeChanged(
                             firstVisible.id,
                             lastVisible.id
@@ -409,8 +408,6 @@ fun ChatScreen(
         if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
             onChatScrolledToBottom()
-        } else {
-//            Timber.d("DROID-2966 Safe onBottomReached skipped")
         }
     }
 
@@ -420,8 +417,6 @@ fun ChatScreen(
         if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
             onChatScrolledToTop()
-        } else {
-//            Timber.d("DROID-2966 Safe onTopReached skipped")
         }
     }
 

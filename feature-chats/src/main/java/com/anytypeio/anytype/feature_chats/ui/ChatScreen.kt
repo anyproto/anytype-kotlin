@@ -47,7 +47,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -90,7 +89,6 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPan
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -358,7 +356,7 @@ fun ChatScreen(
             is ChatContainer.Intent.ScrollToBottom -> {
                 Timber.d("DROID-2966 COMPOSE scroll to bottom")
                 isPerformingScrollIntent.value = true
-                smoothScrollToBottom2(lazyListState)
+                smoothScrollToBottom(lazyListState)
                 awaitFrame()
                 isPerformingScrollIntent.value = false
                 onClearIntent()
@@ -837,21 +835,9 @@ fun TopDiscussionToolbar(
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
-    if (lazyListState.firstVisibleItemIndex > 0) {
-        lazyListState.scrollToItem(0)
-        return
-    }
-    while (lazyListState.firstVisibleItemScrollOffset > 0) {
-        val delta = (-lazyListState.firstVisibleItemScrollOffset).coerceAtLeast(-40)
-        lazyListState.animateScrollBy(delta.toFloat())
-    }
-}
-
-suspend fun smoothScrollToBottom2(lazyListState: LazyListState) {
     lazyListState.scrollToItem(0)
 
     // Wait for the layout to settle after scrolling
-    awaitFrame()
     awaitFrame()
 
     while (lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset > 0) {

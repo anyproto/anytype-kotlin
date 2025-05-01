@@ -93,6 +93,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -367,27 +369,27 @@ fun ChatScreen(
 
     // Tracking visible range
     LaunchedEffect(lazyListState) {
-        snapshotFlow {
-            lazyListState.layoutInfo.visibleItemsInfo.map {
-                it.index
-            }
-        }.distinctUntilChanged()
-            .collect { visibleIndices ->
-                if (visibleIndices.isNotEmpty()) {
-                    val visibleMessages = visibleIndices
-                        .mapNotNull { index -> latestMessages.getOrNull(index) }
-                        .filterIsInstance<ChatView.Message>()
-
-                    if (visibleMessages.isNotEmpty()) {
-                        // TODO could be optimised by passing order ID
-                        val firstVisible = visibleMessages.first()
-                        val lastVisible = visibleMessages.last()
-                        onVisibleRangeChanged(
-                            firstVisible.id,
-                            lastVisible.id
-                        )
+        snapshotFlow { lazyListState.layoutInfo }
+            .mapNotNull { layoutInfo ->
+                val viewportHeight = layoutInfo.viewportSize.height
+                val visibleMessages = layoutInfo.visibleItemsInfo
+                    .filter { item ->
+                        val itemBottom = item.offset + item.size
+                        val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
+                        isFullyVisible
                     }
-                }
+                    .sortedBy { it.index } // still necessary
+                    .mapNotNull { item -> latestMessages.getOrNull(item.index) }
+                    .filterIsInstance<ChatView.Message>()
+
+                if (visibleMessages.isNotEmpty()) {
+                    // TODO could be optimised by passing order ID
+                    visibleMessages.first().id to visibleMessages.last().id
+                } else null
+            }
+            .distinctUntilChanged()
+            .collect { (from, to) ->
+                onVisibleRangeChanged(from, to)
             }
     }
 

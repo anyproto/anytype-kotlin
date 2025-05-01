@@ -118,15 +118,15 @@ class ChatViewModel @Inject constructor(
                 }.collect {
                     header.value = it
                 }
+        }
 
-            viewModelScope.launch {
-                visibleRangeUpdates
-                    .debounce(300) // Delay to avoid spamming
-                    .distinctUntilChanged()
-                    .collect { (from, to) ->
-                        chatContainer.onVisibleRangeChanged(from, to)
-                    }
-            }
+        viewModelScope.launch {
+            visibleRangeUpdates
+                .debounce(300) // Delay to avoid spamming
+                .distinctUntilChanged()
+                .collect { (from, to) ->
+                    chatContainer.onVisibleRangeChanged(from, to)
+                }
         }
 
         viewModelScope.launch {

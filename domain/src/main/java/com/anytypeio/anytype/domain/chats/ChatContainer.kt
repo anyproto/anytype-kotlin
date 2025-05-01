@@ -14,9 +14,6 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
-import kotlin.math.log
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +25,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.withContext
 
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
@@ -239,25 +235,25 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.UpdateVisibleRange -> {
                         val unread = state.state
-                        val toMessage = state.messages.find { it.id == transform.to }
+                        val readFrom = state.messages.find { it.id == transform.from }
                         if (
                             unread.hasUnReadMessages &&
                             !unread.oldestMessageOrderId.isNullOrEmpty() &&
-                            toMessage != null &&
-                            toMessage.order >= unread.oldestMessageOrderId!!
+                            readFrom != null
+                            && readFrom.order >= unread.oldestMessageOrderId!!
                         ) {
                             runCatching {
                                 repo.readChatMessages(
                                     command = Command.ChatCommand.ReadMessages(
                                         chat = chat,
-                                        beforeOrderId = toMessage.order,
+                                        beforeOrderId = readFrom.order,
                                         lastStateId = unread.lastStateId.orEmpty()
                                     )
                                 )
                             }.onFailure {
                                 logger.logException(it, "Error while reading messages")
                             }.onFailure {
-                                logger.logInfo("Read messages")
+                                logger.logInfo("Read messages with success")
                             }
                         }
                         state
@@ -513,6 +509,7 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun onVisibleRangeChanged(from: Id, to: Id) {
+        logger.logInfo("DROID-2966 onVisibleRangeChanged: ")
         commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
     }
 

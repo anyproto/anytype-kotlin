@@ -483,7 +483,7 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun onVisibleRangeChanged(from: Id, to: Id) {
-        logger.logInfo("DROID-2966 onVisibleRangeChanged: ")
+        logger.logInfo("DROID-2966 onVisibleRangeChanged")
         commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
     }
 

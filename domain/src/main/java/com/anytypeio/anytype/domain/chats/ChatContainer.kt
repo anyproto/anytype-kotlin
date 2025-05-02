@@ -226,7 +226,7 @@ class ChatContainer @Inject constructor(
                                 )
                             }.onFailure {
                                 logger.logException(it, "Error while reading messages")
-                            }.onFailure {
+                            }.onSuccess {
                                 logger.logInfo("Read messages with success")
                             }
                         }

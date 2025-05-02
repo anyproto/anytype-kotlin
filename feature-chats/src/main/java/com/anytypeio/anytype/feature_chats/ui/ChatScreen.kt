@@ -347,7 +347,7 @@ fun ChatScreen(
                     lazyListState.animateScrollToItem(index)
                     awaitFrame()
                 } else {
-                    Timber.d("DROID-2966 COMPOSE Could not found the scrolling target for the intent")
+                    Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
                 onClearIntent()
                 isPerformingScrollIntent.value = false

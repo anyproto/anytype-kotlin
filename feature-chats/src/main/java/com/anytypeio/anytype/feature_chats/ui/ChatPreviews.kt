@@ -198,7 +198,8 @@ fun ChatScreenPreview() {
         onChatScrolledToBottom = {},
         onScrollToReplyClicked = {},
         onClearIntent = {},
-        onScrollToBottomClicked = {}
+        onScrollToBottomClicked = {},
+        onVisibleRangeChanged = { _, _ -> }
     )
 }
 

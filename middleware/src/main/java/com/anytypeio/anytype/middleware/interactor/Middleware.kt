@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
+import anytype.Rpc.Chat.ReadMessages.ReadType
 import anytype.model.Block
 import anytype.model.ParticipantPermissionChange
 import anytype.model.Range
@@ -2786,7 +2787,8 @@ class Middleware @Inject constructor(
             chatObjectId = command.chat,
             beforeOrderId = command.beforeOrderId.orEmpty(),
             afterOrderId = command.afterOrderId.orEmpty(),
-            limit = command.limit
+            limit = command.limit,
+            includeBoundary = command.includeBoundary
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatGetMessages(request) }
@@ -2807,6 +2809,20 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.chatGetMessagesByIds(request) }
         logResponseIfDebug(response, time)
         return response.messages.map { it.core() }
+    }
+
+    @Throws
+    fun chatReadMessages(command: Command.ChatCommand.ReadMessages) {
+        val request = Rpc.Chat.ReadMessages.Request(
+            chatObjectId = command.chat,
+            afterOrderId = command.afterOrderId.orEmpty(),
+            beforeOrderId = command.beforeOrderId.orEmpty(),
+            lastStateId = command.lastStateId.orEmpty(),
+            type = ReadType.Messages
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatReadMessages(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws

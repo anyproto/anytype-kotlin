@@ -38,7 +38,32 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
                 message = requireNotNull(event.message?.core())
             )
         }
-
+        chatStateUpdate != null -> {
+            val event = chatStateUpdate
+            checkNotNull(event)
+            Event.Command.Chats.UpdateState(
+                context = contextId,
+                state = event.state?.core()
+            )
+        }
+        chatUpdateMessageReadStatus != null -> {
+            val event = chatUpdateMessageReadStatus
+            checkNotNull(event)
+            Event.Command.Chats.UpdateMessageReadStatus(
+                context = contextId,
+                messages = event.ids,
+                isRead = event.isRead
+            )
+        }
+        chatUpdateMentionReadStatus != null -> {
+            val event = chatUpdateMentionReadStatus
+            checkNotNull(event)
+            Event.Command.Chats.UpdateMentionReadStatus(
+                context = contextId,
+                messages = event.ids,
+                isRead = event.isRead
+            )
+        }
         chatUpdate != null -> {
             val event = chatUpdate
             checkNotNull(event)
@@ -48,7 +73,6 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
                 message = requireNotNull(event.message?.core())
             )
         }
-
         chatDelete != null -> {
             val event = chatDelete
             checkNotNull(event)
@@ -57,7 +81,6 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
                 id = event.id
             )
         }
-
         chatUpdateReactions != null -> {
             val event = chatUpdateReactions
             checkNotNull(event)

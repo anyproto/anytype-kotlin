@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -87,9 +89,12 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPan
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -198,7 +203,8 @@ fun ChatScreenWrapper(
                     onChatScrolledToBottom = vm::onChatScrolledToBottom,
                     onScrollToReplyClicked = vm::onChatScrollToReply,
                     onClearIntent = vm::onClearChatViewStateIntent,
-                    onScrollToBottomClicked = vm::onScrollToBottomClicked
+                    onScrollToBottomClicked = vm::onScrollToBottomClicked,
+                    onVisibleRangeChanged = vm::onVisibleRangeChanged
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -236,51 +242,41 @@ fun ChatScreenWrapper(
 }
 
 @Composable
-fun LazyListState.OnBottomReached(
+private fun LazyListState.OnTopReachedSafely(
     thresholdItems: Int = 0,
-    onBottomReached: () -> Unit
+    onTopReached: () -> Unit
 ) {
     LaunchedEffect(this) {
-        var prevIndex = firstVisibleItemIndex
-        snapshotFlow { firstVisibleItemIndex }
+        snapshotFlow {
+            layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+            .filterNotNull()
             .distinctUntilChanged()
-            .collect { index ->
-                val isDragging = isScrollInProgress
-
-                // Are we scrolling *toward* the bottom edge?
-                val scrollingDown = isDragging && prevIndex > index
-
-                // Have we crossed into the threshold zone?
-                val atBottom = index <= thresholdItems
-
-                if (scrollingDown && atBottom) {
-                    onBottomReached()
+            .collect { lastVisibleIndex ->
+                val isTop = lastVisibleIndex >= layoutInfo.totalItemsCount - 1 - thresholdItems
+                if (isTop) {
+                    onTopReached()
                 }
-                prevIndex = index
             }
     }
 }
 
 @Composable
-private fun LazyListState.OnTopReached(
+private fun LazyListState.OnBottomReachedSafely(
     thresholdItems: Int = 0,
-    onTopReached: () -> Unit
+    onBottomReached: () -> Unit
 ) {
-    val isReached = remember {
-        derivedStateOf {
-            val lastVisibleItem = layoutInfo.visibleItemsInfo.lastOrNull()
-            if (lastVisibleItem != null) {
-                lastVisibleItem.index >= layoutInfo.totalItemsCount - 1 - thresholdItems
-            } else {
-                false
-            }
+    LaunchedEffect(this) {
+        snapshotFlow {
+            layoutInfo.visibleItemsInfo.firstOrNull()?.index
         }
-    }
-
-    LaunchedEffect(isReached) {
-        snapshotFlow { isReached.value }
+            .filterNotNull()
             .distinctUntilChanged()
-            .collect { if (it) onTopReached() }
+            .collect { index ->
+                if (index <= thresholdItems) {
+                    onBottomReached()
+                }
+            }
     }
 }
 
@@ -317,10 +313,11 @@ fun ChatScreen(
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
-    onScrollToBottomClicked: () -> Unit
+    onScrollToBottomClicked: () -> Unit,
+    onVisibleRangeChanged: (Id, Id) -> Unit
 ) {
 
-    Timber.d("DROID-2966 Render called with state")
+    Timber.d("DROID-2966 Render called with state, number of messages: ${uiMessageState.messages.size}")
 
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
@@ -332,49 +329,35 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
+    val latestMessages by rememberUpdatedState(uiMessageState.messages)
+
+    val isPerformingScrollIntent = remember { mutableStateOf(false) }
+
+    // Applying view model intents
     LaunchedEffect(uiMessageState.intent) {
         when (val intent = uiMessageState.intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
+                isPerformingScrollIntent.value = true
                 val index = uiMessageState.messages.indexOfFirst {
                     it is ChatView.Message && it.id == intent.id
                 }
-
                 if (index >= 0) {
-                    Timber.d("DROID-2966 Waiting for layout to stabilize...")
-
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
-
-                    lazyListState.scrollToItem(index)
-
+                    lazyListState.animateScrollToItem(index)
                     awaitFrame()
-
-                    val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
-                    if (itemInfo != null) {
-                        val viewportHeight = lazyListState.layoutInfo.viewportSize.height
-
-                        // Centering calculation:
-                        // itemCenter relative to viewport top
-                        val itemCenterFromTop = itemInfo.offset + (itemInfo.size / 2)
-                        val viewportCenter = viewportHeight / 2
-
-                        val delta = itemCenterFromTop - viewportCenter
-
-                        Timber.d("DROID-2966 Calculated delta for centering (reverseLayout-aware): $delta")
-
-                        // move negatively because reverseLayout flips
-                        lazyListState.animateScrollBy(delta.toFloat())
-
-                        Timber.d("DROID-2966 Scroll complete. Now clearing intent.")
-
-                        onClearIntent()
-                    } else {
-                        Timber.w("DROID-2966 Target item not found after scroll!")
-                    }
+                } else {
+                    Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
+                onClearIntent()
+                isPerformingScrollIntent.value = false
             }
             is ChatContainer.Intent.ScrollToBottom -> {
+                Timber.d("DROID-2966 COMPOSE scroll to bottom")
+                isPerformingScrollIntent.value = true
                 smoothScrollToBottom(lazyListState)
+                awaitFrame()
+                isPerformingScrollIntent.value = false
                 onClearIntent()
             }
             is ChatContainer.Intent.Highlight -> {
@@ -384,16 +367,53 @@ fun ChatScreen(
         }
     }
 
-    lazyListState.OnBottomReached(
-        thresholdItems = 3
-    ) {
-        onChatScrolledToBottom()
+    // Tracking visible range
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.layoutInfo }
+            .mapNotNull { layoutInfo ->
+                val viewportHeight = layoutInfo.viewportSize.height
+                val visibleMessages = layoutInfo.visibleItemsInfo
+                    .filter { item ->
+                        val itemBottom = item.offset + item.size
+                        val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
+                        isFullyVisible
+                    }
+                    .sortedBy { it.index } // still necessary
+                    .mapNotNull { item -> latestMessages.getOrNull(item.index) }
+                    .filterIsInstance<ChatView.Message>()
+
+                if (visibleMessages.isNotEmpty()) {
+                    // TODO could be optimised by passing order ID
+                    visibleMessages.first().id to visibleMessages.last().id
+                } else null
+            }
+            .distinctUntilChanged()
+            .collect { (from, to) ->
+                onVisibleRangeChanged(from, to)
+            }
     }
 
-    lazyListState.OnTopReached(
-        thresholdItems = 3
-    ) {
-        onChatScrolledToTop()
+    // Scrolling to bottom when list size changes and we are at the bottom of the list
+    LaunchedEffect(latestMessages) {
+        if (lazyListState.firstVisibleItemScrollOffset == 0 && !isPerformingScrollIntent.value) {
+            scope.launch {
+                lazyListState.animateScrollToItem(0)
+            }
+        }
+    }
+
+    lazyListState.OnBottomReachedSafely {
+        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
+            onChatScrolledToBottom()
+        }
+    }
+
+    lazyListState.OnTopReachedSafely {
+        if (!isPerformingScrollIntent.value && latestMessages.isNotEmpty()) {
+            Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
+            onChatScrolledToTop()
+        }
     }
 
     Column(
@@ -452,6 +472,29 @@ fun ChatScreen(
                 },
                 enabled = jumpToBottomButtonEnabled
             )
+
+            if (uiMessageState.counter.count > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                        .padding(bottom = 46.dp, end = 2.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        )
+                ) {
+                    Text(
+                        text = uiMessageState.counter.count.toString(),
+                        modifier = Modifier.align(Alignment.Center).padding(
+                            horizontal = 5.dp,
+                            vertical = 2.dp
+                        ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
+                }
+            }
 
             when(mentionPanelState) {
                 MentionPanelState.Hidden -> {
@@ -597,7 +640,7 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
 ) {
-    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
+//    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
     LazyColumn(
         modifier = modifier,
@@ -783,13 +826,16 @@ fun TopDiscussionToolbar(
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
-    if (lazyListState.firstVisibleItemIndex > 0) {
-        lazyListState.scrollToItem(0)
-        return
-    }
-    while (lazyListState.firstVisibleItemScrollOffset > 0) {
-        val delta = (-lazyListState.firstVisibleItemScrollOffset).coerceAtLeast(-40)
+    lazyListState.scrollToItem(0)
+
+    // Wait for the layout to settle after scrolling
+    awaitFrame()
+
+    while (lazyListState.firstVisibleItemIndex == 0 && lazyListState.firstVisibleItemScrollOffset > 0) {
+        val offset = lazyListState.firstVisibleItemScrollOffset
+        val delta = (-offset).coerceAtLeast(-80)
         lazyListState.animateScrollBy(delta.toFloat())
+        awaitFrame() // Yield to UI again
     }
 }
 

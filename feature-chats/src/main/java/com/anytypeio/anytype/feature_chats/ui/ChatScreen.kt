@@ -313,7 +313,7 @@ fun ChatScreen(
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
-    onScrollToBottomClicked: () -> Unit,
+    onScrollToBottomClicked: (Id?) -> Unit,
     onVisibleRangeChanged: (Id, Id) -> Unit
 ) {
 
@@ -468,7 +468,19 @@ fun ChatScreen(
                     .align(Alignment.BottomEnd)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
-                    onScrollToBottomClicked()
+                    val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    val lastVisibleView = if (lastVisibleIndex != null) {
+                        latestMessages.getOrNull(lastVisibleIndex)
+                    } else {
+                        null
+                    }
+                    if (lastVisibleView is ChatView.Message) {
+                        onScrollToBottomClicked(
+                            lastVisibleView.id
+                        )
+                    } else {
+                        onScrollToBottomClicked(null)
+                    }
                 },
                 enabled = jumpToBottomButtonEnabled
             )

@@ -624,8 +624,13 @@ fun ChatScreen(
             resetScroll = {
                 if (!isPerformingScrollIntent.value) {
                     scope.launch {
-                        if (!isAtBottom) {
-                            lazyListState.animateScrollToItem(index = 0)
+                        lazyListState.scrollToItem(0)
+                        awaitFrame()
+                        while (!isAtBottom) {
+                            val offset = lazyListState.firstVisibleItemScrollOffset
+                            val delta = (-offset).coerceAtLeast(-80)
+                            lazyListState.animateScrollBy(delta.toFloat())
+                            awaitFrame()
                         }
                     }
                 }

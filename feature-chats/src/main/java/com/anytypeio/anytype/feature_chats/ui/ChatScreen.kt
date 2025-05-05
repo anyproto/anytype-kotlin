@@ -259,10 +259,11 @@ fun ChatScreenWrapper(
 
 @Composable
 private fun LazyListState.OnTopReachedSafely(
+    messages: List<ChatView>,
     thresholdItems: Int = 0,
     onTopReached: () -> Unit
 ) {
-    LaunchedEffect(this) {
+    LaunchedEffect(this, messages.size) {
         snapshotFlow {
             layoutInfo.visibleItemsInfo.lastOrNull()?.index
         }
@@ -279,10 +280,11 @@ private fun LazyListState.OnTopReachedSafely(
 
 @Composable
 private fun LazyListState.OnBottomReachedSafely(
+    messages: List<ChatView>,
     thresholdItems: Int = 0,
     onBottomReached: () -> Unit
 ) {
-    LaunchedEffect(this) {
+    LaunchedEffect(this, messages.size) {
         snapshotFlow {
             layoutInfo.visibleItemsInfo.firstOrNull()?.index
         }
@@ -423,17 +425,21 @@ fun ChatScreen(
         }
     }
 
-    lazyListState.OnBottomReachedSafely {
+    lazyListState.OnBottomReachedSafely(messages) {
         if (!isPerformingScrollIntent.value && messages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onBottomReached dispatched from compose to VM")
             onChatScrolledToBottom()
+        } else {
+            Timber.d("DROID-2966 SKIPPED(!): Safe onBottomReached dispatched from compose to VM")
         }
     }
 
-    lazyListState.OnTopReachedSafely {
+    lazyListState.OnTopReachedSafely(messages) {
         if (!isPerformingScrollIntent.value && messages.isNotEmpty()) {
             Timber.d("DROID-2966 Safe onTopReached dispatched from compose to VM")
             onChatScrolledToTop()
+        } else {
+            Timber.d("DROID-2966 SKIPPED(!): Safe onTopReached dispatched from compose to VM: is empty: ${messages.isEmpty()}, is performing: ${isPerformingScrollIntent.value}")
         }
     }
 

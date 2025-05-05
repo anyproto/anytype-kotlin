@@ -57,9 +57,6 @@ class MiddlewareEventChannel(
         blockDataviewIsCollectionSet != null -> true
         blockSetWidget != null -> true
         spaceAutoWidgetAdded != null -> true
-        chatStateUpdate != null -> true
-        chatUpdateMentionReadStatus != null -> true
-        chatUpdateMessageReadStatus != null -> true
         else -> false.also {
             if (featureToggles.isLogMiddlewareInteraction)
                 Timber.w("Ignored event: $this")

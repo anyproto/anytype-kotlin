@@ -939,10 +939,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onScrollToBottomClicked() {
+    fun onScrollToBottomClicked(lastVisibileMessage: Id?) {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
-            chatContainer.onLoadChatTail()
+            chatContainer.onLoadChatTail(lastVisibileMessage)
         }
     }
 

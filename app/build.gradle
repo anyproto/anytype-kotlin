@@ -245,6 +245,11 @@ dependencies {
 
     implementation libs.wireRuntime
 
+    implementation platform(libs.firebaseBom)
+    implementation libs.firebaseMessaging
+
+    implementation libs.kotlinxSerializationJson
+
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore
     testImplementation libs.junit

@@ -313,7 +313,7 @@ fun ChatScreen(
     onChatScrolledToBottom: () -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
-    onScrollToBottomClicked: () -> Unit,
+    onScrollToBottomClicked: (Id?) -> Unit,
     onVisibleRangeChanged: (Id, Id) -> Unit
 ) {
 
@@ -382,7 +382,7 @@ fun ChatScreen(
                     .mapNotNull { item -> latestMessages.getOrNull(item.index) }
                     .filterIsInstance<ChatView.Message>()
 
-                if (visibleMessages.isNotEmpty()) {
+                if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
                     // TODO could be optimised by passing order ID
                     visibleMessages.first().id to visibleMessages.last().id
                 } else null
@@ -468,7 +468,19 @@ fun ChatScreen(
                     .align(Alignment.BottomEnd)
                     .padding(end = 12.dp),
                 onGoToBottomClicked = {
-                    onScrollToBottomClicked()
+                    val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    val lastVisibleView = if (lastVisibleIndex != null) {
+                        latestMessages.getOrNull(lastVisibleIndex)
+                    } else {
+                        null
+                    }
+                    if (lastVisibleView is ChatView.Message) {
+                        onScrollToBottomClicked(
+                            lastVisibleView.id
+                        )
+                    } else {
+                        onScrollToBottomClicked(null)
+                    }
                 },
                 enabled = jumpToBottomButtonEnabled
             )

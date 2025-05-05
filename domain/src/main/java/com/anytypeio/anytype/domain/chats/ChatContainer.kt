@@ -169,7 +169,10 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.LoadAround -> {
                         val messages = try {
-                            loadAroundMessage(chat, transform.message)
+                            loadAroundMessage(
+                                chat = chat,
+                                msg = transform.message
+                            )
                         } catch (e: Exception) {
                             logger.logException(e, "DROID-2966 Error while loading reply context")
                             state.messages
@@ -182,26 +185,78 @@ class ChatContainer @Inject constructor(
                     }
                     is Transformation.Commands.LoadEnd -> {
                         if (state.messages.isNotEmpty()) {
-                            val lastShown = state.messages.last()
-                            val lastTracked = lastMessages.entries.first().value
-                            if (lastShown.id == lastTracked.id) {
-                                // No need to paginate, just scroll to bottom.
-                                state.copy(
-                                    intent = Intent.ScrollToBottom
-                                )
-                            } else {
-                                val messages = try {
-                                    loadToEnd(chat)
-                                } catch (e: Exception) {
-                                    state.messages.also {
-                                        logger.logException(e, "DROID-2966 Error while scrolling to bottom")
-                                    }
+                            if (state.state.hasUnReadMessages) {
+                                // Check if above the unread messages
+                                val oldestReadOrderId = state.state.oldestMessageOrderId
+                                val bottomMessage = state.messages.find {
+                                    it.id == transform.lastVisibleMessage
                                 }
-                                ChatStreamState(
-                                    messages = messages,
-                                    intent = Intent.ScrollToBottom,
-                                    state = state.state
-                                )
+                                if (bottomMessage != null && oldestReadOrderId != null) {
+                                    if (bottomMessage.order < oldestReadOrderId) {
+                                        // Scroll to the first unread message
+                                        val messages = try {
+                                            loadAroundMessageOrder(
+                                                chat = chat,
+                                                order = oldestReadOrderId
+                                            )
+                                        } catch (e: Exception) {
+                                            logger.logException(e, "DROID-2966 Error while loading reply context")
+                                            state.messages
+                                        }
+                                        val target = messages.find { it.order == oldestReadOrderId }
+                                        ChatStreamState(
+                                            messages = messages,
+                                            intent = if (target != null) Intent.ScrollToMessage(target.id) else Intent.ScrollToBottom,
+                                            state = state.state
+                                        )
+                                    } else {
+                                        val messages = try {
+                                            loadToEnd(chat)
+                                        } catch (e: Exception) {
+                                            state.messages.also {
+                                                logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                            }
+                                        }
+                                        ChatStreamState(
+                                            messages = messages,
+                                            intent = Intent.ScrollToBottom,
+                                            state = state.state
+                                        )
+                                    }
+                                } else {
+                                    val messages = try {
+                                        loadToEnd(chat)
+                                    } catch (e: Exception) {
+                                        state.messages.also {
+                                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                        }
+                                    }
+                                    ChatStreamState(
+                                        messages = messages,
+                                        intent = Intent.ScrollToBottom,
+                                        state = state.state
+                                    )
+                                }
+                            } else {
+                                if (lastMessages.contains(transform.lastVisibleMessage)) {
+                                    // No need to paginate, just scroll to bottom.
+                                    state.copy(
+                                        intent = Intent.ScrollToBottom
+                                    )
+                                } else {
+                                    val messages = try {
+                                        loadToEnd(chat)
+                                    } catch (e: Exception) {
+                                        state.messages.also {
+                                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                        }
+                                    }
+                                    ChatStreamState(
+                                        messages = messages,
+                                        intent = Intent.ScrollToBottom,
+                                        state = state.state
+                                    )
+                                }
                             }
                         } else {
                             state
@@ -477,9 +532,9 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadAround(message = replyMessage))
     }
 
-    suspend fun onLoadChatTail() {
+    suspend fun onLoadChatTail(msg: Id?) {
         logger.logInfo("DROID-2966 emitting onLoadEnd")
-        commands.emit(Transformation.Commands.LoadEnd)
+        commands.emit(Transformation.Commands.LoadEnd(msg))
     }
 
     suspend fun onVisibleRangeChanged(from: Id, to: Id) {
@@ -527,7 +582,7 @@ class ChatContainer @Inject constructor(
             /**
              * Scroll-to-bottom behavior.
              */
-            data object LoadEnd: Commands()
+            data class LoadEnd(val lastVisibleMessage: Id?): Commands()
 
             data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
         }

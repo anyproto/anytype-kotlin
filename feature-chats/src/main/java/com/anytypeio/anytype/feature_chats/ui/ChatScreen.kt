@@ -382,7 +382,7 @@ fun ChatScreen(
                     .mapNotNull { item -> latestMessages.getOrNull(item.index) }
                     .filterIsInstance<ChatView.Message>()
 
-                if (visibleMessages.isNotEmpty()) {
+                if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
                     // TODO could be optimised by passing order ID
                     visibleMessages.first().id to visibleMessages.last().id
                 } else null

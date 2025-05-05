@@ -105,4 +105,8 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun cancelAccountMigration(account: Id) {
         throw UnsupportedOperationException()
     }
+
+    override suspend fun registerDeviceToken(request: Command.RegisterDeviceToken) {
+        throw UnsupportedOperationException()
+    }
 }

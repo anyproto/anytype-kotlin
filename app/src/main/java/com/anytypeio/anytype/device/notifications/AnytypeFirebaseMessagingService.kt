@@ -11,6 +11,7 @@ import android.util.Base64
 import android.util.Log
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.AndroidApplication
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -25,13 +26,21 @@ class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        Log.d("Test1983", "Refreshed token: $token")
         // TODO: отправить token на ваш сервер
+    }
+
+    init {
+        Log.d("Test1983", "FirebaseMessagingService initialized")
     }
 
     override fun onCreate() {
        (application as AndroidApplication).componentManager.pushContentComponent.get().inject(this)
         super.onCreate()
+        Log.d("Test1983", "FirebaseMessagingService onCreate")
+        FirebaseMessaging.getInstance().token
+            .addOnCompleteListener { t ->
+                Log.d("Test1983", "Refreshed token: ${t.result}")
+            }
         createNotificationChannel()
     }
 

@@ -22,7 +22,7 @@ interface MiddlewareProtobufLogger {
     ) : MiddlewareProtobufLogger {
 
         private val isConciseLogging: Boolean
-            get() = false//featureToggles.isConciseLogging
+            get() = true//featureToggles.isConciseLogging
 
         override fun logRequest(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {

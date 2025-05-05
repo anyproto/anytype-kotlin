@@ -959,7 +959,7 @@ class ChatViewModel @Inject constructor(
         from: Id,
         to: Id
     ) {
-        Timber.d("onVisibleRangeChanged, from: $from, to: $to")
+        Timber.d("DROID-2966 onVisibleRangeChanged, from: $from, to: $to")
         visibleRangeUpdates.tryEmit(from to to)
     }
 

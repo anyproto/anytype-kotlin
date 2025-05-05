@@ -393,12 +393,17 @@ fun ChatScreen(
             }
     }
 
+    val isAtBottom by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex == 0 &&
+                    lazyListState.firstVisibleItemScrollOffset == 0
+        }
+    }
+
     // Scrolling to bottom when list size changes and we are at the bottom of the list
-    LaunchedEffect(latestMessages) {
-        if (lazyListState.firstVisibleItemScrollOffset == 0 && !isPerformingScrollIntent.value) {
-            scope.launch {
-                lazyListState.animateScrollToItem(0)
-            }
+    LaunchedEffect(latestMessages.size) {
+        if (isAtBottom && !isPerformingScrollIntent.value) {
+            lazyListState.animateScrollToItem(0)
         }
     }
 

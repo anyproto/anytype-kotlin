@@ -203,10 +203,10 @@ class ChatContainer @Inject constructor(
                                             logger.logException(e, "DROID-2966 Error while loading reply context")
                                             state.messages
                                         }
-                                        val target = messages.find { it.order == oldestReadOrderId } ?: messages.lastOrNull()
+                                        val target = messages.find { it.order == oldestReadOrderId }
                                         ChatStreamState(
                                             messages = messages,
-                                            intent = if (target != null) Intent.ScrollToMessage(target.id) else Intent.None,
+                                            intent = if (target != null) Intent.ScrollToMessage(target.id) else Intent.ScrollToBottom,
                                             state = state.state
                                         )
                                     } else {

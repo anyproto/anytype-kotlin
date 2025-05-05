@@ -139,6 +139,8 @@ fun ChatScreenWrapper(
                     .map { it.intent }
                     .collectAsStateWithLifecycle(ChatContainer.Intent.None)
 
+                val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
+
                 ChatScreen(
                     chatBoxMode = vm.chatBoxMode.collectAsState().value,
                     messages = messages,
@@ -206,7 +208,7 @@ fun ChatScreenWrapper(
                     onViewChatReaction = onViewChatReaction,
                     onMemberIconClicked = vm::onMemberIconClicked,
                     onMentionClicked = vm::onMentionClicked,
-                    mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value,
+                    mentionPanelState = mentionPanelState,
                     onTextChanged = { value ->
                         vm.onChatBoxInputChanged(
                             selection = value.selection.start..value.selection.end,

@@ -122,6 +122,7 @@ message Event {
 
             Chat.Delete chatDelete = 131;
             Chat.UpdateState chatStateUpdate = 133; // in case new unread messages received or chat state changed (e.g. message read on another device)
+            PushEncryptionKey.Update pushEncryptionKeyUpdate = 136;
         }
     }
 
@@ -1187,6 +1188,13 @@ message Event {
             string rootCollectionID = 1;
             int64 objectsCount = 2;
             model.Import.Type importType = 3;
+        }
+    }
+
+    message PushEncryptionKey {
+        message Update {
+            string encryptionKeyId = 1;
+            string encryptionKey = 2;
         }
     }
 }

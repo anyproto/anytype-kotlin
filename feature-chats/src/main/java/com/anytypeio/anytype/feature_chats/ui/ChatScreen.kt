@@ -728,11 +728,14 @@ fun Messages(
                         },
                         reply = msg.reply,
                         onScrollToReplyClicked = { reply ->
-                            val idx = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
-                            if (idx != -1) {
-                                scope.launch { scrollState.animateScrollToItem(index = idx) }
-                            } else {
-                                onScrollToReplyClicked(reply.msg)
+                            val targetIndex = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
+                            scope.launch {
+                                if (targetIndex != -1 && targetIndex < scrollState.layoutInfo.totalItemsCount) {
+                                    scrollState.animateScrollToItem(index = targetIndex)
+                                } else {
+                                    // Defer to VM: message likely not yet in the list (e.g. paged)
+                                    onScrollToReplyClicked(reply.msg)
+                                }
                             }
                         },
                         onAddReactionClicked = {

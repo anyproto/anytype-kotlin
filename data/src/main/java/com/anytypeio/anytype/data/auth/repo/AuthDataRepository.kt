@@ -121,4 +121,8 @@ class AuthDataRepository(
     override suspend fun debugExportLogs(dir: String): String {
         return factory.remote.debugExportLogs(dir)
     }
+
+    override suspend fun registerDeviceToken(request: Command.RegisterDeviceToken) {
+        factory.remote.registerDeviceToken(request)
+    }
 }

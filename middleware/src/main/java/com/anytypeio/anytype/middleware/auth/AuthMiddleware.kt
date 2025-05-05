@@ -96,4 +96,8 @@ class AuthMiddleware(
     override suspend fun debugExportLogs(dir: String): String {
         return middleware.debugExportLogs(dir)
     }
+
+    override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
+        middleware.registerDeviceToken(request = command)
+    }
 }

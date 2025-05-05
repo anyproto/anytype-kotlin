@@ -710,4 +710,8 @@ sealed class Command {
         val blockId: Id,
         val properties: List<Key>
     ) : Command()
+
+    data class RegisterDeviceToken(
+        val token: String
+    ) : Command()
 }

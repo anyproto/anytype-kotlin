@@ -10,7 +10,7 @@ interface PushKeyRemoteChannel {
     fun observe(): Flow<PushKeyUpdate>
 }
 
-class PushKeyDateChannel(
+class PushKeyDataChannel(
     private val channel: PushKeyRemoteChannel
 ) : PushKeyChannel {
 

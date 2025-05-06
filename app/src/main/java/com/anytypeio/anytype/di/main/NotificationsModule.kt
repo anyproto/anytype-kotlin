@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
-import com.anytypeio.anytype.data.auth.event.PushKeyDateChannel
+import com.anytypeio.anytype.data.auth.event.PushKeyDataChannel
 import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -103,7 +103,7 @@ object NotificationsModule {
     @Singleton
     fun providePushKeyChannel(
         channel: PushKeyRemoteChannel
-    ): PushKeyChannel = PushKeyDateChannel(
+    ): PushKeyChannel = PushKeyDataChannel(
         channel = channel
     )
 }

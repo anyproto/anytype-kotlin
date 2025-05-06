@@ -6,16 +6,16 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import javax.inject.Inject
 
-class PushNotificationUseCase @Inject constructor(
+class RegisterDeviceTokenUseCase @Inject constructor(
     private val repository: AuthRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<PushNotificationUseCase.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<RegisterDeviceTokenUseCase.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        val request = Command.RegisterDeviceToken(
+        val command = Command.RegisterDeviceToken(
             token = params.token,
         )
-        repository.registerDeviceToken(request)
+        repository.registerDeviceToken(command = command)
     }
 
     data class Params(

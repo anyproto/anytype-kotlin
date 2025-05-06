@@ -1,20 +1,25 @@
 package com.anytypeio.anytype.device.notifications
 
-import android.content.SharedPreferences
+import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
+import timber.log.Timber
 
 interface DecryptionPushContentServiceProtocol {
     fun decrypt(encryptedData: ByteArray, keyId: String): DecryptedPushContent?
 }
 
 class DecryptionPushContentService(
-    private val encryptedPrefs: SharedPreferences,
+    private val pushKeyProvider: PushKeyProvider,
     private val cryptoService: CryptoServiceProtocol = CryptoService(),
 //    private val encryptionKeyService: EncryptionKeyServiceProtocol = AppContainer.shared.encryptionKeyService(),
     private val json: Json = Json { ignoreUnknownKeys = true }
 ) : DecryptionPushContentServiceProtocol {
+
+    init {
+        Timber.d("DecryptionPushContentService initialized")
+    }
 
     @OptIn(ExperimentalEncodingApi::class)
     override fun decrypt(encryptedData: ByteArray, keyId: String): DecryptedPushContent? {

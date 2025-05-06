@@ -50,6 +50,8 @@ dependencies {
 
     compileOnly libs.javaxInject
 
+    implementation libs.gson
+
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin

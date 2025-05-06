@@ -98,6 +98,6 @@ class AuthMiddleware(
     }
 
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
-        middleware.registerDeviceToken(request = command)
+        middleware.registerDeviceToken(command = command)
     }
 }

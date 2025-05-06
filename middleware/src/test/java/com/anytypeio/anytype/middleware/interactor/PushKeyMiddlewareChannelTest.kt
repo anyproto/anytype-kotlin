@@ -11,7 +11,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 
@@ -34,12 +33,12 @@ class PushKeyMiddlewareChannelTest {
     }
 
     @Test
-    fun `should emit null initially`() = runTest {
+    fun `should emit empty initially`() = runTest {
         // Given
         val initialValue = channel.observe().first()
 
         // Then
-        assertNull(initialValue)
+        assertEquals(PushKeyUpdate.EMPTY, initialValue)
     }
 
     @Test
@@ -56,8 +55,8 @@ class PushKeyMiddlewareChannelTest {
                 messages = listOf(
                     anytype.Event.Message(
                         pushEncryptionKeyUpdate = anytype.Event.PushEncryptionKey.Update(
-                            encryptionKeyId = expectedUpdate1.encryptionKeyId!!,
-                            encryptionKey = expectedUpdate1.encryptionKey!!
+                            encryptionKeyId = expectedUpdate1.encryptionKeyId,
+                            encryptionKey = expectedUpdate1.encryptionKey
                         )
                     )
                 )
@@ -72,8 +71,8 @@ class PushKeyMiddlewareChannelTest {
                 messages = listOf(
                     anytype.Event.Message(
                         pushEncryptionKeyUpdate = anytype.Event.PushEncryptionKey.Update(
-                            encryptionKeyId = expectedUpdate2.encryptionKeyId!!,
-                            encryptionKey = expectedUpdate2.encryptionKey!!
+                            encryptionKeyId = expectedUpdate2.encryptionKeyId,
+                            encryptionKey = expectedUpdate2.encryptionKey
                         )
                     )
                 )
@@ -87,7 +86,7 @@ class PushKeyMiddlewareChannelTest {
             channel.observe().test {
 
                 val emittedValue = awaitItem()
-                assertNull(emittedValue)
+                assertEquals(PushKeyUpdate.EMPTY, emittedValue)
 
                 eventHandlerChannel.emit(event1)
                 dispatcher.scheduler.advanceUntilIdle()
@@ -129,7 +128,7 @@ class PushKeyMiddlewareChannelTest {
             channel.observe().test {
 
                 val emittedValue = awaitItem()
-                assertNull(emittedValue)
+                assertEquals(PushKeyUpdate.EMPTY, emittedValue)
 
                 eventHandlerChannel.emit(event)
                 dispatcher.scheduler.advanceUntilIdle()
@@ -154,8 +153,8 @@ class PushKeyMiddlewareChannelTest {
                 messages = listOf(
                     anytype.Event.Message(
                         pushEncryptionKeyUpdate = anytype.Event.PushEncryptionKey.Update(
-                            encryptionKeyId = expectedUpdate.encryptionKeyId!!,
-                            encryptionKey = expectedUpdate.encryptionKey!!
+                            encryptionKeyId = expectedUpdate.encryptionKeyId,
+                            encryptionKey = expectedUpdate.encryptionKey
                         )
                     )
                 )
@@ -170,7 +169,7 @@ class PushKeyMiddlewareChannelTest {
             channel.observe().test {
 
                 val emittedValue = awaitItem()
-                assertNull(emittedValue)
+                assertEquals(PushKeyUpdate.EMPTY, emittedValue)
 
                 eventHandlerChannel.emit(event)
                 dispatcher.scheduler.advanceUntilIdle()
@@ -196,8 +195,8 @@ class PushKeyMiddlewareChannelTest {
                         anytype.Event.Message(pushEncryptionKeyUpdate = null),
                         anytype.Event.Message(
                             pushEncryptionKeyUpdate = anytype.Event.PushEncryptionKey.Update(
-                                encryptionKeyId = expectedUpdate1.encryptionKeyId!!,
-                                encryptionKey = expectedUpdate1.encryptionKey!!
+                                encryptionKeyId = expectedUpdate1.encryptionKeyId,
+                                encryptionKey = expectedUpdate1.encryptionKey
                             )
                         ),
                         anytype.Event.Message(pushEncryptionKeyUpdate = null),
@@ -212,7 +211,7 @@ class PushKeyMiddlewareChannelTest {
                 channel.observe().test {
 
                     val emittedValue = awaitItem()
-                    assertNull(emittedValue)
+                    assertEquals(PushKeyUpdate.EMPTY, emittedValue)
 
                     eventHandlerChannel.emit(event1)
                     dispatcher.scheduler.advanceUntilIdle()

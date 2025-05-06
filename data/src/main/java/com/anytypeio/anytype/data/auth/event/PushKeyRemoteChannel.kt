@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.Flow
 interface PushKeyRemoteChannel {
     fun start()
     fun stop()
-    fun observe(): Flow<PushKeyUpdate?>
+    fun observe(): Flow<PushKeyUpdate>
 }
 
 class PushKeyDateChannel(
     private val channel: PushKeyRemoteChannel
 ) : PushKeyChannel {
 
-    override fun observe(): Flow<PushKeyUpdate?> {
+    override fun observe(): Flow<PushKeyUpdate> {
         return channel.observe()
     }
 }

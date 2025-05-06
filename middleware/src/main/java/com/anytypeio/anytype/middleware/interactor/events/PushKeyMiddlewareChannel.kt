@@ -22,8 +22,8 @@ class PushKeyMiddlewareChannel(
 
     private val jobs = mutableListOf<Job>()
 
-    private val _pushKeyStatus = MutableStateFlow<PushKeyUpdate?>(null)
-    val pushKeyStatus: Flow<PushKeyUpdate?> = _pushKeyStatus.asStateFlow()
+    private val _pushKeyStatus = MutableStateFlow<PushKeyUpdate>(PushKeyUpdate.EMPTY)
+    val pushKeyStatus: Flow<PushKeyUpdate> = _pushKeyStatus.asStateFlow()
 
     override fun start() {
         Timber.i("PushKeyMiddlewareChannel start")
@@ -52,7 +52,7 @@ class PushKeyMiddlewareChannel(
         jobs.cancel()
     }
 
-    override fun observe(): Flow<PushKeyUpdate?> {
+    override fun observe(): Flow<PushKeyUpdate> {
         return pushKeyStatus
     }
 }

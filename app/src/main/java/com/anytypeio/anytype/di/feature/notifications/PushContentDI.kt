@@ -1,21 +1,22 @@
 package com.anytypeio.anytype.di.feature.notifications
 
 import android.content.Context
-import android.content.SharedPreferences
-import com.anytypeio.anytype.data.notifications.PushNotificationRepositoryImpl
 import com.anytypeio.anytype.device.notifications.AnytypeFirebaseMessagingService
 import com.anytypeio.anytype.device.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.device.notifications.DecryptionPushContentServiceProtocol
-import com.anytypeio.anytype.device.notifications.PushNotificationService
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.notifications.PushNotificationRepository
-import dagger.Binds
+import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
+import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Singleton
 @Component(
@@ -38,37 +39,40 @@ object PushContentModule {
 
     @Singleton
     @Provides
-    fun providePushNotificationService(
-        repository: PushNotificationRepository
-    ): PushNotificationService {
-        return PushNotificationService(repository)
+    fun provideUseCase(
+        repository: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RegisterDeviceTokenUseCase {
+        return RegisterDeviceTokenUseCase(
+            repository = repository,
+            dispatchers = dispatchers
+        )
     }
 
     @Singleton
     @Provides
     fun provideDecryptionPushContentService(
-        @Named("encrypted") sharedPreferences: SharedPreferences
+        pushKeyProvider: PushKeyProvider
     ): DecryptionPushContentServiceProtocol {
         return DecryptionPushContentService(
-            encryptedPrefs = sharedPreferences,
+            pushKeyProvider = pushKeyProvider
         )
     }
 
     @Module
     interface Declarations {
-        @Binds
-        fun bindPushNotificationRepository(
-            impl: PushNotificationRepositoryImpl
-        ): PushNotificationRepository
 
     }
 }
 
 interface PushContentDependencies : ComponentDependencies {
-    // Define any necessary dependencies here
     fun context(): Context
     fun logger(): Logger
+    fun authRepository(): AuthRepository
+    fun dispatchers(): AppCoroutineDispatchers
 
-    @Named("encrypted")
-    fun sharedPreferences(): SharedPreferences
+    fun pushKeyProvider(): PushKeyProvider
+
+    @Named(DEFAULT_APP_COROUTINE_SCOPE)
+    fun coroutineScope(): CoroutineScope
 }

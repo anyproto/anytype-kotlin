@@ -15,6 +15,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -61,7 +62,7 @@ class PushKeyProviderImplTest {
     fun `getPushKey should return empty PushKey when no key is set`() = runTest {
         val pushKeyProvider = createPushKeyProvider()
         val pushKey = pushKeyProvider.getPushKey()
-        assert(pushKey == PushKey.EMPTY)
+        assertTrue(pushKey == PushKey.EMPTY)
     }
 
     @Test

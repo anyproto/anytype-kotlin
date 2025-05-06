@@ -36,6 +36,7 @@ import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
 import com.anytypeio.anytype.di.feature.notifications.NotificationDependencies
+import com.anytypeio.anytype.di.feature.notifications.PushContentDependencies
 import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
@@ -143,7 +144,8 @@ interface MainComponent :
     DebugDependencies,
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
-    SpacePropertiesDependencies
+    SpacePropertiesDependencies,
+    PushContentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -414,4 +416,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SpacePropertiesDependencies::class)
     abstract fun provideSpacePropertiesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(PushContentDependencies::class)
+    abstract fun providePushContentDependencies(component: MainComponent): ComponentDependencies
 }

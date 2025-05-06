@@ -5,16 +5,23 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.*
 import android.util.Base64
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.AndroidApplication
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -22,11 +29,33 @@ class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var decryptionPushContentService: DecryptionPushContentServiceProtocol
 
     @Inject
+    lateinit var dispatchers: AppCoroutineDispatchers
+
+    @Inject
+    @Named(DEFAULT_APP_COROUTINE_SCOPE)
+    lateinit var scope: CoroutineScope
+
+    @Inject
+    lateinit var registerDeviceToken: RegisterDeviceTokenUseCase
+
+    @Inject
     lateinit var context: Context
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // TODO: отправить token на ваш сервер
+        scope.launch(dispatchers.io) {
+            val params = RegisterDeviceTokenUseCase.Params(
+                token = token
+            )
+            registerDeviceToken.async(params).fold(
+                onSuccess = {
+                    Log.d("Test1983", "Token registered successfully")
+                },
+                onFailure = { error ->
+                    Log.e("Test1983", "Failed to register token: $error")
+                }
+            )
+        }
     }
 
     init {
@@ -34,7 +63,7 @@ class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onCreate() {
-       (application as AndroidApplication).componentManager.pushContentComponent.get().inject(this)
+        (application as AndroidApplication).componentManager.pushContentComponent.get().inject(this)
         super.onCreate()
         Log.d("Test1983", "FirebaseMessagingService onCreate")
         FirebaseMessaging.getInstance().token
@@ -52,9 +81,9 @@ class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
 
         if (base64Payload != null && keyId != null) {
             // 2) Расшифровываем в фоне
-            GlobalScope.launch(Dispatchers.IO) {
+            scope.launch(dispatchers.io) {
                 val decrypted = decryptPayload(base64Payload, keyId)
-                withContext(Dispatchers.Main) {
+                withContext(dispatchers.main) {
                     if (decrypted != null) {
                         showDecryptedNotification(decrypted)
                     } else {
@@ -80,7 +109,7 @@ class AnytypeFirebaseMessagingService : FirebaseMessagingService() {
 
     private fun showDecryptedNotification(decrypted: DecryptedPushContent) {
         val title = decrypted.newMessage.spaceName
-        val text  = "${decrypted.newMessage.senderName}: ${decrypted.newMessage.text}"
+        val text = "${decrypted.newMessage.senderName}: ${decrypted.newMessage.text}"
 
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(title)

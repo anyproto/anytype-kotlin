@@ -1,22 +1,20 @@
 package com.anytypeio.anytype.core_models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DecryptedPushContent(
-    val spaceId: Id,
+    val spaceId: String,
     val type: Int,
-    val senderId: Id,
+    val senderId: String,
     val newMessage: Message
 ) {
+    @Serializable
     data class Message(
-        val chatId: Id,
-        val msgId: Id,
+        val chatId: String,
+        val msgId: String,
         val text: String,
         val spaceName: String,
         val senderName: String
     )
 }
-
-data class DecryptedPushKeys(
-    val decryptedMessage: String,
-    val spaceId: Id,
-    val chatId: Id
-) 

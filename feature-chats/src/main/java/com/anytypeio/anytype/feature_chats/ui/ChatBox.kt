@@ -47,6 +47,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -603,7 +604,7 @@ fun ChatBoxMarkup(
                 onMarkupEvent(ChatMarkupEvent.Italic)
             },
             text = "i",
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 fontStyle = FontStyle.Italic
             ),
             color = colorResource(R.color.text_primary)
@@ -612,7 +613,7 @@ fun ChatBoxMarkup(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Strike)
             },
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 textDecoration = TextDecoration.LineThrough
             ),
             text = " S ",
@@ -622,7 +623,7 @@ fun ChatBoxMarkup(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Underline)
             },
-            style = androidx.compose.ui.text.TextStyle(
+            style = TextStyle(
                 textDecoration = TextDecoration.Underline
             ),
             text = "U",

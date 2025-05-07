@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.di.main
 
+import android.content.SharedPreferences
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.device.DeviceTokenStoringServiceImpl
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -11,12 +13,14 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
+import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -223,14 +227,16 @@ object SubscriptionsModule {
         permissions: UserPermissionProvider,
         isSpaceDeleted: SpaceDeletedStatusWatcher,
         profileSubscriptionManager: ProfileSubscriptionManager,
-        networkConnectionStatus: NetworkConnectionStatus
+        networkConnectionStatus: NetworkConnectionStatus,
+        deviceTokenStoringService: DeviceTokenStoringService
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
         permissions = permissions,
         isSpaceDeleted = isSpaceDeleted,
         profile = profileSubscriptionManager,
-        networkConnectionStatus = networkConnectionStatus
+        networkConnectionStatus = networkConnectionStatus,
+        deviceTokenStoringService = deviceTokenStoringService
     )
 
     @JvmStatic
@@ -259,4 +265,19 @@ object SubscriptionsModule {
             repo = repo,
             dispatchers = dispatchers
         )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun deviceTokenStoreService(
+        @Named("encrypted") sharedPreferences: SharedPreferences,
+        registerDeviceToken: RegisterDeviceToken,
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): DeviceTokenStoringService = DeviceTokenStoringServiceImpl(
+        sharedPreferences = sharedPreferences,
+        registerDeviceToken = registerDeviceToken,
+        dispatchers = dispatchers,
+        scope = scope
+    )
 }

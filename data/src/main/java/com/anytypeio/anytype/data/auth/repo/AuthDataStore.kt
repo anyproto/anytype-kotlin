@@ -47,4 +47,6 @@ interface AuthDataStore {
     suspend fun getNetworkMode(): NetworkModeConfig
     suspend fun setNetworkMode(modeConfig: NetworkModeConfig)
     suspend fun debugExportLogs(dir: String): String
+
+    suspend fun registerDeviceToken(request: Command.RegisterDeviceToken)
 }

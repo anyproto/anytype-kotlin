@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
+import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.middleware.EventProxy
 import java.io.IOException
@@ -17,10 +18,14 @@ class EventHandler @Inject constructor(
     private val logger: MiddlewareProtobufLogger,
     private val scope: CoroutineScope,
     private val channel: EventHandlerChannel,
-    private val syncP2PStore: SyncAndP2PStatusEventsStore
+    private val syncP2PStore: SyncAndP2PStatusEventsStore,
+    private val pushKeyRemoteChannel: PushKeyRemoteChannel
 ) : EventProxy {
 
     init {
+        scope.launch {
+            pushKeyRemoteChannel.start()
+        }
         scope.launch {
             syncP2PStore.start()
         }

@@ -62,6 +62,7 @@ dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.1.0'
 sentryVersion = '7.13.0'
+firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
@@ -153,12 +154,14 @@ navigationCompose = { module = "androidx.navigation:navigation-compose", version
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
 playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" }
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
+firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.8.2" }
-library = { id = "com.android.library", version = "8.8.2" }
+application = { id = "com.android.application", version = "8.9.1" }
+library = { id = "com.android.library", version = "8.9.1" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }

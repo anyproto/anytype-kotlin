@@ -634,4 +634,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockDataViewRelationSet(request: Rpc.BlockDataview.Relation.Set.Request): Rpc.BlockDataview.Relation.Set.Response
+
+    @Throws(Exception::class)
+    fun pushNotificationRegisterToken(request: Rpc.PushNotification.RegisterToken.Request): Rpc.PushNotification.RegisterToken.Response
 }

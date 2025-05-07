@@ -6,10 +6,10 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import javax.inject.Inject
 
-class RegisterDeviceTokenUseCase @Inject constructor(
+class RegisterDeviceToken @Inject constructor(
     private val repository: AuthRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<RegisterDeviceTokenUseCase.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<RegisterDeviceToken.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
         val command = Command.RegisterDeviceToken(

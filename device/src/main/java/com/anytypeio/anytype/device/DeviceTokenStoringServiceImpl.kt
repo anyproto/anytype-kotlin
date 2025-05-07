@@ -4,7 +4,7 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
-import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
+import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -12,7 +12,7 @@ import timber.log.Timber
 
 class DeviceTokenStoringServiceImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
-    private val registerDeviceToken: RegisterDeviceTokenUseCase,
+    private val registerDeviceToken: RegisterDeviceToken,
     private val dispatchers: AppCoroutineDispatchers,
     private val scope: CoroutineScope
 ) : DeviceTokenStoringService {
@@ -31,7 +31,7 @@ class DeviceTokenStoringServiceImpl @Inject constructor(
         val token = sharedPreferences.getString(PREF_KEY, null)
         if (!token.isNullOrEmpty()) {
             scope.launch(dispatchers.io) {
-                val params = RegisterDeviceTokenUseCase.Params(token = token)
+                val params = RegisterDeviceToken.Params(token = token)
                 registerDeviceToken.async(params).fold(
                     onSuccess = {
                         Timber.d("Successfully registered token: $token")

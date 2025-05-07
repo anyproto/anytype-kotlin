@@ -20,7 +20,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
+import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -271,7 +271,7 @@ object SubscriptionsModule {
     @Singleton
     fun deviceTokenStoreService(
         @Named("encrypted") sharedPreferences: SharedPreferences,
-        registerDeviceToken: RegisterDeviceTokenUseCase,
+        registerDeviceToken: RegisterDeviceToken,
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
     ): DeviceTokenStoringService = DeviceTokenStoringServiceImpl(

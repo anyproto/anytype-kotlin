@@ -2986,7 +2986,7 @@ class Middleware @Inject constructor(
             platform = Platform.Android
         )
         logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.registerToken(request) }
+        val (response, time) = measureTimedValue { service.pushNotificationRegisterToken(request) }
         logResponseIfDebug(response, time)
     }
 

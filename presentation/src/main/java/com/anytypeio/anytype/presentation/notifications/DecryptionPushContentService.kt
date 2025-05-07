@@ -14,8 +14,7 @@ interface DecryptionPushContentService {
 
 class DecryptionPushContentServiceImpl @Inject constructor(
     private val pushKeyProvider: PushKeyProvider,
-    private val cryptoService: CryptoService,
-    private val json: Json
+    private val cryptoService: CryptoService
 ) : DecryptionPushContentService {
 
     init {
@@ -50,7 +49,7 @@ class DecryptionPushContentServiceImpl @Inject constructor(
 
             // Parse the decrypted JSON
             try {
-                json.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
+                Json.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
             } catch (e: Exception) {
                 Timber.e(e, "Failed to parse decrypted data for keyId: $keyId")
                 null

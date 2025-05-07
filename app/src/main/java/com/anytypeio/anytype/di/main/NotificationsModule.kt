@@ -29,7 +29,6 @@ import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.serialization.json.Json
 
 @Module
 object NotificationsModule {
@@ -123,18 +122,11 @@ object NotificationsModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideJson(): Json = Json { ignoreUnknownKeys = true }
-
-    @JvmStatic
-    @Provides
-    @Singleton
     fun provideDecryptionPushContentService(
         pushKeyProvider: PushKeyProvider,
         cryptoService: CryptoService,
-        json: Json
     ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
         pushKeyProvider = pushKeyProvider,
         cryptoService = cryptoService,
-        json = json
     )
 }

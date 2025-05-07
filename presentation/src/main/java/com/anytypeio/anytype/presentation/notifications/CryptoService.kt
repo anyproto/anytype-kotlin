@@ -17,17 +17,24 @@ interface CryptoService {
 }
 
 class CryptoServiceImpl : CryptoService {
+    companion object {
+        private const val NONCE_SIZE = 12
+    }
+
     @Throws(CryptoError.DecryptionFailed::class)
     override fun decryptAESGCM(data: ByteArray, keyData: ByteArray): ByteArray {
         return try {
+            // Verify input data length
+            if (data.size < NONCE_SIZE) {
+                throw CryptoError.DecryptionFailed(IllegalArgumentException("Input data must be at least $NONCE_SIZE bytes"))
+            }
 
             // Create SecretKeySpec for AES
             val keySpec = SecretKeySpec(keyData, "AES")
 
             // Combined data format: nonce + ciphertext + tag
-            val nonceSize = 12
-            val nonce = data.copyOfRange(0, nonceSize)
-            val cipherText = data.copyOfRange(nonceSize, data.size)
+            val nonce = data.copyOfRange(0, NONCE_SIZE)
+            val cipherText = data.copyOfRange(NONCE_SIZE, data.size)
 
             // Initialize Cipher for AES/GCM/NoPadding
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")

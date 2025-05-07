@@ -150,7 +150,7 @@ fun ChatScreenWrapper(
                     onMessageSent = { text, spans ->
                         vm.onMessageSent(
                             msg = text,
-                            markup = spans.map { span ->
+                            markup = spans.mapNotNull { span ->
                                 when(span) {
                                     is ChatBoxSpan.Mention -> {
                                         Block.Content.Text.Mark(
@@ -158,6 +158,24 @@ fun ChatScreenWrapper(
                                             param = span.param,
                                             range = span.start..span.end
                                         )
+                                    }
+                                    is ChatBoxSpan.Markup -> {
+                                        val type = when(span.type) {
+                                            ChatBoxSpan.Markup.BOLD -> Block.Content.Text.Mark.Type.BOLD
+                                            ChatBoxSpan.Markup.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
+                                            ChatBoxSpan.Markup.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+                                            ChatBoxSpan.Markup.CODE -> Block.Content.Text.Mark.Type.KEYBOARD
+                                            ChatBoxSpan.Markup.UNDERLINE -> Block.Content.Text.Mark.Type.UNDERLINE
+                                            else -> null
+                                        }
+                                        if (type != null) {
+                                            Block.Content.Text.Mark(
+                                                type = type,
+                                                range = span.start..span.end
+                                            )
+                                        } else {
+                                            null
+                                        }
                                     }
                                 }
                             }
@@ -582,6 +600,12 @@ fun ChatScreen(
                                             if (span.start > query.range.last) {
                                                 when (span) {
                                                     is ChatBoxSpan.Mention -> {
+                                                        span.copy(
+                                                            start = span.start + lengthDifference,
+                                                            end = span.end + lengthDifference
+                                                        )
+                                                    }
+                                                    is ChatBoxSpan.Markup -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,
                                                             end = span.end + lengthDifference

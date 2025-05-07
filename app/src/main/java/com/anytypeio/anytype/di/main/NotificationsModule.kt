@@ -19,6 +19,7 @@ import com.anytypeio.anytype.middleware.interactor.events.PushKeyMiddlewareChann
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -75,13 +76,15 @@ object NotificationsModule {
         @Named("encrypted") sharedPreferences: SharedPreferences,
         dispatchers: AppCoroutineDispatchers,
         @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        channel: PushKeyChannel
+        channel: PushKeyChannel,
+        gson: Gson
     ): PushKeyProvider {
         return PushKeyProviderImpl(
             sharedPreferences = sharedPreferences,
             dispatchers = dispatchers,
             scope = scope,
-            channel = channel
+            channel = channel,
+            gson = gson
         )
     }
 

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.other.DefaultDebugConfig
 import com.anytypeio.anytype.presentation.util.StringResourceProviderImpl
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProviderImpl
+import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -104,6 +105,11 @@ object UtilModule {
     @Singleton
     fun provideStringResourceProvider(context: Context): StringResourceProvider =
         StringResourceProviderImpl(context)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideGson(): Gson = Gson()
 
     @Module
     interface Bindings {

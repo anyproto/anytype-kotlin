@@ -40,8 +40,8 @@ object EmojiModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideEmojiSuggestStorage(context: Context): EmojiSuggestStorage {
-        return DefaultEmojiSuggestStorage(context, Gson())
+    fun provideEmojiSuggestStorage(context: Context, gson: Gson): EmojiSuggestStorage {
+        return DefaultEmojiSuggestStorage(context, gson)
     }
 
     @JvmStatic

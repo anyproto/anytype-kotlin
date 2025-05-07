@@ -2,10 +2,8 @@ package com.anytypeio.anytype.device
 
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
-import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
-import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -21,12 +19,6 @@ class AnytypePushService : FirebaseMessagingService() {
     @Inject
     @Named(DEFAULT_APP_COROUTINE_SCOPE)
     lateinit var scope: CoroutineScope
-
-    @Inject
-    lateinit var registerDeviceToken: RegisterDeviceTokenUseCase
-
-    @Inject
-    lateinit var awaitAccountStartManager: AwaitAccountStartManager
 
     @Inject
     lateinit var deviceTokenSavingService: DeviceTokenStoringService

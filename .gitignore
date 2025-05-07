@@ -14,6 +14,7 @@
 /analytics/gradle.properties
 .DS_Store
 **/build
+**/bin
 /libs/build
 /libs/lib.aar
 /captures

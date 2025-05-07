@@ -13,6 +13,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,11 +45,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -355,6 +362,51 @@ fun ChatBox(
                 }
             }
         }
+        // Markup panel
+        ChatBoxMarkup(
+            onMarkupEvent = { event ->
+                scope.launch {
+                    val selection = text.selection
+                    if (selection.start == selection.end) return@launch // No selection, nothing to apply
+
+                    val newSpan = when (event) {
+                        ChatMarkupEvent.Bold -> ChatBoxSpan.Mention(
+                            style = SpanStyle(fontWeight = FontWeight.Bold),
+                            start = selection.start,
+                            end = selection.end,
+                            param = "bold"
+                        )
+                        ChatMarkupEvent.Italic -> ChatBoxSpan.Mention(
+                            style = SpanStyle(fontStyle = FontStyle.Italic),
+                            start = selection.start,
+                            end = selection.end,
+                            param = "italic"
+                        )
+                        ChatMarkupEvent.Strike -> ChatBoxSpan.Mention(
+                            style = SpanStyle(textDecoration = TextDecoration.LineThrough),
+                            start = selection.start,
+                            end = selection.end,
+                            param = "strike"
+                        )
+                        ChatMarkupEvent.Underline -> ChatBoxSpan.Mention(
+                            style = SpanStyle(textDecoration = TextDecoration.Underline),
+                            start = selection.start,
+                            end = selection.end,
+                            param = "underline"
+                        )
+                        ChatMarkupEvent.Code -> ChatBoxSpan.Mention(
+                            style = SpanStyle(fontFamily = FontFamily.Monospace),
+                            start = selection.start,
+                            end = selection.end,
+                            param = "code"
+                        )
+                    }
+
+                    val updatedSpans = toggleSpan(text, spans, newSpan)
+                    onValueChange(text, updatedSpans)
+                }
+            }
+        )
     }
 }
 
@@ -436,4 +488,144 @@ private fun ChatBoxUserInput(
         },
         visualTransformation = AnnotatedTextTransformation(spans)
     )
+}
+
+/**
+ * Toggles a text span (markup) on the selected text range.
+ * If the range already has a conflicting span, it is removed or adjusted.
+ *
+ * @param text The current TextFieldValue.
+ * @param spans The list of existing spans.
+ * @param newSpan The new span to be applied (or toggled).
+ * @return A new list of spans with the toggled result.
+ */
+fun toggleSpan(
+    text: TextFieldValue,
+    spans: List<ChatBoxSpan>,
+    newSpan: ChatBoxSpan.Mention
+): List<ChatBoxSpan> {
+    val selection = text.selection
+    if (selection.start == selection.end) return spans // No selection, nothing to apply
+
+    val updatedSpans = spans.toMutableList()
+    val newSpans = mutableListOf<ChatBoxSpan>()
+
+    var spanToggled = false
+
+    // Process existing spans
+    updatedSpans.forEach { span ->
+        // Skip spans of a different type
+        if (span !is ChatBoxSpan.Mention || span.param != newSpan.param) {
+            newSpans.add(span)
+            return@forEach
+        }
+
+        // Case 1: Span is completely outside the selection - keep it
+        if (span.end <= selection.start || span.start >= selection.end) {
+            newSpans.add(span)
+            return@forEach
+        }
+
+        // Case 2: Selection fully covers the span - remove it (toggle off)
+        if (selection.start <= span.start && selection.end >= span.end) {
+            spanToggled = true
+            return@forEach // Do not add this span
+        }
+
+        // Case 3: Partial overlap - split or trim
+        if (selection.start > span.start) {
+            newSpans.add(span.copy(end = selection.start))
+        }
+        if (selection.end < span.end) {
+            newSpans.add(span.copy(start = selection.end))
+        }
+
+        spanToggled = true
+    }
+
+    // Case 4: Add new span if no toggle off occurred
+    if (!spanToggled) {
+        newSpans.add(newSpan)
+    }
+
+    // Sort and merge contiguous spans
+    return newSpans
+        .sortedBy { it.start }
+        .fold(mutableListOf<ChatBoxSpan>()) { acc, span ->
+            if (acc.isNotEmpty()) {
+                val last = acc.last()
+                if (last is ChatBoxSpan.Mention && span is ChatBoxSpan.Mention &&
+                    last.param == span.param && last.end == span.start
+                ) {
+                    // Merge contiguous spans of the same type
+                    acc[acc.lastIndex] = last.copy(end = span.end)
+                } else {
+                    acc.add(span)
+                }
+            } else {
+                acc.add(span)
+            }
+            acc
+        }
+}
+
+@Composable
+fun ChatBoxMarkup(
+    onMarkupEvent: (ChatMarkupEvent) -> Unit = {}
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.clickable {
+                onMarkupEvent(ChatMarkupEvent.Bold)
+            },
+            text = "B",
+            color = colorResource(R.color.text_primary)
+        )
+        Text(
+            modifier = Modifier.clickable {
+                onMarkupEvent(ChatMarkupEvent.Italic)
+            },
+            text = "I",
+            color = colorResource(R.color.text_primary)
+        )
+        Text(
+            modifier = Modifier.clickable {
+                onMarkupEvent(ChatMarkupEvent.Strike)
+            },
+            text = "S",
+            color = colorResource(R.color.text_primary)
+        )
+        Text(
+            modifier = Modifier.clickable {
+                onMarkupEvent(ChatMarkupEvent.Underline)
+            },
+            text = "U",
+            color = colorResource(R.color.text_primary)
+        )
+        Text(
+            modifier = Modifier.clickable {
+                onMarkupEvent(ChatMarkupEvent.Code)
+            },
+            text = "<>",
+            color = colorResource(R.color.text_primary)
+        )
+    }
+}
+
+sealed class ChatMarkupEvent {
+    data object Bold : ChatMarkupEvent()
+    data object Italic : ChatMarkupEvent()
+    data object Strike : ChatMarkupEvent()
+    data object Underline: ChatMarkupEvent()
+    data object Code: ChatMarkupEvent()
+}
+
+@DefaultPreviews
+@Composable
+fun ChatBoxMarkupPreview() {
+    ChatBoxMarkup()
 }

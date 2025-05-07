@@ -507,52 +507,51 @@ fun toggleSpan(
     spans: List<ChatBoxSpan>,
     newSpan: ChatBoxSpan.Markup
 ): List<ChatBoxSpan> {
-    val selection = text.selection
-    if (selection.start == selection.end) return spans // No selection, nothing to apply
+    val selectionStart = minOf(text.selection.start, text.selection.end)
+    val selectionEnd = maxOf(text.selection.start, text.selection.end)
+    if (selectionStart == selectionEnd) return spans // No selection, nothing to apply
 
     val updatedSpans = spans.toMutableList()
-    val newSpans = mutableListOf<ChatBoxSpan>()
-
+    val finalSpans = mutableListOf<ChatBoxSpan>()
     var spanToggled = false
 
-    // Process existing spans
-    updatedSpans.forEach { span ->
-        // Skip spans of a different type
+    // Process existing spans and toggle where needed
+    for (span in updatedSpans) {
         if (span !is ChatBoxSpan.Markup || span.type != newSpan.type) {
-            newSpans.add(span)
-            return@forEach
+            finalSpans.add(span)
+            continue
         }
 
-        // Case 1: Span is completely outside the selection - keep it
-        if (span.end <= selection.start || span.start >= selection.end) {
-            newSpans.add(span)
-            return@forEach
+        // Span completely outside the selection - keep it
+        if (span.end <= selectionStart || span.start >= selectionEnd) {
+            finalSpans.add(span)
+            continue
         }
 
-        // Case 2: Selection fully covers the span - remove it (toggle off)
-        if (selection.start <= span.start && selection.end >= span.end) {
-            spanToggled = true
-            return@forEach // Do not add this span
-        }
-
-        // Case 3: Partial overlap - split or trim
-        if (selection.start > span.start) {
-            newSpans.add(span.copy(end = selection.start))
-        }
-        if (selection.end < span.end) {
-            newSpans.add(span.copy(start = selection.end))
-        }
-
+        // Toggle logic:
         spanToggled = true
+
+        // Case 1: Selection fully covers the span - remove it (toggle off)
+        if (selectionStart <= span.start && selectionEnd >= span.end) {
+            continue // Skip adding this span
+        }
+
+        // Case 2: Partial overlap - split or trim
+        if (span.start < selectionStart) {
+            finalSpans.add(span.copy(end = selectionStart)) // Left part
+        }
+        if (span.end > selectionEnd) {
+            finalSpans.add(span.copy(start = selectionEnd)) // Right part
+        }
     }
 
-    // Case 4: Add new span if no toggle off occurred
+    // If no span was toggled off, add the new span
     if (!spanToggled) {
-        newSpans.add(newSpan)
+        finalSpans.add(newSpan.copy(start = selectionStart, end = selectionEnd))
     }
 
     // Sort and merge contiguous spans
-    return newSpans
+    return finalSpans
         .sortedBy { it.start }
         .fold(mutableListOf<ChatBoxSpan>()) { acc, span ->
             if (acc.isNotEmpty()) {

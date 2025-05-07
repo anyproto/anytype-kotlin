@@ -7,6 +7,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.chats.PushKeyUpdate
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -33,6 +35,8 @@ class PushKeyProviderImplTest {
 
     @Mock
     private lateinit var mockChannel: PushKeyChannel
+
+    private val gson = Gson()
 
     private lateinit var sharedPreferences: SharedPreferences
     private val dispatcher = StandardTestDispatcher(name = "Default test dispatcher")
@@ -62,14 +66,14 @@ class PushKeyProviderImplTest {
     fun `getPushKey should return empty PushKey when no key is set`() = runTest {
         val pushKeyProvider = createPushKeyProvider()
         val pushKey = pushKeyProvider.getPushKey()
-        assertTrue(pushKey == PushKey.EMPTY)
+        assertTrue(pushKey.isEmpty())
     }
 
     @Test
     fun `savePushKey should store the key and keyId in shared preferences when channel emits`() =
         runTest(dispatcher) {
-            val pushKey = "test_push_key"
             val pushKeyId = "test_push_key_id"
+            val pushKey = "test_push_key"
 
             // Simulate the event emission from the channel
             val channelFlow = MutableSharedFlow<PushKeyUpdate>(replay = 0)
@@ -85,29 +89,17 @@ class PushKeyProviderImplTest {
             dispatcher.scheduler.advanceUntilIdle() // Allow the processing coroutine to run
 
             // Verify the stored values in SharedPreferences
-            val storedKey = sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY, null)
-            val storedKeyId =
-                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY_ID, null)
+            val storedKeysJson =
+                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+            val storedKeys: Map<String, PushKey> = gson.fromJson(
+                storedKeysJson,
+                object : TypeToken<Map<String, PushKey>>() {}.type
+            )
 
-            assertEquals(pushKey, storedKey)
-            assertEquals(pushKeyId, storedKeyId)
+            assertTrue(storedKeys.containsKey(pushKeyId))
+            assertEquals(pushKeyId, storedKeys[pushKeyId]?.id)
+            assertEquals(pushKey, storedKeys[pushKeyId]?.value)
         }
-
-    @Test
-    fun `getPushKey should return the stored key when a key is set`() = runTest {
-        val pushKey = PushKey(key = "test_push_key", id = "test_push_key_id")
-        sharedPreferences.edit()
-            .putString(PushKeyProviderImpl.PREF_PUSH_KEY_ID, pushKey.id)
-            .apply()
-        sharedPreferences.edit()
-            .putString(PushKeyProviderImpl.PREF_PUSH_KEY, pushKey.key)
-            .apply()
-
-        val pushKeyProvider = createPushKeyProvider()
-        val retrievedKey = pushKeyProvider.getPushKey()
-
-        assertEquals(pushKey, retrievedKey)
-    }
 
     @Test
     fun `observation should update shared preferences on subsequent channel emissions`() =
@@ -136,14 +128,13 @@ class PushKeyProviderImplTest {
             dispatcher.scheduler.advanceUntilIdle() // Process emission
 
             // Verify initial storage
-            assertEquals(
-                initialKey,
-                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY, null)
-            )
-            assertEquals(
-                initialKeyId,
-                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY_ID, null)
-            )
+            val storedKeysJson =
+                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+            val storedKeys: Map<String, PushKey> =
+                gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
+            assertTrue(storedKeys.containsKey(initialKeyId))
+            assertEquals(initialKeyId, storedKeys[initialKeyId]?.id)
+            assertEquals(initialKey, storedKeys[initialKeyId]?.value)
 
             // Emit updated event
             channelFlow.emit(
@@ -155,15 +146,71 @@ class PushKeyProviderImplTest {
             dispatcher.scheduler.advanceUntilIdle() // Process emission
 
             // Verify updated storage
-            assertEquals(
-                updatedKey,
-                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY, null)
+            val updatedStoredKeysJson =
+                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+            val updatedStoredKeys: Map<String, PushKey> = gson.fromJson(
+                updatedStoredKeysJson,
+                object : TypeToken<Map<String, PushKey>>() {}.type
             )
-            assertEquals(
-                updatedKeyId,
-                sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEY_ID, null)
-            )
+            assertTrue(updatedStoredKeys.containsKey(updatedKeyId))
+            assertEquals(updatedKeyId, updatedStoredKeys[updatedKeyId]?.id)
+            assertEquals(updatedKey, updatedStoredKeys[updatedKeyId]?.value)
         }
+
+    @Test
+    fun `emit key1 to value1 and then update key1 to value2`() = runTest(dispatcher) {
+        val key1 = "key1"
+        val value1 = "value11"
+        val value2 = "value22"
+
+        // Simulate the event emission from the channel
+        val channelFlow = MutableSharedFlow<PushKeyUpdate>(replay = 0)
+        mockChannel.stub {
+            on { observe() } doReturn channelFlow
+        }
+
+        // Start observing the channel (create provider)
+        createPushKeyProvider() // This will start observing the channel
+        dispatcher.scheduler.advanceUntilIdle() // Allow the observation coroutine to run
+
+        // Emit first event: (key1 to value1)
+        channelFlow.emit(PushKeyUpdate(encryptionKey = value1, encryptionKeyId = key1))
+        dispatcher.scheduler.advanceUntilIdle() // Allow the processing coroutine to run
+
+        // Verify first event: (key1 to value1) has been saved in SharedPreferences
+        val storedKeysJson1 =
+            sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+        val storedKeys1: Map<String, PushKey> = Gson().fromJson(
+            storedKeysJson1,
+            object : TypeToken<Map<String, PushKey>>() {}.type
+        )
+
+        assertTrue(storedKeys1.containsKey(key1))
+        assertEquals(key1, storedKeys1[key1]?.id)
+        assertEquals(value1, storedKeys1[key1]?.value)
+
+        assertEquals(1, storedKeys1.size) // Only one key should be present
+
+        // Emit second event: (key1 to value2)
+        channelFlow.emit(PushKeyUpdate(encryptionKey = value2, encryptionKeyId = key1))
+        dispatcher.scheduler.advanceUntilIdle() // Allow the processing coroutine to run
+
+        // Verify second event: (key1 to value2) has updated the value for the same key in SharedPreferences
+        val storedKeysJson2 =
+            sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+        val storedKeys2: Map<String, PushKey> = Gson().fromJson(
+            storedKeysJson2,
+            object : TypeToken<Map<String, PushKey>>() {}.type
+        )
+
+        // Ensure the value for key1 has been updated to value2
+        assertTrue(storedKeys2.containsKey(key1))
+        assertEquals(key1, storedKeys2[key1]?.id) // Verify the updated value
+        assertEquals(value2, storedKeys2[key1]?.value)
+
+        // Ensure no other keys were affected
+        assertEquals(1, storedKeys2.size) // Still only one key should be present
+    }
 
     private fun createPushKeyProvider(): PushKeyProviderImpl {
         return PushKeyProviderImpl(
@@ -174,7 +221,8 @@ class PushKeyProviderImplTest {
                 main = dispatcher,
                 computation = dispatcher
             ),
-            scope = testScope
+            scope = testScope,
+            gson = gson
         )
     }
 

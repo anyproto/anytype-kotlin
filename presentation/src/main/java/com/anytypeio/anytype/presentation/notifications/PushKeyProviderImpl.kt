@@ -3,27 +3,30 @@ package com.anytypeio.anytype.presentation.notifications
 import android.content.SharedPreferences
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 interface PushKeyProvider {
-    fun getPushKey(): PushKey
+    fun getPushKey(): Map<String, PushKey>
 }
 
 data class PushKey(
-    val key: String,
-    val id: String
+    val id: String,
+    val value: String
 ) {
     companion object {
-        val EMPTY = PushKey(key = "", id = "")
+        val EMPTY = PushKey(value = "", id = "")
     }
 }
 
 class PushKeyProviderImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val channel: PushKeyChannel,
+    private val gson: Gson,
     dispatchers: AppCoroutineDispatchers,
     scope: CoroutineScope
 ) : PushKeyProvider {
@@ -36,30 +39,37 @@ class PushKeyProviderImpl @Inject constructor(
                 .collect { event ->
                     Timber.d("New push key updates: $event")
                     savePushKey(
-                        pushKey = event.encryptionKey,
-                        pushKeyId = event.encryptionKeyId
+                        id = event.encryptionKeyId,
+                        value = event.encryptionKey
                     )
                 }
         }
     }
 
-    private fun savePushKey(pushKey: String?, pushKeyId: String?) {
+    private fun savePushKey(id: String?, value: String?) {
+        val storedKeys = getStoredPushKeys().toMutableMap()
+
+        if (!value.isNullOrEmpty() && !id.isNullOrEmpty()) {
+            storedKeys[id] = PushKey(id = id, value = value)
+        }
+
         sharedPreferences.edit().apply {
-            putString(PREF_PUSH_KEY, pushKey)
-            putString(PREF_PUSH_KEY_ID, pushKeyId)
+            putString(PREF_PUSH_KEYS, gson.toJson(storedKeys))
             apply()
         }
     }
 
-    override fun getPushKey(): PushKey {
-        val pushKey = sharedPreferences.getString(PREF_PUSH_KEY, "") ?: ""
-        val pushKeyId = sharedPreferences.getString(PREF_PUSH_KEY_ID, "") ?: ""
-        Timber.d("PushKeyProvider getPushKey: $pushKey, $pushKeyId")
-        return PushKey(key = pushKey, id = pushKeyId)
+    override fun getPushKey(): Map<String, PushKey> {
+        val storedKeysJson = sharedPreferences.getString(PREF_PUSH_KEYS, "{}") ?: "{}"
+        return gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
+    }
+
+    private fun getStoredPushKeys(): Map<String, PushKey> {
+        val storedKeysJson = sharedPreferences.getString(PREF_PUSH_KEYS, "{}") ?: "{}"
+        return gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
     }
 
     companion object {
-        const val PREF_PUSH_KEY = "pref.push_key"
-        const val PREF_PUSH_KEY_ID = "pref.push_key_id"
+        const val PREF_PUSH_KEYS = "pref.push_keys"
     }
 }

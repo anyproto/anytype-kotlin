@@ -230,6 +230,9 @@ dependencies {
 
     implementation libs.room
 
+    implementation platform(libs.firebaseBom)
+    implementation libs.firebaseMessaging
+
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi
 

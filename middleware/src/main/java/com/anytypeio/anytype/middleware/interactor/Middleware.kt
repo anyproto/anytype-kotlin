@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.Rpc.Chat.ReadMessages.ReadType
+import anytype.Rpc.PushNotification.RegisterToken.Platform
 import anytype.model.Block
 import anytype.model.ParticipantPermissionChange
 import anytype.model.Range
@@ -2976,6 +2977,17 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.blockDataViewRelationSet(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun registerDeviceToken(command: Command.RegisterDeviceToken) {
+        val request = Rpc.PushNotification.RegisterToken.Request(
+            token = command.token,
+            platform = Platform.Android
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.pushNotificationRegisterToken(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

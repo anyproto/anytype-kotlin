@@ -370,35 +370,35 @@ fun ChatBox(
                     if (selection.start == selection.end) return@launch // No selection, nothing to apply
 
                     val newSpan = when (event) {
-                        ChatMarkupEvent.Bold -> ChatBoxSpan.Mention(
+                        ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
                             style = SpanStyle(fontWeight = FontWeight.Bold),
                             start = selection.start,
                             end = selection.end,
-                            param = "bold"
+                            type = ChatBoxSpan.Markup.BOLD
                         )
-                        ChatMarkupEvent.Italic -> ChatBoxSpan.Mention(
+                        ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
                             style = SpanStyle(fontStyle = FontStyle.Italic),
                             start = selection.start,
                             end = selection.end,
-                            param = "italic"
+                            type = ChatBoxSpan.Markup.ITALIC
                         )
-                        ChatMarkupEvent.Strike -> ChatBoxSpan.Mention(
+                        ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
                             style = SpanStyle(textDecoration = TextDecoration.LineThrough),
                             start = selection.start,
                             end = selection.end,
-                            param = "strike"
+                            type = ChatBoxSpan.Markup.STRIKETHROUGH
                         )
-                        ChatMarkupEvent.Underline -> ChatBoxSpan.Mention(
+                        ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
                             style = SpanStyle(textDecoration = TextDecoration.Underline),
                             start = selection.start,
                             end = selection.end,
-                            param = "underline"
+                            type = ChatBoxSpan.Markup.UNDERLINE
                         )
-                        ChatMarkupEvent.Code -> ChatBoxSpan.Mention(
+                        ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
                             style = SpanStyle(fontFamily = FontFamily.Monospace),
                             start = selection.start,
                             end = selection.end,
-                            param = "code"
+                            type = ChatBoxSpan.Markup.CODE
                         )
                     }
 
@@ -454,6 +454,9 @@ private fun ChatBoxUserInput(
                         is ChatBoxSpan.Mention -> {
                             span.copy(start = newStart, end = newEnd)
                         }
+                        is ChatBoxSpan.Markup -> {
+                            span.copy(start = newStart, end = newEnd)
+                        }
                     }
                 } else {
                     Timber.d("Removing span: $span")
@@ -502,7 +505,7 @@ private fun ChatBoxUserInput(
 fun toggleSpan(
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
-    newSpan: ChatBoxSpan.Mention
+    newSpan: ChatBoxSpan.Markup
 ): List<ChatBoxSpan> {
     val selection = text.selection
     if (selection.start == selection.end) return spans // No selection, nothing to apply
@@ -515,7 +518,7 @@ fun toggleSpan(
     // Process existing spans
     updatedSpans.forEach { span ->
         // Skip spans of a different type
-        if (span !is ChatBoxSpan.Mention || span.param != newSpan.param) {
+        if (span !is ChatBoxSpan.Markup || span.type != newSpan.type) {
             newSpans.add(span)
             return@forEach
         }
@@ -554,8 +557,8 @@ fun toggleSpan(
         .fold(mutableListOf<ChatBoxSpan>()) { acc, span ->
             if (acc.isNotEmpty()) {
                 val last = acc.last()
-                if (last is ChatBoxSpan.Mention && span is ChatBoxSpan.Mention &&
-                    last.param == span.param && last.end == span.start
+                if (last is ChatBoxSpan.Markup && span is ChatBoxSpan.Markup &&
+                    last.type == span.type && last.end == span.start
                 ) {
                     // Merge contiguous spans of the same type
                     acc[acc.lastIndex] = last.copy(end = span.end)

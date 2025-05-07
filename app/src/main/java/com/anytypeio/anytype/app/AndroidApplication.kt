@@ -82,7 +82,7 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) Timber.plant(CustomTimberDebugTree("ANYTYPELOGS"))
+        if (BuildConfig.DEBUG) Timber.plant(Timber.DebugTree())
     }
 
     private fun setupCrashReporter() {
@@ -130,10 +130,4 @@ class AndroidApplication : Application(), HasComponentDependencies {
         external fun initSignalHandler()
         const val SIGNAL_HANDLER_LIB_NAME = "signal_handler"
     }
-}
-
-class CustomTimberDebugTree(val tagPrefix: String) : Timber.DebugTree() {
-
-    override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
-        super.log(priority, "$tagPrefix.$tag", message, t)  }
 }

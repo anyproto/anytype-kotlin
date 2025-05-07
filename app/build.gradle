@@ -232,7 +232,6 @@ dependencies {
 
     implementation platform(libs.firebaseBom)
     implementation libs.firebaseMessaging
-    implementation libs.kotlinxSerializationJson
 
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi

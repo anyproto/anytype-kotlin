@@ -366,6 +366,9 @@ fun ChatBox(
                 }
             }
         }
+
+        if (!isFocused) return@Column
+
         // Markup panel
         ChatBoxMarkup(
             onMarkupEvent = { event ->
@@ -599,20 +602,29 @@ fun ChatBoxMarkup(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Italic)
             },
-            text = "I",
+            text = "i",
+            style = androidx.compose.ui.text.TextStyle(
+                fontStyle = FontStyle.Italic
+            ),
             color = colorResource(R.color.text_primary)
         )
         Text(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Strike)
             },
-            text = "S",
-            color = colorResource(R.color.text_primary)
+            style = androidx.compose.ui.text.TextStyle(
+                textDecoration = TextDecoration.LineThrough
+            ),
+            text = " S ",
+            color = colorResource(R.color.text_primary),
         )
         Text(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Underline)
             },
+            style = androidx.compose.ui.text.TextStyle(
+                textDecoration = TextDecoration.Underline
+            ),
             text = "U",
             color = colorResource(R.color.text_primary)
         )

@@ -2,13 +2,13 @@ package com.anytypeio.anytype.di.feature.notifications
 
 import android.content.Context
 import com.anytypeio.anytype.device.AnytypePushService
-import com.anytypeio.anytype.device.DeviceTokenStore
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.notifications.RegisterDeviceTokenUseCase
 import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import dagger.Component
@@ -49,13 +49,6 @@ object PushContentModule {
         )
     }
 
-    @Singleton
-    @Provides
-    fun provideDeviceTokenStore(
-    ): DeviceTokenStore {
-        return DeviceTokenStore()
-    }
-
     @Module
     interface Declarations {
 
@@ -69,6 +62,8 @@ interface PushContentDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
 
     fun pushKeyProvider(): PushKeyProvider
+
+    fun deviceTokenSavingService(): DeviceTokenStoringService
 
     @Named(DEFAULT_APP_COROUTINE_SCOPE)
     fun coroutineScope(): CoroutineScope

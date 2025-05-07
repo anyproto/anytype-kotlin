@@ -16,6 +16,10 @@ import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
 import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.events.PushKeyMiddlewareChannel
+import com.anytypeio.anytype.presentation.notifications.CryptoService
+import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
+import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
+import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
@@ -25,6 +29,7 @@ import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.json.Json
 
 @Module
 object NotificationsModule {
@@ -108,5 +113,28 @@ object NotificationsModule {
         channel: PushKeyRemoteChannel
     ): PushKeyChannel = PushKeyDataChannel(
         channel = channel
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideCryptoService(): CryptoService = CryptoServiceImpl()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideJson(): Json = Json { ignoreUnknownKeys = true }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDecryptionPushContentService(
+        pushKeyProvider: PushKeyProvider,
+        cryptoService: CryptoService,
+        json: Json
+    ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
+        pushKeyProvider = pushKeyProvider,
+        cryptoService = cryptoService,
+        json = json
     )
 }

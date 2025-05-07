@@ -23,7 +23,6 @@ class DecryptionPushContentServiceImplTest {
 
     private lateinit var pushKeyProvider: PushKeyProvider
     private lateinit var cryptoService: CryptoService
-    private lateinit var json: Json
     private lateinit var decryptionService: DecryptionPushContentService
 
     private val testKeyId = "test-key-id"
@@ -37,11 +36,9 @@ class DecryptionPushContentServiceImplTest {
     fun setup() {
         pushKeyProvider = mock()
         cryptoService = CryptoServiceImpl()
-        json = Json { ignoreUnknownKeys = true }
         decryptionService = DecryptionPushContentServiceImpl(
             pushKeyProvider = pushKeyProvider,
-            cryptoService = cryptoService,
-            json = json
+            cryptoService = cryptoService
         )
     }
 
@@ -148,7 +145,7 @@ class DecryptionPushContentServiceImplTest {
 
     private fun encryptTestData(content: DecryptedPushContent): ByteArray {
         // Convert content to JSON
-        val jsonString = json.encodeToString(DecryptedPushContent.serializer(), content)
+        val jsonString = Json.encodeToString(DecryptedPushContent.serializer(), content)
         val plaintext = jsonString.toByteArray()
 
         // Generate random nonce

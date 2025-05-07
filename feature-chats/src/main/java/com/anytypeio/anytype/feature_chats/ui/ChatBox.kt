@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -108,6 +109,8 @@ fun ChatBox(
     val scope = rememberCoroutineScope()
 
     val focus = LocalFocusManager.current
+
+    var isFocused by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -286,6 +289,7 @@ fun ChatBox(
                     text = text,
                     spans = spans,
                     onValueChange = onValueChange,
+                    onFocusChanged = { isFocused = it },
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(chatBoxFocusRequester)
@@ -415,7 +419,8 @@ private fun ChatBoxUserInput(
     modifier: Modifier,
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
-    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
+    onFocusChanged: (Boolean) -> Unit
 ) {
     BasicTextField(
         value = text,
@@ -478,6 +483,9 @@ private fun ChatBoxUserInput(
                 top = 16.dp,
                 bottom = 16.dp
             )
+            .onFocusChanged { state ->
+                onFocusChanged(state.isFocused)
+            }
         ,
         cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
         maxLines = 5,

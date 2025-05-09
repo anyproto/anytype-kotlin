@@ -8,6 +8,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
@@ -126,6 +127,31 @@ class DecryptionPushContentServiceImplTest {
 
         // Then
         assertNull(result)
+    }
+
+    @Test
+    fun `decrypt should successfully decrypt actual RemoteMessage data`() {
+        // Given
+        val actualKeyId = "626166797265696376626f79757979696a6c66636235677461336665736c6f716132656f646b707377766133326b6d6c6b76336870637366756971e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        val actualEncryptedPayload = "OllD4bCyF0VbI0VrEsz0aYFuj+X8cnsRvm1wDYJC6aCzIyBu99NhHJi3xbIX565cUvIB6tlCdFzRUDc1WJqV8/0dbaB5PZozwLwbv9Pk+Ozxgsu6AspYT8MAR67exZ2ekD3dSo3hoeqlD50bJYQQnWvTgRUns5WzOzDanwwMMXJncxERlB2BdiqC7S2LmU47dgxoMytwBaJXemw9wHiU7dPnICSDAbnNlJU6DAGTn0Rqc38GpMbDg8+u2ksa1gb7P+P8XwTn9AFRPFz4Ay/mM/5jxcignyRGm3PObxBfUCP8NDwl7jH+55Q2VUgC2SX7vVEBLb5mlNJu3DwkhJvB7iRssulypiQ8I1w+mJ+Xh3TG2RYbgjb4l48mNoecblL/hvaRh560T3OTqlWlVNh0c5wRd/eo5YH5zoXrQydk2JXO6vReEWaJQt+bPU2y6N6IUbpLlw2q7OQu9jRIF5T35R3XO8GU8CmyKmhlJK4xAvhOiKIc8X47BGfApY6hl3TSPea9dSEnb0+EB0YsC7DyRc7y3NL588+Yc0sfHLA5Mp2oWs9a"
+        val actualEncryptedData = Base64.decode(actualEncryptedPayload, Base64.DEFAULT)
+        
+        // Use the actual push key from the logs
+        val actualKeyValue = "RT1gb7DyUW5tc5qCF92Jc3IlEQVOgxxBo6x2BP5T5mU="
+        whenever(pushKeyProvider.getPushKey()).thenReturn(
+            mapOf(actualKeyId to PushKey(id = actualKeyId, value = actualKeyValue))
+        )
+
+        // When
+        val result = decryptionService.decrypt(actualEncryptedData, actualKeyId)
+
+        // Then
+        assertNotNull(result)
+        assertEquals(1, result?.type)
+        assertNotNull(result?.newMessage)
+        assertEquals("Спейсдля пушей", result?.newMessage?.spaceName)
+        assertEquals("Test not", result?.newMessage?.senderName)
+        assertEquals("ooo", result?.newMessage?.text)
     }
 
     private fun createTestContent(): DecryptedPushContent {

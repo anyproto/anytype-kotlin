@@ -87,6 +87,7 @@ class AnytypePushService : FirebaseMessagingService() {
         Timber.d("New message received: $message")
         
         // Create an intent to open the app when notification is tapped
+        //todo extra task on Navigation
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("chatId", message.chatId)

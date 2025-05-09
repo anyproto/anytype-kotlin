@@ -42,7 +42,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
     ) = with(binding) {
         if (overCover) {
             menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            topBackButton.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            //topBackButton.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
             ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)

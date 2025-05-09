@@ -57,21 +57,21 @@ class AnytypePushService : FirebaseMessagingService() {
             val keyId = message.data["x-any-key-id"]
 
             if (encryptedData == null || keyId == null) {
-                Timber.e("Missing required data in push message: encryptedData is null =${encryptedData == null}, keyId=$keyId")
+                Timber.w("Missing required data in push message: encryptedData is null =${encryptedData == null}, keyId=$keyId")
                 return
             }
 
             // Decrypt the message
             val decryptedContent = decryptionService.decrypt(encryptedData, keyId)
             if (decryptedContent == null) {
-                Timber.e("Failed to decrypt push message")
+                Timber.w("Failed to decrypt push message")
                 return
             }
 
             // Handle the decrypted content
             handleDecryptedContent(decryptedContent)
         } catch (e: Exception) {
-            Timber.e(e, "Error processing push message")
+            Timber.w(e, "Error processing push message")
         }
     }
 

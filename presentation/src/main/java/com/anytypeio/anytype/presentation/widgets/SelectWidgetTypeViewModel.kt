@@ -79,6 +79,8 @@ class SelectWidgetTypeViewModel(
                     // If the layout is a data view, provide View and Link widgets
                     objectLayout?.isDataView() == true -> listOf(
                         WidgetTypeView.View(),
+                        WidgetTypeView.CompactList(),
+                        WidgetTypeView.List(),
                         WidgetTypeView.Link()
                     )
 
@@ -145,6 +147,8 @@ class SelectWidgetTypeViewModel(
                     // If the layout is a data view, provide View and Link widgets
                     objectLayout?.isDataView() == true -> listOf(
                         WidgetTypeView.View(isSelected = false),
+                        WidgetTypeView.CompactList(),
+                        WidgetTypeView.List(),
                         WidgetTypeView.Link(isSelected = false)
                     )
 

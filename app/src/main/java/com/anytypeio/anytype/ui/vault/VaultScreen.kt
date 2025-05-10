@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -45,7 +44,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
-import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -60,7 +58,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
-import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -202,11 +200,12 @@ fun VaultScreenToolbar(
         )
         when(profile) {
             is AccountProfile.Data -> {
+
                 Box(
                     Modifier
                         .align(Alignment.CenterStart)
                         .padding(start = 16.dp)
-                        .size(28.dp)
+                        .size(32.dp)
                         .noRippleClickable {
                             onSettingsClicked()
                         }
@@ -236,10 +235,10 @@ fun VaultScreenToolbar(
                             ) {
                                 Text(
                                     text = nameFirstChar,
-                                    style = MaterialTheme.typography.h3.copy(
-                                        color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
+                                    style = AvatarTitle.copy(
                                         fontSize = 20.sp
                                     ),
+                                    color = colorResource(id = R.color.text_white),
                                     modifier = Modifier.align(Alignment.Center)
                                 )
                             }

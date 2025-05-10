@@ -253,17 +253,8 @@ fun buildWidgetName(
     obj: ObjectWrapper.Basic,
     fieldParser: FieldParser
 ): Name {
-    val prettyPrintName = fieldParser.getObjectName(obj)
+    val prettyPrintName = fieldParser.getObjectPluralName(obj)
     return Name.Default(prettyPrintName = prettyPrintName)
-}
-
-private fun createDefaultName(
-    obj: ObjectWrapper.Basic,
-    fieldParser: FieldParser
-): Name.Default {
-    return Name.Default(
-        prettyPrintName = fieldParser.getObjectName(obj)
-    )
 }
 
 typealias WidgetId = Id

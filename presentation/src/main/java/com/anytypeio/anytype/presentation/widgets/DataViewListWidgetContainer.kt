@@ -188,7 +188,7 @@ class DataViewListWidgetContainer(
                             )
                         )
                         if (params != null) {
-                            if (target?.type == DVViewerType.GALLERY) {
+                            if (widget is Widget.View && target?.type == DVViewerType.GALLERY) {
                                 galleryWidgetSubscribe(
                                     obj = obj,
                                     activeView = view,
@@ -336,7 +336,7 @@ class DataViewListWidgetContainer(
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = true,
-                isCompact = (widget as? Widget.List)?.isCompact ?: false,
+                isCompact = widget.isCompact,
                 name = when(val source = widget.source) {
                     is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
                     is Widget.Source.Default ->  WidgetView.Name.Default(

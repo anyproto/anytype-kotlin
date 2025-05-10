@@ -96,7 +96,7 @@ class AnytypePushService : FirebaseMessagingService() {
         
         val pendingIntent = PendingIntent.getActivity(
             this,
-            0,
+            NOTIFICATION_REQUEST_CODE,
             intent,
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -146,5 +146,7 @@ class AnytypePushService : FirebaseMessagingService() {
         private const val CHANNEL_NAME = "Chat Messages"
         val EXTRA_CHAT_ID = "chatId"
         val EXTRA_SPACE_ID = "spaceId"
+
+        private const val NOTIFICATION_REQUEST_CODE = 100
     }
 }

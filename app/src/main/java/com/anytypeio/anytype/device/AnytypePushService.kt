@@ -53,8 +53,8 @@ class AnytypePushService : FirebaseMessagingService() {
 
         try {
             // Extract encrypted data and keyId from the message
-            val encryptedData = message.data["x-any-payload"]?.let { Base64.decode(it, Base64.DEFAULT) }
-            val keyId = message.data["x-any-key-id"]
+            val encryptedData = message.data[PAYLOAD_KEY]?.let { Base64.decode(it, Base64.DEFAULT) }
+            val keyId = message.data[KEY_ID_KEY]
 
             if (encryptedData == null || keyId == null) {
                 Timber.w("Missing required data in push message: encryptedData is null =${encryptedData == null}, keyId=$keyId")
@@ -90,8 +90,8 @@ class AnytypePushService : FirebaseMessagingService() {
         //todo extra task on Navigation
         val intent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("chatId", message.chatId)
-            putExtra("spaceId", message.spaceName)
+            putExtra(EXTRA_CHAT_ID, message.chatId)
+            putExtra(EXTRA_SPACE_ID, message.spaceName)
         }
         
         val pendingIntent = PendingIntent.getActivity(
@@ -126,7 +126,7 @@ class AnytypePushService : FirebaseMessagingService() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 CHANNEL_ID,
-                "Chat Messages",
+                CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "New messages notifications"
@@ -141,5 +141,10 @@ class AnytypePushService : FirebaseMessagingService() {
 
     companion object {
         private const val CHANNEL_ID = "messages_channel"
+        private const val PAYLOAD_KEY = "x-any-payload"
+        private const val KEY_ID_KEY = "x-any-key-id"
+        private const val CHANNEL_NAME = "Chat Messages"
+        val EXTRA_CHAT_ID = "chatId"
+        val EXTRA_SPACE_ID = "spaceId"
     }
 }

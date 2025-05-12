@@ -66,7 +66,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -74,7 +73,6 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
-import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -379,9 +377,9 @@ class OnboardingFragment : Fragment() {
                 BackHandler { onBackClicked() }
             }
             composable(
-                route = "${OnboardingNavigation.setEmail}?name={name}",
+                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM={$ONBOARDING_NAME_PARAM}",
                 arguments = listOf(
-                    navArgument("name") {
+                    navArgument(ONBOARDING_NAME_PARAM) {
                         type = NavType.StringType
                         defaultValue = ""
                         nullable = false
@@ -406,7 +404,7 @@ class OnboardingFragment : Fragment() {
                 }
                 currentPage.value = OnboardingPage.SET_EMAIL
                 backButtonCallback.value = onBackClicked
-                SetEmail(
+                AddEmail(
                     navController = navController,
                     onBackClicked = onBackClicked
                 )
@@ -777,7 +775,7 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
-    private fun SetEmail(
+    private fun AddEmail(
         navController: NavHostController,
         onBackClicked: () -> Unit
     ) {
@@ -788,7 +786,7 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
-        val name = navController.currentBackStackEntry?.arguments?.getString("name") ?: ""
+        val name = navController.currentBackStackEntry?.arguments?.getString(ONBOARDING_NAME_PARAM) ?: ""
 
         SetEmailWrapper(
             viewModel = vm,
@@ -817,7 +815,9 @@ class OnboardingFragment : Fragment() {
                         //
                     }
 
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> TODO()
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
+                        //do nothing
+                    }
                 }
             }
         }
@@ -872,6 +872,8 @@ class OnboardingFragment : Fragment() {
 
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
+
+        private const val ONBOARDING_NAME_PARAM = "space"
     }
 }
 

@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Prompt
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.domain.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.ui.settings.typography
 import kotlinx.coroutines.launch
 import timber.log.Timber

@@ -1,22 +1,21 @@
-package com.anytypeio.anytype.domain.notifications
+package com.anytypeio.anytype.presentation.notifications
 
-import android.content.Context
 import android.content.SharedPreferences
 import javax.inject.Inject
-import javax.inject.Singleton
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import timber.log.Timber
 
-@Singleton
-class NotificationPermissionManager @Inject constructor(
-    private val context: Context,
+interface NotificationPermissionManager {
+    fun shouldShowPermissionDialog(): Boolean
+}
+
+class NotificationPermissionManagerImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences
-) {
+) : NotificationPermissionManager {
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.NotRequested)
     val permissionState: StateFlow<PermissionState> = _permissionState
 
-    fun shouldShowPermissionDialog(): Boolean {
+    override fun shouldShowPermissionDialog(): Boolean {
         val lastRequestTime = sharedPreferences.getLong(KEY_LAST_REQUEST_TIME, 0)
         val requestCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
         val currentTime = System.currentTimeMillis()

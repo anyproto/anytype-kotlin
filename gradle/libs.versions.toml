@@ -160,8 +160,8 @@ firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.9.1" }
-library = { id = "com.android.library", version = "8.9.1" }
+application = { id = "com.android.application", version = "8.10.0" }
+library = { id = "com.android.library", version = "8.10.0" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }

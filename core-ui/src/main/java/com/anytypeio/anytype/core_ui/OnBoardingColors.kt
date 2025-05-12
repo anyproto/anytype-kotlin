@@ -11,17 +11,17 @@ val OnboardingSubtitleColor = Color(0xFF505050)
 val OnBoardingTextPrimaryColor = Color(0xFFF3F2EC)
 val OnBoardingTextSecondaryColor = Color(0x80F3F2EC)
 
-val ColorButtonPrimaryActive = Color(0xFF252525)
+val ColorButtonPrimaryActive = Color(0xFF3A3A3A)
 val ColorButtonPrimaryPressed = Color(0xFF464646)
 val ColorButtonPrimaryText = Color(0xFFF2F3EC)
 
-val ColorButtonPrimaryInactive = Color(0xFF1F1E1D)
-val ColorButtonPrimaryInactiveText = Color(0xFF64635B)
+val ColorButtonPrimaryInactive = Color(0xFF1F1F1F)
+val ColorButtonPrimaryInactiveText = Color(0xFF646464)
 
 val ColorButtonSecondaryActive = Color.Transparent
 val ColorButtonSecondaryPressed = Color(0xFF1F1E1C)
 val ColorButtonSecondaryBorder = Color(0xFF525148)
-val ColorButtonSecondaryBorderPressed = Color(0xFF525148)
+val ColorButtonSecondaryBorderPressed = Color(0xFF3A3A3A)
 val ColorButtonSecondaryText = Color(0xFF7B7A72)
 val ColorButtonRegular = Color(0xFFCBC9BD)
 val ColorButtonInversion= Color(0xFFFFFFFF)

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -48,7 +49,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val localeProvider: LocaleProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
     private val spaceManager: SpaceManager,
-    private val stringProvider: StringResourceProvider
+    private val stringProvider: StringResourceProvider,
+    private val setMembershipEmail: SetMembershipEmail,
 ) : BaseViewModel() {
 
     init {
@@ -259,7 +261,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         email: String,
         name: String,
     ) {
-        val spaceName = "My First Space"
+        proceedWithSettingEmail(email = email)
         if (state.value !is ScreenState.Loading) {
             proceedWithCreatingWallet(
                 name = name
@@ -280,6 +282,22 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             sendToast(LOADING_MSG)
         }
     }
+
+    private fun proceedWithSettingEmail(email: String) {
+        val params = SetMembershipEmail.Params(
+            email = email,
+            subscribeToNewsletter = false,
+            isFromOnboarding = true
+        )
+        viewModelScope.launch {
+            setMembershipEmail.async(params).fold(
+                onSuccess = { Timber.d("Email set") },
+                onFailure = { error ->
+                    Timber.e("Error setting email: $error")
+                }
+            )
+        }
+    }
     //endregion
 
     class Factory @Inject constructor(
@@ -296,7 +314,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val localeProvider: LocaleProvider,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
         private val spaceManager: SpaceManager,
-        private val stringProvider: StringResourceProvider
+        private val stringProvider: StringResourceProvider,
+        private val setMembershipEmail: SetMembershipEmail
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -314,7 +333,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 localeProvider = localeProvider,
                 globalSubscriptionManager = globalSubscriptionManager,
                 spaceManager = spaceManager,
-                stringProvider = stringProvider
+                stringProvider = stringProvider,
+                setMembershipEmail = setMembershipEmail
             ) as T
         }
     }

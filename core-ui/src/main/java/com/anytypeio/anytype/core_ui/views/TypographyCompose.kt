@@ -39,6 +39,16 @@ val HeadlineTitle =
         letterSpacing = (-0.017).em
     )
 
+//Content/Headlines/Title Semibold
+val HeadlineTitleSemibold =
+    TextStyle(
+        fontFamily = fontInterSemibold,
+        fontWeight = FontWeight.W600,
+        fontSize = 28.sp,
+        lineHeight = 32.sp,
+        letterSpacing = (-0.017).em
+    )
+
 //Content/Headlines/Heading
 val HeadlineHeading =
     TextStyle(

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,8 +15,8 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Text
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,22 +35,50 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 
+@Composable
+fun SetEmailWrapper(
+    viewModel: OnboardingSetProfileNameViewModel,
+    name: String,
+    spaceName: String,
+    onBackClicked: () -> Unit,
+) {
+    OnboardingEmailScreen(
+        onContinueClicked = { email ->
+            viewModel.onEmailContinueClicked(
+                name = name,
+                spaceName = spaceName,
+                email = email
+            )
+        },
+        onSkipClicked = {
+            viewModel.onEmailSkippedClicked(
+                name = name,
+                spaceName = spaceName
+            )
+        },
+        isLoading = viewModel.state
+            .collectAsStateWithLifecycle()
+            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading,
+        onBackClicked = onBackClicked
+    )
+}
 
 @Composable
 fun OnboardingEmailScreen(
-    onNextClicked: (Name) -> Unit,
+    onContinueClicked: (String) -> Unit,
     onSkipClicked: () -> Unit,
     onBackClicked: () -> Unit,
     isLoading: Boolean
@@ -70,7 +97,7 @@ fun OnboardingEmailScreen(
             isError = false
             focusRequester.freeFocus()
             keyboardController?.hide()
-            onNextClicked(innerValue.text)
+            onContinueClicked(innerValue.text)
         } else {
             isError = true
         }
@@ -80,7 +107,7 @@ fun OnboardingEmailScreen(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .imePadding()
-            .background(color = colorResource(id = R.color.black))
+            //.background(color = colorResource(id = R.color.black))
             .fillMaxSize()
     ) {
         Column {
@@ -91,7 +118,7 @@ fun OnboardingEmailScreen(
                     .padding(horizontal = 16.dp),
                 text = stringResource(R.string.onboarding_email_add_title),
                 color = colorResource(id = R.color.text_white),
-                style = HeadlineHeading,
+                style = HeadlineTitleSemibold,
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -141,8 +168,10 @@ fun OnboardingEmailScreen(
                     disabledTextColor = colorResource(id = R.color.text_primary),
                     cursorColor = Color(0xFFC2C2C2),
                     focusedContainerColor = Color(0xFF212121),
+                    unfocusedContainerColor = Color(0xFF212121),
                     errorContainerColor = Color(0xFF212121),
                     focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -202,7 +231,7 @@ fun OnboardingEmailScreen(
 @Composable
 private fun SetProfileNameScreenPreview() {
     OnboardingEmailScreen(
-        onNextClicked = {},
+        onContinueClicked = {},
         onBackClicked = {},
         onSkipClicked = {},
         isLoading = false

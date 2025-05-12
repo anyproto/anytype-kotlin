@@ -7,6 +7,10 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface NotificationPermissionManager {
     fun shouldShowPermissionDialog(): Boolean
+    fun onPermissionRequested()
+    fun onPermissionGranted()
+    fun onPermissionDenied()
+    fun onPermissionDismissed()
 }
 
 class NotificationPermissionManagerImpl @Inject constructor(
@@ -31,7 +35,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
         }
     }
 
-    fun onPermissionRequested() {
+    override fun onPermissionRequested() {
         val currentCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
         sharedPreferences.edit().apply {
             putLong(KEY_LAST_REQUEST_TIME, System.currentTimeMillis())
@@ -40,7 +44,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
         }
     }
 
-    fun onPermissionGranted() {
+    override fun onPermissionGranted() {
         _permissionState.value = PermissionState.Granted
         sharedPreferences.edit().apply {
             putBoolean(KEY_PERMISSION_GRANTED, true)
@@ -48,7 +52,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
         }
     }
 
-    fun onPermissionDenied() {
+    override fun onPermissionDenied() {
         _permissionState.value = PermissionState.Denied
         sharedPreferences.edit().apply {
             putBoolean(KEY_PERMISSION_GRANTED, false)
@@ -56,7 +60,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
         }
     }
 
-    fun onPermissionDismissed() {
+    override fun onPermissionDismissed() {
         _permissionState.value = PermissionState.Dismissed
     }
 

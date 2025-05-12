@@ -583,6 +583,14 @@ class OnboardingFragment : Fragment() {
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
                         //
                     }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(force = true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
+                        navController.navigate(OnboardingNavigation.setEmail)
+                    }
                 }
             }
         }

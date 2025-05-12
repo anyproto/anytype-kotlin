@@ -1,9 +1,4 @@
 <resources>
     <string name="amplitude_api_key" translatable="false">1ba981d1a9afb8af8c81847ef3383a20</string>
     <string name="amplitude_api_key_debug" translatable="false">b9791dd64a1e9f07a330a4ac9feb1f10</string>
-    <string name="notifications_prompt_get_notified">Get notified</string>
-    <string name="notifications_prompt_description">Enable notifications to stay updated with messages and important updates</string>
-    <string name="notifications_prompt_primary_button_text">Enable notifications</string>
-    <string name="notifications_prompt_secondary_button_text">Not now</string>
-    <string name="notifications_permission_banner_text">Notifications are disabled. Tap to enable them in system settings</string>
 </resources>

@@ -2044,4 +2044,10 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
 
+    <string name="notifications_prompt_get_notified">Get notified</string>
+    <string name="notifications_prompt_description">Enable notifications to stay updated with messages and important updates</string>
+    <string name="notifications_prompt_primary_button_text">Enable notifications</string>
+    <string name="notifications_prompt_secondary_button_text">Not now</string>
+    <string name="notifications_permission_banner_text">Notifications are disabled. Tap to enable them in system settings</string>
+
 </resources>

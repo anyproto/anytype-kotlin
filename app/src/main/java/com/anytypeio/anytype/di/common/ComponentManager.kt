@@ -1144,6 +1144,12 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
+    val notificationPermissionComponent = Component {
+        DaggerNotificationPermissionComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
     class Component<T>(private val builder: () -> T) {
 
         private var instance: T? = null

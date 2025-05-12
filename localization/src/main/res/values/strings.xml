@@ -1139,6 +1139,7 @@
     <string name="onboarding_enter_email">Enter your email</string>
     <string name="onboarding_button_continue">Continue</string>
     <string name="onboarding_button_skip">Skip</string>
+    <string name="onboarding_email_error">Incorrect email</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>

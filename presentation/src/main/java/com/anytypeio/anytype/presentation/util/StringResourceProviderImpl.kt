@@ -51,4 +51,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
             RelationFormat.UNDEFINED -> context.getString(R.string.undefined)
         }
     }
+
+    override fun getFirstSpaceName(): String {
+        return context.getString(R.string.onboarding_my_first_space)
+    }
 }

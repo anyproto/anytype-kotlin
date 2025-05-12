@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -46,7 +47,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val localeProvider: LocaleProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val stringProvider: StringResourceProvider
 ) : BaseViewModel() {
 
     init {
@@ -62,23 +64,28 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     val navigation = MutableSharedFlow<Navigation>()
 
     fun onNextClicked(
-        name: String,
-        spaceName: String
+        name: String
     ) {
         if (state.value !is ScreenState.Loading) {
-            proceedWithCreatingWallet(
-                name = name,
-                spaceName = spaceName
-            )
+            viewModelScope.launch {
+                navigation.emit(
+                    Navigation.NavigateToAddEmailScreen(
+                        name = name
+                    )
+                )
+            }
         } else {
             sendToast(LOADING_MSG)
         }
     }
 
     private fun proceedWithCreatingWallet(
-        name: String,
-        spaceName: String
+        name: String
     ) {
+        viewModelScope.launch {
+            _toasts.emit("Test1983 Name: $name")
+        }
+        return
         state.value = ScreenState.Loading
         setupWallet.invoke(
             scope = viewModelScope,
@@ -92,8 +99,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 },
                 fnR = {
                     proceedWithCreatingAccount(
-                        name = name,
-                        spaceName = spaceName
+                        name = name
                     )
                 }
             )
@@ -101,9 +107,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     private fun proceedWithCreatingAccount(
-        name: String,
-        spaceName: String
+        name: String
     ) {
+        val spaceName = stringProvider.getFirstSpaceName()
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(
             name = name,
@@ -252,12 +258,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     fun onEmailContinueClicked(
         email: String,
         name: String,
-        spaceName: String
     ) {
+        val spaceName = "My First Space"
         if (state.value !is ScreenState.Loading) {
             proceedWithCreatingWallet(
-                name = name,
-                spaceName = spaceName
+                name = name
             )
         } else {
             sendToast(LOADING_MSG)
@@ -265,13 +270,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     fun onEmailSkippedClicked(
-        name: String,
-        spaceName: String
+        name: String
     ) {
         if (state.value !is ScreenState.Loading) {
             proceedWithCreatingWallet(
-                name = name,
-                spaceName = spaceName
+                name = name
             )
         } else {
             sendToast(LOADING_MSG)
@@ -292,7 +295,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val crashReporter: CrashReporter,
         private val localeProvider: LocaleProvider,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val stringProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -309,7 +313,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 crashReporter = crashReporter,
                 localeProvider = localeProvider,
                 globalSubscriptionManager = globalSubscriptionManager,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                stringProvider = stringProvider
             ) as T
         }
     }
@@ -324,8 +329,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     sealed class Navigation {
         data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
         data class NavigateToAddEmailScreen(
-            val name: String,
-            val spaceName: String
+            val name: String
         ) : Navigation()
         data object GoBack: Navigation()
     }

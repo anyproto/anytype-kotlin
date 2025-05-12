@@ -379,7 +379,14 @@ class OnboardingFragment : Fragment() {
                 BackHandler { onBackClicked() }
             }
             composable(
-                route = OnboardingNavigation.setEmail,
+                route = "${OnboardingNavigation.setEmail}?name={name}",
+                arguments = listOf(
+                    navArgument("name") {
+                        type = NavType.StringType
+                        defaultValue = ""
+                        nullable = false
+                    }
+                ),
                 enterTransition = {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 },
@@ -390,7 +397,7 @@ class OnboardingFragment : Fragment() {
                 val focus = LocalFocusManager.current
                 val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
-                    if (lastDestination?.destination?.route == OnboardingNavigation.setEmail) {
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setEmail) == true) {
                         focus.clearFocus(true)
                         navController.popBackStack()
                     } else {
@@ -589,7 +596,9 @@ class OnboardingFragment : Fragment() {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
-                        navController.navigate(OnboardingNavigation.setEmail)
+                        navController.navigate(
+                            route = "${OnboardingNavigation.setEmail}?name=${command.name}",
+                        )
                     }
                 }
             }
@@ -779,10 +788,11 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
+        val name = navController.currentBackStackEntry?.arguments?.getString("name") ?: ""
+
         SetEmailWrapper(
             viewModel = vm,
-            name = "add name",
-            spaceName = "add space",
+            name = name,
             onBackClicked = onBackClicked
         )
 

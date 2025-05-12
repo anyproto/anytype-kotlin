@@ -56,21 +56,18 @@ import kotlin.text.isNotEmpty
 fun SetEmailWrapper(
     viewModel: OnboardingSetProfileNameViewModel,
     name: String,
-    spaceName: String,
     onBackClicked: () -> Unit,
 ) {
     OnboardingEmailScreen(
         onContinueClicked = { email ->
             viewModel.onEmailContinueClicked(
                 name = name,
-                spaceName = spaceName,
                 email = email
             )
         },
         onSkipClicked = {
             viewModel.onEmailSkippedClicked(
                 name = name,
-                spaceName = spaceName
             )
         },
         isLoading = viewModel.state

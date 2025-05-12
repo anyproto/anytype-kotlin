@@ -145,7 +145,8 @@ interface MainComponent :
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
-    PushContentDependencies
+    PushContentDependencies,
+    NotificationPermissionDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -421,4 +422,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(PushContentDependencies::class)
     abstract fun providePushContentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(NotificationPermissionDependencies::class)
+    abstract fun provideNotificationPermissionDependencies(component: MainComponent): ComponentDependencies
 }

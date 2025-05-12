@@ -94,6 +94,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -372,6 +373,33 @@ class OnboardingFragment : Fragment() {
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME
                 backButtonCallback.value = onBackClicked
                 SetProfileName(
+                    navController = navController,
+                    onBackClicked = onBackClicked
+                )
+                BackHandler { onBackClicked() }
+            }
+            composable(
+                route = OnboardingNavigation.setEmail,
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                val focus = LocalFocusManager.current
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route == OnboardingNavigation.setEmail) {
+                        focus.clearFocus(true)
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                currentPage.value = OnboardingPage.SET_EMAIL
+                backButtonCallback.value = onBackClicked
+                SetEmail(
                     navController = navController,
                     onBackClicked = onBackClicked
                 )
@@ -728,6 +756,60 @@ class OnboardingFragment : Fragment() {
                     exoPlayer.release()
                 }
             }
+        }
+    }
+
+    @Composable
+    private fun SetEmail(
+        navController: NavHostController,
+        onBackClicked: () -> Unit
+    ) {
+        val component = componentManager().onboardingSoulCreationComponent
+        val vm = daggerViewModel { component.get().getViewModel() }
+
+        val focusManager = LocalFocusManager.current
+        val keyboardInsets = WindowInsets.ime
+        val density = LocalDensity.current
+
+        SetEmailWrapper(
+            viewModel = vm,
+            name = "add name",
+            spaceName = "add space",
+            onBackClicked = onBackClicked
+        )
+
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { command ->
+                when (command) {
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(force = true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
+                        val space = command.space
+                        val startingObject = command.startingObject
+                        navController.navigate(
+                            route = buildString {
+                                append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${space.id}")
+                                startingObject?.let { append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") }
+                            }
+                        )
+                    }
+                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
+                        //
+                    }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> TODO()
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect {
+                toast(it)
+            }
+        }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
         }
     }
 

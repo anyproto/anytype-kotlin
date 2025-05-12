@@ -323,6 +323,10 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     sealed class Navigation {
         data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
+        data class NavigateToAddEmailScreen(
+            val name: String,
+            val spaceName: String
+        ) : Navigation()
         data object GoBack: Navigation()
     }
 

@@ -592,49 +592,40 @@ fun ChatBoxMarkup(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
+        Image(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Bold)
             },
-            text = "B",
-            color = colorResource(R.color.text_primary)
+            painter = painterResource(R.drawable.ic_toolbar_markup_bold),
+            contentDescription = ""
         )
-        Text(
+        Image(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Italic)
             },
-            text = "i",
-            style = TextStyle(
-                fontStyle = FontStyle.Italic
-            ),
-            color = colorResource(R.color.text_primary)
+            painter = painterResource(R.drawable.ic_toolbar_markup_italic),
+            contentDescription = ""
         )
-        Text(
+        Image(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Strike)
             },
-            style = TextStyle(
-                textDecoration = TextDecoration.LineThrough
-            ),
-            text = " S ",
-            color = colorResource(R.color.text_primary),
+            painter = painterResource(R.drawable.ic_toolbar_markup_strike_through),
+            contentDescription = ""
         )
-        Text(
+        Image(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Underline)
             },
-            style = TextStyle(
-                textDecoration = TextDecoration.Underline
-            ),
-            text = "U",
-            color = colorResource(R.color.text_primary)
+            painter = painterResource(R.drawable.ic_toolbar_markup_underline),
+            contentDescription = ""
         )
-        Text(
+        Image(
             modifier = Modifier.clickable {
                 onMarkupEvent(ChatMarkupEvent.Code)
             },
-            text = "<>",
-            color = colorResource(R.color.text_primary)
+            painter = painterResource(R.drawable.ic_toolbar_markup_code),
+            contentDescription = ""
         )
     }
 }

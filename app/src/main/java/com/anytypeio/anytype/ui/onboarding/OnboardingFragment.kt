@@ -94,6 +94,8 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingEmailScreen
+import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -372,6 +374,33 @@ class OnboardingFragment : Fragment() {
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME
                 backButtonCallback.value = onBackClicked
                 SetProfileName(
+                    navController = navController,
+                    onBackClicked = onBackClicked
+                )
+                BackHandler { onBackClicked() }
+            }
+            composable(
+                route = OnboardingNavigation.setEmail,
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                val focus = LocalFocusManager.current
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route == OnboardingNavigation.setEmail) {
+                        focus.clearFocus(true)
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                currentPage.value = OnboardingPage.SET_EMAIL
+                backButtonCallback.value = onBackClicked
+                SetEmail(
                     navController = navController,
                     onBackClicked = onBackClicked
                 )

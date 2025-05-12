@@ -7,5 +7,5 @@ enum class OnboardingPage(val num: Int, val visible: Boolean) {
     SET_PROFILE_NAME(1, false),
     SOUL_CREATION_ANIM(4, false),
     RECOVERY(5, false),
-    ENTER_THE_VOID(6, false)
+    SET_EMAIL(3, false),
 }

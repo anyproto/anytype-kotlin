@@ -371,7 +371,7 @@ fun ChatScreen(
 
     // Applying view model intents
     LaunchedEffect(intent) {
-        when (val intent = intent) {
+        when (intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 isPerformingScrollIntent.value = true
                 val index = messages.indexOfFirst {
@@ -404,9 +404,10 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState) {
+    LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
+                // TODO optimise by only sending event when scrolling towards bottom
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -899,6 +900,7 @@ fun TopDiscussionToolbar(
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
+    Timber.d("DROID-2966 Performing scroll-to-bottom")
     lazyListState.scrollToItem(0)
 
     // Wait for the layout to settle after scrolling

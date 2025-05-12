@@ -949,9 +949,7 @@ class ChatViewModel @Inject constructor(
     fun onClearChatViewStateIntent() {
         Timber.d("DROID-2966 onClearChatViewStateIntent")
         viewModelScope.launch {
-            uiState.update { current ->
-                current.copy(intent = ChatContainer.Intent.None)
-            }
+            chatContainer.onClearIntent()
         }
     }
 

@@ -149,7 +149,7 @@ class ChatViewModel @Inject constructor(
     ) {
         combine(
             chatContainer
-                .watchWhileTrackingAttachments(chat = chat)
+                .watchWhileTrackingAttachments(chat = chat).distinctUntilChanged()
             ,
             chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()

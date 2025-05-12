@@ -595,7 +595,7 @@ class OnboardingFragment : Fragment() {
                             delay(KEYBOARD_HIDE_DELAY)
                         }
                         navController.navigate(
-                            route = "${OnboardingNavigation.setEmail}?name=${command.name}",
+                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM=${command.name}",
                         )
                     }
                 }
@@ -873,7 +873,7 @@ class OnboardingFragment : Fragment() {
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
 
-        private const val ONBOARDING_NAME_PARAM = "space"
+        private const val ONBOARDING_NAME_PARAM = "name"
     }
 }
 

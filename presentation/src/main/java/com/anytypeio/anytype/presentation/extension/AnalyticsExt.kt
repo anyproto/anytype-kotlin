@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.logScreenEditType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.logScreenTemplateSelector
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreateLink
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
@@ -1503,6 +1504,17 @@ fun CoroutineScope.logEvent(
                 props = buildProps(route = route, spaceParams = spaceParams)
             )
         }
+        ObjectStateAnalyticsEvent.SCREEN_TYPE_TEMPLATE_SELECTOR -> {
+            if (state is ObjectState.DataView.TypeSet) {
+                scope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.logScreenTypeTemplateSelector,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(spaceParams = spaceParams)
+                )
+            }
+        }
     }
 }
 
@@ -1557,7 +1569,8 @@ enum class ObjectStateAnalyticsEvent {
     DUPLICATE_TEMPLATE,
     DELETE_TEMPLATE,
     SET_AS_DEFAULT_TYPE,
-    CHANGE_DEFAULT_TEMPLATE
+    CHANGE_DEFAULT_TEMPLATE,
+    SCREEN_TYPE_TEMPLATE_SELECTOR
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(
@@ -2107,6 +2120,22 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
         props = Props(
             buildMap {
                 put(EventsPropertiesKey.route, "Navigation")
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsScreenTemplateSelectorEvent(
+    analytics: Analytics,
+    spaceParams: AnalyticSpaceHelperDelegate.Params
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = logScreenTemplateSelector,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
             }
         )
     )

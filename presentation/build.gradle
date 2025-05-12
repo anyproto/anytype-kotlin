@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "com.google.devtools.ksp"
     id "kotlin-parcelize"
+    id "kotlinx-serialization"
 }
 
 def networkConfigFile = rootProject.file("network.properties")
@@ -49,6 +50,10 @@ dependencies {
     implementation libs.amplitude
 
     compileOnly libs.javaxInject
+
+    implementation libs.gson
+
+    implementation libs.kotlinxSerializationJson
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

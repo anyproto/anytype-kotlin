@@ -46,10 +46,12 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -75,6 +77,12 @@ class ChatViewModel @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+
+    private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
@@ -111,6 +119,15 @@ class ChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
+            visibleRangeUpdates
+                .debounce(300) // Delay to avoid spamming
+                .distinctUntilChanged()
+                .collect { (from, to) ->
+                    chatContainer.onVisibleRangeChanged(from, to)
+                }
+        }
+
+        viewModelScope.launch {
             getAccount
                 .async(Unit)
                 .onSuccess { acc ->
@@ -137,7 +154,9 @@ class ChatViewModel @Inject constructor(
             chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Got chat results: ${result.messages.size}")
+            Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
+            Timber.d("DROID-2966 Intent from container: ${result.intent}")
+            Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList<ChatView> {
                 result.messages.forEach { msg ->
@@ -195,6 +214,7 @@ class ChatViewModel @Inject constructor(
 
                     val view = ChatView.Message(
                         id = msg.id,
+                        order = msg.order,
                         timestamp = msg.createdAt * 1000,
                         content = ChatView.Message.Content(
                             msg = content?.text.orEmpty(),
@@ -297,7 +317,10 @@ class ChatViewModel @Inject constructor(
             }.reversed()
             ChatViewState(
                 messages = messageViews,
-                result.intent
+                intent = result.intent,
+                counter = ChatViewState.Counter(
+                    count = result.state.unreadMessages?.counter ?: 0
+                )
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it
@@ -502,7 +525,7 @@ class ChatViewModel @Inject constructor(
                                         )
                                     }
                                 }.onFailure {
-                                    Timber.e(it, "Error while uploading file as attachment")
+                                    Timber.e(it, "DROID-2966 Error while uploading file as attachment")
                                     chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                         set(
                                             index = idx,
@@ -916,10 +939,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onScrollToBottomClicked() {
+    fun onScrollToBottomClicked(lastVisibleMessage: Id?) {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
-            chatContainer.onLoadChatTail()
+            chatContainer.onLoadChatTail(lastVisibleMessage)
         }
     }
 
@@ -930,6 +953,14 @@ class ChatViewModel @Inject constructor(
                 current.copy(intent = ChatContainer.Intent.None)
             }
         }
+    }
+
+    fun onVisibleRangeChanged(
+        from: Id,
+        to: Id
+    ) {
+        Timber.d("DROID-2966 onVisibleRangeChanged, from: $from, to: $to")
+        visibleRangeUpdates.tryEmit(from to to)
     }
 
     /**

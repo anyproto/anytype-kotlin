@@ -1754,4 +1754,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_properties_screen_section_my_types">My Properties</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Erreur lors de la création du compte : l\'espace est manquant</string>
 </resources>

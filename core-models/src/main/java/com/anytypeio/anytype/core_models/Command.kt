@@ -618,6 +618,14 @@ sealed class Command {
     }
 
     sealed class ChatCommand {
+
+        data class ReadMessages(
+            val chat: Id,
+            val afterOrderId: Id? = null,
+            val beforeOrderId: Id? = null,
+            val lastStateId: Id? = null
+        )
+
         data class AddMessage(
             val chat: Id,
             val message: Chat.Message,
@@ -633,11 +641,16 @@ sealed class Command {
             val message: Chat.Message
         ) : ChatCommand()
 
+        /**
+         * @property [includeBoundary] defines whether the message corresponding to the order ID
+         * in [afterOrderId] or [beforeOrderId] should be included in results.
+         */
         data class GetMessages(
             val chat: Id,
             val beforeOrderId: Id? = null,
             val afterOrderId: Id? = null,
-            val limit: Int
+            val limit: Int,
+            val includeBoundary: Boolean = false
         ) : ChatCommand() {
             data class Response(
                 val messages: List<Chat.Message>,
@@ -696,5 +709,9 @@ sealed class Command {
         val objectId: Id,
         val blockId: Id,
         val properties: List<Key>
+    ) : Command()
+
+    data class RegisterDeviceToken(
+        val token: String
     ) : Command()
 }

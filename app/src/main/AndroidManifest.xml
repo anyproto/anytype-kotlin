@@ -53,7 +53,7 @@
                 <data android:scheme="http"/>
                 <data android:host="invite.any.coop" />
             </intent-filter>
-            <intent-filter android:autoVerify="true">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -160,7 +160,13 @@
             </intent-filter>
             <meta-data android:name="photopicker_activity:0:required" android:value="" />
         </service>
-
+        <service
+            android:name="com.anytypeio.anytype.device.AnytypePushService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
         <service
             android:name=".app.QuickCreateTileService"
             android:exported="true"

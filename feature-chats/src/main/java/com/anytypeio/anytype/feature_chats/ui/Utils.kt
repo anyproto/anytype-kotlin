@@ -91,6 +91,21 @@ sealed class ChatBoxSpan {
         override val end: Int,
         val param: Id
     ) : ChatBoxSpan()
+
+    data class Markup(
+        override val style: SpanStyle,
+        override val start: Int,
+        override val end: Int,
+        val type: Int
+    ) : ChatBoxSpan() {
+        companion object {
+            const val BOLD = 0
+            const val ITALIC = 1
+            const val STRIKETHROUGH = 2
+            const val UNDERLINE = 3
+            const val CODE = 4
+        }
+    }
 }
 
 const val DEFAULT_MENTION_SPAN_TAG = "@-mention"

@@ -59,7 +59,7 @@ fun ChatTopToolbar(
         ) {
             Image(
                 modifier = Modifier.align(Alignment.Center),
-                painter = painterResource(R.drawable.ic_home_top_toolbar_back),
+                painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
             )
         }

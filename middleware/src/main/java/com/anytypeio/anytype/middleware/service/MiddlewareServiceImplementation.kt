@@ -2573,4 +2573,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun pushNotificationRegisterToken(request: Rpc.PushNotification.RegisterToken.Request): Rpc.PushNotification.RegisterToken.Response {
+        val encoded = Service.pushNotificationRegisterToken(
+            Rpc.PushNotification.RegisterToken.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.RegisterToken.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.RegisterToken.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

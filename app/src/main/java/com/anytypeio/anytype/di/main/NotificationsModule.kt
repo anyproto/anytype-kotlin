@@ -1,16 +1,29 @@
 package com.anytypeio.anytype.di.main
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
+import com.anytypeio.anytype.data.auth.event.PushKeyDataChannel
+import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.chats.PushKeyChannel
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
 import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChannel
+import com.anytypeio.anytype.middleware.interactor.events.PushKeyMiddlewareChannel
+import com.anytypeio.anytype.presentation.notifications.CryptoService
+import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
+import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
+import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
+import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
+import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -58,5 +71,62 @@ object NotificationsModule {
         scope = scope,
         notificationsChannel = notificationsChannel,
         awaitAccountStartManager = awaitAccountStartManager,
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun providePushKeyProvider(
+        @Named("encrypted") sharedPreferences: SharedPreferences,
+        dispatchers: AppCoroutineDispatchers,
+        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        channel: PushKeyChannel,
+        gson: Gson
+    ): PushKeyProvider {
+        return PushKeyProviderImpl(
+            sharedPreferences = sharedPreferences,
+            dispatchers = dispatchers,
+            scope = scope,
+            channel = channel,
+            gson = gson
+        )
+    }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun providePushKeyRemoteChannel(
+        channel: EventHandlerChannel,
+        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        dispatchers: AppCoroutineDispatchers
+    ): PushKeyRemoteChannel = PushKeyMiddlewareChannel(
+        channel = channel,
+        scope = scope,
+        dispatcher = dispatchers.io
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun providePushKeyChannel(
+        channel: PushKeyRemoteChannel
+    ): PushKeyChannel = PushKeyDataChannel(
+        channel = channel
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideCryptoService(): CryptoService = CryptoServiceImpl()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDecryptionPushContentService(
+        pushKeyProvider: PushKeyProvider,
+        cryptoService: CryptoService,
+    ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
+        pushKeyProvider = pushKeyProvider,
+        cryptoService = cryptoService,
     )
 }

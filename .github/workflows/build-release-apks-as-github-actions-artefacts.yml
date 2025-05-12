@@ -86,7 +86,7 @@ jobs:
         run: ./scripts/release/prepare-release-artefacts.sh
 
       - name: Upload artefacts as GitHub Actions output
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: release-apks-${{ github.event.inputs.tag }}
           path: app/build/outputs/apk/release/release-artefacts/

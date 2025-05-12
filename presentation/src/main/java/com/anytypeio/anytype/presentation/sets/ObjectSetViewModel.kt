@@ -2131,6 +2131,7 @@ class ObjectSetViewModel(
             selectedTypeFlow.value = type
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
+        logEvent(ObjectStateAnalyticsEvent.SCREEN_TYPE_TEMPLATE_SELECTOR)
     }
 
     fun onTypeTemplatesWidgetAction(action: TypeTemplatesWidgetUIAction) {

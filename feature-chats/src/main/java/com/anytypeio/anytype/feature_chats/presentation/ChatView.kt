@@ -19,6 +19,7 @@ sealed interface ChatView {
 
     data class Message(
         val id: String,
+        val order: Id = "",
         val content: Content,
         val author: String,
         val creator: Id?,
@@ -150,5 +151,10 @@ sealed interface ChatView {
 
 data class ChatViewState(
     val messages: List<ChatView> = emptyList(),
-    val intent: ChatContainer.Intent = ChatContainer.Intent.None
-)
+    val intent: ChatContainer.Intent = ChatContainer.Intent.None,
+    val counter: Counter = Counter()
+) {
+    data class Counter(
+        val count: Int = 0
+    )
+}

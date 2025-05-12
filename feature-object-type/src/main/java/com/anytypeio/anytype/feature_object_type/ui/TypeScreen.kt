@@ -6,14 +6,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +25,6 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 @Composable
 fun TopBarContent(
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
-    uiEditButtonState: UiEditButton,
-    uiTitleState: UiTitleState,
-    topBarScrollBehavior: TopAppBarScrollBehavior,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
     // Use windowInsetsPadding if running on a recent SDK
@@ -43,14 +38,8 @@ fun TopBarContent(
 
     Column(modifier = modifier) {
         TopToolbar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
             uiSyncStatusBadgeState = uiSyncStatusBadgeState,
-            uiEditButtonState = uiEditButtonState,
-            uiTitleState = uiTitleState,
-            onTypeEvent = onTypeEvent,
-            topBarScrollBehavior = topBarScrollBehavior
+            onTypeEvent = onTypeEvent
         )
     }
 }

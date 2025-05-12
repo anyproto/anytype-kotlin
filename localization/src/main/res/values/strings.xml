@@ -1132,8 +1132,6 @@
     <string name="onboarding_key_skip">Skip</string>
     <string name="onboarding_key_not_now">Not now</string>
     <string name="onboarding_key_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>

@@ -84,10 +84,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private fun proceedWithCreatingWallet(
         name: String
     ) {
-        viewModelScope.launch {
-            _toasts.emit("Test1983 Name: $name")
-        }
-        return
         state.value = ScreenState.Loading
         setupWallet.invoke(
             scope = viewModelScope,

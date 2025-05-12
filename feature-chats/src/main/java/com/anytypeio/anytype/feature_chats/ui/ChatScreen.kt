@@ -371,7 +371,7 @@ fun ChatScreen(
 
     // Applying view model intents
     LaunchedEffect(intent) {
-        when (val intent = intent) {
+        when (intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 isPerformingScrollIntent.value = true
                 val index = messages.indexOfFirst {
@@ -404,7 +404,7 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState) {
+    LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
                 val viewportHeight = layoutInfo.viewportSize.height

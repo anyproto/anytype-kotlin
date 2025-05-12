@@ -66,7 +66,7 @@ class ChatContainer @Inject constructor(
                 }
             }
             .distinctUntilChanged()
-            .map { wrappers -> wrappers.associate { it.id to it } }
+            .map { wrappers -> wrappers.associateBy { it.id } }
     }
 
     // TODO Naive implementation. Add caching logic
@@ -115,18 +115,18 @@ class ChatContainer @Inject constructor(
             cacheLastMessages(result.messages)
         }
 
-        val state = response.chatState ?: Chat.State()
+        val initialState = response.chatState ?: Chat.State()
 
         var intent: Intent = Intent.None
 
         val initial = buildList<Chat.Message> {
-            if (state.hasUnReadMessages && !state.oldestMessageOrderId.isNullOrEmpty()) {
+            if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                 // Starting from the unread-messages window.
                 val aroundUnread = loadAroundMessageOrder(
                     chat = chat,
-                    order = state.oldestMessageOrderId.orEmpty()
+                    order = initialState.oldestMessageOrderId.orEmpty()
                 ).also {
-                    val target = it.find { it.order == state.oldestMessageOrderId }
+                    val target = it.find { it.order == initialState.oldestMessageOrderId }
                     if (target != null) {
                         intent = Intent.ScrollToMessage(target.id)
                     }
@@ -148,7 +148,7 @@ class ChatContainer @Inject constructor(
             inputs.scan(
                 initial = ChatStreamState(
                     messages = initial,
-                    state = state,
+                    state = initialState,
                     intent = intent
                 )
             ) { state, transform ->

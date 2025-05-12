@@ -248,6 +248,37 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
+    //region Email screen
+    fun onEmailContinueClicked(
+        email: String,
+        name: String,
+        spaceName: String
+    ) {
+        if (state.value !is ScreenState.Loading) {
+            proceedWithCreatingWallet(
+                name = name,
+                spaceName = spaceName
+            )
+        } else {
+            sendToast(LOADING_MSG)
+        }
+    }
+
+    fun onEmailSkippedClicked(
+        name: String,
+        spaceName: String
+    ) {
+        if (state.value !is ScreenState.Loading) {
+            proceedWithCreatingWallet(
+                name = name,
+                spaceName = spaceName
+            )
+        } else {
+            sendToast(LOADING_MSG)
+        }
+    }
+    //endregion
+
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
         private val setSpaceDetails: SetSpaceDetails,

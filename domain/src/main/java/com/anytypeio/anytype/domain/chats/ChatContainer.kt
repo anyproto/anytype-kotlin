@@ -184,6 +184,7 @@ class ChatContainer @Inject constructor(
                         )
                     }
                     is Transformation.Commands.LoadEnd -> {
+                        logger.logInfo("DROID-2966 intent while load end: $intent")
                         if (state.messages.isNotEmpty()) {
                             if (state.state.hasUnReadMessages) {
                                 // Check if above the unread messages
@@ -238,6 +239,7 @@ class ChatContainer @Inject constructor(
                                     )
                                 }
                             } else {
+                                // TODO optimise by checking last message and last message in state
                                 if (lastMessages.contains(transform.lastVisibleMessage)) {
                                     // No need to paginate, just scroll to bottom.
                                     state.copy(
@@ -245,12 +247,15 @@ class ChatContainer @Inject constructor(
                                     )
                                 } else {
                                     val messages = try {
-                                        loadToEnd(chat)
+                                        loadToEnd(chat).also {
+                                            logger.logInfo("DROID-2966 Loaded chat tail because last message did not contained last visible message")
+                                        }
                                     } catch (e: Exception) {
                                         state.messages.also {
                                             logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                                         }
                                     }
+
                                     ChatStreamState(
                                         messages = messages,
                                         intent = Intent.ScrollToBottom,
@@ -261,6 +266,11 @@ class ChatContainer @Inject constructor(
                         } else {
                             state
                         }
+                    }
+                    is Transformation.Commands.ClearIntent -> {
+                        state.copy(
+                            intent = Intent.None
+                        )
                     }
                     is Transformation.Commands.UpdateVisibleRange -> {
                         val unread = state.state
@@ -280,9 +290,9 @@ class ChatContainer @Inject constructor(
                                     )
                                 )
                             }.onFailure {
-                                logger.logException(it, "Error while reading messages")
+                                logger.logException(it, "DROID-2966 Error while reading messages")
                             }.onSuccess {
-                                logger.logInfo("Read messages with success")
+                                logger.logInfo("DROID-2966 Read messages with success")
                             }
                         }
                         state
@@ -291,6 +301,8 @@ class ChatContainer @Inject constructor(
                         state.reduce(transform.events)
                     }
                 }
+            }.onEach {
+                logger.logInfo("DROID-2966 New emission with intent: ${it.intent}")
             }.distinctUntilChanged()
         )
     }.catch { e ->
@@ -557,6 +569,11 @@ class ChatContainer @Inject constructor(
         }
     }
 
+    suspend fun onClearIntent() {
+        logger.logInfo("DROID-2966 onClearIntent called")
+        commands.emit(Transformation.Commands.ClearIntent)
+    }
+
     internal sealed class Transformation {
         sealed class Events : Transformation() {
             data class Payload(val events: List<Event.Command.Chats>) : Events()
@@ -585,6 +602,8 @@ class ChatContainer @Inject constructor(
             data class LoadEnd(val lastVisibleMessage: Id?): Commands()
 
             data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
+
+            data object ClearIntent : Commands()
         }
     }
 

@@ -71,11 +71,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     ) {
         if (state.value !is ScreenState.Loading) {
             viewModelScope.launch {
-                navigation.emit(
-                    Navigation.NavigateToAddEmailScreen(
-                        name = name
-                    )
-                )
+                proceedWithCreatingWallet(name)
             }
         } else {
             sendToast(LOADING_MSG)

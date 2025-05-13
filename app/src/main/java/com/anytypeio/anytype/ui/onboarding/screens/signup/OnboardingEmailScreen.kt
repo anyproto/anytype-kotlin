@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -91,6 +92,10 @@ fun OnboardingEmailScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
+
     fun isValidEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
@@ -98,8 +103,6 @@ fun OnboardingEmailScreen(
     fun validateAndSubmit() {
         if (isValidEmail(innerValue.text)) {
             isError = false
-            focusManager.clearFocus()
-            keyboardController?.hide()
             onContinueClicked(innerValue.text)
         } else {
             isError = true

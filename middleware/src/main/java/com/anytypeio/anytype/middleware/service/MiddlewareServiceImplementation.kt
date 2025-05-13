@@ -2599,4 +2599,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun objectCreateFromUrl(request: Rpc.Object.CreateFromUrl.Request): Rpc.Object.CreateFromUrl.Response {
+        val encoded = Service.objectCreateFromUrl(
+            Rpc.Object.CreateFromUrl.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CreateFromUrl.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateFromUrl.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

@@ -257,6 +257,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         space: Id,
         startingObject: String?
     ) {
+        if (state.value is ScreenState.Loading) {
+            sendToast(LOADING_MSG)
+            return
+        }
+        state.value = ScreenState.Loading
         proceedWithSettingEmail(email = email)
         proceedWithNavigation(space, startingObject)
     }
@@ -265,6 +270,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         space: Id,
         startingObject: String?
     ) {
+        if (state.value is ScreenState.Loading) {
+            sendToast(LOADING_MSG)
+            return
+        }
+        state.value = ScreenState.Loading
         proceedWithNavigation(space, startingObject)
     }
 
@@ -303,12 +313,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         )
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
-                onSuccess = { Timber.d("Email set") },
+                onSuccess = { Timber.d("Email set successfully") },
                 onFailure = { error ->
+                    Timber.e(error, "Error setting email")
                     if (BuildConfig.DEBUG) {
-                        sendToast("Error setting email")
+                        sendToast("Error setting email: ${error.message}")
                     }
-                    Timber.e("Error setting email: $error")
                 }
             )
         }

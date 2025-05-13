@@ -258,15 +258,19 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         startingObject: String?
     ) {
         proceedWithSettingEmail(email = email)
+        proceedWithNavigation(space, startingObject)
+    }
+
+    fun onEmailSkippedClicked(
+        space: Id,
+        startingObject: String?
+    ) {
+        proceedWithNavigation(space, startingObject)
+    }
+
+    private fun proceedWithNavigation(space: Id, startingObject: String?) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
+            sendOpenAccountAnalytics()
             if (!startingObject.isNullOrEmpty()) {
                 navigation.emit(
                     OpenStartingObject(
@@ -280,29 +284,14 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
-    fun onEmailSkippedClicked(
-        space: Id,
-        startingObject: String?
-    ) {
-        viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
-            if (!startingObject.isNullOrEmpty()) {
-                navigation.emit(
-                    OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
-                    )
-                )
-            } else {
-                navigation.emit(Navigation.OpenVault)
-            }
+    private suspend fun sendOpenAccountAnalytics() {
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            analytics.sendOpenAccountEvent(
+                analytics = config.analytics
+            )
+        } else {
+            Timber.w("config was missing before the end of onboarding")
         }
     }
 

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
@@ -64,6 +65,7 @@ import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCore
+import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
@@ -2988,6 +2990,14 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.pushNotificationRegisterToken(request) }
         logResponseIfDebug(response, time)
+    }
+
+    fun getLinkPreview(url: Url): LinkPreview {
+        val request = Rpc.LinkPreview.Request(url = url)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.linkPreview(request) }
+        logResponseIfDebug(response, time)
+        return response.linkPreview?.toCoreLinkPreview() ?: throw Exception("MW return empty link preview")
     }
 
     private fun logRequestIfDebug(request: Any) {

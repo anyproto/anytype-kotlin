@@ -13,21 +13,5 @@ data class LinkPreview(
         Page,
         Image,
         Text;
-
-        companion object {
-            fun fromProto(value: Int): Type = when (value) {
-                1    -> Page
-                2    -> Image
-                3    -> Text
-                else -> Unknown
-            }
-        }
-
-        fun toProto(): Int = when (this) {
-            Page    -> 1
-            Image   -> 2
-            Text    -> 3
-            Unknown -> 0
-        }
     }
 }

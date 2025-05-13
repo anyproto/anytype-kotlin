@@ -2,16 +2,21 @@ package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import android.os.Build
 import android.os.Build.VERSION_CODES
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,13 +27,15 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -36,16 +43,14 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.ColorBackgroundField
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
-import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
-import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.extensions.conditional
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonMedium
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.MnemonicStub
@@ -81,8 +86,12 @@ fun MnemonicPhraseScreenWrapper(
 }
 
 
-
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    showSystemUi = true,
+    device = PIXEL_7
+)
 @Composable
 fun PreviewMnemonicPhraseScreen() {
     val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
@@ -96,7 +105,12 @@ fun PreviewMnemonicPhraseScreen() {
     )
 }
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    showSystemUi = true,
+    device = PIXEL_7
+)
 @Composable
 fun PreviewMnemonicPhraseScreen2() {
     val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
@@ -125,25 +139,28 @@ fun MnemonicPhraseScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.Top
+                .padding(horizontal = 20.dp),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.height(148.dp))
             MnemonicTitle()
             MnemonicDescription()
-            ReadMoreButton(showWhatIsRecoveryPhraseDialog)
+            Spacer(modifier = Modifier.height(31.dp))
             MnemonicPhrase(
                 state = state,
                 copyMnemonicToClipboard = copyMnemonicToClipboard,
                 mnemonicColorPalette = mnemonicColorPalette
             )
+            ReadMoreButton(showWhatIsRecoveryPhraseDialog)
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
-            openMnemonic = reviewMnemonic,
+            reviewMnemonic = reviewMnemonic,
             onCheckLaterClicked = onCheckLaterClicked,
             onGoToAppClicked = onGoToAppClicked,
-            state = state
+            state = state,
+            copyMnemonicToClipboard = copyMnemonicToClipboard
         )
     }
     if (showWhatIsRecoveryPhraseDialog.value) {
@@ -165,22 +182,27 @@ fun MnemonicPhraseScreen(
 }
 
 @Composable
-private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>) {
-    Box(
+private fun ColumnScope.ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>) {
+    Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 16.dp)
+            .wrapContentWidth()
+            .padding(top = 16.dp)
             .height(24.dp)
             .noRippleClickable {
                 showWhatIsRecoveryPhraseDialog.value = true
-            }
+            },
+        verticalAlignment = Alignment.CenterVertically,
     ) {
+        Image(
+            modifier = Modifier.wrapContentSize(),
+            painter = painterResource(id = R.drawable.ic_plus_18),
+            contentDescription = "Read more about recovery phrase",
+        )
         Text(
             text = stringResource(id = R.string.onboarding_mnemonic_read_more),
-            style = BodyRegular.copy(
-                color = Color(0xFFDBDAD4)
-            ),
-            modifier = Modifier.align(Alignment.Center)
+            style = ButtonMedium,
+            color = Color(0xFF909090),
+            modifier = Modifier.padding(start = 8.dp),
         )
     }
 }
@@ -188,8 +210,9 @@ private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>
 @Composable
 fun MnemonicButtons(
     modifier: Modifier = Modifier,
-    openMnemonic: () -> Unit,
+    reviewMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
+    copyMnemonicToClipboard: (String) -> Unit,
     onGoToAppClicked: () -> Unit,
     state: OnboardingMnemonicViewModel.State
 ) {
@@ -205,6 +228,7 @@ fun MnemonicButtons(
                     size = ButtonSize.Large
                 )
             }
+
             else -> {
                 OnBoardingButtonPrimary(
                     text = stringResource(id = R.string.onboarding_tap_to_reveal),
@@ -212,8 +236,13 @@ fun MnemonicButtons(
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
                     onClick = {
-                        openMnemonic.invoke()
-                    }, size = ButtonSize.Large
+                        reviewMnemonic.invoke().also {
+                            if (state is OnboardingMnemonicViewModel.State.Mnemonic) {
+                                copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
+                            }
+                        }
+                    },
+                    size = ButtonSize.Large
                 )
                 OnBoardingButtonSecondary(
                     text = stringResource(id = R.string.onboarding_key_not_now),
@@ -248,9 +277,8 @@ fun MnemonicTitle() {
         Text(
             modifier = Modifier,
             text = stringResource(R.string.onboarding_this_is_your_key_title),
-            style = HeadlineHeading.copy(
-                color = OnBoardingTextPrimaryColor
-            ),
+            style = HeadlineTitleSemibold,
+            color = colorResource(id = R.color.text_white),
             textAlign = TextAlign.Center
         )
     }
@@ -273,8 +301,7 @@ fun MnemonicPhrase(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                        .background(color = ColorBackgroundField, shape = RoundedCornerShape(24.dp))
+                        .background(color = ColorBackgroundField, shape = RoundedCornerShape(16.dp))
                         .wrapContentHeight()
                 ) {
                     if (Build.VERSION.SDK_INT <= VERSION_CODES.R && state is OnboardingMnemonicViewModel.State.Mnemonic) {
@@ -298,19 +325,6 @@ fun MnemonicPhrase(
                         )
                     }
                 }
-                if (state is OnboardingMnemonicViewModel.State.MnemonicOpened) {
-                    OnBoardingButtonSecondary(
-                        text = stringResource(id = R.string.onboarding_key_copy),
-                        modifier = Modifier
-                            .align(CenterHorizontally)
-                            .padding(bottom = 12.dp),
-                        onClick = {
-                            copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
-                        },
-                        size = ButtonSize.SmallSecondary,
-                        textColor = ColorButtonRegular
-                    )
-                }
             }
 
         }
@@ -322,16 +336,15 @@ fun MnemonicDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp)
+            .padding(horizontal = 20.dp)
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.onboarding_key_description),
-            style = HeadlineOnBoardingDescription.copy(
-                color = OnBoardingTextSecondaryColor,
-                textAlign = TextAlign.Center
-            )
+            textAlign = TextAlign.Center,
+            style = UXBody,
+            color = colorResource(id = R.color.text_white)
         )
     }
 }

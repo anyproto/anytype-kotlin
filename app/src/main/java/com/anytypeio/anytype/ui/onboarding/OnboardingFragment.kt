@@ -332,7 +332,8 @@ class OnboardingFragment : Fragment() {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
                         space = spaceId,
-                        startingObject = startingObjectId
+                        startingObject = startingObjectId,
+                        navController = navController
                     )
                 } else {
                     Box(
@@ -377,12 +378,13 @@ class OnboardingFragment : Fragment() {
                 BackHandler { onBackClicked() }
             }
             composable(
-                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM={$ONBOARDING_NAME_PARAM}",
+                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
                 arguments = listOf(
-                    navArgument(ONBOARDING_NAME_PARAM) {
+                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
+                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
                         type = NavType.StringType
-                        defaultValue = ""
-                        nullable = false
+                        nullable = true
+                        defaultValue = null
                     }
                 ),
                 enterTransition = {
@@ -393,6 +395,8 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
+                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
+                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
                 val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
                     if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setEmail) == true) {
@@ -404,10 +408,23 @@ class OnboardingFragment : Fragment() {
                 }
                 currentPage.value = OnboardingPage.SET_EMAIL
                 backButtonCallback.value = onBackClicked
-                AddEmail(
-                    navController = navController,
-                    onBackClicked = onBackClicked
-                )
+                if (!spaceId.isNullOrEmpty()) {
+                    AddEmail(
+                        space = spaceId,
+                        startingObject = startingObjectId,
+                        onBackClicked = onBackClicked
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 BackHandler { onBackClicked() }
             }
         }
@@ -586,17 +603,14 @@ class OnboardingFragment : Fragment() {
                         )
                     }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
-                        //
+                        // do nothing
                     }
 
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
-                        if (keyboardInsets.getBottom(density) > 0) {
-                            focusManager.clearFocus(force = true)
-                            delay(KEYBOARD_HIDE_DELAY)
-                        }
-                        navController.navigate(
-                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM=${command.name}",
-                        )
+                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
+                        //do nothing
+                    }
+                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
+                        //do nothing
                     }
                 }
             }
@@ -615,7 +629,8 @@ class OnboardingFragment : Fragment() {
     private fun Mnemonic(
         mnemonicColorPalette: List<Color>,
         space: Id,
-        startingObject: Id?
+        startingObject: Id?,
+        navController: NavHostController
     ) {
         val component = componentManager().onboardingMnemonicComponent
         val vm = daggerViewModel { component.get().getViewModel() }
@@ -666,6 +681,13 @@ class OnboardingFragment : Fragment() {
                         }.onFailure {
                             Timber.e(it, "Error while navigation to vault")
                         }
+                    }
+                    is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
+                        val startingObject = command.startingObject
+                        val space = command.space
+                        navController.navigate(
+                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM=$space&$ONBOARDING_STARTING_OBJECT_PARAM=$startingObject"
+                        )
                     }
                 }
             }
@@ -776,7 +798,8 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun AddEmail(
-        navController: NavHostController,
+        space: Id,
+        startingObject: Id?,
         onBackClicked: () -> Unit
     ) {
         val component = componentManager().onboardingSoulCreationComponent
@@ -786,11 +809,10 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
-        val name = navController.currentBackStackEntry?.arguments?.getString(ONBOARDING_NAME_PARAM) ?: ""
-
         SetEmailWrapper(
             viewModel = vm,
-            name = name,
+            startingObject = startingObject,
+            space = space,
             onBackClicked = onBackClicked
         )
 
@@ -798,25 +820,45 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { command ->
                 when (command) {
                     is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
-                        if (keyboardInsets.getBottom(density) > 0) {
-                            focusManager.clearFocus(force = true)
-                            delay(KEYBOARD_HIDE_DELAY)
-                        }
-                        val space = command.space
-                        val startingObject = command.startingObject
-                        navController.navigate(
-                            route = buildString {
-                                append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${space.id}")
-                                startingObject?.let { append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") }
-                            }
-                        )
+                        //do nothing
                     }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
                         //
                     }
 
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
-                        //do nothing
+                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                            findNavController().navigate(
+                                R.id.actionOpenSpaceFromVault,
+                                HomeScreenFragment.args(
+                                    space = command.space.id,
+                                    deeplink = null
+                                )
+                            )
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = command.startingObject,
+                                    space = command.space.id,
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
                     }
                 }
             }
@@ -873,7 +915,7 @@ class OnboardingFragment : Fragment() {
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
 
-        private const val ONBOARDING_NAME_PARAM = "name"
+        private const val ONBOARDING_NAME_PARAM = "startingObject"
     }
 }
 

@@ -103,6 +103,8 @@ fun OnboardingEmailScreen(
     fun validateAndSubmit() {
         if (isValidEmail(innerValue.text)) {
             isError = false
+            focusManager.clearFocus()
+            keyboardController?.hide()
             onContinueClicked(innerValue.text)
         } else {
             isError = true
@@ -222,6 +224,7 @@ fun OnboardingEmailScreen(
                 onClick = {
                     onSkipClicked().also {
                         focusManager.clearFocus()
+                        keyboardController?.hide()
                     }
                 },
                 textColor = colorResource(id = R.color.text_white),

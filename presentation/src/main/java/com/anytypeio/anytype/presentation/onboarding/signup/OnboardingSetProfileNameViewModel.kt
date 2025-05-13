@@ -28,6 +28,8 @@ import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
+import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -252,27 +254,55 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     //region Email screen
     fun onEmailContinueClicked(
         email: String,
-        name: String,
+        space: Id,
+        startingObject: String?
     ) {
         proceedWithSettingEmail(email = email)
-        if (state.value !is ScreenState.Loading) {
-            proceedWithCreatingWallet(
-                name = name
-            )
-        } else {
-            sendToast(LOADING_MSG)
+        viewModelScope.launch {
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                analytics.sendOpenAccountEvent(
+                    analytics = config.analytics
+                )
+            } else {
+                Timber.w("config was missing before the end of onboarding")
+            }
+            if (!startingObject.isNullOrEmpty()) {
+                navigation.emit(
+                    OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                navigation.emit(Navigation.OpenVault)
+            }
         }
     }
 
     fun onEmailSkippedClicked(
-        name: String
+        space: Id,
+        startingObject: String?
     ) {
-        if (state.value !is ScreenState.Loading) {
-            proceedWithCreatingWallet(
-                name = name
-            )
-        } else {
-            sendToast(LOADING_MSG)
+        viewModelScope.launch {
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                analytics.sendOpenAccountEvent(
+                    analytics = config.analytics
+                )
+            } else {
+                Timber.w("config was missing before the end of onboarding")
+            }
+            if (!startingObject.isNullOrEmpty()) {
+                navigation.emit(
+                    OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                navigation.emit(Navigation.OpenVault)
+            }
         }
     }
 
@@ -344,10 +374,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     sealed class Navigation {
         data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
-        data class NavigateToAddEmailScreen(
-            val name: String
-        ) : Navigation()
         data object GoBack: Navigation()
+        data class OpenStartingObject(
+            val space: SpaceId,
+            val startingObject: Id
+        ) : Navigation()
+        data object OpenVault : Navigation()
     }
 
     sealed class ScreenState {

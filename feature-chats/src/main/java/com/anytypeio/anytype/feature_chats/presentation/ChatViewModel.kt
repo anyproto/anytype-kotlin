@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
@@ -76,6 +78,7 @@ class ChatViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getLinkPreview: GetLinkPreview
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(

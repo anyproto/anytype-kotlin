@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
@@ -79,7 +80,8 @@ class ChatViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
-    private val getLinkPreview: GetLinkPreview
+    private val getLinkPreview: GetLinkPreview,
+    private val createObjectFromUrl: CreateObjectFromUrl
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -494,7 +496,20 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.Bookmark -> {
-                            // TODO
+                            createObjectFromUrl.async(
+                                params = attachment.preview.url
+                            ).onSuccess { obj ->
+                                if (obj.isValid) {
+                                    add(
+                                        Chat.Message.Attachment(
+                                            target = obj.id,
+                                            type = Chat.Message.Attachment.Type.Link
+                                        )
+                                    )
+                                }
+                            }.onFailure {
+
+                            }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
                             val path = withContext(dispatchers.io) {
@@ -1047,7 +1062,7 @@ class ChatViewModel @Inject constructor(
         ): ChatBoxMode()
     }
 
-    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+    private fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
         return when (this) {
             is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
             is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)

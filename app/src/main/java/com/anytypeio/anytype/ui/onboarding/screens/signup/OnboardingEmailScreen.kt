@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -39,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -55,19 +58,22 @@ import kotlin.text.isNotEmpty
 @Composable
 fun SetEmailWrapper(
     viewModel: OnboardingSetProfileNameViewModel,
-    name: String,
+    startingObject: String?,
+    space: Id,
     onBackClicked: () -> Unit,
 ) {
     OnboardingEmailScreen(
         onContinueClicked = { email ->
             viewModel.onEmailContinueClicked(
-                name = name,
+                space = space,
+                startingObject = startingObject,
                 email = email
             )
         },
         onSkipClicked = {
             viewModel.onEmailSkippedClicked(
-                name = name,
+                space = space,
+                startingObject = startingObject
             )
         },
         isLoading = viewModel.state
@@ -87,7 +93,12 @@ fun OnboardingEmailScreen(
     var innerValue by remember { mutableStateOf(TextFieldValue()) }
     var isError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     fun isValidEmail(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
@@ -96,7 +107,7 @@ fun OnboardingEmailScreen(
     fun validateAndSubmit() {
         if (isValidEmail(innerValue.text)) {
             isError = false
-            focusRequester.freeFocus()
+            focusManager.clearFocus()
             keyboardController?.hide()
             onContinueClicked(innerValue.text)
         } else {
@@ -108,11 +119,10 @@ fun OnboardingEmailScreen(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .imePadding()
-            //.background(color = colorResource(id = R.color.black))
             .fillMaxSize()
     ) {
         Column {
-            Spacer(modifier = Modifier.height(148.dp))
+            Spacer(modifier = Modifier.height(140.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,7 +158,7 @@ fun OnboardingEmailScreen(
                     Text(
                         text = stringResource(id = R.string.onboarding_enter_email),
                         style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_tertiary)
+                        color = Color(0xFF646464)
                     )
                 },
                 textStyle = PreviewTitle1Regular.copy(
@@ -216,9 +226,9 @@ fun OnboardingEmailScreen(
             OnBoardingButtonSecondary(
                 text = stringResource(id = R.string.onboarding_button_skip),
                 onClick = {
-                    onSkipClicked().also {
-                        focusRequester.freeFocus()
-                    }
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSkipClicked()
                 },
                 textColor = colorResource(id = R.color.text_white),
                 size = ButtonSize.Large,

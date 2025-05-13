@@ -27,8 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -82,17 +84,18 @@ private fun SetProfileNameScreen(
     var innerValue by remember { mutableStateOf(TextFieldValue()) }
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
     var isError by remember { mutableStateOf(false) }
 
     fun validateAndSubmit() {
         if (innerValue.text.isNotEmpty()) {
             isError = false
-            focusRequester.freeFocus()
+            focusManager.clearFocus()
             keyboardController?.hide()
             onNextClicked(innerValue.text)
         } else {
             isError = true
-            focusRequester.freeFocus()
+            focusManager.clearFocus()
             keyboardController?.hide()
         }
     }
@@ -114,9 +117,7 @@ private fun SetProfileNameScreen(
                 value = innerValue,
                 onValueChange = { input ->
                     innerValue = input
-                    if (innerValue.text.isNotEmpty() && isError) {
-                        isError = false
-                    }
+                    isError = false
                 },
                 shape = RoundedCornerShape(size = 16.dp),
                 modifier = Modifier
@@ -165,7 +166,7 @@ private fun SetProfileNameScreen(
                 .align(Alignment.TopStart)
                 .padding(top = 16.dp, start = 9.dp)
                 .noRippleClickable {
-                    focusRequester.freeFocus()
+                    focusManager.clearFocus()
                     onBackClicked()
                 },
             painter = painterResource(id = R.drawable.ic_back_onboarding_32),

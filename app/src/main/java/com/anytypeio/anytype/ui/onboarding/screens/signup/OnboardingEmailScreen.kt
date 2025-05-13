@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -87,6 +88,7 @@ fun OnboardingEmailScreen(
     var innerValue by remember { mutableStateOf(TextFieldValue()) }
     var isError by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     fun isValidEmail(email: String): Boolean {
@@ -96,7 +98,7 @@ fun OnboardingEmailScreen(
     fun validateAndSubmit() {
         if (isValidEmail(innerValue.text)) {
             isError = false
-            focusRequester.freeFocus()
+            focusManager.clearFocus()
             keyboardController?.hide()
             onContinueClicked(innerValue.text)
         } else {
@@ -216,7 +218,7 @@ fun OnboardingEmailScreen(
                 text = stringResource(id = R.string.onboarding_button_skip),
                 onClick = {
                     onSkipClicked().also {
-                        focusRequester.freeFocus()
+                        focusManager.clearFocus()
                     }
                 },
                 textColor = colorResource(id = R.color.text_white),

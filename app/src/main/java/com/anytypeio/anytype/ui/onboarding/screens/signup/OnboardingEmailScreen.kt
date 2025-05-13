@@ -108,11 +108,10 @@ fun OnboardingEmailScreen(
         modifier = Modifier
             .windowInsetsPadding(WindowInsets.navigationBars)
             .imePadding()
-            //.background(color = colorResource(id = R.color.black))
             .fillMaxSize()
     ) {
         Column {
-            Spacer(modifier = Modifier.height(148.dp))
+            Spacer(modifier = Modifier.height(140.dp))
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -148,7 +147,7 @@ fun OnboardingEmailScreen(
                     Text(
                         text = stringResource(id = R.string.onboarding_enter_email),
                         style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_tertiary)
+                        color = Color(0xFF646464)
                     )
                 },
                 textStyle = PreviewTitle1Regular.copy(

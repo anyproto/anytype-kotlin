@@ -4,40 +4,52 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
-import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
-import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
@@ -46,7 +58,7 @@ fun SetProfileNameWrapper(
     onBackClicked: () -> Unit,
 ) {
     val name = remember { mutableStateOf("") }
-    
+
     SetProfileNameScreen(
         onNextClicked = { inputName ->
             name.value = inputName
@@ -67,45 +79,114 @@ private fun SetProfileNameScreen(
     onBackClicked: () -> Unit,
     isLoading: Boolean
 ) {
-    val text = remember { mutableStateOf("") }
-    val focus = LocalFocusManager.current
+    var innerValue by remember { mutableStateOf(TextFieldValue()) }
+    val focusRequester = remember { FocusRequester() }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    var isError by remember { mutableStateOf(false) }
+
+    fun validateAndSubmit() {
+        if (innerValue.text.isNotEmpty()) {
+            isError = false
+            focusRequester.freeFocus()
+            keyboardController?.hide()
+            onNextClicked(innerValue.text)
+        } else {
+            isError = true
+            focusRequester.freeFocus()
+            keyboardController?.hide()
+        }
+    }
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.navigationBars)
+            .imePadding()
+            .fillMaxSize()
     ) {
         Column {
             Spacer(
-                modifier = Modifier.height(148.dp)
+                modifier = Modifier.height(140.dp)
             )
             SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
             SetProfileNameDescription()
-            Spacer(modifier = Modifier.height(16.dp))
-            SetProfileNameInput(
-                text = text,
-                onKeyboardActionDoneClicked = { onNextClicked(text.value) }
+            Spacer(modifier = Modifier.height(32.dp))
+            OutlinedTextField(
+                value = innerValue,
+                onValueChange = { input ->
+                    innerValue = input
+                    if (innerValue.text.isNotEmpty() && isError) {
+                        isError = false
+                    }
+                },
+                shape = RoundedCornerShape(size = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .focusRequester(focusRequester),
+                placeholder = {
+                    Text(
+                        text = stringResource(id = R.string.onboarding_your_name),
+                        style = PreviewTitle1Regular,
+                        color = Color(0xFF646464)
+                    )
+                },
+                supportingText = {
+                    if (isError) {
+                        Text(
+                            text = stringResource(id = R.string.onboarding_name_error),
+                            color = colorResource(id = R.color.palette_system_red),
+                            style = Caption1Regular
+                        )
+                    }
+                },
+                textStyle = PreviewTitle1Regular.copy(
+                    color = Color(0xFFC2C2C2)
+                ),
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = colorResource(id = R.color.text_primary),
+                    cursorColor = Color(0xFFC2C2C2),
+                    focusedContainerColor = Color(0xFF212121),
+                    unfocusedContainerColor = Color(0xFF212121),
+                    errorContainerColor = Color(0xFF212121),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                ),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions {
+                    validateAndSubmit()
+                }
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
         }
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(top = 16.dp, start = 9.dp)
                 .noRippleClickable {
-                    focus.clearFocus()
+                    focusRequester.freeFocus()
                     onBackClicked()
                 },
             painter = painterResource(id = R.drawable.ic_back_onboarding_32),
             contentDescription = stringResource(R.string.content_description_back_button_icon)
         )
-        SetProfileNameNextButton(
+        OnBoardingButtonPrimary(
+            text = stringResource(id = R.string.onboarding_button_continue),
+            onClick = {
+                validateAndSubmit()
+            },
+            size = ButtonSize.Large,
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
-            ,
-            onNextClicked = onNextClicked,
-            text = text,
-            isLoading = isLoading
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 20.dp
+                )
+                .align(Alignment.BottomCenter),
+            isLoading = isLoading,
+            enabled = innerValue.text.isNotEmpty()
         )
     }
 }
@@ -122,44 +203,9 @@ fun SetProfileNameTitle(modifier: Modifier) {
         Text(
             modifier = Modifier,
             text = stringResource(R.string.onboarding_set_your_name_title),
-            style = HeadlineHeading.copy(
-                color = OnBoardingTextPrimaryColor
-            )
+            style = HeadlineTitleSemibold,
+            color = colorResource(id = R.color.text_white)
         )
-    }
-}
-
-@Composable
-fun SetProfileNameInput(
-    text: MutableState<String>,
-    onKeyboardActionDoneClicked: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        contentAlignment = Alignment.Center
-    ) {
-        val focus = LocalFocusManager.current
-        val focusRequester = FocusRequester()
-        OnboardingInput(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .focusRequester(focusRequester)
-            ,
-            text = text,
-            placeholder = stringResource(id = R.string.onboarding_your_name),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    focus.clearFocus()
-                    onKeyboardActionDoneClicked()
-                }
-            )
-        )
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
     }
 }
 
@@ -168,44 +214,25 @@ fun SetProfileNameDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
+            .padding(horizontal = 20.dp)
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = stringResource(id = R.string.onboarding_soul_creation_description),
-            style = HeadlineOnBoardingDescription.copy(
-                color = OnBoardingTextSecondaryColor,
-                textAlign = TextAlign.Center
-            )
+            style = UXBody,
+            color = colorResource(id = R.color.text_white),
+            textAlign = TextAlign.Center
         )
     }
 }
 
-@Composable
-fun SetProfileNameNextButton(
-    modifier: Modifier,
-    onNextClicked: (Name) -> Unit,
-    text: MutableState<String>,
-    isLoading: Boolean
-) {
-    val focus = LocalFocusManager.current
-    Box(modifier = modifier) {
-        OnBoardingButtonPrimary(
-            text = stringResource(id = R.string.done),
-            onClick = {
-                onNextClicked(text.value).also {
-                    focus.clearFocus(force = true)
-                }
-            },
-            size = ButtonSize.Large,
-            modifier = modifier,
-            isLoading = isLoading
-        )
-    }
-}
-
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    showSystemUi = true,
+    device = PIXEL_7
+)
 @Composable
 private fun SetProfileNameScreenPreview() {
     SetProfileNameScreen(

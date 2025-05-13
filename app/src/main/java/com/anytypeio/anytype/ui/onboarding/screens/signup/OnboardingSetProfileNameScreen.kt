@@ -20,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,6 +87,10 @@ private fun SetProfileNameScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var isError by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
+    }
 
     fun validateAndSubmit() {
         if (innerValue.text.isNotEmpty()) {

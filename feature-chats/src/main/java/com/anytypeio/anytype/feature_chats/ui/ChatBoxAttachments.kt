@@ -221,11 +221,8 @@ internal fun ChatBoxAttachments(
                                     )
                                     .width(216.dp),
                                 title = attachment.preview.title,
-                                type = stringResource(R.string.file),
-                                icon = ObjectIcon.File(
-                                    mime = null,
-                                    fileName = null
-                                ),
+                                type = stringResource(R.string.bookmark),
+                                icon = ObjectIcon.None,
                                 onAttachmentClicked = {
                                     // TODO
                                 }

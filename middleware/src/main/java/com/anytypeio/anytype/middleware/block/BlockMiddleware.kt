@@ -1097,4 +1097,8 @@ class BlockMiddleware(
     override suspend fun getLinkPreview(url: Url): LinkPreview {
         return middleware.getLinkPreview(url)
     }
+
+    override suspend fun createObjectFromUrl(url: Url): ObjectWrapper.Basic {
+        return middleware.createObjectFromUrl(url = url)
+    }
 }

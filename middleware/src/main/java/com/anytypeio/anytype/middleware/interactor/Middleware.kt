@@ -2992,12 +2992,22 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
     }
 
+    @Throws(Exception::class)
     fun getLinkPreview(url: Url): LinkPreview {
         val request = Rpc.LinkPreview.Request(url = url)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.linkPreview(request) }
         logResponseIfDebug(response, time)
         return response.linkPreview?.toCoreLinkPreview() ?: throw Exception("MW return empty link preview")
+    }
+
+    @Throws(Exception::class)
+    fun createObjectFromUrl(url: Url) : ObjectWrapper.Basic {
+        val request = Rpc.Object.CreateFromUrl.Request(url = url)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }
+        logResponseIfDebug(response, time)
+        return ObjectWrapper.Basic(response.details.orEmpty())
     }
 
     private fun logRequestIfDebug(request: Any) {

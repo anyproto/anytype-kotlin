@@ -479,4 +479,6 @@ interface BlockRemote {
     suspend fun setDataViewProperties(command: Command.SetDataViewProperties): Payload
 
     suspend fun getLinkPreview(url: Url): LinkPreview
+
+    suspend fun createObjectFromUrl(url: Url): ObjectWrapper.Basic
 }

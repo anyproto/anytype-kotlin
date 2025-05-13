@@ -1125,4 +1125,6 @@ class BlockDataRepository(
     }
 
     override suspend fun getLinkPreview(url: Url): LinkPreview = remote.getLinkPreview(url)
+
+    override suspend fun createObjectFromUrl(url: Url): ObjectWrapper.Basic = remote.createObjectFromUrl(url)
 }

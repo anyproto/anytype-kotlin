@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -289,6 +290,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             setMembershipEmail.async(params).fold(
                 onSuccess = { Timber.d("Email set") },
                 onFailure = { error ->
+                    if (BuildConfig.DEBUG) {
+                        sendToast("Error setting email")
+                    }
                     Timber.e("Error setting email: $error")
                 }
             )

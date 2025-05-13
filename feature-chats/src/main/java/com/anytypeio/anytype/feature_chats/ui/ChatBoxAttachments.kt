@@ -210,6 +210,43 @@ internal fun ChatBoxAttachments(
                         }
                     }
                 }
+                is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                    item {
+                        Box {
+                            AttachedObject(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 12.dp,
+                                        end = 4.dp
+                                    )
+                                    .width(216.dp),
+                                title = attachment.preview.title,
+                                type = stringResource(R.string.file),
+                                icon = ObjectIcon.File(
+                                    mime = null,
+                                    fileName = null
+                                ),
+                                onAttachmentClicked = {
+                                    // TODO
+                                }
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                contentDescription = "Close icon",
+                                modifier = Modifier
+                                    .align(
+                                        Alignment.TopEnd
+                                    )
+                                    .padding(top = 6.dp)
+                                    .noRippleClickable {
+                                        onClearAttachmentClicked(attachment)
+                                    }
+                            )
+                            // TODO handle state
+//                            ChatBoxAttachmentState(attachment.state)
+                        }
+                    }
+                }
             }
         }
     }

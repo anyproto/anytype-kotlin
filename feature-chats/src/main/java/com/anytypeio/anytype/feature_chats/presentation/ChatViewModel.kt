@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -492,6 +493,9 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
                         }
+                        is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                            // TODO
+                        }
                         is ChatView.Message.ChatBoxAttachment.File -> {
                             val path = withContext(dispatchers.io) {
                                 copyFileToCacheDirectory.copy(attachment.uri)
@@ -962,6 +966,25 @@ class ChatViewModel @Inject constructor(
     ) {
         Timber.d("DROID-2966 onVisibleRangeChanged, from: $from, to: $to")
         visibleRangeUpdates.tryEmit(from to to)
+    }
+
+    fun onUrlPasted(url: Url) {
+        viewModelScope.launch {
+            getLinkPreview.async(
+                params = url
+            ).onSuccess { preview ->
+                chatBoxAttachments.value = buildList {
+                    addAll(chatBoxAttachments.value)
+                    add(
+                        ChatView.Message.ChatBoxAttachment.Bookmark(
+                            preview = preview
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "Failed to get link preview")
+            }
+        }
     }
 
     /**

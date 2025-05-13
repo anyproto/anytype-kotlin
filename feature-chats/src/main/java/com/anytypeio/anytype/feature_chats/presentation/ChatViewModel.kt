@@ -506,9 +506,11 @@ class ChatViewModel @Inject constructor(
                                             type = Chat.Message.Attachment.Type.Link
                                         )
                                     )
+                                } else {
+                                    Timber.w("DROID-2966 Created object from URL is not valid")
                                 }
                             }.onFailure {
-
+                                Timber.e(it, "DROID-2966 Error while creating object from url")
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {

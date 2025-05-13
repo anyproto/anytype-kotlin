@@ -480,5 +480,5 @@ interface BlockRemote {
 
     suspend fun getLinkPreview(url: Url): LinkPreview
 
-    suspend fun createObjectFromUrl(url: Url): ObjectWrapper.Basic
+    suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
 }

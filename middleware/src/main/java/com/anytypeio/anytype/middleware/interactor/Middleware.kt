@@ -3002,8 +3002,11 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun createObjectFromUrl(url: Url) : ObjectWrapper.Basic {
-        val request = Rpc.Object.CreateFromUrl.Request(url = url)
+    fun createObjectFromUrl(space: SpaceId, url: Url) : ObjectWrapper.Basic {
+        val request = Rpc.Object.CreateFromUrl.Request(
+            url = url,
+            spaceId = space.id
+        )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }
         logResponseIfDebug(response, time)

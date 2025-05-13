@@ -1098,7 +1098,7 @@ class BlockMiddleware(
         return middleware.getLinkPreview(url)
     }
 
-    override suspend fun createObjectFromUrl(url: Url): ObjectWrapper.Basic {
-        return middleware.createObjectFromUrl(url = url)
+    override suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic {
+        return middleware.createObjectFromUrl(space = space, url = url)
     }
 }

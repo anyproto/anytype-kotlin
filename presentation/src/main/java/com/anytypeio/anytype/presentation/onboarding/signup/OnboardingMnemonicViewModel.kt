@@ -129,6 +129,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
     }
 
     private fun shouldShowEmail(): Boolean {
+        //todo: update with Local Only config
         return true
     }
 

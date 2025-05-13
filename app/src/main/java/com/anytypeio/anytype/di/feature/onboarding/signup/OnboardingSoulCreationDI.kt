@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.onboarding.signup
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
@@ -16,7 +17,9 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -94,6 +97,14 @@ object OnboardingSoulCreationModule {
         dispatchers = dispatchers
     )
 
+    @JvmStatic
+    @Provides
+    @SoulCreationScreenScope
+    fun provideSetMembershipEmail(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetMembershipEmail = SetMembershipEmail(repo = repo, dispatchers = dispatchers)
+
     @Module
     interface Declarations {
         @Binds
@@ -119,6 +130,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun globalSubscriptionManager(): GlobalSubscriptionManager
+    fun stringResourceProvider(): StringResourceProvider
 }
 
 @Scope

@@ -226,10 +226,9 @@ fun OnboardingEmailScreen(
             OnBoardingButtonSecondary(
                 text = stringResource(id = R.string.onboarding_button_skip),
                 onClick = {
-                    onSkipClicked().also {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSkipClicked()
                 },
                 textColor = colorResource(id = R.color.text_white),
                 size = ButtonSize.Large,

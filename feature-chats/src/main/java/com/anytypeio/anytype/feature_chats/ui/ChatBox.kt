@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
+import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -480,9 +481,20 @@ private fun ChatBoxUserInput(
     BasicTextField(
         value = text,
         onValueChange = { newValue ->
+
             val newText = newValue.text
             val oldText = text.text // Keep a reference to the current text before updating
             val textLengthDifference = newText.length - oldText.length
+
+            if (textLengthDifference > 0) {
+                val prefixLen = newText.commonPrefixWith(oldText).length
+                val inserted = newText.substring(prefixLen, prefixLen + textLengthDifference)
+                val urlMatcher = Patterns.WEB_URL.matcher(inserted)
+                if (urlMatcher.find()) {
+                    val url = urlMatcher.group()
+                    Timber.d("DROID-2966 User just inserted URL: $url")
+                }
+            }
 
             val updatedSpans = spans.mapNotNull { span ->
                 // Detect the common prefix length

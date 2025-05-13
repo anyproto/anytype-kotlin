@@ -637,4 +637,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun pushNotificationRegisterToken(request: Rpc.PushNotification.RegisterToken.Request): Rpc.PushNotification.RegisterToken.Response
+
+    @Throws(Exception::class)
+    fun linkPreview(request: Rpc.LinkPreview.Request) : Rpc.LinkPreview.Response
 }

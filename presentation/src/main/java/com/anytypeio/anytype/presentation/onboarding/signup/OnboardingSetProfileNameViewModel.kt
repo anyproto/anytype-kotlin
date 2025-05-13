@@ -107,7 +107,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private fun proceedWithCreatingAccount(
         name: String
     ) {
-        val spaceName = stringProvider.getFirstSpaceName()
+        val spaceName = stringProvider.getDefaultSpaceName()
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(
             name = name,

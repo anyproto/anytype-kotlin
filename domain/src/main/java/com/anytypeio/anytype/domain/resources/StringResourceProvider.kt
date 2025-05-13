@@ -9,5 +9,5 @@ interface StringResourceProvider {
     fun getUntitledObjectTitle(): String
     fun getSetOfObjectsTitle(): String
     fun getPropertiesFormatPrettyString(format: RelationFormat): String
-    fun getFirstSpaceName(): String
+    fun getDefaultSpaceName(): String
 }

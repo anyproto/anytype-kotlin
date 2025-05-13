@@ -52,7 +52,7 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
         }
     }
 
-    override fun getFirstSpaceName(): String {
+    override fun getDefaultSpaceName(): String {
         return context.getString(R.string.onboarding_my_first_space)
     }
 }

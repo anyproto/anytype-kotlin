@@ -497,7 +497,10 @@ class ChatViewModel @Inject constructor(
                         }
                         is ChatView.Message.ChatBoxAttachment.Bookmark -> {
                             createObjectFromUrl.async(
-                                params = attachment.preview.url
+                                params = CreateObjectFromUrl.Params(
+                                    url = attachment.preview.url,
+                                    space = vmParams.space
+                                )
                             ).onSuccess { obj ->
                                 if (obj.isValid) {
                                     add(

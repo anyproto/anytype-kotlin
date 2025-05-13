@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -3005,7 +3006,8 @@ class Middleware @Inject constructor(
     fun createObjectFromUrl(space: SpaceId, url: Url) : ObjectWrapper.Basic {
         val request = Rpc.Object.CreateFromUrl.Request(
             url = url,
-            spaceId = space.id
+            spaceId = space.id,
+            objectTypeUniqueKey = ObjectTypeUniqueKeys.BOOKMARK
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -57,19 +58,22 @@ import kotlin.text.isNotEmpty
 @Composable
 fun SetEmailWrapper(
     viewModel: OnboardingSetProfileNameViewModel,
-    name: String,
+    startingObject: String?,
+    space: Id,
     onBackClicked: () -> Unit,
 ) {
     OnboardingEmailScreen(
         onContinueClicked = { email ->
             viewModel.onEmailContinueClicked(
-                name = name,
+                space = space,
+                startingObject = startingObject,
                 email = email
             )
         },
         onSkipClicked = {
             viewModel.onEmailSkippedClicked(
-                name = name,
+                space = space,
+                startingObject = startingObject
             )
         },
         isLoading = viewModel.state

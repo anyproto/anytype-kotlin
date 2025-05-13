@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -57,24 +58,35 @@ class OnboardingMnemonicViewModel @Inject constructor(
             type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
             step = EventsDictionary.ScreenOnboardingStep.PHRASE
         )
-        viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
-            if (!startingObject.isNullOrEmpty()) {
+        if (shouldShowEmail()) {
+            viewModelScope.launch {
                 commands.emit(
-                    Command.OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
+                    Command.NavigateToAddEmailScreen(
+                        startingObject = startingObject,
+                        space = space
                     )
                 )
-            } else {
-                commands.emit(Command.OpenVault)
+            }
+        } else {
+            viewModelScope.launch {
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    analytics.sendOpenAccountEvent(
+                        analytics = config.analytics
+                    )
+                } else {
+                    Timber.w("config was missing before the end of onboarding")
+                }
+                if (!startingObject.isNullOrEmpty()) {
+                    commands.emit(
+                        Command.OpenStartingObject(
+                            space = SpaceId(space),
+                            startingObject = startingObject
+                        )
+                    )
+                } else {
+                    commands.emit(Command.OpenVault)
+                }
             }
         }
     }
@@ -83,26 +95,41 @@ class OnboardingMnemonicViewModel @Inject constructor(
         space: Id,
         startingObject: Id?,
     ) {
-        viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
-            if (!startingObject.isNullOrEmpty()) {
+        if (shouldShowEmail()) {
+            viewModelScope.launch {
                 commands.emit(
-                    Command.OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
+                    Command.NavigateToAddEmailScreen(
+                        startingObject = startingObject,
+                        space = space
                     )
                 )
-            } else {
-                commands.emit(Command.OpenVault)
+            }
+        } else {
+            viewModelScope.launch {
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    analytics.sendOpenAccountEvent(
+                        analytics = config.analytics
+                    )
+                } else {
+                    Timber.w("config was missing before the end of onboarding")
+                }
+                if (!startingObject.isNullOrEmpty()) {
+                    commands.emit(
+                        Command.OpenStartingObject(
+                            space = SpaceId(space),
+                            startingObject = startingObject
+                        )
+                    )
+                } else {
+                    commands.emit(Command.OpenVault)
+                }
             }
         }
+    }
+
+    private fun shouldShowEmail(): Boolean {
+        return true
     }
 
     private suspend fun proceedWithMnemonicPhrase() {
@@ -144,6 +171,10 @@ class OnboardingMnemonicViewModel @Inject constructor(
         data class OpenStartingObject(
             val space: SpaceId,
             val startingObject: Id
+        ) : Command()
+        data class NavigateToAddEmailScreen(
+            val startingObject: String?,
+            val space: String
         ) : Command()
     }
 }

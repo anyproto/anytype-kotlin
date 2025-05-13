@@ -1132,8 +1132,6 @@
     <string name="onboarding_key_skip">Skip</string>
     <string name="onboarding_key_not_now">Not now</string>
     <string name="onboarding_key_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>
@@ -2043,5 +2041,14 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+
+    <string name="onboarding_set_your_name_title">Add Your Name</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
+    <string name="onboarding_email_add_title">Stay in the loop</string>
+    <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
+    <string name="onboarding_enter_email">Enter your email</string>
+    <string name="onboarding_button_continue">Continue</string>
+    <string name="onboarding_button_skip">Skip</string>
+    <string name="onboarding_email_error">Incorrect email</string>
 
 </resources>

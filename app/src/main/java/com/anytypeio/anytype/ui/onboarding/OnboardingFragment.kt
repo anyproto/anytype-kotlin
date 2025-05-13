@@ -66,7 +66,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -74,7 +73,6 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
-import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -94,6 +92,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -377,6 +376,40 @@ class OnboardingFragment : Fragment() {
                 )
                 BackHandler { onBackClicked() }
             }
+            composable(
+                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM={$ONBOARDING_NAME_PARAM}",
+                arguments = listOf(
+                    navArgument(ONBOARDING_NAME_PARAM) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                        nullable = false
+                    }
+                ),
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                val focus = LocalFocusManager.current
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setEmail) == true) {
+                        focus.clearFocus(true)
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                currentPage.value = OnboardingPage.SET_EMAIL
+                backButtonCallback.value = onBackClicked
+                AddEmail(
+                    navController = navController,
+                    onBackClicked = onBackClicked
+                )
+                BackHandler { onBackClicked() }
+            }
         }
     }
 
@@ -555,6 +588,16 @@ class OnboardingFragment : Fragment() {
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
                         //
                     }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(force = true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
+                        navController.navigate(
+                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_NAME_PARAM=${command.name}",
+                        )
+                    }
                 }
             }
         }
@@ -731,6 +774,63 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    @Composable
+    private fun AddEmail(
+        navController: NavHostController,
+        onBackClicked: () -> Unit
+    ) {
+        val component = componentManager().onboardingSoulCreationComponent
+        val vm = daggerViewModel { component.get().getViewModel() }
+
+        val focusManager = LocalFocusManager.current
+        val keyboardInsets = WindowInsets.ime
+        val density = LocalDensity.current
+
+        val name = navController.currentBackStackEntry?.arguments?.getString(ONBOARDING_NAME_PARAM) ?: ""
+
+        SetEmailWrapper(
+            viewModel = vm,
+            name = name,
+            onBackClicked = onBackClicked
+        )
+
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { command ->
+                when (command) {
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(force = true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
+                        val space = command.space
+                        val startingObject = command.startingObject
+                        navController.navigate(
+                            route = buildString {
+                                append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${space.id}")
+                                startingObject?.let { append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") }
+                            }
+                        )
+                    }
+                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
+                        //
+                    }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToAddEmailScreen -> {
+                        //do nothing
+                    }
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect {
+                toast(it)
+            }
+        }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
+    }
+
     private fun getVideoPlayer(context: Context, videoPath: Uri): Player {
         val player = ExoPlayer.Builder(context).build()
         val source = DefaultDataSource.Factory(
@@ -772,6 +872,8 @@ class OnboardingFragment : Fragment() {
 
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
+
+        private const val ONBOARDING_NAME_PARAM = "name"
     }
 }
 

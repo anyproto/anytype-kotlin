@@ -100,7 +100,9 @@ fun PagerIndicator(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    modifier = Modifier.wrapContentWidth().padding(top = 21.dp, end = 16.dp),
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(top = 21.dp, end = 16.dp),
                     text = "${currentPage.value.num} / $pageCount",
                     style = HeadlineOnBoardingDescription.copy(
                         color = ColorPagerIndicatorText, textAlign = TextAlign.End
@@ -121,12 +123,18 @@ fun MnemonicPhraseWidget(
     val words = mnemonic.split(" ")
     if (words.isNotEmpty()) {
         FlowRow(
-            modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
+            modifier = modifier,
+            maxItemsInEachRow = 4,
+            horizontalArrangement = Arrangement.Center
         ) {
             words.forEachIndexed { idx, word ->
-                val color = colorResource(R.color.palette_system_pink)
+                val color = colorResource(R.color.text_white)
                 Text(
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 6.dp,
+                            vertical = 6.dp
+                        ),
                     text = word.lowercase(),
                     style = PreviewTitle1Regular.copy(
                         color = color
@@ -190,7 +198,7 @@ fun MnemonicStubPreview() {
     MnemonicStub()
 }
 
-@Preview
+@Preview(backgroundColor = 0xFF000000, showBackground = true)
 @Composable
 fun MnemonicPhraseWidgetPreview() {
     val mnemonic = "kenobi hello there general grievous you are bold like toe pineapple wave"
@@ -215,8 +223,7 @@ fun OnboardingMnemonicInput(
             .copy(
                 lineHeight = 34.sp,
                 color = colorResource(R.color.palette_system_pink)
-            )
-        ,
+            ),
         value = text.value,
         onValueChange = {
             text.value = it

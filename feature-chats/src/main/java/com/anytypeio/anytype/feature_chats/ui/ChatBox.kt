@@ -394,6 +394,9 @@ fun ChatBox(
 
         if (showMarkup) {
             ChatBoxMarkup(
+                selectionStart = text.selection.start,
+                selectionEnd = text.selection.end,
+                spans = spans,
                 onBackClicked = {
                     showMarkup = false
                 },
@@ -648,9 +651,30 @@ fun toggleSpan(
 
 @Composable
 fun ChatBoxMarkup(
+    selectionStart: Int,
+    selectionEnd: Int,
+    spans: List<ChatBoxSpan> = emptyList(),
     onMarkupEvent: (ChatMarkupEvent) -> Unit = {},
     onBackClicked: () -> Unit
 ) {
+    // Compute which markup spans overlap the selection
+    val activeTypes: Set<Int> = remember(spans, selectionStart, selectionEnd) {
+        spans
+            .filterIsInstance<ChatBoxSpan.Markup>()
+            .filter { span ->
+                // any overlap of [selectionStart, selectionEnd) with [span.start, span.end)
+                span.start < selectionEnd && selectionStart < span.end
+            }
+            .map { it.type }
+            .toSet()
+    }
+
+    val isBold = ChatBoxSpan.Markup.BOLD in activeTypes
+    val isItalic = ChatBoxSpan.Markup.ITALIC in activeTypes
+    val isStrike = ChatBoxSpan.Markup.STRIKETHROUGH in activeTypes
+    val isUnderline = ChatBoxSpan.Markup.UNDERLINE in activeTypes
+    val isCode = ChatBoxSpan.Markup.CODE in activeTypes
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -658,29 +682,73 @@ fun ChatBoxMarkup(
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // Back button never has an active state
         MarkupIcon(
-            onClick = { onBackClicked() },
+            onClick = onBackClicked,
             resId = R.drawable.ic_markup_panel_back
         )
+
+        // Bold
         MarkupIcon(
             onClick = { onMarkupEvent(ChatMarkupEvent.Bold) },
-            resId = R.drawable.ic_toolbar_markup_bold
+            resId = if (isBold)
+                R.drawable.ic_toolbar_markup_bold_active
+            else
+                R.drawable.ic_toolbar_markup_bold
         )
+
+        // Italic
         MarkupIcon(
             onClick = { onMarkupEvent(ChatMarkupEvent.Italic) },
-            resId = R.drawable.ic_toolbar_markup_italic
+            resId = if (isItalic)
+                R.drawable.ic_toolbar_markup_italic_active
+            else
+                R.drawable.ic_toolbar_markup_italic
         )
+
+        // Strikethrough
         MarkupIcon(
             onClick = { onMarkupEvent(ChatMarkupEvent.Strike) },
-            resId = R.drawable.ic_toolbar_markup_strike_through
+            resId = if (isStrike)
+                R.drawable.ic_toolbar_markup_strike_through_active
+            else
+                R.drawable.ic_toolbar_markup_strike_through
         )
+
+        // Underline
         MarkupIcon(
             onClick = { onMarkupEvent(ChatMarkupEvent.Underline) },
-            resId = R.drawable.ic_toolbar_markup_underline
+            resId = if (isUnderline)
+                R.drawable.ic_toolbar_markup_underline_active
+            else
+                R.drawable.ic_toolbar_markup_underline
         )
+
+        // Code
         MarkupIcon(
             onClick = { onMarkupEvent(ChatMarkupEvent.Code) },
-            resId = R.drawable.ic_toolbar_markup_code
+            resId = if (isCode)
+                R.drawable.ic_toolbar_markup_code_active
+            else
+                R.drawable.ic_toolbar_markup_code
+        )
+    }
+}
+
+@Composable
+private fun MarkupIcon(
+    onClick: () -> Unit,
+    @DrawableRes resId: Int
+) {
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .noRippleClickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(resId),
+            contentDescription = null
         )
     }
 }
@@ -729,24 +797,6 @@ fun ChatBoxEditPanel(
     }
 }
 
-@Composable
-private fun MarkupIcon(
-    onClick: () -> Unit,
-    @DrawableRes resId: Int
-) {
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .noRippleClickable { onClick() },
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(resId),
-            contentDescription = null
-        )
-    }
-}
-
 sealed class ChatMarkupEvent {
     data object Bold : ChatMarkupEvent()
     data object Italic : ChatMarkupEvent()
@@ -759,7 +809,10 @@ sealed class ChatMarkupEvent {
 @Composable
 fun ChatBoxMarkupPreview() {
     ChatBoxMarkup(
-        onBackClicked = {}
+        spans = emptyList(),
+        onBackClicked = {},
+        selectionStart = 0,
+        selectionEnd = 0
     )
 }
 

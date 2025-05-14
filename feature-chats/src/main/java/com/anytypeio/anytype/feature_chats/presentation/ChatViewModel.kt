@@ -621,10 +621,11 @@ class ChatViewModel @Inject constructor(
                         uXCommands.emit(UXCommand.JumpToBottom)
                         chatBoxAttachments.value = emptyList()
                     }.onFailure {
-                        Timber.e(it, "Error while adding message")
+                        Timber.e(it, "Error while editing message")
                     }.onSuccess {
-                        chatBoxMode.value = ChatBoxMode.Default()
+                        Timber.d("Message edited with success")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.Reply -> {
                     addChatMessage.async(
@@ -853,7 +854,7 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<String>) {
         Timber.d("onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+        chatBoxAttachments.value += uris.map {
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = it
             )
@@ -862,7 +863,7 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
         Timber.d("onChatBoxFilePicked: $infos")
-        chatBoxAttachments.value = chatBoxAttachments.value + infos.map { info ->
+        chatBoxAttachments.value += infos.map { info ->
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
@@ -951,14 +952,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
         if (selectionStart <= 0 || selectionStart > text.length) return false
         val previousChar = text[selectionStart - 1]
         return previousChar == '@'
                 && (selectionStart == 1 || !text[selectionStart - 2].isLetterOrDigit())
     }
 
-    fun shouldHideMention(text: String, selectionStart: Int): Boolean {
+    private fun shouldHideMention(text: String, selectionStart: Int): Boolean {
         if (selectionStart > text.length) return false
         // Check if the current character is a space
         val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
@@ -967,7 +968,7 @@ class ChatViewModel @Inject constructor(
         return currentChar == ' ' || !atCharExists
     }
 
-    fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
+    private fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
         if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
         val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length

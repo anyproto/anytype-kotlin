@@ -172,6 +172,8 @@ object EventsDictionary {
     const val screenOnboarding = "ScreenOnboarding"
     const val clickOnboarding = "ClickOnboarding"
     const val clickLogin = "ClickLogin"
+    const val screenOnboardingEnterEmail = "ScreenOnboardingEnterEmail"
+    const val screenOnboardingSkipEmail = "ScreenOnboardingSkipEmail"
 
     //Primitives
     const val logScreenEditType = "ScreenEditType"
@@ -298,7 +300,8 @@ object EventsDictionary {
     enum class ScreenOnboardingStep(val value: String) {
         VAULT("Vault"),
         SOUL("Soul"),
-        PHRASE("Phrase")
+        PHRASE("Phrase"),
+        EMAIL("Email")
     }
 
     enum class ClickOnboardingButton(val value: String) {

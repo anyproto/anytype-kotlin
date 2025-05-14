@@ -830,7 +830,7 @@ class ChatViewModel @Inject constructor(
                     // TODO
                 }
                 is ChatView.Message.Attachment.Bookmark -> {
-                    // TODO
+                    commands.emit(ViewModelCommand.Browse(attachment.url))
                 }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper

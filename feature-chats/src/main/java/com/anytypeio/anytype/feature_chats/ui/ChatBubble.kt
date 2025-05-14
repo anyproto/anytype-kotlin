@@ -71,7 +71,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,

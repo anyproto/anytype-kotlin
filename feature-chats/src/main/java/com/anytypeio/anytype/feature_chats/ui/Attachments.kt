@@ -121,7 +121,10 @@ fun BubbleAttachments(
                     url = attachment.url,
                     title = attachment.title,
                     description = attachment.description,
-                    imageUrl = attachment.imageUrl
+                    imageUrl = attachment.imageUrl,
+                    onClick = {
+                        onAttachmentClicked(attachment)
+                    }
                 )
             }
         }
@@ -204,10 +207,16 @@ fun Bookmark(
     url: String,
     title: String,
     description: String,
-    imageUrl: String?
+    imageUrl: String?,
+    onClick: () -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }
+        ,
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.shape_transparent_secondary)
         ),
@@ -218,7 +227,6 @@ fun Bookmark(
                 painter = rememberAsyncImagePainter(imageUrl),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color.Red)
                     .aspectRatio(1.91f),
                 contentDescription = null,
                 contentScale = ContentScale.Crop
@@ -256,7 +264,8 @@ fun BookmarkPreview() {
         url = "algo.tv",
         title = "Algo - Video Automation",
         description = "Algo is a data-visualization studio specializing in video automation.",
-        imageUrl = null
+        imageUrl = null,
+        onClick = {}
     )
 }
 

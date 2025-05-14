@@ -4,10 +4,10 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.repo.AuthCache
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.mapper.toEntity
 import com.anytypeio.anytype.persistence.mapper.toTable
-import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 
 class DefaultAuthCache(
     private val db: AnytypeDatabase,

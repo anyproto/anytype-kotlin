@@ -6,16 +6,11 @@ import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_DEFAULT
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_APP_FILE_PATH_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_USER_FILE_PATH_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.USE_RESERVE_MULTIPLEX_LIBRARY_PREF
-
-interface NetworkModeProvider {
-    fun set(networkModeConfig: NetworkModeConfig)
-    fun get(): NetworkModeConfig
-    fun clear()
-}
 
 class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreferences) :
     NetworkModeProvider {

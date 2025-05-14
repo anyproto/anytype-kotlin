@@ -58,7 +58,7 @@ internal fun ChatBoxAttachments(
                                 type = attachment.typeName,
                                 icon = attachment.icon,
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -90,7 +90,7 @@ internal fun ChatBoxAttachments(
                                 type = attachment.wrapper.type,
                                 icon = attachment.wrapper.icon,
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -191,7 +191,7 @@ internal fun ChatBoxAttachments(
                                     fileName = null
                                 ),
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -224,7 +224,7 @@ internal fun ChatBoxAttachments(
                                 type = stringResource(R.string.bookmark),
                                 icon = ObjectIcon.None,
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -239,8 +239,6 @@ internal fun ChatBoxAttachments(
                                         onClearAttachmentClicked(attachment)
                                     }
                             )
-                            // TODO handle state
-//                            ChatBoxAttachmentState(attachment.state)
                         }
                     }
                 }

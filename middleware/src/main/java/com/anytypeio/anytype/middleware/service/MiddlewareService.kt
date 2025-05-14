@@ -641,5 +641,6 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun linkPreview(request: Rpc.LinkPreview.Request) : Rpc.LinkPreview.Response
 
+    @Throws(Exception::class)
     fun objectCreateFromUrl(request: Rpc.Object.CreateFromUrl.Request): Rpc.Object.CreateFromUrl.Response
 }

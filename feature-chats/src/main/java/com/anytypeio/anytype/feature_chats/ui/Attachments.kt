@@ -229,7 +229,7 @@ fun Bookmark(
             text = url,
             modifier = Modifier.padding(horizontal = 12.dp),
             style = Relations3,
-            color = colorResource(R.color.text_tertiary)
+            color = colorResource(R.color.transparent_active)
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -243,7 +243,7 @@ fun Bookmark(
             text = description,
             modifier = Modifier.padding(horizontal = 12.dp),
             style = Relations3,
-            color = colorResource(R.color.text_tertiary)
+            color = colorResource(R.color.transparent_active)
         )
         Spacer(modifier = Modifier.height(8.dp))
     }

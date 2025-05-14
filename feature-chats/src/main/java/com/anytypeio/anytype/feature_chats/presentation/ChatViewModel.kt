@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
@@ -273,6 +274,7 @@ class ChatViewModel @Inject constructor(
                                     } else if (wrapper?.layout == ObjectType.Layout.BOOKMARK) {
                                         Timber.d("DROID-2966 Got bookmark object: $wrapper")
                                         ChatView.Message.Attachment.Bookmark(
+                                            id = wrapper.id,
                                             url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
                                             title = wrapper.name.orEmpty(),
                                             description = wrapper.description.orEmpty(),
@@ -664,7 +666,14 @@ class ChatViewModel @Inject constructor(
                             )
                         }
                         is ChatView.Message.Attachment.Bookmark -> {
-                            // TODO
+                            add(
+                                ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                    target = a.id,
+                                    name = a.title,
+                                    icon = ObjectIcon.None,
+                                    typeName = storeOfObjectTypes.get(ObjectTypeUniqueKeys.BOOKMARK)?.name.orEmpty()
+                                )
+                            )
                         }
                         is ChatView.Message.Attachment.Gallery -> {
                             a.images.forEach { image ->

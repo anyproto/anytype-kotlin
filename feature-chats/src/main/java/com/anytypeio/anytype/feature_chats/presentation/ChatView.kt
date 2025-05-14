@@ -97,6 +97,7 @@ sealed interface ChatView {
             ): Attachment()
 
             data class Bookmark(
+                val id: Id,
                 val url: String,
                 val title: String,
                 val description: String,

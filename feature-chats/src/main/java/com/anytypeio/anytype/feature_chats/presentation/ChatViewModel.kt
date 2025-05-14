@@ -264,40 +264,44 @@ class ChatViewModel @Inject constructor(
                                 }
                                 else -> {
                                     val wrapper = dependencies[attachment.target]
-                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
-                                        ChatView.Message.Attachment.Image(
-                                            target = attachment.target,
-                                            url = urlBuilder.large(path = attachment.target),
-                                            name = wrapper.name.orEmpty(),
-                                            ext = wrapper.fileExt.orEmpty()
-                                        )
-                                    } else if (wrapper?.layout == ObjectType.Layout.BOOKMARK) {
-                                        ChatView.Message.Attachment.Bookmark(
-                                            id = wrapper.id,
-                                            url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
-                                            title = wrapper.name.orEmpty(),
-                                            description = wrapper.description.orEmpty(),
-                                            imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
-                                                if (!hash.isNullOrEmpty())
-                                                    urlBuilder.medium(hash)
+                                    when (wrapper?.layout) {
+                                        ObjectType.Layout.IMAGE -> {
+                                            ChatView.Message.Attachment.Image(
+                                                target = attachment.target,
+                                                url = urlBuilder.large(path = attachment.target),
+                                                name = wrapper.name.orEmpty(),
+                                                ext = wrapper.fileExt.orEmpty()
+                                            )
+                                        }
+                                        ObjectType.Layout.BOOKMARK -> {
+                                            ChatView.Message.Attachment.Bookmark(
+                                                id = wrapper.id,
+                                                url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
+                                                title = wrapper.name.orEmpty(),
+                                                description = wrapper.description.orEmpty(),
+                                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
+                                                    if (!hash.isNullOrEmpty())
+                                                        urlBuilder.medium(hash)
+                                                    else
+                                                        null
+                                                }
+                                            )
+                                        }
+                                        else -> {
+                                            val type = wrapper?.type?.firstOrNull()
+                                            ChatView.Message.Attachment.Link(
+                                                target = attachment.target,
+                                                wrapper = wrapper,
+                                                icon = wrapper?.objectIcon(
+                                                    builder = urlBuilder,
+                                                    objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                                                ) ?: ObjectIcon.None,
+                                                typeName = if (type != null)
+                                                    storeOfObjectTypes.get(type)?.name.orEmpty()
                                                 else
-                                                    null
-                                            }
-                                        )
-                                    } else {
-                                        val type = wrapper?.type?.firstOrNull()
-                                        ChatView.Message.Attachment.Link(
-                                            target = attachment.target,
-                                            wrapper = wrapper,
-                                            icon = wrapper?.objectIcon(
-                                                builder = urlBuilder,
-                                                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
-                                            ) ?: ObjectIcon.None,
-                                            typeName = if (type != null)
-                                                storeOfObjectTypes.get(type)?.name.orEmpty()
-                                            else
-                                                ""
-                                        )
+                                                    ""
+                                            )
+                                        }
                                     }
                                 }
                             }

@@ -252,6 +252,15 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     //region Email screen
+    fun sendAnalyticsOnboardingEmailScreen() {
+        viewModelScope.launch {
+            sendAnalyticsOnboardingScreenEvent(
+                analytics = analytics,
+                step = EventsDictionary.ScreenOnboardingStep.EMAIL
+            )
+        }
+    }
+
     fun onEmailContinueClicked(
         email: String,
         space: Id,
@@ -273,6 +282,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         if (state.value is ScreenState.Loading) {
             sendToast(LOADING_MSG)
             return
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenOnboardingSkipEmail
+            )
         }
         state.value = ScreenState.Loading
         proceedWithNavigation(space, startingObject)
@@ -313,7 +327,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         )
         viewModelScope.launch {
             setMembershipEmail.async(params).fold(
-                onSuccess = { Timber.d("Email set successfully") },
+                onSuccess = { 
+                    Timber.d("Email set successfully")
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.screenOnboardingEnterEmail
+                    )
+                },
                 onFailure = { error ->
                     Timber.e(error, "Error setting email")
                     if (BuildConfig.DEBUG) {

@@ -2,8 +2,6 @@ package com.anytypeio.anytype.di.main
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.app.DefaultInitialParamsProvider
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
@@ -49,10 +47,10 @@ import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
-import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
@@ -62,10 +60,8 @@ import com.anytypeio.anytype.security.KeystoreManager
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import java.security.GeneralSecurityException
 import javax.inject.Named
 import javax.inject.Singleton
-import timber.log.Timber
 
 @Module(includes = [DataModule.Bindings::class])
 object DataModule {

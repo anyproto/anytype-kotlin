@@ -24,6 +24,8 @@ class NetworkConnectionStatusImpl(
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
     private var isMonitoring = false
 
+    private var currentNetworkType: DeviceNetworkType = DeviceNetworkType.NOT_CONNECTED
+
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             // Called when the network is available
@@ -74,6 +76,7 @@ class NetworkConnectionStatusImpl(
     private fun updateNetworkState(networkCapabilities: NetworkCapabilities?) {
         coroutineScope.launch {
             val networkType = mapNetworkType(networkCapabilities)
+            currentNetworkType = networkType
             withContext(dispatchers.io) {
                 try {
                     blockRepository.setDeviceNetworkState(networkType)
@@ -102,4 +105,11 @@ class NetworkConnectionStatusImpl(
             networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> DeviceNetworkType.CELLULAR
             else -> DeviceNetworkType.NOT_CONNECTED
         }
+
+    override fun getCurrentNetworkType(): DeviceNetworkType {
+        if (!isMonitoring) {
+            return mapNetworkType(getNetworkCapabilities())
+        }
+        return currentNetworkType
+    }
 }

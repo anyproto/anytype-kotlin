@@ -6,6 +6,8 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import dagger.Binds
 import dagger.Component
@@ -57,6 +59,8 @@ interface OnboardingMnemonicDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
     fun analytics(): Analytics
     fun config(): ConfigStorage
+    fun networkModeProvider(): NetworkModeProvider
+    fun networkConnectionStatus(): NetworkConnectionStatus
 }
 
 @Scope

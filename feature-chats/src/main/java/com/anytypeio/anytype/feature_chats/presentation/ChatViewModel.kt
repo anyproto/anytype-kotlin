@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -268,6 +269,19 @@ class ChatViewModel @Inject constructor(
                                             url = urlBuilder.large(path = attachment.target),
                                             name = wrapper.name.orEmpty(),
                                             ext = wrapper.fileExt.orEmpty()
+                                        )
+                                    } else if (wrapper?.layout == ObjectType.Layout.BOOKMARK) {
+                                        Timber.d("DROID-2966 Got bookmark object: $wrapper")
+                                        ChatView.Message.Attachment.Bookmark(
+                                            url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
+                                            title = wrapper.name.orEmpty(),
+                                            description = wrapper.description.orEmpty(),
+                                            imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
+                                                if (!hash.isNullOrEmpty())
+                                                    urlBuilder.medium(hash)
+                                                else
+                                                    null
+                                            }
                                         )
                                     } else {
                                         val type = wrapper?.type?.firstOrNull()
@@ -649,6 +663,9 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.Attachment.Bookmark -> {
+                            // TODO
+                        }
                         is ChatView.Message.Attachment.Gallery -> {
                             a.images.forEach { image ->
                                 add(
@@ -687,7 +704,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onAttachObject(obj: GlobalSearchItemView) {
-        chatBoxAttachments.value = chatBoxAttachments.value + listOf(
+        chatBoxAttachments.value += listOf(
             ChatView.Message.ChatBoxAttachment.Link(
                 target = obj.id,
                 wrapper = obj
@@ -734,8 +751,7 @@ class ChatViewModel @Inject constructor(
                 text = msg.content.msg.ifEmpty {
                     // Fallback to attachment name if empty
                     if (msg.attachments.isNotEmpty()) {
-                        val attachment = msg.attachments.last()
-                        when(attachment) {
+                        when(val attachment = msg.attachments.last()) {
                             is ChatView.Message.Attachment.Image -> {
                                 if (attachment.ext.isNotEmpty()) {
                                     "${attachment.name}.${attachment.ext}"
@@ -757,6 +773,9 @@ class ChatViewModel @Inject constructor(
                             }
                             is ChatView.Message.Attachment.Link -> {
                                 attachment.wrapper?.name.orEmpty()
+                            }
+                            is ChatView.Message.Attachment.Bookmark -> {
+                                attachment.url
                             }
                         }
                     } else {
@@ -795,6 +814,9 @@ class ChatViewModel @Inject constructor(
                     )
                 }
                 is ChatView.Message.Attachment.Gallery -> {
+                    // TODO
+                }
+                is ChatView.Message.Attachment.Bookmark -> {
                     // TODO
                 }
                 is ChatView.Message.Attachment.Link -> {

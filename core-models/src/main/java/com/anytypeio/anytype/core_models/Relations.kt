@@ -40,6 +40,7 @@ object Relations {
     const val SET_OF = "setOf"
     const val URL = "url"
     const val SOURCE = "source"
+    const val PICTURE = "picture"
     const val SMARTBLOCKTYPES = "smartblockTypes"
     const val RELATION_KEY = "relationKey"
     const val RELATION_OPTION_COLOR = "relationOptionColor"

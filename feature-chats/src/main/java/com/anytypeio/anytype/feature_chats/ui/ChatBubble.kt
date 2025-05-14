@@ -191,7 +191,7 @@ fun Bubble(
                         modifier = Modifier,
                         text = buildAnnotatedString {
                             content.parts.forEach { part ->
-                                if (part.link != null && part.link.param != null) {
+                                if (part.link?.param != null) {
                                     withLink(
                                         LinkAnnotation.Clickable(
                                             tag = DEFAULT_MENTION_LINK_TAG,
@@ -208,7 +208,7 @@ fun Bubble(
                                     ) {
                                         append(part.part)
                                     }
-                                } else if (part.mention != null && part.mention.param != null) {
+                                } else if (part.mention?.param != null) {
                                     withLink(
                                         LinkAnnotation.Clickable(
                                             tag = DEFAULT_MENTION_SPAN_TAG,
@@ -225,7 +225,7 @@ fun Bubble(
                                     ) {
                                         append(part.part)
                                     }
-                                } else if (part.emoji != null && part.emoji.param != null) {
+                                } else if (part.emoji?.param != null) {
                                     append(part.emoji.param)
                                 } else {
                                     withStyle(

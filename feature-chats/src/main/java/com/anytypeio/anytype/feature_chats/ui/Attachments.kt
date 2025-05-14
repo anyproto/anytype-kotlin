@@ -1,31 +1,41 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
@@ -35,7 +45,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)
-fun ColumnScope.BubbleAttachments(
+fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
@@ -104,6 +114,14 @@ fun ColumnScope.BubbleAttachments(
                     onAttachmentClicked = {
                         onAttachmentClicked(attachment)
                     }
+                )
+            }
+            is ChatView.Message.Attachment.Bookmark -> {
+                Bookmark(
+                    url = attachment.url,
+                    title = attachment.title,
+                    description = attachment.description,
+                    imageUrl = attachment.imageUrl
                 )
             }
         }
@@ -181,8 +199,68 @@ fun AttachedObject(
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@Composable
+fun Bookmark(
+    url: String,
+    title: String,
+    description: String,
+    imageUrl: String?
+) {
+    Card(
+        modifier = Modifier.fillMaxWidth().padding(4.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.shape_transparent_secondary)
+        ),
+        shape = RoundedCornerShape(12.dp),
+    ) {
+        if (!imageUrl.isNullOrEmpty()) {
+            Image(
+                painter = rememberAsyncImagePainter(imageUrl),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color.Red)
+                    .aspectRatio(1.91f),
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = url,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Relations3,
+            color = colorResource(R.color.text_tertiary)
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = title,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Title2,
+            color = colorResource(R.color.text_primary)
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = description,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Relations3,
+            color = colorResource(R.color.text_tertiary)
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun BookmarkPreview() {
+    Bookmark(
+        url = "algo.tv",
+        title = "Algo - Video Automation",
+        description = "Algo is a data-visualization studio specializing in video automation.",
+        imageUrl = null
+    )
+}
+
+@DefaultPreviews
 @Composable
 fun AttachmentPreview() {
     AttachedObject(

@@ -95,6 +95,13 @@ sealed interface ChatView {
                 val icon: ObjectIcon = ObjectIcon.None,
                 val typeName: String
             ): Attachment()
+
+            data class Bookmark(
+                val url: String,
+                val title: String,
+                val description: String,
+                val imageUrl: String?
+            ) : Attachment()
         }
 
         sealed class ChatBoxAttachment {

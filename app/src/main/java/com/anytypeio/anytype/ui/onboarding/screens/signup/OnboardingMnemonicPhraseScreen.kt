@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_ui.ColorBackgroundField
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.extensions.conditional
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonMedium
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
@@ -150,7 +151,8 @@ fun MnemonicPhraseScreen(
             MnemonicPhrase(
                 state = state,
                 copyMnemonicToClipboard = copyMnemonicToClipboard,
-                mnemonicColorPalette = mnemonicColorPalette
+                mnemonicColorPalette = mnemonicColorPalette,
+                reviewMnemonic = reviewMnemonic
             )
             ReadMoreButton(showWhatIsRecoveryPhraseDialog)
         }
@@ -287,6 +289,7 @@ fun MnemonicTitle() {
 @Composable
 fun MnemonicPhrase(
     state: OnboardingMnemonicViewModel.State,
+    reviewMnemonic: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     mnemonicColorPalette: List<Color>
 ) {
@@ -303,6 +306,10 @@ fun MnemonicPhrase(
                         .fillMaxWidth()
                         .background(color = ColorBackgroundField, shape = RoundedCornerShape(16.dp))
                         .wrapContentHeight()
+                        .noRippleThrottledClickable {
+                            reviewMnemonic()
+                            copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
+                        }
                 ) {
                     if (Build.VERSION.SDK_INT <= VERSION_CODES.R && state is OnboardingMnemonicViewModel.State.Mnemonic) {
                         MnemonicStub()
@@ -315,10 +322,10 @@ fun MnemonicPhrase(
                                     positive = { blur(15.dp) }
                                 )
                                 .padding(
-                                    start = 16.dp,
-                                    top = 16.dp,
-                                    end = 16.dp,
-                                    bottom = 16.dp
+                                    start = 42.dp,
+                                    top = 17.dp,
+                                    end = 42.dp,
+                                    bottom = 17.dp
                                 ),
                             mnemonic = state.mnemonicPhrase,
                             mnemonicColorPalette = mnemonicColorPalette

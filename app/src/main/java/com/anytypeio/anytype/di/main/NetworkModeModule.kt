@@ -7,9 +7,9 @@ import com.anytypeio.anytype.device.network_type.NetworkConnectionStatusImpl
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NAMED_NETWORK_MODE_PREFS
-import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named

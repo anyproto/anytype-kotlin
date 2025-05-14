@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.NetworkModeConfig
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
@@ -22,7 +25,9 @@ import timber.log.Timber
 class OnboardingMnemonicViewModel @Inject constructor(
     private val getMnemonic: GetMnemonic,
     private val analytics: Analytics,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val networkModeProvider: NetworkModeProvider,
+    private val networkConnectionStatus: NetworkConnectionStatus
 ) : ViewModel() {
 
     val state = MutableStateFlow<State>(State.Idle(""))
@@ -128,9 +133,13 @@ class OnboardingMnemonicViewModel @Inject constructor(
         }
     }
 
-    private fun shouldShowEmail(): Boolean {
-        //todo: update with Local Only config
-        return true
+    fun shouldShowEmail(): Boolean {
+        val networkStatus = networkConnectionStatus.getCurrentNetworkType()
+        if (networkStatus == DeviceNetworkType.NOT_CONNECTED) {
+            Timber.i("Network is not connected, skipping email screen")
+            return false
+        }
+        return networkModeProvider.get().networkMode != NetworkMode.LOCAL
     }
 
     private suspend fun proceedWithMnemonicPhrase() {
@@ -156,13 +165,17 @@ class OnboardingMnemonicViewModel @Inject constructor(
         private val getMnemonic: GetMnemonic,
         private val analytics: Analytics,
         private val configStorage: ConfigStorage,
+        private val networkModeProvider: NetworkModeProvider,
+        private val networkConnectionStatus: NetworkConnectionStatus
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingMnemonicViewModel(
                 getMnemonic = getMnemonic,
                 analytics = analytics,
-                configStorage = configStorage
+                configStorage = configStorage,
+                networkModeProvider = networkModeProvider,
+                networkConnectionStatus = networkConnectionStatus
             ) as T
         }
     }

@@ -10,11 +10,13 @@ import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -35,7 +37,9 @@ class ChatViewModelFactory @Inject constructor(
     private val uploadFile: UploadFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getLinkPreview: GetLinkPreview,
+    private val createObjectFromUrl: CreateObjectFromUrl
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -53,6 +57,8 @@ class ChatViewModelFactory @Inject constructor(
         uploadFile = uploadFile,
         storeOfObjectTypes = storeOfObjectTypes,
         copyFileToCacheDirectory = copyFileToCacheDirectory,
-        exitToVaultDelegate = exitToVaultDelegate
+        exitToVaultDelegate = exitToVaultDelegate,
+        getLinkPreview = getLinkPreview,
+        createObjectFromUrl = createObjectFromUrl
     ) as T
 }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
+import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -61,6 +62,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
@@ -94,7 +96,8 @@ fun ChatBox(
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onExitEditMessageMode: () -> Unit,
-    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
+    onUrlInserted: (Url) -> Unit,
 ) {
 
     val length = text.text.length
@@ -309,7 +312,8 @@ fun ChatBox(
                             end = 4.dp,
                             top = 16.dp,
                             bottom = 16.dp
-                        )
+                        ),
+                    onUrlInserted = onUrlInserted
                 )
                 if (length >= ChatConfig.MAX_MESSAGE_CHARACTER_OFFSET_LIMIT) {
                     Box(
@@ -478,15 +482,29 @@ private fun ChatBoxUserInput(
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
+    onUrlInserted: (Url) -> Unit,
     onFocusChanged: (Boolean) -> Unit
 ) {
     BasicTextField(
         value = text,
         onValueChange = { newValue ->
+
             val newText = newValue.text
             val oldText = text.text // Keep a reference to the current text before updating
             val textLengthDifference = newText.length - oldText.length
 
+            // URL insert detection
+            if (textLengthDifference > 0) {
+                val prefixLen = newText.commonPrefixWith(oldText).length
+                val inserted = newText.substring(prefixLen, prefixLen + textLengthDifference)
+                val urlMatcher = Patterns.WEB_URL.matcher(inserted)
+                if (urlMatcher.find()) {
+                    val url = urlMatcher.group()
+                    onUrlInserted(url)
+                }
+            }
+
+            // SPANS normalization
             val updatedSpans = spans.mapNotNull { span ->
                 // Detect the common prefix length
                 val commonPrefixLength = newText.commonPrefixWith(oldText).length

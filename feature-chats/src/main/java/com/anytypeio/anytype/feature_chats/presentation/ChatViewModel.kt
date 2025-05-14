@@ -4,8 +4,10 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -23,10 +25,12 @@ import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
@@ -76,6 +80,8 @@ class ChatViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getLinkPreview: GetLinkPreview,
+    private val createObjectFromUrl: CreateObjectFromUrl
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -487,6 +493,27 @@ class ChatViewModel @Inject constructor(
                                         )
                                     )
                                 }
+                            }
+                        }
+                        is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                            createObjectFromUrl.async(
+                                params = CreateObjectFromUrl.Params(
+                                    url = attachment.preview.url,
+                                    space = vmParams.space
+                                )
+                            ).onSuccess { obj ->
+                                if (obj.isValid) {
+                                    add(
+                                        Chat.Message.Attachment(
+                                            target = obj.id,
+                                            type = Chat.Message.Attachment.Type.Link
+                                        )
+                                    )
+                                } else {
+                                    Timber.w("DROID-2966 Created object from URL is not valid")
+                                }
+                            }.onFailure {
+                                Timber.e(it, "DROID-2966 Error while creating object from url")
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
@@ -961,6 +988,25 @@ class ChatViewModel @Inject constructor(
         visibleRangeUpdates.tryEmit(from to to)
     }
 
+    fun onUrlPasted(url: Url) {
+        viewModelScope.launch {
+            getLinkPreview.async(
+                params = url
+            ).onSuccess { preview ->
+                chatBoxAttachments.value = buildList {
+                    addAll(chatBoxAttachments.value)
+                    add(
+                        ChatView.Message.ChatBoxAttachment.Bookmark(
+                            preview = preview
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "Failed to get link preview")
+            }
+        }
+    }
+
     /**
      * Used for testing. Will be deleted.
      */
@@ -1021,7 +1067,7 @@ class ChatViewModel @Inject constructor(
         ): ChatBoxMode()
     }
 
-    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+    private fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
         return when (this) {
             is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
             is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)

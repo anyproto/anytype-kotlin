@@ -52,7 +52,6 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import kotlin.also
 import kotlin.text.isNotEmpty
 
 @Composable
@@ -62,6 +61,10 @@ fun SetEmailWrapper(
     space: Id,
     onBackClicked: () -> Unit,
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.sendAnalyticsOnboardingEmailScreen()
+    }
+    
     OnboardingEmailScreen(
         onContinueClicked = { email ->
             viewModel.onEmailContinueClicked(

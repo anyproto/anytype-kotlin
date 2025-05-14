@@ -103,6 +103,7 @@ fun WhatIsRecoveryPhraseScreen() {
                     withStyle(
                         style = SpanStyle(fontWeight = FontWeight.Bold)
                     ) {
+                        append(" ")
                         append(stringResource(R.string.onboarding_recovery_phrase_description_3))
                     }
                 },

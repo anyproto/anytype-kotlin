@@ -272,7 +272,6 @@ class ChatViewModel @Inject constructor(
                                             ext = wrapper.fileExt.orEmpty()
                                         )
                                     } else if (wrapper?.layout == ObjectType.Layout.BOOKMARK) {
-                                        Timber.d("DROID-2966 Got bookmark object: $wrapper")
                                         ChatView.Message.Attachment.Bookmark(
                                             id = wrapper.id,
                                             url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),

@@ -1,12 +1,14 @@
 package com.anytypeio.anytype.ui.onboarding
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -700,6 +702,11 @@ class OnboardingFragment : Fragment() {
                 requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip =
                 ClipData.newPlainText("Mnemonic phrase", mnemonicPhrase)
+            clip.apply {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                }
+            }
             clipboard.setPrimaryClip(clip)
             if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
                 toast("Mnemonic phrase copied")

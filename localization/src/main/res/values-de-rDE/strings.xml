@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="about">Info</string>
+    <string name="about">Über</string>
     <string name="app_version">App Version</string>
     <string name="library">Bibliothek</string>
     <string name="user_id">Benutzer ID</string>
     <string name="account_and_data"><![CDATA[Account & Daten]]></string>
     <string name="profile">Profil</string>
     <string name="personalization">Personalisierung</string>
-    <string name="appearance">Aussehen</string>
+    <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
     <string name="clear_file_cache">Dateicache leeren</string>
@@ -409,7 +409,7 @@
     <string name="layout_basic_name">Einfach</string>
     <string name="layout_basic_description">Standardlayout für Leinwandblöcke</string>
     <string name="layout_note_name">Notiz</string>
-    <string name="layout_note_description">Entwickelt um schnell Gedanken zu erfassen</string>
+    <string name="layout_note_description">Entwickelt, um schnell Gedanken zu erfassen</string>
     <string name="layout_profile_name">Profil</string>
     <string name="layout_profile_description">Unternehmen, Kontakte, Freunde und Familie</string>
     <string name="layout_todo_name">Aufgabe</string>
@@ -473,7 +473,7 @@
     <string name="open_link">Link öffnen</string>
     <string name="open_file">Datei öffnen</string>
     <string name="copy_email">E-Mail kopieren</string>
-    <string name="copy_phone_number">Copy phone numbler</string>
+    <string name="copy_phone_number">Telefonnummer kopieren</string>
     <string name="send_email">E-Mail senden</string>
     <string name="call_phone_number">Telefonnummer anrufen</string>
     <string name="bookmark_icon">Bookmark icon</string>
@@ -709,7 +709,7 @@
     <string name="alert_qr_camera">Gehen Sie auf \"Einstellungen – Schlüssel\", um den QR-Code für die Anmeldung zu finden</string>
     <string name="alert_qr_camera_ok">OK</string>
     <string name="choose_option">Option auswählen</string>
-    <string name="find_a_relation">Find a property</string>
+    <string name="find_a_relation">Finde eine Eigenschaft</string>
     <string name="inbox">Posteingang</string>
     <string name="unknown_type">Unbekannter Typ</string>
     <string name="collection">Sammlung</string>
@@ -797,9 +797,9 @@
     <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget">Dieses Objekt hat keine Links zu anderen Objekten.\nVersuche ein neues zu erstellen.</string>
-    <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
+    <string name="empty_tree_widget_reader_access">Dieses Objekt ist mit keinem anderen Objekt verlinkt</string>
     <string name="empty_list_widget">Diese Ansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
-    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
+    <string name="empty_list_widget_no_objects">In diesem Widget befinden sich noch keine Objekte</string>
     <string name="empty_list_widget_no_view">Diese Datenansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="this_widget_has_no_object">Dieses Widget hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="emoji">Emoji</string>
@@ -822,7 +822,7 @@
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="personal">Standard</string>
-    <string name="create_space">Create a space</string>
+    <string name="create_space">Erstelle einen Bereich</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -831,7 +831,7 @@
     <string name="created_by">Erstellt von</string>
     <string name="space_id">Space-ID</string>
     <string name="network_id">Netzwerk-ID</string>
-    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
+    <string name="delete_space_subtitle">Das Löschen eines Bereichs ist permanent und kann nicht rückgängig gemacht werden. Bitte beachten Sie, dass alle Daten, die mit diesem Bereich verknüpft sind, permanent entfernt werden und Sie den Zugriff darauf für immer verlieren werden</string>
     <string name="delete_space_title_with_param">Space „%1$s“ löschen</string>
     <string name="delete_space_title">Möchtest du diesen Space wirklich löschen?</string>
     <string name="space_id_copied_toast_msg">Space-ID kopiert</string>
@@ -1000,7 +1000,7 @@
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
     <string name="onboarding_new_vault_button_text">Ich bin neu hier</string>
     <string name="onboarding_enter_my_vault">Weiter</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">Ich habe bereits einen Schlüssel</string>
     <string name="onboarding_get_my_key_button_text">Meinen Schlüssel holen</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
@@ -1700,8 +1700,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_default_type_button">Standard-Objekttyp</string>
     <string name="space_settings_wallpaper_button">Hintergrundbild</string>
     <string name="space_settings_storage_button">Remote Storage</string>
-    <string name="space_settings_space_info_button">Space Information</string>
-    <string name="space_settings_delete_space_button">Delete Space</string>
+    <string name="space_settings_space_info_button">Bereichsinformationen</string>
+    <string name="space_settings_delete_space_button">Bereich löschen</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="object_type_add_property_screen_title">Eigenschaft hinzufügen</string>
@@ -1717,7 +1717,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="add_property_error_update">Fehler beim Aktualisieren einer Eigenschaft</string>
     <string name="add_property_error_add">Fehler beim Hinzufügen einer Eigenschaft zum Typ</string>
     <string name="property_select_format_title">Eigenschaftsformat auswählen</string>
-    <string name="property_edit_menu_delete">Delete from space</string>
+    <string name="property_edit_menu_delete">Aus dem Bereich löschen</string>
     <string name="property_edit_menu_unlink">Verlinkung mit Typ aufheben</string>
     <string name="property_limit_objects_title">Objekte einschränken</string>
     <string name="property_include_time_section">Zeit einbeziehen</string>

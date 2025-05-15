@@ -122,6 +122,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -232,7 +233,8 @@ class HomeScreenViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
-    private val setAsFavourite: SetObjectListIsFavorite
+    private val setAsFavourite: SetObjectListIsFavorite,
+    private val spaceChatWidgetContainer: SpaceChatWidgetContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -464,6 +466,7 @@ class HomeScreenViewModel(
                 combine(
                     flows = buildList<Flow<WidgetView>> {
                         add(spaceWidgetView)
+                        add(spaceChatWidgetContainer.view)
                         addAll(list.map { m -> m.view })
                     }
                 ) { array ->
@@ -2613,7 +2616,8 @@ class HomeScreenViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-        private val setObjectListIsFavorite: SetObjectListIsFavorite
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val spaceChatWidgetContainer: SpaceChatWidgetContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2671,7 +2675,8 @@ class HomeScreenViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer,
-            setAsFavourite = setObjectListIsFavorite
+            setAsFavourite = setObjectListIsFavorite,
+            spaceChatWidgetContainer = spaceChatWidgetContainer
         ) as T
     }
 

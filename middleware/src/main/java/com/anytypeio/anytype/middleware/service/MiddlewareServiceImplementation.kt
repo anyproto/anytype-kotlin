@@ -2573,4 +2573,43 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun pushNotificationRegisterToken(request: Rpc.PushNotification.RegisterToken.Request): Rpc.PushNotification.RegisterToken.Response {
+        val encoded = Service.pushNotificationRegisterToken(
+            Rpc.PushNotification.RegisterToken.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.RegisterToken.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.RegisterToken.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun linkPreview(request: Rpc.LinkPreview.Request): Rpc.LinkPreview.Response {
+        val encoded = Service.linkPreview(
+            Rpc.LinkPreview.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.LinkPreview.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.LinkPreview.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCreateFromUrl(request: Rpc.Object.CreateFromUrl.Request): Rpc.Object.CreateFromUrl.Response {
+        val encoded = Service.objectCreateFromUrl(
+            Rpc.Object.CreateFromUrl.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CreateFromUrl.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CreateFromUrl.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

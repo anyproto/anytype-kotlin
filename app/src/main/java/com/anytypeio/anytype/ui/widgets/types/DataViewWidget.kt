@@ -144,7 +144,8 @@ fun DataViewListWidgetCard(
                             obj = element.obj,
                             icon = element.objectIcon,
                             mode = mode,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            name = element.getPrettyName()
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -392,7 +393,8 @@ fun ListWidgetElement(
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     icon: ObjectIcon,
-    obj: ObjectWrapper.Basic
+    obj: ObjectWrapper.Basic,
+    name: String
 ) {
     Box(
         modifier = Modifier
@@ -408,8 +410,6 @@ fun ListWidgetElement(
     ) {
         val hasDescription = !obj.description.isNullOrEmpty()
         val hasIcon = icon != ObjectIcon.None
-        val name = obj.name?.trim()?.orNull()
-        val snippet = obj.snippet?.trim().orNull()
         if (hasIcon) {
             ListWidgetObjectIcon(
                 icon = icon,
@@ -425,7 +425,7 @@ fun ListWidgetElement(
             )
         }
         Text(
-            text = name ?: snippet ?: stringResource(id = R.string.untitled),
+            text = name.ifEmpty { stringResource(id = R.string.untitled) },
             modifier = if (hasDescription)
                 Modifier
                     .padding(

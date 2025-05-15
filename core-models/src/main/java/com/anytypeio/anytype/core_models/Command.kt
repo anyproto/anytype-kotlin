@@ -550,7 +550,8 @@ sealed class Command {
         data class Finalize(val name: String, val nameType: NameServiceNameType) : Membership()
         data class GetVerificationEmail(
             val email: String,
-            val subscribeToNewsletter: Boolean
+            val subscribeToNewsletter: Boolean,
+            val isFromOnboarding: Boolean
         ) : Membership()
 
         data class VerifyEmailCode(val code: String) : Membership()
@@ -709,5 +710,9 @@ sealed class Command {
         val objectId: Id,
         val blockId: Id,
         val properties: List<Key>
+    ) : Command()
+
+    data class RegisterDeviceToken(
+        val token: String
     ) : Command()
 }

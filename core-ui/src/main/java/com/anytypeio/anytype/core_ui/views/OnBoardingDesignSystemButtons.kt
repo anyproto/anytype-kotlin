@@ -76,7 +76,7 @@ fun OnBoardingButtonPrimary(
             Box() {
                 Text(
                     text = if (isLoading) "" else text,
-                    style = size.textStyle
+                    style = ButtonMedium
                 )
                 if (isLoading) {
                     val loadingAlpha by animateFloatAsState(targetValue = 1f)

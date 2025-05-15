@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.Rpc.Chat.ReadMessages.ReadType
+import anytype.Rpc.PushNotification.RegisterToken.Platform
 import anytype.model.Block
 import anytype.model.ParticipantPermissionChange
 import anytype.model.Range
@@ -21,9 +22,11 @@ import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -63,6 +66,7 @@ import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCore
+import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
@@ -2659,7 +2663,8 @@ class Middleware @Inject constructor(
     fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
         val request = Rpc.Membership.GetVerificationEmail.Request(
             email = command.email,
-            subscribeToNewsletter = command.subscribeToNewsletter
+            subscribeToNewsletter = command.subscribeToNewsletter,
+            isOnboardingList = command.isFromOnboarding
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.membershipGetVerificationEmail(request) }
@@ -2976,6 +2981,39 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.blockDataViewRelationSet(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun registerDeviceToken(command: Command.RegisterDeviceToken) {
+        val request = Rpc.PushNotification.RegisterToken.Request(
+            token = command.token,
+            platform = Platform.Android
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.pushNotificationRegisterToken(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun getLinkPreview(url: Url): LinkPreview {
+        val request = Rpc.LinkPreview.Request(url = url)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.linkPreview(request) }
+        logResponseIfDebug(response, time)
+        return response.linkPreview?.toCoreLinkPreview() ?: throw Exception("MW return empty link preview")
+    }
+
+    @Throws(Exception::class)
+    fun createObjectFromUrl(space: SpaceId, url: Url) : ObjectWrapper.Basic {
+        val request = Rpc.Object.CreateFromUrl.Request(
+            url = url,
+            spaceId = space.id,
+            objectTypeUniqueKey = ObjectTypeUniqueKeys.BOOKMARK
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }
+        logResponseIfDebug(response, time)
+        return ObjectWrapper.Basic(response.details.orEmpty())
     }
 
     private fun logRequestIfDebug(request: Any) {

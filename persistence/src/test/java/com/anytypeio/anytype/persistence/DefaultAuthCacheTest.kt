@@ -4,9 +4,9 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider
-import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals

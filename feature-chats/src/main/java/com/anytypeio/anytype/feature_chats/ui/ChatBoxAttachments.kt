@@ -58,7 +58,7 @@ internal fun ChatBoxAttachments(
                                 type = attachment.typeName,
                                 icon = attachment.icon,
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -90,7 +90,7 @@ internal fun ChatBoxAttachments(
                                 type = attachment.wrapper.type,
                                 icon = attachment.wrapper.icon,
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -191,7 +191,7 @@ internal fun ChatBoxAttachments(
                                     fileName = null
                                 ),
                                 onAttachmentClicked = {
-                                    // TODO
+                                    // Do nothing
                                 }
                             )
                             Image(
@@ -207,6 +207,38 @@ internal fun ChatBoxAttachments(
                                     }
                             )
                             ChatBoxAttachmentState(attachment.state)
+                        }
+                    }
+                }
+                is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                    item {
+                        Box {
+                            AttachedObject(
+                                modifier = Modifier
+                                    .padding(
+                                        top = 12.dp,
+                                        end = 4.dp
+                                    )
+                                    .width(216.dp),
+                                title = attachment.preview.title,
+                                type = stringResource(R.string.bookmark),
+                                icon = ObjectIcon.None,
+                                onAttachmentClicked = {
+                                    // Do nothing
+                                }
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                contentDescription = "Close icon",
+                                modifier = Modifier
+                                    .align(
+                                        Alignment.TopEnd
+                                    )
+                                    .padding(top = 6.dp)
+                                    .noRippleClickable {
+                                        onClearAttachmentClicked(attachment)
+                                    }
+                            )
                         }
                     }
                 }

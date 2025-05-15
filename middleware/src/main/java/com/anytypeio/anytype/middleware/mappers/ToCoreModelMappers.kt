@@ -3,7 +3,6 @@ package com.anytypeio.anytype.middleware.mappers
 import anytype.ResponseEvent
 import anytype.Rpc
 import anytype.model.Account
-import anytype.model.ChatState
 import anytype.model.NameserviceNameType
 import anytype.model.ParticipantPermissions
 import anytype.model.Restrictions
@@ -28,6 +27,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ImportErrorCode
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
@@ -1206,5 +1206,15 @@ fun Rpc.Relation.ListWithValue.Response.ResponseItem.toCoreModel(): RelationList
     return RelationListWithValueItem(
         key = RelationKey(key = relationKey),
         counter = counter
+    )
+}
+
+fun MLinkPreview.toCoreLinkPreview(): LinkPreview {
+    return LinkPreview(
+        url = url,
+        faviconUrl = faviconUrl,
+        imageUrl = imageUrl,
+        description = description,
+        title = title
     )
 }

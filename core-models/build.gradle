@@ -1,10 +1,12 @@
 plugins {
     id "kotlin"
     id "org.jetbrains.dokka"
+    id "kotlinx-serialization"
 }
 
 dependencies {
     implementation libs.kotlin
+    implementation libs.kotlinxSerializationJson
 
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin

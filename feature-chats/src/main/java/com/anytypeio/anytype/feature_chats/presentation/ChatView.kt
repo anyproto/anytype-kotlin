@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_chats.presentation
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.chats.ChatContainer
@@ -94,6 +95,14 @@ sealed interface ChatView {
                 val icon: ObjectIcon = ObjectIcon.None,
                 val typeName: String
             ): Attachment()
+
+            data class Bookmark(
+                val id: Id,
+                val url: String,
+                val title: String,
+                val description: String,
+                val imageUrl: String?
+            ) : Attachment()
         }
 
         sealed class ChatBoxAttachment {
@@ -128,6 +137,10 @@ sealed interface ChatView {
                 val target: Id,
                 val wrapper: GlobalSearchItemView
             ): ChatBoxAttachment()
+
+            data class Bookmark(
+                val preview: LinkPreview
+            ) : ChatBoxAttachment()
 
             sealed class State {
                 data object Idle : State()

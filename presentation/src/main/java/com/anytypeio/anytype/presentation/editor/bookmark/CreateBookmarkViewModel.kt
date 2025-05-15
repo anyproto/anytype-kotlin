@@ -16,7 +16,7 @@ class CreateBookmarkViewModel() : ViewStateViewModel<ViewState>() {
     sealed class ViewState {
         data class Success(val url: String) : ViewState()
         data class Error(val message: String) : ViewState()
-        object Exit : ViewState()
+        data object Exit : ViewState()
     }
 
     class Factory() : ViewModelProvider.Factory {

@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.di.feature.notifications
 
 import android.content.SharedPreferences
-import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
-import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
+import com.anytypeio.anytype.ui.notifications.NotificationPermissionRequestDialog
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -15,20 +13,20 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-    dependencies = [PushContentDependencies::class],
-    modules = [PushContentModule::class],
+    dependencies = [NotificationPermissionDependencies::class],
+    modules = [NotificationPermissionModule::class],
 )
-interface PushContentComponent {
+interface NotificationPermissionComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependency: PushContentDependencies): PushContentComponent
+        fun create(dependency: NotificationPermissionDependencies): NotificationPermissionComponent
     }
 
-    fun inject(service: AnytypePushService)
+    fun inject(fragment: NotificationPermissionRequestDialog)
 }
 
 @Module
-object PushContentModule {
+object NotificationPermissionModule {
 
     @Provides
     @Singleton
@@ -40,11 +38,9 @@ object PushContentModule {
             sharedPreferences = prefs
         )
     }
-
 }
 
-interface PushContentDependencies : ComponentDependencies {
-    fun deviceTokenSavingService(): DeviceTokenStoringService
-    fun decryptionService(): DecryptionPushContentService
-    @Named("default") fun providePrefs(): SharedPreferences
+interface NotificationPermissionDependencies : ComponentDependencies {
+    @Named("default")
+    fun providePrefs(): SharedPreferences
 }

@@ -65,6 +65,7 @@ import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceCompon
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
 import com.anytypeio.anytype.di.feature.notifications.DaggerNotificationComponent
+import com.anytypeio.anytype.di.feature.notifications.DaggerNotificationPermissionComponent
 import com.anytypeio.anytype.di.feature.notifications.DaggerPushContentComponent
 import com.anytypeio.anytype.di.feature.objects.DaggerSelectObjectTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
@@ -1140,6 +1141,12 @@ class ComponentManager(
 
     val pushContentComponent = Component {
         DaggerPushContentComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val notificationPermissionComponent = Component {
+        DaggerNotificationPermissionComponent
             .factory()
             .create(findComponentDependencies())
     }

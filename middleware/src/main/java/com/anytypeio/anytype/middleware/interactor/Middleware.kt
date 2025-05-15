@@ -2663,7 +2663,8 @@ class Middleware @Inject constructor(
     fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail) {
         val request = Rpc.Membership.GetVerificationEmail.Request(
             email = command.email,
-            subscribeToNewsletter = command.subscribeToNewsletter
+            subscribeToNewsletter = command.subscribeToNewsletter,
+            isOnboardingList = command.isFromOnboarding
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.membershipGetVerificationEmail(request) }

@@ -1111,38 +1111,36 @@
     <!--region ONBOARDING -->
 
     <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
     <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
-    <string name="onboarding_enter_my_vault">Enter my Vault</string>
-    <string name="onboarding_have_key_button_text">Already have a Key</string>
+    <string name="onboarding_enter_my_vault">Next</string>
+    <string name="onboarding_have_key_button_text">I already have a key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">This is your Key</string>
-    <string name="onboarding_key_description">It gives you full ownership over your vault.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Show my Key</string>
-    <string name="onboarding_tap_to_reveal">Tap to Reveal</string>
+    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
     <string name="onboarding_key_skip">Skip</string>
     <string name="onboarding_key_not_now">Not now</string>
     <string name="onboarding_key_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry of these names.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Type your recovery phrase</string>
     <string name="onboarding_login_or">OR</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
-    <string name="onboarding_your_name">Your name</string>
+    <string name="onboarding_your_name">Type your name</string>
 
-    <string name="onboarding_mnemonic_read_more">Read more about Key</string>
+    <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
     <string name="onboarding_what_is_the_key">What is the Key?</string>
     <string name="onboarding_recovery_phrase_description">It is represented by a recovery phrase – 12 random words from which your vault is magically generated on this device.</string>
@@ -2043,5 +2041,15 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+
+    <string name="onboarding_set_your_name_title">Add Your Name</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
+    <string name="onboarding_email_add_title">Stay in the loop</string>
+    <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
+    <string name="onboarding_enter_email">Enter your email</string>
+    <string name="onboarding_button_continue">Continue</string>
+    <string name="onboarding_button_skip">Skip</string>
+    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_name_error">Enter name</string>
 
 </resources>

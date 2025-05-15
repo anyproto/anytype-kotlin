@@ -40,7 +40,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 fun PreviewWhatIsRecoveryPhraseScreen() {
     WhatIsRecoveryPhraseScreen()
@@ -80,7 +80,7 @@ fun WhatIsRecoveryPhraseScreen() {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(R.string.onboarding_recovery_phrase_description),
                 color = Color.White,
@@ -96,13 +96,14 @@ fun WhatIsRecoveryPhraseScreen() {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = buildAnnotatedString {
                     append(stringResource(R.string.onboarding_recovery_phrase_description_2))
                     withStyle(
                         style = SpanStyle(fontWeight = FontWeight.Bold)
                     ) {
+                        append(" ")
                         append(stringResource(R.string.onboarding_recovery_phrase_description_3))
                     }
                 },
@@ -119,7 +120,7 @@ fun WhatIsRecoveryPhraseScreen() {
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(modifier = Modifier.width(18.dp))
+            Spacer(modifier = Modifier.width(12.dp))
             Text(
                 text = stringResource(R.string.onboarding_recovery_phrase_description_4),
                 color = Color.White,

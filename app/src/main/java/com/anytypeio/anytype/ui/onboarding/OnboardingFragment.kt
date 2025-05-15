@@ -1,12 +1,14 @@
 package com.anytypeio.anytype.ui.onboarding
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -66,7 +68,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -74,7 +75,6 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
-import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -94,6 +94,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import com.google.android.exoplayer2.ExoPlayer
@@ -333,7 +334,8 @@ class OnboardingFragment : Fragment() {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
                         space = spaceId,
-                        startingObject = startingObjectId
+                        startingObject = startingObjectId,
+                        navController = navController
                     )
                 } else {
                     Box(
@@ -375,6 +377,56 @@ class OnboardingFragment : Fragment() {
                     navController = navController,
                     onBackClicked = onBackClicked
                 )
+                BackHandler { onBackClicked() }
+            }
+            composable(
+                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
+                arguments = listOf(
+                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
+                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    }
+                ),
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                val focus = LocalFocusManager.current
+                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
+                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setEmail) == true) {
+                        focus.clearFocus(true)
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                currentPage.value = OnboardingPage.SET_EMAIL
+                backButtonCallback.value = onBackClicked
+                if (!spaceId.isNullOrEmpty()) {
+                    AddEmail(
+                        space = spaceId,
+                        startingObject = startingObjectId,
+                        onBackClicked = onBackClicked
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 BackHandler { onBackClicked() }
             }
         }
@@ -553,7 +605,14 @@ class OnboardingFragment : Fragment() {
                         )
                     }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
-                        //
+                        // do nothing
+                    }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
+                        //do nothing
+                    }
+                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
+                        //do nothing
                     }
                 }
             }
@@ -572,7 +631,8 @@ class OnboardingFragment : Fragment() {
     private fun Mnemonic(
         mnemonicColorPalette: List<Color>,
         space: Id,
-        startingObject: Id?
+        startingObject: Id?,
+        navController: NavHostController
     ) {
         val component = componentManager().onboardingMnemonicComponent
         val vm = daggerViewModel { component.get().getViewModel() }
@@ -624,6 +684,13 @@ class OnboardingFragment : Fragment() {
                             Timber.e(it, "Error while navigation to vault")
                         }
                     }
+                    is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
+                        val startingObject = command.startingObject
+                        val space = command.space
+                        navController.navigate(
+                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM=$space&$ONBOARDING_STARTING_OBJECT_PARAM=$startingObject"
+                        )
+                    }
                 }
             }
         }
@@ -635,8 +702,15 @@ class OnboardingFragment : Fragment() {
                 requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip =
                 ClipData.newPlainText("Mnemonic phrase", mnemonicPhrase)
+            clip.apply {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                }
+            }
             clipboard.setPrimaryClip(clip)
-            toast("Mnemonic phrase copied")
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
+                toast("Mnemonic phrase copied")
+            }
         } catch (e: Exception) {
             toast("Could not copy your mnemonic phrase. Please try again later, or copy it manually.")
         }
@@ -731,6 +805,83 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    @Composable
+    private fun AddEmail(
+        space: Id,
+        startingObject: Id?,
+        onBackClicked: () -> Unit
+    ) {
+        val component = componentManager().onboardingSoulCreationComponent
+        val vm = daggerViewModel { component.get().getViewModel() }
+
+        val focusManager = LocalFocusManager.current
+        val keyboardInsets = WindowInsets.ime
+        val density = LocalDensity.current
+
+        SetEmailWrapper(
+            viewModel = vm,
+            startingObject = startingObject,
+            space = space,
+            onBackClicked = onBackClicked
+        )
+
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { command ->
+                when (command) {
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
+                        //do nothing
+                    }
+                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
+                        //
+                    }
+
+                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                            findNavController().navigate(
+                                R.id.actionOpenSpaceFromVault,
+                                HomeScreenFragment.args(
+                                    space = command.space.id,
+                                    deeplink = null
+                                )
+                            )
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = command.startingObject,
+                                    space = command.space.id,
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect {
+                toast(it)
+            }
+        }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
+    }
+
     private fun getVideoPlayer(context: Context, videoPath: Uri): Player {
         val player = ExoPlayer.Builder(context).build()
         val source = DefaultDataSource.Factory(
@@ -772,6 +923,8 @@ class OnboardingFragment : Fragment() {
 
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
+
+        private const val ONBOARDING_NAME_PARAM = "startingObject"
     }
 }
 

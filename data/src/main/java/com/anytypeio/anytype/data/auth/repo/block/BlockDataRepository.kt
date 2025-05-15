@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -910,8 +911,16 @@ class BlockDataRepository(
         remote.makeSpaceShareable(space)
     }
 
-    override suspend fun generateSpaceInviteLink(space: SpaceId): SpaceInviteLink {
-        return remote.generateSpaceInviteLink(space)
+    override suspend fun generateSpaceInviteLink(
+        space: SpaceId,
+        inviteType: InviteType,
+        permissions: SpaceMemberPermissions
+    ): SpaceInviteLink {
+        return remote.generateSpaceInviteLink(
+            space = space,
+            inviteType = inviteType,
+            permissions = permissions
+        )
     }
 
     override suspend fun revokeSpaceInviteLink(space: SpaceId) {

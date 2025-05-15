@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -44,6 +45,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
+import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 
@@ -443,7 +445,11 @@ interface BlockRepository {
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
 
     suspend fun makeSpaceShareable(space: SpaceId)
-    suspend fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink
+    suspend fun generateSpaceInviteLink(
+        space: SpaceId,
+        inviteType: InviteType,
+        permissions: SpaceMemberPermissions
+    ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(
         space: SpaceId,

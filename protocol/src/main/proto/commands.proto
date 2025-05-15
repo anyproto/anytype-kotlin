@@ -8297,11 +8297,21 @@ message Rpc {
         }
 
         message SubscribeToMessagePreviews {
-            message Request {}
+            message Request {
+                string subId = 1;
+            }
 
             message Response {
                 Error error = 1;
-                string subId = 2;
+                repeated ChatPreview previews = 2;
+
+                message ChatPreview {
+                    string spaceId = 1;
+                    string chatObjectId = 2;
+                    model.ChatMessage message = 3;
+                    model.ChatState state = 4;
+                    repeated google.protobuf.Struct dependencies = 5;
+                }
 
                 message Error {
                     Code code = 1;
@@ -8318,7 +8328,9 @@ message Rpc {
         }
 
         message UnsubscribeFromMessagePreviews {
-            message Request {}
+            message Request {
+                string subId = 1;
+            }
 
             message Response {
                 Error error = 1;

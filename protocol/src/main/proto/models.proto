@@ -1367,7 +1367,11 @@ message MembershipTierData {
     // Android platform-specific data:
     string androidProductId = 17;
     string androidManageUrl = 18;
+
+    // "limited offer" or somehing like that
+    string offer = 19;
 }
+
 enum DeviceNetworkType {
     WIFI = 0;
     CELLULAR = 1;

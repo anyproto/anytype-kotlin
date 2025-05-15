@@ -21,18 +21,18 @@ class DeviceTokenStoringServiceImpl @Inject constructor(
     }
 
     override fun start() {
-        try {
-            scope.launch(dispatchers.io) {
-                FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+        scope.launch(dispatchers.io) {
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { token ->
                     if (token.isNotEmpty()) {
                         proceedWithUpdatingToken(token = token)
                     } else {
                         Timber.w("Firebase token is empty")
                     }
                 }
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error while getting device token")
+                .addOnFailureListener { exception ->
+                    Timber.w("Failed to get Firebase token: ${exception.message}")
+                }
         }
     }
 

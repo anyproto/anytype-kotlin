@@ -1756,7 +1756,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_my_types">Le mie Proprietà</string>
     <string name="space_properties_screen_section_system_types">Proprietà Di Sistema</string>
     <string name="space_properties_screen_menu_move_to_bin">Sposta nel cestino</string>
-    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Errore durante la creazione dell\'account: manca lo spazio</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>

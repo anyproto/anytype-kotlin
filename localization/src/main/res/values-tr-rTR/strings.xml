@@ -992,7 +992,7 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">her şeyin uygulaması</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
+    <string name="onboarding_auth_subtitle">Şifreli, çevrimdışı\n&amp; açık</string>
     <string name="onboarding_auth_description">Sahip olduğunuz alanlarda oluşturun &amp; işbirliği yapın. Şifreli, çevrimdışı &amp; açık.</string>
     <string name="onboarding_terms_and_policy_prefix">"Devam ederek şunları kabul etmiş olursunuz "</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0Kullanım\u00A0koşulları</string>

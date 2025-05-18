@@ -1000,7 +1000,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Je suis nouveau ici</string>
     <string name="onboarding_enter_my_vault">Suivant</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">J\'ai déjà une clé</string>
     <string name="onboarding_get_my_key_button_text">Obtenir ma Clé</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>

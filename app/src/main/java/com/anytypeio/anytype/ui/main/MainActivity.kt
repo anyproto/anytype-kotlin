@@ -439,14 +439,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
-                val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString
-                if (raw != null) {
-                    if (checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw)) {
-                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
-                    } else if (raw.isNotEmpty()) {
-                        vm.onIntentTextShare(raw)
-                    }
-                }
+                handleTextShare(
+                    intent = intent,
+                    checkDeepLink = checkDeepLink
+                )
             }
             intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
                 proceedWithImageShareIntent(intent)
@@ -461,6 +457,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 proceedWithFileShareIntent(intent)
             }
             else -> Timber.e("Unexpected scenario: ${intent.type}")
+        }
+    }
+
+    private fun handleTextShare(intent: Intent, checkDeepLink: Boolean) {
+        val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString ?: return
+
+        when {
+            checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw) -> {
+                vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
+            }
+            raw.isNotEmpty() && !DefaultDeepLinkResolver.isDeepLink(raw) -> {
+                vm.onIntentTextShare(raw)
+            }
+            else -> {
+                Timber.d("handleTextShare, skip handle intent :$raw")
+            }
         }
     }
 

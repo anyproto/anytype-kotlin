@@ -201,9 +201,9 @@ fun ChatBox(
             if (!isFocused) {
                 Box(
                     modifier = Modifier
-                        .padding(horizontal = 4.dp, vertical = 8.dp)
-                        .clip(CircleShape)
                         .align(Alignment.Bottom)
+                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .clip(CircleShape)
                         .clickable {
                             scope.launch {
                                 focus.clearFocus(force = true)
@@ -449,9 +449,7 @@ fun ChatBox(
             )
         } else {
             ChatBoxEditPanel(
-                onPlusClicked = {
-                    showDropdownMenu = true
-                },
+                onAttachObjectClicked = onAttachObjectClicked,
                 onMentionClicked = {
                     val selection = text.selection
                     val cursorPosition = selection.start
@@ -470,6 +468,16 @@ fun ChatBox(
                 },
                 onStyleClicked = {
                     showMarkup = true
+                },
+                onUploadFileClicked = {
+                    uploadFileLauncher.launch(
+                        arrayOf("*/*")
+                    )
+                },
+                onUploadMediaClicked = {
+                    uploadMediaLauncher.launch(
+                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
                 }
             )
         }
@@ -755,23 +763,101 @@ private fun MarkupIcon(
 
 @Composable
 fun ChatBoxEditPanel(
-    onPlusClicked: () -> Unit,
+    onAttachObjectClicked: () -> Unit,
     onStyleClicked: () -> Unit,
-    onMentionClicked: () -> Unit
+    onMentionClicked: () -> Unit,
+    onUploadMediaClicked: () -> Unit,
+    onUploadFileClicked: () -> Unit
 ) {
+
+    var showDropdownMenu by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier.fillMaxWidth().height(52.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
-            contentDescription = "Plus button",
+
+        Box(
             modifier = Modifier
                 .padding(start = 12.dp)
-                .noRippleClickable {
-                    onPlusClicked()
+                .clip(CircleShape)
+                .clickable {
+                    showDropdownMenu = true
                 }
-        )
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
+                contentDescription = "Plus button"
+            )
+            MaterialTheme(
+                shapes = MaterialTheme.shapes.copy(
+                    medium = RoundedCornerShape(
+                        12.dp
+                    )
+                ),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.background_secondary)
+                )
+            ) {
+                DropdownMenu(
+                    offset = DpOffset(8.dp, 40.dp),
+                    expanded = showDropdownMenu,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(
+                            minWidth = 252.dp
+                        )
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_object),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onAttachObjectClicked()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_media),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onUploadMediaClicked()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_file),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onUploadFileClicked()
+                        }
+                    )
+                }
+            }
+        }
 
         Spacer(modifier = Modifier.width(20.dp))
 
@@ -822,6 +908,8 @@ fun ChatBoxEditPanelPreview() {
     ChatBoxEditPanel(
         onMentionClicked = {},
         onStyleClicked = {},
-        onPlusClicked = {}
+        onAttachObjectClicked = {},
+        onUploadFileClicked = {},
+        onUploadMediaClicked = {}
     )
 }

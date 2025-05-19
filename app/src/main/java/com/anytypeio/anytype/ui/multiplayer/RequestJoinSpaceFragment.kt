@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceWithoutApproveScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -94,25 +95,37 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                             val isLoading: Boolean
                             val spaceName: String
                             val createdByName: String
+                            val withoutApprove : Boolean
                             if (state is TypedViewState.Loading) {
                                 isLoading = true
                                 spaceName = stringResource(R.string.three_dots_text_placeholder)
                                 createdByName = stringResource(R.string.three_dots_text_placeholder)
+                                withoutApprove = false
                             }
                             else {
                                 isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value
                                 with(state as TypedViewState.Success) {
                                     spaceName = state.data.spaceName
                                     createdByName = state.data.creatorName
+                                    withoutApprove = state.data.withoutApprove
                                 }
                             }
                             if (!showModal) {
-                                JoinSpaceScreen(
-                                    isLoading = isLoading,
-                                    onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                    spaceName = spaceName,
-                                    createdByName = createdByName
-                                )
+                                if (withoutApprove) {
+                                    JoinSpaceWithoutApproveScreen(
+                                        isLoading = isLoading,
+                                        onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                        spaceName = spaceName,
+                                        createdByName = createdByName
+                                    )
+                                } else {
+                                    JoinSpaceScreen(
+                                        isLoading = isLoading,
+                                        onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                        spaceName = spaceName,
+                                        createdByName = createdByName,
+                                    )
+                                }
                             } else {
                                 ModalBottomSheet(
                                     onDismissRequest = {

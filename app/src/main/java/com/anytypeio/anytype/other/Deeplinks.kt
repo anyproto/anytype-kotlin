@@ -41,13 +41,14 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
 
     private val defaultInviteRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
     private val defaultLinkToObjectRegex = Regex(DEEP_LINK_TO_OBJECT_REG_EXP)
+    private val customInviteRegex = Regex(DEE_LINK_INVITE_CUSTOM_REG_EXP)
 
     override fun resolve(deeplink: String): DeepLinkResolver.Action {
         val uri = Uri.parse(deeplink)
-
         return when {
             deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> resolveImportExperience(uri)
             defaultInviteRegex.containsMatchIn(deeplink) -> DeepLinkResolver.Action.Invite(deeplink)
+            customInviteRegex.containsMatchIn(deeplink) ->  DeepLinkResolver.Action.Invite(deeplink)
             defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
             deeplink.contains(OBJECT_PATH) -> resolveObjectPath(uri)
             deeplink.contains(MEMBERSHIP_PATH) -> resolveMembershipPath(uri)

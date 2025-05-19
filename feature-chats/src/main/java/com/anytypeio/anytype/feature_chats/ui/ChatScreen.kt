@@ -455,7 +455,7 @@ fun ChatScreen(
         }
     }
 
-    var wasAtBottom by remember { mutableStateOf(false) }
+    var wasAtBottom by remember { mutableStateOf(isAtBottom) }
 
     LaunchedEffect(lazyListState) {
         snapshotFlow {

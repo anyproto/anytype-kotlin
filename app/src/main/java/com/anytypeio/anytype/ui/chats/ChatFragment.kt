@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.SystemAction.*
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.home.isSpaceRootScreen
+import com.anytypeio.anytype.ui.notifications.NotificationPermissionRequestDialog
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -177,6 +179,7 @@ class ChatFragment : BaseComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
+                        Timber.d("Command: $command")
                         when(command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
@@ -254,13 +257,20 @@ class ChatFragment : BaseComposeFragment() {
                             is ChatViewModel.ViewModelCommand.Browse -> {
                                 runCatching {
                                     proceedWithAction(
-                                        SystemAction.OpenUrl(
+                                        OpenUrl(
                                             command.url
                                         )
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
+                            }
+
+                            ChatViewModel.ViewModelCommand.ShowNotificationPermissionDialog -> {
+                                NotificationPermissionRequestDialog().show(
+                                    childFragmentManager,
+                                    "notification_permission_dialog"
+                                )
                             }
                         }
                     }

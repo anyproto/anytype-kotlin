@@ -202,7 +202,7 @@ fun ChatBox(
                 Box(
                     modifier = Modifier
                         .align(Alignment.Bottom)
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
+                        .padding(horizontal = 4.dp, vertical = 8.dp)
                         .clip(CircleShape)
                         .clickable {
                             scope.launch {

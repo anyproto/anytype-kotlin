@@ -433,6 +433,21 @@ fun ChatScreen(
             }
     }
 
+    // Jump to bottom button shows up when user scrolls past a threshold.
+    // Convert to pixels:
+    val jumpThreshold = with(LocalDensity.current) {
+        JumpToBottomThreshold.toPx()
+    }
+
+    // Show the button if the first visible item is not the first one or if the offset is
+    // greater than the threshold.
+    val jumpToBottomButtonEnabled by remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex != 0 ||
+                    lazyListState.firstVisibleItemScrollOffset > jumpThreshold
+        }
+    }
+
     val isAtBottom by remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex == 0 &&
@@ -440,10 +455,27 @@ fun ChatScreen(
         }
     }
 
+    var wasAtBottom by remember { mutableStateOf(isAtBottom) }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow {
+            val layoutInfo = lazyListState.layoutInfo
+            layoutInfo.visibleItemsInfo.firstOrNull()?.index == 0 &&
+                    layoutInfo.visibleItemsInfo.firstOrNull()?.offset == 0
+        }
+            .distinctUntilChanged()
+            .collect { atBottom ->
+                wasAtBottom = atBottom
+                Timber.d("DROID-2966 Updated wasAtBottom: $wasAtBottom")
+            }
+    }
+
     // Scrolling to bottom when list size changes and we are at the bottom of the list
     LaunchedEffect(messages.size) {
-        if (isAtBottom && !isPerformingScrollIntent.value) {
+        if (wasAtBottom && !isPerformingScrollIntent.value) {
             lazyListState.animateScrollToItem(0)
+        } else {
+            Timber.d("DROID-2966 Skipping auto-scroll")
         }
     }
 
@@ -497,20 +529,6 @@ fun ChatScreen(
                 onMentionClicked = onMentionClicked,
                 onScrollToReplyClicked = onScrollToReplyClicked
             )
-            // Jump to bottom button shows up when user scrolls past a threshold.
-            // Convert to pixels:
-            val jumpThreshold = with(LocalDensity.current) {
-                JumpToBottomThreshold.toPx()
-            }
-
-            // Show the button if the first visible item is not the first one or if the offset is
-            // greater than the threshold.
-            val jumpToBottomButtonEnabled by remember {
-                derivedStateOf {
-                    lazyListState.firstVisibleItemIndex != 0 ||
-                            lazyListState.firstVisibleItemScrollOffset > jumpThreshold
-                }
-            }
 
             GoToBottomButton(
                 modifier = Modifier

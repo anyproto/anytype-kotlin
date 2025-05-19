@@ -444,6 +444,8 @@ fun ChatScreen(
     LaunchedEffect(messages.size) {
         if (isAtBottom && !isPerformingScrollIntent.value) {
             lazyListState.animateScrollToItem(0)
+        } else {
+            Timber.d("DROID-2966 Skipping auto-scroll")
         }
     }
 
@@ -733,7 +735,7 @@ fun Messages(
         ) { idx, msg ->
             if (msg is ChatView.Message) {
                 if (idx == 0)
-                    Spacer(modifier = Modifier.height(36.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

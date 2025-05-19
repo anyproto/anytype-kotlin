@@ -42,6 +42,7 @@ import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -83,7 +84,8 @@ class ChatViewModel @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val getLinkPreview: GetLinkPreview,
-    private val createObjectFromUrl: CreateObjectFromUrl
+    private val createObjectFromUrl: CreateObjectFromUrl,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -955,6 +957,18 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun shouldShowNotificationPermissionDialog() {
+        val shouldShow = notificationPermissionManager.shouldShowPermissionDialog()
+        Timber.d("shouldShowNotificationPermissionDialog: $shouldShow")
+        if (true) {
+            viewModelScope.launch {
+                commands.emit(
+                    ViewModelCommand.ShowNotificationPermissionDialog
+                )
+            }
+        }
+    }
+
     private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
         if (selectionStart <= 0 || selectionStart > text.length) return false
         val previousChar = text[selectionStart - 1]
@@ -1075,6 +1089,7 @@ class ChatViewModel @Inject constructor(
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
+        data object ShowNotificationPermissionDialog : ViewModelCommand()
     }
 
     sealed class UXCommand {

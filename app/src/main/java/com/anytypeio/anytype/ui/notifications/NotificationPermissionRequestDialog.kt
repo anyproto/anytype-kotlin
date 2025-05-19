@@ -12,9 +12,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -68,6 +71,9 @@ class NotificationPermissionRequestDialog : BaseBottomSheetComposeFragment() {
                     onPermissionDismissed = { permissionManager.onPermissionDismissed() },
                     onRequestPermissionsResult = { requestCode, permissions, grantResults ->
                         activity?.onRequestPermissionsResult(requestCode, permissions, grantResults)
+                    },
+                    onDismiss = {
+                        this@NotificationPermissionRequestDialog.dismiss()
                     }
                 )
             }
@@ -94,9 +100,12 @@ private fun NotificationPermissionRequestContent(
     onPermissionGranted: () -> Unit,
     onPermissionDenied: () -> Unit,
     onPermissionDismissed: () -> Unit,
-    onRequestPermissionsResult: (Int, Array<String>, IntArray) -> Unit
+    onRequestPermissionsResult: (Int, Array<String>, IntArray) -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val bottomSheetState = rememberModalBottomSheetState()
+    val bottomSheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
     val scope = rememberCoroutineScope()
 
     val launcher = rememberLauncherForActivityResult(
@@ -120,16 +129,21 @@ private fun NotificationPermissionRequestContent(
                 onPermissionDenied()
             }
         }
+        onDismiss()
     }
 
     MaterialTheme(typography = typography) {
         ModalBottomSheet(
+            modifier = Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.navigationBars),
             onDismissRequest = {
                 scope.launch {
                     bottomSheetState.hide()
                 }.invokeOnCompletion {
                     onPermissionDismissed()
                 }
+                onDismiss()
             },
             dragHandle = {},
             containerColor = colorResource(id = R.color.widget_background),
@@ -209,6 +223,7 @@ fun NotificationPermissionRequestDialogPreview() {
         onPermissionGranted = {},
         onPermissionDenied = {},
         onPermissionDismissed = {},
-        onRequestPermissionsResult = { _, _, _ -> }
+        onRequestPermissionsResult = { _, _, _ -> },
+        onDismiss = {}
     )
 }

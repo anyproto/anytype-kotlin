@@ -4,8 +4,12 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -23,10 +27,12 @@ import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
@@ -76,6 +82,8 @@ class ChatViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getLinkPreview: GetLinkPreview,
+    private val createObjectFromUrl: CreateObjectFromUrl
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -256,27 +264,44 @@ class ChatViewModel @Inject constructor(
                                 }
                                 else -> {
                                     val wrapper = dependencies[attachment.target]
-                                    if (wrapper?.layout == ObjectType.Layout.IMAGE) {
-                                        ChatView.Message.Attachment.Image(
-                                            target = attachment.target,
-                                            url = urlBuilder.large(path = attachment.target),
-                                            name = wrapper.name.orEmpty(),
-                                            ext = wrapper.fileExt.orEmpty()
-                                        )
-                                    } else {
-                                        val type = wrapper?.type?.firstOrNull()
-                                        ChatView.Message.Attachment.Link(
-                                            target = attachment.target,
-                                            wrapper = wrapper,
-                                            icon = wrapper?.objectIcon(
-                                                builder = urlBuilder,
-                                                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
-                                            ) ?: ObjectIcon.None,
-                                            typeName = if (type != null)
-                                                storeOfObjectTypes.get(type)?.name.orEmpty()
-                                            else
-                                                ""
-                                        )
+                                    when (wrapper?.layout) {
+                                        ObjectType.Layout.IMAGE -> {
+                                            ChatView.Message.Attachment.Image(
+                                                target = attachment.target,
+                                                url = urlBuilder.large(path = attachment.target),
+                                                name = wrapper.name.orEmpty(),
+                                                ext = wrapper.fileExt.orEmpty()
+                                            )
+                                        }
+                                        ObjectType.Layout.BOOKMARK -> {
+                                            ChatView.Message.Attachment.Bookmark(
+                                                id = wrapper.id,
+                                                url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
+                                                title = wrapper.name.orEmpty(),
+                                                description = wrapper.description.orEmpty(),
+                                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
+                                                    if (!hash.isNullOrEmpty())
+                                                        urlBuilder.medium(hash)
+                                                    else
+                                                        null
+                                                }
+                                            )
+                                        }
+                                        else -> {
+                                            val type = wrapper?.type?.firstOrNull()
+                                            ChatView.Message.Attachment.Link(
+                                                target = attachment.target,
+                                                wrapper = wrapper,
+                                                icon = wrapper?.objectIcon(
+                                                    builder = urlBuilder,
+                                                    objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                                                ) ?: ObjectIcon.None,
+                                                typeName = if (type != null)
+                                                    storeOfObjectTypes.get(type)?.name.orEmpty()
+                                                else
+                                                    ""
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -489,6 +514,27 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
                         }
+                        is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                            createObjectFromUrl.async(
+                                params = CreateObjectFromUrl.Params(
+                                    url = attachment.preview.url,
+                                    space = vmParams.space
+                                )
+                            ).onSuccess { obj ->
+                                if (obj.isValid) {
+                                    add(
+                                        Chat.Message.Attachment(
+                                            target = obj.id,
+                                            type = Chat.Message.Attachment.Type.Link
+                                        )
+                                    )
+                                } else {
+                                    Timber.w("DROID-2966 Created object from URL is not valid")
+                                }
+                            }.onFailure {
+                                Timber.e(it, "DROID-2966 Error while creating object from url")
+                            }
+                        }
                         is ChatView.Message.ChatBoxAttachment.File -> {
                             val path = withContext(dispatchers.io) {
                                 copyFileToCacheDirectory.copy(attachment.uri)
@@ -578,10 +624,11 @@ class ChatViewModel @Inject constructor(
                         uXCommands.emit(UXCommand.JumpToBottom)
                         chatBoxAttachments.value = emptyList()
                     }.onFailure {
-                        Timber.e(it, "Error while adding message")
+                        Timber.e(it, "Error while editing message")
                     }.onSuccess {
-                        chatBoxMode.value = ChatBoxMode.Default()
+                        Timber.d("Message edited with success")
                     }
+                    chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.Reply -> {
                     addChatMessage.async(
@@ -619,6 +666,16 @@ class ChatViewModel @Inject constructor(
                                 ChatView.Message.ChatBoxAttachment.Existing.Image(
                                     target = a.target,
                                     url = a.url
+                                )
+                            )
+                        }
+                        is ChatView.Message.Attachment.Bookmark -> {
+                            add(
+                                ChatView.Message.ChatBoxAttachment.Existing.Link(
+                                    target = a.id,
+                                    name = a.title,
+                                    icon = ObjectIcon.None,
+                                    typeName = storeOfObjectTypes.get(ObjectTypeUniqueKeys.BOOKMARK)?.name.orEmpty()
                                 )
                             )
                         }
@@ -660,7 +717,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onAttachObject(obj: GlobalSearchItemView) {
-        chatBoxAttachments.value = chatBoxAttachments.value + listOf(
+        chatBoxAttachments.value += listOf(
             ChatView.Message.ChatBoxAttachment.Link(
                 target = obj.id,
                 wrapper = obj
@@ -707,8 +764,7 @@ class ChatViewModel @Inject constructor(
                 text = msg.content.msg.ifEmpty {
                     // Fallback to attachment name if empty
                     if (msg.attachments.isNotEmpty()) {
-                        val attachment = msg.attachments.last()
-                        when(attachment) {
+                        when(val attachment = msg.attachments.last()) {
                             is ChatView.Message.Attachment.Image -> {
                                 if (attachment.ext.isNotEmpty()) {
                                     "${attachment.name}.${attachment.ext}"
@@ -730,6 +786,9 @@ class ChatViewModel @Inject constructor(
                             }
                             is ChatView.Message.Attachment.Link -> {
                                 attachment.wrapper?.name.orEmpty()
+                            }
+                            is ChatView.Message.Attachment.Bookmark -> {
+                                attachment.url
                             }
                         }
                     } else {
@@ -770,6 +829,9 @@ class ChatViewModel @Inject constructor(
                 is ChatView.Message.Attachment.Gallery -> {
                     // TODO
                 }
+                is ChatView.Message.Attachment.Bookmark -> {
+                    commands.emit(ViewModelCommand.Browse(attachment.url))
+                }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
                     if (wrapper != null) {
@@ -795,7 +857,7 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<String>) {
         Timber.d("onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value = chatBoxAttachments.value + uris.map {
+        chatBoxAttachments.value += uris.map {
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = it
             )
@@ -804,7 +866,7 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
         Timber.d("onChatBoxFilePicked: $infos")
-        chatBoxAttachments.value = chatBoxAttachments.value + infos.map { info ->
+        chatBoxAttachments.value += infos.map { info ->
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
@@ -893,14 +955,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
         if (selectionStart <= 0 || selectionStart > text.length) return false
         val previousChar = text[selectionStart - 1]
         return previousChar == '@'
                 && (selectionStart == 1 || !text[selectionStart - 2].isLetterOrDigit())
     }
 
-    fun shouldHideMention(text: String, selectionStart: Int): Boolean {
+    private fun shouldHideMention(text: String, selectionStart: Int): Boolean {
         if (selectionStart > text.length) return false
         // Check if the current character is a space
         val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
@@ -909,7 +971,7 @@ class ChatViewModel @Inject constructor(
         return currentChar == ' ' || !atCharExists
     }
 
-    fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
+    private fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
         if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
         val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
@@ -949,9 +1011,7 @@ class ChatViewModel @Inject constructor(
     fun onClearChatViewStateIntent() {
         Timber.d("DROID-2966 onClearChatViewStateIntent")
         viewModelScope.launch {
-            uiState.update { current ->
-                current.copy(intent = ChatContainer.Intent.None)
-            }
+            chatContainer.onClearIntent()
         }
     }
 
@@ -961,6 +1021,25 @@ class ChatViewModel @Inject constructor(
     ) {
         Timber.d("DROID-2966 onVisibleRangeChanged, from: $from, to: $to")
         visibleRangeUpdates.tryEmit(from to to)
+    }
+
+    fun onUrlPasted(url: Url) {
+        viewModelScope.launch {
+            getLinkPreview.async(
+                params = url
+            ).onSuccess { preview ->
+                chatBoxAttachments.value = buildList {
+                    addAll(chatBoxAttachments.value)
+                    add(
+                        ChatView.Message.ChatBoxAttachment.Bookmark(
+                            preview = preview
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "Failed to get link preview")
+            }
+        }
     }
 
     /**
@@ -1023,7 +1102,7 @@ class ChatViewModel @Inject constructor(
         ): ChatBoxMode()
     }
 
-    fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
+    private fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
         return when (this) {
             is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
             is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)

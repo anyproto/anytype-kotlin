@@ -5,10 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
@@ -21,7 +25,9 @@ import timber.log.Timber
 class OnboardingMnemonicViewModel @Inject constructor(
     private val getMnemonic: GetMnemonic,
     private val analytics: Analytics,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val networkModeProvider: NetworkModeProvider,
+    private val networkConnectionStatus: NetworkConnectionStatus
 ) : ViewModel() {
 
     val state = MutableStateFlow<State>(State.Idle(""))
@@ -57,24 +63,35 @@ class OnboardingMnemonicViewModel @Inject constructor(
             type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
             step = EventsDictionary.ScreenOnboardingStep.PHRASE
         )
-        viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
-            if (!startingObject.isNullOrEmpty()) {
+        if (shouldShowEmail()) {
+            viewModelScope.launch {
                 commands.emit(
-                    Command.OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
+                    Command.NavigateToAddEmailScreen(
+                        startingObject = startingObject,
+                        space = space
                     )
                 )
-            } else {
-                commands.emit(Command.OpenVault)
+            }
+        } else {
+            viewModelScope.launch {
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    analytics.sendOpenAccountEvent(
+                        analytics = config.analytics
+                    )
+                } else {
+                    Timber.w("config was missing before the end of onboarding")
+                }
+                if (!startingObject.isNullOrEmpty()) {
+                    commands.emit(
+                        Command.OpenStartingObject(
+                            space = SpaceId(space),
+                            startingObject = startingObject
+                        )
+                    )
+                } else {
+                    commands.emit(Command.OpenVault)
+                }
             }
         }
     }
@@ -83,26 +100,46 @@ class OnboardingMnemonicViewModel @Inject constructor(
         space: Id,
         startingObject: Id?,
     ) {
-        viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                analytics.sendOpenAccountEvent(
-                    analytics = config.analytics
-                )
-            } else {
-                Timber.w("config was missing before the end of onboarding")
-            }
-            if (!startingObject.isNullOrEmpty()) {
+        if (shouldShowEmail()) {
+            viewModelScope.launch {
                 commands.emit(
-                    Command.OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
+                    Command.NavigateToAddEmailScreen(
+                        startingObject = startingObject,
+                        space = space
                     )
                 )
-            } else {
-                commands.emit(Command.OpenVault)
+            }
+        } else {
+            viewModelScope.launch {
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    analytics.sendOpenAccountEvent(
+                        analytics = config.analytics
+                    )
+                } else {
+                    Timber.w("config was missing before the end of onboarding")
+                }
+                if (!startingObject.isNullOrEmpty()) {
+                    commands.emit(
+                        Command.OpenStartingObject(
+                            space = SpaceId(space),
+                            startingObject = startingObject
+                        )
+                    )
+                } else {
+                    commands.emit(Command.OpenVault)
+                }
             }
         }
+    }
+
+    fun shouldShowEmail(): Boolean {
+        val networkStatus = networkConnectionStatus.getCurrentNetworkType()
+        if (networkStatus == DeviceNetworkType.NOT_CONNECTED) {
+            Timber.i("Network is not connected, skipping email screen")
+            return false
+        }
+        return networkModeProvider.get().networkMode != NetworkMode.LOCAL
     }
 
     private suspend fun proceedWithMnemonicPhrase() {
@@ -128,13 +165,17 @@ class OnboardingMnemonicViewModel @Inject constructor(
         private val getMnemonic: GetMnemonic,
         private val analytics: Analytics,
         private val configStorage: ConfigStorage,
+        private val networkModeProvider: NetworkModeProvider,
+        private val networkConnectionStatus: NetworkConnectionStatus
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingMnemonicViewModel(
                 getMnemonic = getMnemonic,
                 analytics = analytics,
-                configStorage = configStorage
+                configStorage = configStorage,
+                networkModeProvider = networkModeProvider,
+                networkConnectionStatus = networkConnectionStatus
             ) as T
         }
     }
@@ -144,6 +185,10 @@ class OnboardingMnemonicViewModel @Inject constructor(
         data class OpenStartingObject(
             val space: SpaceId,
             val startingObject: Id
+        ) : Command()
+        data class NavigateToAddEmailScreen(
+            val startingObject: String?,
+            val space: String
         ) : Command()
     }
 }

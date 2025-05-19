@@ -19,12 +19,17 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.payments.SetMembershipEmail
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
+import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -46,7 +51,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val localeProvider: LocaleProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val stringProvider: StringResourceProvider,
+    private val setMembershipEmail: SetMembershipEmail,
 ) : BaseViewModel() {
 
     init {
@@ -62,22 +69,19 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     val navigation = MutableSharedFlow<Navigation>()
 
     fun onNextClicked(
-        name: String,
-        spaceName: String
+        name: String
     ) {
         if (state.value !is ScreenState.Loading) {
-            proceedWithCreatingWallet(
-                name = name,
-                spaceName = spaceName
-            )
+            viewModelScope.launch {
+                proceedWithCreatingWallet(name)
+            }
         } else {
             sendToast(LOADING_MSG)
         }
     }
 
     private fun proceedWithCreatingWallet(
-        name: String,
-        spaceName: String
+        name: String
     ) {
         state.value = ScreenState.Loading
         setupWallet.invoke(
@@ -92,8 +96,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 },
                 fnR = {
                     proceedWithCreatingAccount(
-                        name = name,
-                        spaceName = spaceName
+                        name = name
                     )
                 }
             )
@@ -101,9 +104,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     private fun proceedWithCreatingAccount(
-        name: String,
-        spaceName: String
+        name: String
     ) {
+        val spaceName = stringProvider.getDefaultSpaceName()
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(
             name = name,
@@ -248,6 +251,99 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
+    //region Email screen
+    fun sendAnalyticsOnboardingEmailScreen() {
+        viewModelScope.launch {
+            sendAnalyticsOnboardingScreenEvent(
+                analytics = analytics,
+                step = EventsDictionary.ScreenOnboardingStep.EMAIL
+            )
+        }
+    }
+
+    fun onEmailContinueClicked(
+        email: String,
+        space: Id,
+        startingObject: String?
+    ) {
+        if (state.value is ScreenState.Loading) {
+            sendToast(LOADING_MSG)
+            return
+        }
+        state.value = ScreenState.Loading
+        proceedWithSettingEmail(email = email)
+        proceedWithNavigation(space, startingObject)
+    }
+
+    fun onEmailSkippedClicked(
+        space: Id,
+        startingObject: String?
+    ) {
+        if (state.value is ScreenState.Loading) {
+            sendToast(LOADING_MSG)
+            return
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenOnboardingSkipEmail
+            )
+        }
+        state.value = ScreenState.Loading
+        proceedWithNavigation(space, startingObject)
+    }
+
+    private fun proceedWithNavigation(space: Id, startingObject: String?) {
+        viewModelScope.launch {
+            sendOpenAccountAnalytics()
+            if (!startingObject.isNullOrEmpty()) {
+                navigation.emit(
+                    OpenStartingObject(
+                        space = SpaceId(space),
+                        startingObject = startingObject
+                    )
+                )
+            } else {
+                navigation.emit(Navigation.OpenVault)
+            }
+        }
+    }
+
+    private suspend fun sendOpenAccountAnalytics() {
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            analytics.sendOpenAccountEvent(
+                analytics = config.analytics
+            )
+        } else {
+            Timber.w("config was missing before the end of onboarding")
+        }
+    }
+
+    private fun proceedWithSettingEmail(email: String) {
+        val params = SetMembershipEmail.Params(
+            email = email,
+            subscribeToNewsletter = false,
+            isFromOnboarding = true
+        )
+        viewModelScope.launch {
+            setMembershipEmail.async(params).fold(
+                onSuccess = { 
+                    Timber.d("Email set successfully")
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.screenOnboardingEnterEmail
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error setting email")
+                    if (BuildConfig.DEBUG) {
+                        sendToast("Error setting email: ${error.message}")
+                    }
+                }
+            )
+        }
+    }
+    //endregion
+
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
         private val setSpaceDetails: SetSpaceDetails,
@@ -261,7 +357,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val crashReporter: CrashReporter,
         private val localeProvider: LocaleProvider,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val stringProvider: StringResourceProvider,
+        private val setMembershipEmail: SetMembershipEmail
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -278,7 +376,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 crashReporter = crashReporter,
                 localeProvider = localeProvider,
                 globalSubscriptionManager = globalSubscriptionManager,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                stringProvider = stringProvider,
+                setMembershipEmail = setMembershipEmail
             ) as T
         }
     }
@@ -293,6 +393,11 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     sealed class Navigation {
         data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
         data object GoBack: Navigation()
+        data class OpenStartingObject(
+            val space: SpaceId,
+            val startingObject: Id
+        ) : Navigation()
+        data object OpenVault : Navigation()
     }
 
     sealed class ScreenState {

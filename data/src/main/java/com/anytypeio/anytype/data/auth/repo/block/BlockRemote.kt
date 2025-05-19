@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
@@ -476,4 +477,8 @@ interface BlockRemote {
     suspend fun objectTypeSetRecommendedFields(command: Command.ObjectTypeSetRecommendedFields)
 
     suspend fun setDataViewProperties(command: Command.SetDataViewProperties): Payload
+
+    suspend fun getLinkPreview(url: Url): LinkPreview
+
+    suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
 }

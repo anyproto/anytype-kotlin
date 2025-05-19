@@ -20,11 +20,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonInversion
@@ -36,9 +40,15 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 
-@Preview
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    showSystemUi = true,
+    device = PIXEL_7
+)
 @Composable
 fun AuthScreenPreview() {
     AuthScreen(
@@ -77,7 +87,7 @@ fun AuthScreen(
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
             Title(modifier = Modifier.align(Alignment.CenterHorizontally))
             Subtitle(modifier = Modifier)
-            Description()
+            //Description()
             Spacer(modifier = Modifier.height(72.dp))
         }
         Column(
@@ -108,7 +118,7 @@ fun AuthScreen(
 @Composable
 fun Title(modifier: Modifier = Modifier) {
     Image(
-        painter = painterResource(id = R.drawable.ic_local_first_internet) ,
+        painter = painterResource(id = R.drawable.ic_local_first_internet),
         contentDescription = "Everything app logo",
         modifier = modifier
     )
@@ -126,12 +136,14 @@ fun Subtitle(modifier: Modifier = Modifier) {
         Text(
             text = stringResource(id = R.string.onboarding_auth_subtitle),
             textAlign = TextAlign.Center,
-            style = HeadlineOnBoardingTitle
-                .copy(
-                    color = OnboardingSubtitleColor,
-                    fontSize = 43.sp,
-                    lineHeight = 37.5.sp
-                )
+            color = OnboardingSubtitleColor,
+            style = TextStyle(
+                fontFamily = fontRiccioneRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 44.sp,
+                lineHeight = 44.sp,
+                letterSpacing = (-0.05).em
+            )
         )
     }
 }

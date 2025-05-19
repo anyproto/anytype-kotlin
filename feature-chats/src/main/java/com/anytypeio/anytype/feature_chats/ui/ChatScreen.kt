@@ -70,6 +70,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -238,7 +239,8 @@ fun ChatScreenWrapper(
                     onScrollToReplyClicked = vm::onChatScrollToReply,
                     onClearIntent = vm::onClearChatViewStateIntent,
                     onScrollToBottomClicked = vm::onScrollToBottomClicked,
-                    onVisibleRangeChanged = vm::onVisibleRangeChanged
+                    onVisibleRangeChanged = vm::onVisibleRangeChanged,
+                    onUrlInserted = vm::onUrlPasted
                 )
                 LaunchedEffect(Unit) {
                     vm.uXCommands.collect { command ->
@@ -352,7 +354,8 @@ fun ChatScreen(
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
     onScrollToBottomClicked: (Id?) -> Unit,
-    onVisibleRangeChanged: (Id, Id) -> Unit
+    onVisibleRangeChanged: (Id, Id) -> Unit,
+    onUrlInserted: (Url) -> Unit,
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -371,7 +374,7 @@ fun ChatScreen(
 
     // Applying view model intents
     LaunchedEffect(intent) {
-        when (val intent = intent) {
+        when (intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 isPerformingScrollIntent.value = true
                 val index = messages.indexOfFirst {
@@ -404,9 +407,10 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState) {
+    LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
+                // TODO optimise by only sending event when scrolling towards bottom
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -687,7 +691,8 @@ fun ChatScreen(
                 onTextChanged(t)
             },
             text = text,
-            spans = spans
+            spans = spans,
+            onUrlInserted = onUrlInserted
         )
     }
 }
@@ -899,6 +904,7 @@ fun TopDiscussionToolbar(
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
+    Timber.d("DROID-2966 Performing scroll-to-bottom")
     lazyListState.scrollToItem(0)
 
     // Wait for the layout to settle after scrolling

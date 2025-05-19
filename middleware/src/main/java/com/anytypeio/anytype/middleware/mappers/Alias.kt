@@ -113,3 +113,5 @@ typealias MP2PStatusUpdate = P2PStatus.Update
 typealias MSyncStatusUpdate = Space.SyncStatus.Update
 
 typealias MDeviceNetworkType = anytype.model.DeviceNetworkType
+
+typealias MLinkPreview = anytype.model.LinkPreview

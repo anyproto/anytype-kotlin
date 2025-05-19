@@ -1,34 +1,42 @@
 package com.anytypeio.anytype.device
 
-import android.content.SharedPreferences
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
+import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DeviceTokenStoringServiceImpl @Inject constructor(
-    private val sharedPreferences: SharedPreferences,
     private val registerDeviceToken: RegisterDeviceToken,
     private val dispatchers: AppCoroutineDispatchers,
     private val scope: CoroutineScope
 ) : DeviceTokenStoringService {
 
     override fun saveToken(token: String) {
-        scope.launch(dispatchers.io) {
-            Timber.d("Saving token: $token")
-            sharedPreferences.edit().apply {
-                putString(PREF_KEY, token)
-                apply()
-            }
-        }
+        proceedWithUpdatingToken(token = token)
     }
 
     override fun start() {
-        val token = sharedPreferences.getString(PREF_KEY, null)
+        scope.launch(dispatchers.io) {
+            FirebaseMessaging.getInstance().token
+                .addOnSuccessListener { token ->
+                    if (token.isNotEmpty()) {
+                        proceedWithUpdatingToken(token = token)
+                    } else {
+                        Timber.w("Firebase token is empty")
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Timber.w("Failed to get Firebase token: ${exception.message}")
+                }
+        }
+    }
+
+    private fun proceedWithUpdatingToken(token: String?) {
         if (!token.isNullOrEmpty()) {
             scope.launch(dispatchers.io) {
                 val params = RegisterDeviceToken.Params(token = token)
@@ -46,9 +54,5 @@ class DeviceTokenStoringServiceImpl @Inject constructor(
 
     override fun stop() {
         // Nothing to do here
-    }
-
-    companion object {
-        private const val PREF_KEY = "prefs.device_token"
     }
 } 

@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
+import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,10 +19,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -47,6 +52,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -56,10 +62,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -88,7 +96,8 @@ fun ChatBox(
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onExitEditMessageMode: () -> Unit,
-    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit
+    onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
+    onUrlInserted: (Url) -> Unit,
 ) {
 
     val length = text.text.length
@@ -112,6 +121,8 @@ fun ChatBox(
     val focus = LocalFocusManager.current
 
     var isFocused by remember { mutableStateOf(false) }
+
+    var showMarkup by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -187,96 +198,98 @@ fun ChatBox(
             }
         }
         Row {
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 4.dp, vertical = 8.dp)
-                    .clip(CircleShape)
-                    .align(Alignment.Bottom)
-                    .clickable {
-                        scope.launch {
-                            focus.clearFocus(force = true)
-                            showDropdownMenu = true
-                        }
-                    }
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
-                    contentDescription = "Plus button",
+            if (!isFocused) {
+                Box(
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(horizontal = 4.dp, vertical = 4.dp)
-                )
-                if (attachments.size < ChatConfig.MAX_ATTACHMENT_COUNT) {
-                    MaterialTheme(
-                        shapes = MaterialTheme.shapes.copy(
-                            medium = RoundedCornerShape(
-                                12.dp
-                            )
-                        ),
-                        colors = MaterialTheme.colors.copy(
-                            surface = colorResource(id = R.color.background_secondary)
-                        )
-                    ) {
-                        DropdownMenu(
-                            offset = DpOffset(8.dp, 40.dp),
-                            expanded = showDropdownMenu,
-                            onDismissRequest = {
-                                showDropdownMenu = false
-                            },
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .defaultMinSize(
-                                    minWidth = 252.dp
+                        .padding(horizontal = 4.dp, vertical = 8.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Bottom)
+                        .clickable {
+                            scope.launch {
+                                focus.clearFocus(force = true)
+                                showDropdownMenu = true
+                            }
+                        }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
+                        contentDescription = "Plus button",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp)
+                    )
+                    if (attachments.size < ChatConfig.MAX_ATTACHMENT_COUNT) {
+                        MaterialTheme(
+                            shapes = MaterialTheme.shapes.copy(
+                                medium = RoundedCornerShape(
+                                    12.dp
                                 )
+                            ),
+                            colors = MaterialTheme.colors.copy(
+                                surface = colorResource(id = R.color.background_secondary)
+                            )
                         ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(R.string.chat_attachment_object),
-                                        color = colorResource(id = R.color.text_primary)
-                                    )
-                                },
-                                onClick = {
+                            DropdownMenu(
+                                offset = DpOffset(8.dp, 40.dp),
+                                expanded = showDropdownMenu,
+                                onDismissRequest = {
                                     showDropdownMenu = false
-                                    onAttachObjectClicked()
-                                }
-                            )
-                            Divider(
-                                paddingStart = 0.dp,
-                                paddingEnd = 0.dp
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(R.string.chat_attachment_media),
-                                        color = colorResource(id = R.color.text_primary)
-                                    )
                                 },
-                                onClick = {
-                                    showDropdownMenu = false
-                                    uploadMediaLauncher.launch(
-                                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .defaultMinSize(
+                                        minWidth = 252.dp
                                     )
-                                }
-                            )
-                            Divider(
-                                paddingStart = 0.dp,
-                                paddingEnd = 0.dp
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Text(
-                                        text = stringResource(R.string.chat_attachment_file),
-                                        color = colorResource(id = R.color.text_primary)
-                                    )
-                                },
-                                onClick = {
-                                    showDropdownMenu = false
-                                    uploadFileLauncher.launch(
-                                        arrayOf("*/*")
-                                    )
-                                }
-                            )
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_attachment_object),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        onAttachObjectClicked()
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_attachment_media),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        uploadMediaLauncher.launch(
+                                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_attachment_file),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        uploadFileLauncher.launch(
+                                            arrayOf("*/*")
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -294,6 +307,13 @@ fun ChatBox(
                     modifier = Modifier
                         .fillMaxWidth()
                         .focusRequester(chatBoxFocusRequester)
+                        .padding(
+                            start = if (!isFocused) 4.dp else 12.dp,
+                            end = 4.dp,
+                            top = 16.dp,
+                            bottom = 16.dp
+                        ),
+                    onUrlInserted = onUrlInserted
                 )
                 if (length >= ChatConfig.MAX_MESSAGE_CHARACTER_OFFSET_LIMIT) {
                     Box(
@@ -371,50 +391,88 @@ fun ChatBox(
         if (!isFocused) return@Column
 
         // Markup panel
-        ChatBoxMarkup(
-            onMarkupEvent = { event ->
-                scope.launch {
-                    val selection = text.selection
-                    if (selection.start == selection.end) return@launch // No selection, nothing to apply
 
-                    val newSpan = when (event) {
-                        ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
-                            style = SpanStyle(fontWeight = FontWeight.Bold),
-                            start = selection.start,
-                            end = selection.end,
-                            type = ChatBoxSpan.Markup.BOLD
-                        )
-                        ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
-                            style = SpanStyle(fontStyle = FontStyle.Italic),
-                            start = selection.start,
-                            end = selection.end,
-                            type = ChatBoxSpan.Markup.ITALIC
-                        )
-                        ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
-                            style = SpanStyle(textDecoration = TextDecoration.LineThrough),
-                            start = selection.start,
-                            end = selection.end,
-                            type = ChatBoxSpan.Markup.STRIKETHROUGH
-                        )
-                        ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
-                            style = SpanStyle(textDecoration = TextDecoration.Underline),
-                            start = selection.start,
-                            end = selection.end,
-                            type = ChatBoxSpan.Markup.UNDERLINE
-                        )
-                        ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
-                            style = SpanStyle(fontFamily = FontFamily.Monospace),
-                            start = selection.start,
-                            end = selection.end,
-                            type = ChatBoxSpan.Markup.CODE
-                        )
+        if (showMarkup) {
+            ChatBoxMarkup(
+                selectionStart = text.selection.start,
+                selectionEnd = text.selection.end,
+                spans = spans,
+                onBackClicked = {
+                    showMarkup = false
+                },
+                onMarkupEvent = { event ->
+                    scope.launch {
+                        val selection = text.selection
+                        if (selection.start == selection.end) return@launch // No selection, nothing to apply
+
+                        val newSpan = when (event) {
+                            ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
+                                style = SpanStyle(fontWeight = FontWeight.Bold),
+                                start = selection.start,
+                                end = selection.end,
+                                type = ChatBoxSpan.Markup.BOLD
+                            )
+
+                            ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
+                                style = SpanStyle(fontStyle = FontStyle.Italic),
+                                start = selection.start,
+                                end = selection.end,
+                                type = ChatBoxSpan.Markup.ITALIC
+                            )
+
+                            ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
+                                style = SpanStyle(textDecoration = TextDecoration.LineThrough),
+                                start = selection.start,
+                                end = selection.end,
+                                type = ChatBoxSpan.Markup.STRIKETHROUGH
+                            )
+
+                            ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
+                                style = SpanStyle(textDecoration = TextDecoration.Underline),
+                                start = selection.start,
+                                end = selection.end,
+                                type = ChatBoxSpan.Markup.UNDERLINE
+                            )
+
+                            ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
+                                style = SpanStyle(fontFamily = FontFamily.Monospace),
+                                start = selection.start,
+                                end = selection.end,
+                                type = ChatBoxSpan.Markup.CODE
+                            )
+                        }
+
+                        val updatedSpans = toggleSpan(text, spans, newSpan)
+                        onValueChange(text, updatedSpans)
                     }
-
-                    val updatedSpans = toggleSpan(text, spans, newSpan)
-                    onValueChange(text, updatedSpans)
                 }
-            }
-        )
+            )
+        } else {
+            ChatBoxEditPanel(
+                onPlusClicked = {
+                    showDropdownMenu = true
+                },
+                onMentionClicked = {
+                    val selection = text.selection
+                    val cursorPosition = selection.start
+                    val updatedText = text.text.substring(0, cursorPosition) +
+                            "@" +
+                            text.text.substring(cursorPosition)
+
+                    // Update the cursor position after the inserted '@' character
+                    val newSelection = TextRange(cursorPosition + 1)
+
+                    // Notify parent with the updated text without any new spans
+                    onValueChange(
+                        TextFieldValue(updatedText, selection = newSelection),
+                        spans // Keep existing spans without adding any
+                    )
+                },
+                onStyleClicked = {
+                    showMarkup = true
+                }
+            )
+        }
     }
 }
 
@@ -424,15 +482,29 @@ private fun ChatBoxUserInput(
     text: TextFieldValue,
     spans: List<ChatBoxSpan>,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
+    onUrlInserted: (Url) -> Unit,
     onFocusChanged: (Boolean) -> Unit
 ) {
     BasicTextField(
         value = text,
         onValueChange = { newValue ->
+
             val newText = newValue.text
             val oldText = text.text // Keep a reference to the current text before updating
             val textLengthDifference = newText.length - oldText.length
 
+            // URL insert detection
+            if (textLengthDifference > 0) {
+                val prefixLen = newText.commonPrefixWith(oldText).length
+                val inserted = newText.substring(prefixLen, prefixLen + textLengthDifference)
+                val urlMatcher = Patterns.WEB_URL.matcher(inserted)
+                if (urlMatcher.find()) {
+                    val url = urlMatcher.group()
+                    onUrlInserted(url)
+                }
+            }
+
+            // SPANS normalization
             val updatedSpans = spans.mapNotNull { span ->
                 // Detect the common prefix length
                 val commonPrefixLength = newText.commonPrefixWith(oldText).length
@@ -481,12 +553,6 @@ private fun ChatBoxUserInput(
             color = colorResource(id = R.color.text_primary)
         ),
         modifier = modifier
-            .padding(
-                start = 4.dp,
-                end = 4.dp,
-                top = 16.dp,
-                bottom = 16.dp
-            )
             .onFocusChanged { state ->
                 onFocusChanged(state.isFocused)
             }
@@ -585,56 +651,148 @@ fun toggleSpan(
 
 @Composable
 fun ChatBoxMarkup(
-    onMarkupEvent: (ChatMarkupEvent) -> Unit = {}
+    selectionStart: Int,
+    selectionEnd: Int,
+    spans: List<ChatBoxSpan> = emptyList(),
+    onMarkupEvent: (ChatMarkupEvent) -> Unit = {},
+    onBackClicked: () -> Unit
 ) {
+    // Compute which markup spans overlap the selection
+    val activeTypes: Set<Int> = remember(spans, selectionStart, selectionEnd) {
+        spans
+            .filterIsInstance<ChatBoxSpan.Markup>()
+            .filter { span ->
+                // any overlap of [selectionStart, selectionEnd) with [span.start, span.end)
+                span.start < selectionEnd && selectionStart < span.end
+            }
+            .map { it.type }
+            .toSet()
+    }
+
+    val isBold = ChatBoxSpan.Markup.BOLD in activeTypes
+    val isItalic = ChatBoxSpan.Markup.ITALIC in activeTypes
+    val isStrike = ChatBoxSpan.Markup.STRIKETHROUGH in activeTypes
+    val isUnderline = ChatBoxSpan.Markup.UNDERLINE in activeTypes
+    val isCode = ChatBoxSpan.Markup.CODE in activeTypes
+
     Row(
-        modifier = Modifier.fillMaxWidth().height(52.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            modifier = Modifier.clickable {
-                onMarkupEvent(ChatMarkupEvent.Bold)
-            },
-            text = "B",
-            color = colorResource(R.color.text_primary)
+        // Back button never has an active state
+        MarkupIcon(
+            onClick = onBackClicked,
+            resId = R.drawable.ic_markup_panel_back
         )
-        Text(
-            modifier = Modifier.clickable {
-                onMarkupEvent(ChatMarkupEvent.Italic)
-            },
-            text = "i",
-            style = TextStyle(
-                fontStyle = FontStyle.Italic
-            ),
-            color = colorResource(R.color.text_primary)
+
+        // Bold
+        MarkupIcon(
+            onClick = { onMarkupEvent(ChatMarkupEvent.Bold) },
+            resId = if (isBold)
+                R.drawable.ic_toolbar_markup_bold_active
+            else
+                R.drawable.ic_toolbar_markup_bold
         )
-        Text(
-            modifier = Modifier.clickable {
-                onMarkupEvent(ChatMarkupEvent.Strike)
-            },
-            style = TextStyle(
-                textDecoration = TextDecoration.LineThrough
-            ),
-            text = " S ",
-            color = colorResource(R.color.text_primary),
+
+        // Italic
+        MarkupIcon(
+            onClick = { onMarkupEvent(ChatMarkupEvent.Italic) },
+            resId = if (isItalic)
+                R.drawable.ic_toolbar_markup_italic_active
+            else
+                R.drawable.ic_toolbar_markup_italic
         )
-        Text(
-            modifier = Modifier.clickable {
-                onMarkupEvent(ChatMarkupEvent.Underline)
-            },
-            style = TextStyle(
-                textDecoration = TextDecoration.Underline
-            ),
-            text = "U",
-            color = colorResource(R.color.text_primary)
+
+        // Strikethrough
+        MarkupIcon(
+            onClick = { onMarkupEvent(ChatMarkupEvent.Strike) },
+            resId = if (isStrike)
+                R.drawable.ic_toolbar_markup_strike_through_active
+            else
+                R.drawable.ic_toolbar_markup_strike_through
         )
-        Text(
-            modifier = Modifier.clickable {
-                onMarkupEvent(ChatMarkupEvent.Code)
-            },
-            text = "<>",
-            color = colorResource(R.color.text_primary)
+
+        // Underline
+        MarkupIcon(
+            onClick = { onMarkupEvent(ChatMarkupEvent.Underline) },
+            resId = if (isUnderline)
+                R.drawable.ic_toolbar_markup_underline_active
+            else
+                R.drawable.ic_toolbar_markup_underline
+        )
+
+        // Code
+        MarkupIcon(
+            onClick = { onMarkupEvent(ChatMarkupEvent.Code) },
+            resId = if (isCode)
+                R.drawable.ic_toolbar_markup_code_active
+            else
+                R.drawable.ic_toolbar_markup_code
+        )
+    }
+}
+
+@Composable
+private fun MarkupIcon(
+    onClick: () -> Unit,
+    @DrawableRes resId: Int
+) {
+    Box(
+        modifier = Modifier
+            .size(32.dp)
+            .noRippleClickable { onClick() },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(resId),
+            contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun ChatBoxEditPanel(
+    onPlusClicked: () -> Unit,
+    onStyleClicked: () -> Unit,
+    onMentionClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(52.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
+            contentDescription = "Plus button",
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .noRippleClickable {
+                    onPlusClicked()
+                }
+        )
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_style_32),
+            contentDescription = "Plus button",
+            modifier = Modifier
+                .noRippleClickable {
+                    onStyleClicked()
+                }
+        )
+
+        Spacer(modifier = Modifier.width(20.dp))
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_chat_mention),
+            contentDescription = "Plus button",
+            modifier = Modifier
+                .noRippleClickable {
+                    onMentionClicked()
+                }
         )
     }
 }
@@ -650,5 +808,20 @@ sealed class ChatMarkupEvent {
 @DefaultPreviews
 @Composable
 fun ChatBoxMarkupPreview() {
-    ChatBoxMarkup()
+    ChatBoxMarkup(
+        spans = emptyList(),
+        onBackClicked = {},
+        selectionStart = 0,
+        selectionEnd = 0
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun ChatBoxEditPanelPreview() {
+    ChatBoxEditPanel(
+        onMentionClicked = {},
+        onStyleClicked = {},
+        onPlusClicked = {}
+    )
 }

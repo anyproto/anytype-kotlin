@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.main
 
-import android.content.SharedPreferences
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.DeviceTokenStoringServiceImpl
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
@@ -270,12 +269,10 @@ object SubscriptionsModule {
     @Provides
     @Singleton
     fun deviceTokenStoreService(
-        @Named("encrypted") sharedPreferences: SharedPreferences,
         registerDeviceToken: RegisterDeviceToken,
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
     ): DeviceTokenStoringService = DeviceTokenStoringServiceImpl(
-        sharedPreferences = sharedPreferences,
         registerDeviceToken = registerDeviceToken,
         dispatchers = dispatchers,
         scope = scope

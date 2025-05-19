@@ -2519,7 +2519,8 @@ class Middleware @Inject constructor(
             space = SpaceId(response.spaceId),
             creatorName = response.creatorName,
             spaceName = response.spaceName,
-            spaceIconContentId = response.spaceIconCid
+            spaceIconContentId = response.spaceIconCid,
+            withoutApprove = response.inviteType == anytype.model.InviteType.WithoutApprove
         )
     }
 

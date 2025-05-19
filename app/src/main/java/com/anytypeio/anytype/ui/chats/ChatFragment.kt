@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.ui.chats
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -50,7 +54,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.home.isSpaceRootScreen
-import com.anytypeio.anytype.ui.notifications.NotificationPermissionRequestDialog
+import com.anytypeio.anytype.ui.notifications.NotificationPermissionContent
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -81,7 +85,10 @@ class ChatFragment : BaseComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                    val notificationsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+                    val showNotificationPermissionDialog =
+                        vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
 
                     Column(
                         modifier = Modifier
@@ -106,6 +113,46 @@ class ChatFragment : BaseComposeFragment() {
                                 vm.onViewChatReaction(msg = msg, emoji = emoji)
                             }
                         )
+                    }
+
+                    if (showNotificationPermissionDialog) {
+                        val launcher = rememberLauncherForActivityResult(
+                            ActivityResultContracts.RequestPermission()
+                        ) { isGranted: Boolean ->
+                            Timber.d("Permission granted: $isGranted")
+                            if (isGranted) {
+                                vm.onNotificationPermissionGranted()
+                            } else {
+                                vm.onNotificationPermissionDenied()
+                            }
+                            activity?.onRequestPermissionsResult(
+                                PERMISSIONS_REQUEST_CODE,
+                                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                                if (isGranted)
+                                    intArrayOf(PackageManager.PERMISSION_GRANTED)
+                                else
+                                    intArrayOf(PackageManager.PERMISSION_DENIED)
+                            )
+                        }
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                vm.onNotificationPermissionDismissed()
+                            },
+                            sheetState = notificationsSheetState,
+                            containerColor = colorResource(id = R.color.background_secondary),
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            dragHandle = null
+                        ) {
+                            NotificationPermissionContent(
+                                onCancelClicked = {
+                                    vm.onNotificationPermissionDismissed()
+                                },
+                                onEnableNotifications = {
+                                    vm.onNotificationPermissionRequested()
+                                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            )
+                        }
                     }
 
                     if (showGlobalSearchBottomSheet) {
@@ -265,13 +312,6 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
                             }
-
-                            ChatViewModel.ViewModelCommand.ShowNotificationPermissionDialog -> {
-                                NotificationPermissionRequestDialog().show(
-                                    childFragmentManager,
-                                    "notification_permission_dialog"
-                                )
-                            }
                         }
                     }
                 }
@@ -279,6 +319,9 @@ class ChatFragment : BaseComposeFragment() {
                     vm.onBackButtonPressed(
                         isSpaceRoot = isSpaceRootScreen()
                     )
+                }
+                LaunchedEffect(Unit) {
+                    vm.shouldShowNotificationPermissionDialog()
                 }
             }
         }
@@ -310,6 +353,7 @@ class ChatFragment : BaseComposeFragment() {
     companion object {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
+        const val PERMISSIONS_REQUEST_CODE = 22
         fun args(
             space: Id,
             ctx: Id

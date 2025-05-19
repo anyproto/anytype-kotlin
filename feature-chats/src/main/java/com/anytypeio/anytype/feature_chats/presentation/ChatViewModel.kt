@@ -102,6 +102,7 @@ class ChatViewModel @Inject constructor(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
+    val showNotificationPermissionDialog = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
 
@@ -961,12 +962,27 @@ class ChatViewModel @Inject constructor(
         val shouldShow = notificationPermissionManager.shouldShowPermissionDialog()
         Timber.d("shouldShowNotificationPermissionDialog: $shouldShow")
         if (true) {
-            viewModelScope.launch {
-                commands.emit(
-                    ViewModelCommand.ShowNotificationPermissionDialog
-                )
-            }
+            showNotificationPermissionDialog.value = true
         }
+    }
+
+    fun onNotificationPermissionRequested() {
+        notificationPermissionManager.onPermissionRequested()
+    }
+
+    fun onNotificationPermissionGranted() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionGranted()
+    }
+
+    fun onNotificationPermissionDenied() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionDenied()
+    }
+
+    fun onNotificationPermissionDismissed() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionDismissed()
     }
 
     private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
@@ -1089,7 +1105,6 @@ class ChatViewModel @Inject constructor(
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
-        data object ShowNotificationPermissionDialog : ViewModelCommand()
     }
 
     sealed class UXCommand {

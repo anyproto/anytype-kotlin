@@ -706,10 +706,6 @@
         android:name="com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog"/>
 
     <dialog
-        android:id="@+id/notificationPermissionScreen"
-        android:name="com.anytypeio.anytype.ui.notifications.NotificationPermissionRequestDialog"/>
-
-    <dialog
         android:id="@+id/multiplayerFeatureDialog"
         android:name="com.anytypeio.anytype.ui.multiplayer.IntroduceSpaceSharingFragment"/>
 

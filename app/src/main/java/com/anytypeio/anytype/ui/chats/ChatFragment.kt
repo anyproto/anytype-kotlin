@@ -126,14 +126,6 @@ class ChatFragment : BaseComposeFragment() {
                             } else {
                                 vm.onNotificationPermissionDenied()
                             }
-                            activity?.onRequestPermissionsResult(
-                                PERMISSIONS_REQUEST_CODE,
-                                arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                                if (isGranted)
-                                    intArrayOf(PackageManager.PERMISSION_GRANTED)
-                                else
-                                    intArrayOf(PackageManager.PERMISSION_DENIED)
-                            )
                         }
                         ModalBottomSheet(
                             onDismissRequest = { vm.onNotificationPermissionDismissed() },

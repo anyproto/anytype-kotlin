@@ -27,6 +27,8 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -51,6 +53,7 @@ class RequestJoinSpaceViewModel(
     val showEnableNotificationDialog = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(0)
     val showLoadingInviteProgress = MutableStateFlow(false)
+    private var getSpaceInviteViewJob: Job? = null
 
     init {
         Timber.i("RequestJoinSpaceViewModel, init")
@@ -62,7 +65,7 @@ class RequestJoinSpaceViewModel(
         val contentId = spaceInviteResolver.parseContentId(params.link)
         if (fileKey != null && contentId != null) {
             showLoadingInviteProgress.value = true
-            viewModelScope.launch {
+            getSpaceInviteViewJob = viewModelScope.launch {
                 getSpaceInviteView.async(
                     GetSpaceInviteView.Params(
                         inviteContentId = contentId,
@@ -119,6 +122,11 @@ class RequestJoinSpaceViewModel(
         viewModelScope.launch {
             analytics.sendEvent(eventName = screenInviteRequest)
         }
+    }
+
+    fun onCancelLoadingInviteClicked() {
+        getSpaceInviteViewJob?.cancel()
+        showLoadingInviteProgress.value = false
     }
 
     fun onRequestToJoinClicked() {

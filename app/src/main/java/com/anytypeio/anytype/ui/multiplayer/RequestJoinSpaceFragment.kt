@@ -131,7 +131,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                             ) {
                                 if (isLoadingInvite) {
                                     JoiningLoadingState(
-                                        onCancelLoadingInviteClicked = { dismiss() }
+                                        onCancelLoadingInviteClicked = {
+                                            vm.onCancelLoadingInviteClicked()
+                                            dismiss()
+                                        }
                                     )
                                 } else if (!showModal) {
                                     if (withoutApprove) {

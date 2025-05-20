@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -75,26 +76,30 @@ fun ChatTopToolbar(
             textAlign = TextAlign.Center,
             style = Title1
         )
-        Box(
-            modifier = Modifier
-                .width(60.dp)
-                .fillMaxHeight()
-                .noRippleClickable {
-                    onSpaceIconClicked()
-                }
-        ) {
-            SpaceIconView(
-                modifier = Modifier.align(Alignment.Center),
-                mainSize = 28.dp,
-                icon = when(header) {
-                    is ChatViewModel.HeaderView.Default -> header.icon
-                    is ChatViewModel.HeaderView.Init -> SpaceIconView.Loading
-                },
-                onSpaceIconClick = {
-                    onSpaceIconClicked()
-                }
+        if (header is ChatViewModel.HeaderView.Default && header.showIcon) {
+            Box(
+                modifier = Modifier
+                    .width(60.dp)
+                    .fillMaxHeight()
+                    .noRippleClickable {
+                        onSpaceIconClicked()
+                    }
+            ) {
+                SpaceIconView(
+                    modifier = Modifier.align(Alignment.Center),
+                    mainSize = 28.dp,
+                    icon = header.icon,
+                    onSpaceIconClick = {
+                        onSpaceIconClicked()
+                    }
+                )
+            }
+        } else {
+            Spacer(
+                modifier = Modifier.width(60.dp)
             )
         }
+
     }
 }
 
@@ -104,7 +109,8 @@ fun ChatTopToolbarPreview() {
     ChatTopToolbar(
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
-            icon = SpaceIconView.Placeholder(name = "Us")
+            icon = SpaceIconView.Placeholder(name = "Us"),
+            showIcon = true
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {}

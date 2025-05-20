@@ -120,7 +120,8 @@ class ChatViewModel @Inject constructor(
                         icon = view.spaceIcon(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
-                        )
+                        ),
+                        showIcon = false
                     )
                 }.collect {
                     header.value = it
@@ -1159,7 +1160,8 @@ class ChatViewModel @Inject constructor(
         data object Init : HeaderView()
         data class Default(
             val icon: SpaceIconView,
-            val title: String
+            val title: String,
+            val showIcon: Boolean
         ) : HeaderView()
     }
 

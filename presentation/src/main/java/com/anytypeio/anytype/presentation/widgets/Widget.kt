@@ -118,6 +118,15 @@ sealed class Widget {
     }
 }
 
+fun List<Widget>.forceChatPosition(): List<Widget> {
+    // Partition the list into chat widgets and the rest
+    val (chatWidgets, otherWidgets) = partition { widget ->
+        widget.source is Widget.Source.Bundled.Chat
+    }
+    // Place chat widgets first, followed by the others
+    return chatWidgets + otherWidgets
+}
+
 fun Widget.hasValidLayout(): Boolean = when (val widgetSource = source) {
     is Widget.Source.Default -> isSupportedForWidgets(widgetSource.obj.layout)
     is Widget.Source.Bundled -> true

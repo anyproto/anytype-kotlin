@@ -85,7 +85,8 @@ class ChatFragment : BaseComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-                    val notificationsSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                    val notificationsSheetState =
+                        rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
@@ -135,18 +136,14 @@ class ChatFragment : BaseComposeFragment() {
                             )
                         }
                         ModalBottomSheet(
-                            onDismissRequest = {
-                                vm.onNotificationPermissionDismissed()
-                            },
+                            onDismissRequest = { vm.onNotificationPermissionDismissed() },
                             sheetState = notificationsSheetState,
                             containerColor = colorResource(id = R.color.background_secondary),
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                             dragHandle = null
                         ) {
                             NotificationPermissionContent(
-                                onCancelClicked = {
-                                    vm.onNotificationPermissionDismissed()
-                                },
+                                onCancelClicked = { vm.onNotificationPermissionDismissed() },
                                 onEnableNotifications = {
                                     vm.onNotificationPermissionRequested()
                                     launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -177,8 +174,7 @@ class ChatFragment : BaseComposeFragment() {
                                 modifier = Modifier.padding(top = 12.dp),
                                 state = searchViewModel.state
                                     .collectAsStateWithLifecycle()
-                                    .value
-                                ,
+                                    .value,
                                 onQueryChanged = searchViewModel::onQueryChanged,
                                 onObjectClicked = {
                                     vm.onAttachObject(it)
@@ -193,7 +189,7 @@ class ChatFragment : BaseComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
-                        when(nav) {
+                        when (nav) {
                             is OpenObjectNavigation.OpenEditor -> {
                                 runCatching {
                                     findNavController().navigate(
@@ -227,7 +223,7 @@ class ChatFragment : BaseComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
                         Timber.d("Command: $command")
-                        when(command) {
+                        when (command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
                                     findNavController().popBackStack()
@@ -353,7 +349,7 @@ class ChatFragment : BaseComposeFragment() {
     companion object {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
-        const val PERMISSIONS_REQUEST_CODE = 22
+        const val PERMISSIONS_REQUEST_CODE = 100
         fun args(
             space: Id,
             ctx: Id

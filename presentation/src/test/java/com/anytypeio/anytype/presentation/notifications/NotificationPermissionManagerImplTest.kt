@@ -83,7 +83,7 @@ class NotificationPermissionManagerImplTest {
     @Test
     fun `should not show dialog if max requests reached`() = runTest {
         // Set up max requests
-        repeat(MAX_REQUEST_COUNT) {
+        repeat(NotificationPermissionManagerImpl.MAX_REQUEST_COUNT) {
             manager.onPermissionRequested()
         }
 
@@ -166,7 +166,6 @@ class NotificationPermissionManagerImplTest {
         private const val KEY_LAST_REQUEST_TIME = "notification_permission_last_request_time"
         private const val KEY_REQUEST_COUNT = "notification_permission_request_count"
         private const val KEY_PERMISSION_GRANTED = "notification_permission_granted"
-        private const val MAX_REQUEST_COUNT = 3
         private const val HOURS_24 = 24 * 60 * 60 * 1000L
     }
 } 

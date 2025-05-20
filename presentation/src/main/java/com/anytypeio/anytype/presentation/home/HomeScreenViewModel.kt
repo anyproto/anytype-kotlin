@@ -738,6 +738,7 @@ class HomeScreenViewModel(
                             if (
                                 dispatch.source == BundledWidgetSourceView.AllObjects.id
                                 || dispatch.source == BundledWidgetSourceView.Bin.id
+                                || dispatch.source == BundledWidgetSourceView.Chat.id
                             ) {
                                 // Applying link layout automatically to all-objects widget
                                 proceedWithCreatingWidget(
@@ -1103,6 +1104,14 @@ class HomeScreenViewModel(
                             space = spaceManager.get()
                         )
                     )
+                }
+            }
+            is Widget.Source.Bundled.Chat -> {
+                viewModelScope.launch {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    // TODO DROID-3662 Chat navigation
                 }
             }
         }

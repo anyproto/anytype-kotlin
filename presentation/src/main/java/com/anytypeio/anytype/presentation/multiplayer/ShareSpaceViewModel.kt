@@ -205,8 +205,8 @@ class ShareSpaceViewModel(
     }
 
     private fun proceedWithGeneratingInviteLink(
-        inviteType: InviteType = InviteType.WITHOUT_APPROVE,
-        permissions: SpaceMemberPermissions = SpaceMemberPermissions.WRITER
+        inviteType: InviteType = InviteType.GUEST,
+        permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER
     ) {
         viewModelScope.launch {
             if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
@@ -227,7 +227,10 @@ class ShareSpaceViewModel(
                     }
                 )
             } else {
-                generateInviteLink(inviteType, permissions)
+                generateInviteLink(
+                    inviteType = inviteType,
+                    permissions = permissions
+                )
             }
         }
     }
@@ -241,8 +244,7 @@ class ShareSpaceViewModel(
             )
         ).fold(
             onSuccess = { inviteLink ->
-                //_shareLinkViewState.value = ShareLinkViewState.Success(inviteLink)
-                //analytics.sendEvent(eventName = EventsDictionary.shareSpaceInviteGenerate)
+                shareLinkViewState.value = ShareLinkViewState.Shared(inviteLink.scheme)
                 Timber.d("Successfully generated invite link")
             },
             onFailure = {

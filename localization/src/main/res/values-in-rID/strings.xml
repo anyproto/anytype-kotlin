@@ -1752,4 +1752,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="onboarding_button_skip">Lewati</string>
     <string name="onboarding_email_error">Surel salah</string>
     <string name="onboarding_name_error">Enter name</string>
+    <string name="notifications_modal_title">Nyalakan pemberitahuan push</string>
+    <string name="notifications_modal_description">Dapatkan pemberitahuan segera ketika seseorang mengirim pesan atau menyebutmu di ruangmu.</string>
+    <string name="notifications_modal_success_button">Nyalakan Pemberitahuan</string>
+    <string name="notifications_modal_cancel_button">Tidak dulu</string>
 </resources>

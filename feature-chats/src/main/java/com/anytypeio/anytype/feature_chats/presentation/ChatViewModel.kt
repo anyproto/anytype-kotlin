@@ -956,7 +956,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun shouldShowNotificationPermissionDialog() {
+    fun checkNotificationPermissionDialogState() {
         val shouldShow = notificationPermissionManager.shouldShowPermissionDialog()
         Timber.d("shouldShowNotificationPermissionDialog: $shouldShow")
         if (shouldShow) {

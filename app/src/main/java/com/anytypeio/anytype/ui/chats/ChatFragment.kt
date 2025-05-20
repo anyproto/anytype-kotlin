@@ -317,7 +317,7 @@ class ChatFragment : BaseComposeFragment() {
                     )
                 }
                 LaunchedEffect(Unit) {
-                    vm.shouldShowNotificationPermissionDialog()
+                    vm.checkNotificationPermissionDialogState()
                 }
             }
         }

@@ -205,7 +205,7 @@ class ShareSpaceViewModel(
     }
 
     private fun proceedWithGeneratingInviteLink(
-        inviteType: InviteType = InviteType.GUEST,
+        inviteType: InviteType = InviteType.MEMBER,
         permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER
     ) {
         viewModelScope.launch {

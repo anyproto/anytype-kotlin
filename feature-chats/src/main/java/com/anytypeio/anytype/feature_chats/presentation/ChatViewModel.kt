@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -62,7 +61,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -961,7 +959,7 @@ class ChatViewModel @Inject constructor(
     fun shouldShowNotificationPermissionDialog() {
         val shouldShow = notificationPermissionManager.shouldShowPermissionDialog()
         Timber.d("shouldShowNotificationPermissionDialog: $shouldShow")
-        if (true) {
+        if (shouldShow) {
             showNotificationPermissionDialog.value = true
         }
     }

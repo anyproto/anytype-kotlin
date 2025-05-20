@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.notifications
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
 import androidx.test.core.app.ApplicationProvider
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
@@ -19,7 +19,9 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowNotificationManager
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
@@ -31,6 +33,9 @@ class NotificationPermissionManagerImplTest {
     private val testScope = TestScope(dispatcher)
     private lateinit var manager: NotificationPermissionManagerImpl
 
+    private lateinit var notificationManager: NotificationManager
+    private lateinit var shadowNotificationManager: ShadowNotificationManager
+
     @Before
     fun setUp() {
         // Use a real SharedPreferences from Robolectric
@@ -40,8 +45,17 @@ class NotificationPermissionManagerImplTest {
         // Clear shared preferences before each test
         sharedPreferences.edit().clear().apply()
 
+        // Grab NotificationManager and shadow it
+        notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        shadowNotificationManager = Shadows.shadowOf(notificationManager)
+
+        // By default, simulate notifications being DISABLED at the system level
+        shadowNotificationManager.setNotificationsEnabled(false)
+
         manager = NotificationPermissionManagerImpl(
-            sharedPreferences = sharedPreferences
+            sharedPreferences = sharedPreferences,
+            context = context
         )
     }
 
@@ -56,6 +70,14 @@ class NotificationPermissionManagerImplTest {
     @Test
     fun `should show dialog on first request`() = runTest {
         assertTrue(manager.shouldShowPermissionDialog())
+    }
+
+    @Test
+    fun `should not show dialog if notifications globally enabled`() = runTest {
+        // Simulate user has notifications turned ON in OS settings
+        shadowNotificationManager.setNotificationsEnabled(true)
+
+        assertFalse(manager.shouldShowPermissionDialog())
     }
 
     @Test

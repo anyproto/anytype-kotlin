@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.presentation.notifications
 
+import android.Manifest
+import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.NotificationManagerCompat
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,12 +19,19 @@ interface NotificationPermissionManager {
 }
 
 class NotificationPermissionManagerImpl @Inject constructor(
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val context: Context
 ) : NotificationPermissionManager {
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.NotRequested)
     val permissionState: StateFlow<PermissionState> = _permissionState
 
     override fun shouldShowPermissionDialog(): Boolean {
+
+        // If notifications are already enabled at the system level, no dialog needed
+        if (areNotificationsEnabled()) {
+            return false
+        }
+
         val lastRequestTime = sharedPreferences.getLong(KEY_LAST_REQUEST_TIME, 0)
         val requestCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
         val currentTime = System.currentTimeMillis()
@@ -62,6 +74,27 @@ class NotificationPermissionManagerImpl @Inject constructor(
 
     override fun onPermissionDismissed() {
         _permissionState.value = PermissionState.Dismissed
+    }
+
+    /**
+     * Returns true if notifications can be posted:
+     *  - on API<33, checks whether the user has globally disabled notifications for your app
+     *  - on API>=33, also checks the new POST_NOTIFICATIONS runtime permission
+     */
+    private fun areNotificationsEnabled(): Boolean {
+        // 1) global switch
+        val managerCompat = NotificationManagerCompat.from(context)
+        if (!managerCompat.areNotificationsEnabled()) {
+            return false
+        }
+
+        // 2) on Tiramisu+, must also hold POST_NOTIFICATIONS
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                    PackageManager.PERMISSION_GRANTED
+        }
+
+        return true
     }
 
     sealed class PermissionState {

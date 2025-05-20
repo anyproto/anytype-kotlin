@@ -136,10 +136,12 @@ object NotificationsModule {
     @Singleton
     @JvmStatic
     fun provideNotificationPermissionManager(
-        @Named("default") prefs: SharedPreferences
+        @Named("default") prefs: SharedPreferences,
+        context: Context
     ): NotificationPermissionManager {
         return NotificationPermissionManagerImpl(
-            sharedPreferences = prefs
+            sharedPreferences = prefs,
+            context = context
         )
     }
 }

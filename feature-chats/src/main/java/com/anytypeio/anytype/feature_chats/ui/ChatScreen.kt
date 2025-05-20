@@ -383,7 +383,11 @@ fun ChatScreen(
                 if (index >= 0) {
                     snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
                         .first { it > index }
-                    lazyListState.animateScrollToItem(index)
+                    if (intent.smooth) {
+                        lazyListState.animateScrollToItem(index)
+                    } else {
+                        lazyListState.scrollToItem(index)
+                    }
                     awaitFrame()
                 } else {
                     Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")

@@ -635,6 +635,14 @@ class ChatContainer @Inject constructor(
     )
 
     sealed class Intent {
+        /**
+         * Represents an intent to scroll to a specific message in the chat.
+         *
+         * @param id The unique identifier of the message to scroll to.
+         * @param smooth Determines whether the scrolling should be smooth (animated) or instantaneous.
+         *               Defaults to `false` for performance reasons, as smooth scrolling may introduce
+         *               delays or unnecessary animations in certain scenarios.
+         */
         data class ScrollToMessage(val id: Id, val smooth: Boolean = false) : Intent()
         data class Highlight(val id: Id) : Intent()
         data object ScrollToBottom : Intent()

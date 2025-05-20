@@ -55,6 +55,11 @@ enum class SpaceAccessType(val code: Int) {
     SHARED(2)
 }
 
+enum class SpaceType(val code: Int) {
+    DATA(0),
+    CHAT(1)
+}
+
 sealed class SpaceInviteError : Exception() {
     class SpaceDeleted : SpaceInviteError()
     class InvalidInvite : SpaceInviteError()

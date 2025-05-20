@@ -50,6 +50,7 @@ class RequestJoinSpaceViewModel(
     val isRequestInProgress = MutableStateFlow(false)
     val showEnableNotificationDialog = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(0)
+    val showLoadingInviteProgress = MutableStateFlow(false)
 
     init {
         Timber.i("RequestJoinSpaceViewModel, init")
@@ -60,6 +61,7 @@ class RequestJoinSpaceViewModel(
         val fileKey = spaceInviteResolver.parseFileKey(params.link)
         val contentId = spaceInviteResolver.parseContentId(params.link)
         if (fileKey != null && contentId != null) {
+            showLoadingInviteProgress.value = true
             viewModelScope.launch {
                 getSpaceInviteView.async(
                     GetSpaceInviteView.Params(
@@ -68,6 +70,7 @@ class RequestJoinSpaceViewModel(
                     )
                 ).fold(
                     onSuccess = { view ->
+                        showLoadingInviteProgress.value = false
                         val isAlreadyMember = checkIsUserSpaceMember
                             .async(view.space)
                             .getOrDefault(false)
@@ -85,6 +88,7 @@ class RequestJoinSpaceViewModel(
                         }
                     },
                     onFailure = { e ->
+                        showLoadingInviteProgress.value = false
                         if (e is SpaceInviteError) {
                             when(e) {
                                 is SpaceInviteError.InvalidInvite -> {

@@ -8,12 +8,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -28,6 +33,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceWithoutApproveScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.JoiningLoadingState
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -41,7 +47,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel.ErrorView
-import com.anytypeio.anytype.presentation.spaces.Command
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog
 import com.anytypeio.anytype.ui.settings.typography
@@ -90,6 +95,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 MaterialTheme(typography = typography) {
                     val showModal = vm.showEnableNotificationDialog.collectAsStateWithLifecycle().value
+                    val isLoadingInvite = vm.showLoadingInviteProgress.collectAsStateWithLifecycle().value
                     when(val state = vm.state.collectAsStateWithLifecycle().value) {
                         is TypedViewState.Loading, is TypedViewState.Success -> {
                             val isLoading: Boolean
@@ -110,31 +116,40 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                     withoutApprove = state.data.withoutApprove
                                 }
                             }
-                            if (!showModal) {
-                                if (withoutApprove) {
-                                    JoinSpaceWithoutApproveScreen(
-                                        isLoading = isLoading,
-                                        onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                        spaceName = spaceName,
-                                        createdByName = createdByName
+                            ModalBottomSheet(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .windowInsetsPadding(WindowInsets.navigationBars),
+                                onDismissRequest = {
+                                    if (!isLoadingInvite) {
+                                        dismiss()
+                                    }
+                                },
+                                dragHandle = {},
+                                containerColor = colorResource(id = R.color.background_secondary),
+                                sheetState = bottomSheetState
+                            ) {
+                                if (isLoadingInvite) {
+                                    JoiningLoadingState(
+                                        onCancelLoadingInviteClicked = { dismiss() }
                                     )
+                                } else if (!showModal) {
+                                    if (withoutApprove) {
+                                        JoinSpaceWithoutApproveScreen(
+                                            isLoading = isLoading,
+                                            onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                            spaceName = spaceName,
+                                            createdByName = createdByName
+                                        )
+                                    } else {
+                                        JoinSpaceScreen(
+                                            isLoading = isLoading,
+                                            onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                            spaceName = spaceName,
+                                            createdByName = createdByName,
+                                        )
+                                    }
                                 } else {
-                                    JoinSpaceScreen(
-                                        isLoading = isLoading,
-                                        onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
-                                        spaceName = spaceName,
-                                        createdByName = createdByName,
-                                    )
-                                }
-                            } else {
-                                ModalBottomSheet(
-                                    onDismissRequest = {
-                                        vm.onNotificationPromptDismissed()
-                                    },
-                                    dragHandle = {},
-                                    containerColor = colorResource(id = R.color.background_secondary),
-                                    sheetState = bottomSheetState
-                                ) {
                                     Prompt(
                                         title = stringResource(R.string.notifications_prompt_get_notified),
                                         description = stringResource(R.string.notifications_prompt_description),

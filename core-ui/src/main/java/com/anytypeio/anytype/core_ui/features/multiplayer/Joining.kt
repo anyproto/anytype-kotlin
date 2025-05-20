@@ -1,12 +1,16 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,9 +19,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
@@ -28,36 +32,6 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 
 @Composable
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
-fun JoinSpaceScreenPreview() {
-    JoinSpaceScreen(
-        onRequestJoinSpaceClicked = {},
-        spaceName = "Anytype Android App",
-        createdByName = "Konstantin"
-    )
-}
-
-@Composable
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
-fun JoinSpaceScreenPreviewWithEmptyNames() {
-    JoinSpaceScreen(
-        onRequestJoinSpaceClicked = {},
-        spaceName = "",
-        createdByName = ""
-    )
-}
-
-@Composable
-@Preview(showBackground = true, backgroundColor = 0xFFFFFF)
-fun JoinSpaceScreenPreviewWithoutApprove() {
-    JoinSpaceWithoutApproveScreen(
-        onRequestJoinSpaceClicked = {},
-        spaceName = "",
-        createdByName = ""
-    )
-}
-
-@Composable
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: () -> Unit,
     spaceName: String,
@@ -65,7 +39,8 @@ fun JoinSpaceScreen(
     isLoading: Boolean = false
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         Dragger(
@@ -132,7 +107,8 @@ fun JoinSpaceWithoutApproveScreen(
     isLoading: Boolean = false
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         Dragger(
@@ -148,17 +124,24 @@ fun JoinSpaceWithoutApproveScreen(
         )
         Spacer(modifier = Modifier.height(15.dp))
         Text(
-            text = stringResource(R.string.multiplayer_request_to_join_without_approve_title, spaceName),
+            text = stringResource(
+                R.string.multiplayer_request_to_join_without_approve_title,
+                spaceName
+            ),
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             style = Title2,
             color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             text = stringResource(
                 id = R.string.multiplayer_request_to_join_without_approve_desc,
                 spaceName.ifEmpty { stringResource(id = R.string.untitled) },
@@ -187,4 +170,83 @@ fun JoinSpaceWithoutApproveScreen(
         )
         Spacer(modifier = Modifier.height(16.dp))
     }
+}
+
+@Composable
+fun JoiningLoadingState(
+    onCancelLoadingInviteClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Spacer(modifier = Modifier.height(27.dp))
+        CircularProgressIndicator(
+            modifier = Modifier
+                .size(56.dp),
+            color = colorResource(R.color.shape_secondary),
+            trackColor = colorResource(R.color.shape_primary)
+        )
+        Spacer(modifier = Modifier.height(15.dp))
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            color = colorResource(id = R.color.text_secondary),
+            textAlign = TextAlign.Center,
+            text = stringResource(R.string.multiplayer_request_to_join_loading_text),
+            style = Title2
+        )
+        Spacer(modifier = Modifier.height(19.dp))
+        ButtonSecondary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp, start = 16.dp, end = 16.dp),
+            onClick = {
+                onCancelLoadingInviteClicked()
+            },
+            size = ButtonSize.Large,
+            text = stringResource(R.string.cancel),
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+@DefaultPreviews
+fun JoinSpaceScreenPreviewLoading() {
+    JoiningLoadingState(
+        onCancelLoadingInviteClicked = {}
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun JoinSpaceScreenPreview() {
+    JoinSpaceScreen(
+        onRequestJoinSpaceClicked = {},
+        spaceName = "Anytype Android App",
+        createdByName = "Konstantin"
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun JoinSpaceScreenPreviewWithEmptyNames() {
+    JoinSpaceScreen(
+        onRequestJoinSpaceClicked = {},
+        spaceName = "",
+        createdByName = ""
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun JoinSpaceScreenPreviewWithoutApprove() {
+    JoinSpaceWithoutApproveScreen(
+        onRequestJoinSpaceClicked = {},
+        spaceName = "",
+        createdByName = ""
+    )
 }

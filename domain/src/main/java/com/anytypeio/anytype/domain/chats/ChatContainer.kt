@@ -125,10 +125,13 @@ class ChatContainer @Inject constructor(
                 val aroundUnread = loadAroundMessageOrder(
                     chat = chat,
                     order = initialState.oldestMessageOrderId.orEmpty()
-                ).also {
-                    val target = it.find { it.order == initialState.oldestMessageOrderId }
+                ).also { messages ->
+                    val target = messages.find { it.order == initialState.oldestMessageOrderId }
                     if (target != null) {
-                        intent = Intent.ScrollToMessage(target.id)
+                        intent = Intent.ScrollToMessage(
+                            id = target.id,
+                            smooth = false
+                        )
                     }
                 }
                 addAll(aroundUnread)
@@ -179,7 +182,10 @@ class ChatContainer @Inject constructor(
                         }
                         ChatStreamState(
                             messages = messages,
-                            intent = Intent.ScrollToMessage(transform.message),
+                            intent = Intent.ScrollToMessage(
+                                id = transform.message,
+                                smooth = true
+                            ),
                             state = state.state
                         )
                     }
@@ -207,7 +213,10 @@ class ChatContainer @Inject constructor(
                                         val target = messages.find { it.order == oldestReadOrderId }
                                         ChatStreamState(
                                             messages = messages,
-                                            intent = if (target != null) Intent.ScrollToMessage(target.id) else Intent.ScrollToBottom,
+                                            intent = if (target != null)
+                                                Intent.ScrollToMessage(target.id, smooth = true)
+                                            else
+                                                Intent.ScrollToBottom,
                                             state = state.state
                                         )
                                     } else {
@@ -626,7 +635,7 @@ class ChatContainer @Inject constructor(
     )
 
     sealed class Intent {
-        data class ScrollToMessage(val id: Id) : Intent()
+        data class ScrollToMessage(val id: Id, val smooth: Boolean = false) : Intent()
         data class Highlight(val id: Id) : Intent()
         data object ScrollToBottom : Intent()
         data object None : Intent()

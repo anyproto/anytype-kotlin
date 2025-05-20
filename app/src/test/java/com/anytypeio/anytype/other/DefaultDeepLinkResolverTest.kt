@@ -4,6 +4,7 @@ import android.os.Build
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -172,5 +173,14 @@ class DefaultDeepLinkResolverTest {
         assertTrue(
             deepLinkResolver.isDeepLink(link1)
         )
+    }
+
+    @Test
+    fun `should resolve invite`() {
+        val invite = "anytype://invite/?cid=bafybeibl3c5eqptcom5l5hjj5x6hkids6ayljykujamvt3bt4fcvuuebdy&key=Z7qado84JzbmwZhXBf53dYiCyNAEERyRWwwiHbBgWMv"
+        assertTrue(
+            deepLinkResolver.isDeepLink(invite)
+        )
+        assertIs<DeepLinkResolver.Action.Invite>(deepLinkResolver.resolve(invite))
     }
 }

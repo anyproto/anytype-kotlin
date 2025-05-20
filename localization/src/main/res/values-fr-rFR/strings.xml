@@ -1751,7 +1751,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_properties_screen_title">Propriétés</string>
     <string name="space_properties_screen_section_my_types">My Properties</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
-    <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
+    <string name="space_properties_screen_menu_move_to_bin">Déplacer vers la corbeille</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Erreur lors de la création du compte : l\'espace est manquant</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
@@ -1762,4 +1762,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="onboarding_button_skip">Ignorer</string>
     <string name="onboarding_email_error">Incorrect email</string>
     <string name="onboarding_name_error">Enter name</string>
+    <string name="notifications_modal_title">Activer les notifications push</string>
+    <string name="notifications_modal_description">Recevez une notification instantanée lorsque quelqu\'un vous envoie des messages ou vous mentionne dans vos espaces.</string>
+    <string name="notifications_modal_success_button">Activer les notifications</string>
+    <string name="notifications_modal_cancel_button">Plus tard</string>
 </resources>

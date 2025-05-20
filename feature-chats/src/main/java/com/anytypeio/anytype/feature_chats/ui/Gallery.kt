@@ -23,6 +23,8 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -65,7 +67,13 @@ fun BubbleGalleryRowLayout(
                         .clickable {
                             onAttachmentClicked(image)
                         }
-                )
+                ) {
+                    it
+                        .override(512, 512)
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .format(DecodeFormat.PREFER_RGB_565)
+                }
             }
         }
     }

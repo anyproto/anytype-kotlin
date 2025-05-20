@@ -1111,7 +1111,19 @@ class HomeScreenViewModel(
                     if (mode.value == InteractionMode.Edit) {
                         return@launch
                     }
-                    // TODO DROID-3662 Chat navigation
+                    val space = spaceManager.get()
+                    val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+                    val chat = view?.chatId
+                    if (chat != null) {
+                        navigation(
+                            Navigation.OpenChat(
+                                ctx = chat,
+                                space = space
+                            )
+                        )
+                    } else {
+                        Timber.w("Failed to open chat from widget: chat not found")
+                    }
                 }
             }
         }

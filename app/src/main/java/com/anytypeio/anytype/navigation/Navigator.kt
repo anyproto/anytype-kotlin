@@ -63,16 +63,6 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openDiscussion(target: Id, space: Id) {
-        navController?.navigate(
-            R.id.chatScreen,
-            ChatFragment.args(
-                ctx = target,
-                space = space
-            )
-        )
-    }
-
     override fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,

@@ -17,7 +17,6 @@ interface AppNavigation {
     )
     fun openChat(target: Id, space: Id)
     fun openDocument(target: Id, space: Id)
-    fun openDiscussion(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,

@@ -1006,6 +1006,12 @@ enum ParticipantPermissions {
     NoPermissions = 3;
 }
 
+enum InviteType {
+    Member = 0; // aclKey contains the key to sign the ACL record
+    Guest = 1; // guestKey contains the privateKey of the guest user
+    WithoutApprove = 2; // aclKey contains the key to sign the ACL record, but no approval needed
+}
+
 enum ParticipantStatus {
     Joining = 0;
     Active = 1;
@@ -1204,10 +1210,6 @@ message InvitePayload {
 
     InviteType inviteType = 8;
     bytes guestKey = 9;
-    enum InviteType {
-        JoinAsMember = 0; // aclKey contains the key to sign the ACL record
-        JoinAsGuest = 1; // guestKey contains the privateKey of the guest user
-    }
 }
 
 message IdentityProfile {

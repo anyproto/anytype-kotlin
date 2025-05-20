@@ -11,7 +11,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -106,6 +108,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         setupTheme()
 
         if (savedInstanceState != null) vm.onRestore()
+
+//        setFragmentLifecycleCallbacks()
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
@@ -281,6 +286,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         } else {
             Timber.d("onSaveInstanceStateNotNull")
         }
+    }
+
+    private fun setFragmentLifecycleCallbacks() {
+        supportFragmentManager.registerFragmentLifecycleCallbacks(
+            object : FragmentManager.FragmentLifecycleCallbacks() {
+                override fun onFragmentResumed(fm: FragmentManager, fragment: Fragment) {
+                    super.onFragmentResumed(fm, fragment)
+                    Timber.d("onFragmentAdded: $fragment is ${fragment.tag}")
+                }
+
+                override fun onFragmentPaused(fm: FragmentManager, fragment: Fragment) {
+                    super.onFragmentPaused(fm, fragment)
+                    Timber.d("onFragmentPaused: $fragment is ${fragment.tag}")
+                }
+            }, true
+        )
     }
 
     private fun proceedWithOpenObjectNavigation(dest: OpenObjectNavigation) {

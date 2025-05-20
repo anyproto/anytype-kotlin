@@ -148,20 +148,46 @@ message Rpc {
             }
         }
 
+        message InviteChange {
+            message Request {
+                string spaceId = 1;
+                model.ParticipantPermissions permissions = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NO_SUCH_SPACE = 101;
+                        SPACE_IS_DELETED = 102;
+                        REQUEST_FAILED = 103;
+                        INCORRECT_PERMISSIONS = 105;
+                    }
+                }
+            }
+        }
+
         message InviteGenerate {
             message Request {
                 string spaceId = 1;
-                InviteType inviteType = 2;
-                enum InviteType {
-                    Member = 0;
-                    Guest = 1;
-                }
+                model.InviteType inviteType = 2;
+                model.ParticipantPermissions permissions = 3;
             }
 
             message Response {
                 Error error = 1;
                 string inviteCid = 2;
                 string inviteFileKey = 3;
+                model.InviteType inviteType = 4;
+                model.ParticipantPermissions permissions = 5;
 
                 message Error {
                     Code code = 1;
@@ -217,6 +243,8 @@ message Rpc {
                 Error error = 1;
                 string inviteCid = 2;
                 string inviteFileKey = 3;
+                model.InviteType inviteType = 4;
+                model.ParticipantPermissions permissions = 5;
 
                 message Error {
                     Code code = 1;
@@ -298,7 +326,8 @@ message Rpc {
                 string spaceName = 3;
                 string spaceIconCid = 4;
                 string creatorName = 5;
-                bool   isGuestUserInvite = 6;
+                bool   isGuestUserInvite = 6; // deprecated, use inviteType
+                model.InviteType inviteType = 7;
 
                 message Error {
                     Code code = 1;

@@ -1766,4 +1766,8 @@ Please provide specific details of your needs here.</string>
     <string name="onboarding_button_skip">Salta</string>
     <string name="onboarding_email_error">Incorrect email</string>
     <string name="onboarding_name_error">Inserisci nome</string>
+    <string name="notifications_modal_title">Attiva le notifiche push</string>
+    <string name="notifications_modal_description">Ricevi una notifica immediata quando qualcuno ti invia un messaggio o ti menziona nei tuoi spazi.</string>
+    <string name="notifications_modal_success_button">Abilita le notifiche</string>
+    <string name="notifications_modal_cancel_button">Non ora</string>
 </resources>

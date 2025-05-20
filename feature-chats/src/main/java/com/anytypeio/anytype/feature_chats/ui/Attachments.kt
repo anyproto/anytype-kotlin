@@ -42,6 +42,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.DecodeFormat
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -94,7 +96,13 @@ fun BubbleAttachments(
                             .clickable {
                                 onAttachmentClicked(attachment)
                             }
-                    )
+                    ) {
+                        it
+                            .override(1024, 1024)
+                            .centerCrop()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                            .format(DecodeFormat.PREFER_RGB_565)
+                    }
                 }
             }
             is ChatView.Message.Attachment.Link -> {

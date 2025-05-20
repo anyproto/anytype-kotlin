@@ -42,6 +42,7 @@ dependencies {
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleLiveData
     implementation libs.compose
+    implementation libs.androidxCore
 
     implementation libs.timber
 

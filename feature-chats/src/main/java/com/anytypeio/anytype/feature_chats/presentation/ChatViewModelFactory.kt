@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import javax.inject.Inject
@@ -39,7 +40,8 @@ class ChatViewModelFactory @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val getLinkPreview: GetLinkPreview,
-    private val createObjectFromUrl: CreateObjectFromUrl
+    private val createObjectFromUrl: CreateObjectFromUrl,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -59,6 +61,7 @@ class ChatViewModelFactory @Inject constructor(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         exitToVaultDelegate = exitToVaultDelegate,
         getLinkPreview = getLinkPreview,
-        createObjectFromUrl = createObjectFromUrl
+        createObjectFromUrl = createObjectFromUrl,
+        notificationPermissionManager = notificationPermissionManager
     ) as T
 }

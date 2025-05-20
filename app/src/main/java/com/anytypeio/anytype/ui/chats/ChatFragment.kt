@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.ui.chats
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -35,6 +39,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.SystemAction.*
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -43,6 +48,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
+import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -79,7 +85,11 @@ class ChatFragment : BaseComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+                    val notificationsSheetState =
+                        rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+                    val showNotificationPermissionDialog =
+                        vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
 
                     Column(
                         modifier = Modifier
@@ -106,6 +116,34 @@ class ChatFragment : BaseComposeFragment() {
                         )
                     }
 
+                    if (showNotificationPermissionDialog) {
+                        val launcher = rememberLauncherForActivityResult(
+                            ActivityResultContracts.RequestPermission()
+                        ) { isGranted: Boolean ->
+                            Timber.d("Permission granted: $isGranted")
+                            if (isGranted) {
+                                vm.onNotificationPermissionGranted()
+                            } else {
+                                vm.onNotificationPermissionDenied()
+                            }
+                        }
+                        ModalBottomSheet(
+                            onDismissRequest = { vm.onNotificationPermissionDismissed() },
+                            sheetState = notificationsSheetState,
+                            containerColor = colorResource(id = R.color.background_secondary),
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            dragHandle = null
+                        ) {
+                            NotificationPermissionContent(
+                                onCancelClicked = { vm.onNotificationPermissionDismissed() },
+                                onEnableNotifications = {
+                                    vm.onNotificationPermissionRequested()
+                                    launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                            )
+                        }
+                    }
+
                     if (showGlobalSearchBottomSheet) {
                         ModalBottomSheet(
                             onDismissRequest = {
@@ -128,8 +166,7 @@ class ChatFragment : BaseComposeFragment() {
                                 modifier = Modifier.padding(top = 12.dp),
                                 state = searchViewModel.state
                                     .collectAsStateWithLifecycle()
-                                    .value
-                                ,
+                                    .value,
                                 onQueryChanged = searchViewModel::onQueryChanged,
                                 onObjectClicked = {
                                     vm.onAttachObject(it)
@@ -144,7 +181,7 @@ class ChatFragment : BaseComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
-                        when(nav) {
+                        when (nav) {
                             is OpenObjectNavigation.OpenEditor -> {
                                 runCatching {
                                     findNavController().navigate(
@@ -177,7 +214,8 @@ class ChatFragment : BaseComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
-                        when(command) {
+                        Timber.d("Command: $command")
+                        when (command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
                                     findNavController().popBackStack()
@@ -254,7 +292,7 @@ class ChatFragment : BaseComposeFragment() {
                             is ChatViewModel.ViewModelCommand.Browse -> {
                                 runCatching {
                                     proceedWithAction(
-                                        SystemAction.OpenUrl(
+                                        OpenUrl(
                                             command.url
                                         )
                                     )
@@ -269,6 +307,9 @@ class ChatFragment : BaseComposeFragment() {
                     vm.onBackButtonPressed(
                         isSpaceRoot = isSpaceRootScreen()
                     )
+                }
+                LaunchedEffect(Unit) {
+                    vm.checkNotificationPermissionDialogState()
                 }
             }
         }
@@ -300,6 +341,7 @@ class ChatFragment : BaseComposeFragment() {
     companion object {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
+        const val PERMISSIONS_REQUEST_CODE = 100
         fun args(
             space: Id,
             ctx: Id

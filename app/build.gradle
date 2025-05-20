@@ -274,7 +274,7 @@ dependencies {
 
     debugImplementation libs.fragmentTesting
     debugImplementation libs.composeTooling
-    debugImplementation libs.composeToolingPreview
+    implementation libs.composeToolingPreview
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1765,4 +1765,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="onboarding_button_skip">Atla</string>
     <string name="onboarding_email_error">Yanlış e-posta</string>
     <string name="onboarding_name_error">İsim girin</string>
+    <string name="notifications_modal_title">Anlık bildirimleri aç</string>
+    <string name="notifications_modal_description">Alanlarınızda biri size mesaj attığında veya sizden bahsettiğinde anında bildirim alın.</string>
+    <string name="notifications_modal_success_button">Bildirimleri etkinleştir</string>
+    <string name="notifications_modal_cancel_button">Şimdi değil</string>
 </resources>

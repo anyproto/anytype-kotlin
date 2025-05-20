@@ -1765,4 +1765,8 @@ En concreto,
     <string name="onboarding_button_skip">Omitir</string>
     <string name="onboarding_email_error">Correo electrónico incorrecto</string>
     <string name="onboarding_name_error">Introducir nombre</string>
+    <string name="notifications_modal_title">Activar las notificaciones push</string>
+    <string name="notifications_modal_description">Recibe notificaciones al instante cuando te envíen un mensaje o te mencionen en tus espacios.</string>
+    <string name="notifications_modal_success_button">Activar notificaciones</string>
+    <string name="notifications_modal_cancel_button">Ahora no</string>
 </resources>

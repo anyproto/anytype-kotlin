@@ -97,7 +97,7 @@ interface AppNavigation {
             val space: Id
         ) : Command()
 
-        object OpenSettings : Command()
+        data object OpenSettings : Command()
 
         data class OpenShareScreen(
             val space: SpaceId
@@ -131,7 +131,7 @@ interface AppNavigation {
 
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
-        object OpenUpdateAppScreen : Command()
+        data object OpenUpdateAppScreen : Command()
 
         data class DeletedAccountScreen(val deadline: Long) : Command()
 

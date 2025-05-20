@@ -13,7 +13,8 @@ data class SpaceInviteView(
     val space: SpaceId,
     val spaceName: String,
     val creatorName: String,
-    val spaceIconContentId: String
+    val spaceIconContentId: String,
+    val withoutApprove: Boolean
 )
 
 enum class ParticipantStatus(

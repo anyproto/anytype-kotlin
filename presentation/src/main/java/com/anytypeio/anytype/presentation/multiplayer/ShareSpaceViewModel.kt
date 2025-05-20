@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -203,7 +204,10 @@ class ShareSpaceViewModel(
         }
     }
 
-    private fun proceedWithGeneratingInviteLink() {
+    private fun proceedWithGeneratingInviteLink(
+        inviteType: InviteType = InviteType.MEMBER,
+        permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER
+    ) {
         viewModelScope.launch {
             if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
                 makeSpaceShareable.async(
@@ -212,25 +216,42 @@ class ShareSpaceViewModel(
                     onSuccess = {
                         analytics.sendEvent(eventName = EventsDictionary.shareSpace)
                         Timber.d("Successfully made space shareable")
+                        generateInviteLink(
+                            inviteType = inviteType,
+                            permissions = permissions
+                        )
                     },
                     onFailure = {
                         Timber.e(it, "Error while making space shareable")
                         proceedWithMultiplayerError(it)
                     }
                 )
-            }
-            generateSpaceInviteLink
-                .async(vmParams.space)
-                .fold(
-                    onSuccess = { link ->
-                        shareLinkViewState.value = ShareLinkViewState.Shared(link = link.scheme)
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while generating invite link")
-                        proceedWithMultiplayerError(it)
-                    }
+            } else {
+                generateInviteLink(
+                    inviteType = inviteType,
+                    permissions = permissions
                 )
+            }
         }
+    }
+
+    private suspend fun generateInviteLink(inviteType: InviteType, permissions: SpaceMemberPermissions) {
+        generateSpaceInviteLink.async(
+            params = GenerateSpaceInviteLink.Params(
+                space = vmParams.space,
+                inviteType = inviteType,
+                permissions = permissions
+            )
+        ).fold(
+            onSuccess = { inviteLink ->
+                shareLinkViewState.value = ShareLinkViewState.Shared(inviteLink.scheme)
+                Timber.d("Successfully generated invite link")
+            },
+            onFailure = {
+                Timber.e(it, "Error while generating invite link")
+                proceedWithMultiplayerError(it)
+            }
+        )
     }
 
     fun onShareInviteLinkClicked() {

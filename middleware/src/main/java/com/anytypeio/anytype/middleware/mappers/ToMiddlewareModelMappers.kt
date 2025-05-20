@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 
@@ -635,5 +636,11 @@ fun DeviceNetworkType.mw(): MDeviceNetworkType = when(this) {
     DeviceNetworkType.WIFI -> MDeviceNetworkType.WIFI
     DeviceNetworkType.CELLULAR -> MDeviceNetworkType.CELLULAR
     DeviceNetworkType.NOT_CONNECTED -> MDeviceNetworkType.NOT_CONNECTED
+}
+
+fun InviteType.toMiddleware(): MInviteType = when (this) {
+    InviteType.MEMBER -> MInviteType.Member
+    InviteType.GUEST -> MInviteType.Guest
+    InviteType.WITHOUT_APPROVE -> MInviteType.WithoutApprove
 }
 

@@ -27,6 +27,8 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -50,6 +52,8 @@ class RequestJoinSpaceViewModel(
     val isRequestInProgress = MutableStateFlow(false)
     val showEnableNotificationDialog = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(0)
+    val showLoadingInviteProgress = MutableStateFlow(false)
+    private var getSpaceInviteViewJob: Job? = null
 
     init {
         Timber.i("RequestJoinSpaceViewModel, init")
@@ -60,7 +64,8 @@ class RequestJoinSpaceViewModel(
         val fileKey = spaceInviteResolver.parseFileKey(params.link)
         val contentId = spaceInviteResolver.parseContentId(params.link)
         if (fileKey != null && contentId != null) {
-            viewModelScope.launch {
+            showLoadingInviteProgress.value = true
+            getSpaceInviteViewJob = viewModelScope.launch {
                 getSpaceInviteView.async(
                     GetSpaceInviteView.Params(
                         inviteContentId = contentId,
@@ -68,6 +73,7 @@ class RequestJoinSpaceViewModel(
                     )
                 ).fold(
                     onSuccess = { view ->
+                        showLoadingInviteProgress.value = false
                         val isAlreadyMember = checkIsUserSpaceMember
                             .async(view.space)
                             .getOrDefault(false)
@@ -85,6 +91,7 @@ class RequestJoinSpaceViewModel(
                         }
                     },
                     onFailure = { e ->
+                        showLoadingInviteProgress.value = false
                         if (e is SpaceInviteError) {
                             when(e) {
                                 is SpaceInviteError.InvalidInvite -> {
@@ -115,6 +122,11 @@ class RequestJoinSpaceViewModel(
         viewModelScope.launch {
             analytics.sendEvent(eventName = screenInviteRequest)
         }
+    }
+
+    fun onCancelLoadingInviteClicked() {
+        getSpaceInviteViewJob?.cancel()
+        showLoadingInviteProgress.value = false
     }
 
     fun onRequestToJoinClicked() {

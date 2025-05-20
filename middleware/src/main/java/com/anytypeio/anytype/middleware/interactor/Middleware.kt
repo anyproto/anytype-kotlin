@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -70,6 +71,7 @@ import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toMiddleware
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toMw
 import com.anytypeio.anytype.middleware.mappers.toPayload
@@ -2388,16 +2390,22 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink {
+    fun generateSpaceInviteLink(
+        space: SpaceId,
+        inviteType: InviteType,
+        permissions: SpaceMemberPermissions
+    ): SpaceInviteLink {
         val request = Rpc.Space.InviteGenerate.Request(
-            spaceId = space.id
+            spaceId = space.id,
+            inviteType = inviteType.toMiddleware(),
+            permissions = permissions.toMw()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
         logResponseIfDebug(response, time)
         return SpaceInviteLink(
             contentId = response.inviteCid,
-            fileKey= response.inviteFileKey
+            fileKey = response.inviteFileKey
         )
     }
 
@@ -2511,7 +2519,8 @@ class Middleware @Inject constructor(
             space = SpaceId(response.spaceId),
             creatorName = response.creatorName,
             spaceName = response.spaceName,
-            spaceIconContentId = response.spaceIconCid
+            spaceIconContentId = response.spaceIconCid,
+            withoutApprove = response.inviteType == anytype.model.InviteType.WithoutApprove
         )
     }
 

@@ -20,6 +20,8 @@ import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
@@ -129,4 +131,17 @@ object NotificationsModule {
         pushKeyProvider = pushKeyProvider,
         cryptoService = cryptoService,
     )
+
+    @Provides
+    @Singleton
+    @JvmStatic
+    fun provideNotificationPermissionManager(
+        @Named("default") prefs: SharedPreferences,
+        context: Context
+    ): NotificationPermissionManager {
+        return NotificationPermissionManagerImpl(
+            sharedPreferences = prefs,
+            context = context
+        )
+    }
 }

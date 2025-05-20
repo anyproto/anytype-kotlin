@@ -617,4 +617,5 @@ fun Widget.Source.Bundled.res(): Int = when (this) {
     Widget.Source.Bundled.RecentLocal -> R.string.recently_opened
     Widget.Source.Bundled.Bin -> R.string.bin
     Widget.Source.Bundled.AllObjects -> R.string.all_content
+    Widget.Source.Bundled.Chat -> R.string.chat
 }

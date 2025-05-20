@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -42,6 +41,7 @@ import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -61,7 +61,6 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -83,7 +82,8 @@ class ChatViewModel @Inject constructor(
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val getLinkPreview: GetLinkPreview,
-    private val createObjectFromUrl: CreateObjectFromUrl
+    private val createObjectFromUrl: CreateObjectFromUrl,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -100,6 +100,7 @@ class ChatViewModel @Inject constructor(
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
+    val showNotificationPermissionDialog = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
 
@@ -953,6 +954,33 @@ class ChatViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun checkNotificationPermissionDialogState() {
+        val shouldShow = notificationPermissionManager.shouldShowPermissionDialog()
+        Timber.d("shouldShowNotificationPermissionDialog: $shouldShow")
+        if (shouldShow) {
+            showNotificationPermissionDialog.value = true
+        }
+    }
+
+    fun onNotificationPermissionRequested() {
+        notificationPermissionManager.onPermissionRequested()
+    }
+
+    fun onNotificationPermissionGranted() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionGranted()
+    }
+
+    fun onNotificationPermissionDenied() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionDenied()
+    }
+
+    fun onNotificationPermissionDismissed() {
+        showNotificationPermissionDialog.value = false
+        notificationPermissionManager.onPermissionDismissed()
     }
 
     private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {

@@ -66,7 +66,7 @@
     <string name="deleted_account_danger_zone_msg">Une fois que vous avez demandé la suppression de votre coffre, vous avez 30 jours pour annuler cette demande. Après 30 jours, les données chiffrées de votre coffre sont définitivement supprimées du nœud de sauvegarde et vous ne pourrez plus vous connecter à Anytype sur de nouveaux appareils.</string>
     <string name="danger_zone">Zone de danger</string>
     <string name="snackbar_template_add">Le nouveau modèle a été ajouté au type</string>
-    <string name="settings_membership">Adhésion</string>
+    <string name="settings_membership">Abonnement</string>
     <string name="multi_select_turn_into">Transformer en</string>
     <string name="multi_select_move_to">Déplacer vers</string>
     <string name="option_toolbar_header_turn_into">Transformer en</string>
@@ -378,7 +378,7 @@
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Bloc non pris en charge</string>
-    <string name="new_relation">New property</string>
+    <string name="new_relation">Nouvelle propriété</string>
     <string name="copy_link">Copier le lien</string>
     <string name="edit_link">Éditer un lien</string>
     <string name="unlink">Délier</string>
@@ -650,7 +650,7 @@
     <string name="object_view_type">Object view type</string>
     <string name="object_type_name">Object type name</string>
     <string name="name">Nom</string>
-    <string name="hint_type_name_for_new_relation">Name for new property</string>
+    <string name="hint_type_name_for_new_relation">Nom de la nouvelle propriété</string>
     <string name="dv_create_new_object">Nouveau</string>
     <string name="content_description_plus_button">Plus button</string>
     <string name="content_description_image_icon">Image icon</string>
@@ -677,7 +677,7 @@
     <string name="relation_open_edit">Open to edit</string>
     <string name="remove_from_set">Remove from this query</string>
     <string name="reset">Reset</string>
-    <string name="search_a_relation">Search a property</string>
+    <string name="search_a_relation">Rechercher une propriété</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="content_desc_empty_values_bottom_check_icon">Trier les valeurs vides en bas</string>
     <string name="content_desc_empty_values_top_check_icon">Trier les valeurs vides en haut</string>
@@ -822,7 +822,7 @@
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
     <string name="personal">Default</string>
-    <string name="create_space">Create a space</string>
+    <string name="create_space">Créer un espace</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
@@ -992,37 +992,35 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
     <string name="onboarding_auth_description">Créez et collaborez dans des espaces qui vous appartiennent. Chiffrés, hors ligne et ouverts.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Je suis nouveau ici</string>
-    <string name="onboarding_enter_my_vault">Obtenir ma Clé</string>
-    <string name="onboarding_have_key_button_text">Vous avez déjà une clé</string>
+    <string name="onboarding_enter_my_vault">Suivant</string>
+    <string name="onboarding_have_key_button_text">J\'ai déjà une clé</string>
     <string name="onboarding_get_my_key_button_text">Obtenir ma Clé</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ceci est votre clé</string>
-    <string name="onboarding_key_description">Cela vous donne la pleine propriété de votre coffre.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Afficher ma clé</string>
-    <string name="onboarding_tap_to_reveal">Appuyez pour dévoiler</string>
+    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
     <string name="onboarding_key_skip">Ignorer</string>
     <string name="onboarding_key_not_now">Plus tard</string>
     <string name="onboarding_key_copy">Copier dans le presse-papier</string>
-    <string name="onboarding_set_your_name_title">Saisissez votre nom</string>
-    <string name="onboarding_soul_creation_description">Seulement vu par les personnes avec qui vous partagez quelque chose. Il n\'y a pas de registre central des utilisateurs.</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_type_your_key">Saisissez votre phrase de récupération</string>
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>
-    <string name="onboarding_your_name">Your name</string>
-    <string name="onboarding_mnemonic_read_more">En savoir plus sur la clé</string>
+    <string name="onboarding_your_name">Type your name</string>
+    <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">Vous pourrez trouver cette clé plus tard dans les paramètres de l\'application</string>
     <string name="onboarding_what_is_the_key">Qu\'est-ce que la Clé ?</string>
     <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
@@ -1131,12 +1129,12 @@
     <string name="option_widget_edit">Éditer l\'option</string>
     <string name="options_empty_description">Rien n\'a été trouvé. Créez la première option pour commencer.</string>
     <string name="options_empty_title">Aucune option</string>
-    <string name="options_empty_not_editable">The property is empty</string>
+    <string name="options_empty_not_editable">La propriété est vide</string>
     <string name="options_delete_title">Êtes-vous sûr ?</string>
     <string name="options_delete_description">L\'option sera définitivement retirée de votre espace</string>
     <string name="object_values_empty_description">Objet introuvable</string>
     <string name="object_values_empty_title">Aucune valeur</string>
-    <string name="object_values_empty_not_editable">The property is empty</string>
+    <string name="object_values_empty_not_editable">La propriété est vide</string>
     <string name="object_values_delete_title">Êtes-vous sûr ?</string>
     <string name="object_values_delete_description">L\'objet sera déplacé dans la corbeille.</string>
     <string name="hint_enter_name">Saisir un nom...</string>
@@ -1275,7 +1273,7 @@
     <string name="multiplayer_invite_link_request_already_sent">Demande envoyée</string>
     <!--endregion-->
     <!--region PAYMENTS -->
-    <string name="payments_header">Adhésion</string>
+    <string name="payments_header">Abonnement</string>
     <string name="payments_subheader">Rejoindre le réseau Anytype signifie contribuer à son histoire</string>
     <string name="payments_card_text_1">Co-créer la vision</string>
     <string name="payments_card_description_1">En tant que membre apprécié, votre voix compte ! Participez à des événements exclusifs, définissez des choix stratégiques et influencez notre feuille de route.</string>
@@ -1300,7 +1298,7 @@
     <string name="payments_button_submit">Soumettre</string>
     <string name="payments_button_pay">Payer par carte</string>
     <string name="payments_button_change_email">Modifier l\'adresse e-mail</string>
-    <string name="payments_member_link">Détails des niveaux d\'adhésion</string>
+    <string name="payments_member_link">Détails des niveaux d\'abonnement</string>
     <string name="payments_privacy_link">Politique de confidentialité</string>
     <string name="payments_terms_link">Termes et conditions</string>
     <string name="payments_let_us_link_start">Vous souhaitez utiliser Anytype pour les affaires, l\'éducation, etc.?</string>
@@ -1528,7 +1526,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_title_all_content">Tous les objets</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">Voir la corbeille</string>
     <string name="all_content_title_tab_pages">Pages</string>
     <string name="all_content_title_tab_lists">Listes</string>
     <string name="all_content_title_tab_media">Média</string>
@@ -1562,12 +1560,12 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_error_title">Un problème est survenu.</string>
     <string name="onboarding_my_first_space">Mon premier espace</string>
     <string name="all_content_error_unexpected_layout">Erreur: mise en page inattendue</string>
-    <string name="all_content_toast_relation_added">Property added</string>
+    <string name="all_content_toast_relation_added">Propriété ajoutée</string>
     <string name="all_content_toast_relation_removed">Property removed</string>
     <string name="all_content_toast_type_added">Type d\'objet ajouté</string>
     <string name="all_content_toast_type_removed">Type d\'objet supprimé</string>
     <string name="all_content_toast_archived">Objet archivé</string>
-    <string name="all_content_new_relation">New property</string>
+    <string name="all_content_new_relation">Nouvelle propriété</string>
     <string name="all_content_new_type">Nouveau type</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">déplacé vers la corbeille</string>
@@ -1581,7 +1579,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
-    <string name="write_a_message">Write a message...</string>
+    <string name="write_a_message">Ecrire un message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Il n\'y a encore rien ici pour cette date</string>
     <string name="date_layout_alert_date_out_of_range">La date sélectionnée est en dehors de la plage valide (années %1$d à %2$d). Veuillez sélectionner une date dans cette plage.</string>
@@ -1708,7 +1706,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
     <string name="object_type_add_property_screen_section_existing">Existing properties</string>
     <string name="object_type_add_property_screen_search_hint">Rechercher ou créer un nouveau</string>
-    <string name="new_property_hint">New property</string>
+    <string name="new_property_hint">Nouvelle propriété</string>
     <string name="edit_property_limit_objects">Limit objects to</string>
     <string name="edit_property_limit_objects_all">Limit objects</string>
     <string name="edit_property_limit_all">Tout</string>
@@ -1735,8 +1733,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_icon_remove">Supprimer</string>
     <string name="object_type_icon_change_title_search_hint">Search...\"</string>
     <string name="space_invite_link_copied">Space invite link copied!</string>
-    <string name="object_type_create_new_title">Create new type</string>
-    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_create_new_title">Créer un nouveau type</string>
+    <string name="object_type_rename_title">Renommer le type</string>
     <string name="object_type_create_plural_title">Nom du type au pluriel</string>
     <string name="object_type_create_title_hint">par ex. Projet</string>
     <string name="object_type_create_plural_title_hint">par ex. Projets</string>
@@ -1755,4 +1753,13 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Erreur lors de la création du compte : l\'espace est manquant</string>
+    <string name="onboarding_set_your_name_title">Add Your Name</string>
+    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
+    <string name="onboarding_email_add_title">Restez au courant</string>
+    <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
+    <string name="onboarding_enter_email">Entrez votre adresse e-mail</string>
+    <string name="onboarding_button_continue">Continuer</string>
+    <string name="onboarding_button_skip">Ignorer</string>
+    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_name_error">Enter name</string>
 </resources>

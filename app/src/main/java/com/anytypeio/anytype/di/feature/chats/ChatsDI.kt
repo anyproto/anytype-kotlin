@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -99,4 +100,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun context(): Context
     fun spaceManager(): SpaceManager
+    fun notificationPermissionManager(): NotificationPermissionManager
 }

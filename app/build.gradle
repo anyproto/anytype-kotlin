@@ -218,7 +218,6 @@ dependencies {
     implementation libs.composeFoundation
     implementation libs.composeMaterial
     implementation libs.composeMaterial3
-    implementation libs.composeToolingPreview
     implementation libs.composeAccompanistPager
     implementation libs.composeAccompanistThemeAdapter
     implementation libs.composeAccompanistPagerIndicators
@@ -275,6 +274,7 @@ dependencies {
 
     debugImplementation libs.fragmentTesting
     debugImplementation libs.composeTooling
+    debugImplementation libs.composeToolingPreview
 }
 
 apply plugin: 'com.google.gms.google-services'

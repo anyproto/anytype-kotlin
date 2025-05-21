@@ -677,6 +677,15 @@ message Account {
     }
 
     message Auth {
+        message AppInfo {
+            string appHash = 1;
+            string appName = 2; // either from process or specified manually when creating
+            string appKey = 4;
+            int64 createdAt = 5;
+            int64 expireAt = 6;
+            LocalApiScope scope = 7;
+            bool isActive = 8;
+        }
         enum LocalApiScope {
             Limited = 0; // Used in WebClipper; AccountSelect(to be deprecated), ObjectSearch, ObjectShow, ObjectCreate, ObjectCreateFromURL, BlockPreview, BlockPaste, BroadcastPayloadEvent
             JsonAPI = 1; // JSON API only, no direct grpc api calls allowed

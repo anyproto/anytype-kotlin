@@ -58,7 +58,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -517,6 +516,14 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        isUploading = true
+                                    )
+                                )
+                            }
                             createObjectFromUrl.async(
                                 params = CreateObjectFromUrl.Params(
                                     url = attachment.preview.url,
@@ -1062,7 +1069,7 @@ class ChatViewModel @Inject constructor(
                         preview = LinkPreview(
                             url = url
                         ),
-                        isLoading = true
+                        isLoadingPreview = true
                     )
                 )
             }
@@ -1074,7 +1081,7 @@ class ChatViewModel @Inject constructor(
                     add(
                         ChatView.Message.ChatBoxAttachment.Bookmark(
                             preview = preview,
-                            isLoading = false
+                            isLoadingPreview = false
                         )
                     )
                 }

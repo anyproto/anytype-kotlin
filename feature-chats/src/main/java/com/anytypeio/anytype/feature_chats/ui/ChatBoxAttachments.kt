@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -27,7 +25,6 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.feature_chats.R
-import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -220,11 +217,10 @@ internal fun ChatBoxAttachments(
                                         end = 4.dp
                                     )
                                     .width(216.dp),
-                                title = if (attachment.isLoading)
+                                title = if (attachment.isLoadingPreview)
                                     stringResource(R.string.three_dots_text_placeholder)
-                                        else
-                                    attachment.preview.title
-                                ,
+                                else
+                                    attachment.preview.title,
                                 type = stringResource(R.string.bookmark),
                                 icon = ObjectIcon.None,
                                 onAttachmentClicked = {
@@ -247,7 +243,7 @@ internal fun ChatBoxAttachments(
                                     modifier = Modifier
                                         .align(Alignment.Center)
                                 )
-                                if (attachment.isLoading) {
+                                if (attachment.isLoadingPreview || attachment.isUploading) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(16.dp)

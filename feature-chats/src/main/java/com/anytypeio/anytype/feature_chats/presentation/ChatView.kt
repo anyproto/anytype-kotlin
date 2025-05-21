@@ -140,7 +140,8 @@ sealed interface ChatView {
 
             data class Bookmark(
                 val preview: LinkPreview,
-                val isLoading: Boolean = false
+                val isLoadingPreview: Boolean = false,
+                val isUploading: Boolean = false
             ) : ChatBoxAttachment()
 
             sealed class State {

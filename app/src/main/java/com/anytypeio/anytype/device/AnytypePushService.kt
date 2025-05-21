@@ -11,6 +11,8 @@ import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.ui.main.MainActivity
@@ -87,11 +89,11 @@ class AnytypePushService : FirebaseMessagingService() {
         Timber.d("New message received: $message")
         
         // Create an intent to open the app when notification is tapped
-        //todo extra task on Navigation
         val intent = Intent(this, MainActivity::class.java).apply {
+            action = ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra(EXTRA_CHAT_ID, message.chatId)
-            putExtra(EXTRA_SPACE_ID, message.spaceName)
+            putExtra(Relations.CHAT_ID, message.chatId)
+            putExtra(Relations.SPACE_ID, message.spaceName)
         }
         
         val pendingIntent = PendingIntent.getActivity(
@@ -145,9 +147,7 @@ class AnytypePushService : FirebaseMessagingService() {
         private const val PAYLOAD_KEY = "x-any-payload"
         private const val KEY_ID_KEY = "x-any-key-id"
         private const val CHANNEL_NAME = "Chat Messages"
-        val EXTRA_CHAT_ID = "chatId"
-        val EXTRA_SPACE_ID = "spaceId"
-
         private const val NOTIFICATION_REQUEST_CODE = 100
+        const val ACTION_OPEN_CHAT = "com.anytype.ACTION_OPEN_CHAT"
     }
 }

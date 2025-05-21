@@ -20,6 +20,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.*
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
@@ -36,6 +38,7 @@ import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
@@ -205,13 +208,37 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                                 toast(getString(R.string.multiplayer_deeplink_to_your_object_error))
                             }
+                            is Command.LaunchChat -> {
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    controller.navigate(
+                                        R.id.actionOpenSpaceFromVault,
+                                        HomeScreenFragment.args(
+                                            space = command.space,
+                                            deeplink = null
+                                        )
+                                    )
+                                    controller.navigate(
+                                        R.id.chatScreen,
+                                        ChatFragment.args(
+                                            space = command.space,
+                                            ctx = command.chat
+                                        )
+                                    )
+                                }.onFailure {
+                                    if (BuildConfig.DEBUG) {
+                                        toast("Failed to open chat from push notification")
+                                    }
+                                }
+                            }
                             is Command.Deeplink.DeepLinkToObject -> {
                                 when(val effect = command.sideEffect) {
                                     is Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace -> {
                                         runCatching {
                                             val controller = findNavController(R.id.fragment)
                                             controller.popBackStack(R.id.vaultScreen, false)
-                                            if (effect.chat != null) {
+                                            if (effect.chat != null && effect.spaceType == SpaceType.CHAT) {
                                                 controller.navigate(
                                                     R.id.actionOpenChatFromVault,
                                                     ChatFragment.args(
@@ -449,6 +476,34 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             AnytypeNotificationService.NOTIFICATION_INTENT_ACTION -> {
                 proceedWithNotificationIntent(intent)
             }
+            AnytypePushService.ACTION_OPEN_CHAT -> {
+                proceedWithOpenChatIntent(intent)
+            }
+        }
+    }
+
+    private fun proceedWithOpenChatIntent(intent: Intent) {
+        val chatId = intent.getStringExtra(Relations.CHAT_ID)
+        val spaceId = intent.getStringExtra(Relations.SPACE_ID)
+        if (!chatId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
+            if (!isChatFragmentVisible(chatId)) {
+                vm.onOpenChatTriggeredByPush(
+                    chatId = chatId,
+                    spaceId = spaceId
+                )
+            } else {
+                // Do nothing, already there.
+            }
+        }
+    }
+
+    private fun isChatFragmentVisible(chatId: String): Boolean {
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.fragment) as? NavHostFragment
+        val currentFragment = navHostFragment?.childFragmentManager?.fragments?.firstOrNull()
+        return if (currentFragment is ChatFragment) {
+            currentFragment.ctx == chatId
+        } else {
+            false
         }
     }
 
@@ -720,7 +775,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     companion object {
-        const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
         const val SHARE_IMAGE_INTENT_PATTERN = "image/"
         const val SHARE_VIDEO_INTENT_PATTERN = "video/"

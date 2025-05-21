@@ -5,14 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -38,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
@@ -52,7 +50,6 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import kotlin.text.isNotEmpty
 
 @Composable
 fun SetEmailWrapper(
@@ -120,16 +117,16 @@ fun OnboardingEmailScreen(
 
     Box(
         modifier = Modifier
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .imePadding()
             .fillMaxSize()
+            .imePadding()
     ) {
-        Column {
-            Spacer(modifier = Modifier.height(140.dp))
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+        ) {
             Text(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 20.dp),
                 text = stringResource(R.string.onboarding_email_add_title),
                 color = colorResource(id = R.color.text_white),
                 style = HeadlineTitleSemibold,
@@ -193,7 +190,6 @@ fun OnboardingEmailScreen(
                     validateAndSubmit()
                 }
             )
-            Spacer(modifier = Modifier.height(32.dp))
         }
         Image(
             modifier = Modifier

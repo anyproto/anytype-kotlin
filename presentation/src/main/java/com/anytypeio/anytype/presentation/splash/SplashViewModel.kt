@@ -392,21 +392,32 @@ class SplashViewModel(
             if (view != null) {
                 if (view.isActive || view.isLoading) {
                     val chat = view.chatId
-                    if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
-                        commands.emit(
-                            Command.NavigateToWidgets(
-                                space = space.id,
-                                deeplink = deeplink
+                    when {
+                        chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id) -> {
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
                             )
-                        )
-                    } else if (view.spaceType == SpaceType.CHAT) {
-                        commands.emit(
-                            Command.NavigateToSpaceLevelChat(
-                                space = space.id,
-                                chat = chat,
-                                deeplink = deeplink
+                        }
+                        view.spaceType == SpaceType.CHAT -> {
+                            commands.emit(
+                                Command.NavigateToSpaceLevelChat(
+                                    space = space.id,
+                                    chat = chat,
+                                    deeplink = deeplink
+                                )
                             )
-                        )
+                        }
+                        else -> {
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
+                            )
+                        }
                     }
                 } else {
                     commands.emit(Command.NavigateToVault(deeplink))

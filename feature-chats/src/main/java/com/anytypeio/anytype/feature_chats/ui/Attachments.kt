@@ -46,8 +46,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import kotlin.math.atan
-
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 fun BubbleAttachments(

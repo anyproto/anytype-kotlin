@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -57,7 +58,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -282,7 +282,7 @@ class ChatViewModel @Inject constructor(
                                                 description = wrapper.description.orEmpty(),
                                                 imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
                                                     if (!hash.isNullOrEmpty())
-                                                        urlBuilder.medium(hash)
+                                                        urlBuilder.large(hash)
                                                     else
                                                         null
                                                 }
@@ -516,6 +516,14 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.Bookmark -> {
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        isUploading = true
+                                    )
+                                )
+                            }
                             createObjectFromUrl.async(
                                 params = CreateObjectFromUrl.Params(
                                     url = attachment.preview.url,
@@ -600,13 +608,13 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
@@ -623,12 +631,12 @@ class ChatViewModel @Inject constructor(
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
-                        chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while editing message")
                     }.onSuccess {
                         Timber.d("Message edited with success")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.Reply -> {
@@ -643,13 +651,13 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
             }
@@ -1053,14 +1061,27 @@ class ChatViewModel @Inject constructor(
 
     fun onUrlPasted(url: Url) {
         viewModelScope.launch {
+            val curr = chatBoxAttachments.value
+            chatBoxAttachments.value = buildList {
+                addAll(curr)
+                add(
+                    ChatView.Message.ChatBoxAttachment.Bookmark(
+                        preview = LinkPreview(
+                            url = url
+                        ),
+                        isLoadingPreview = true
+                    )
+                )
+            }
             getLinkPreview.async(
                 params = url
             ).onSuccess { preview ->
                 chatBoxAttachments.value = buildList {
-                    addAll(chatBoxAttachments.value)
+                    addAll(curr)
                     add(
                         ChatView.Message.ChatBoxAttachment.Bookmark(
-                            preview = preview
+                            preview = preview,
+                            isLoadingPreview = false
                         )
                     )
                 }

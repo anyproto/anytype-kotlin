@@ -277,7 +277,7 @@ class BundledWidgetSourceHolder(
                 with(binding) {
                     tvTitle.setText(R.string.chat)
                     tvSubtitle.gone()
-                    // TODO DROID-3662 Set icon
+                    ivIcon.setBackgroundResource(R.drawable.ic_widget_system_chat)
                 }
             }
         }

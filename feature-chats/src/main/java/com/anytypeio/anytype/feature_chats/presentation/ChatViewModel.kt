@@ -900,6 +900,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onSpaceNameClicked(isSpaceRoot: Boolean) {
+        onBackButtonPressed(isSpaceRoot = isSpaceRoot)
+    }
+
     fun onSpaceIconClicked() {
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenWidgets)

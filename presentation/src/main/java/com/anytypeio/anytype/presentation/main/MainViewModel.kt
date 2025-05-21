@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -451,6 +452,31 @@ class MainViewModel(
             }
     }
 
+    fun onOpenChatTriggeredByPush(chatId: String, spaceId: String) {
+        viewModelScope.launch {
+            if (spaceManager.get() != spaceId) {
+                spaceManager.set(spaceId)
+                    .onSuccess {
+                        commands.emit(
+                            Command.LaunchChat(
+                                space = spaceId,
+                                chat = chatId
+                            )
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while switching space when launching chat from push notification")
+                    }
+            } else {
+                commands.emit(
+                    Command.LaunchChat(
+                        space = spaceId,
+                        chat = chatId
+                    )
+                )
+            }
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()
@@ -467,6 +493,11 @@ class MainViewModel(
         data object Notifications: Command()
         data object RequestNotificationPermission: Command()
 
+        data class LaunchChat(
+            val space: Id,
+            val chat: Id
+        ): Command()
+
         data class Navigate(val destination: OpenObjectNavigation): Command()
 
         sealed class Deeplink : Command() {
@@ -480,7 +511,8 @@ class MainViewModel(
                 sealed class SideEffect {
                     data class SwitchSpace(
                         val home: Id,
-                        val chat: Id?
+                        val chat: Id? = null,
+                        val spaceType: SpaceType? = null
                     ): SideEffect()
                 }
             }

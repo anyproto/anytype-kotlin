@@ -69,7 +69,7 @@ class ChatFragment : BaseComposeFragment() {
 
     private val vm by viewModels<ChatViewModel> { factory }
 
-    private val ctx get() = arg<Id>(CTX_KEY)
+    val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
 
     // Rendering
@@ -100,6 +100,9 @@ class ChatFragment : BaseComposeFragment() {
                             header = vm.header.collectAsStateWithLifecycle().value,
                             onBackButtonClicked = {
                                 vm.onBackButtonPressed(isSpaceRootScreen())
+                            },
+                            onSpaceNameClicked = {
+                                vm.onSpaceNameClicked(isSpaceRoot = isSpaceRootScreen())
                             },
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )

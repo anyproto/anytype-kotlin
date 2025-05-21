@@ -283,7 +283,7 @@ class ChatViewModel @Inject constructor(
                                                 description = wrapper.description.orEmpty(),
                                                 imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
                                                     if (!hash.isNullOrEmpty())
-                                                        urlBuilder.medium(hash)
+                                                        urlBuilder.large(hash)
                                                     else
                                                         null
                                                 }

@@ -600,13 +600,13 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.EditMessage -> {
@@ -623,12 +623,12 @@ class ChatViewModel @Inject constructor(
                     ).onSuccess {
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
-                        chatBoxAttachments.value = emptyList()
                     }.onFailure {
                         Timber.e(it, "Error while editing message")
                     }.onSuccess {
                         Timber.d("Message edited with success")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
                 is ChatBoxMode.Reply -> {
@@ -643,13 +643,13 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess { (id, payload) ->
-                        chatBoxAttachments.value = emptyList()
                         chatContainer.onPayload(payload)
                         delay(JUMP_TO_BOTTOM_DELAY)
                         uXCommands.emit(UXCommand.JumpToBottom)
                     }.onFailure {
                         Timber.e(it, "Error while adding message")
                     }
+                    chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
             }

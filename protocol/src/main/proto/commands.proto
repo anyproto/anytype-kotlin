@@ -1265,7 +1265,77 @@ message Rpc {
                     }
                 }
             }
+            message ListApps {
+                message Request {
+                }
+
+                message Response {
+                    Error error = 1;
+                    repeated model.Account.Auth.AppInfo app = 2;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                        }
+                    }
+                }
+            }
+            message CreateApp {
+                message Request {
+                    model.Account.Auth.AppInfo app = 1;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string appKey = 2; // persistent key, that can be used to restore session via CreateSession or for JSON API
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                        }
+                    }
+                }
+            }
+            message RevokeApp {
+                message Request {
+                    string appHash = 1;
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            NOT_FOUND = 3;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                        }
+                    }
+                }
+            }
+
         }
+
     }
     message Workspace {
         message GetCurrent {

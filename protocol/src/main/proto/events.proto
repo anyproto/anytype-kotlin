@@ -197,6 +197,7 @@ message Event {
             message ClientInfo {
                 string processName = 1;
                 string processPath = 2;
+                string name = 4;
                 bool signatureVerified = 3;
             }
             string challenge = 1;

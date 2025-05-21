@@ -36,6 +36,7 @@ object Relations {
     const val FEATURED_RELATIONS = "featuredRelations"
     const val SNIPPET = "snippet"
     const val SPACE_ID = "spaceId"
+    const val SPACE_TYPE = "spaceType"
     const val TARGET_SPACE_ID = "targetSpaceId"
     const val SET_OF = "setOf"
     const val URL = "url"

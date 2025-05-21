@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
@@ -257,7 +258,7 @@ class SplashViewModel(
                                                 Command.NavigateToObjectSet(
                                                     id = target,
                                                     space = spaceId,
-                                                    chat = view.chatId
+                                                    chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                 )
                                             )
                                         } else {
@@ -265,7 +266,7 @@ class SplashViewModel(
                                                 Command.NavigateToObject(
                                                     id = target,
                                                     space = spaceId,
-                                                    chat = view.chatId
+                                                    chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                 )
                                             )
                                         }
@@ -317,7 +318,7 @@ class SplashViewModel(
                                                         Command.NavigateToObjectSet(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 ObjectType.Layout.DATE -> {
@@ -325,7 +326,7 @@ class SplashViewModel(
                                                         Command.NavigateToDateObject(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 }
@@ -334,7 +335,7 @@ class SplashViewModel(
                                                         Command.NavigateToObjectType(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 }
@@ -343,7 +344,7 @@ class SplashViewModel(
                                                         Command.NavigateToObject(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                             }
@@ -391,21 +392,32 @@ class SplashViewModel(
             if (view != null) {
                 if (view.isActive || view.isLoading) {
                     val chat = view.chatId
-                    if (chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id)) {
-                        commands.emit(
-                            Command.NavigateToWidgets(
-                                space = space.id,
-                                deeplink = deeplink
+                    when {
+                        chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id) -> {
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
                             )
-                        )
-                    } else {
-                        commands.emit(
-                            Command.NavigateToSpaceLevelChat(
-                                space = space.id,
-                                chat = chat,
-                                deeplink = deeplink
+                        }
+                        view.spaceType == SpaceType.CHAT -> {
+                            commands.emit(
+                                Command.NavigateToSpaceLevelChat(
+                                    space = space.id,
+                                    chat = chat,
+                                    deeplink = deeplink
+                                )
                             )
-                        )
+                        }
+                        else -> {
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
+                            )
+                        }
                     }
                 } else {
                     commands.emit(Command.NavigateToVault(deeplink))

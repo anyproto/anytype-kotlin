@@ -136,6 +136,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
+import com.anytypeio.anytype.presentation.widgets.forceChatPosition
 import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
@@ -503,7 +504,8 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.filter { widget -> widget.hasValidLayout() }.map { widget ->
+
+                widgets.forceChatPosition().filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget,
@@ -738,6 +740,7 @@ class HomeScreenViewModel(
                             if (
                                 dispatch.source == BundledWidgetSourceView.AllObjects.id
                                 || dispatch.source == BundledWidgetSourceView.Bin.id
+                                || dispatch.source == BundledWidgetSourceView.Chat.id
                             ) {
                                 // Applying link layout automatically to all-objects widget
                                 proceedWithCreatingWidget(
@@ -1103,6 +1106,26 @@ class HomeScreenViewModel(
                             space = spaceManager.get()
                         )
                     )
+                }
+            }
+            is Widget.Source.Bundled.Chat -> {
+                viewModelScope.launch {
+                    if (mode.value == InteractionMode.Edit) {
+                        return@launch
+                    }
+                    val space = spaceManager.get()
+                    val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+                    val chat = view?.chatId
+                    if (chat != null) {
+                        navigation(
+                            Navigation.OpenChat(
+                                ctx = chat,
+                                space = space
+                            )
+                        )
+                    } else {
+                        Timber.w("Failed to open chat from widget: chat not found")
+                    }
                 }
             }
         }
@@ -2487,41 +2510,46 @@ class HomeScreenViewModel(
                 viewModelScope.launch {
                     val source = view.source
                     if (source is Widget.Source.Default) {
-                        if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
-                            val wrapper = ObjectWrapper.Type(source.obj.map)
-                            val space = SpaceId(spaceManager.get())
-                            val startTime = System.currentTimeMillis()
-                            createObject.async(
-                                params = CreateObject.Param(
-                                    space = space,
-                                    type = TypeKey(wrapper.uniqueKey),
-                                    prefilled = mapOf(Relations.IS_FAVORITE to true)
-                                )
-                            ).onSuccess { result ->
-                                sendAnalyticsObjectCreateEvent(
-                                    objType = wrapper.uniqueKey,
-                                    analytics = analytics,
-                                    route = EventsDictionary.Routes.widget,
-                                    startTime = startTime,
-                                    view = null,
-                                    spaceParams = provideParams(space.id)
-                                )
-                                proceedWithNavigation(result.obj.navigation())
+                        when (source.obj.layout) {
+                            ObjectType.Layout.OBJECT_TYPE -> {
+                                val wrapper = ObjectWrapper.Type(source.obj.map)
+                                val space = SpaceId(spaceManager.get())
+                                val startTime = System.currentTimeMillis()
+                                createObject.async(
+                                    params = CreateObject.Param(
+                                        space = space,
+                                        type = TypeKey(wrapper.uniqueKey),
+                                        prefilled = mapOf(Relations.IS_FAVORITE to true)
+                                    )
+                                ).onSuccess { result ->
+                                    sendAnalyticsObjectCreateEvent(
+                                        objType = wrapper.uniqueKey,
+                                        analytics = analytics,
+                                        route = EventsDictionary.Routes.widget,
+                                        startTime = startTime,
+                                        view = null,
+                                        spaceParams = provideParams(space.id)
+                                    )
+                                    proceedWithNavigation(result.obj.navigation())
+                                }
                             }
-                        } else if (source.obj.layout == ObjectType.Layout.COLLECTION) {
-                            onCreateDataViewObject(
-                                widget = view.id,
-                                view = null,
-                                navigate = true
-                            )
-                        } else if (source.obj.layout == ObjectType.Layout.SET) {
-                            onCreateDataViewObject(
-                                widget = view.id,
-                                view = null,
-                                navigate = true
-                            )
-                        } else {
-                            Timber.w("Unexpected source layout: ${source.obj.layout}")
+                            ObjectType.Layout.COLLECTION -> {
+                                onCreateDataViewObject(
+                                    widget = view.id,
+                                    view = null,
+                                    navigate = true
+                                )
+                            }
+                            ObjectType.Layout.SET -> {
+                                onCreateDataViewObject(
+                                    widget = view.id,
+                                    view = null,
+                                    navigate = true
+                                )
+                            }
+                            else -> {
+                                Timber.w("Unexpected source layout: ${source.obj.layout}")
+                            }
                         }
                     }
                 }

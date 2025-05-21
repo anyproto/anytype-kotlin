@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 
@@ -327,6 +328,14 @@ sealed class ObjectWrapper {
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCESS_TYPE)
                 return SpaceAccessType
+                    .entries
+                    .firstOrNull { it.code == code?.toInt() }
+            }
+
+        val spaceType: SpaceType?
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_TYPE)
+                return SpaceType
                     .entries
                     .firstOrNull { it.code == code?.toInt() }
             }

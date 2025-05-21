@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
@@ -257,7 +258,7 @@ class SplashViewModel(
                                                 Command.NavigateToObjectSet(
                                                     id = target,
                                                     space = spaceId,
-                                                    chat = view.chatId
+                                                    chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                 )
                                             )
                                         } else {
@@ -265,7 +266,7 @@ class SplashViewModel(
                                                 Command.NavigateToObject(
                                                     id = target,
                                                     space = spaceId,
-                                                    chat = view.chatId
+                                                    chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                 )
                                             )
                                         }
@@ -317,7 +318,7 @@ class SplashViewModel(
                                                         Command.NavigateToObjectSet(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 ObjectType.Layout.DATE -> {
@@ -325,7 +326,7 @@ class SplashViewModel(
                                                         Command.NavigateToDateObject(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 }
@@ -334,7 +335,7 @@ class SplashViewModel(
                                                         Command.NavigateToObjectType(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                                 }
@@ -343,7 +344,7 @@ class SplashViewModel(
                                                         Command.NavigateToObject(
                                                             id = id,
                                                             space = space,
-                                                            chat = view.chatId
+                                                            chat = if (view.spaceType == SpaceType.CHAT) view.chatId else null
                                                         )
                                                     )
                                             }
@@ -398,7 +399,7 @@ class SplashViewModel(
                                 deeplink = deeplink
                             )
                         )
-                    } else {
+                    } else if (view.spaceType == SpaceType.CHAT) {
                         commands.emit(
                             Command.NavigateToSpaceLevelChat(
                                 space = space.id,

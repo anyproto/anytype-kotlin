@@ -17,7 +17,6 @@ interface AppNavigation {
     )
     fun openChat(target: Id, space: Id)
     fun openDocument(target: Id, space: Id)
-    fun openDiscussion(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
@@ -98,7 +97,7 @@ interface AppNavigation {
             val space: Id
         ) : Command()
 
-        object OpenSettings : Command()
+        data object OpenSettings : Command()
 
         data class OpenShareScreen(
             val space: SpaceId
@@ -132,7 +131,7 @@ interface AppNavigation {
 
         data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
-        object OpenUpdateAppScreen : Command()
+        data object OpenUpdateAppScreen : Command()
 
         data class DeletedAccountScreen(val deadline: Long) : Command()
 

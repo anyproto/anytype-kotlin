@@ -452,7 +452,7 @@ class MainViewModel(
             }
     }
 
-    fun onOpenChat(chatId: String, spaceId: String) {
+    fun onOpenChatTriggeredByPush(chatId: String, spaceId: String) {
         viewModelScope.launch {
             if (spaceManager.get() != spaceId) {
                 spaceManager.set(spaceId)

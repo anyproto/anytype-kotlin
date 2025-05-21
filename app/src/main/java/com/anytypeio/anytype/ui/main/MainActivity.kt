@@ -487,7 +487,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         val spaceId = intent.getStringExtra(Relations.SPACE_ID)
         if (!chatId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
             if (!isChatFragmentVisible(chatId)) {
-                vm.onOpenChat(
+                vm.onOpenChatTriggeredByPush(
                     chatId = chatId,
                     spaceId = spaceId
                 )

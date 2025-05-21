@@ -231,10 +231,8 @@ internal fun ChatBoxAttachments(
                                     // Do nothing
                                 }
                             )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
-                                contentDescription = "Close icon",
-                                modifier = Modifier
+                            Box(
+                                Modifier
                                     .align(
                                         Alignment.TopEnd
                                     )
@@ -242,7 +240,24 @@ internal fun ChatBoxAttachments(
                                     .noRippleClickable {
                                         onClearAttachmentClicked(attachment)
                                     }
-                            )
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_clear_chatbox_attachment),
+                                    contentDescription = "Close icon",
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                )
+                                if (attachment.isLoading) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                            .align(Alignment.Center),
+                                        color = colorResource(R.color.text_white),
+                                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                                        strokeWidth = 1.5.dp
+                                    )
+                                }
+                            }
                         }
                     }
                 }

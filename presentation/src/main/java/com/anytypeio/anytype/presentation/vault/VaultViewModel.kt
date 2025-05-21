@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
@@ -147,7 +148,8 @@ class VaultViewModel(
                     onSuccess = {
                         proceedWithSavingCurrentSpace(
                             targetSpace = targetSpace,
-                            chat = view.space.chatId?.ifEmpty { null }
+                            chat = view.space.chatId?.ifEmpty { null },
+                            spaceType = view.space.spaceType
                         )
                     }
                 )
@@ -252,7 +254,8 @@ class VaultViewModel(
 
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: String,
-        chat: Id?
+        chat: Id?,
+        spaceType: SpaceType?
     ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -261,7 +264,7 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                if (chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
+                if (spaceType == SpaceType.CHAT && chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
                     commands.emit(
                         Command.EnterSpaceLevelChat(
                             space = Space(targetSpace),

@@ -130,6 +130,9 @@ class SelectWidgetSourceViewModel(
                 if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
                     add(BundledWidgetSourceView.AllObjects)
                 }
+                if (contains(BundledWidgetSourceIds.CHAT)) {
+                    add(BundledWidgetSourceView.Chat)
+                }
                 if (contains(BundledWidgetSourceIds.RECENT)) {
                     add(BundledWidgetSourceView.Recent)
                 }
@@ -270,6 +273,7 @@ class SelectWidgetSourceViewModel(
                     if (
                         view is BundledWidgetSourceView.AllObjects
                         || view is BundledWidgetSourceView.Bin
+                        || view is BundledWidgetSourceView.Chat
                     ) {
                         isDismissed.value = true
                     }

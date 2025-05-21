@@ -1666,6 +1666,12 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     BundledWidgetSourceView.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
+                    BundledWidgetSourceView.AllObjects -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
+                    }
+                    BundledWidgetSourceView.Chat -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
+                    }
                 }
                 if (isForNewWidget)
                     put(WidgetAnalytics.ROUTE, WidgetAnalytics.ROUTE_ADD_WIDGET)
@@ -1769,6 +1775,9 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
+                    Widget.Source.Bundled.Chat -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
@@ -1813,6 +1822,9 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                     }
                     Widget.Source.Bundled.AllObjects -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
+                    }
+                    Widget.Source.Bundled.Chat -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                 }
 
@@ -1901,6 +1913,9 @@ fun CoroutineScope.sendReorderWidgetEvent(
                     }
                     Widget.Source.Bundled.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
+                    }
+                    Widget.Source.Bundled.Chat -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                 }
 

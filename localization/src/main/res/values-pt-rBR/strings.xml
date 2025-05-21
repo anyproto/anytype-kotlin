@@ -1164,6 +1164,10 @@
     <string name="multiplayer_join_a_space">Juntar-se a um espaço</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
     <string name="multiplayer_request_to_join_explanation">Quando o dono do espaço aprovar sua solicitação, você se juntará ao espaço com as permissões que o dono determinar.</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
     <string name="multiplayer_space_request_to_join">Solicitar o acesso</string>
     <string name="multiplayer_space_request_to_join_msg">Você foi convidado para se juntar ao espaço %1$s, criado por %2$s. Envie uma solicitação para que o proprietário do espaço permita seu acesso.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>

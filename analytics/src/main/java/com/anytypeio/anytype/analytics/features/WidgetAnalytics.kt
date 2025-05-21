@@ -31,7 +31,7 @@ object WidgetAnalytics {
     const val WIDGET_SOURCE_SETS = "Sets"
     const val WIDGET_SOURCE_BIN = "Bin"
     const val WIDGET_SOURCE_ALL_OBJECTS = "AllObjects"
-    const val WIDGET_SOURCE_COLLECTIONS = "Sets"
+    const val WIDGET_SOURCE_CHAT = "Chat"
 
     const val CUSTOM_OBJECT_TYPE = "custom"
 

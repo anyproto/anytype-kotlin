@@ -108,6 +108,7 @@ interface SpaceViewSubscriptionContainer {
                     subscription = GLOBAL_SUBSCRIPTION,
                     keys = listOf(
                         Relations.ID,
+                        Relations.SPACE_TYPE,
                         Relations.TARGET_SPACE_ID,
                         Relations.CHAT_ID,
                         Relations.SPACE_ACCOUNT_STATUS,

@@ -78,6 +78,7 @@ sealed class WidgetView {
         val canCreateObjectOfType : Boolean get() {
             return when(source) {
                 Widget.Source.Bundled.AllObjects -> false
+                Widget.Source.Bundled.Chat -> false
                 Widget.Source.Bundled.Bin -> false
                 Widget.Source.Bundled.Favorites -> true
                 Widget.Source.Bundled.Recent -> false

@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
@@ -44,12 +46,14 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import kotlin.math.atan
 
 @Composable
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
     attachments.forEachIndexed { idx, attachment ->
@@ -93,9 +97,14 @@ fun BubbleAttachments(
                         modifier = Modifier
                             .size(292.dp)
                             .clip(shape = RoundedCornerShape(12.dp))
-                            .clickable {
-                                onAttachmentClicked(attachment)
-                            }
+                            .combinedClickable(
+                                onClick = {
+                                    onAttachmentClicked(attachment)
+                                },
+                                onLongClick = {
+                                    onAttachmentLongClicked(attachment)
+                                }
+                            )
                     ) {
                         it
                             .override(1024, 1024)
@@ -121,6 +130,9 @@ fun BubbleAttachments(
                     icon = attachment.icon,
                     onAttachmentClicked = {
                         onAttachmentClicked(attachment)
+                    },
+                    onAttachmentLongClicked = {
+                        onAttachmentLongClicked(attachment)
                     }
                 )
             }
@@ -132,6 +144,9 @@ fun BubbleAttachments(
                     imageUrl = attachment.imageUrl,
                     onClick = {
                         onAttachmentClicked(attachment)
+                    },
+                    onLongClick = {
+                        onAttachmentLongClicked(attachment)
                     }
                 )
             }
@@ -139,13 +154,15 @@ fun BubbleAttachments(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AttachedObject(
     modifier: Modifier,
     title: String,
     type: String,
     icon: ObjectIcon,
-    onAttachmentClicked: () -> Unit
+    onAttachmentClicked: () -> Unit = {},
+    onAttachmentLongClicked: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -159,9 +176,10 @@ fun AttachedObject(
             .background(
                 color = colorResource(id = R.color.background_secondary)
             )
-            .clickable {
-                onAttachmentClicked()
-            }
+            .combinedClickable(
+                onClick = onAttachmentClicked,
+                onLongClick = onAttachmentLongClicked
+            )
     ) {
         ListWidgetObjectIcon(
             icon = icon,
@@ -210,20 +228,25 @@ fun AttachedObject(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Bookmark(
     url: String,
     title: String,
     description: String,
     imageUrl: String?,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp)
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
         ,
         colors = CardDefaults.cardColors(
             containerColor = colorResource(R.color.shape_transparent_secondary)
@@ -273,7 +296,8 @@ fun BookmarkPreview() {
         title = "Algo - Video Automation",
         description = "Algo is a data-visualization studio specializing in video automation.",
         imageUrl = null,
-        onClick = {}
+        onClick = {},
+        onLongClick = {}
     )
 }
 

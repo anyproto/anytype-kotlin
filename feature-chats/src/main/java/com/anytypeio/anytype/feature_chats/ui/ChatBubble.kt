@@ -175,7 +175,10 @@ fun Bubble(
             BubbleAttachments(
                 attachments = attachments,
                 isUserAuthor = isUserAuthor,
-                onAttachmentClicked = onAttachmentClicked
+                onAttachmentClicked = onAttachmentClicked,
+                onAttachmentLongClicked = {
+                    showDropdownMenu = true
+                }
             )
             if (content.msg.isNotEmpty()) {
                 Box(

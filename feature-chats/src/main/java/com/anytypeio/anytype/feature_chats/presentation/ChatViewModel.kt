@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -1053,14 +1054,27 @@ class ChatViewModel @Inject constructor(
 
     fun onUrlPasted(url: Url) {
         viewModelScope.launch {
+            val curr = chatBoxAttachments.value
+            chatBoxAttachments.value = buildList {
+                addAll(curr)
+                add(
+                    ChatView.Message.ChatBoxAttachment.Bookmark(
+                        preview = LinkPreview(
+                            url = url
+                        ),
+                        isLoading = true
+                    )
+                )
+            }
             getLinkPreview.async(
                 params = url
             ).onSuccess { preview ->
                 chatBoxAttachments.value = buildList {
-                    addAll(chatBoxAttachments.value)
+                    addAll(curr)
                     add(
                         ChatView.Message.ChatBoxAttachment.Bookmark(
-                            preview = preview
+                            preview = preview,
+                            isLoading = false
                         )
                     )
                 }

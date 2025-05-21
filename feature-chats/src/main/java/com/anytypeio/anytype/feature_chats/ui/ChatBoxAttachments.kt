@@ -220,7 +220,11 @@ internal fun ChatBoxAttachments(
                                         end = 4.dp
                                     )
                                     .width(216.dp),
-                                title = attachment.preview.title,
+                                title = if (attachment.isLoading)
+                                    stringResource(R.string.three_dots_text_placeholder)
+                                        else
+                                    attachment.preview.title
+                                ,
                                 type = stringResource(R.string.bookmark),
                                 icon = ObjectIcon.None,
                                 onAttachmentClicked = {

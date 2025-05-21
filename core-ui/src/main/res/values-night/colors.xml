@@ -129,6 +129,9 @@
     <color name="tier_gradient_purple_start">#00000000</color>
     <color name="tier_gradient_purple_end">#E86DE3</color>
 
+    <color name="tier_gradient_ice_start">#00000000</color>
+    <color name="tier_gradient_ice_end">#FF91D3FF</color>
+
     <color name="object_number_background">#393835</color>
 
     <color name="home_screen_toolbar_button">#F2222222</color>

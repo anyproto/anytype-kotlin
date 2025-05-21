@@ -49,7 +49,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = MembershipConstants.EXPLORER_ID,
+                id = MembershipConstants.STARTER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
@@ -105,7 +105,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
             val flow = flow {
                 emit(
                     MembershipStatus(
-                        activeTier = TierId(MembershipConstants.EXPLORER_ID),
+                        activeTier = TierId(MembershipConstants.STARTER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = 0L,
                         paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -225,7 +225,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
                 val flow = flow {
                     emit(
                         MembershipStatus(
-                            activeTier = TierId(MembershipConstants.EXPLORER_ID),
+                            activeTier = TierId(MembershipConstants.STARTER_ID),
                             status = Membership.Status.STATUS_ACTIVE,
                             dateEnds = 0L,
                             paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -313,7 +313,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
             val flow = flow {
                 emit(
                     MembershipStatus(
-                        activeTier = TierId(MembershipConstants.EXPLORER_ID),
+                        activeTier = TierId(MembershipConstants.STARTER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = 0L,
                         paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -428,7 +428,7 @@ class TierActiveWithDifferentSubIdTest : MembershipTestsSetup() {
             val flow = flow {
                 emit(
                     MembershipStatus(
-                        activeTier = TierId(MembershipConstants.EXPLORER_ID),
+                        activeTier = TierId(MembershipConstants.STARTER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = 0L,
                         paymentMethod = MembershipPaymentMethod.METHOD_NONE,

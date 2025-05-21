@@ -45,7 +45,7 @@ class TierAndroidActivePurchasedOniOS : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = MembershipConstants.EXPLORER_ID,
+                id = MembershipConstants.STARTER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,

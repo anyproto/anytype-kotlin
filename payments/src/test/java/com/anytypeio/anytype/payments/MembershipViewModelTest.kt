@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.ACTIVE_TIERS_WITH_BANNERS
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.payments.viewmodel.MembershipMainState
 import com.anytypeio.anytype.payments.viewmodel.MembershipTierState
 import com.anytypeio.anytype.payments.viewmodel.MembershipEmailCodeState
@@ -27,7 +27,7 @@ class MembershipViewModelTest : MembershipTestsSetup() {
 
     private val mTiers = listOf(
         StubMembershipTierData(
-            id = EXPLORER_ID,
+            id = STARTER_ID,
         ),
         StubMembershipTierData(
             id = BUILDER_ID,
@@ -92,7 +92,7 @@ class MembershipViewModelTest : MembershipTestsSetup() {
                 membershipStatus(
                     listOf(
                         StubMembershipTierData(
-                            id = EXPLORER_ID,
+                            id = STARTER_ID,
                         ),
                         StubMembershipTierData(
                             id = BUILDER_ID,

@@ -90,7 +90,7 @@ open class MembershipTestsSetup {
     protected val accountId = "accountId-${RandomString.make()}"
 
     fun membershipStatus(tiers: List<MembershipTierData>) = MembershipStatus(
-        activeTier = TierId(MembershipConstants.EXPLORER_ID),
+        activeTier = TierId(MembershipConstants.STARTER_ID),
         status = Membership.Status.STATUS_ACTIVE,
         dateEnds = 1714199910,
         paymentMethod = MembershipPaymentMethod.METHOD_NONE,

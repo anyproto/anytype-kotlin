@@ -36,7 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_POLICY
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
@@ -466,7 +466,7 @@ fun TierViewScreenPreview() {
                     payedBy = MembershipPaymentMethod.METHOD_INAPP_GOOGLE
                 ),
                 buttonState = TierButton.HiddenWithText.ManageOnIOS,
-                id = TierId(value = EXPLORER_ID),
+                id = TierId(value = STARTER_ID),
                 membershipAnyName = TierAnyName.Visible.Purchased("someanyname111"),
                 email = TierEmail.Visible.Enter,
                 color = "teal",

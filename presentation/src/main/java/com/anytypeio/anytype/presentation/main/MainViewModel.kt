@@ -455,14 +455,17 @@ class MainViewModel(
     fun onOpenChat(chatId: String, spaceId: String) {
         viewModelScope.launch {
             if (spaceManager.get() != spaceId) {
-                spaceManager.set(spaceId).onSuccess {
-                    commands.emit(
-                        Command.LaunchChat(
-                            space = spaceId,
-                            chat = chatId
+                spaceManager.set(spaceId)
+                    .onSuccess {
+                        commands.emit(
+                            Command.LaunchChat(
+                                space = spaceId,
+                                chat = chatId
+                            )
                         )
-                    )
-                }
+                    }.onFailure {
+                        Timber.e(it, "Error while switching space when launching chat from push notification")
+                    }
             } else {
                 commands.emit(
                     Command.LaunchChat(

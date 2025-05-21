@@ -367,6 +367,7 @@ fun ChatBox(
                                         onMessageSent(text.text, spans)
                                         clearText()
                                         resetScroll()
+                                        showMarkup = false
                                     }
                             }
                         )

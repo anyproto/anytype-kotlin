@@ -1164,6 +1164,10 @@
     <string name="multiplayer_join_a_space">Bir alana katıl</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Alan sahibi için özel bir yorum bırakın</string>
     <string name="multiplayer_request_to_join_explanation">Alan sahibi talebinizi onayladığında, alana erişim hakları sahibinin belirlediği şekilde katılırsınız.</string>
+    <string name="multiplayer_request_to_join_without_approve_title">%1$s alanına katıl</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">%2$s tarafından oluşturulan %1$s alanına katılmaya davet edildiniz</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Alana Katıl</string>
+    <string name="multiplayer_request_to_join_loading_text">  Sıkı durun! Sizin için bir şeyler ayarlıyoruz. Bu sadece bir dakika sürecektir.</string>
     <string name="multiplayer_space_request_to_join">Katılma isteği gönder</string>
     <string name="multiplayer_space_request_to_join_msg">%2$s tarafından oluşturulan %1$s alanına katılmaya davet edildiniz. Alan sahibinin sizi kabul etmesi için bir istek gönderin.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Yorumunuzu yazmak için dokunun</string>

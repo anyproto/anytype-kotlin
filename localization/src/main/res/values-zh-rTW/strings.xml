@@ -1160,6 +1160,10 @@
     <string name="multiplayer_join_a_space">加入空間</string>
     <string name="multiplayer_private_comment_for_a_space_owner">空間擁有者的私人留言</string>
     <string name="multiplayer_request_to_join_explanation">一旦空間擁有者批准了您的請求，您將加入空間並擁有指定的存取權限。</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
     <string name="multiplayer_space_request_to_join">請求加入</string>
     <string name="multiplayer_space_request_to_join_msg">您已被邀請加入由 %2$s 建立的 %1$s 空間。 發送請求，以便空間所有者可以讓​​您加入。</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">點擊以寫下您的留言</string>

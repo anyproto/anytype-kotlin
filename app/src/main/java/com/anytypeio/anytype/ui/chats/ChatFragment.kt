@@ -69,7 +69,7 @@ class ChatFragment : BaseComposeFragment() {
 
     private val vm by viewModels<ChatViewModel> { factory }
 
-    private val ctx get() = arg<Id>(CTX_KEY)
+    val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
 
     // Rendering

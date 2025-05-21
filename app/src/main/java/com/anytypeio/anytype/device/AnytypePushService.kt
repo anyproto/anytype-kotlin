@@ -103,10 +103,11 @@ class AnytypePushService : FirebaseMessagingService() {
 
         // Build the notification
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_app_notification)
-            .setContentTitle(message.senderName)
-            .setContentText(message.text)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message.text))
+            //.setSmallIcon(R.drawable.ic_push_icon)
+            .setContentTitle(message.spaceName.trim())
+            .setSubText(message.senderName.trim())
+            .setContentText(message.text.trim())
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message.text.trim()))
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)

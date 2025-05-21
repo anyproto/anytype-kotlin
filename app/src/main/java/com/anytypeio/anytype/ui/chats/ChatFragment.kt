@@ -101,6 +101,9 @@ class ChatFragment : BaseComposeFragment() {
                             onBackButtonClicked = {
                                 vm.onBackButtonPressed(isSpaceRootScreen())
                             },
+                            onSpaceNameClicked = {
+                                vm.onSpaceNameClicked(isSpaceRoot = isSpaceRootScreen())
+                            },
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )
                         ChatScreenWrapper(

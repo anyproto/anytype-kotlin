@@ -42,7 +42,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 fun ChatTopToolbar(
     header: ChatViewModel.HeaderView,
     onSpaceIconClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onSpaceNameClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -65,6 +66,10 @@ fun ChatTopToolbar(
             )
         }
         Text(
+            modifier = Modifier
+                .weight(1f)
+                .noRippleClickable { onSpaceNameClicked() }
+            ,
             text = when(header) {
                 is ChatViewModel.HeaderView.Default -> header.title
                 is ChatViewModel.HeaderView.Init -> ""
@@ -72,7 +77,6 @@ fun ChatTopToolbar(
             color = colorResource(R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
             style = Title1
         )
@@ -113,7 +117,8 @@ fun ChatTopToolbarPreview() {
             showIcon = true
         ),
         onSpaceIconClicked = {},
-        onBackButtonClicked = {}
+        onBackButtonClicked = {},
+        onSpaceNameClicked = {}
     )
 }
 

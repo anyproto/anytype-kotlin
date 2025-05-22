@@ -116,22 +116,6 @@ object NotificationsModule {
         channel = channel
     )
 
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideCryptoService(): CryptoService = CryptoServiceImpl()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideDecryptionPushContentService(
-        pushKeyProvider: PushKeyProvider,
-        cryptoService: CryptoService,
-    ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
-        pushKeyProvider = pushKeyProvider,
-        cryptoService = cryptoService,
-    )
-
     @Provides
     @Singleton
     @JvmStatic

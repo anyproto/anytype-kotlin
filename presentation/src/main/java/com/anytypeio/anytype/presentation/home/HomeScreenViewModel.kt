@@ -2555,6 +2555,55 @@ class HomeScreenViewModel(
                 }
 
             }
+            is WidgetView.Gallery -> {
+                viewModelScope.launch {
+                    val source = view.source
+                    if (source is Widget.Source.Default) {
+                        when (source.obj.layout) {
+                            ObjectType.Layout.OBJECT_TYPE -> {
+                                val wrapper = ObjectWrapper.Type(source.obj.map)
+                                val space = SpaceId(spaceManager.get())
+                                val startTime = System.currentTimeMillis()
+                                createObject.async(
+                                    params = CreateObject.Param(
+                                        space = space,
+                                        type = TypeKey(wrapper.uniqueKey),
+                                        prefilled = mapOf(Relations.IS_FAVORITE to true)
+                                    )
+                                ).onSuccess { result ->
+                                    sendAnalyticsObjectCreateEvent(
+                                        objType = wrapper.uniqueKey,
+                                        analytics = analytics,
+                                        route = EventsDictionary.Routes.widget,
+                                        startTime = startTime,
+                                        view = null,
+                                        spaceParams = provideParams(space.id)
+                                    )
+                                    proceedWithNavigation(result.obj.navigation())
+                                }
+                            }
+                            ObjectType.Layout.COLLECTION -> {
+                                onCreateDataViewObject(
+                                    widget = view.id,
+                                    view = null,
+                                    navigate = true
+                                )
+                            }
+                            ObjectType.Layout.SET -> {
+                                onCreateDataViewObject(
+                                    widget = view.id,
+                                    view = null,
+                                    navigate = true
+                                )
+                            }
+                            else -> {
+                                Timber.w("Unexpected source layout: ${source.obj.layout}")
+                            }
+                        }
+                    }
+                }
+
+            }
             else -> {
                 Timber.w("Unexpected widget type: ${view::class.java.simpleName}")
             }

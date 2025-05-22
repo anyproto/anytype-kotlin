@@ -214,7 +214,8 @@ fun GalleryWidgetCard(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
+    onCreateElement: (WidgetView) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -259,7 +260,9 @@ fun GalleryWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) },
+                canCreate = mode is InteractionMode.Default && item.canCreateObjectOfType,
+                onCreateElement = { onCreateElement(item) },
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(

@@ -105,7 +105,7 @@ class AnytypePushService : FirebaseMessagingService() {
 
         // Build the notification
         val notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            //.setSmallIcon(R.drawable.ic_push_icon)
+            .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setSubText(message.senderName.trim())
             .setContentText(message.text.trim())

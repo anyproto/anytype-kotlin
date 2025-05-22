@@ -20,6 +20,7 @@ fun TierId.isPossibleToUpgrade(
 fun TierId.isPossibleToUpgradeNumberOfSpaceMembers(): Boolean {
     return when (this.value) {
         MembershipConstants.NONE_ID -> true
+        MembershipConstants.OLD_EXPLORER_ID -> true
         MembershipConstants.STARTER_ID -> true
         MembershipConstants.PIONEER_ID -> true
         MembershipConstants.NEW_EXPLORER_ID -> true
@@ -33,6 +34,7 @@ fun TierId.isPossibleToUpgradeNumberOfSpaceMembers(): Boolean {
 fun TierId.isPossibleToUpgradeStorageSpace(): Boolean {
     return when (this.value) {
         MembershipConstants.NONE_ID -> true
+        MembershipConstants.OLD_EXPLORER_ID -> true
         MembershipConstants.STARTER_ID -> true
         MembershipConstants.PIONEER_ID -> true
         MembershipConstants.NEW_EXPLORER_ID -> true

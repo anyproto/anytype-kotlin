@@ -13,6 +13,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
@@ -137,7 +139,7 @@ class SpaceJoinRequestViewModel(
         Timber.d("proceedWithState, tierId: $tierId, spaceView: $spaceView, spaceMembers: $spaceMembers, newMember: $newMember, isCurrentUserOwner: $isCurrentUserOwner")
 
         val state = when (tierId.value) {
-            STARTER_ID -> createExplorerState(
+            STARTER_ID, OLD_EXPLORER_ID, PIONEER_ID -> createExplorerState(
                 spaceView = spaceView,
                 spaceMembers = spaceMembers,
                 newMember = newMember,

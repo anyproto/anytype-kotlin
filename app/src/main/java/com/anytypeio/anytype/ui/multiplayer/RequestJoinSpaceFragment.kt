@@ -94,22 +94,24 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                 }
                 MaterialTheme(typography = typography) {
-                    val showModal = vm.showEnableNotificationDialog.collectAsStateWithLifecycle().value
-                    val isLoadingInvite = vm.showLoadingInviteProgress.collectAsStateWithLifecycle().value
-                    when(val state = vm.state.collectAsStateWithLifecycle().value) {
+                    val showModal =
+                        vm.showEnableNotificationDialog.collectAsStateWithLifecycle().value
+                    val isLoadingInvite =
+                        vm.showLoadingInviteProgress.collectAsStateWithLifecycle().value
+                    when (val state = vm.state.collectAsStateWithLifecycle().value) {
                         is TypedViewState.Loading, is TypedViewState.Success -> {
                             val isLoading: Boolean
                             val spaceName: String
                             val createdByName: String
-                            val withoutApprove : Boolean
+                            val withoutApprove: Boolean
                             if (state is TypedViewState.Loading) {
                                 isLoading = true
                                 spaceName = stringResource(R.string.three_dots_text_placeholder)
                                 createdByName = stringResource(R.string.three_dots_text_placeholder)
                                 withoutApprove = false
-                            }
-                            else {
-                                isLoading = vm.isRequestInProgress.collectAsStateWithLifecycle().value
+                            } else {
+                                isLoading =
+                                    vm.isRequestInProgress.collectAsStateWithLifecycle().value
                                 with(state as TypedViewState.Success) {
                                     spaceName = state.data.spaceName
                                     createdByName = state.data.creatorName
@@ -121,7 +123,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                     .fillMaxWidth()
                                     .windowInsetsPadding(WindowInsets.navigationBars),
                                 onDismissRequest = {
-                                    if (!isLoadingInvite) {
+                                    if (isLoadingInvite) {
+                                        vm.onCancelLoadingInviteClicked()
+                                        dismiss()
+                                    } else {
                                         dismiss()
                                     }
                                 },
@@ -172,8 +177,9 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 }
                             }
                         }
+
                         is TypedViewState.Error -> {
-                            when(val err = state.error) {
+                            when (val err = state.error) {
                                 is ErrorView.AlreadySpaceMember -> {
                                     Announcement(
                                         title = stringResource(id = R.string.multiplayer_already_space_member),

@@ -1,10 +1,7 @@
 package com.anytypeio.anytype.device
 
-import android.app.NotificationManager
-import android.content.Context
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
-import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -16,10 +13,7 @@ class AnytypePushService : FirebaseMessagingService() {
     lateinit var deviceTokenSavingService: DeviceTokenStoringService
 
     @Inject
-    lateinit var decryptionService: DecryptionPushContentService
-
-    private lateinit var processor: PushMessageProcessor
-    private lateinit var notificationBuilder: NotificationBuilder
+    lateinit var processor: PushMessageProcessor
 
     init {
         Timber.d("AnytypePushService initialized")
@@ -28,16 +22,6 @@ class AnytypePushService : FirebaseMessagingService() {
     override fun onCreate() {
         super.onCreate()
         (application as AndroidApplication).componentManager.pushContentComponent.get().inject(this)
-
-        notificationBuilder = NotificationBuilder(
-            context = this,
-            notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        ).apply {
-            createNotificationChannelIfNeeded()
-        }
-
-        processor = DefaultPushMessageProcessor(decryptionService, notificationBuilder)
-
         Timber.d("AnytypePushService initialized")
     }
 
@@ -50,7 +34,6 @@ class AnytypePushService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Timber.d("Received message: $message")
-
         processor.process(message.data)
     }
 

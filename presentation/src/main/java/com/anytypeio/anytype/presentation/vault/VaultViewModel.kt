@@ -8,16 +8,13 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.multiplayer.SpaceType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.onFailure
-import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -149,7 +146,7 @@ class VaultViewModel(
                         proceedWithSavingCurrentSpace(
                             targetSpace = targetSpace,
                             chat = view.space.chatId?.ifEmpty { null },
-                            spaceType = view.space.spaceType
+                            spaceUxType = view.space.spaceUxType
                         )
                     }
                 )
@@ -255,7 +252,7 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: String,
         chat: Id?,
-        spaceType: SpaceType?
+        spaceUxType: SpaceUxType?
     ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -264,7 +261,7 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                if (spaceType == SpaceType.CHAT && chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
+                if (spaceUxType == SpaceUxType.CHAT && chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
                     commands.emit(
                         Command.EnterSpaceLevelChat(
                             space = Space(targetSpace),

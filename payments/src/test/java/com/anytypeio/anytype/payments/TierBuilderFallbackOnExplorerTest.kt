@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.payments.models.BillingPriceInfo
 import com.anytypeio.anytype.payments.models.MembershipPurchase
 import com.anytypeio.anytype.payments.models.PeriodDescription
@@ -47,7 +47,7 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = EXPLORER_ID,
+                id = STARTER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
@@ -102,7 +102,7 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
                 delay(300)
                 emit(
                     MembershipStatus(
-                        activeTier = TierId(EXPLORER_ID),
+                        activeTier = TierId(STARTER_ID),
                         status = Membership.Status.STATUS_ACTIVE,
                         dateEnds = 0L,
                         paymentMethod = MembershipPaymentMethod.METHOD_NONE,
@@ -136,7 +136,7 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
             secondMainItem.let {
                 assertIs<MembershipMainState.Default>(secondMainItem)
                 val builderTier2 = secondMainItem.tiers.find { it.id == TierId(BUILDER_ID) }
-                val explorerTier2 = secondMainItem.tiers.find { it.id == TierId(EXPLORER_ID) }
+                val explorerTier2 = secondMainItem.tiers.find { it.id == TierId(STARTER_ID) }
                 assertEquals(true, builderTier2?.isActive)
                 assertEquals(false, explorerTier2?.isActive)
             }
@@ -145,7 +145,7 @@ class TierBuilderFallbackOnExplorerTest : MembershipTestsSetup() {
             thirdMainItem.let {
                 assertIs<MembershipMainState.Default>(thirdMainItem)
                 val builderTier3 = thirdMainItem.tiers.find { it.id == TierId(BUILDER_ID) }
-                val explorerTier3 = thirdMainItem.tiers.find { it.id == TierId(EXPLORER_ID) }
+                val explorerTier3 = thirdMainItem.tiers.find { it.id == TierId(STARTER_ID) }
                 assertEquals(false, builderTier3?.isActive)
                 assertEquals(true, explorerTier3?.isActive)
             }

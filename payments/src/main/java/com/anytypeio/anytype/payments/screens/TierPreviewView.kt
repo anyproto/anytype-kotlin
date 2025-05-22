@@ -40,7 +40,9 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.NEW_EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
 import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -157,9 +159,21 @@ fun mapTierToResources(tier: Tier): TierResources {
             colors = toValue(tier.color),
             features = tier.features,
         )
-        EXPLORER_ID -> TierResources(
+        STARTER_ID -> TierResources(
             mediumIcon = R.drawable.logo_explorer_96,
             smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
+        PIONEER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_custom_64,
+            smallIcon = R.drawable.logo_custom_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
+        NEW_EXPLORER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_new_explorer_96,
+            smallIcon = R.drawable.logo_new_explorer_64,
             colors = toValue(tier.color),
             features = tier.features,
         )
@@ -186,9 +200,19 @@ fun mapTierPreviewToResources(tier: TierPreview): TierResources {
             smallIcon = R.drawable.logo_co_creator_64,
             colors = toValue(tier.color)
         )
-        EXPLORER_ID -> TierResources(
+        STARTER_ID -> TierResources(
             mediumIcon = R.drawable.logo_explorer_96,
             smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color)
+        )
+        PIONEER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_custom_64,
+            smallIcon = R.drawable.logo_custom_64,
+            colors = toValue(tier.color)
+        )
+        NEW_EXPLORER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_new_explorer_96,
+            smallIcon = R.drawable.logo_new_explorer_64,
             colors = toValue(tier.color)
         )
         else -> TierResources(
@@ -213,6 +237,7 @@ fun String.gradientStart(): Color = when (this) {
     CoverColor.BLUE.code -> colorResource(id = R.color.tier_gradient_blue_start)
     CoverColor.GREEN.code -> colorResource(id = R.color.tier_gradient_teal_start)
     CoverColor.PURPLE.code -> colorResource(id = R.color.tier_gradient_purple_start)
+    CoverColor.ICE.code -> colorResource(id = R.color.tier_gradient_ice_start)
     else -> colorResource(id = R.color.tier_gradient_blue_start)
 }
 
@@ -222,6 +247,7 @@ private fun String.gradientEnd(): Color = when (this) {
     CoverColor.BLUE.code -> colorResource(id = R.color.tier_gradient_blue_end)
     CoverColor.GREEN.code -> colorResource(id = R.color.tier_gradient_teal_end)
     CoverColor.PURPLE.code -> colorResource(id = R.color.tier_gradient_purple_end)
+    CoverColor.ICE.code -> colorResource(id = R.color.tier_gradient_ice_end)
     else -> colorResource(id = R.color.tier_gradient_blue_end)
 }
 
@@ -252,11 +278,12 @@ data class TierColors(
 fun TierPreviewViewPreview() {
     TierPreviewView(
         tier = TierPreview(
-            id = TierId(BUILDER_ID),
-            title = "Builder",
+            id = TierId(NEW_EXPLORER_ID),
+            title = "Explorer",
             subtitle = "For those who want to build and create",
             conditionInfo = TierConditionInfo.Visible.Price("99.99", TierPeriod.Year(1)),
-            isActive = true
+            isActive = true,
+            color = "ice"
         )
     ) {}
 }

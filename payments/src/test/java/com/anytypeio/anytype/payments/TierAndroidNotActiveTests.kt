@@ -46,7 +46,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
     private fun setupTierData(features: List<String>): List<MembershipTierData> {
         return listOf(
             StubMembershipTierData(
-                id = MembershipConstants.EXPLORER_ID,
+                id = MembershipConstants.STARTER_ID,
                 androidProductId = null,
                 features = features,
                 periodType = MembershipPeriodType.PERIOD_TYPE_UNLIMITED,
@@ -85,7 +85,7 @@ class TierAndroidNotActiveTests : MembershipTestsSetup() {
         status : Membership.Status = Membership.Status.STATUS_ACTIVE
     ): MembershipStatus {
         return MembershipStatus(
-            activeTier = TierId(MembershipConstants.EXPLORER_ID),
+            activeTier = TierId(MembershipConstants.STARTER_ID),
             status = status,
             dateEnds = 1714199910,
             paymentMethod = MembershipPaymentMethod.METHOD_NONE,

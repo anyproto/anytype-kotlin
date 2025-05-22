@@ -173,6 +173,9 @@
     <color name="tier_gradient_purple_start">#FBEAFF</color>
     <color name="tier_gradient_purple_end">#E86DE3</color>
 
+    <color name="tier_gradient_ice_start">#1A0091D3</color>
+    <color name="tier_gradient_ice_end">#FF91D3FF</color>
+
     <color name="membership_info_gradient_green">#CFF6CF</color>
     <color name="membership_info_gradient_yellow">#FEF2C6</color>
     <color name="membership_info_gradient_pink">#FFEBEB</color>

@@ -184,10 +184,10 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
     val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
     if (!wasPurchasedOnAndroid) {
         return when {
-            id == MembershipConstants.EXPLORER_ID && userEmail.isBlank() -> {
+            id == MembershipConstants.STARTER_ID && userEmail.isBlank() -> {
                 TierButton.Submit.Enabled to TierAnyName.Hidden
             }
-            id == MembershipConstants.EXPLORER_ID -> {
+            id == MembershipConstants.STARTER_ID -> {
                 TierButton.ChangeEmail to TierAnyName.Hidden
             }
             paymentMethod == METHOD_NONE -> {
@@ -448,7 +448,7 @@ private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
 
 private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: String): TierEmail {
     if (isActive) {
-        if (id == MembershipConstants.EXPLORER_ID && membershipEmail.isBlank()) {
+        if (id == MembershipConstants.STARTER_ID && membershipEmail.isBlank()) {
             return TierEmail.Visible.Enter
         }
     }

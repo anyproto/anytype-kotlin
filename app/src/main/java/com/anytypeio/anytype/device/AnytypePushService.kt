@@ -11,6 +11,7 @@ import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
@@ -80,12 +81,18 @@ class AnytypePushService : FirebaseMessagingService() {
     private fun handleDecryptedContent(content: DecryptedPushContent) {
         Timber.d("Decrypted content: $content")
         when (content.type) {
-            1 -> handleNewMessage(content.newMessage)
+            1 -> handleNewMessage(
+                message = content.newMessage,
+                space = content.spaceId
+            )
             else -> Timber.w("Unknown message type: ${content.type}")
         }
     }
 
-    private fun handleNewMessage(message: DecryptedPushContent.Message) {
+    private fun handleNewMessage(
+        message: DecryptedPushContent.Message,
+        space: Id
+    ) {
         Timber.d("New message received: $message")
         
         // Create an intent to open the app when notification is tapped
@@ -93,7 +100,7 @@ class AnytypePushService : FirebaseMessagingService() {
             action = ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(Relations.CHAT_ID, message.chatId)
-            putExtra(Relations.SPACE_ID, message.spaceName)
+            putExtra(Relations.SPACE_ID, space)
         }
         
         val pendingIntent = PendingIntent.getActivity(

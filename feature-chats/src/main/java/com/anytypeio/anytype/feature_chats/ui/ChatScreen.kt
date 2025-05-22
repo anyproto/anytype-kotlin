@@ -41,7 +41,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
@@ -65,9 +64,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
@@ -91,7 +87,6 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -114,147 +109,137 @@ fun ChatScreenWrapper(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showReactionSheet by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    NavHost(
-        modifier = modifier,
-        navController = rememberNavController(),
-        startDestination = "discussions"
+    Box(
+        modifier = modifier.fillMaxSize()
     ) {
-        composable(
-            route = "discussions"
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                val clipboard = LocalClipboardManager.current
-                val lazyListState = rememberLazyListState()
+        val clipboard = LocalClipboardManager.current
+        val lazyListState = rememberLazyListState()
 
-                val messages by vm.uiState
-                    .map { it.messages }
-                    .collectAsStateWithLifecycle(emptyList())
+        val messages by vm.uiState
+            .map { it.messages }
+            .collectAsStateWithLifecycle(emptyList())
 
-                val counter by vm.uiState
-                    .map { it.counter }
-                    .collectAsStateWithLifecycle(ChatViewState.Counter())
+        val counter by vm.uiState
+            .map { it.counter }
+            .collectAsStateWithLifecycle(ChatViewState.Counter())
 
-                val intent by vm.uiState
-                    .map { it.intent }
-                    .collectAsStateWithLifecycle(ChatContainer.Intent.None)
+        val intent by vm.uiState
+            .map { it.intent }
+            .collectAsStateWithLifecycle(ChatContainer.Intent.None)
 
-                val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
+        val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
-                ChatScreen(
-                    chatBoxMode = vm.chatBoxMode.collectAsState().value,
-                    messages = messages,
-                    counter = counter,
-                    intent = intent,
-                    attachments = vm.chatBoxAttachments.collectAsState().value,
-                    onMessageSent = { text, spans ->
-                        vm.onMessageSent(
-                            msg = text,
-                            markup = spans.mapNotNull { span ->
-                                when(span) {
-                                    is ChatBoxSpan.Mention -> {
-                                        Block.Content.Text.Mark(
-                                            type = Block.Content.Text.Mark.Type.MENTION,
-                                            param = span.param,
-                                            range = span.start..span.end
-                                        )
-                                    }
-                                    is ChatBoxSpan.Markup -> {
-                                        val type = when(span.type) {
-                                            ChatBoxSpan.Markup.BOLD -> Block.Content.Text.Mark.Type.BOLD
-                                            ChatBoxSpan.Markup.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
-                                            ChatBoxSpan.Markup.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
-                                            ChatBoxSpan.Markup.CODE -> Block.Content.Text.Mark.Type.KEYBOARD
-                                            ChatBoxSpan.Markup.UNDERLINE -> Block.Content.Text.Mark.Type.UNDERLINE
-                                            else -> null
-                                        }
-                                        if (type != null) {
-                                            Block.Content.Text.Mark(
-                                                type = type,
-                                                range = span.start..span.end
-                                            )
-                                        } else {
-                                            null
-                                        }
-                                    }
+        ChatScreen(
+            chatBoxMode = vm.chatBoxMode.collectAsState().value,
+            messages = messages,
+            counter = counter,
+            intent = intent,
+            attachments = vm.chatBoxAttachments.collectAsState().value,
+            onMessageSent = { text, spans ->
+                vm.onMessageSent(
+                    msg = text,
+                    markup = spans.mapNotNull { span ->
+                        when(span) {
+                            is ChatBoxSpan.Mention -> {
+                                Block.Content.Text.Mark(
+                                    type = Block.Content.Text.Mark.Type.MENTION,
+                                    param = span.param,
+                                    range = span.start..span.end
+                                )
+                            }
+                            is ChatBoxSpan.Markup -> {
+                                val type = when(span.type) {
+                                    ChatBoxSpan.Markup.BOLD -> Block.Content.Text.Mark.Type.BOLD
+                                    ChatBoxSpan.Markup.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
+                                    ChatBoxSpan.Markup.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+                                    ChatBoxSpan.Markup.CODE -> Block.Content.Text.Mark.Type.KEYBOARD
+                                    ChatBoxSpan.Markup.UNDERLINE -> Block.Content.Text.Mark.Type.UNDERLINE
+                                    else -> null
+                                }
+                                if (type != null) {
+                                    Block.Content.Text.Mark(
+                                        type = type,
+                                        range = span.start..span.end
+                                    )
+                                } else {
+                                    null
                                 }
                             }
-                        )
-                    },
-                    onClearAttachmentClicked = vm::onClearAttachmentClicked,
-                    lazyListState = lazyListState,
-                    onReacted = vm::onReacted,
-                    onCopyMessage = { msg ->
-                        clipboard.setText(AnnotatedString(text = msg.content.msg))
-                    },
-                    onDeleteMessage = vm::onDeleteMessage,
-                    onEditMessage = vm::onRequestEditMessageClicked,
-                    onAttachmentClicked = vm::onAttachmentClicked,
-                    onExitEditMessageMode = vm::onExitEditMessageMode,
-                    onMarkupLinkClicked = onMarkupLinkClicked,
-                    onAttachObjectClicked = onAttachObjectClicked,
-                    onReplyMessage = vm::onReplyMessage,
-                    onClearReplyClicked = vm::onClearReplyClicked,
-                    onChatBoxMediaPicked = { uris ->
-                        vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
-                    },
-                    onChatBoxFilePicked = { uris ->
-                        val infos = uris.mapNotNull { uri ->
-                            val cursor = context.contentResolver.query(
-                                uri,
-                                null,
-                                null,
-                                null,
-                                null
-                            )
-                            if (cursor != null) {
-                                val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
-                                cursor.moveToFirst()
-                                DefaultFileInfo(
-                                    uri = uri.toString(),
-                                    name = cursor.getString(nameIndex),
-                                    size = cursor.getLong(sizeIndex).toInt()
-                                )
-                            } else {
-                                null
-                            }
                         }
-                        vm.onChatBoxFilePicked(infos)
-                    },
-                    onAddReactionClicked = onSelectChatReaction,
-                    onViewChatReaction = onViewChatReaction,
-                    onMemberIconClicked = vm::onMemberIconClicked,
-                    onMentionClicked = vm::onMentionClicked,
-                    mentionPanelState = mentionPanelState,
-                    onTextChanged = { value ->
-                        vm.onChatBoxInputChanged(
-                            selection = value.selection.start..value.selection.end,
-                            text = value.text
-                        )
-                    },
-                    onChatScrolledToTop = vm::onChatScrolledToTop,
-                    onChatScrolledToBottom = vm::onChatScrolledToBottom,
-                    onScrollToReplyClicked = vm::onChatScrollToReply,
-                    onClearIntent = vm::onClearChatViewStateIntent,
-                    onScrollToBottomClicked = vm::onScrollToBottomClicked,
-                    onVisibleRangeChanged = vm::onVisibleRangeChanged,
-                    onUrlInserted = vm::onUrlPasted
+                    }
                 )
-                LaunchedEffect(Unit) {
-                    vm.uXCommands.collect { command ->
-                        when(command) {
-                            is UXCommand.JumpToBottom -> {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                            is UXCommand.SetChatBoxInput -> {
-                                // TODO
-                            }
-                            is UXCommand.OpenFullScreenImage -> {
-                                onRequestOpenFullScreenImage(command.url)
-                            }
-                        }
+            },
+            onClearAttachmentClicked = vm::onClearAttachmentClicked,
+            lazyListState = lazyListState,
+            onReacted = vm::onReacted,
+            onCopyMessage = { msg ->
+                clipboard.setText(AnnotatedString(text = msg.content.msg))
+            },
+            onDeleteMessage = vm::onDeleteMessage,
+            onEditMessage = vm::onRequestEditMessageClicked,
+            onAttachmentClicked = vm::onAttachmentClicked,
+            onExitEditMessageMode = vm::onExitEditMessageMode,
+            onMarkupLinkClicked = onMarkupLinkClicked,
+            onAttachObjectClicked = onAttachObjectClicked,
+            onReplyMessage = vm::onReplyMessage,
+            onClearReplyClicked = vm::onClearReplyClicked,
+            onChatBoxMediaPicked = { uris ->
+                vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
+            },
+            onChatBoxFilePicked = { uris ->
+                val infos = uris.mapNotNull { uri ->
+                    val cursor = context.contentResolver.query(
+                        uri,
+                        null,
+                        null,
+                        null,
+                        null
+                    )
+                    if (cursor != null) {
+                        val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                        val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                        cursor.moveToFirst()
+                        DefaultFileInfo(
+                            uri = uri.toString(),
+                            name = cursor.getString(nameIndex),
+                            size = cursor.getLong(sizeIndex).toInt()
+                        )
+                    } else {
+                        null
+                    }
+                }
+                vm.onChatBoxFilePicked(infos)
+            },
+            onAddReactionClicked = onSelectChatReaction,
+            onViewChatReaction = onViewChatReaction,
+            onMemberIconClicked = vm::onMemberIconClicked,
+            onMentionClicked = vm::onMentionClicked,
+            mentionPanelState = mentionPanelState,
+            onTextChanged = { value ->
+                vm.onChatBoxInputChanged(
+                    selection = value.selection.start..value.selection.end,
+                    text = value.text
+                )
+            },
+            onChatScrolledToTop = vm::onChatScrolledToTop,
+            onChatScrolledToBottom = vm::onChatScrolledToBottom,
+            onScrollToReplyClicked = vm::onChatScrollToReply,
+            onClearIntent = vm::onClearChatViewStateIntent,
+            onScrollToBottomClicked = vm::onScrollToBottomClicked,
+            onVisibleRangeChanged = vm::onVisibleRangeChanged,
+            onUrlInserted = vm::onUrlPasted
+        )
+        LaunchedEffect(Unit) {
+            vm.uXCommands.collect { command ->
+                when(command) {
+                    is UXCommand.JumpToBottom -> {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                    is UXCommand.SetChatBoxInput -> {
+                        // TODO
+                    }
+                    is UXCommand.OpenFullScreenImage -> {
+                        onRequestOpenFullScreenImage(command.url)
                     }
                 }
             }

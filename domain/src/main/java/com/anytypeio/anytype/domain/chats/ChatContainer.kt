@@ -85,7 +85,7 @@
                     }
                 }
                 .distinctUntilChanged()
-                .map { messages -> messages.associate { it.id to it } }
+                .map { messages -> messages.associateBy { it.id } }
         }
     
         fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {
@@ -119,7 +119,7 @@
     
             var intent: Intent = Intent.None
     
-            val initial = buildList<Chat.Message> {
+            val initial = buildList {
                 if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                     // Starting from the unread-messages window.
                     val aroundUnread = loadAroundMessageOrder(

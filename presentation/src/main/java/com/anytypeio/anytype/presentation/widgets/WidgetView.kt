@@ -119,7 +119,26 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val showIcon: Boolean = false,
         val showCover: Boolean = false
-    ) : WidgetView(), Draggable
+    ) : WidgetView(), Draggable {
+        val canCreateObjectOfType : Boolean get() {
+            return when(source) {
+                Widget.Source.Bundled.AllObjects -> false
+                Widget.Source.Bundled.Chat -> false
+                Widget.Source.Bundled.Bin -> false
+                Widget.Source.Bundled.Favorites -> true
+                Widget.Source.Bundled.Recent -> false
+                Widget.Source.Bundled.RecentLocal -> false
+                is Widget.Source.Default -> {
+                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                        val wrapper = ObjectWrapper.Type(source.obj.map)
+                        SupportedLayouts.createObjectLayouts.contains(wrapper.recommendedLayout)
+                    } else {
+                        true
+                    }
+                }
+            }
+        }
+    }
 
     data class ListOfObjects(
         override val id: Id,

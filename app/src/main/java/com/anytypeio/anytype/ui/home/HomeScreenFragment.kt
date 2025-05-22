@@ -101,7 +101,6 @@ class HomeScreenFragment : BaseComposeFragment(),
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-
             MaterialTheme(
                 typography = typography,
                 shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),

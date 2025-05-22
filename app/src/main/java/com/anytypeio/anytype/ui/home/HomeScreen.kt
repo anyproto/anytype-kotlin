@@ -406,7 +406,8 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onCreateElement = onCreateElement
                         )
                     }
                 }
@@ -691,7 +692,8 @@ private fun GalleryWidgetItem(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit
+    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -712,7 +714,8 @@ private fun GalleryWidgetItem(
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onWidgetMenuTriggered = onWidgetMenuTriggered,
+            onCreateElement = onCreateElement
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,

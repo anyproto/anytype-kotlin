@@ -453,6 +453,7 @@ class MainViewModel(
     }
 
     fun onOpenChatTriggeredByPush(chatId: String, spaceId: String) {
+        Timber.d("onOpenChatTriggeredByPush: $chatId, $spaceId")
         viewModelScope.launch {
             if (spaceManager.get() != spaceId) {
                 spaceManager.set(spaceId)

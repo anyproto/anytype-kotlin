@@ -13,12 +13,14 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
+import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -200,6 +202,27 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     Timber.e(it, "Error while navigating to object from splash")
                 }
             }
+            is SplashViewModel.Command.NavigateToChat -> {
+                runCatching {
+                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        args = HomeScreenFragment.args(
+                            space = command.space,
+                            deeplink = null
+                        )
+                    )
+                    findNavController().navigate(
+                        R.id.chatScreen,
+                        args = ChatFragment.args(
+                            space = command.space,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to chat from push")
+                }
+            }
             is SplashViewModel.Command.NavigateToObjectType -> {
                 runCatching {
                     findNavController().navigate(R.id.actionOpenVaultFromSplash)
@@ -324,32 +347,48 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = activity?.intent
-                if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
-                    val data = intent.dataString.orNull() ?: intent.extras?.getString(Intent.EXTRA_TEXT)
-                    if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
-                        // Clearing intent to only handle it once:
-                        with(intent) {
-                            setAction(null)
-                            setData(null)
-                            putExtras(Bundle())
-                        }
-                        vm.onDeepLinkLaunch(data)
-                    } else {
-                        val bundle = intent.extras
-                        if (bundle != null) {
-                            val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
-                            if (type != null) {
-                                vm.onIntentCreateNewObject(type = type)
+                Timber.d("Checking app start intent: $intent, action: ${intent?.action}")
+                when {
+                    intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND) -> {
+                        val data =
+                            intent.dataString.orNull() ?: intent.extras?.getString(Intent.EXTRA_TEXT)
+                        if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
+                            // Clearing intent to only handle it once:
+                            with(intent) {
+                                setAction(null)
+                                setData(null)
+                                putExtras(Bundle())
+                            }
+                            vm.onDeepLinkLaunch(data)
+                        } else {
+                            val bundle = intent.extras
+                            if (bundle != null) {
+                                val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
+                                if (type != null) {
+                                    vm.onIntentCreateNewObject(type = type)
+                                } else {
+                                    vm.onIntentActionNotFound()
+                                }
                             } else {
                                 vm.onIntentActionNotFound()
                             }
+                        }
+                    }
+                    intent?.action == AnytypePushService.ACTION_OPEN_CHAT -> {
+                        val chatId = intent.getStringExtra(Relations.CHAT_ID)
+                        val spaceId = intent.getStringExtra(Relations.SPACE_ID)
+                        if (!chatId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
+                            vm.onIntentTriggeredByChatPush(
+                                space = spaceId,
+                                chat = chatId
+                            )
                         } else {
                             vm.onIntentActionNotFound()
                         }
                     }
-                }
-                else {
-                    vm.onIntentActionNotFound()
+                    else -> {
+                        vm.onIntentActionNotFound()
+                    }
                 }
             }
 

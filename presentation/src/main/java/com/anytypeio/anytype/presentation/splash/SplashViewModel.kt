@@ -278,6 +278,23 @@ class SplashViewModel(
         }
     }
 
+    fun onIntentTriggeredByChatPush(space: Id, chat: Id) {
+        viewModelScope.launch {
+            spaceManager.set(space = space)
+                .onSuccess {
+                    commands.emit(
+                        Command.NavigateToChat(
+                            space = space,
+                            chat = chat
+                        )
+                    )
+                }
+                .onFailure {
+                    Timber.e(it, "Error while setting space due to chat intent")
+                }
+        }
+    }
+
     fun onIntentActionNotFound() {
         proceedWithNavigation()
     }
@@ -463,6 +480,7 @@ class SplashViewModel(
         data object NavigateToAuthStart : Command()
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
+        data class NavigateToChat(val space: Id, val chat: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToDateObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectType(val id: Id, val space: Id, val chat: Id?) : Command()

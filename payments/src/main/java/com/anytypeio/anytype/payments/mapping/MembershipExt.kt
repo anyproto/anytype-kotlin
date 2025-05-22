@@ -184,6 +184,12 @@ private fun MembershipTierData.mapActiveTierButtonAndNameStates(
     val wasPurchasedOnAndroid = isActiveTierPurchasedOnAndroid(paymentMethod)
     if (!wasPurchasedOnAndroid) {
         return when {
+            id == MembershipConstants.OLD_EXPLORER_ID && userEmail.isBlank() -> {
+                TierButton.Submit.Enabled to TierAnyName.Hidden
+            }
+            id == MembershipConstants.OLD_EXPLORER_ID -> {
+                TierButton.ChangeEmail to TierAnyName.Hidden
+            }
             id == MembershipConstants.STARTER_ID && userEmail.isBlank() -> {
                 TierButton.Submit.Enabled to TierAnyName.Hidden
             }
@@ -448,6 +454,9 @@ private fun convertToTierViewPeriod(tier: MembershipTierData): TierPeriod {
 
 private fun MembershipTierData.getTierEmail(isActive: Boolean, membershipEmail: String): TierEmail {
     if (isActive) {
+        if (id == MembershipConstants.OLD_EXPLORER_ID && membershipEmail.isBlank()) {
+            return TierEmail.Visible.Enter
+        }
         if (id == MembershipConstants.STARTER_ID && membershipEmail.isBlank()) {
             return TierEmail.Visible.Enter
         }

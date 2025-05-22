@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.NEW_EXPLORER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
 import com.anytypeio.anytype.payments.models.TierPreview
@@ -159,6 +160,12 @@ fun mapTierToResources(tier: Tier): TierResources {
             colors = toValue(tier.color),
             features = tier.features,
         )
+        OLD_EXPLORER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
         STARTER_ID -> TierResources(
             mediumIcon = R.drawable.logo_explorer_96,
             smallIcon = R.drawable.logo_explorer_64,
@@ -198,6 +205,11 @@ fun mapTierPreviewToResources(tier: TierPreview): TierResources {
         CO_CREATOR_ID -> TierResources(
             mediumIcon = R.drawable.logo_co_creator_96,
             smallIcon = R.drawable.logo_co_creator_64,
+            colors = toValue(tier.color)
+        )
+        OLD_EXPLORER_ID -> TierResources(
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
             colors = toValue(tier.color)
         )
         STARTER_ID -> TierResources(

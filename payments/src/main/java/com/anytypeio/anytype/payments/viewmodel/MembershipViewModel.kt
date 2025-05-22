@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_NAME_MIN_LENGTH
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.NONE_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
@@ -458,7 +459,7 @@ class MembershipViewModel(
                         (tierState.value as? MembershipTierState.Visible)?.tier ?: return@fold
                     when (status) {
                         EmailVerificationStatus.STATUS_VERIFIED -> {
-                            if (tierView.id.value == STARTER_ID) {
+                            if (tierView.id.value == STARTER_ID || tierView.id.value == OLD_EXPLORER_ID) {
                                 anyEmailState.clearText()
                                 val updatedState = tierView.copy(
                                     email = TierEmail.Hidden,

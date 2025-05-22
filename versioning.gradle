@@ -77,7 +77,7 @@ def enableDatedVersionName() {
             sb.append("version.versionMinor=${versionMinor}")
         }else if(line.startsWith('version.versionPatch=')){
             sb.append("version.versionPatch=${versionPatch}")
-        } else if(line.startsWith('version.useDatedVersionName=false')){
+        } else if(line.startsWith('version.useDatedVersionName=')){
             sb.append("version.useDatedVersionName=true")
         }else{
             sb.append(line)

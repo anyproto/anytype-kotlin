@@ -9,6 +9,7 @@ import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.ui.main.MainActivity
 
@@ -17,13 +18,13 @@ class NotificationBuilder(
     private val notificationManager: NotificationManager
 ) {
 
-    fun buildAndNotify(message: DecryptedPushContent.Message) {
+    fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
 
         // 1) Build the intent that’ll open your MainActivity in the right chat
         val pending = createChatPendingIntent(
             context = context,
             chatId = message.chatId,
-            spaceName = message.spaceName
+            spaceId = spaceId
         )
 
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -67,14 +68,14 @@ class NotificationBuilder(
     fun createChatPendingIntent(
         context: Context,
         chatId: String,
-        spaceName: String
+        spaceId: Id
     ): PendingIntent {
         // 1) Build the intent that’ll open your MainActivity in the right chat
         val intent = Intent(context, MainActivity::class.java).apply {
             action = AnytypePushService.ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra(Relations.CHAT_ID, chatId)
-            putExtra(Relations.SPACE_ID, spaceName)
+            putExtra(Relations.SPACE_ID, spaceId)
         }
 
         // 2) Wrap it in a one-shot immutable PendingIntent

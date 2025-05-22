@@ -23,7 +23,10 @@ class DefaultPushMessageProcessor(
         val encrypted = Base64.decode(base64, Base64.DEFAULT)
         val content = decryptionService.decrypt(encrypted, keyId) ?: return false
 
-        notificationBuilder.buildAndNotify(content.newMessage)
+        notificationBuilder.buildAndNotify(
+            message = content.newMessage,
+            spaceId = content.spaceId
+        )
 
         return true
     }

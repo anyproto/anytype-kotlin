@@ -49,7 +49,7 @@ class DecryptionPushContentServiceImpl @Inject constructor(
 
             // Parse the decrypted JSON
             try {
-                Json.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
+                Json { ignoreUnknownKeys = true }.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
             } catch (e: Exception) {
                 Timber.e(e, "Failed to parse decrypted data for keyId: $keyId")
                 null

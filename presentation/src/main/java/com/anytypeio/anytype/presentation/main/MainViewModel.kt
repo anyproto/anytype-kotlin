@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
-import com.anytypeio.anytype.core_models.multiplayer.SpaceType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -512,7 +512,7 @@ class MainViewModel(
                     data class SwitchSpace(
                         val home: Id,
                         val chat: Id? = null,
-                        val spaceType: SpaceType? = null
+                        val spaceUxType: SpaceUxType? = null
                     ): SideEffect()
                 }
             }

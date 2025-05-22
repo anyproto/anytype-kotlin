@@ -55,7 +55,7 @@ enum class SpaceAccessType(val code: Int) {
     SHARED(2)
 }
 
-enum class SpaceType(val code: Int) {
+enum class SpaceUxType(val code: Int) {
     DATA(0),
     CHAT(1)
 }

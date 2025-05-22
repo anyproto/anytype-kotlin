@@ -30,7 +30,7 @@ import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.multiplayer.SpaceType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
@@ -238,7 +238,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         runCatching {
                                             val controller = findNavController(R.id.fragment)
                                             controller.popBackStack(R.id.vaultScreen, false)
-                                            if (effect.chat != null && effect.spaceType == SpaceType.CHAT) {
+                                            if (effect.chat != null && effect.spaceUxType == SpaceUxType.CHAT) {
                                                 controller.navigate(
                                                     R.id.actionOpenChatFromVault,
                                                     ChatFragment.args(

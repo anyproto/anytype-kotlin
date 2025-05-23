@@ -1192,7 +1192,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                WidgetView.SpaceChat.id -> {
+                BundledWidgetSourceIds.CHAT -> {
                     proceedWithSpaceChatWidgetHeaderClick()
                 }
                 else -> {

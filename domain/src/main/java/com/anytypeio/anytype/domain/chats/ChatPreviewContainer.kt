@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,7 @@ interface ChatPreviewContainer {
 
     suspend fun getAll(): List<Chat.Preview>
     suspend fun getPreview(space: SpaceId): Chat.Preview?
+    fun observePreview(space: SpaceId) : Flow<Chat.Preview?>
     fun observePreviews() : Flow<List<Chat.Preview>>
 
     class Default @Inject constructor(
@@ -111,6 +114,12 @@ interface ChatPreviewContainer {
 
         override suspend fun getPreview(space: SpaceId): Chat.Preview? {
             return previews.value.firstOrNull { preview -> preview.space.id == space.id }
+        }
+
+        override fun observePreview(space: SpaceId): Flow<Chat.Preview?> {
+            return previews.map {
+                it.firstOrNull { preview -> preview.space.id == space.id }
+            }
         }
 
         override fun observePreviews(): Flow<List<Chat.Preview>> {

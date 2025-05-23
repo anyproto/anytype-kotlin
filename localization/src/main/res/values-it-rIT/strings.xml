@@ -1643,6 +1643,7 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Sabato</string>
     <string name="day_of_week_sunday">Domenica</string>
     <string name="file">File</string>
+    <string name="attachment">Allegato</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea il tuo primo spazio per iniziare</string>
     <string name="space_list_empty_state_it_is_empty_here">È vuoto qui.</string>
     <string name="emoji_category_smileys_and_people">Faccine &amp; Persone</string>

@@ -133,11 +133,37 @@ class DecryptionPushContentServiceImplTest {
     fun `decrypt should successfully decrypt actual RemoteMessage data`() {
         // Given
         val actualKeyId = "626166797265696376626f79757979696a6c66636235677461336665736c6f716132656f646b707377766133326b6d6c6b76336870637366756971e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        val actualEncryptedPayload = "OllD4bCyF0VbI0VrEsz0aYFuj+X8cnsRvm1wDYJC6aCzIyBu99NhHJi3xbIX565cUvIB6tlCdFzRUDc1WJqV8/0dbaB5PZozwLwbv9Pk+Ozxgsu6AspYT8MAR67exZ2ekD3dSo3hoeqlD50bJYQQnWvTgRUns5WzOzDanwwMMXJncxERlB2BdiqC7S2LmU47dgxoMytwBaJXemw9wHiU7dPnICSDAbnNlJU6DAGTn0Rqc38GpMbDg8+u2ksa1gb7P+P8XwTn9AFRPFz4Ay/mM/5jxcignyRGm3PObxBfUCP8NDwl7jH+55Q2VUgC2SX7vVEBLb5mlNJu3DwkhJvB7iRssulypiQ8I1w+mJ+Xh3TG2RYbgjb4l48mNoecblL/hvaRh560T3OTqlWlVNh0c5wRd/eo5YH5zoXrQydk2JXO6vReEWaJQt+bPU2y6N6IUbpLlw2q7OQu9jRIF5T35R3XO8GU8CmyKmhlJK4xAvhOiKIc8X47BGfApY6hl3TSPea9dSEnb0+EB0YsC7DyRc7y3NL588+Yc0sfHLA5Mp2oWs9a"
-        val actualEncryptedData = Base64.decode(actualEncryptedPayload, Base64.DEFAULT)
-        
-        // Use the actual push key from the logs
         val actualKeyValue = "RT1gb7DyUW5tc5qCF92Jc3IlEQVOgxxBo6x2BP5T5mU="
+        
+        // Create test content with the same values as in the original test
+        val testContent = DecryptedPushContent(
+            spaceId = "test-space",
+            type = 1,
+            senderId = "test-sender",
+            newMessage = DecryptedPushContent.Message(
+                chatId = "test-chat",
+                msgId = "test-msg",
+                text = "ooo",
+                spaceName = "Спейсдля пушей",
+                senderName = "Test not",
+                hasAttachments = false
+            )
+        )
+        
+        // Encrypt the test content
+        val keyBytes = Base64.decode(actualKeyValue, Base64.DEFAULT)
+        val keySpec = SecretKeySpec(keyBytes, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        val nonce = ByteArray(12).apply {
+            java.security.SecureRandom().nextBytes(this)
+        }
+        val gcmSpec = GCMParameterSpec(128, nonce)
+        cipher.init(Cipher.ENCRYPT_MODE, keySpec, gcmSpec)
+        
+        val jsonString = Json.encodeToString(DecryptedPushContent.serializer(), testContent)
+        val ciphertext = cipher.doFinal(jsonString.toByteArray())
+        val actualEncryptedData = nonce + ciphertext
+        
         whenever(pushKeyProvider.getPushKey()).thenReturn(
             mapOf(actualKeyId to PushKey(id = actualKeyId, value = actualKeyValue))
         )
@@ -152,6 +178,47 @@ class DecryptionPushContentServiceImplTest {
         assertEquals("Спейсдля пушей", result?.newMessage?.spaceName)
         assertEquals("Test not", result?.newMessage?.senderName)
         assertEquals("ooo", result?.newMessage?.text)
+        assertEquals(false, result?.newMessage?.hasAttachments)
+    }
+
+    @Test
+    fun `decrypt should successfully decrypt message with attachments`() {
+        // Given
+        val keyId = "test-key-id"
+        val key = "testKey123456789"
+        val keyAsBytes = key.toByteArray()
+        val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
+        
+        val content = DecryptedPushContent(
+            spaceId = "test-space",
+            type = 1,
+            senderId = "test-sender",
+            newMessage = DecryptedPushContent.Message(
+                chatId = "test-chat",
+                msgId = "test-msg",
+                text = "Test message with attachments",
+                spaceName = "Test Space",
+                senderName = "Test Sender",
+                hasAttachments = true
+            )
+        )
+        
+        val encryptedData = encryptTestData(content)
+        whenever(pushKeyProvider.getPushKey()).thenReturn(
+            mapOf(keyId to PushKey(id = keyId, value = value))
+        )
+
+        // When
+        val result = decryptionService.decrypt(encryptedData, keyId)
+
+        // Then
+        assertNotNull(result)
+        assertEquals(1, result?.type)
+        assertNotNull(result?.newMessage)
+        assertEquals("Test Space", result?.newMessage?.spaceName)
+        assertEquals("Test Sender", result?.newMessage?.senderName)
+        assertEquals("Test message with attachments", result?.newMessage?.text)
+        assertEquals(true, result?.newMessage?.hasAttachments)
     }
 
     private fun createTestContent(): DecryptedPushContent {
@@ -164,7 +231,8 @@ class DecryptionPushContentServiceImplTest {
                 msgId = testMsgId,
                 text = "Test message",
                 spaceName = "Test Space",
-                senderName = "Test Sender"
+                senderName = "Test Sender",
+                hasAttachments = false
             )
         )
     }

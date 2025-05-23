@@ -467,6 +467,8 @@ interface BlockRemote {
     suspend fun subscribeLastChatMessages(command: Command.ChatCommand.SubscribeLastMessages): Command.ChatCommand.SubscribeLastMessages.Response
     suspend fun toggleChatMessageReaction(command: Command.ChatCommand.ToggleMessageReaction)
     suspend fun unsubscribeChat(chat: Id)
+    suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview>
+    suspend fun unsubscribeFromMessagePreviews(subscription: Id)
 
     //endregion
 

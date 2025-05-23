@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.mappers
 
 import anytype.Event.P2PStatus
 import anytype.Event.Space
+import com.anytypeio.anytype.core_models.chats.Chat
 
 
 typealias MEvent = anytype.Event

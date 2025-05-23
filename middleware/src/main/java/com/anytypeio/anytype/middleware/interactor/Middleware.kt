@@ -830,7 +830,7 @@ class Middleware @Inject constructor(
             localPath = command.path,
             type = type,
             spaceId = command.space.id,
-            createTypeWidgetIfMissing = true
+            createTypeWidgetIfMissing = command.createTypeWidgetIfMissing
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
@@ -2895,11 +2895,28 @@ class Middleware @Inject constructor(
         return response.event.toPayload()
     }
 
-    @Throws
+    @Throws(Exception::class)
     fun chatUnsubscribe(chat: Id) {
         val request = Rpc.Chat.Unsubscribe.Request(chatObjectId = chat)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatUnsubscribe(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun chatSubscribeToMessagePreviews(subscription: Id): List<Chat.Preview> {
+        val request = Rpc.Chat.SubscribeToMessagePreviews.Request(subId = subscription)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSubscribeToMessagePreviews(request) }
+        logResponseIfDebug(response, time)
+        return response.previews.map { it.core() }
+    }
+
+    @Throws(Exception::class)
+    fun chatUnsubscribeFromMessagePreviews(subscription: Id) {
+        val request = Rpc.Chat.UnsubscribeFromMessagePreviews.Request(subId = subscription)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatUnsubscribeToMessagePreviews(request) }
         logResponseIfDebug(response, time)
     }
 

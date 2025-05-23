@@ -1101,6 +1101,14 @@ class BlockDataRepository(
         return remote.unsubscribeChat(chat)
     }
 
+    override suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview> {
+        return remote.subscribeToMessagePreviews(subscription)
+    }
+
+    override suspend fun unsubscribeFromMessagePreviews(subscription: Id) {
+        remote.unsubscribeFromMessagePreviews(subscription)
+    }
+
     override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
         return remote.objectRelationListWithValue(command)
     }

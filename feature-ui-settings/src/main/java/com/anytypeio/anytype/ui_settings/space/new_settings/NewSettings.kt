@@ -78,15 +78,10 @@ fun NewSpaceSettingsScreen(
         containerColor = colorResource(id = R.color.background_primary),
         topBar = {
             Box(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                        .height(48.dp)
-                else
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
+                modifier = Modifier
+                    .windowInsetsPadding(WindowInsets.statusBars)
+                    .fillMaxWidth()
+                    .height(48.dp)
             ) {
                 Box(
                     modifier = Modifier

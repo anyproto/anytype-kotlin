@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -53,6 +54,7 @@ interface SelectWidgetSourceDependencies : ComponentDependencies {
     fun searchObjects(): SearchObjects
     fun fieldParser(): FieldParser
     fun logger(): Logger
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }
 
 @Module
@@ -71,7 +73,8 @@ object SelectWidgetSourceModule {
         analyticsHelper: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
         storeOfObjectTypes: StoreOfObjectTypes,
-        getSuggestedWidgetTypes: GetSuggestedWidgetTypes
+        getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
@@ -82,6 +85,7 @@ object SelectWidgetSourceModule {
         analyticSpaceHelperDelegate = analyticsHelper,
         fieldParser = fieldParser,
         storeOfObjectTypes = storeOfObjectTypes,
-        getSuggestedWidgetTypes = getSuggestedWidgetTypes
+        getSuggestedWidgetTypes = getSuggestedWidgetTypes,
+        spaceViews = spaceViewSubscriptionContainer
     )
 }

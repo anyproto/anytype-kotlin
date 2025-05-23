@@ -3,12 +3,14 @@ package com.anytypeio.anytype.device
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.core_utils.ext.isAppInForeground
 import com.anytypeio.anytype.core_utils.ext.runSafely
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
+import javax.inject.Named
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -19,6 +21,13 @@ class AnytypePushService : FirebaseMessagingService() {
 
     @Inject
     lateinit var processor: PushMessageProcessor
+
+    @Inject
+    @Named(DEFAULT_APP_COROUTINE_SCOPE)
+    lateinit var scope: CoroutineScope
+
+    @Inject
+    lateinit var dispatchers: AppCoroutineDispatchers
 
     override fun onCreate() {
         super.onCreate()
@@ -43,7 +52,7 @@ class AnytypePushService : FirebaseMessagingService() {
             Timber.d("App is in foreground, skipping notification")
             return
         }
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch((dispatchers.io)) {
             runSafely("processing push message") {
                 processor.process(message.data)
             }

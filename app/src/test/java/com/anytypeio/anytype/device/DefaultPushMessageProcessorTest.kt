@@ -103,7 +103,8 @@ class DefaultPushMessageProcessorTest {
                 msgId = "test-msg-id",
                 text = "Test message",
                 spaceName = "Test Space",
-                senderName = "Test Sender"
+                senderName = "Test Sender",
+                hasAttachments = true
             )
         )
 

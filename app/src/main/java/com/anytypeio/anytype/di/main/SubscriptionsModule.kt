@@ -229,7 +229,8 @@ object SubscriptionsModule {
         isSpaceDeleted: SpaceDeletedStatusWatcher,
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
-        deviceTokenStoringService: DeviceTokenStoringService
+        deviceTokenStoringService: DeviceTokenStoringService,
+        chatPreviewContainer: ChatPreviewContainer
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -237,7 +238,8 @@ object SubscriptionsModule {
         isSpaceDeleted = isSpaceDeleted,
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
-        deviceTokenStoringService = deviceTokenStoringService
+        deviceTokenStoringService = deviceTokenStoringService,
+        chatPreviewContainer = chatPreviewContainer
     )
 
     @JvmStatic

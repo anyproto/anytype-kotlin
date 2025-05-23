@@ -2470,6 +2470,32 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatSubscribeToMessagePreviews(request: Rpc.Chat.SubscribeToMessagePreviews.Request): Rpc.Chat.SubscribeToMessagePreviews.Response {
+        val encoded = Service.chatSubscribeToMessagePreviews(
+            Rpc.Chat.SubscribeToMessagePreviews.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.SubscribeToMessagePreviews.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.SubscribeToMessagePreviews.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatUnsubscribeToMessagePreviews(request: Rpc.Chat.UnsubscribeFromMessagePreviews.Request): Rpc.Chat.UnsubscribeFromMessagePreviews.Response {
+        val encoded = Service.chatUnsubscribeFromMessagePreviews(
+            Rpc.Chat.UnsubscribeFromMessagePreviews.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.UnsubscribeFromMessagePreviews.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.UnsubscribeFromMessagePreviews.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun debugAccountSelectTrace(request: Rpc.Debug.AccountSelectTrace.Request): Rpc.Debug.AccountSelectTrace.Response {
         val encoded = Service.debugAccountSelectTrace(
             Rpc.Debug.AccountSelectTrace.Request.ADAPTER.encode(request)

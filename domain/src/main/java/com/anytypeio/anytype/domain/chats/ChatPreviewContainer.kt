@@ -7,14 +7,11 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
-import kotlin.math.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
@@ -105,7 +102,7 @@ interface ChatPreviewContainer {
                 runCatching {
                     repo.unsubscribeFromMessagePreviews(subscription = SUBSCRIPTION_ID)
                 }.onFailure {
-                    logger.logException(it, "Error while unsubscribing from message previews")
+                    logger.logException(it, "DROID-2966 Error while unsubscribing from message previews")
                 }
             }
         }

@@ -29,19 +29,8 @@ class NotificationBuilder(
             spaceId = spaceId
         )
 
-        // 1) prepare the body text + optional attachment suffix
-        // We append the paperclip emoji (📎) and localized attachment text to make it clear to users
-        // that the notification contains attachments. This is a common pattern in messaging apps
-        // and helps maintain consistency across different notification styles and device manufacturers.
-        val rawText = message.text.trim()
-        val bodyText = when {
-            message.hasAttachments && rawText.isNotEmpty() ->
-                "$rawText \uD83D\uDCCE$attachmentText"
-            message.hasAttachments ->
-                "\uD83D\uDCCE$attachmentText"
-            else ->
-                rawText
-        }
+        // Format the notification body text
+        val bodyText = message.formatNotificationBody(attachmentText)
 
         // 2) put it all on one line: "Author: <bodyText>"
         val singleLine = "${message.senderName.trim()}: $bodyText"

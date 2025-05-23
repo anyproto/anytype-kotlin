@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -85,16 +86,12 @@ fun SpaceChatWidgetCard(
                         color = colorResource(R.color.transparent_active),
                         shape = CircleShape
                     )
-                    .defaultMinSize(20.dp),
+                    .size(20.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                    ,
-                    text = "@",
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_white),
+                Image(
+                    painter = painterResource(R.drawable.ic_chat_widget_mention),
+                    contentDescription = null
                 )
             }
         }
@@ -105,7 +102,8 @@ fun SpaceChatWidgetCard(
             }
             Box(
                 modifier = Modifier
-                    .defaultMinSize(20.dp)
+                    .height(20.dp)
+                    .defaultMinSize(minWidth = 20.dp)
                     .background(
                         color = colorResource(R.color.transparent_active),
                         shape = CircleShape

@@ -1642,6 +1642,7 @@ En concreto,
     <string name="day_of_week_saturday">Sábado</string>
     <string name="day_of_week_sunday">Domingo</string>
     <string name="file">Archivo</string>
+    <string name="attachment">Adjunto</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea tu primer espacio para empezar</string>
     <string name="space_list_empty_state_it_is_empty_here">Aquí no hay nada.</string>
     <string name="emoji_category_smileys_and_people">Emoticonos y personas</string>

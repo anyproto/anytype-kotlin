@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -114,7 +117,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .systemBarsPadding()
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,

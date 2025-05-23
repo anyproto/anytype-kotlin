@@ -9,8 +9,10 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlin.math.log
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
@@ -35,12 +37,16 @@ interface ChatPreviewContainer {
         private val logger: Logger
     ) : ChatPreviewContainer {
 
+        private var job: Job? = null
         private val previews = MutableStateFlow<List<Chat.Preview>>(emptyList())
 
         override fun start() {
-            scope.launch {
+            job?.cancel()
+            job = scope.launch(dispatchers.io) {
                 previews.value = emptyList()
-                val initial = repo.subscribeToMessagePreviews(SUBSCRIPTION_ID)
+                val initial = runCatching { repo.subscribeToMessagePreviews(SUBSCRIPTION_ID) }
+                    .onFailure { logger.logException(it, "DROID-2966 Error while getting initial previews") }
+                    .getOrDefault(emptyList())
                 events
                     .observe(SUBSCRIPTION_ID)
                     .scan(initial = initial) { previews, events ->
@@ -82,6 +88,7 @@ interface ChatPreviewContainer {
                         }
                     }
                     .flowOn(dispatchers.io)
+                    .catch { logger.logException(it, "DROID-2966 Exception in chat preview flow") }
                     .collect {
                         previews.value = it
                     }
@@ -89,15 +96,22 @@ interface ChatPreviewContainer {
         }
 
         override fun stop() {
-            scope.launch {
+            job?.cancel()
+            job = null
+            scope.launch(dispatchers.io) {
                 previews.value = emptyList()
+                runCatching {
+                    repo.unsubscribeFromMessagePreviews(subscription = SUBSCRIPTION_ID)
+                }.onFailure {
+                    logger.logException(it, "Error while unsubscribing from message previews")
+                }
             }
         }
 
         override suspend fun getAll(): List<Chat.Preview> = previews.value
 
         override suspend fun getPreview(space: SpaceId): Chat.Preview? {
-            return previews.value.firstOrNull { it.space.id == it.space.id }
+            return previews.value.firstOrNull { preview -> preview.space.id == space.id }
         }
 
         override fun observePreviews(): Flow<List<Chat.Preview>> {

@@ -71,7 +71,9 @@ fun ChatTopToolbar(
                 .noRippleClickable { onSpaceNameClicked() }
             ,
             text = when(header) {
-                is ChatViewModel.HeaderView.Default -> header.title
+                is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
+                    stringResource(R.string.untitled)
+                }
                 is ChatViewModel.HeaderView.Init -> ""
             },
             color = colorResource(R.color.text_primary),

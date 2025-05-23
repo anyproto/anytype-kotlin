@@ -501,7 +501,7 @@ private fun WidgetList(
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
-                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
+                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) }
                     )
                 }
                 is WidgetView.Action.EditWidgets -> {

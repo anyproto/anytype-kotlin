@@ -322,6 +322,9 @@ sealed class Event {
 
         sealed class Chats : Command() {
 
+            /**
+             * @property [id] msg ID
+             */
             data class Add(
                 override val context: Id,
                 val id: Id,
@@ -329,6 +332,9 @@ sealed class Event {
                 val message: Chat.Message
             ) : Chats()
 
+            /**
+             * @property [id] msg ID
+             */
             data class Update(
                 override val context: Id,
                 val id: Id,
@@ -337,9 +343,12 @@ sealed class Event {
 
             data class Delete(
                 override val context: Id,
-                val id: Id
+                val message: Id
             ) : Chats()
 
+            /**
+             * @property [id] msg ID
+             */
             data class UpdateReactions(
                 override val context: Id,
                 val id: Id,

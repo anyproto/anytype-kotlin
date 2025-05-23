@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChatEventRemoteChannel {
     fun observe(chat: Id): Flow<List<Event.Command.Chats>>
+    fun subscribe(subscription: Id): Flow<List<Event.Command.Chats>>
     class Default(
         private val channel: ChatEventRemoteChannel
     ) : ChatEventChannel {

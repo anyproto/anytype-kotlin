@@ -156,10 +156,14 @@ class RequestJoinSpaceViewModel(
                             onSuccess = {
                                 analytics.sendEvent(eventName = screenRequestSent)
                                 if (notificator.areNotificationsEnabled) {
-                                    commands.emit(Command.Toast.RequestSent)
+                                    if (!curr.data.withoutApprove) {
+                                        commands.emit(Command.Toast.RequestSent)
+                                    }
                                     commands.emit(Command.Dismiss)
                                 } else {
-                                    commands.emit(Command.Toast.RequestSent)
+                                    if (!curr.data.withoutApprove) {
+                                        commands.emit(Command.Toast.RequestSent)
+                                    }
                                     showEnableNotificationDialog.value = true
                                 }
                             }

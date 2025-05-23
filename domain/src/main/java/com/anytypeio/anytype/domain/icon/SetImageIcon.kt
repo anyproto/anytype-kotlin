@@ -14,6 +14,7 @@ abstract class SetImageIcon<T> : BaseUseCase<Pair<Payload, Hash>, SetImageIcon.P
     data class Params<T>(
         val target: T,
         val path: String,
-        val spaceId: SpaceId
+        val spaceId: SpaceId,
+        val  createTypeWidgetIfMissing: Boolean = true
     )
 }

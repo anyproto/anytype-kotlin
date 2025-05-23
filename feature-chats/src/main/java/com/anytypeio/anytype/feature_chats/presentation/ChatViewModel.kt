@@ -390,23 +390,25 @@ class ChatViewModel @Inject constructor(
         val results = members.get().let { store ->
             when (store) {
                 is Store.Data -> {
-                    store.members.map { member ->
-                        MentionPanelState.Member(
-                            member.id,
-                            name = member.name.orEmpty(),
-                            icon = SpaceMemberIconView.icon(
-                                obj = member,
-                                urlBuilder = urlBuilder
-                            ),
-                            isUser = member.identity == account
-                        )
-                    }.filter { m ->
-                        if (query != null) {
-                            m.name.contains(query.query, true)
-                        } else {
-                            true
+                    store.members
+                        .filter { member -> member.permissions?.isAtLeastReader() == true }
+                        .map { member ->
+                            MentionPanelState.Member(
+                                member.id,
+                                name = member.name.orEmpty(),
+                                icon = SpaceMemberIconView.icon(
+                                    obj = member,
+                                    urlBuilder = urlBuilder
+                                ),
+                                isUser = member.identity == account
+                            )
+                        }.filter { m ->
+                            if (query != null) {
+                                m.name.contains(query.query, true)
+                            } else {
+                                true
+                            }
                         }
-                    }
                 }
 
                 Store.Empty -> {

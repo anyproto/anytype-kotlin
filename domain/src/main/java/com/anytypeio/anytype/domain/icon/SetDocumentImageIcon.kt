@@ -15,7 +15,8 @@ class SetDocumentImageIcon @Inject constructor(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE,
-                space = params.spaceId
+                space = params.spaceId,
+                createTypeWidgetIfMissing = params.createTypeWidgetIfMissing
             )
         )
         val payload = repo.setDocumentImageIcon(

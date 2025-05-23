@@ -1629,6 +1629,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
     <string name="file">Berkas</string>
+    <string name="attachment">Attachment</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
     <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
     <string name="emoji_category_smileys_and_people">Smiley &amp; Orang</string>

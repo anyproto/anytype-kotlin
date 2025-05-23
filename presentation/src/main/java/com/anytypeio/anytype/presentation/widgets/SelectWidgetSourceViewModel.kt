@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -36,7 +37,9 @@ import com.anytypeio.anytype.presentation.widgets.source.SuggestWidgetObjectType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -51,7 +54,8 @@ class SelectWidgetSourceViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -63,41 +67,58 @@ class SelectWidgetSourceViewModel(
     storeOfObjectTypes = storeOfObjectTypes
 ) {
 
-    val suggested = MutableStateFlow<SuggestedWidgetsState>(SuggestedWidgetsState.Init)
+    private val suggested = MutableStateFlow<SuggestedWidgetsState>(SuggestedWidgetsState.Init)
 
     val isDismissed = MutableStateFlow(false)
     var config : Config = Config.None
 
-    val viewState = combine(
-        stateData
-            .asFlow(),
-        suggested.filterIsInstance<SuggestedWidgetsState.Default>()
-    ) { state, suggested ->
-        when(state) {
-            is ObjectSearchView.Success -> {
-                state.copy(
-                    objects = buildList {
-                        val query = userInput.value
-                        addAll(resolveSuggestedResults(suggested, query))
-                        // Widgets from existing objects
-                        add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
-                        addAll(state.objects)
+    val viewState = flow {
+        val hasChat = !spaceViews.get(vmParams.space)?.chatId.isNullOrEmpty()
+        emitAll(
+            combine(
+                stateData
+                    .asFlow(),
+                suggested.filterIsInstance<SuggestedWidgetsState.Default>()
+            ) { state, suggested ->
+                when(state) {
+                    is ObjectSearchView.Success -> {
+                        state.copy(
+                            objects = buildList {
+                                val query = userInput.value
+                                addAll(
+                                    resolveSuggestedResults(
+                                        suggested = suggested,
+                                        query = query,
+                                        hasChat = hasChat
+                                    )
+                                )
+                                // Widgets from existing objects
+                                add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)
+                                addAll(state.objects)
+                            }
+                        )
                     }
-                )
-            }
-            is ObjectSearchView.NoResults -> {
-                val query = state.searchText
-                val result = buildList<DefaultSearchItem> {
-                    addAll(resolveSuggestedResults(suggested, query))
+                    is ObjectSearchView.NoResults -> {
+                        val query = state.searchText
+                        val result = buildList {
+                            addAll(
+                                resolveSuggestedResults(
+                                    suggested = suggested,
+                                    query = query,
+                                    hasChat = hasChat
+                                )
+                            )
+                        }
+                        if (result.isNotEmpty()) {
+                            ObjectSearchView.Success(result)
+                        } else {
+                            state
+                        }
+                    }
+                    else -> state
                 }
-                if (result.isNotEmpty()) {
-                    ObjectSearchView.Success(result)
-                } else {
-                    state
-                }
             }
-            else -> state
-        }
+        )
     }
 
     init {
@@ -113,7 +134,8 @@ class SelectWidgetSourceViewModel(
 
     private fun resolveSuggestedResults(
         suggested: SuggestedWidgetsState.Default,
-        query: String
+        query: String,
+        hasChat: Boolean
     ) = buildList {
 
         // Adding system widgets if matched by query
@@ -130,7 +152,7 @@ class SelectWidgetSourceViewModel(
                 if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
                     add(BundledWidgetSourceView.AllObjects)
                 }
-                if (contains(BundledWidgetSourceIds.CHAT)) {
+                if (contains(BundledWidgetSourceIds.CHAT) && hasChat) {
                     add(BundledWidgetSourceView.Chat)
                 }
                 if (contains(BundledWidgetSourceIds.RECENT)) {
@@ -428,7 +450,8 @@ class SelectWidgetSourceViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fieldParser: FieldParser,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes
+        private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -443,7 +466,8 @@ class SelectWidgetSourceViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
-                getSuggestedWidgetTypes = getSuggestedWidgetTypes
+                getSuggestedWidgetTypes = getSuggestedWidgetTypes,
+                spaceViews = spaceViews
             ) as T
         }
     }

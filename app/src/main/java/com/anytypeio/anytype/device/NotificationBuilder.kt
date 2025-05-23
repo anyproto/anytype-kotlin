@@ -22,7 +22,7 @@ class NotificationBuilder(
 
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
 
-        // 1) Build the intent that’ll open your MainActivity in the right chat
+        // 1) Build the intent that'll open your MainActivity in the right chat
         val pending = createChatPendingIntent(
             context = context,
             chatId = message.chatId,
@@ -30,6 +30,9 @@ class NotificationBuilder(
         )
 
         // 1) prepare the body text + optional attachment suffix
+        // We append the paperclip emoji (📎) and localized attachment text to make it clear to users
+        // that the notification contains attachments. This is a common pattern in messaging apps
+        // and helps maintain consistency across different notification styles and device manufacturers.
         val rawText = message.text.trim()
         val bodyText = when {
             message.hasAttachments && rawText.isNotEmpty() ->
@@ -40,7 +43,7 @@ class NotificationBuilder(
                 rawText
         }
 
-        // 2) put it all on one line: “Author: <bodyText>”
+        // 2) put it all on one line: "Author: <bodyText>"
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -85,7 +88,7 @@ class NotificationBuilder(
         chatId: String,
         spaceId: Id
     ): PendingIntent {
-        // 1) Build the intent that’ll open your MainActivity in the right chat
+        // 1) Build the intent that'll open your MainActivity in the right chat
         val intent = Intent(context, MainActivity::class.java).apply {
             action = AnytypePushService.ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

@@ -27,12 +27,14 @@ class NotificationBuilder(
             spaceId = spaceId
         )
 
+        // 2) Build a single line of “Author: text”
+        val singleLine = "${message.senderName.trim()}: ${message.text.trim()}"
+
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
-            .setSubText(message.senderName.trim())
-            .setContentText(message.text.trim())
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message.text.trim()))
+            .setContentText(singleLine)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(singleLine))
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pending)

@@ -184,6 +184,63 @@ fun JoinSpaceWithoutApproveScreen(
 }
 
 @Composable
+fun JoinSpaceRequestSentScreen(
+    onDoneClicked: () -> Unit,
+    onManageSpaces: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_request_to_join_sent_title,),
+            style = HeadlineHeading,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_request_to_join_sent_description,),
+            style = Title2,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(19.dp))
+        ButtonPrimaryLoading(
+            onClick = throttledClick(
+                onClick = {  }
+            ),
+            size = ButtonSize.Large,
+            text = stringResource(R.string.done),
+            modifierButton = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonSecondary(
+            onClick = throttledClick(
+                onClick = {  }
+            ),
+            text = stringResource(R.string.multiplayer_request_to_join_btn_manage_spaces),
+            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSize.Large,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
 fun JoiningLoadingState(
     onCancelLoadingInviteClicked: () -> Unit
 ) {

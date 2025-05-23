@@ -18,6 +18,8 @@ class NotificationBuilder(
     private val notificationManager: NotificationManager
 ) {
 
+    private val attachmentText get() = context.getString(R.string.attachment)
+
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
 
         // 1) Build the intent that’ll open your MainActivity in the right chat
@@ -27,8 +29,19 @@ class NotificationBuilder(
             spaceId = spaceId
         )
 
-        // 2) Build a single line of “Author: text”
-        val singleLine = "${message.senderName.trim()}: ${message.text.trim()}"
+        // 1) prepare the body text + optional attachment suffix
+        val rawText = message.text.trim()
+        val bodyText = when {
+            message.hasAttachments && rawText.isNotEmpty() ->
+                "$rawText \uD83D\uDCCE$attachmentText"
+            message.hasAttachments ->
+                "\uD83D\uDCCE$attachmentText"
+            else ->
+                rawText
+        }
+
+        // 2) put it all on one line: “SpaceName Author: <bodyText>”
+        val singleLine = "${message.senderName.trim()}: $bodyText"
 
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)

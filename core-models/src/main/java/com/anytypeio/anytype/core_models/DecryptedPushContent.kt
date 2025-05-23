@@ -15,6 +15,7 @@ data class DecryptedPushContent(
         val msgId: String,
         val text: String,
         val spaceName: String,
-        val senderName: String
+        val senderName: String,
+        val hasAttachments: Boolean
     )
 }

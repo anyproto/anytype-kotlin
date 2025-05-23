@@ -189,11 +189,23 @@ class SpaceSettingsViewModel(
                 }
                 val createdByNameOrId = spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
-                val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.size
-                } else {
-                    0
-                }
+                val spaceMemberCount =
+                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        if (permission?.isOwner() == true) {
+                            spaceMembers.members
+                                .filter {
+                                    it.status == ParticipantStatus.ACTIVE
+                                            || it.status == ParticipantStatus.JOINING
+                                            || it.status == ParticipantStatus.REMOVING
+                                }.size
+                        } else {
+                            spaceMembers.members
+                                .filter { it.status == ParticipantStatus.ACTIVE }.size
+                        }
+
+                    } else {
+                        0
+                    }
 
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.count { it.status == ParticipantStatus.JOINING }

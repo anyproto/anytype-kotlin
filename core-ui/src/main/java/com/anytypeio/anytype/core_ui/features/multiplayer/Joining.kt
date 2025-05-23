@@ -295,7 +295,8 @@ fun JoinSpaceScreenPreview() {
     JoinSpaceScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "Anytype Android App",
-        createdByName = "Konstantin"
+        createdByName = "Konstantin",
+        onCancelClicked = {}
     )
 }
 
@@ -305,7 +306,8 @@ fun JoinSpaceScreenPreviewWithEmptyNames() {
     JoinSpaceScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "",
-        createdByName = ""
+        createdByName = "",
+        onCancelClicked = {}
     )
 }
 
@@ -315,6 +317,7 @@ fun JoinSpaceScreenPreviewWithoutApprove() {
     JoinSpaceWithoutApproveScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "",
-        createdByName = ""
+        createdByName = "",
+        onCancelClicked = {}
     )
 }

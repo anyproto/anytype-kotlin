@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_utils.ext
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ClipboardManager
 import android.content.Context
@@ -437,4 +438,11 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
         state = BottomSheetBehavior.STATE_EXPANDED
         skipCollapsed = true
     }
+}
+
+fun Context.isAppInForeground(): Boolean {
+    val appProcessInfo = ActivityManager.RunningAppProcessInfo()
+    ActivityManager.getMyMemoryState(appProcessInfo)
+    return appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
+            appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
 }

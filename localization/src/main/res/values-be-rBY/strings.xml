@@ -1175,6 +1175,9 @@
     <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
     <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_sent_title">Запыт адпраўлены</string>
+    <string name="multiplayer_request_to_join_sent_description">Вы атрымаеце паведамленне, калі ўладальнік прасторы зацвердзіць ваш запыт.</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
     <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
     <string name="multiplayer_space_request_to_join">Адправіць запыт на далучэнне</string>
     <string name="multiplayer_space_request_to_join_msg">Вас запрасілі далучыцца да прасторы %1$s, створанай %2$s. Адпраўце запыт, каб уладальнік прасторы змог прыняць вас.</string>

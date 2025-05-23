@@ -40,7 +40,7 @@ class NotificationBuilder(
                 rawText
         }
 
-        // 2) put it all on one line: “SpaceName Author: <bodyText>”
+        // 2) put it all on one line: “Author: <bodyText>”
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)

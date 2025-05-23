@@ -23,8 +23,10 @@ import kotlinx.coroutines.launch
  * Cross-space (vault-level) chat previews container
  */
 interface ChatPreviewContainer {
+
     fun start()
     fun stop()
+
     suspend fun getAll(): List<Chat.Preview>
     suspend fun getPreview(space: SpaceId): Chat.Preview?
     fun observePreviews() : Flow<List<Chat.Preview>>

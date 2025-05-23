@@ -7,6 +7,8 @@ import com.anytypeio.anytype.device.DefaultPushMessageProcessor
 import com.anytypeio.anytype.device.NotificationBuilder
 import com.anytypeio.anytype.device.PushMessageProcessor
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
@@ -16,7 +18,9 @@ import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Singleton
 @Component(
@@ -86,4 +90,6 @@ interface PushContentDependencies : ComponentDependencies {
     fun deviceTokenSavingService(): DeviceTokenStoringService
     fun pushKeyProvider(): PushKeyProvider
     fun context(): Context
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
+    fun dispatchers(): AppCoroutineDispatchers
 }

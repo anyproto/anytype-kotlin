@@ -18,21 +18,28 @@ class NotificationBuilder(
     private val notificationManager: NotificationManager
 ) {
 
+    private val attachmentText get() = context.getString(R.string.attachment)
+
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
 
-        // 1) Build the intent that’ll open your MainActivity in the right chat
+        // 1) Build the intent that'll open your MainActivity in the right chat
         val pending = createChatPendingIntent(
             context = context,
             chatId = message.chatId,
             spaceId = spaceId
         )
 
+        // Format the notification body text
+        val bodyText = message.formatNotificationBody(attachmentText)
+
+        // 2) put it all on one line: "Author: <bodyText>"
+        val singleLine = "${message.senderName.trim()}: $bodyText"
+
         val notif = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
-            .setSubText(message.senderName.trim())
-            .setContentText(message.text.trim())
-            .setStyle(NotificationCompat.BigTextStyle().bigText(message.text.trim()))
+            .setContentText(singleLine)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(singleLine))
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pending)
@@ -70,7 +77,7 @@ class NotificationBuilder(
         chatId: String,
         spaceId: Id
     ): PendingIntent {
-        // 1) Build the intent that’ll open your MainActivity in the right chat
+        // 1) Build the intent that'll open your MainActivity in the right chat
         val intent = Intent(context, MainActivity::class.java).apply {
             action = AnytypePushService.ACTION_OPEN_CHAT
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

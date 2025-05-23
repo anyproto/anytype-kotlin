@@ -499,6 +499,8 @@ private fun WidgetList(
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
                         mode = mode,
+                        unReadMentionCount = item.unreadMentionCount,
+                        unReadMessageCount = item.unreadMessageCount,
                         onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
                     )
                 }

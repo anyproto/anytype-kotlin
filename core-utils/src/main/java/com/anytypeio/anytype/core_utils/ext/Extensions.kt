@@ -159,3 +159,11 @@ fun Long.readableFileSize(): String {
 }
 
 fun Throwable.msg(default: String = "Unknown error") = message ?: default
+
+inline fun <T> runSafely(actionDesc: String, block: () -> T) {
+    try {
+        block()
+    } catch (e: Exception) {
+        Timber.e(e, "Error during $actionDesc")
+    }
+}

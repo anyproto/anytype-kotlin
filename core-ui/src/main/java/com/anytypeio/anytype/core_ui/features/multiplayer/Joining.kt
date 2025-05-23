@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_ui.views.Title2
 @Composable
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     spaceName: String,
     createdByName: String,
     isLoading: Boolean = false
@@ -87,7 +88,16 @@ fun JoinSpaceScreen(
                 loading = isLoading
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonSecondary(
+            onClick = throttledClick(
+                onClick = { onCancelClicked() }
+            ),
+            text = stringResource(R.string.cancel),
+            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSize.Large,
+        )
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = stringResource(R.string.multiplayer_request_to_join_explanation),
             style = Caption1Regular,
@@ -102,6 +112,7 @@ fun JoinSpaceScreen(
 @Composable
 fun JoinSpaceWithoutApproveScreen(
     onRequestJoinSpaceClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     spaceName: String,
     createdByName: String,
     isLoading: Boolean = false
@@ -162,7 +173,7 @@ fun JoinSpaceWithoutApproveScreen(
         Spacer(modifier = Modifier.height(8.dp))
         ButtonSecondary(
             onClick = throttledClick(
-                onClick = { onRequestJoinSpaceClicked() }
+                onClick = { onCancelClicked() }
             ),
             text = stringResource(R.string.cancel),
             modifier = Modifier.fillMaxWidth(),

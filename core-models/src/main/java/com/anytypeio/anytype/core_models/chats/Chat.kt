@@ -113,11 +113,11 @@ sealed class Chat {
         val oldestMentionMessageOrderId: Id? = unreadMentions?.olderOrderId
     }
 
-    data class MessagePreview(
+    data class Preview(
         val space: SpaceId,
         val chat: Id,
-        val message: Message,
-        val state: State,
-        val dependencies: List<ObjectWrapper.Basic>
+        val message: Message? = null,
+        val state: State? = null,
+        val dependencies: List<ObjectWrapper.Basic> = emptyList()
     )
 }

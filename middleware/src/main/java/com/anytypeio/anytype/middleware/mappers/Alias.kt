@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.mappers
 
 import anytype.Event.P2PStatus
 import anytype.Event.Space
+import com.anytypeio.anytype.core_models.chats.Chat
 
 
 typealias MEvent = anytype.Event
@@ -43,6 +44,7 @@ typealias MChatState = anytype.model.ChatState
 typealias MChatMessageContent = anytype.model.ChatMessage.MessageContent
 typealias MChatMessageAttachment = anytype.model.ChatMessage.Attachment
 typealias MChatMessageAttachmentType = anytype.model.ChatMessage.Attachment.AttachmentType
+typealias MChatMessagePreview = Chat.MessagePreview
 typealias MChatMessageReactions = anytype.model.ChatMessage.Reactions
 typealias MChatMessageReactionIdentity = anytype.model.ChatMessage.Reactions.IdentityList
 

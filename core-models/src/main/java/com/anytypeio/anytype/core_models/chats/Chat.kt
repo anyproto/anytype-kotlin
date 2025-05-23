@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_models.chats
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 sealed class Chat {
 
@@ -110,4 +112,12 @@ sealed class Chat {
         val oldestMessageOrderId: Id? = unreadMessages?.olderOrderId
         val oldestMentionMessageOrderId: Id? = unreadMentions?.olderOrderId
     }
+
+    data class Preview(
+        val space: SpaceId,
+        val chat: Id,
+        val message: Message? = null,
+        val state: State? = null,
+        val dependencies: List<ObjectWrapper.Basic> = emptyList()
+    )
 }

@@ -1067,6 +1067,14 @@ class BlockMiddleware(
         return middleware.chatUnsubscribe(chat = chat)
     }
 
+    override suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview> {
+        return middleware.chatSubscribeToMessagePreviews(subscription)
+    }
+
+    override suspend fun unsubscribeFromMessagePreviews(subscription: Id) {
+        middleware.chatUnsubscribeFromMessagePreviews(subscription)
+    }
+
     override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
         return middleware.dataViewSetActiveView(command)
     }

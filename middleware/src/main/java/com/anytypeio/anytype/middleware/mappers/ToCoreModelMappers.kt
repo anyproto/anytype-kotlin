@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Relation
@@ -1173,6 +1174,16 @@ fun MChatState.core(): Chat.State = Chat.State(
     },
     lastStateId = lastStateId
 )
+
+fun Rpc.Chat.SubscribeToMessagePreviews.Response.ChatPreview.core(): Chat.Preview {
+    return Chat.Preview(
+        space = SpaceId(spaceId),
+        chat = chatObjectId,
+        message = message?.core(),
+        state = state?.core(),
+        dependencies = dependencies.map { ObjectWrapper.Basic(it.orEmpty()) }.filter { it.isValid }
+    )
+}
 
 fun Rpc.History.Version.toCoreModel(): Version {
     return Version(

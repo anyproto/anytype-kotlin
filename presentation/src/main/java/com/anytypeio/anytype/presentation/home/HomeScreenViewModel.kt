@@ -123,6 +123,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -506,101 +507,111 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-
                 widgets.forceChatPosition().filter { widget -> widget.hasValidLayout() }.map { widget ->
-                    when (widget) {
-                        is Widget.Link -> LinkWidgetContainer(
+                    if (widget.source.id == BundledWidgetSourceIds.CHAT) {
+                        SpaceChatWidgetContainer(
                             widget = widget,
-                            fieldParser = fieldParser
+                            container = chatPreviews
                         )
-                        is Widget.Tree -> TreeWidgetContainer(
-                            widget = widget,
-                            container = storelessSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = isCollapsed(widget.id),
-                            isSessionActive = isSessionActive,
-                            urlBuilder = urlBuilder,
-                            objectWatcher = objectWatcher,
-                            getSpaceView = getSpaceView,
-                            onRequestCache = {
-                                currentlyDisplayedViews.find { view ->
-                                    view.id == widget.id
-                                            && view is WidgetView.Tree
-                                            && view.source == widget.source
-                                } as? WidgetView.Tree
-                            },
-                            fieldParser = fieldParser,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-                            ListWidgetContainer(
+                    } else {
+                        when (widget) {
+                            is Widget.Link -> LinkWidgetContainer(
                                 widget = widget,
-                                subscription = widget.source.id,
-                                storage = storelessSubscriptionContainer,
+                                fieldParser = fieldParser
+                            )
+
+                            is Widget.Tree -> TreeWidgetContainer(
+                                widget = widget,
+                                container = storelessSubscriptionContainer,
+                                expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
-                                urlBuilder = urlBuilder,
                                 isSessionActive = isSessionActive,
+                                urlBuilder = urlBuilder,
                                 objectWatcher = objectWatcher,
                                 getSpaceView = getSpaceView,
                                 onRequestCache = {
                                     currentlyDisplayedViews.find { view ->
                                         view.id == widget.id
-                                                && view is WidgetView.ListOfObjects
+                                                && view is WidgetView.Tree
                                                 && view.source == widget.source
-                                    } as? WidgetView.ListOfObjects
+                                    } as? WidgetView.Tree
                                 },
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes
                             )
-                        } else {
-                            DataViewListWidgetContainer(
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
-                                isSessionActive = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.View -> {
-                            DataViewListWidgetContainer(
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
-                                isSessionActive = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                // TODO handle cached item type.
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.AllObjects -> {
-                            AllContentWidgetContainer(
-                                widget = widget
-                            )
+
+                            is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+                                ListWidgetContainer(
+                                    widget = widget,
+                                    subscription = widget.source.id,
+                                    storage = storelessSubscriptionContainer,
+                                    isWidgetCollapsed = isCollapsed(widget.id),
+                                    urlBuilder = urlBuilder,
+                                    isSessionActive = isSessionActive,
+                                    objectWatcher = objectWatcher,
+                                    getSpaceView = getSpaceView,
+                                    onRequestCache = {
+                                        currentlyDisplayedViews.find { view ->
+                                            view.id == widget.id
+                                                    && view is WidgetView.ListOfObjects
+                                                    && view.source == widget.source
+                                        } as? WidgetView.ListOfObjects
+                                    },
+                                    fieldParser = fieldParser,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            } else {
+                                DataViewListWidgetContainer(
+                                    widget = widget,
+                                    storage = storelessSubscriptionContainer,
+                                    getObject = getObject,
+                                    activeView = observeCurrentWidgetView(widget.id),
+                                    isWidgetCollapsed = isCollapsed(widget.id),
+                                    isSessionActive = isSessionActive,
+                                    urlBuilder = urlBuilder,
+                                    coverImageHashProvider = coverImageHashProvider,
+                                    onRequestCache = {
+                                        currentlyDisplayedViews.find { view ->
+                                            view.id == widget.id
+                                                    && view is WidgetView.SetOfObjects
+                                                    && view.source == widget.source
+                                        } as? WidgetView.SetOfObjects
+                                    },
+                                    storeOfRelations = storeOfRelations,
+                                    fieldParser = fieldParser,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            }
+
+                            is Widget.View -> {
+                                DataViewListWidgetContainer(
+                                    widget = widget,
+                                    storage = storelessSubscriptionContainer,
+                                    getObject = getObject,
+                                    activeView = observeCurrentWidgetView(widget.id),
+                                    isWidgetCollapsed = isCollapsed(widget.id),
+                                    isSessionActive = isSessionActive,
+                                    urlBuilder = urlBuilder,
+                                    coverImageHashProvider = coverImageHashProvider,
+                                    // TODO handle cached item type.
+                                    onRequestCache = {
+                                        currentlyDisplayedViews.find { view ->
+                                            view.id == widget.id
+                                                    && view is WidgetView.SetOfObjects
+                                                    && view.source == widget.source
+                                        } as? WidgetView.SetOfObjects
+                                    },
+                                    storeOfRelations = storeOfRelations,
+                                    fieldParser = fieldParser,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            }
+
+                            is Widget.AllObjects -> {
+                                AllContentWidgetContainer(
+                                    widget = widget
+                                )
+                            }
                         }
                     }
                 }

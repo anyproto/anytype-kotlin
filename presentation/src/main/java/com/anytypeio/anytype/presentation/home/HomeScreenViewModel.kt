@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -233,7 +234,8 @@ class HomeScreenViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
-    private val setAsFavourite: SetObjectListIsFavorite
+    private val setAsFavourite: SetObjectListIsFavorite,
+    private val chatPreviews: ChatPreviewContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -2690,7 +2692,8 @@ class HomeScreenViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-        private val setObjectListIsFavorite: SetObjectListIsFavorite
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val chatPreviews: ChatPreviewContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2748,7 +2751,8 @@ class HomeScreenViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer,
-            setAsFavourite = setObjectListIsFavorite
+            setAsFavourite = setObjectListIsFavorite,
+            chatPreviews = chatPreviews
         ) as T
     }
 

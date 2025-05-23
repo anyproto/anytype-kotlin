@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -51,7 +52,8 @@ class SelectWidgetSourceViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -428,7 +430,8 @@ class SelectWidgetSourceViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val fieldParser: FieldParser,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes
+        private val getSuggestedWidgetTypes: GetSuggestedWidgetTypes,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -443,7 +446,8 @@ class SelectWidgetSourceViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
-                getSuggestedWidgetTypes = getSuggestedWidgetTypes
+                getSuggestedWidgetTypes = getSuggestedWidgetTypes,
+                spaceViews = spaceViews
             ) as T
         }
     }

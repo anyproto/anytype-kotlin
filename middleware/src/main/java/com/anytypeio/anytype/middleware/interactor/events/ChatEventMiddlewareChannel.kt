@@ -184,7 +184,7 @@ fun MEventMessage.payload(subscription: Id, contextId: Id) : Event.Command.Chats
             if (event.subIds.contains(subscription)) {
                 Event.Command.Chats.Delete(
                     context = contextId,
-                    id = event.id
+                    message = event.id
                 )
             } else {
                 null

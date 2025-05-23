@@ -299,7 +299,7 @@ fun anytype.Event.Message.toCoreModels(
         checkNotNull(event)
         Event.Command.Chats.Delete(
             context = context,
-            id = event.id
+            message = event.id
         )
     }
     chatUpdate != null -> {

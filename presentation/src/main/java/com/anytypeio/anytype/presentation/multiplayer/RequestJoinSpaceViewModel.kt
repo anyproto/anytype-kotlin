@@ -28,7 +28,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -54,6 +53,7 @@ class RequestJoinSpaceViewModel(
     val commands = MutableSharedFlow<Command>(0)
     val showLoadingInviteProgress = MutableStateFlow(false)
     private var getSpaceInviteViewJob: Job? = null
+    private var joinSpaceRequestJob: Job? = null
 
     init {
         Timber.i("RequestJoinSpaceViewModel, init")
@@ -132,7 +132,8 @@ class RequestJoinSpaceViewModel(
     fun onRequestToJoinClicked() {
         when(val curr = state.value) {
             is TypedViewState.Success -> {
-                viewModelScope.launch {
+                joinSpaceRequestJob?.cancel()
+                joinSpaceRequestJob = viewModelScope.launch {
                     val fileKey = spaceInviteResolver.parseFileKey(params.link)
                     val contentId = spaceInviteResolver.parseContentId(params.link)
                     if (contentId != null && fileKey != null) {
@@ -175,6 +176,11 @@ class RequestJoinSpaceViewModel(
                 // Do nothing.
             }
         }
+    }
+
+    fun onCancelJoinSpaceRequestClicked() {
+        joinSpaceRequestJob?.cancel()
+        isRequestInProgress.value = false
     }
 
     fun onOpenSpaceClicked(space: SpaceId) {

@@ -10,6 +10,7 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -725,6 +726,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onResume() {
         super.onResume()
+        NotificationManagerCompat.from(this).cancelAll()
         mdnsProvider.start()
         navigator.bind(findNavController(R.id.fragment))
     }

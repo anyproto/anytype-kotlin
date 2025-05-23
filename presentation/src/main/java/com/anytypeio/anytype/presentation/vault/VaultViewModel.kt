@@ -379,7 +379,8 @@ class VaultViewModel(
     data class VaultSpaceView(
         val space: ObjectWrapper.SpaceView,
         val icon: SpaceIconView,
-        val wallpaper: Wallpaper = Wallpaper.Default
+        val wallpaper: Wallpaper = Wallpaper.Default,
+        val counter: Int = 0,
     )
 
     sealed class Command {

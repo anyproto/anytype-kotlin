@@ -358,6 +358,14 @@ fun VaultSpaceCard(
                 modifier = Modifier.alpha(0.6f)
             )
         }
+        Text(
+            text = "111",
+            style = BodySemiBold,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp)
+        )
     }
 }
 

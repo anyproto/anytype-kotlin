@@ -830,7 +830,7 @@ class Middleware @Inject constructor(
             localPath = command.path,
             type = type,
             spaceId = command.space.id,
-            createTypeWidgetIfMissing = true
+            createTypeWidgetIfMissing = command.createTypeWidgetIfMissing
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }

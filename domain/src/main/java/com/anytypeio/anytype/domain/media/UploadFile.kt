@@ -19,7 +19,8 @@ class UploadFile @Inject constructor(
         command = Command.UploadFile(
             path = params.path,
             type = params.type,
-            space = params.space
+            space = params.space,
+            createTypeWidgetIfMissing = params.createTypeWidgetIfMissing
         )
     )
 
@@ -27,5 +28,6 @@ class UploadFile @Inject constructor(
         val path: String,
         val space: SpaceId,
         val type: Block.Content.File.Type = Block.Content.File.Type.FILE,
+        val  createTypeWidgetIfMissing: Boolean = true
     )
 }

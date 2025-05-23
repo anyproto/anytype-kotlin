@@ -72,6 +72,13 @@ sealed class Widget {
         override val isAutoCreated: Boolean = false,
     ) : Widget()
 
+    data class Chat(
+        override val id: Id,
+        override val source: Source.Bundled.Chat,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -172,69 +179,32 @@ fun List<Block>.parseWidgets(
                         is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
                     }
                     if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
-                        if (source is Widget.Source.Bundled.AllObjects) {
-                            add(
-                                Widget.AllObjects(
-                                    id = w.id,
-                                    source = source,
-                                    config = config,
-                                    isAutoCreated = widgetContent.isAutoAdded
+                        when (source) {
+                            is Widget.Source.Bundled.AllObjects -> {
+                                add(
+                                    Widget.AllObjects(
+                                        id = w.id,
+                                        source = source,
+                                        config = config,
+                                        isAutoCreated = widgetContent.isAutoAdded
+                                    )
                                 )
-                            )
-                        } else {
-                            when (widgetContent.layout) {
-                                Block.Content.Widget.Layout.TREE -> {
-                                    add(
-                                        Widget.Tree(
-                                            id = w.id,
-                                            source = source,
-                                            limit = widgetContent.limit,
-                                            config = config,
-                                            isAutoCreated = widgetContent.isAutoAdded
-                                        )
+                            }
+                            is Widget.Source.Bundled.Chat -> {
+                                add(
+                                    Widget.Chat(
+                                        id = w.id,
+                                        source = source,
+                                        config = config,
+                                        isAutoCreated = widgetContent.isAutoAdded
                                     )
-                                }
-
-                                Block.Content.Widget.Layout.LINK -> {
-                                    add(
-                                        Widget.Link(
-                                            id = w.id,
-                                            source = source,
-                                            config = config,
-                                            isAutoCreated = widgetContent.isAutoAdded
-                                        )
-                                    )
-                                }
-
-                                Block.Content.Widget.Layout.LIST -> {
-                                    add(
-                                        Widget.List(
-                                            id = w.id,
-                                            source = source,
-                                            limit = widgetContent.limit,
-                                            config = config,
-                                            isAutoCreated = widgetContent.isAutoAdded
-                                        )
-                                    )
-                                }
-
-                                Block.Content.Widget.Layout.COMPACT_LIST -> {
-                                    add(
-                                        Widget.List(
-                                            id = w.id,
-                                            source = source,
-                                            isCompact = true,
-                                            limit = widgetContent.limit,
-                                            config = config,
-                                            isAutoCreated = widgetContent.isAutoAdded
-                                        )
-                                    )
-                                }
-
-                                Block.Content.Widget.Layout.VIEW -> {
-                                    if (source is Widget.Source.Default) {
+                                )
+                            }
+                            else -> {
+                                when (widgetContent.layout) {
+                                    Block.Content.Widget.Layout.TREE -> {
                                         add(
-                                            Widget.View(
+                                            Widget.Tree(
                                                 id = w.id,
                                                 source = source,
                                                 limit = widgetContent.limit,
@@ -242,6 +212,56 @@ fun List<Block>.parseWidgets(
                                                 isAutoCreated = widgetContent.isAutoAdded
                                             )
                                         )
+                                    }
+
+                                    Block.Content.Widget.Layout.LINK -> {
+                                        add(
+                                            Widget.Link(
+                                                id = w.id,
+                                                source = source,
+                                                config = config,
+                                                isAutoCreated = widgetContent.isAutoAdded
+                                            )
+                                        )
+                                    }
+
+                                    Block.Content.Widget.Layout.LIST -> {
+                                        add(
+                                            Widget.List(
+                                                id = w.id,
+                                                source = source,
+                                                limit = widgetContent.limit,
+                                                config = config,
+                                                isAutoCreated = widgetContent.isAutoAdded
+                                            )
+                                        )
+                                    }
+
+                                    Block.Content.Widget.Layout.COMPACT_LIST -> {
+                                        add(
+                                            Widget.List(
+                                                id = w.id,
+                                                source = source,
+                                                isCompact = true,
+                                                limit = widgetContent.limit,
+                                                config = config,
+                                                isAutoCreated = widgetContent.isAutoAdded
+                                            )
+                                        )
+                                    }
+
+                                    Block.Content.Widget.Layout.VIEW -> {
+                                        if (source is Widget.Source.Default) {
+                                            add(
+                                                Widget.View(
+                                                    id = w.id,
+                                                    source = source,
+                                                    limit = widgetContent.limit,
+                                                    config = config,
+                                                    isAutoCreated = widgetContent.isAutoAdded
+                                                )
+                                            )
+                                        }
                                     }
                                 }
                             }

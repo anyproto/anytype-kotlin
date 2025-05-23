@@ -19,11 +19,7 @@ class SpaceChatWidgetContainer @Inject constructor(
             container
                 .observePreview(space = SpaceId(widget.config.space))
                 .map { preview ->
-                    preview?.state.let { state ->
-                        state?.unreadMessages?.counter ?: 0
-                    } to preview?.state.let { state ->
-                        state?.unreadMentions?.counter ?: 0
-                    }
+                    (preview?.state?.unreadMessages?.counter ?: 0) to (preview?.state?.unreadMentions?.counter ?: 0)
                 }
                 .distinctUntilChanged()
                 .map { (unreadMessageCount, unreadMentionCount) ->

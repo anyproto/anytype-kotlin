@@ -51,8 +51,8 @@ interface ChatPreviewContainer {
                     .onFailure { logger.logException(it, "DROID-2966 Error while getting initial previews") }
                     .getOrDefault(emptyList())
                 events
-                    .observe(SUBSCRIPTION_ID)
-                    .onEach { logger.logInfo("DROID-2966 Chat preview events: $it") }
+                    .subscribe(SUBSCRIPTION_ID)
+                    .onEach { logger.logWarning("DROID-2966 Chat preview events: $it") }
                     .scan(initial = initial) { previews, events ->
                         events.fold(previews) { state, event ->
                             when (event) {

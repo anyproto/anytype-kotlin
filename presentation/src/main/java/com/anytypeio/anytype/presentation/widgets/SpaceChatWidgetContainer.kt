@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
@@ -22,6 +23,7 @@ class SpaceChatWidgetContainer @Inject constructor(
                     (preview?.state?.unreadMessages?.counter ?: 0) to (preview?.state?.unreadMentions?.counter ?: 0)
                 }
                 .distinctUntilChanged()
+                .debounce(DEBOUNCE_DURATION)
                 .map { (unreadMessageCount, unreadMentionCount) ->
                     WidgetView.SpaceChat(
                         id = widget.id,
@@ -38,5 +40,9 @@ class SpaceChatWidgetContainer @Inject constructor(
                 source = widget.source
             )
         )
+    }
+
+    companion object {
+        const val DEBOUNCE_DURATION = 500L
     }
 }

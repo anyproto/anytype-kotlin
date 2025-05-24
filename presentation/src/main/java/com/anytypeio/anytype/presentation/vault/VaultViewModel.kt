@@ -48,7 +48,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
@@ -92,45 +94,53 @@ class VaultViewModel(
         Timber.i("VaultViewModel, init")
         viewModelScope.launch {
             val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
-            spaceViewSubscriptionContainer
-                .observe()
-                .take(1)
-                .onCompletion {
-                    emitAll(
-                        spaceViewSubscriptionContainer
-                            .observe()
-                            .debounce(SPACE_VAULT_DEBOUNCE_DURATION)
-                    )
-                }
-                .combine(observeVaultSettings.flow()) { spaces, settings ->
-                    spaces
-                        .filter { space -> (space.isActive || space.isLoading) }
-                        .distinctBy { it.id }
-                        .map { space ->
-                            VaultSpaceView(
-                                space = space,
-                                icon = space.spaceIcon(
-                                    builder = urlBuilder,
-                                    spaceGradientProvider = SpaceGradientProvider.Default
-                                ),
-                                wallpaper = wallpapers.getOrDefault(
-                                    key = space.targetSpaceId,
-                                    defaultValue = Wallpaper.Default
-                                )
-                            )
-                        }.sortedBy { space ->
-                            val idx = settings.orderOfSpaces.indexOf(
-                                space.space.id
-                            )
-                            if (idx == -1) {
-                                Int.MIN_VALUE
-                            } else {
-                                idx
-                            }
+            combine(
+                spaceViewSubscriptionContainer
+                    .observe()
+                    .take(1)
+                    .onCompletion {
+                        emitAll(
+                            spaceViewSubscriptionContainer
+                                .observe()
+                                .debounce(SPACE_VAULT_DEBOUNCE_DURATION)
+                        )
+                    },
+                observeVaultSettings.flow(),
+                chatPreviewContainer.observePreviews()
+            ) { spaces, settings, chatPreviews ->
+                spaces
+                    .filter { space -> (space.isActive || space.isLoading) }
+                    .map { space ->
+                        val chatPreview = space.targetSpaceId?.let { spaceId ->
+                            chatPreviews.find { it.space.id == spaceId }
                         }
-                }.collect {
-                    spaces.value = it
-                }
+                        
+                        VaultSpaceView(
+                            space = space,
+                            icon = space.spaceIcon(
+                                builder = urlBuilder,
+                                spaceGradientProvider = SpaceGradientProvider.Default
+                            ),
+                            wallpaper = wallpapers.getOrDefault(
+                                key = space.targetSpaceId,
+                                defaultValue = Wallpaper.Default
+                            ),
+                            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
+                            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0
+                        )
+                    }.sortedBy { space ->
+                        val idx = settings.orderOfSpaces.indexOf(
+                            space.space.id
+                        )
+                        if (idx == -1) {
+                            Int.MIN_VALUE
+                        } else {
+                            idx
+                        }
+                    }
+            }.collect {
+                spaces.value = it
+            }
         }
     }
 

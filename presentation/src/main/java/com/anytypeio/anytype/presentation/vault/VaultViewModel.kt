@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -69,7 +70,8 @@ class VaultViewModel(
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val chatPreviewContainer: ChatPreviewContainer
 ) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -353,7 +355,8 @@ class VaultViewModel(
         private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
         private val appActionManager: AppActionManager,
         private val spaceInviteResolver: SpaceInviteResolver,
-        private val profileContainer: ProfileSubscriptionManager
+        private val profileContainer: ProfileSubscriptionManager,
+        private val chatPreviewContainer: ChatPreviewContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -372,7 +375,8 @@ class VaultViewModel(
             deepLinkToObjectDelegate = deepLinkToObjectDelegate,
             appActionManager = appActionManager,
             spaceInviteResolver = spaceInviteResolver,
-            profileContainer = profileContainer
+            profileContainer = profileContainer,
+            chatPreviewContainer = chatPreviewContainer
         ) as T
     }
 
@@ -380,7 +384,8 @@ class VaultViewModel(
         val space: ObjectWrapper.SpaceView,
         val icon: SpaceIconView,
         val wallpaper: Wallpaper = Wallpaper.Default,
-        val counter: Int = 0,
+        val unreadMessageCount: Int = 0,
+        val unreadMentionCount: Int = 0,
     )
 
     sealed class Command {

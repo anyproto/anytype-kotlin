@@ -53,6 +53,7 @@ sealed class UiSpaceSettingsItem {
         val widget: Id,
         val isAutoCreateEnabled: Boolean
     ) : UiSpaceSettingsItem()
+    data class DisableChatNotifications(val isDisabled: Boolean) : UiSpaceSettingsItem()
     data object RemoteStorage : UiSpaceSettingsItem()
     data object Bin : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()

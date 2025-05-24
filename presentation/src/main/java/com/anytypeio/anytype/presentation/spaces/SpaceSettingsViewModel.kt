@@ -49,6 +49,8 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
+import com.anytypeio.anytype.domain.vault.SetVaultSettings
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -126,7 +128,7 @@ class SpaceSettingsViewModel(
         val otherFlows = combine(
             spaceViewContainer.observe(vmParams.space),
             activeSpaceMemberSubscriptionContainer.observe(vmParams.space),
-            observeWallpaper.build()
+            observeWallpaper.build(),
         ) { spaceView, spaceMembers, wallpaper ->
             Triple(spaceView, spaceMembers, wallpaper)
         }
@@ -183,7 +185,7 @@ class SpaceSettingsViewModel(
 
             combine(
                 restrictions,
-                otherFlows
+                otherFlows,
             ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
@@ -281,6 +283,11 @@ class SpaceSettingsViewModel(
                         add(
                             widgetAutoCreationPreference
                         )
+                    }
+
+                    if (spaceView.chatId != null) {
+                        add(Spacer(height = 8))
+                        add(DisableChatNotifications(isDisabled = false))
                     }
 
                     add(UiSpaceSettingsItem.Section.DataManagement)
@@ -420,7 +427,9 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
-
+            is UiEvent.OnDisableChatNotificationsSwitchChanged -> {
+                // TODO update vault settings
+            }
             UiEvent.OnObjectTypesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenTypesScreen(vmParams.space))

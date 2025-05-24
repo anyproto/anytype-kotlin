@@ -1586,6 +1586,7 @@ En concreto,
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>
     <string name="copy">Copiar</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>

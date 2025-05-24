@@ -1586,6 +1586,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>
     <string name="copy">Kopiëren</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>

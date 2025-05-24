@@ -52,7 +52,6 @@ interface ChatPreviewContainer {
                     .getOrDefault(emptyList())
                 events
                     .subscribe(SUBSCRIPTION_ID)
-                    .onEach { logger.logWarning("DROID-2966 Chat preview events: $it") }
                     .scan(initial = initial) { previews, events ->
                         events.fold(previews) { state, event ->
                             when (event) {

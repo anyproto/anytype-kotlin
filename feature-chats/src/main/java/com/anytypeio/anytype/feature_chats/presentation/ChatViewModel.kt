@@ -345,7 +345,8 @@ class ChatViewModel @Inject constructor(
                 messages = messageViews,
                 intent = result.intent,
                 counter = ChatViewState.Counter(
-                    count = result.state.unreadMessages?.counter ?: 0
+                    messages = result.state.unreadMessages?.counter ?: 0,
+                    mentions = result.state.unreadMentions?.counter ?: 0
                 )
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {

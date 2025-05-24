@@ -519,6 +519,39 @@ fun ChatScreen(
                 onScrollToReplyClicked = onScrollToReplyClicked
             )
 
+            GoToMentionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 12.dp, bottom = 60.dp),
+                onClick = {
+                    // TODO
+                },
+                enabled = counter.mentions > 0
+            )
+
+            if (counter.mentions > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                        .padding(bottom = 106.dp, end = 2.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        )
+                ) {
+                    Text(
+                        text = counter.mentions.toString(),
+                        modifier = Modifier.align(Alignment.Center).padding(
+                            horizontal = 5.dp,
+                            vertical = 2.dp
+                        ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
+                }
+            }
+
             GoToBottomButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -541,7 +574,7 @@ fun ChatScreen(
                 enabled = jumpToBottomButtonEnabled
             )
 
-            if (counter.count > 0) {
+            if (counter.messages > 0) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -553,7 +586,7 @@ fun ChatScreen(
                         )
                 ) {
                     Text(
-                        text = counter.count.toString(),
+                        text = counter.messages.toString(),
                         modifier = Modifier.align(Alignment.Center).padding(
                             horizontal = 5.dp,
                             vertical = 2.dp

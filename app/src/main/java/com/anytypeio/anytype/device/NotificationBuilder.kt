@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.device
 
 import android.app.NotificationChannel
+import android.app.NotificationChannelGroup
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
@@ -20,6 +21,8 @@ class NotificationBuilder(
 
     private val attachmentText get() = context.getString(R.string.attachment)
 
+    private val createdChannels = mutableSetOf<String>()
+
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
 
         // 1) Build the intent that'll open your MainActivity in the right chat
@@ -35,7 +38,14 @@ class NotificationBuilder(
         // 2) put it all on one line: "Author: <bodyText>"
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
-        val notif = NotificationCompat.Builder(context, CHANNEL_ID)
+        val channelName = sanitizeChannelName(message.spaceName)
+
+        createNotificationChannelIfNeeded(
+            channelId = spaceId,
+            channelName = channelName
+        )
+
+        val notif = NotificationCompat.Builder(context, spaceId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
@@ -54,18 +64,24 @@ class NotificationBuilder(
         notificationManager.notify(System.currentTimeMillis().toInt(), notif)
     }
 
-    fun createNotificationChannelIfNeeded() {
+    private fun createNotificationChannelIfNeeded(
+        channelId: String,
+        channelName: String
+    ) {
+        if (createdChannels.contains(channelId)) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH
+                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "New messages notifications"
                 enableLights(true)
                 enableVibration(true)
                 setShowBadge(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+                group = CHANNEL_GROUP_ID
             }
             notificationManager.createNotificationChannel(channel)
+            createdChannels.add(channelId)
         }
     }
 
@@ -94,9 +110,23 @@ class NotificationBuilder(
         )
     }
 
+    fun createChannelGroupIfNeeded() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+            if (existingGroup == null) {
+                val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
+                notificationManager.createNotificationChannelGroup(group)
+            }
+        }
+    }
+
+    private fun sanitizeChannelName(name: String): String {
+        return name.trim().replace(Regex("[^a-zA-Z0-9 _-]"), "_")
+    }
+
     companion object {
         private const val NOTIFICATION_REQUEST_CODE = 100
-        private const val CHANNEL_ID = "messages_channel"
-        private const val CHANNEL_NAME = "Chat Messages"
+        private const val CHANNEL_GROUP_ID = "chats_group"
+        private const val CHANNEL_GROUP_NAME = "Chats"
     }
 }

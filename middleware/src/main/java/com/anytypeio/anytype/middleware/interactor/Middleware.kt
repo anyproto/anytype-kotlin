@@ -2832,7 +2832,7 @@ class Middleware @Inject constructor(
             afterOrderId = command.afterOrderId.orEmpty(),
             beforeOrderId = command.beforeOrderId.orEmpty(),
             lastStateId = command.lastStateId.orEmpty(),
-            type = ReadType.Messages
+            type = if (command.isMention) ReadType.Mentions else ReadType.Messages
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatReadMessages(request) }

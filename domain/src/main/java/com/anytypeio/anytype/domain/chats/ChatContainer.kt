@@ -276,11 +276,29 @@ class ChatContainer @Inject constructor(
                     is Transformation.Commands.GoToMention -> {
                         if (state.state.hasUnReadMentions) {
                             val oldestMentionOrderId = state.state.oldestMentionMessageOrderId
-                            // TODO add try catch
-                            val messages = loadAroundMessageOrder(
-                                chat = chat,
-                                order = oldestMentionOrderId!!
-                            )
+                            val messages = try {
+                                loadAroundMessageOrder(
+                                    chat = chat,
+                                    order = oldestMentionOrderId!!
+                                )
+                            } catch (e: Exception) {
+                                state.messages.also {
+                                    logger.logException(e, "DROID-2966 Error while loading mention context")
+                                }
+                            }
+                            runCatching {
+                                repo.readChatMessages(
+                                    command = Command.ChatCommand.ReadMessages(
+                                        chat = chat,
+                                        beforeOrderId = oldestMentionOrderId,
+                                        lastStateId = state.state.lastStateId
+                                    )
+                                )
+                            }.onFailure {
+                                logger.logException(it, "DROID-2966 Error while reading mentions")
+                            }.onSuccess {
+                                logger.logInfo("DROID-2966 Read mentions with success")
+                            }
                             val target = messages.find { it.order == oldestMentionOrderId }
                             ChatStreamState(
                                 messages = messages,

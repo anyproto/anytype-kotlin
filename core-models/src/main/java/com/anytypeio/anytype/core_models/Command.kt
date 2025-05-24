@@ -625,7 +625,8 @@ sealed class Command {
             val chat: Id,
             val afterOrderId: Id? = null,
             val beforeOrderId: Id? = null,
-            val lastStateId: Id? = null
+            val lastStateId: Id? = null,
+            val isMention: Boolean = false
         )
 
         data class AddMessage(

@@ -370,24 +370,23 @@ fun VaultSpaceCard(
                 .padding(end = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            //todo: uncomment when mention counters are fixed
-//            if (unreadMentionCount > 0) {
-//                Box(
-//                    modifier = Modifier
-//                        .background(
-//                            color = colorResource(R.color.glyph_active),
-//                            shape = CircleShape
-//                        )
-//                        .size(18.dp),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Image(
-//                        painter = painterResource(R.drawable.ic_chat_widget_mention),
-//                        contentDescription = null
-//                    )
-//                }
-//                Spacer(modifier = Modifier.width(8.dp))
-//            }
+            if (unreadMentionCount > 0) {
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = colorResource(R.color.glyph_active),
+                            shape = CircleShape
+                        )
+                        .size(18.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_chat_widget_mention),
+                        contentDescription = null
+                    )
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             
             if (unreadMessageCount > 0) {
                 val shape = if (unreadMentionCount > 9) {

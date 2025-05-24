@@ -524,7 +524,10 @@ fun ChatScreen(
             GoToMentionButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
-                    .padding(end = 12.dp, bottom = 60.dp),
+                    .padding(
+                        end = 12.dp,
+                        bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
+                    ),
                 onClick = onGoToMentionClicked,
                 enabled = counter.mentions > 0
             )
@@ -534,7 +537,10 @@ fun ChatScreen(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
-                        .padding(bottom = 106.dp, end = 2.dp)
+                        .padding(
+                            bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
+                            end = 2.dp
+                        )
                         .background(
                             color = colorResource(R.color.transparent_active),
                             shape = CircleShape

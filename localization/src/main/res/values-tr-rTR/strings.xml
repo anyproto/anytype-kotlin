@@ -1586,6 +1586,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>
     <string name="copy">Kopyala</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>

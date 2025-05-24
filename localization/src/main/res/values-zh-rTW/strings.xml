@@ -1163,6 +1163,9 @@
     <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
     <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_sent_title">已送出請求</string>
+    <string name="multiplayer_request_to_join_sent_description">當空間所有者批准您的請求後，您將會收到通知。</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
     <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
     <string name="multiplayer_space_request_to_join">請求加入</string>
     <string name="multiplayer_space_request_to_join_msg">您已被邀請加入由 %2$s 建立的 %1$s 空間。 發送請求，以便空間所有者可以讓​​您加入。</string>

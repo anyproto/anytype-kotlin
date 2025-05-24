@@ -157,7 +157,7 @@ class ChatContainerTest {
                     listOf(
                         Event.Command.Chats.Delete(
                             context = givenChatID,
-                            id = initialMsg.id,
+                            message = initialMsg.id,
                         )
                     )
                 )

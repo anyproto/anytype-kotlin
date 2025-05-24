@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.subscriptions
 
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -21,7 +22,8 @@ interface GlobalSubscriptionManager {
         private val isSpaceDeleted: SpaceDeletedStatusWatcher,
         private val profile: ProfileSubscriptionManager,
         private val networkConnectionStatus: NetworkConnectionStatus,
-        private val deviceTokenStoringService: DeviceTokenStoringService
+        private val deviceTokenStoringService: DeviceTokenStoringService,
+        private val chatPreviewContainer: ChatPreviewContainer
     ) : GlobalSubscriptionManager {
 
         override fun onStart() {
@@ -32,6 +34,7 @@ interface GlobalSubscriptionManager {
             profile.onStart()
             networkConnectionStatus.start()
             deviceTokenStoringService.start()
+            chatPreviewContainer.start()
         }
 
         override fun onStop() {
@@ -42,6 +45,7 @@ interface GlobalSubscriptionManager {
             profile.onStop()
             networkConnectionStatus.stop()
             deviceTokenStoringService.stop()
+            chatPreviewContainer.stop()
         }
     }
 

@@ -990,7 +990,7 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
+    <string name="onboarding_auth_subtitle">Terenkripsi, luring\n&amp; terbuka</string>
     <string name="onboarding_auth_description">Buat dan berkolaborasilah di ruang milikmu. Terenkripsi, offline, dan terbuka.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
@@ -998,16 +998,16 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Aku pengguna baru</string>
     <string name="onboarding_enter_my_vault">Lanjut</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">Sudah punya kunci</string>
     <string name="onboarding_get_my_key_button_text">Ambil Kunciku</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Kunci bagaikan nama pengguna dan kata sandi. Simpanlah dengan baik—karena kamu sendirilah yang mengendalikan datamu. Kunci ini bisa dilihat lagi di setelan aplikasi.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Tunjukkan dan salin</string>
     <string name="onboarding_key_skip">Lewati</string>
     <string name="onboarding_key_not_now">Tidak dulu</string>
     <string name="onboarding_key_copy">Salin ke papan klip</string>
@@ -1017,8 +1017,8 @@
     <string name="onboarding_login_or">ATAU</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Kunci tidak boleh kosong</string>
-    <string name="onboarding_your_name">Type your name</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
+    <string name="onboarding_your_name">Masukkan namamu</string>
+    <string name="onboarding_mnemonic_read_more">Selengkapnya</string>
     <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan aplikasi</string>
     <string name="onboarding_what_is_the_key">Apa itu Kunci?</string>
     <string name="onboarding_recovery_phrase_description">Ini dalam bentuk frasa pemulihan - 12 kata acak yang secara ajaib menghasilkan brankas Anda di perangkat ini.</string>
@@ -1160,10 +1160,13 @@
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="multiplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
-    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
-    <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
-    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
-    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Bergabung ke %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">Kamu diundang bergabung ke %1$s, dibuat oleh %2$s</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Bergabung ke Ruang</string>
+    <string name="multiplayer_request_to_join_sent_title">Permintaan terkirim</string>
+    <string name="multiplayer_request_to_join_sent_description">Kamu akan menerima pemberitahuan ketika pemilik ruang menyetujui permintaanmu.</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Kelola ruang</string>
+    <string name="multiplayer_request_to_join_loading_text"> Tunggu sebentar — kami sedang mempersiapkan. Proses ini akan segera selesai.</string>
     <string name="multiplayer_space_request_to_join">Permintaan bergabung</string>
     <string name="multiplayer_space_request_to_join_msg">Kamu diundang bergabung ke ruang %1$s buatan %2$s. Kirimkan permintaan supaya pemilik ruang dapat mengizinkanmu bergabung.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
@@ -1629,7 +1632,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
     <string name="file">Berkas</string>
-    <string name="attachment">Attachment</string>
+    <string name="attachment">Lampiran</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
     <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
     <string name="emoji_category_smileys_and_people">Smiley &amp; Orang</string>
@@ -1748,15 +1751,15 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_properties_screen_section_system_types">Properti Sistem</string>
     <string name="space_properties_screen_menu_move_to_bin">Pindah ke bak sampah</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Terjadi kesalahan saat membuat akun: tidak ada ruang</string>
-    <string name="onboarding_set_your_name_title">Add Your Name</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
+    <string name="onboarding_set_your_name_title">Tambahkan Namamu</string>
+    <string name="onboarding_soul_creation_description">Hanya dapat dilihat oleh orang yang saling berbgi denganmu. Nama ini tidak disimpan secara sentral.</string>
     <string name="onboarding_email_add_title">Tetap terinformasi</string>
     <string name="onboarding_email_add_description">Kami akan dengan senang hati membagikan tip, trik, dan informasi produk kepadamu. Surelmu tidak akan dihubungkan dengan identitasmu, dan kami tidak akan pernah membagikan datamu.</string>
     <string name="onboarding_enter_email">Masukkan surelmu</string>
     <string name="onboarding_button_continue">Lanjutkan</string>
     <string name="onboarding_button_skip">Lewati</string>
     <string name="onboarding_email_error">Surel salah</string>
-    <string name="onboarding_name_error">Enter name</string>
+    <string name="onboarding_name_error">Masukkan nama</string>
     <string name="notifications_modal_title">Nyalakan pemberitahuan push</string>
     <string name="notifications_modal_description">Dapatkan pemberitahuan segera ketika seseorang mengirim pesan atau menyebutmu di ruangmu.</string>
     <string name="notifications_modal_success_button">Nyalakan Pemberitahuan</string>

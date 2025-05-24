@@ -499,7 +499,9 @@ private fun WidgetList(
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
                         mode = mode,
-                        onWidgetClicked = { onBundledWidgetHeaderClicked(item.id) }
+                        unReadMentionCount = item.unreadMentionCount,
+                        unReadMessageCount = item.unreadMessageCount,
+                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) }
                     )
                 }
                 is WidgetView.Action.EditWidgets -> {

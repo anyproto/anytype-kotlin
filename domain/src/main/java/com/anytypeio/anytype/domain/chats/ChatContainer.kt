@@ -291,7 +291,8 @@ class ChatContainer @Inject constructor(
                                     command = Command.ChatCommand.ReadMessages(
                                         chat = chat,
                                         beforeOrderId = oldestMentionOrderId,
-                                        lastStateId = state.state.lastStateId
+                                        lastStateId = state.state.lastStateId,
+                                        isMention = true
                                     )
                                 )
                             }.onFailure {

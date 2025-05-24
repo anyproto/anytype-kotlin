@@ -273,6 +273,27 @@ class ChatContainer @Inject constructor(
                             state
                         }
                     }
+                    is Transformation.Commands.GoToMention -> {
+                        if (state.state.hasUnReadMentions) {
+                            val oldestMentionOrderId = state.state.oldestMentionMessageOrderId
+                            // TODO add try catch
+                            val messages = loadAroundMessageOrder(
+                                chat = chat,
+                                order = oldestMentionOrderId!!
+                            )
+                            val target = messages.find { it.order == oldestMentionOrderId }
+                            ChatStreamState(
+                                messages = messages,
+                                intent = if (target != null)
+                                    Intent.ScrollToMessage(target.id)
+                                else
+                                    Intent.None,
+                                state = state.state
+                            )
+                        } else {
+                            state
+                        }
+                    }
                     is Transformation.Commands.ClearIntent -> {
                         state.copy(
                             intent = Intent.None
@@ -560,6 +581,11 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
     }
 
+    suspend fun onGoToMention() {
+        logger.logInfo("DROID-2966 onGoToMention")
+        commands.emit(Transformation.Commands.GoToMention)
+    }
+
     private fun cacheLastMessages(messages: List<Chat.Message>) {
         messages.sortedByDescending { it.order } // Newest first
             .take(LAST_MESSAGES_MAX_SIZE)
@@ -610,6 +636,8 @@ class ChatContainer @Inject constructor(
             data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
 
             data object ClearIntent : Commands()
+
+            data object GoToMention : Commands()
         }
     }
 

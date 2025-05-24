@@ -227,7 +227,8 @@ fun ChatScreenWrapper(
             onClearIntent = vm::onClearChatViewStateIntent,
             onScrollToBottomClicked = vm::onScrollToBottomClicked,
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
-            onUrlInserted = vm::onUrlPasted
+            onUrlInserted = vm::onUrlPasted,
+            onGoToMentionClicked = vm::onGoToMentionClicked
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -341,6 +342,7 @@ fun ChatScreen(
     onScrollToBottomClicked: (Id?) -> Unit,
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
+    onGoToMentionClicked: () -> Unit
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -523,9 +525,7 @@ fun ChatScreen(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(end = 12.dp, bottom = 60.dp),
-                onClick = {
-                    // TODO
-                },
+                onClick = onGoToMentionClicked,
                 enabled = counter.mentions > 0
             )
 

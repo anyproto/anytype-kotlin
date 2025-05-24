@@ -1037,6 +1037,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onGoToMentionClicked() {
+        Timber.d("DROID-2966 onGoToMentionClicked")
+        viewModelScope.launch {
+            chatContainer.onGoToMention()
+        }
+    }
+
     fun onChatScrollToReply(replyMessage: Id) {
         Timber.d("DROID-2966 onScrollToReply: $replyMessage")
         viewModelScope.launch {

@@ -279,7 +279,7 @@ class ChatContainer @Inject constructor(
                             val messages = try {
                                 loadAroundMessageOrder(
                                     chat = chat,
-                                    order = oldestMentionOrderId!!
+                                    order = oldestMentionOrderId.orEmpty()
                                 )
                             } catch (e: Exception) {
                                 state.messages.also {

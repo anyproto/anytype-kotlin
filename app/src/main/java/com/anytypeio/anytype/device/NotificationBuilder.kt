@@ -112,8 +112,11 @@ class NotificationBuilder(
 
     fun createChannelGroupIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
-            notificationManager.createNotificationChannelGroup(group)
+            val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+            if (existingGroup == null) {
+                val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
+                notificationManager.createNotificationChannelGroup(group)
+            }
         }
     }
 

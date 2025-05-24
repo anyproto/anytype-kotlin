@@ -54,9 +54,7 @@ object PushContentModule {
     ): NotificationBuilder = NotificationBuilder(
         context = context,
         notificationManager = notificationManager
-    ).apply {
-        createNotificationChannelIfNeeded()
-    }
+    )
 
     @JvmStatic
     @Provides

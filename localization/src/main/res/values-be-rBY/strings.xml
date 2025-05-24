@@ -1612,6 +1612,7 @@
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Чат</string>
     <string name="copy">Капіяваць</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">Рэдагаваць паведамленне</string>
     <string name="chats_message_edited">адрэдагавана</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>

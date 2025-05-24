@@ -99,30 +99,32 @@ fun SpaceChatWidgetCard(
             color = colorResource(id = R.color.text_primary),
         )
 
-        if (unReadMentionCount > 0) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = colorResource(R.color.transparent_active),
-                        shape = CircleShape
-                    )
-                    .size(20.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_chat_widget_mention),
-                    contentDescription = null
-                )
-            }
-            if (unReadMessageCount == 0) {
-                Spacer(modifier = Modifier.width(16.dp))
-            }
-        }
+        // Uncomment when go-to-bottom is ready
+//        if (unReadMentionCount > 0) {
+//            Box(
+//                modifier = Modifier
+//                    .background(
+//                        color = colorResource(R.color.transparent_active),
+//                        shape = CircleShape
+//                    )
+//                    .size(20.dp),
+//                contentAlignment = Alignment.Center
+//            ) {
+//                Image(
+//                    painter = painterResource(R.drawable.ic_chat_widget_mention),
+//                    contentDescription = null
+//                )
+//            }
+//            if (unReadMessageCount == 0) {
+//                Spacer(modifier = Modifier.width(16.dp))
+//            }
+//        }
 
         if (unReadMessageCount > 0) {
-            if (unReadMentionCount > 0) {
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+            // Uncomment when go-to-bottom is ready
+//            if (unReadMentionCount > 0) {
+//                Spacer(modifier = Modifier.width(8.dp))
+//            }
             Box(
                 modifier = Modifier
                     .height(20.dp)

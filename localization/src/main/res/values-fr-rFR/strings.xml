@@ -1583,6 +1583,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
     <string name="chat">Messagerie</string>
     <string name="copy">Copier</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>

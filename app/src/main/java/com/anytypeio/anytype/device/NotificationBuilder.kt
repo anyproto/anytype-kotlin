@@ -19,10 +19,6 @@ class NotificationBuilder(
     private val notificationManager: NotificationManager
 ) {
 
-    init {
-        createChannelGroupIfNeeded()
-    }
-
     private val attachmentText get() = context.getString(R.string.attachment)
 
     private val createdChannels = mutableSetOf<String>()

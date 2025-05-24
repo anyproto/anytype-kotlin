@@ -54,7 +54,9 @@ object PushContentModule {
     ): NotificationBuilder = NotificationBuilder(
         context = context,
         notificationManager = notificationManager
-    )
+    ).apply {
+        createChannelGroupIfNeeded()
+    }
 
     @JvmStatic
     @Provides

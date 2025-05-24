@@ -111,7 +111,7 @@ fun SpaceChatWidgetCard(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = unReadMentionCount.toString(),
+                    text = unReadMessageCount.toString(),
                     style = Caption1Regular,
                     color = colorResource(id = R.color.text_white),
                 )

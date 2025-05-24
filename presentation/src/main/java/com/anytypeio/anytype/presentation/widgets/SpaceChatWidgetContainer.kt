@@ -14,7 +14,7 @@ class SpaceChatWidgetContainer @Inject constructor(
     private val widget: Widget,
     private val container: ChatPreviewContainer
 ) : WidgetContainer {
-    override val view: Flow<WidgetView> = flow {
+    override val view: Flow<WidgetView.SpaceChat> = flow {
         emitAll(
             container
                 .observePreview(space = SpaceId(widget.config.space))

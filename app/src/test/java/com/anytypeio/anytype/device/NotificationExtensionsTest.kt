@@ -15,13 +15,13 @@ class NotificationExtensionsTest {
     @Test
     fun `formatNotificationBody appends attachment indicator when only attachments present`() {
         val message = createMessage(text = "", hasAttachments = true)
-        assertEquals("\uD83D\uDCCEattachment", message.formatNotificationBody("attachment"))
+        assertEquals("\uD83D\uDCCE attachment", message.formatNotificationBody("attachment"))
     }
 
     @Test
     fun `formatNotificationBody appends attachment indicator after text when both present`() {
         val message = createMessage(text = "Hello world", hasAttachments = true)
-        assertEquals("Hello world \uD83D\uDCCEattachment", message.formatNotificationBody("attachment"))
+        assertEquals("Hello world \uD83D\uDCCE attachment", message.formatNotificationBody("attachment"))
     }
 
     @Test

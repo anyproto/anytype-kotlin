@@ -48,7 +48,9 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.*
@@ -85,7 +87,8 @@ class SpaceSettingsViewModel(
     private val appActionManager: AppActionManager,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val fetchObject: FetchObject,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val getAccount: GetAccount
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -175,6 +178,9 @@ class SpaceSettingsViewModel(
                 )
             }
 
+            // Get account for toView function
+            val account = getAccount.async(Unit).getOrNull()?.id
+
             combine(
                 restrictions,
                 otherFlows
@@ -189,23 +195,16 @@ class SpaceSettingsViewModel(
                 }
                 val createdByNameOrId = spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
-                val spaceMemberCount =
-                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                        if (permission?.isOwner() == true) {
-                            spaceMembers.members
-                                .filter {
-                                    it.status == ParticipantStatus.ACTIVE
-                                            || it.status == ParticipantStatus.JOINING
-                                            || it.status == ParticipantStatus.REMOVING
-                                }.size
-                        } else {
-                            spaceMembers.members
-                                .filter { it.status == ParticipantStatus.ACTIVE }.size
-                        }
-
-                    } else {
-                        0
-                    }
+                val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    spaceMembers.members.toView(
+                        spaceView = spaceView,
+                        urlBuilder = urlBuilder,
+                        isCurrentUserOwner = permission?.isOwner() == true,
+                        account = account
+                    ).size
+                } else {
+                    0
+                }
 
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
@@ -782,7 +781,8 @@ class SpaceSettingsViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val fetchObject: FetchObject,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val getAccount: GetAccount
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -810,7 +810,8 @@ class SpaceSettingsViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             getSpaceInviteLink = getSpaceInviteLink,
             fetchObject = fetchObject,
-            setObjectDetails = setObjectDetails
+            setObjectDetails = setObjectDetails,
+            getAccount = getAccount
         ) as T
     }
 

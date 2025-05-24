@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.share.debug.DebugSpaceDeviceFileContentSaver
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -88,6 +89,14 @@ object SpaceSettingsModule {
         dispatchers = dispatchers,
         repo = repository
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetAccountUseCase(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
 
     @Module
     interface Bindings {

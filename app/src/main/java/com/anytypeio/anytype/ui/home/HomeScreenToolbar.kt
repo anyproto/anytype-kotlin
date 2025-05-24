@@ -40,7 +40,6 @@ fun HomeScreenToolbar(
 ) {
     Box(
         modifier = Modifier
-            .systemBarsPadding()
             .fillMaxWidth()
             .height(52.dp)
     ) {

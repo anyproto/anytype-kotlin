@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -114,7 +115,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 val view = (vm.views.collectAsStateWithLifecycle().value.find {
                     it is WidgetView.SpaceWidget.View
                 } as? WidgetView.SpaceWidget.View)
-                Box(
+                Column(
                     modifier = Modifier
                         .fillMaxSize()
                 ) {
@@ -131,7 +132,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
                     )
                     PageWithWidgets(
-                        modifier = Modifier.padding(top = 52.dp),
+                        modifier = Modifier.weight(1f),
                         showSpaceWidget = false
                     )
                 }

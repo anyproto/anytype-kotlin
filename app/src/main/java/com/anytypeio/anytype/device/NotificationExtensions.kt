@@ -12,9 +12,9 @@ fun DecryptedPushContent.Message.formatNotificationBody(attachmentText: String):
     val rawText = text.trim()
     return when {
         hasAttachments && rawText.isNotEmpty() ->
-            "$rawText \uD83D\uDCCE$attachmentText"
+            "$rawText \uD83D\uDCCE $attachmentText"
         hasAttachments ->
-            "\uD83D\uDCCE$attachmentText"
+            "\uD83D\uDCCE $attachmentText"
         else ->
             rawText
     }

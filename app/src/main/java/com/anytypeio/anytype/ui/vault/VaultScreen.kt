@@ -72,6 +72,8 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import androidx.compose.foundation.layout.Row
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 
 
 @Composable
@@ -155,7 +157,9 @@ fun VaultScreen(
                            },
                            wallpaper = item.wallpaper,
                            onCardClicked = { onSpaceClicked(item) },
-                           icon = item.icon
+                           icon = item.icon,
+                           unreadMessageCount = item.unreadMessageCount,
+                           unreadMentionCount = item.unreadMentionCount
                        )
                    }
                }
@@ -271,7 +275,9 @@ fun VaultSpaceCard(
     subtitle: String,
     onCardClicked: () -> Unit,
     icon: SpaceIconView,
-    wallpaper: Wallpaper
+    wallpaper: Wallpaper,
+    unreadMessageCount: Int = 0,
+    unreadMentionCount: Int = 0
 ) {
     Box(
         modifier = Modifier
@@ -357,6 +363,55 @@ fun VaultSpaceCard(
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.alpha(0.6f)
             )
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            //todo: uncomment when mention counters are fixed
+//            if (unreadMentionCount > 0) {
+//                Box(
+//                    modifier = Modifier
+//                        .background(
+//                            color = colorResource(R.color.glyph_active),
+//                            shape = CircleShape
+//                        )
+//                        .size(18.dp),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Image(
+//                        painter = painterResource(R.drawable.ic_chat_widget_mention),
+//                        contentDescription = null
+//                    )
+//                }
+//                Spacer(modifier = Modifier.width(8.dp))
+//            }
+            
+            if (unreadMessageCount > 0) {
+                val shape = if (unreadMentionCount > 9) {
+                    CircleShape
+                } else {
+                    RoundedCornerShape(100.dp)
+                }
+                Box(
+                    modifier = Modifier
+                        .height(18.dp)
+                        .background(
+                            color = colorResource(R.color.glyph_active),
+                            shape = shape
+                        )
+                        .padding(horizontal = 5.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = unreadMessageCount.toString(),
+                        style = Caption1Regular,
+                        color = colorResource(id = R.color.text_white),
+                    )
+                }
+            }
         }
     }
 }
@@ -476,7 +531,9 @@ fun VaultSpaceCardPreview() {
         subtitle = "Private space",
         onCardClicked = {},
         wallpaper = Wallpaper.Default,
-        icon = SpaceIconView.Placeholder()
+        icon = SpaceIconView.Placeholder(),
+        unreadMentionCount = 1,
+        unreadMessageCount = 9
     )
 }
 

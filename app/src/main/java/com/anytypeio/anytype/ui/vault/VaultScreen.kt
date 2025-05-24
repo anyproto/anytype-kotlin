@@ -530,7 +530,9 @@ fun VaultSpaceCardPreview() {
         subtitle = "Private space",
         onCardClicked = {},
         wallpaper = Wallpaper.Default,
-        icon = SpaceIconView.Placeholder()
+        icon = SpaceIconView.Placeholder(),
+        unreadMentionCount = 1,
+        unreadMessageCount = 9
     )
 }
 

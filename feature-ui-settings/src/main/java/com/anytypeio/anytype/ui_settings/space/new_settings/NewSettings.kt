@@ -349,20 +349,6 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-                        is UiSpaceSettingsItem.DisableChatNotifications -> {
-                            item {
-                                DisableChatNotificationsItem(
-                                    onCheckedStatusChanged = { isChecked ->
-                                        uiEvent(
-                                            UiEvent.OnDisableChatNotificationsSwitchChanged(
-                                               isDisabled = isChecked
-                                            )
-                                        )
-                                    },
-                                    isChecked = item.isDisabled
-                                )
-                            }
-                        }
                         is UiSpaceSettingsItem.Spacer -> {
                             item {
                                 Spacer(modifier = Modifier.height(item.height.dp))

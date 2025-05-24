@@ -614,7 +614,7 @@ fun AutoCreateWidgetItem(
     isChecked: Boolean
 ) {
 
-    val checked = remember { mutableStateOf(isChecked) }
+    var checked = remember { mutableStateOf(isChecked) }
 
     Row(
         modifier = Modifier
@@ -631,49 +631,6 @@ fun AutoCreateWidgetItem(
         Text(
             modifier = Modifier.weight(1f),
             text = stringResource(id = R.string.space_settings_auto_create_widgets),
-            style = PreviewTitle1Regular,
-            color = colorResource(id = R.color.text_primary),
-        )
-        Switch(
-            checked = checked.value,
-            onCheckedChange = {
-                checked.value = it
-                onCheckedStatusChanged(it)
-            },
-            colors = SwitchDefaults.colors().copy(
-                checkedBorderColor = Color.Transparent,
-                uncheckedBorderColor = Color.Transparent,
-                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedTrackColor = colorResource(R.color.shape_secondary)
-            )
-        )
-
-    }
-}
-
-@Composable
-fun DisableChatNotificationsItem(
-    onCheckedStatusChanged: (Boolean) -> Unit,
-    isChecked: Boolean
-) {
-
-    val checked = remember { mutableStateOf(isChecked) }
-
-    Row(
-        modifier = Modifier
-            .border(
-                shape = RoundedCornerShape(16.dp),
-                width = 0.5.dp,
-                color = colorResource(id = R.color.shape_primary)
-            )
-            .height(64.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = stringResource(id = R.string.space_settings_disable_chat_notifications),
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )

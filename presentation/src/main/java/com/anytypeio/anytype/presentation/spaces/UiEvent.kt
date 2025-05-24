@@ -29,10 +29,6 @@ sealed class UiEvent {
         val isAutoCreateEnabled: Boolean
     ) : UiEvent()
 
-    data class OnDisableChatNotificationsSwitchChanged(
-        val isDisabled: Boolean
-    ) : UiEvent()
-
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()
     }

@@ -213,10 +213,7 @@ class ChatContainer @Inject constructor(
                                         val target = messages.find { it.order == oldestReadOrderId }
                                         ChatStreamState(
                                             messages = messages,
-                                            intent = if (target != null)
-                                                Intent.ScrollToMessage(target.id, smooth = true)
-                                            else
-                                                Intent.ScrollToBottom,
+                                            intent = Intent.ScrollToBottom,
                                             state = state.state
                                         )
                                     } else {

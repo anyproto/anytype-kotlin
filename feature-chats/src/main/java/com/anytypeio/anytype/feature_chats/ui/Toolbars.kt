@@ -207,3 +207,51 @@ fun GoToBottomButton(
         }
     }
 }
+
+@Composable
+fun GoToMentionButton(
+    enabled: Boolean,
+    modifier: Modifier,
+    onClick: () -> Unit
+) {
+    val transition = updateTransition(
+        enabled,
+        label = "JumpToBottom visibility animation"
+    )
+    val bottomOffset by transition.animateDp(label = "JumpToBottom offset animation") {
+        if (it) {
+            (12).dp
+        } else {
+            (-12).dp
+        }
+    }
+    if (bottomOffset > 0.dp) {
+        Box(
+            modifier = modifier
+                .offset(x = 0.dp, y = -bottomOffset)
+                .size(48.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = colorResource(id = R.color.navigation_panel))
+                .clickable {
+                    onClick()
+                }
+
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_go_to_mention_button),
+                contentDescription = "Arrow icon",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun GoToMentionButtonPreview() {
+    GoToMentionButton(
+        enabled = true,
+        modifier = Modifier,
+        onClick = {}
+    )
+}

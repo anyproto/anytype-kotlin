@@ -273,6 +273,46 @@ class ChatContainer @Inject constructor(
                             state
                         }
                     }
+                    is Transformation.Commands.GoToMention -> {
+                        if (state.state.hasUnReadMentions) {
+                            val oldestMentionOrderId = state.state.oldestMentionMessageOrderId
+                            val messages = try {
+                                loadAroundMessageOrder(
+                                    chat = chat,
+                                    order = oldestMentionOrderId.orEmpty()
+                                )
+                            } catch (e: Exception) {
+                                state.messages.also {
+                                    logger.logException(e, "DROID-2966 Error while loading mention context")
+                                }
+                            }
+                            runCatching {
+                                repo.readChatMessages(
+                                    command = Command.ChatCommand.ReadMessages(
+                                        chat = chat,
+                                        beforeOrderId = oldestMentionOrderId,
+                                        lastStateId = state.state.lastStateId,
+                                        isMention = true
+                                    )
+                                )
+                            }.onFailure {
+                                logger.logException(it, "DROID-2966 Error while reading mentions")
+                            }.onSuccess {
+                                logger.logInfo("DROID-2966 Read mentions with success")
+                            }
+                            val target = messages.find { it.order == oldestMentionOrderId }
+                            ChatStreamState(
+                                messages = messages,
+                                intent = if (target != null)
+                                    Intent.ScrollToMessage(target.id)
+                                else
+                                    Intent.None,
+                                state = state.state
+                            )
+                        } else {
+                            state
+                        }
+                    }
                     is Transformation.Commands.ClearIntent -> {
                         state.copy(
                             intent = Intent.None
@@ -560,6 +600,11 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
     }
 
+    suspend fun onGoToMention() {
+        logger.logInfo("DROID-2966 onGoToMention")
+        commands.emit(Transformation.Commands.GoToMention)
+    }
+
     private fun cacheLastMessages(messages: List<Chat.Message>) {
         messages.sortedByDescending { it.order } // Newest first
             .take(LAST_MESSAGES_MAX_SIZE)
@@ -610,6 +655,8 @@ class ChatContainer @Inject constructor(
             data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
 
             data object ClearIntent : Commands()
+
+            data object GoToMention : Commands()
         }
     }
 

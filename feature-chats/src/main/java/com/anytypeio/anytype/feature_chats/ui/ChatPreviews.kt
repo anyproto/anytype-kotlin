@@ -201,7 +201,8 @@ fun ChatScreenPreview() {
         onClearIntent = {},
         onScrollToBottomClicked = {},
         onVisibleRangeChanged = { _, _ -> },
-        onUrlInserted = {}
+        onUrlInserted = {},
+        onGoToMentionClicked = {}
     )
 }
 

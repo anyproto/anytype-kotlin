@@ -170,6 +170,7 @@ data class ChatViewState(
     val counter: Counter = Counter()
 ) {
     data class Counter(
-        val count: Int = 0
+        val messages: Int = 0,
+        val mentions: Int = 0
     )
 }

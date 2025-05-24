@@ -227,7 +227,8 @@ fun ChatScreenWrapper(
             onClearIntent = vm::onClearChatViewStateIntent,
             onScrollToBottomClicked = vm::onScrollToBottomClicked,
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
-            onUrlInserted = vm::onUrlPasted
+            onUrlInserted = vm::onUrlPasted,
+            onGoToMentionClicked = vm::onGoToMentionClicked
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -341,6 +342,7 @@ fun ChatScreen(
     onScrollToBottomClicked: (Id?) -> Unit,
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
+    onGoToMentionClicked: () -> Unit
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -519,6 +521,43 @@ fun ChatScreen(
                 onScrollToReplyClicked = onScrollToReplyClicked
             )
 
+            GoToMentionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 12.dp,
+                        bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
+                    ),
+                onClick = onGoToMentionClicked,
+                enabled = counter.mentions > 0
+            )
+
+            if (counter.mentions > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                        .padding(
+                            bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
+                            end = 2.dp
+                        )
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        )
+                ) {
+                    Text(
+                        text = counter.mentions.toString(),
+                        modifier = Modifier.align(Alignment.Center).padding(
+                            horizontal = 5.dp,
+                            vertical = 2.dp
+                        ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
+                }
+            }
+
             GoToBottomButton(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
@@ -541,7 +580,7 @@ fun ChatScreen(
                 enabled = jumpToBottomButtonEnabled
             )
 
-            if (counter.count > 0) {
+            if (counter.messages > 0) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -553,7 +592,7 @@ fun ChatScreen(
                         )
                 ) {
                     Text(
-                        text = counter.count.toString(),
+                        text = counter.messages.toString(),
                         modifier = Modifier.align(Alignment.Center).padding(
                             horizontal = 5.dp,
                             vertical = 2.dp

@@ -501,7 +501,10 @@ private fun WidgetList(
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) }
+                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                        onDropDownMenuAction = { action ->
+                            onWidgetMenuAction(item.id, action)
+                        }
                     )
                 }
                 is WidgetView.Action.EditWidgets -> {

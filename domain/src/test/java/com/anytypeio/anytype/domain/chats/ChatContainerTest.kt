@@ -392,9 +392,8 @@ class ChatContainerTest {
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should scroll to the first unread message when scroll-to-bottom is clicked when subscribing chat`() = runTest {
+    fun `should scroll to bottom when scroll-to-bottom is clicked when subscribing chat`() = runTest {
 
         val container = ChatContainer(
             repo = repo,
@@ -480,6 +479,13 @@ class ChatContainerTest {
 
             container.onLoadChatTail(
                 msg = "80"
+            )
+
+            val next = awaitItem()
+
+            assertEquals(
+                expected = ChatContainer.Intent.ScrollToBottom,
+                actual = next.intent,
             )
 
             // New state is not emitted, since it does not change.

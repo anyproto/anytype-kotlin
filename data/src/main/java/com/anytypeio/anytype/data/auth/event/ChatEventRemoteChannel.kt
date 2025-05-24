@@ -11,6 +11,11 @@ interface ChatEventRemoteChannel {
     class Default(
         private val channel: ChatEventRemoteChannel
     ) : ChatEventChannel {
+
+        override fun subscribe(subscribe: Id): Flow<List<Event.Command.Chats>> {
+            return channel.subscribe(subscribe)
+        }
+
         override fun observe(chat: Id): Flow<List<Event.Command.Chats>> {
             return channel.observe(chat)
         }

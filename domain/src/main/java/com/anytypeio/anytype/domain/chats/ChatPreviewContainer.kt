@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
@@ -50,7 +51,7 @@ interface ChatPreviewContainer {
                     .onFailure { logger.logException(it, "DROID-2966 Error while getting initial previews") }
                     .getOrDefault(emptyList())
                 events
-                    .observe(SUBSCRIPTION_ID)
+                    .subscribe(SUBSCRIPTION_ID)
                     .scan(initial = initial) { previews, events ->
                         events.fold(previews) { state, event ->
                             when (event) {

@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_ui.views.Title2
 @Composable
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     spaceName: String,
     createdByName: String,
     isLoading: Boolean = false
@@ -87,7 +88,16 @@ fun JoinSpaceScreen(
                 loading = isLoading
             )
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonSecondary(
+            onClick = throttledClick(
+                onClick = { onCancelClicked() }
+            ),
+            text = stringResource(R.string.cancel),
+            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSize.Large,
+        )
+        Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = stringResource(R.string.multiplayer_request_to_join_explanation),
             style = Caption1Regular,
@@ -102,6 +112,7 @@ fun JoinSpaceScreen(
 @Composable
 fun JoinSpaceWithoutApproveScreen(
     onRequestJoinSpaceClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
     spaceName: String,
     createdByName: String,
     isLoading: Boolean = false
@@ -162,9 +173,66 @@ fun JoinSpaceWithoutApproveScreen(
         Spacer(modifier = Modifier.height(8.dp))
         ButtonSecondary(
             onClick = throttledClick(
-                onClick = { onRequestJoinSpaceClicked() }
+                onClick = { onCancelClicked() }
             ),
             text = stringResource(R.string.cancel),
+            modifier = Modifier.fillMaxWidth(),
+            size = ButtonSize.Large,
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+fun JoinSpaceRequestSentScreen(
+    onDoneClicked: () -> Unit,
+    onManageSpaces: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_request_to_join_sent_title,),
+            style = HeadlineHeading,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_request_to_join_sent_description,),
+            style = Title2,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(19.dp))
+        ButtonPrimaryLoading(
+            onClick = throttledClick(
+                onClick = {  }
+            ),
+            size = ButtonSize.Large,
+            text = stringResource(R.string.done),
+            modifierButton = Modifier.fillMaxWidth(),
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonSecondary(
+            onClick = throttledClick(
+                onClick = {  }
+            ),
+            text = stringResource(R.string.multiplayer_request_to_join_btn_manage_spaces),
             modifier = Modifier.fillMaxWidth(),
             size = ButtonSize.Large,
         )
@@ -227,7 +295,8 @@ fun JoinSpaceScreenPreview() {
     JoinSpaceScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "Anytype Android App",
-        createdByName = "Konstantin"
+        createdByName = "Konstantin",
+        onCancelClicked = {}
     )
 }
 
@@ -237,7 +306,8 @@ fun JoinSpaceScreenPreviewWithEmptyNames() {
     JoinSpaceScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "",
-        createdByName = ""
+        createdByName = "",
+        onCancelClicked = {}
     )
 }
 
@@ -247,6 +317,7 @@ fun JoinSpaceScreenPreviewWithoutApprove() {
     JoinSpaceWithoutApproveScreen(
         onRequestJoinSpaceClicked = {},
         spaceName = "",
-        createdByName = ""
+        createdByName = "",
+        onCancelClicked = {}
     )
 }

@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -122,6 +123,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -233,7 +235,8 @@ class HomeScreenViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
-    private val setAsFavourite: SetObjectListIsFavorite
+    private val setAsFavourite: SetObjectListIsFavorite,
+    private val chatPreviews: ChatPreviewContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -507,6 +510,10 @@ class HomeScreenViewModel(
 
                 widgets.forceChatPosition().filter { widget -> widget.hasValidLayout() }.map { widget ->
                     when (widget) {
+                        is Widget.Chat -> SpaceChatWidgetContainer(
+                            widget = widget,
+                            container = chatPreviews
+                        )
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget,
                             fieldParser = fieldParser
@@ -1192,7 +1199,7 @@ class HomeScreenViewModel(
                         )
                     )
                 }
-                WidgetView.SpaceChat.id -> {
+                BundledWidgetSourceIds.CHAT -> {
                     proceedWithSpaceChatWidgetHeaderClick()
                 }
                 else -> {
@@ -1315,6 +1322,7 @@ class HomeScreenViewModel(
         }
         // All-objects widget has link appearance.
         is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
+        is Widget.Chat -> Command.ChangeWidgetType.TYPE_LINK
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -2690,7 +2698,8 @@ class HomeScreenViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-        private val setObjectListIsFavorite: SetObjectListIsFavorite
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val chatPreviews: ChatPreviewContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2748,7 +2757,8 @@ class HomeScreenViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer,
-            setAsFavourite = setObjectListIsFavorite
+            setAsFavourite = setObjectListIsFavorite,
+            chatPreviews = chatPreviews
         ) as T
     }
 

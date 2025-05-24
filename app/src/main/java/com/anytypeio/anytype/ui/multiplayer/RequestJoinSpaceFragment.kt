@@ -146,6 +146,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         JoinSpaceWithoutApproveScreen(
                                             isLoading = isLoading,
                                             onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
+                                            onCancelClicked = {
+                                                vm.onCancelJoinSpaceRequestClicked()
+                                                dismiss()
+                                            },
                                             spaceName = spaceName,
                                             createdByName = createdByName
                                         )
@@ -155,6 +159,10 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
                                             spaceName = spaceName,
                                             createdByName = createdByName,
+                                            onCancelClicked = {
+                                                vm.onCancelJoinSpaceRequestClicked()
+                                                dismiss()
+                                            }
                                         )
                                     }
                                 } else {

@@ -174,10 +174,13 @@ sealed class WidgetView {
         override val isLoading: Boolean = false
     }
 
-    data object SpaceChat : WidgetView() {
-        private const val SPACE_CHAT_WIDGET_ID = "bundled-widget.space-chat"
+    data class SpaceChat(
+        override val id: Id,
+        val source: Widget.Source,
+        val unreadMessageCount: Int = 0,
+        val unreadMentionCount: Int = 0
+    ) : WidgetView() {
         override val isLoading: Boolean = false
-        override val id: Id = SPACE_CHAT_WIDGET_ID
     }
 
     sealed class SpaceWidget: WidgetView() {
@@ -200,7 +203,7 @@ sealed class WidgetView {
         }
     }
 
-    object EmptyState : WidgetView() {
+    data object EmptyState : WidgetView() {
         override val id: Id get() = "id.widgets.empty.state"
         override val isLoading: Boolean = false
     }

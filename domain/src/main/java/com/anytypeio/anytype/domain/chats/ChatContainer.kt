@@ -478,7 +478,7 @@ class ChatContainer @Inject constructor(
 
                 is Event.Command.Chats.Update -> {
                     if (messageList.isInCurrentWindow(event.id)) {
-                        val index = messageList.indexOfFirst { it.id == event.id }
+                        val index = messageList.indexOfFirst { it.id == event.message.id }
                         messageList[index] = event.message
                     }
                     // Tracking the last message in the chat tail
@@ -486,12 +486,12 @@ class ChatContainer @Inject constructor(
                 }
 
                 is Event.Command.Chats.Delete -> {
-                    if (messageList.isInCurrentWindow(event.id)) {
-                        val index = messageList.indexOfFirst { it.id == event.id }
+                    if (messageList.isInCurrentWindow(event.message)) {
+                        val index = messageList.indexOfFirst { it.id == event.message }
                         messageList.removeAt(index)
                     }
                     // Tracking the last message in the chat tail
-                    lastMessages.remove(event.id)
+                    lastMessages.remove(event.message)
                 }
 
                 is Event.Command.Chats.UpdateReactions -> {

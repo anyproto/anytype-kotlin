@@ -24,6 +24,18 @@ class ChatEventMiddlewareChannel(
                 events.isNotEmpty()
             }
     }
+
+    override fun subscribe(subscription: Id): Flow<List<Event.Command.Chats>> {
+        return eventProxy
+            .flow()
+            .mapNotNull { item ->
+                item.messages.mapNotNull { msg ->
+                    msg.payload(subscription = subscription, contextId = item.contextId)
+                }
+            }.filter { events ->
+                events.isNotEmpty()
+            }
+    }
 }
 
 fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
@@ -78,7 +90,7 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
             checkNotNull(event)
             Event.Command.Chats.Delete(
                 context = contextId,
-                id = event.id
+                message = event.id
             )
         }
         chatUpdateReactions != null -> {
@@ -93,6 +105,106 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
             )
         }
 
+        else -> {
+            null
+        }
+    }
+}
+
+fun MEventMessage.payload(subscription: Id, contextId: Id) : Event.Command.Chats? {
+    return when {
+        chatAdd != null -> {
+            val event = chatAdd
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.Add(
+                    context = contextId,
+                    order = event.orderId,
+                    id = event.id,
+                    message = requireNotNull(event.message?.core())
+                )
+            } else {
+                null
+            }
+        }
+        chatStateUpdate != null -> {
+            val event = chatStateUpdate
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.UpdateState(
+                    context = contextId,
+                    state = event.state?.core()
+                )
+            } else {
+                null
+            }
+        }
+        chatUpdateMessageReadStatus != null -> {
+            val event = chatUpdateMessageReadStatus
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.UpdateMessageReadStatus(
+                    context = contextId,
+                    messages = event.ids,
+                    isRead = event.isRead
+                )
+            } else {
+                null
+            }
+        }
+        chatUpdateMentionReadStatus != null -> {
+            val event = chatUpdateMentionReadStatus
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.UpdateMentionReadStatus(
+                    context = contextId,
+                    messages = event.ids,
+                    isRead = event.isRead
+                )
+            } else {
+                null
+            }
+        }
+        chatUpdate != null -> {
+            val event = chatUpdate
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.Update(
+                    context = contextId,
+                    id = event.id,
+                    message = requireNotNull(event.message?.core())
+                )
+            } else {
+                null
+            }
+        }
+        chatDelete != null -> {
+            val event = chatDelete
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.Delete(
+                    context = contextId,
+                    message = event.id
+                )
+            } else {
+                null
+            }
+        }
+        chatUpdateReactions != null -> {
+            val event = chatUpdateReactions
+            checkNotNull(event)
+            if (event.subIds.contains(subscription)) {
+                Event.Command.Chats.UpdateReactions(
+                    context = contextId,
+                    id = event.id,
+                    reactions = event.reactions?.reactions?.mapValues { (unicode, identities) ->
+                        identities.ids
+                    } ?: emptyMap()
+                )
+            } else {
+                null
+            }
+        }
         else -> {
             null
         }

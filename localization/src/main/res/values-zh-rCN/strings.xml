@@ -1569,6 +1569,7 @@
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>
     <string name="copy">拷贝</string>
+    <string name="copy_text">Copy Text</string>
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>

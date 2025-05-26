@@ -82,7 +82,7 @@ class NotificationBuilder(
                 enableVibration(true)
                 setShowBadge(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     group = CHANNEL_GROUP_ID
                 }
             }
@@ -120,7 +120,7 @@ class NotificationBuilder(
     }
 
     fun createChannelGroupIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
             if (existingGroup == null) {
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)

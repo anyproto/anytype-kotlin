@@ -455,7 +455,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 intent.data?.let { uri ->
                     val data = uri.toString()
                     if (DefaultDeepLinkResolver.isDeepLink(data)) {
-                        vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                        vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))
 
                         // Optionally clear to prevent repeat
                         intent.action = null
@@ -542,7 +542,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
         when {
             checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw) -> {
-                vm.onNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
+                vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
             }
             raw.isNotEmpty() && !DefaultDeepLinkResolver.isDeepLink(raw) -> {
                 vm.onIntentTextShare(raw)

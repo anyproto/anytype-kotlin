@@ -2,7 +2,6 @@ package com.anytypeio.anytype.di.feature.vault
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -12,6 +11,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -83,4 +83,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun awaitAccount(): AwaitAccountStartManager
     fun profileContainer(): ProfileSubscriptionManager
     fun chatPreviewContainer(): ChatPreviewContainer
+    fun pendingIntentStore(): PendingIntentStore
 }

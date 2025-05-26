@@ -22,7 +22,9 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.deeplink.SavePendingDeeplink
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -69,7 +71,8 @@ class MainViewModel(
     private val globalSubscriptionManager: GlobalSubscriptionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val savePendingDeeplink: SavePendingDeeplink
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -319,6 +322,7 @@ class MainViewModel(
                     proceedWithNewDeepLink(deeplink)
                 }
         }
+        handleIncomingDeeplink(deeplink = deeplink)
     }
 
     private suspend fun proceedWithNewDeepLink(deeplink: DeepLinkResolver.Action) {
@@ -476,6 +480,47 @@ class MainViewModel(
                 )
             }
         }
+    }
+
+    /**
+     * Handles an incoming deeplink when received.
+     * If the user is not authenticated, saves it for later processing after login.
+     * Especially relevant for invite deeplinks.
+     */
+    private fun handleIncomingDeeplink(deeplink: DeepLinkResolver.Action) {
+        if (deeplink !is DeepLinkResolver.Action.Invite) {
+            Timber.d("Deeplink is not an invite, no need to save for later")
+            return
+        }
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { exception ->
+                    Timber.e(exception, "Failed to check authentication status")
+                },
+                success = { authStatus ->
+                    if (authStatus == AuthStatus.UNAUTHORIZED) {
+                        saveDeeplinkForLater(deeplink.link)
+                    }
+                }
+            )
+        }
+    }
+
+    private suspend fun saveDeeplinkForLater(deeplink: String) {
+        val params = SavePendingDeeplink.Params(deeplink)
+        savePendingDeeplink.async(params).fold(
+            onFailure = { error ->
+                Timber.e(error, "Failed to save deeplink for later")
+            },
+            onSuccess = { success ->
+                if (!success) {
+                    Timber.d("Deeplink is not an invite, not saving")
+                    return@fold
+                } else {
+                    Timber.d("Deeplink saved for later processing: $deeplink")
+                }
+            }
+        )
     }
 
     sealed class Command {

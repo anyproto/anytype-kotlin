@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
@@ -41,7 +42,8 @@ class ChatViewModelFactory @Inject constructor(
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val getLinkPreview: GetLinkPreview,
     private val createObjectFromUrl: CreateObjectFromUrl,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val spacePermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -62,6 +64,7 @@ class ChatViewModelFactory @Inject constructor(
         exitToVaultDelegate = exitToVaultDelegate,
         getLinkPreview = getLinkPreview,
         createObjectFromUrl = createObjectFromUrl,
-        notificationPermissionManager = notificationPermissionManager
+        notificationPermissionManager = notificationPermissionManager,
+        spacePermissionProvider = spacePermissionProvider
     ) as T
 }

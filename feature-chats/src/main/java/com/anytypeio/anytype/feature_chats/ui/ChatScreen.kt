@@ -228,7 +228,10 @@ fun ChatScreenWrapper(
             onScrollToBottomClicked = vm::onScrollToBottomClicked,
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
             onUrlInserted = vm::onUrlPasted,
-            onGoToMentionClicked = vm::onGoToMentionClicked
+            onGoToMentionClicked = vm::onGoToMentionClicked,
+            isReadOnly = vm.chatBoxMode
+                .collectAsStateWithLifecycle()
+                .value is ChatBoxMode.ReadOnly
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -342,7 +345,8 @@ fun ChatScreen(
     onScrollToBottomClicked: (Id?) -> Unit,
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
-    onGoToMentionClicked: () -> Unit
+    onGoToMentionClicked: () -> Unit,
+    isReadOnly: Boolean = false
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -518,7 +522,8 @@ fun ChatScreen(
                 onViewChatReaction = onViewChatReaction,
                 onMemberIconClicked = onMemberIconClicked,
                 onMentionClicked = onMentionClicked,
-                onScrollToReplyClicked = onScrollToReplyClicked
+                onScrollToReplyClicked = onScrollToReplyClicked,
+                isReadOnly = isReadOnly
             )
 
             GoToMentionButton(
@@ -694,52 +699,61 @@ fun ChatScreen(
                 }
             }
         }
-        ChatBox(
-            mode = chatBoxMode,
-            modifier = Modifier
-                .imePadding()
-                .navigationBarsPadding(),
-            chatBoxFocusRequester = chatBoxFocusRequester,
-            onMessageSent = { text, markup ->
-                onMessageSent(text, markup)
-            },
-            resetScroll = {
-                if (!isPerformingScrollIntent.value) {
-                    scope.launch {
-                        lazyListState.scrollToItem(0)
-                        awaitFrame()
-                        while (!isAtBottom) {
-                            val offset = lazyListState.firstVisibleItemScrollOffset
-                            val delta = (-offset).coerceAtLeast(-80)
-                            lazyListState.animateScrollBy(delta.toFloat())
+
+        if (isReadOnly) {
+            ReaderChatBox(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
+                    .navigationBarsPadding()
+            )
+        } else {
+            ChatBox(
+                mode = chatBoxMode,
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding(),
+                chatBoxFocusRequester = chatBoxFocusRequester,
+                onMessageSent = { text, markup ->
+                    onMessageSent(text, markup)
+                },
+                resetScroll = {
+                    if (!isPerformingScrollIntent.value) {
+                        scope.launch {
+                            lazyListState.scrollToItem(0)
                             awaitFrame()
+                            while (!isAtBottom) {
+                                val offset = lazyListState.firstVisibleItemScrollOffset
+                                val delta = (-offset).coerceAtLeast(-80)
+                                lazyListState.animateScrollBy(delta.toFloat())
+                                awaitFrame()
+                            }
                         }
                     }
-                }
-            },
-            attachments = attachments,
-            clearText = {
-                text = TextFieldValue()
-            },
-            onAttachObjectClicked = onAttachObjectClicked,
-            onClearAttachmentClicked = onClearAttachmentClicked,
-            onClearReplyClicked = onClearReplyClicked,
-            onChatBoxMediaPicked = onChatBoxMediaPicked,
-            onChatBoxFilePicked = onChatBoxFilePicked,
-            onExitEditMessageMode = {
-                onExitEditMessageMode().also {
+                },
+                attachments = attachments,
+                clearText = {
                     text = TextFieldValue()
-                }
-            },
-            onValueChange = { t, s ->
-                text = t
-                spans = s
-                onTextChanged(t)
-            },
-            text = text,
-            spans = spans,
-            onUrlInserted = onUrlInserted
-        )
+                },
+                onAttachObjectClicked = onAttachObjectClicked,
+                onClearAttachmentClicked = onClearAttachmentClicked,
+                onClearReplyClicked = onClearReplyClicked,
+                onChatBoxMediaPicked = onChatBoxMediaPicked,
+                onChatBoxFilePicked = onChatBoxFilePicked,
+                onExitEditMessageMode = {
+                    onExitEditMessageMode().also {
+                        text = TextFieldValue()
+                    }
+                },
+                onValueChange = { t, s ->
+                    text = t
+                    spans = s
+                    onTextChanged(t)
+                },
+                text = text,
+                spans = spans,
+                onUrlInserted = onUrlInserted
+            )
+        }
     }
 }
 
@@ -760,6 +774,7 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    isReadOnly: Boolean = false
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
@@ -848,7 +863,8 @@ fun Messages(
                         onViewChatReaction = { emoji ->
                             onViewChatReaction(msg.id, emoji)
                         },
-                        onMentionClicked = onMentionClicked
+                        onMentionClicked = onMentionClicked,
+                        isReadOnly = isReadOnly
                     )
                 }
                 if (idx == messages.lastIndex) {

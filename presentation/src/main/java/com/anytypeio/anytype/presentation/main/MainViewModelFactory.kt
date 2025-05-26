@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.deeplink.SavePendingDeeplink
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -42,7 +43,8 @@ class MainViewModelFactory @Inject constructor(
     private val globalSubscriptionManager: GlobalSubscriptionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val savePendingDeeplink: SavePendingDeeplink
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -66,6 +68,7 @@ class MainViewModelFactory @Inject constructor(
         globalSubscriptionManager = globalSubscriptionManager,
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
-        spaceViews = spaceViews
+        spaceViews = spaceViews,
+        savePendingDeeplink = savePendingDeeplink
     ) as T
 }

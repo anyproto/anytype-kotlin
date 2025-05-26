@@ -1,10 +1,9 @@
 package com.anytypeio.anytype.domain.deeplink
 
-import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
-import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import javax.inject.Inject
 
@@ -14,32 +13,22 @@ import javax.inject.Inject
  */
 class SavePendingDeeplink @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
-    private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val deepLinkResolver: DeepLinkResolver,
+    private val logger: Logger,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<SavePendingDeeplink.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<SavePendingDeeplink.Params, Boolean>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params) {
-
-        checkAuthorizationStatus(Unit).process(
-            failure = {
-                // Check if this is an invite deeplink
-                val action = deepLinkResolver.resolve(params.deeplink)
-                if (action is DeepLinkResolver.Action.Invite) {
-                    userSettingsRepository.setPendingInviteDeeplink(params.deeplink)
-                }
-                //do nothing, assume unauthorized
-            },
-            success = { status ->
-                if (status == AuthStatus.UNAUTHORIZED) {
-                    // Check if this is an invite deeplink
-                    val action = deepLinkResolver.resolve(params.deeplink)
-                    if (action is DeepLinkResolver.Action.Invite) {
-                        userSettingsRepository.setPendingInviteDeeplink(params.deeplink)
-                    }
-                }
-            }
-        )
+    override suspend fun doWork(params: Params): Boolean {
+        logger.logInfo("Saving pending deeplink: ${params.deeplink}")
+        val action = deepLinkResolver.resolve(params.deeplink)
+        if (action is DeepLinkResolver.Action.Invite) {
+            logger.logInfo("Deeplink is an invite, saving to user settings")
+            userSettingsRepository.setPendingInviteDeeplink(params.deeplink)
+            return true
+        } else {
+            logger.logInfo("Deeplink is not an invite, not saving")
+            return false
+        }
     }
 
     data class Params(val deeplink: String)

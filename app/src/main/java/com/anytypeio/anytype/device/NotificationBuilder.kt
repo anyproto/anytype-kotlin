@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.ui.main.MainActivity
+import kotlin.math.absoluteValue
 
 class NotificationBuilder(
     private val context: Context,
@@ -107,7 +108,7 @@ class NotificationBuilder(
         }
 
         // A unique PendingIntent per chat target.
-        val requestCode = chatId.hashCode()
+        val requestCode = (chatId + spaceId).hashCode().absoluteValue
 
         // 2) Wrap it in a one-shot immutable PendingIntent
         return PendingIntent.getActivity(

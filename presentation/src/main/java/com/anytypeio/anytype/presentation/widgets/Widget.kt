@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 
 sealed class Widget {
@@ -121,6 +122,10 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.CHAT
                 override val type: Id? = null
             }
+        }
+
+        companion object {
+            val SOURCE_KEYS = ObjectSearchConstants.defaultKeys
         }
     }
 }

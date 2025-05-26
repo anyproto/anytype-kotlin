@@ -94,7 +94,8 @@ fun Bubble(
     onScrollToReplyClicked: (ChatView.Message.Reply) -> Unit,
     onAddReactionClicked: () -> Unit,
     onViewChatReaction: (String) -> Unit,
-    onMentionClicked: (Id) -> Unit
+    onMentionClicked: (Id) -> Unit,
+    isReadOnly: Boolean = false
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
@@ -318,19 +319,21 @@ fun Bubble(
                         )
                         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     }
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chats_reply),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onReply()
-                            showDropdownMenu = false
-                        }
-                    )
+                    if (!isReadOnly) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.chats_reply),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onReply()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
                     if (content.msg.isNotEmpty()) {
                         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                         DropdownMenuItem(

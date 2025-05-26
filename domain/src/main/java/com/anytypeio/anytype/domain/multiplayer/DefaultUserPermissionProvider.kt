@@ -16,12 +16,15 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -75,9 +78,14 @@ class DefaultUserPermissionProvider @Inject constructor(
         return members.value.firstOrNull { member -> member.spaceId == space.id }?.permissions
     }
     override fun observe(space: SpaceId): Flow<SpaceMemberPermissions?> {
-        return members.map { all ->
-            all.firstOrNull { member -> member.spaceId == space.id }?.permissions
+        return flow {
+            emit(null)
+//            delay(3000)
+//            emit(SpaceMemberPermissions.WRITER)
         }
+//        return members.map { all ->
+//            all.firstOrNull { member -> member.spaceId == space.id }?.permissions
+//        }
     }
 
     override fun start() {

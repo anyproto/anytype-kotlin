@@ -522,7 +522,8 @@ fun ChatScreen(
                 onViewChatReaction = onViewChatReaction,
                 onMemberIconClicked = onMemberIconClicked,
                 onMentionClicked = onMentionClicked,
-                onScrollToReplyClicked = onScrollToReplyClicked
+                onScrollToReplyClicked = onScrollToReplyClicked,
+                isReadOnly = isReadOnly
             )
 
             GoToMentionButton(
@@ -773,6 +774,7 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    isReadOnly: Boolean = false
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
@@ -861,7 +863,8 @@ fun Messages(
                         onViewChatReaction = { emoji ->
                             onViewChatReaction(msg.id, emoji)
                         },
-                        onMentionClicked = onMentionClicked
+                        onMentionClicked = onMentionClicked,
+                        isReadOnly = isReadOnly
                     )
                 }
                 if (idx == messages.lastIndex) {

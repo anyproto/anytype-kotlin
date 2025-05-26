@@ -6,6 +6,7 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -319,7 +320,8 @@ class SplashViewModelTest {
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
             spaceAccountStatus = SpaceStatus.OK,
-            chatId = chatId
+            chatId = chatId,
+            spaceUxType = SpaceUxType.CHAT
         )
 
         stubCheckAuthStatus(response)
@@ -350,6 +352,58 @@ class SplashViewModelTest {
                 expected = SplashViewModel.Command.NavigateToSpaceLevelChat(
                     space = space,
                     chat = chatId,
+                    deeplink = deeplink
+                ),
+                actual = first
+            )
+        }
+    }
+
+    @Test
+    fun `should navigate to vault even if chat is available if given space has data ux type`() = runTest {
+        // GIVEN
+        val deeplink = "test-deeplink"
+        val status = AuthStatus.AUTHORIZED
+        val response = Either.Right(status)
+
+        val space = defaultSpaceConfig.space
+        val chatId = "chat-id"
+
+        val spaceView = StubSpaceView(
+            targetSpaceId = space,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.OK,
+            chatId = chatId,
+            spaceUxType = SpaceUxType.DATA
+        )
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking { async(Unit) } doReturn Resultat.Success(SpaceId(space))
+        }
+
+        initViewModel()
+
+        // WHEN
+        spaceManager.stub {
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(spaceView)
+        }
+
+        vm.commands.test {
+            // Act
+            vm.onDeepLinkLaunch(deeplink)
+
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToWidgets(
+                    space = space,
                     deeplink = deeplink
                 ),
                 actual = first

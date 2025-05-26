@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -104,8 +105,8 @@ fun StubSpaceView(
     sharedSpaceLimit: Int? = null,
     spaceAccountStatus: SpaceStatus? = null,
     spaceLocalStatus: SpaceStatus? = null,
-    chatId: Id? = null
-
+    chatId: Id? = null,
+    spaceUxType: SpaceUxType = SpaceUxType.DATA,
 ) = ObjectWrapper.SpaceView(
     map = mapOf(
         Relations.ID to id,
@@ -114,6 +115,7 @@ fun StubSpaceView(
         Relations.SPACE_ACCESS_TYPE to spaceAccessType.code.toDouble(),
         Relations.SHARED_SPACES_LIMIT to sharedSpaceLimit?.toDouble(),
         Relations.SPACE_ACCOUNT_STATUS to spaceAccountStatus?.code?.toDouble(),
-        Relations.SPACE_LOCAL_STATUS to spaceLocalStatus?.code?.toDouble()
+        Relations.SPACE_LOCAL_STATUS to spaceLocalStatus?.code?.toDouble(),
+        Relations.SPACE_UX_TYPE to spaceUxType.code.toDouble()
     )
 )

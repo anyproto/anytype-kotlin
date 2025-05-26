@@ -56,4 +56,9 @@ interface UserSettingsRepository {
 
     suspend fun setRecentlyUsedChatReactions(account: Account, emojis: Set<String>)
     fun observeRecentlyUsedChatReactions(account: Account): Flow<List<String>>
+
+    // Pending deeplink storage
+    suspend fun setPendingInviteDeeplink(deeplink: String)
+    suspend fun getPendingInviteDeeplink(): String?
+    suspend fun clearPendingInviteDeeplink()
 }

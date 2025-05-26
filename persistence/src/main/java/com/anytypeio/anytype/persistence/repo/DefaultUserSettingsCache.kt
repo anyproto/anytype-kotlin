@@ -587,5 +587,24 @@ class DefaultUserSettingsCache(
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
         const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
+        
+        const val PENDING_INVITE_DEEPLINK_KEY = "prefs.user_settings.pending_invite_deeplink"
+    }
+
+    // Pending deeplink storage implementation
+    override suspend fun setPendingInviteDeeplink(deeplink: String) {
+        prefs.edit()
+            .putString(PENDING_INVITE_DEEPLINK_KEY, deeplink)
+            .apply()
+    }
+
+    override suspend fun getPendingInviteDeeplink(): String? {
+        return prefs.getString(PENDING_INVITE_DEEPLINK_KEY, null)
+    }
+
+    override suspend fun clearPendingInviteDeeplink() {
+        prefs.edit()
+            .remove(PENDING_INVITE_DEEPLINK_KEY)
+            .apply()
     }
 }

@@ -13,6 +13,10 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.deeplink.DefaultPendingDeeplinkProcessor
+import com.anytypeio.anytype.domain.deeplink.PendingDeeplinkProcessor
+import com.anytypeio.anytype.domain.deeplink.ProcessPendingDeeplink
+import com.anytypeio.anytype.domain.deeplink.SavePendingDeeplink
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -34,10 +38,15 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import com.anytypeio.anytype.presentation.sync.SpaceSyncAndP2PStatusProviderImpl
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -230,7 +239,9 @@ object SubscriptionsModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
-        chatPreviewContainer: ChatPreviewContainer
+        chatPreviewContainer: ChatPreviewContainer,
+        pendingDeeplinkProcessor: PendingDeeplinkProcessor,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -239,7 +250,9 @@ object SubscriptionsModule {
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
-        chatPreviewContainer = chatPreviewContainer
+        chatPreviewContainer = chatPreviewContainer,
+        pendingDeeplinkProcessor = pendingDeeplinkProcessor,
+        scope = scope
     )
 
     @JvmStatic
@@ -297,5 +310,44 @@ object SubscriptionsModule {
         registerDeviceToken = registerDeviceToken,
         dispatchers = dispatchers,
         scope = scope
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun providePendingDeeplinkProcessor(
+        processPendingDeeplink: ProcessPendingDeeplink,
+        savePendingDeeplink: SavePendingDeeplink,
+        dispatchers: AppCoroutineDispatchers
+    ): PendingDeeplinkProcessor = DefaultPendingDeeplinkProcessor(
+        processPendingDeeplink = processPendingDeeplink,
+        savePendingDeeplink = savePendingDeeplink,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideProcessPendingDeeplink(
+        userSettingsRepository: UserSettingsRepository,
+        checkAuthorizationStatus: CheckAuthorizationStatus,
+        deepLinkResolver: DeepLinkResolver
+    ): ProcessPendingDeeplink = ProcessPendingDeeplink(
+        userSettingsRepository = userSettingsRepository,
+        checkAuthorizationStatus = checkAuthorizationStatus,
+        deepLinkResolver = deepLinkResolver
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideSavePendingDeeplink(
+        userSettingsRepository: UserSettingsRepository,
+        checkAuthorizationStatus: CheckAuthorizationStatus,
+        deepLinkResolver: DeepLinkResolver
+    ): SavePendingDeeplink = SavePendingDeeplink(
+        userSettingsRepository = userSettingsRepository,
+        checkAuthorizationStatus = checkAuthorizationStatus,
+        deepLinkResolver = deepLinkResolver
     )
 }

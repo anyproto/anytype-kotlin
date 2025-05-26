@@ -136,7 +136,20 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setRecentlyUsedChatReactions(account, emojis)
     }
 
-    override fun observeRecentlyUsedChatReactions(account: Account,): Flow<List<String>> {
+    override fun observeRecentlyUsedChatReactions(account: Account): Flow<List<String>> {
         return cache.observeRecentlyUsedChatReactions(account)
+    }
+
+    // Pending deeplink storage implementation
+    override suspend fun setPendingInviteDeeplink(deeplink: String) {
+        cache.setPendingInviteDeeplink(deeplink)
+    }
+
+    override suspend fun getPendingInviteDeeplink(): String? {
+        return cache.getPendingInviteDeeplink()
+    }
+
+    override suspend fun clearPendingInviteDeeplink() {
+        cache.clearPendingInviteDeeplink()
     }
 }

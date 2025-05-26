@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -83,7 +84,8 @@ class ChatViewModel @Inject constructor(
     private val exitToVaultDelegate: ExitToVaultDelegate,
     private val getLinkPreview: GetLinkPreview,
     private val createObjectFromUrl: CreateObjectFromUrl,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val spacePermissionProvider: UserPermissionProvider
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -109,6 +111,20 @@ class ChatViewModel @Inject constructor(
     init {
 
 //        generateDummyChatHistory()
+
+        viewModelScope.launch {
+            spacePermissionProvider
+                .observe(vmParams.space)
+                .collect { permission ->
+                    if (permission?.isOwnerOrEditor() == true) {
+                        if (chatBoxMode.value is ChatBoxMode.ReadOnly) {
+                            chatBoxMode.value = ChatBoxMode.Default()
+                        }
+                    } else {
+                        chatBoxMode.value = ChatBoxMode.ReadOnly
+                    }
+                }
+        }
 
         viewModelScope.launch {
             spaceViews
@@ -663,6 +679,9 @@ class ChatViewModel @Inject constructor(
                     chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
+                is ChatBoxMode.ReadOnly -> {
+                    // Do nothing.
+                }
             }
         }
     }
@@ -1150,6 +1169,9 @@ class ChatViewModel @Inject constructor(
 
         abstract val isSendingMessageBlocked: Boolean
 
+        data object ReadOnly : ChatBoxMode() {
+            override val isSendingMessageBlocked: Boolean = true
+        }
         data class Default(
             override val isSendingMessageBlocked: Boolean = false
         ) : ChatBoxMode()
@@ -1170,6 +1192,7 @@ class ChatViewModel @Inject constructor(
             is ChatBoxMode.Default -> copy(isSendingMessageBlocked = isBlocked)
             is ChatBoxMode.EditMessage -> copy(isSendingMessageBlocked = isBlocked)
             is ChatBoxMode.Reply -> copy(isSendingMessageBlocked = isBlocked)
+            is ChatBoxMode.ReadOnly -> this
         }
     }
 

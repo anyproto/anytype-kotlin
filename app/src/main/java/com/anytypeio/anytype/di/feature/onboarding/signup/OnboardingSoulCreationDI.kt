@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature.onboarding.signup
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
@@ -13,6 +12,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -131,6 +131,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun stringResourceProvider(): StringResourceProvider
+    fun providePendingIntentStore(): PendingIntentStore
 }
 
 @Scope

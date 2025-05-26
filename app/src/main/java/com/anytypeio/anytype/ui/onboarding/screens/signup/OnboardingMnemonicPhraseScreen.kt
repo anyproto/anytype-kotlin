@@ -78,7 +78,7 @@ fun MnemonicPhraseScreenWrapper(
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         mnemonicColorPalette = mnemonicColorPalette,
         onGoToAppClicked = {
-            vm.onGoToTheAppClicked(
+            vm.handleAppEntryClick(
                 space = space,
                 startingObject = startingObject
             )

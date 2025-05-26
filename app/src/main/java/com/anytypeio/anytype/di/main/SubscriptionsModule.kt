@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.main
 
-import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.DeviceTokenStoringServiceImpl
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
@@ -12,10 +11,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.deeplink.SavePendingDeeplink
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -312,15 +310,5 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideSavePendingDeeplink(
-        userSettingsRepository: UserSettingsRepository,
-        deepLinkResolver: DeepLinkResolver,
-        diapatchers: AppCoroutineDispatchers,
-        logger: Logger
-    ): SavePendingDeeplink = SavePendingDeeplink(
-        userSettingsRepository = userSettingsRepository,
-        deepLinkResolver = deepLinkResolver,
-        dispatchers = diapatchers,
-        logger = logger
-    )
+    fun providePendingIntentStore(): PendingIntentStore = PendingIntentStore()
 }

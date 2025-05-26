@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 
 class SpaceChatWidgetContainer @Inject constructor(
     private val widget: Widget,
@@ -30,6 +31,14 @@ class SpaceChatWidgetContainer @Inject constructor(
                         source = widget.source,
                         unreadMessageCount = unreadMessageCount,
                         unreadMentionCount = unreadMentionCount
+                    )
+                }
+                .onStart {
+                    emit(
+                        WidgetView.SpaceChat(
+                            id = widget.id,
+                            source = widget.source
+                        )
                     )
                 }
         )

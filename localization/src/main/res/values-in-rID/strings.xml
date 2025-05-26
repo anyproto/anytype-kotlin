@@ -1573,7 +1573,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>
     <string name="copy">Salin</string>
-    <string name="copy_text">Copy Text</string>
+    <string name="copy_text">Salin Teks</string>
     <string name="chats_edit_message">Suting pesan</string>
     <string name="chats_message_edited">disunting</string>
     <string name="chat_empty_state_message">Belum ada pesan.\nJadilah yang memulai diskusi!</string>

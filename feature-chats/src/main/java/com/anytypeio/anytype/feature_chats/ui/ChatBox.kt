@@ -46,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -63,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
@@ -149,10 +151,13 @@ fun ChatBox(
         )
         when(mode) {
             is ChatBoxMode.Default -> {
-
+                // Do nothing
             }
             is ChatBoxMode.EditMessage -> {
-
+                // Do nothing
+            }
+            is ChatBoxMode.ReadOnly -> {
+                // Do nothing
             }
             is ChatBoxMode.Reply -> {
                 Box(
@@ -883,6 +888,41 @@ fun ChatBoxEditPanel(
         )
     }
 }
+
+@Composable
+fun ReaderChatBox(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                color = colorResource(R.color.navigation_panel),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_chatbox_lock),
+            contentDescription = "Lock icon"
+        )
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        Text(
+            modifier = Modifier.padding(start = 12.dp),
+            text = "Only editors can send messages. Contact the owner to request access.",
+            style = Caption1Regular,
+            color = colorResource(R.color.text_primary)
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun ReaderChatBoxPreview() {
+    ReaderChatBox()
+}
+
 
 sealed class ChatMarkupEvent {
     data object Bold : ChatMarkupEvent()

@@ -1350,7 +1350,18 @@ class HomeScreenViewModel(
                     )
                 }
                 is Event.Command.Details -> {
-                    curr = curr.copy(details = curr.details.process(e))
+                    if (e is Event.Command.Details.Amend) {
+                        val hasTargetKeyValueChanges = Widget.Source.SOURCE_KEYS.any { key ->
+                            key in e.details.keys
+                        }
+                        if (hasTargetKeyValueChanges) {
+                            curr = curr.copy(details = curr.details.process(e))
+                        } else {
+                            Timber.d("Widget source reducer: Ignoring Amend event: no relevant keys in ${e.details.keys}")
+                        }
+                    } else {
+                        curr = curr.copy(details = curr.details.process(e))
+                    }
                 }
                 is Event.Command.LinkGranularChange -> {
                     curr = curr.copy(

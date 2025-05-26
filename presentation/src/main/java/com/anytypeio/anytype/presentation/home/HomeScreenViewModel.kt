@@ -1327,7 +1327,6 @@ class HomeScreenViewModel(
 
     // TODO move to a separate reducer inject into this VM's constructor
     override fun reduce(state: ObjectView, event: Payload): ObjectView {
-        Timber.d("Reduce, event: $event")
         var curr = state
         event.events.forEach { e ->
             when (e) {

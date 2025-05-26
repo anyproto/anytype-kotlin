@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.deeplink.SavePendingDeeplink
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -77,7 +78,8 @@ object MainEntryModule {
         globalSubscriptionManager: GlobalSubscriptionManager,
         spaceInviteResolver: SpaceInviteResolver,
         spaceManager: SpaceManager,
-        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+        savePendingDeeplink: SavePendingDeeplink
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -97,7 +99,8 @@ object MainEntryModule {
         globalSubscriptionManager = globalSubscriptionManager,
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
-        spaceViews = spaceViewSubscriptionContainer
+        spaceViews = spaceViewSubscriptionContainer,
+        savePendingDeeplink = savePendingDeeplink
     )
 
     @JvmStatic

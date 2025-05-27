@@ -14,7 +14,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -245,6 +244,7 @@ class VaultFragment : BaseComposeFragment() {
     override fun onResume() {
         super.onResume()
         proceedWithDeepLinks()
+        vm.processPendingDeeplink()
     }
 
     private fun proceedWithDeepLinks() {

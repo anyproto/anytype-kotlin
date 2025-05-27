@@ -145,7 +145,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
-                    Timber.e(it, "Error while navigation")
+                    Timber.e(it, "Error while showing remove member warning")
                 }
             }
             is Command.ShowStopSharingWarning -> {

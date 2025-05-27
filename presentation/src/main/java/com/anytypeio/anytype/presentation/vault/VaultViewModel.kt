@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -48,7 +49,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -64,8 +64,6 @@ class VaultViewModel(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val getVaultSettings: GetVaultSettings,
-    private val setVaultSettings: SetVaultSettings,
     private val observeVaultSettings: ObserveVaultSettings,
     private val setVaultSpaceOrder: SetVaultSpaceOrder,
     private val analytics: Analytics,
@@ -73,7 +71,8 @@ class VaultViewModel(
     private val appActionManager: AppActionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
-    private val chatPreviewContainer: ChatPreviewContainer
+    private val chatPreviewContainer: ChatPreviewContainer,
+    private val pendingIntentStore: PendingIntentStore
 ) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
@@ -261,6 +260,17 @@ class VaultViewModel(
         }
     }
 
+    fun processPendingDeeplink() {
+        viewModelScope.launch {
+            delay(1000) // Simulate some delay
+            pendingIntentStore.getDeepLinkInvite()?.let { deeplink ->
+                Timber.d("Processing pending deeplink: $deeplink")
+                commands.emit(Command.Deeplink.Invite(deeplink))
+                pendingIntentStore.clearDeepLinkInvite()
+            }
+        }
+    }
+
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: String,
         chat: Id?,
@@ -357,8 +367,6 @@ class VaultViewModel(
         private val urlBuilder: UrlBuilder,
         private val spaceManager: SpaceManager,
         private val saveCurrentSpace: SaveCurrentSpace,
-        private val getVaultSettings: GetVaultSettings,
-        private val setVaultSettings: SetVaultSettings,
         private val setVaultSpaceOrder: SetVaultSpaceOrder,
         private val observeVaultSettings: ObserveVaultSettings,
         private val analytics: Analytics,
@@ -366,7 +374,8 @@ class VaultViewModel(
         private val appActionManager: AppActionManager,
         private val spaceInviteResolver: SpaceInviteResolver,
         private val profileContainer: ProfileSubscriptionManager,
-        private val chatPreviewContainer: ChatPreviewContainer
+        private val chatPreviewContainer: ChatPreviewContainer,
+        private val pendingIntentStore: PendingIntentStore
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -377,8 +386,6 @@ class VaultViewModel(
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             saveCurrentSpace = saveCurrentSpace,
-            getVaultSettings = getVaultSettings,
-            setVaultSettings = setVaultSettings,
             setVaultSpaceOrder = setVaultSpaceOrder,
             observeVaultSettings = observeVaultSettings,
             analytics = analytics,
@@ -386,7 +393,8 @@ class VaultViewModel(
             appActionManager = appActionManager,
             spaceInviteResolver = spaceInviteResolver,
             profileContainer = profileContainer,
-            chatPreviewContainer = chatPreviewContainer
+            chatPreviewContainer = chatPreviewContainer,
+            pendingIntentStore = pendingIntentStore
         ) as T
     }
 

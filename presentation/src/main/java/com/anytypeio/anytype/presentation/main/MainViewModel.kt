@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -69,7 +70,8 @@ class MainViewModel(
     private val globalSubscriptionManager: GlobalSubscriptionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val pendingIntentStore: PendingIntentStore
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -308,8 +310,34 @@ class MainViewModel(
         }
     }
 
-    fun onNewDeepLink(deeplink: DeepLinkResolver.Action) {
+    fun handleNewDeepLink(deeplink: DeepLinkResolver.Action) {
         deepLinkJobs.cancel()
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { Timber.e(it, "Failed to check authentication status") },
+                success = { authStatus -> processDeepLinkBasedOnAuth(authStatus, deeplink) }
+            )
+        }
+    }
+
+    private fun processDeepLinkBasedOnAuth(
+        authStatus: AuthStatus,
+        deeplink: DeepLinkResolver.Action
+    ) {
+        if (authStatus == AuthStatus.UNAUTHORIZED && deeplink is DeepLinkResolver.Action.Invite) {
+            saveInviteDeepLinkForLater(deeplink)
+        } else {
+            Timber.d("Proceeding with deeplink: $deeplink")
+            launchDeepLinkProcessing(deeplink)
+        }
+    }
+
+    private fun saveInviteDeepLinkForLater(deeplink: DeepLinkResolver.Action.Invite) {
+        pendingIntentStore.setDeepLinkInvite(deeplink.link)
+        Timber.d("Saved invite deeplink for later processing: ${deeplink.link}")
+    }
+
+    private fun launchDeepLinkProcessing(deeplink: DeepLinkResolver.Action) {
         deepLinkJobs += viewModelScope.launch {
             awaitAccountStartManager
                 .awaitStart()

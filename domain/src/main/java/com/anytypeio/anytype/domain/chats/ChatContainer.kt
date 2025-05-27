@@ -105,6 +105,16 @@ class ChatContainer @Inject constructor(
             }
     }
 
+    suspend fun stop(chat: Id) {
+        runCatching {
+            repo.unsubscribeChat(chat)
+        }.onFailure {
+            logger.logException(it, "DROID-2966 Error while unsubscribing from chat")
+        }.onSuccess {
+            logger.logInfo("Successfully unsubscribed from chat")
+        }
+    }
+
     fun watch(chat: Id): Flow<ChatStreamState> = flow {
         val response = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
@@ -119,7 +129,7 @@ class ChatContainer @Inject constructor(
 
         var intent: Intent = Intent.None
 
-        val initial = buildList<Chat.Message> {
+        val initial = buildList {
             if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                 // Starting from the unread-messages window.
                 val aroundUnread = loadAroundMessageOrder(

@@ -460,13 +460,16 @@ open class FilterViewModel(
     }
 
     fun onConditionClicked() {
-        val condition = conditionState.value?.condition
-        checkNotNull(condition)
         viewModelScope.launch {
-            proceedWithConditionPickerScreen(
-                type = condition.type(),
-                index = condition.index()
-            )
+            val condition = conditionState.value?.condition
+            if (condition != null) {
+                proceedWithConditionPickerScreen(
+                    type = condition.type(),
+                    index = condition.index()
+                )
+            } else {
+                Timber.e("Unexpected state: condition was null in filter")
+            }
         }
     }
 

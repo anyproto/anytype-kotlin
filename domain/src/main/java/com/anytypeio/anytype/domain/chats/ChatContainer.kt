@@ -111,7 +111,7 @@ class ChatContainer @Inject constructor(
         }.onFailure {
             logger.logException(it, "DROID-2966 Error while unsubscribing from chat")
         }.onSuccess {
-            logger.logInfo("Successfully unsubscribed from chat")
+            logger.logInfo("DROID-2966 Successfully unsubscribed from chat")
         }
     }
 

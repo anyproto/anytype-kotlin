@@ -416,23 +416,39 @@ class ShareSpaceViewModel(
     }
 
     fun onRemoveMemberAccepted(identity: Id) {
-        Timber.d("onRemoveMemberAccepted")
+        Timber.d("onRemoveMemberAccepted: Starting member removal process for identity: $identity")
         viewModelScope.launch {
-            removeSpaceMembers.async(
-                RemoveSpaceMembers.Params(
-                    space = vmParams.space,
-                    identities = listOf(identity)
+            try {
+                removeSpaceMembers.async(
+                    RemoveSpaceMembers.Params(
+                        space = vmParams.space,
+                        identities = listOf(identity)
+                    )
+                ).fold(
+                    onFailure = { e ->
+                        Timber.e(
+                            e,
+                            "Error while removing space member (identity: $identity, space: ${vmParams.space})"
+                        )
+                        when (e) {
+                            is java.net.SocketTimeoutException,
+                            is java.net.UnknownHostException,
+                            is java.io.IOException -> {
+                                sendToast("Network error occurred. Please check your connection and try again.")
+                            }
+
+                            else -> proceedWithMultiplayerError(e)
+                        }
+                    },
+                    onSuccess = {
+                        Timber.d("Successfully removed space member (identity: $identity, space: ${vmParams.space})")
+                        analytics.sendEvent(eventName = removeSpaceMember)
+                    }
                 )
-            ).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while removing space member")
-                    proceedWithMultiplayerError(e)
-                },
-                onSuccess = {
-                    Timber.d("Successfully removed space member")
-                    analytics.sendEvent(eventName = removeSpaceMember)
-                }
-            )
+            } catch (e: Exception) {
+                Timber.e(e, "Unexpected error while removing space member")
+                sendToast("An unexpected error occurred. Please try again.")
+            }
         }
     }
 

@@ -7,12 +7,14 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.ui.main.MainActivity
+import kotlin.math.absoluteValue
 
 class NotificationBuilder(
     private val context: Context,
@@ -71,14 +73,18 @@ class NotificationBuilder(
         if (createdChannels.contains(channelId)) return
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
-                channelId, channelName, NotificationManager.IMPORTANCE_HIGH
+                channelId,
+                channelName,
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "New messages notifications"
                 enableLights(true)
                 enableVibration(true)
                 setShowBadge(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-                group = CHANNEL_GROUP_ID
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    group = CHANNEL_GROUP_ID
+                }
             }
             notificationManager.createNotificationChannel(channel)
             createdChannels.add(channelId)
@@ -88,7 +94,7 @@ class NotificationBuilder(
     /**
      * Creates the tap-action intent and wraps it in a PendingIntent for notifications.
      */
-    fun createChatPendingIntent(
+    private fun createChatPendingIntent(
         context: Context,
         chatId: String,
         spaceId: Id
@@ -101,10 +107,13 @@ class NotificationBuilder(
             putExtra(Relations.SPACE_ID, spaceId)
         }
 
+        // A unique PendingIntent per chat target.
+        val requestCode = (chatId + spaceId).hashCode().absoluteValue
+
         // 2) Wrap it in a one-shot immutable PendingIntent
         return PendingIntent.getActivity(
             context,
-            NOTIFICATION_REQUEST_CODE,
+            requestCode,
             intent,
             PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
         )
@@ -125,7 +134,6 @@ class NotificationBuilder(
     }
 
     companion object {
-        private const val NOTIFICATION_REQUEST_CODE = 100
         private const val CHANNEL_GROUP_ID = "chats_group"
         private const val CHANNEL_GROUP_NAME = "Chats"
     }

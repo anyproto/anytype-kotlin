@@ -492,6 +492,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     chatId = chatId,
                     spaceId = spaceId
                 )
+                // Clearing from-notification-to-chat intent.
+                intent.replaceExtras(Bundle())
             } else {
                 // Do nothing, already there.
             }

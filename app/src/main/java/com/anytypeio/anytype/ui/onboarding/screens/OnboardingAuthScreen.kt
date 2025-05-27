@@ -36,7 +36,6 @@ import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.OnboardingSubtitleColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
-import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription

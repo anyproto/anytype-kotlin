@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
@@ -54,6 +55,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val spaceManager: SpaceManager,
     private val stringProvider: StringResourceProvider,
     private val setMembershipEmail: SetMembershipEmail,
+    private val pendingIntentStore: PendingIntentStore
 ) : BaseViewModel() {
 
     init {
@@ -295,16 +297,26 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private fun proceedWithNavigation(space: Id, startingObject: String?) {
         viewModelScope.launch {
             sendOpenAccountAnalytics()
-            if (!startingObject.isNullOrEmpty()) {
-                navigation.emit(
-                    OpenStartingObject(
-                        space = SpaceId(space),
-                        startingObject = startingObject
-                    )
+            navigateNextStep(
+                space = space,
+                startingObject = startingObject
+            )
+        }
+    }
+
+    private suspend fun navigateNextStep(space: Id, startingObject: Id?) {
+        delay(LOADING_AFTER_SUCCESS_DELAY)
+        val deeplink = pendingIntentStore.getDeepLinkInvite()
+        when {
+            !deeplink.isNullOrEmpty() -> navigation.emit(Navigation.OpenVault)
+            !startingObject.isNullOrEmpty() -> navigation.emit(
+                OpenStartingObject(
+                    space = SpaceId(space),
+                    startingObject = startingObject
                 )
-            } else {
-                navigation.emit(Navigation.OpenVault)
-            }
+            )
+
+            else -> navigation.emit(Navigation.OpenVault)
         }
     }
 
@@ -359,7 +371,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val globalSubscriptionManager: GlobalSubscriptionManager,
         private val spaceManager: SpaceManager,
         private val stringProvider: StringResourceProvider,
-        private val setMembershipEmail: SetMembershipEmail
+        private val setMembershipEmail: SetMembershipEmail,
+        private val pendingIntentStore: PendingIntentStore
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -378,7 +391,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 globalSubscriptionManager = globalSubscriptionManager,
                 spaceManager = spaceManager,
                 stringProvider = stringProvider,
-                setMembershipEmail = setMembershipEmail
+                setMembershipEmail = setMembershipEmail,
+                pendingIntentStore = pendingIntentStore
             ) as T
         }
     }

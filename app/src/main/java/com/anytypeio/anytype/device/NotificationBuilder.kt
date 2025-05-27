@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
+import timber.log.Timber
 
 class NotificationBuilder(
     private val context: Context,
@@ -63,6 +64,7 @@ class NotificationBuilder(
             .setVibrate(longArrayOf(0, 500, 200, 500))
             .build()
 
+        // TODO maybe use message ID as notification ID?
         notificationManager.notify(System.currentTimeMillis().toInt(), notif)
     }
 
@@ -82,7 +84,7 @@ class NotificationBuilder(
                 enableVibration(true)
                 setShowBadge(true)
                 lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     group = CHANNEL_GROUP_ID
                 }
             }
@@ -120,9 +122,21 @@ class NotificationBuilder(
     }
 
     fun createChannelGroupIfNeeded() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
-            if (existingGroup == null) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            try {
+                val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+                if (existingGroup == null) {
+                    val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
+                    notificationManager.createNotificationChannelGroup(group)
+                }
+            } catch (e: NoSuchMethodError) {
+                Timber.e(e, "Error while creating or getting notification group")
+                // Some devices might not support getNotificationChannelGroup even on Android O
+                // Just create the group without checking if it exists
+                val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
+                notificationManager.createNotificationChannelGroup(group)
+            } catch (e : Exception) {
+                Timber.e(e, "Error while creating or getting notification group")
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
             }

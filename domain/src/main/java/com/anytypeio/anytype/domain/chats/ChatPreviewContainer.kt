@@ -48,7 +48,7 @@ interface ChatPreviewContainer {
             job = scope.launch(dispatchers.io) {
                 previews.value = emptyList()
                 val initial = runCatching { repo.subscribeToMessagePreviews(SUBSCRIPTION_ID) }
-                    .onFailure { logger.logException(it, "DROID-2966 Error while getting initial previews") }
+                    .onFailure { logger.logWarning("DROID-2966 Error while getting initial previews: ${it.message}") }
                     .getOrDefault(emptyList())
                 events
                     .subscribe(SUBSCRIPTION_ID)

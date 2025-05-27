@@ -80,7 +80,8 @@ class NotificationsViewModel(
                     notification = notification.id,
                     space = payload.spaceId,
                     spaceName = payload.spaceName,
-                    isReadOnly = !payload.permissions.isOwnerOrEditor()
+                    isReadOnly = payload.permissions == null
+                            || payload.permissions?.isOwnerOrEditor() != true
                 )
             }
             is NotificationPayload.ParticipantRemove -> {

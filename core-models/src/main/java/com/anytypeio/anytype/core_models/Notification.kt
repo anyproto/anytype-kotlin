@@ -10,7 +10,7 @@ data class Notification(
     val isLocal: Boolean,
     val payload: NotificationPayload,
     val space: SpaceId,
-    val aclHeadId: String
+    val aclHeadId: String? = null
 ) {
 
     sealed class Event {
@@ -52,7 +52,7 @@ sealed class NotificationPayload {
     data class ParticipantRequestApproved(
         val spaceId: SpaceId,
         val spaceName: String,
-        val permissions: SpaceMemberPermissions
+        val permissions: SpaceMemberPermissions? = null
     ) : NotificationPayload()
 
 

@@ -99,6 +99,7 @@ class AnytypeNotificationService @Inject constructor(
                 )
             }
             is NotificationPayload.ParticipantRequestApproved -> {
+                Timber.d("Processing participant request approved notification : ${notification}")
                 val placeholder = context.resources.getString(R.string.untitled)
                 val title = context.resources.getString(
                     R.string.multiplayer_notification_member_request_approved
@@ -106,16 +107,26 @@ class AnytypeNotificationService @Inject constructor(
                 val actionTitle = context.resources.getString(
                     R.string.multiplayer_notification_go_to_space
                 )
-                val body = if (payload.permissions.isOwnerOrEditor()) {
-                    context.resources.getString(
-                        R.string.multiplayer_notification_member_request_approved_with_edit_rights,
-                        payload.spaceName.ifEmpty { placeholder }
-                    )
-                } else {
-                    context.resources.getString(
-                        R.string.multiplayer_notification_member_request_approved_with_read_only_rights,
-                        payload.spaceName.ifEmpty { placeholder }
-                    )
+                val permissions = payload.permissions
+                val body = when {
+                    permissions == null -> {
+                        context.resources.getString(
+                            R.string.multiplayer_notification_member_request_approved_unknown_rights,
+                            payload.spaceName.ifEmpty { placeholder }
+                        )
+                    }
+                    permissions.isOwnerOrEditor() -> {
+                        context.resources.getString(
+                            R.string.multiplayer_notification_member_request_approved_with_edit_rights,
+                            payload.spaceName.ifEmpty { placeholder }
+                        )
+                    }
+                    else -> {
+                        context.resources.getString(
+                            R.string.multiplayer_notification_member_request_approved_with_read_only_rights,
+                            payload.spaceName.ifEmpty { placeholder }
+                        )
+                    }
                 }
                 val intent = Intent(context, MainActivity::class.java).apply {
                     putExtra(Relations.SPACE_ID, payload.spaceId.id)

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -40,8 +41,11 @@ class OnboardingMnemonicViewModelTest {
     @Mock
     private lateinit var networkModeProvider: NetworkModeProvider
 
+    lateinit var pendingIntentStore: PendingIntentStore
+
     @Before
     fun setup() {
+        pendingIntentStore = PendingIntentStore()
         MockitoAnnotations.openMocks(this)
     }
 
@@ -139,7 +143,8 @@ class OnboardingMnemonicViewModelTest {
             analytics = analytics,
             configStorage = configStorage,
             networkModeProvider = networkModeProvider,
-            networkConnectionStatus = networkConnectionStatus
+            networkConnectionStatus = networkConnectionStatus,
+            pendingIntentStore = pendingIntentStore
         )
     }
 } 

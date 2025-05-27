@@ -72,7 +72,9 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val bottomSheetState = rememberModalBottomSheetState()
+                val bottomSheetState = rememberModalBottomSheetState(
+                    skipPartiallyExpanded = true
+                )
                 val scope = rememberCoroutineScope()
 
                 val launcher = rememberLauncherForActivityResult(

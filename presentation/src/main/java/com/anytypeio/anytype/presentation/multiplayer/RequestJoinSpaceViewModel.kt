@@ -7,6 +7,9 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Notification
+import com.anytypeio.anytype.core_models.NotificationPayload
+import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
@@ -27,6 +30,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import javax.inject.Inject
+import kotlin.random.Random
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -130,52 +134,84 @@ class RequestJoinSpaceViewModel(
     }
 
     fun onRequestToJoinClicked() {
-        when(val curr = state.value) {
-            is TypedViewState.Success -> {
-                joinSpaceRequestJob?.cancel()
-                joinSpaceRequestJob = viewModelScope.launch {
-                    val fileKey = spaceInviteResolver.parseFileKey(params.link)
-                    val contentId = spaceInviteResolver.parseContentId(params.link)
-                    if (contentId != null && fileKey != null) {
-                        isRequestInProgress.value = true
-                        sendJoinSpaceRequest.async(
-                            SendJoinSpaceRequest.Params(
-                                space = curr.data.space,
-                                network = configStorage.getOrNull()?.network,
-                                inviteFileKey = fileKey,
-                                inviteContentId = contentId
-                            )
-                        ).fold(
-                            onFailure = { e ->
-                                Timber.e(e, "Error while sending space join request")
-                                if (e is MultiplayerError.Generic) {
-                                    commands.emit(Command.ShowGenericMultiplayerError(e))
-                                } else {
-                                    sendToast(e.msg())
-                                }
-                            },
-                            onSuccess = {
-                                analytics.sendEvent(eventName = screenRequestSent)
-                                if (notificator.areNotificationsEnabled) {
-                                    if (!curr.data.withoutApprove) {
-                                        commands.emit(Command.Toast.RequestSent)
-                                    }
-                                    commands.emit(Command.Dismiss)
-                                } else {
-                                    if (!curr.data.withoutApprove) {
-                                        commands.emit(Command.Toast.RequestSent)
-                                    }
-                                    showEnableNotificationDialog.value = true
-                                }
-                            }
-                        )
-                        isRequestInProgress.value = false
-                    }
-                }
-            } else -> {
-                // Do nothing.
+        val currentState = state.value
+        if (currentState !is TypedViewState.Success) return
+
+        joinSpaceRequestJob?.cancel()
+        joinSpaceRequestJob = viewModelScope.launch {
+            val fileKey = spaceInviteResolver.parseFileKey(params.link)
+            val contentId = spaceInviteResolver.parseContentId(params.link)
+
+            if (fileKey == null || contentId == null) {
+                Timber.w("Could not parse invite link in onRequestToJoinClicked: ${params.link}")
+                return@launch
             }
+
+            isRequestInProgress.value = true
+
+            val params = SendJoinSpaceRequest.Params(
+                space = currentState.data.space,
+                network = configStorage.getOrNull()?.network,
+                inviteFileKey = fileKey,
+                inviteContentId = contentId
+            )
+
+            sendJoinSpaceRequest.async(params).fold(
+                onFailure = { handleJoinRequestFailure(it) },
+                onSuccess = { handleJoinRequestSuccess(currentState.data) }
+            )
+
+            isRequestInProgress.value = false
         }
+    }
+
+    private suspend fun handleJoinRequestFailure(error: Throwable) {
+        Timber.e(error, "Error while sending space join request")
+        when (error) {
+            is MultiplayerError.Generic -> commands.emit(Command.ShowGenericMultiplayerError(error))
+            else -> sendToast(error.msg())
+        }
+    }
+
+    private suspend fun handleJoinRequestSuccess(data: SpaceInviteView) {
+        analytics.sendEvent(eventName = screenRequestSent)
+
+        val shouldNotify = data.withoutApprove
+        val notificationsEnabled = notificator.areNotificationsEnabled
+
+        if (shouldNotify) {
+            sendApprovalNotification(data)
+        }
+
+        if (notificationsEnabled) {
+            if (!shouldNotify) {
+                commands.emit(Command.Toast.RequestSent)
+            }
+            commands.emit(Command.Dismiss)
+        } else {
+            if (!shouldNotify) {
+                commands.emit(Command.Toast.RequestSent)
+            }
+            showEnableNotificationDialog.value = true
+        }
+    }
+
+    private fun createApprovalNotification(data: SpaceInviteView): Notification {
+        return Notification(
+            id = Random.nextInt().toString(),
+            createTime = System.currentTimeMillis(),
+            status = NotificationStatus.CREATED,
+            isLocal = true,
+            payload = NotificationPayload.ParticipantRequestApproved(
+                spaceId = data.space,
+                spaceName = data.spaceName
+            ),
+            space = data.space
+        )
+    }
+
+    private fun sendApprovalNotification(data: SpaceInviteView) {
+        notificator.notify(createApprovalNotification(data))
     }
 
     fun onCancelJoinSpaceRequestClicked() {

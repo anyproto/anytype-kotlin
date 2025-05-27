@@ -105,6 +105,16 @@ class ChatContainer @Inject constructor(
             }
     }
 
+    suspend fun stop(chat: Id) {
+        runCatching {
+            repo.unsubscribeChat(chat)
+        }.onFailure {
+            logger.logWarning("DROID-2966 Error while unsubscribing from chat")
+        }.onSuccess {
+            logger.logInfo("DROID-2966 Successfully unsubscribed from chat")
+        }
+    }
+
     fun watch(chat: Id): Flow<ChatStreamState> = flow {
         val response = repo.subscribeLastChatMessages(
             command = Command.ChatCommand.SubscribeLastMessages(
@@ -119,7 +129,7 @@ class ChatContainer @Inject constructor(
 
         var intent: Intent = Intent.None
 
-        val initial = buildList<Chat.Message> {
+        val initial = buildList {
             if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                 // Starting from the unread-messages window.
                 val aroundUnread = loadAroundMessageOrder(
@@ -210,7 +220,6 @@ class ChatContainer @Inject constructor(
                                             logger.logException(e, "DROID-2966 Error while loading reply context")
                                             state.messages
                                         }
-                                        val target = messages.find { it.order == oldestReadOrderId }
                                         ChatStreamState(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
@@ -296,7 +305,7 @@ class ChatContainer @Inject constructor(
                                     )
                                 )
                             }.onFailure {
-                                logger.logException(it, "DROID-2966 Error while reading mentions")
+                                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
                             }.onSuccess {
                                 logger.logInfo("DROID-2966 Read mentions with success")
                             }
@@ -336,7 +345,7 @@ class ChatContainer @Inject constructor(
                                     )
                                 )
                             }.onFailure {
-                                logger.logException(it, "DROID-2966 Error while reading messages")
+                                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
                             }.onSuccess {
                                 logger.logInfo("DROID-2966 Read messages with success")
                             }

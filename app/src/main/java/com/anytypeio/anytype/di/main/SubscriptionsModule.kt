@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer

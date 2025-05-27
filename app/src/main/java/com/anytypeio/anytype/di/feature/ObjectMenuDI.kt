@@ -30,7 +30,6 @@ import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -226,11 +225,6 @@ object ObjectMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun provideDeeplinkResolver() : DeepLinkResolver = DefaultDeepLinkResolver
-
-    @JvmStatic
-    @Provides
-    @PerDialog
     fun provideFavoriteUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -376,11 +370,6 @@ object ObjectSetMenuModule {
         uriFileProvider = fileProvider,
         dispatchers = dispatchers
     )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun provideDeeplinkResolver() : DeepLinkResolver = DefaultDeepLinkResolver
 
     @JvmStatic
     @Provides

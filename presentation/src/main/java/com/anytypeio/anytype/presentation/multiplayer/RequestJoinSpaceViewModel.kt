@@ -142,7 +142,10 @@ class RequestJoinSpaceViewModel(
             val fileKey = spaceInviteResolver.parseFileKey(params.link)
             val contentId = spaceInviteResolver.parseContentId(params.link)
 
-            if (fileKey == null || contentId == null) return@launch
+            if (fileKey == null || contentId == null) {
+                Timber.w("Could not parse invite link in onRequestToJoinClicked: ${params.link}")
+                return@launch
+            }
 
             isRequestInProgress.value = true
 

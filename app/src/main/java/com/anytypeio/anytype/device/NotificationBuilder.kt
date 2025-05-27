@@ -121,8 +121,15 @@ class NotificationBuilder(
 
     fun createChannelGroupIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
-            if (existingGroup == null) {
+            try {
+                val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+                if (existingGroup == null) {
+                    val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
+                    notificationManager.createNotificationChannelGroup(group)
+                }
+            } catch (e: NoSuchMethodError) {
+                // Some devices might not support getNotificationChannelGroup even on Android O
+                // Just create the group without checking if it exists
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
             }

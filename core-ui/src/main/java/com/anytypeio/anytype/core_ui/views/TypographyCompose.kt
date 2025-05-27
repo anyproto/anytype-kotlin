@@ -5,28 +5,29 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontLoadingStrategy
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.em
 import com.anytypeio.anytype.core_ui.R
 
 val fontInterRegular = FontFamily(
-    Font(R.font.inter_regular, weight = FontWeight.Normal)
+    Font(R.font.inter_regular, weight = FontWeight.Normal, loadingStrategy = FontLoadingStrategy.Async)
 )
 
 val fontInterMedium = FontFamily(
-    Font(R.font.inter_medium, weight = FontWeight.Medium)
+    Font(R.font.inter_medium, weight = FontWeight.Medium, loadingStrategy = FontLoadingStrategy.Async)
 )
 
 val fontInterBold = FontFamily(
-    Font(R.font.inter_bold, weight = FontWeight.Bold)
+    Font(R.font.inter_bold, weight = FontWeight.Bold, loadingStrategy = FontLoadingStrategy.Async)
 )
 
 val fontInterSemibold = FontFamily(
-    Font(R.font.inter_semibold, weight = FontWeight.SemiBold)
+    Font(R.font.inter_semibold, weight = FontWeight.SemiBold, loadingStrategy = FontLoadingStrategy.Async)
 )
 
 val fontIBM = FontFamily(
-    Font(R.font.ibm_plex_mono, weight = FontWeight.Normal)
+    Font(R.font.ibm_plex_mono, weight = FontWeight.Normal, loadingStrategy = FontLoadingStrategy.Async)
 )
 
 //Content/Headlines/Title

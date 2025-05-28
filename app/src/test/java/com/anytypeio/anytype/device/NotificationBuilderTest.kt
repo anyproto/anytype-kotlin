@@ -7,6 +7,7 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import kotlin.test.Test
 import org.junit.After
 import org.junit.Before
@@ -26,8 +27,10 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
 class NotificationBuilderTest {
 
+
     private val context: Context = ApplicationProvider.getApplicationContext()
     lateinit var notificationManager: NotificationManager
+    lateinit var stringResourceProvider: StringResourceProvider
     private lateinit var builder: NotificationBuilder
     private val testSpaceId = "space123"
 
@@ -43,8 +46,11 @@ class NotificationBuilderTest {
 
     @Before
     fun setUp() {
+        stringResourceProvider = mock<StringResourceProvider> {
+            on { getAttachmentText() } doReturn "[attachment]"
+        }
         notificationManager = mock()
-        builder = NotificationBuilder(context, notificationManager)
+        builder = NotificationBuilder(context, notificationManager, stringResourceProvider)
     }
 
     @After
@@ -142,18 +148,9 @@ class NotificationBuilderTest {
         whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbnA, sbnB, sbnC))
 
         // Ensure channels exist by sending a dummy notification for each
-        val dummyMessage = DecryptedPushContent.Message(
-            chatId = "chat456",
-            senderName = "Alice",
-            spaceName = "My Space",
-            msgId = "msg789",
-            text = "Hello, this is a test message.",
-            hasAttachments = false
-        )
-
-        builder.buildAndNotify(dummyMessage, spaceA)
-        builder.buildAndNotify(dummyMessage, spaceB)
-        builder.buildAndNotify(dummyMessage, spaceC)
+        builder.buildAndNotify(message, spaceA)
+        builder.buildAndNotify(message, spaceB)
+        builder.buildAndNotify(message, spaceC)
 
         // Clear only spaceB
         builder.clearNotificationChannel(spaceB)

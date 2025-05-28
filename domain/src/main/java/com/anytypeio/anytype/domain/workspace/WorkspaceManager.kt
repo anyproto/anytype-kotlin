@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,7 +34,8 @@ interface SpaceManager {
     class Impl @Inject constructor(
         private val repo: BlockRepository,
         private val dispatchers: AppCoroutineDispatchers,
-        private val logger: Logger
+        private val logger: Logger,
+        private val notificationBuilder: NotificationBuilder
     ) : SpaceManager {
 
         private val currentSpace = MutableStateFlow(NO_SPACE)
@@ -77,7 +79,9 @@ interface SpaceManager {
                 if (space.isEmpty()) {
                     null
                 } else {
-                    info[space]
+                    info[space].also {
+                        clearNotificationChannel(space = space)
+                    }
                 }
             }
         }
@@ -120,6 +124,14 @@ interface SpaceManager {
         override fun clear() {
             info.clear()
             currentSpace.value = NO_SPACE
+        }
+
+        private fun clearNotificationChannel(space: Id) {
+            runCatching {
+                notificationBuilder.clearNotificationChannel(spaceId = space)
+            }.onFailure {
+                logger.logWarning("Error clearing notification channel for space: $space")
+            }
         }
 
         companion object {

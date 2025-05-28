@@ -22,7 +22,7 @@ import org.robolectric.annotation.Config
 class DefaultPushMessageProcessorTest {
 
     private lateinit var decryptionService: DecryptionPushContentService
-    private lateinit var notificationBuilder: NotificationBuilder
+    private lateinit var notificationBuilder: NotificationBuilderImpl
     private lateinit var processor: DefaultPushMessageProcessor
 
     @Before

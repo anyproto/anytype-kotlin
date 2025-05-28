@@ -31,7 +31,7 @@ class NotificationBuilderTest {
     private val context: Context = ApplicationProvider.getApplicationContext()
     lateinit var notificationManager: NotificationManager
     lateinit var stringResourceProvider: StringResourceProvider
-    private lateinit var builder: NotificationBuilder
+    private lateinit var builder: NotificationBuilderImpl
     private val testSpaceId = "space123"
 
     // A simple stub for DecryptedPushContent.Message
@@ -50,7 +50,7 @@ class NotificationBuilderTest {
             on { getAttachmentText() } doReturn "[attachment]"
         }
         notificationManager = mock()
-        builder = NotificationBuilder(context, notificationManager, stringResourceProvider)
+        builder = NotificationBuilderImpl(context, notificationManager, stringResourceProvider)
     }
 
     @After

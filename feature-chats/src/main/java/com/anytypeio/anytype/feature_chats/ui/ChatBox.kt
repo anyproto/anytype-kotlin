@@ -371,7 +371,9 @@ fun ChatBox(
                                     .clickable {
                                         onMessageSent(text.text, spans)
                                         clearText()
-                                        resetScroll()
+                                        if (mode !is ChatBoxMode.EditMessage) {
+                                            resetScroll()
+                                        }
                                         showMarkup = false
                                     }
                             }

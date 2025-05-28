@@ -728,7 +728,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onResume() {
         super.onResume()
-        NotificationManagerCompat.from(this).cancelAll()
         mdnsProvider.start()
         navigator.bind(findNavController(R.id.fragment))
     }

@@ -55,25 +55,7 @@ class ChatContainer @Inject constructor(
                         subscription = "$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
                         space = space,
                         targets = ids.toList(),
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.SPACE_ID,
-                            Relations.NAME,
-                            Relations.ICON_IMAGE,
-                            Relations.ICON_EMOJI,
-                            Relations.ICON_NAME,
-                            Relations.ICON_OPTION,
-                            Relations.TYPE,
-                            Relations.LAYOUT,
-                            Relations.IS_ARCHIVED,
-                            Relations.IS_DELETED,
-                            Relations.SNIPPET,
-                            Relations.DONE,
-                            Relations.SNIPPET,
-                            Relations.SIZE_IN_BYTES,
-                            Relations.FILE_MIME_TYPE,
-                            Relations.FILE_EXT,
-                        )
+                        keys = ATTACHMENT_KEYS
                     )
                 ).map { wrappers ->
                     wrappers.associateBy { it.id }
@@ -689,6 +671,27 @@ class ChatContainer @Inject constructor(
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
         private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
+
+
+        private val ATTACHMENT_KEYS = listOf(
+            Relations.ID,
+            Relations.SPACE_ID,
+            Relations.NAME,
+            Relations.ICON_IMAGE,
+            Relations.ICON_EMOJI,
+            Relations.ICON_NAME,
+            Relations.ICON_OPTION,
+            Relations.TYPE,
+            Relations.LAYOUT,
+            Relations.IS_ARCHIVED,
+            Relations.IS_DELETED,
+            Relations.SNIPPET,
+            Relations.DONE,
+            Relations.SNIPPET,
+            Relations.SIZE_IN_BYTES,
+            Relations.FILE_MIME_TYPE,
+            Relations.FILE_EXT,
+        )
     }
 
     data class ChatMessageMeta(val id: Id, val order: String)

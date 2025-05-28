@@ -709,7 +709,7 @@
     <string name="alert_qr_camera">Dans l’application sur votre ordinateur, allez dans Paramètres – Clé pour trouver le code QR permettant de vous connecter.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
-    <string name="find_a_relation">Find a property</string>
+    <string name="find_a_relation">Trouver une propriété</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Type inconnu</string>
     <string name="collection">Collection</string>
@@ -794,7 +794,7 @@
     <string name="snack_move_to">déplacé vers</string>
     <string name="recovery_phrase_copied">Votre Clé a été copiée</string>
     <string name="type_editing_title">Paramètres de type</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">Paramètres de la propriété</string>
     <string name="type_editing_uninstall">Supprimer</string>
     <string name="empty_tree_widget">Cet objet n\'a pas de liens vers d\'autres objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="empty_tree_widget_reader_access">Cet objet n\'a pas de liens vers d\'autres objets.</string>
@@ -972,7 +972,7 @@
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
     <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">Créer une propriété</string>
     <string name="library_subtitle_types">Mes types</string>
     <string name="library_subtitle_relations">Mes propriétés</string>
     <string name="library_subtitle_library">Bibliothèque</string>
@@ -1009,7 +1009,7 @@
     <string name="onboarding_this_is_your_key_title">Ceci est votre clé</string>
     <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Afficher ma clé</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Révéler et copier</string>
     <string name="onboarding_key_skip">Ignorer</string>
     <string name="onboarding_key_not_now">Plus tard</string>
     <string name="onboarding_key_copy">Copier dans le presse-papier</string>
@@ -1164,7 +1164,7 @@
     <string name="multiplayer_join_a_space">Rejoindre un espace</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commentaire privé pour un propriétaire d\'espace</string>
     <string name="multiplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
-    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Rejoindre %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
     <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
     <string name="multiplayer_request_to_join_sent_title">Demande envoyée</string>
@@ -1583,7 +1583,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
     <string name="chat">Messagerie</string>
     <string name="copy">Copier</string>
-    <string name="copy_text">Copy Text</string>
+    <string name="copy_text">Copier le texte</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
@@ -1602,7 +1602,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_empty_items_subtitle">Créez vos premiers objets pour commencer.</string>
     <string name="object_type_menu_delete">Supprimer complètement</string>
     <string name="object_type_objects_menu_open_set">Open Query</string>
-    <string name="object_type_objects_menu_create_set">Create Query</string>
+    <string name="object_type_objects_menu_create_set">Créer une requête</string>
     <string name="object_type_templates_menu_set_default">Définir par défaut</string>
     <string name="object_type_templates_menu_edit">Éditer</string>
     <string name="object_type_templates_menu_duplicate">Dupliquer</string>
@@ -1630,7 +1630,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_type_templates_empty">Ce type n\'a pas\nde modèle</string>
     <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Masqué</string>
-    <string name="object_properties_local_info_title">Local properties</string>
+    <string name="object_properties_local_info_title">Propriétés locales</string>
     <string name="object_properties_local_info_description">Ces propriétés existent uniquement dans cet objet et ne font pas partie de son type. Ajouter au type à utiliser dans tous les objets, ou supprimer.</string>
     <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
     <string name="object_type_open_type_error">Failed to open the object type</string>
@@ -1643,7 +1643,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="day_of_week_saturday">Samedi</string>
     <string name="day_of_week_sunday">Dimanche</string>
     <string name="file">Fichier</string>
-    <string name="attachment">Attachment</string>
+    <string name="attachment">Pièce jointe</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Créez votre premier espace pour commencer</string>
     <string name="space_list_empty_state_it_is_empty_here">C\'est vide ici.</string>
     <string name="emoji_category_smileys_and_people">Émoticônes &amp; Personnes</string>
@@ -1758,7 +1758,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_types_screen_section_my_types">Mes Types</string>
     <string name="space_types_screen_section_system_types">System Types</string>
     <string name="space_properties_screen_title">Propriétés</string>
-    <string name="space_properties_screen_section_my_types">My Properties</string>
+    <string name="space_properties_screen_section_my_types">Mes propriétés</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Déplacer vers la corbeille</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Erreur lors de la création du compte : l\'espace est manquant</string>
@@ -1769,7 +1769,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="onboarding_enter_email">Entrez votre adresse e-mail</string>
     <string name="onboarding_button_continue">Continuer</string>
     <string name="onboarding_button_skip">Ignorer</string>
-    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_email_error">E-mail incorrect</string>
     <string name="onboarding_name_error">Enter name</string>
     <string name="notifications_modal_title">Activer les notifications push</string>
     <string name="notifications_modal_description">Recevez une notification instantanée lorsque quelqu\'un vous envoie des messages ou vous mentionne dans vos espaces.</string>

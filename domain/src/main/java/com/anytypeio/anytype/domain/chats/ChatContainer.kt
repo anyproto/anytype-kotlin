@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
@@ -50,19 +51,29 @@ class ChatContainer @Inject constructor(
         return attachments
             .flatMapLatest { ids ->
                 subscription.subscribe(
-                    searchParams = StoreSearchParams(
+                    searchParams = StoreSearchByIdsParams(
                         subscription = "$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
                         space = space,
-                        limit = 0,
-                        sorts = emptyList(),
-                        filters = buildList {
-                            DVFilter(
-                                relation = Relations.ID,
-                                value = ids.toList(),
-                                condition = DVFilterCondition.IN
-                            )
-                        },
-                        keys = emptyList()
+                        targets = ids.toList(),
+                        keys = listOf(
+                            Relations.ID,
+                            Relations.SPACE_ID,
+                            Relations.NAME,
+                            Relations.ICON_IMAGE,
+                            Relations.ICON_EMOJI,
+                            Relations.ICON_NAME,
+                            Relations.ICON_OPTION,
+                            Relations.TYPE,
+                            Relations.LAYOUT,
+                            Relations.IS_ARCHIVED,
+                            Relations.IS_DELETED,
+                            Relations.SNIPPET,
+                            Relations.DONE,
+                            Relations.SNIPPET,
+                            Relations.SIZE_IN_BYTES,
+                            Relations.FILE_MIME_TYPE,
+                            Relations.FILE_EXT,
+                        )
                     )
                 ).map { wrappers ->
                     wrappers.associateBy { it.id }

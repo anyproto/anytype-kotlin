@@ -70,7 +70,6 @@ class ChatContainer @Inject constructor(
             }
     }
 
-    // TODO Naive implementation. Add caching logic
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
         return replies
             .map { ids ->

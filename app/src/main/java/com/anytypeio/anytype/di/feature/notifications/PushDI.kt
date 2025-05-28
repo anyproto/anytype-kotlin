@@ -10,6 +10,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
@@ -50,10 +51,12 @@ object PushContentModule {
     @Singleton
     fun provideNotificationBuilder(
         context: Context,
-        notificationManager: NotificationManager
+        notificationManager: NotificationManager,
+        stringResourceProvider: StringResourceProvider
     ): NotificationBuilder = NotificationBuilder(
         context = context,
-        notificationManager = notificationManager
+        notificationManager = notificationManager,
+        resourceProvider = stringResourceProvider
     )
 
     @JvmStatic
@@ -90,4 +93,5 @@ interface PushContentDependencies : ComponentDependencies {
     fun context(): Context
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun dispatchers(): AppCoroutineDispatchers
+    fun provider(): StringResourceProvider
 }

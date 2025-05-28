@@ -12,16 +12,18 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
 import timber.log.Timber
 
 class NotificationBuilder(
     private val context: Context,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val resourceProvider: StringResourceProvider
 ) {
 
-    private val attachmentText get() = context.getString(R.string.attachment)
+    private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
 
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {

@@ -1166,7 +1166,7 @@
     <string name="multiplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
     <string name="multiplayer_request_to_join_without_approve_title">Rejoindre %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
-    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Rejoindre l\'espace</string>
     <string name="multiplayer_request_to_join_sent_title">Demande envoyée</string>
     <string name="multiplayer_request_to_join_sent_description">Vous recevrez une notification lorsque le propriétaire de l\'espace approuvera votre demande.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>

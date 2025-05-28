@@ -11,15 +11,19 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
@@ -29,7 +33,8 @@ import kotlinx.coroutines.flow.scan
 class ChatContainer @Inject constructor(
     private val repo: BlockRepository,
     private val channel: ChatEventChannel,
-    private val logger: Logger
+    private val logger: Logger,
+    private val subscription: StorelessSubscriptionContainer
 ) {
 
     private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
@@ -40,14 +45,16 @@ class ChatContainer @Inject constructor(
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
 
-    // TODO Naive implementation. Add caching logic
-    fun fetchAttachments(space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    fun subscribeToAttachments(chat: Id, space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
-            .map { ids ->
-                if (ids.isNotEmpty()) {
-                    repo.searchObjects(
-                        sorts = emptyList(),
+            .flatMapLatest { ids ->
+                subscription.subscribe(
+                    searchParams = StoreSearchParams(
+                        subscription = "$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
+                        space = space,
                         limit = 0,
+                        sorts = emptyList(),
                         filters = buildList {
                             DVFilter(
                                 relation = Relations.ID,
@@ -55,18 +62,12 @@ class ChatContainer @Inject constructor(
                                 condition = DVFilterCondition.IN
                             )
                         },
-                        keys = emptyList(),
-                        space = space
-                    ).mapNotNull {
-                        val wrapper = ObjectWrapper.Basic(it)
-                        if (wrapper.isValid) wrapper else null
-                    }
-                } else {
-                    emptyList()
+                        keys = emptyList()
+                    )
+                ).map { wrappers ->
+                    wrappers.associateBy { it.id }
                 }
             }
-            .distinctUntilChanged()
-            .map { wrappers -> wrappers.associateBy { it.id } }
     }
 
     // TODO Naive implementation. Add caching logic
@@ -85,7 +86,7 @@ class ChatContainer @Inject constructor(
                 }
             }
             .distinctUntilChanged()
-            .map { messages -> messages.associate { it.id to it } }
+            .map { messages -> messages.associateBy { it.id } }
     }
 
     fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {
@@ -108,6 +109,9 @@ class ChatContainer @Inject constructor(
     suspend fun stop(chat: Id) {
         runCatching {
             repo.unsubscribeChat(chat)
+            repo.cancelObjectSearchSubscription(
+                listOf("$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX")
+            )
         }.onFailure {
             logger.logWarning("DROID-2966 Error while unsubscribing from chat")
         }.onSuccess {
@@ -674,6 +678,7 @@ class ChatContainer @Inject constructor(
         // TODO reduce message size to reduce UI and VM overload.
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
+        private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
     }
 
     data class ChatMessageMeta(val id: Id, val order: String)

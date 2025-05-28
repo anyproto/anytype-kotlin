@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
 import kotlin.collections.isNotEmpty
 import kotlin.collections.toList
+import kotlin.math.log
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -61,6 +62,11 @@ class ChatContainer @Inject constructor(
                     wrappers.associateBy { it.id }
                 }
             }
+            .catch { e ->
+                emit(emptyMap()).also {
+                    logger.logException(e, "DROID-2966 Error in the chat attachments pub/sub flow")
+                }
+            }
     }
 
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
@@ -79,6 +85,11 @@ class ChatContainer @Inject constructor(
             }
             .distinctUntilChanged()
             .map { messages -> messages.associateBy { it.id } }
+            .catch { e ->
+                emit(emptyMap()).also {
+                    logger.logException(e, "DROID-2966 Error while fetching chat replies")
+                }
+            }
     }
 
     fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {

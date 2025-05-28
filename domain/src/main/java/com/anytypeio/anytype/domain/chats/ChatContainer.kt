@@ -685,7 +685,6 @@ class ChatContainer @Inject constructor(
             Relations.LAYOUT,
             Relations.IS_ARCHIVED,
             Relations.IS_DELETED,
-            Relations.SNIPPET,
             Relations.DONE,
             Relations.SNIPPET,
             Relations.SIZE_IN_BYTES,

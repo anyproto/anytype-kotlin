@@ -3,6 +3,7 @@ package com.anytypeio.anytype.device
 import android.os.Build
 import android.util.Base64
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -22,7 +23,7 @@ import org.robolectric.annotation.Config
 class DefaultPushMessageProcessorTest {
 
     private lateinit var decryptionService: DecryptionPushContentService
-    private lateinit var notificationBuilder: NotificationBuilderImpl
+    private lateinit var notificationBuilder: NotificationBuilder
     private lateinit var processor: DefaultPushMessageProcessor
 
     @Before

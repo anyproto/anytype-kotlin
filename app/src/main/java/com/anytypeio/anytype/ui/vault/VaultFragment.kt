@@ -126,6 +126,15 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening create-space screen from vault")
                 }
             }
+            Command.CreateChat -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.actionCreateChatFromVault
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening create chat screen from vault")
+                }
+            }
             is Command.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(
@@ -162,16 +171,6 @@ class VaultFragment : BaseComposeFragment() {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
-            }
-
-            Command.CreateChat -> {
-                runCatching {
-                    findNavController().navigate(
-                        R.id.actionCreateChatFromVault
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while opening create chat screen from vault")
-                }
             }
         }
     }

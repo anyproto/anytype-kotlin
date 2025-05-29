@@ -181,8 +181,9 @@ class VaultViewModel(
     }
 
     fun onCreateSpaceClicked() {
-        viewModelScope.launch { 
-            showChooseSpaceType.value = true
+        viewModelScope.launch {
+            showChooseSpaceType.value = false
+            commands.emit(Command.CreateNewSpace)
         }
     }
 
@@ -196,13 +197,6 @@ class VaultViewModel(
     fun onChooseSpaceTypeDismissed() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-        }
-    }
-
-    fun onChooseSpaceTypeConfirmed() {
-        viewModelScope.launch {
-            showChooseSpaceType.value = false
-            commands.emit(Command.CreateNewSpace)
         }
     }
 

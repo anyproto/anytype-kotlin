@@ -5,14 +5,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -51,14 +55,30 @@ class VaultFragment : BaseComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                VaultScreen(
-                    spaces = vm.spaces.collectAsStateWithLifecycle().value,
-                    onSpaceClicked = vm::onSpaceClicked,
-                    onCreateSpaceClicked = vm::onCreateSpaceClicked,
-                    onSettingsClicked = vm::onSettingsClicked,
-                    onOrderChanged = vm::onOrderChanged,
-                    profile = vm.profileView.collectAsStateWithLifecycle().value
-                )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    VaultScreen(
+                        spaces = vm.spaces.collectAsStateWithLifecycle().value,
+                        onSpaceClicked = vm::onSpaceClicked,
+                        onCreateSpaceClicked = vm::onCreateSpaceClicked,
+                        onSettingsClicked = vm::onSettingsClicked,
+                        onOrderChanged = vm::onOrderChanged,
+                        profile = vm.profileView.collectAsStateWithLifecycle().value
+                    )
+                    
+                    if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
+                        ChooseSpaceTypeScreen(
+                            onCreateChatClicked = {
+                                vm.onCreateChatClicked()
+                            },
+                            onCreateSpaceClicked = {
+                                vm.onCreateSpaceClicked()
+                            },
+                            onDismiss = {
+                                vm.onChooseSpaceTypeDismissed()
+                            }
+                        )
+                    }
+                }
             }
             LaunchedEffect(Unit) {
                 vm.commands.collect { command -> proceed(command) }
@@ -135,13 +155,23 @@ class VaultFragment : BaseComposeFragment() {
                 findNavController().navigate(
                     R.id.paymentsScreen,
                     MembershipFragment.args(command.tierId),
-                    NavOptions.Builder().setLaunchSingleTop(true).build()
+                    Builder().setLaunchSingleTop(true).build()
                 )
             }
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
+            }
+
+            Command.CreateChat -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.actionCreateChatFromVault
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while opening create chat screen from vault")
+                }
             }
         }
     }

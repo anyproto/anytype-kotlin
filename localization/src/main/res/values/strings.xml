@@ -2070,4 +2070,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">Not now</string>
 
+    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
+    <string name="vault_create_space">Space</string>
+    <string name="vault_create_space_description">For organized content and data</string>
+
 </resources>

@@ -77,6 +77,7 @@ class VaultViewModel(
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>(replay = 0)
+    val showChooseSpaceType = MutableStateFlow(false)
 
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -180,7 +181,29 @@ class VaultViewModel(
     }
 
     fun onCreateSpaceClicked() {
-        viewModelScope.launch { commands.emit(Command.CreateNewSpace) }
+        viewModelScope.launch { 
+            showChooseSpaceType.value = true
+        }
+    }
+
+    fun onCreateChatClicked() {
+        viewModelScope.launch { 
+            showChooseSpaceType.value = false
+            commands.emit(Command.CreateChat) 
+        }
+    }
+
+    fun onChooseSpaceTypeDismissed() {
+        viewModelScope.launch {
+            showChooseSpaceType.value = false
+        }
+    }
+
+    fun onChooseSpaceTypeConfirmed() {
+        viewModelScope.launch {
+            showChooseSpaceType.value = false
+            commands.emit(Command.CreateNewSpace)
+        }
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
@@ -410,6 +433,7 @@ class VaultViewModel(
         data class EnterSpaceHomeScreen(val space: Space): Command()
         data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
         data object CreateNewSpace: Command()
+        data object CreateChat: Command()
         data object OpenProfileSettings: Command()
 
         sealed class Deeplink : Command() {

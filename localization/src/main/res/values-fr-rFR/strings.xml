@@ -1234,6 +1234,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s a rejoint l\'espace %2$s avec droits d\'accès en modification</string>
     <string name="multiplayer_notification_member_request_approved">Demande approuvée</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Votre demande de rejoindre l\'espace %1$s a été approuvée avec des droits d\'accès en lecture seule. L\'espace sera bientôt disponible sur votre appareil.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s space has been approved. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Votre demande de rejoindre l\'espace %1$s a été approuvée avec les droits d\'accès en modification. L\'espace sera bientôt disponible sur votre appareil.</string>
     <string name="multiplayer_notification_member_removed_from_space_title">L\'espace \"%1$s\" n\'est plus accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Vous avez été retiré de l\'espace \"%1$s\", ou l\'espace a été supprimé par le propriétaire.</string>

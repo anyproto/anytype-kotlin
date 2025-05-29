@@ -27,16 +27,16 @@ import org.robolectric.annotation.Config
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
 class NotificationBuilderTest {
 
-
     private val context: Context = ApplicationProvider.getApplicationContext()
     lateinit var notificationManager: NotificationManager
     lateinit var stringResourceProvider: StringResourceProvider
     private lateinit var builder: NotificationBuilderImpl
     private val testSpaceId = "space123"
+    private val testChatId = "chat456"
 
     // A simple stub for DecryptedPushContent.Message
     private val message = DecryptedPushContent.Message(
-        chatId = "chat456",
+        chatId = testChatId,
         senderName = "Alice",
         spaceName = "My Space",
         msgId = "msg789",
@@ -65,7 +65,7 @@ class NotificationBuilderTest {
 
         // Then: a channel should be created with correct id and name
         verify(notificationManager).createNotificationChannel(argThat {
-            id == testSpaceId && name == "My Space"
+            id == "${testSpaceId}_${testChatId}" && name == "My Space"
         })
         // And a notification should be posted
         verify(notificationManager).notify(any(), any<android.app.Notification>())
@@ -74,44 +74,44 @@ class NotificationBuilderTest {
     @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
     fun `clearNotificationChannel should cancel active and delete channel`() {
+        val channelId = "${testSpaceId}_${testChatId}"
         // Prepare two mock StatusBarNotifications
-        val notif1: android.app.Notification = mock {
-            on { channelId } doReturn testSpaceId
-        }
-        val notif2: android.app.Notification = mock {
-            on { channelId } doReturn "other"
-        }
+        val notif1: android.app.Notification = mock()
+        val notif2: android.app.Notification = mock()
+        
+        whenever(notif1.channelId).thenReturn(channelId)
+        whenever(notif2.channelId).thenReturn("other")
 
         // Wrap them in StatusBarNotification mocks
-        val sbn1: StatusBarNotification = mock {
-            on { notification } doReturn notif1
-            on { id } doReturn 1
-        }
-        val sbn2: StatusBarNotification = mock {
-            on { notification } doReturn notif2
-            on { id } doReturn 2
-        }
+        val sbn1: StatusBarNotification = mock()
+        val sbn2: StatusBarNotification = mock()
+        
+        whenever(sbn1.notification).thenReturn(notif1)
+        whenever(sbn1.id).thenReturn(1)
+        whenever(sbn2.notification).thenReturn(notif2)
+        whenever(sbn2.id).thenReturn(2)
+        
         whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbn1, sbn2))
 
         // Ensure channel exists
         builder.buildAndNotify(message, testSpaceId)
 
         // When
-        builder.clearNotificationChannel(testSpaceId)
+        builder.clearNotificationChannel(testSpaceId, testChatId)
 
         // Then active notifications for this channel are cancelled
         verify(notificationManager).cancel(sbn1.id)
         // Other channels remain
         verify(notificationManager, never()).cancel(sbn2.id)
         // And channel is deleted
-        verify(notificationManager).deleteNotificationChannel(testSpaceId)
+        verify(notificationManager).deleteNotificationChannel(channelId)
     }
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.LOLLIPOP_MR1]) // API < M [22]
     fun `clearNotificationChannel on preO should cancelAll`() {
         // When
-        builder.clearNotificationChannel(testSpaceId)
+        builder.clearNotificationChannel(testSpaceId, testChatId)
 
         // Then
         verify(notificationManager).cancelAll()
@@ -119,49 +119,112 @@ class NotificationBuilderTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
-    fun `clearNotificationChannel with multiple spaces should only clear specified channel`() {
-        // Prepare three mock notifications for spaces A, B, C
-        val spaceA = "spaceA"
-        val spaceB = "spaceB"
-        val spaceC = "spaceC"
-        val notifA: Notification = mock {
-            on { channelId } doReturn spaceA
+    fun `clearNotificationChannel with multiple chats in same space should only clear specified chat`() {
+        // Prepare three mock notifications for different chats in the same space
+        val chat1 = "chat1"
+        val chat2 = "chat2"
+        val chat3 = "chat3"
+        val notif1: Notification = mock {
+            on { channelId } doReturn "${testSpaceId}_${chat1}"
         }
-        val notifB: Notification = mock {
-            on { channelId } doReturn spaceB
+        val notif2: Notification = mock {
+            on { channelId } doReturn "${testSpaceId}_${chat2}"
         }
-        val notifC: Notification = mock {
-            on { channelId } doReturn spaceC
+        val notif3: Notification = mock {
+            on { channelId } doReturn "${testSpaceId}_${chat3}"
         }
-        val sbnA: StatusBarNotification = mock {
-            on { notification } doReturn notifA
+        val sbn1: StatusBarNotification = mock {
+            on { notification } doReturn notif1
             on { id } doReturn 10
         }
-        val sbnB: StatusBarNotification = mock {
-            on { notification } doReturn notifB
+        val sbn2: StatusBarNotification = mock {
+            on { notification } doReturn notif2
             on { id } doReturn 20
         }
-        val sbnC: StatusBarNotification = mock {
-            on { notification } doReturn notifC
+        val sbn3: StatusBarNotification = mock {
+            on { notification } doReturn notif3
             on { id } doReturn 30
         }
-        whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbnA, sbnB, sbnC))
+        whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbn1, sbn2, sbn3))
 
-        // Ensure channels exist by sending a dummy notification for each
-        builder.buildAndNotify(message, spaceA)
-        builder.buildAndNotify(message, spaceB)
-        builder.buildAndNotify(message, spaceC)
+        // Ensure channels exist by sending a dummy notification for each chat
+        builder.buildAndNotify(message.copy(chatId = chat1), testSpaceId)
+        builder.buildAndNotify(message.copy(chatId = chat2), testSpaceId)
+        builder.buildAndNotify(message.copy(chatId = chat3), testSpaceId)
 
-        // Clear only spaceB
-        builder.clearNotificationChannel(spaceB)
+        // Clear only chat2
+        builder.clearNotificationChannel(testSpaceId, chat2)
 
-        // Verify only notifications for spaceB were cancelled
+        // Verify only notifications for chat2 were cancelled
         verify(notificationManager, never()).cancel(10)
         verify(notificationManager).cancel(20)
         verify(notificationManager, never()).cancel(30)
         // Verify only the specified channel was deleted
-        verify(notificationManager).deleteNotificationChannel(spaceB)
-        verify(notificationManager, never()).deleteNotificationChannel(spaceA)
-        verify(notificationManager, never()).deleteNotificationChannel(spaceC)
+        verify(notificationManager).deleteNotificationChannel("${testSpaceId}_${chat2}")
+        verify(notificationManager, never()).deleteNotificationChannel("${testSpaceId}_${chat1}")
+        verify(notificationManager, never()).deleteNotificationChannel("${testSpaceId}_${chat3}")
+    }
+
+    @Test
+    @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
+    fun `clearNotificationChannel with multiple spaces and chats should only clear specified chat`() {
+        // Prepare notifications for different spaces and chats
+        val space1 = "space1"
+        val space2 = "space2"
+        val chat1 = "chat1"
+        val chat2 = "chat2"
+        
+        val notif1: Notification = mock {
+            on { channelId } doReturn "${space1}_${chat1}"
+        }
+        val notif2: Notification = mock {
+            on { channelId } doReturn "${space1}_${chat2}"
+        }
+        val notif3: Notification = mock {
+            on { channelId } doReturn "${space2}_${chat1}"
+        }
+        val notif4: Notification = mock {
+            on { channelId } doReturn "${space2}_${chat2}"
+        }
+        
+        val sbn1: StatusBarNotification = mock {
+            on { notification } doReturn notif1
+            on { id } doReturn 10
+        }
+        val sbn2: StatusBarNotification = mock {
+            on { notification } doReturn notif2
+            on { id } doReturn 20
+        }
+        val sbn3: StatusBarNotification = mock {
+            on { notification } doReturn notif3
+            on { id } doReturn 30
+        }
+        val sbn4: StatusBarNotification = mock {
+            on { notification } doReturn notif4
+            on { id } doReturn 40
+        }
+        
+        whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbn1, sbn2, sbn3, sbn4))
+
+        // Ensure channels exist by sending a dummy notification for each
+        builder.buildAndNotify(message.copy(chatId = chat1), space1)
+        builder.buildAndNotify(message.copy(chatId = chat2), space1)
+        builder.buildAndNotify(message.copy(chatId = chat1), space2)
+        builder.buildAndNotify(message.copy(chatId = chat2), space2)
+
+        // Clear only space1_chat2
+        builder.clearNotificationChannel(space1, chat2)
+
+        // Verify only notifications for space1_chat2 were cancelled
+        verify(notificationManager, never()).cancel(10)
+        verify(notificationManager).cancel(20)
+        verify(notificationManager, never()).cancel(30)
+        verify(notificationManager, never()).cancel(40)
+        
+        // Verify only the specified channel was deleted
+        verify(notificationManager).deleteNotificationChannel("${space1}_${chat2}")
+        verify(notificationManager, never()).deleteNotificationChannel("${space1}_${chat1}")
+        verify(notificationManager, never()).deleteNotificationChannel("${space2}_${chat1}")
+        verify(notificationManager, never()).deleteNotificationChannel("${space2}_${chat2}")
     }
 }

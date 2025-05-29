@@ -170,6 +170,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onResume() {
+        notificationBuilder.clearNotificationChannel(
+            spaceId = vmParams.space.id,
+            chatId = vmParams.ctx
+        )
+    }
+
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
         chat: Id

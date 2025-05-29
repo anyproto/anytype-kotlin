@@ -22,7 +22,7 @@ class NotificationBuilderImpl(
     private val context: Context,
     private val notificationManager: NotificationManager,
     private val resourceProvider: StringResourceProvider
-) : NotificationBuilder{
+) : NotificationBuilder {
 
     private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
@@ -72,22 +72,20 @@ class NotificationBuilderImpl(
     private fun ensureChannelExists(channelId: String, channelName: String) {
         createChannelGroupIfNeeded()
         if (createdChannels.contains(channelId)) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                channelName,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "New messages notifications"
-                enableLights(true)
-                enableVibration(true)
-                setShowBadge(true)
-                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-                group = CHANNEL_GROUP_ID
-            }
-            notificationManager.createNotificationChannel(channel)
-            createdChannels.add(channelId)
+        val channel = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "New messages notifications"
+            enableLights(true)
+            enableVibration(true)
+            setShowBadge(true)
+            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            group = CHANNEL_GROUP_ID
         }
+        notificationManager.createNotificationChannel(channel)
+        createdChannels.add(channelId)
     }
 
     /**
@@ -121,7 +119,8 @@ class NotificationBuilderImpl(
     fun createChannelGroupIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
-                val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+                val existingGroup =
+                    notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
                 if (existingGroup == null) {
                     val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                     notificationManager.createNotificationChannelGroup(group)
@@ -132,7 +131,7 @@ class NotificationBuilderImpl(
                 // Just create the group without checking if it exists
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
-            } catch (e : Exception) {
+            } catch (e: Exception) {
                 Timber.e(e, "Error while creating or getting notification group")
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
@@ -146,22 +145,15 @@ class NotificationBuilderImpl(
      */
     override fun clearNotificationChannel(spaceId: String, chatId: String) {
         val channelId = "${spaceId}_${chatId}"
-        
+
         // Remove posted notifications for this specific chat channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationManager.activeNotifications
-                .filter { it.notification.channelId == channelId }
-                .forEach { notificationManager.cancel(it.id) }
-        } else {
-            // For older versions, cancel all (no channel filtering)
-            notificationManager.cancelAll()
-        }
+        notificationManager.activeNotifications
+            .filter { it.notification.channelId == channelId }
+            .forEach { notificationManager.cancel(it.id) }
 
         // Delete the specific chat channel
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.deleteNotificationChannel(channelId)
-            createdChannels.remove(channelId)
-        }
+        notificationManager.deleteNotificationChannel(channelId)
+        createdChannels.remove(channelId)
     }
 
     private fun sanitizeChannelName(name: String): String {

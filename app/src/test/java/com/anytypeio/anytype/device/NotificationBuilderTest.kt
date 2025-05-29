@@ -108,16 +108,6 @@ class NotificationBuilderTest {
     }
 
     @Test
-    @Config(sdk = [Build.VERSION_CODES.LOLLIPOP_MR1]) // API < M [22]
-    fun `clearNotificationChannel on preO should cancelAll`() {
-        // When
-        builder.clearNotificationChannel(testSpaceId, testChatId)
-
-        // Then
-        verify(notificationManager).cancelAll()
-    }
-
-    @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
     fun `clearNotificationChannel with multiple chats in same space should only clear specified chat`() {
         // Prepare three mock notifications for different chats in the same space

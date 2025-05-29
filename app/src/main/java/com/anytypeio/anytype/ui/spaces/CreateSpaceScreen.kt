@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun CreateSpaceScreen(
@@ -100,7 +101,7 @@ fun CreateSpaceScreen(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 spaceIconView = spaceIconView.copy(
                     name = innerValue.text.ifEmpty {
-                        stringResource(id = R.string.s)
+                        stringResource(id = R.string.u)
                     }
                 ),
                 onSpaceIconClicked = onSpaceIconClicked
@@ -126,6 +127,13 @@ fun CreateSpaceScreen(
                     value = innerValue,
                     onValueChange = {
                         innerValue = it
+                    },
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.untitled),
+                            style = BodySemiBold,
+                            color = colorResource(id = R.color.text_tertiary)
+                        )
                     },
                     label = {
                         Text(

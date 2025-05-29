@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -85,7 +86,8 @@ class ChatViewModel @Inject constructor(
     private val getLinkPreview: GetLinkPreview,
     private val createObjectFromUrl: CreateObjectFromUrl,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val spacePermissionProvider: UserPermissionProvider
+    private val spacePermissionProvider: UserPermissionProvider,
+    private val notificationBuilder: NotificationBuilder
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -166,6 +168,13 @@ class ChatViewModel @Inject constructor(
                 chat = vmParams.ctx
             )
         }
+    }
+
+    fun onResume() {
+        notificationBuilder.clearNotificationChannel(
+            spaceId = vmParams.space.id,
+            chatId = vmParams.ctx
+        )
     }
 
     private suspend fun proceedWithObservingChatMessages(

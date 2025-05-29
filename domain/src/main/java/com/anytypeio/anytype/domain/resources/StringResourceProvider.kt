@@ -10,4 +10,5 @@ interface StringResourceProvider {
     fun getSetOfObjectsTitle(): String
     fun getPropertiesFormatPrettyString(format: RelationFormat): String
     fun getDefaultSpaceName(): String
+    fun getAttachmentText(): String
 }

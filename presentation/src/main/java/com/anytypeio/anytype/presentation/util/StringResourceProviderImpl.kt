@@ -55,4 +55,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getDefaultSpaceName(): String {
         return context.getString(R.string.onboarding_my_first_space)
     }
+
+    override fun getAttachmentText(): String {
+        return context.getString(R.string.attachment)
+    }
 }

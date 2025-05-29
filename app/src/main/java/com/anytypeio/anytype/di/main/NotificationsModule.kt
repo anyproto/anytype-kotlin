@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.main
 
+import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
@@ -7,10 +8,13 @@ import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.data.auth.event.PushKeyDataChannel
 import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
+import com.anytypeio.anytype.device.NotificationBuilderImpl
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
@@ -128,4 +132,24 @@ object NotificationsModule {
             context = context
         )
     }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideNotificationBuilder(
+        context: Context,
+        notificationManager: NotificationManager,
+        stringResourceProvider: StringResourceProvider
+    ): NotificationBuilder = NotificationBuilderImpl(
+        context = context,
+        notificationManager = notificationManager,
+        resourceProvider = stringResourceProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideNotificationManager(
+        context: Context
+    ): NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 }

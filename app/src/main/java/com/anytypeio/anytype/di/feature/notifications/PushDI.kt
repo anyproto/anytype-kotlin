@@ -1,15 +1,15 @@
 package com.anytypeio.anytype.di.feature.notifications
 
-import android.app.NotificationManager
 import android.content.Context
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.device.DefaultPushMessageProcessor
-import com.anytypeio.anytype.device.NotificationBuilder
 import com.anytypeio.anytype.device.PushMessageProcessor
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
@@ -38,25 +38,6 @@ interface PushContentComponent {
 
 @Module
 object PushContentModule {
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideNotificationManager(
-        context: Context
-    ): NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideNotificationBuilder(
-        context: Context,
-        notificationManager: NotificationManager
-    ): NotificationBuilder = NotificationBuilder(
-        context = context,
-        notificationManager = notificationManager
-    ).apply {
-        createChannelGroupIfNeeded()
-    }
 
     @JvmStatic
     @Provides
@@ -92,4 +73,6 @@ interface PushContentDependencies : ComponentDependencies {
     fun context(): Context
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun dispatchers(): AppCoroutineDispatchers
+    fun provider(): StringResourceProvider
+    fun notificationBuilder(): NotificationBuilder
 }

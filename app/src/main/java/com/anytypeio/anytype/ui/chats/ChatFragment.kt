@@ -321,6 +321,11 @@ class ChatFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        vm.onResume()
+    }
+
     // DI
 
     override fun injectDependencies() {

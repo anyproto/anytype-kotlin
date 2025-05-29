@@ -15,8 +15,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.OpenObject
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -43,19 +42,20 @@ class ChatViewModelFactory @Inject constructor(
     private val getLinkPreview: GetLinkPreview,
     private val createObjectFromUrl: CreateObjectFromUrl,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val spacePermissionProvider: UserPermissionProvider
+    private val spacePermissionProvider: UserPermissionProvider,
+    private val notificationBuilder: NotificationBuilder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
         vmParams = params,
         chatContainer = chatContainer,
         addChatMessage = addChatMessage,
+        editChatMessage = editChatMessage,
+        deleteChatMessage = deleteChatMessage,
         toggleChatMessageReaction = toggleChatMessageReaction,
         members = members,
         getAccount = getAccount,
-        deleteChatMessage = deleteChatMessage,
         urlBuilder = urlBuilder,
-        editChatMessage = editChatMessage,
         spaceViews = spaceViews,
         dispatchers = dispatchers,
         uploadFile = uploadFile,
@@ -65,6 +65,7 @@ class ChatViewModelFactory @Inject constructor(
         getLinkPreview = getLinkPreview,
         createObjectFromUrl = createObjectFromUrl,
         notificationPermissionManager = notificationPermissionManager,
-        spacePermissionProvider = spacePermissionProvider
+        spacePermissionProvider = spacePermissionProvider,
+        notificationBuilder = notificationBuilder
     ) as T
 }

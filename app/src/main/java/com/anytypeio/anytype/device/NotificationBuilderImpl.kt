@@ -82,7 +82,9 @@ class NotificationBuilderImpl(
             enableVibration(true)
             setShowBadge(true)
             lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-            group = CHANNEL_GROUP_ID
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                group = CHANNEL_GROUP_ID
+            }
         }
         notificationManager.createNotificationChannel(channel)
         createdChannels.add(channelId)

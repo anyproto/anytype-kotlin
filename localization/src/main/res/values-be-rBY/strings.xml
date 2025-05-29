@@ -1242,6 +1242,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s далучыўся(-лась) да прасторы %2$s з правам доступу да рэдагавання</string>
     <string name="multiplayer_notification_member_request_approved">Запыт ухвалены</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Ваш запыт на далучэнне да прасторы %1$s быў ухвалены з правамі доступу толькі для чытання. Прастора будзе даступна на вашай прыладзе ў бліжэйшы час.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s space has been approved. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Ваш запыт на далучэнне да прасторы %1$s быў ухвалены з правамі доступу да рэдагавання. Прастора будзе даступна на вашай прыладзе ў бліжэйшы час.</string>
     <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Вы былі выдалены з прасторы \"%1$s\", або прастора была выдалена ўладальнікам.</string>

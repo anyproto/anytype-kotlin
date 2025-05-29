@@ -5,7 +5,6 @@ import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import dagger.Module
@@ -21,13 +20,11 @@ object WorkspaceModule {
     fun spaces(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        logger: Logger,
-        notificationBuilder: NotificationBuilder
+        logger: Logger
     ): SpaceManager = SpaceManager.Impl(
         dispatchers = dispatchers,
         repo = repo,
-        logger = logger,
-        notificationBuilder = notificationBuilder
+        logger = logger
     )
 
     @JvmStatic

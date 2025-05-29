@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -101,4 +102,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun context(): Context
     fun spaceManager(): SpaceManager
     fun notificationPermissionManager(): NotificationPermissionManager
+    fun notificationBuilder(): NotificationBuilder
 }

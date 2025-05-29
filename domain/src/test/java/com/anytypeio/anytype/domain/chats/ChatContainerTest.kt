@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -47,6 +48,9 @@ class ChatContainerTest {
     @Mock
     lateinit var logger: Logger
 
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
     private val givenChatID = MockDataFactory.randomUuid()
 
     @Before
@@ -61,7 +65,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val msg = StubChatMessage(
@@ -125,7 +130,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val initialMsg = StubChatMessage(
@@ -187,7 +193,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val initialMsg = StubChatMessage(
@@ -258,7 +265,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val initialMsg = StubChatMessage(
@@ -334,7 +342,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val firstMessage = StubChatMessage(order = "B")
@@ -398,7 +407,8 @@ class ChatContainerTest {
         val container = ChatContainer(
             repo = repo,
             channel = channel,
-            logger = logger
+            logger = logger,
+            subscription = storelessSubscriptionContainer
         )
 
         val messages = buildList {

@@ -173,10 +173,8 @@ class ChatViewModel @Inject constructor(
         chat: Id
     ) {
         combine(
-            chatContainer
-                .watchWhileTrackingAttachments(chat = chat).distinctUntilChanged()
-            ,
-            chatContainer.fetchAttachments(vmParams.space).distinctUntilChanged(),
+            chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
+            chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}")

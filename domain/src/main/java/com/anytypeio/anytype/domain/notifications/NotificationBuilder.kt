@@ -5,5 +5,5 @@ import com.anytypeio.anytype.core_models.Id
 
 interface NotificationBuilder {
     fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id)
-    fun clearNotificationChannel(spaceId: String)
+    fun clearNotificationChannel(spaceId: String, chatId: String)
 }

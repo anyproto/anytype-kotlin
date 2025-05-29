@@ -28,9 +28,10 @@ class NotificationBuilderImpl(
     private val createdChannels = mutableSetOf<String>()
 
     override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
+        val channelId = "${spaceId}_${message.chatId}"
 
         ensureChannelExists(
-            channelId = spaceId,
+            channelId = channelId,
             channelName = sanitizeChannelName(message.spaceName)
         )
 
@@ -45,7 +46,7 @@ class NotificationBuilderImpl(
         val bodyText = message.formatNotificationBody(attachmentText)
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
-        val notif = NotificationCompat.Builder(context, spaceId)
+        val notif = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
@@ -140,24 +141,26 @@ class NotificationBuilderImpl(
     }
 
     /**
-     * Deletes all notifications and the channel for a given space, so that
-     * when the user opens that space, old notifications are cleared.
+     * Deletes notifications and the channel for a specific chat in a space, so that
+     * when the user opens that chat, old notifications are cleared.
      */
-    override fun clearNotificationChannel(spaceId: String) {
-        // Remove posted notifications for this channel
+    override fun clearNotificationChannel(spaceId: String, chatId: String) {
+        val channelId = "${spaceId}_${chatId}"
+        
+        // Remove posted notifications for this specific chat channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             notificationManager.activeNotifications
-                .filter { it.notification.channelId == spaceId }
+                .filter { it.notification.channelId == channelId }
                 .forEach { notificationManager.cancel(it.id) }
         } else {
             // For older versions, cancel all (no channel filtering)
             notificationManager.cancelAll()
         }
 
-        // Delete the channel so it can be recreated clean next time
+        // Delete the specific chat channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationManager.deleteNotificationChannel(spaceId)
-            createdChannels.remove(spaceId)
+            notificationManager.deleteNotificationChannel(channelId)
+            createdChannels.remove(channelId)
         }
     }
 

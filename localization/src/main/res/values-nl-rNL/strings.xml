@@ -1234,6 +1234,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s heeft zich aangesloten bij de ruimte %2$s met bewerkingsrechten</string>
     <string name="multiplayer_notification_member_request_approved">Verzoek goedgekeurd</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met alleen-lezen toegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s space has been approved. The space will be available on your device soon.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Je verzoek om deel te nemen aan de ruimte %1$s is goedgekeurd met bewerktoegangsrechten. De ruimte zal binnenkort beschikbaar zijn op je apparaat.</string>
     <string name="multiplayer_notification_member_removed_from_space_title">De ruimte \"%1$s\" is niet langer toegankelijk.</string>
     <string name="multiplayer_notification_member_removed_from_space">Je bent verwijderd uit de ruimte \"%1$s\" of de ruimte is verwijderd door de eigenaar.</string>

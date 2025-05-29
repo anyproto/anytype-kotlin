@@ -371,7 +371,11 @@ fun ChatBox(
                                     .clickable {
                                         onMessageSent(text.text, spans)
                                         clearText()
-                                        resetScroll()
+                                        // Bypass resetScroll in edit mode because editing a message does not require
+                                        // resetting the scroll position, unlike sending a new message.
+                                        if (mode !is ChatBoxMode.EditMessage) {
+                                            resetScroll()
+                                        }
                                         showMarkup = false
                                     }
                             }

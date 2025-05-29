@@ -303,7 +303,7 @@ fun Bubble(
                         showDropdownMenu = false
                     }
                 ) {
-                    if (!isMaxReactionCountReached) {
+                    if (!isMaxReactionCountReached && !isReadOnly) {
                         DropdownMenuItem(
                             text = {
                                 Text(

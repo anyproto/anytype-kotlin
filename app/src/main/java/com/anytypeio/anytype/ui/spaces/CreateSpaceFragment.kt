@@ -29,6 +29,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<CreateSpaceViewModel> { factory }
 
+    private val spaceType get() = argString(ARG_SPACE_TYPE)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -98,5 +100,12 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().createSpaceComponent.release()
+    }
+
+    companion object {
+        const val ARG_SPACE_TYPE = "arg.space_type"
+
+        const val TYPE_SPACE = "space"
+        const val TYPE_CHAT = "chat"
     }
 }

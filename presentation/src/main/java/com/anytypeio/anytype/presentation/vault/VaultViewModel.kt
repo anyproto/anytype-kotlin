@@ -180,6 +180,12 @@ class VaultViewModel(
         viewModelScope.launch { setVaultSpaceOrder.async(params = order) }
     }
 
+    fun onChooseSpaceTypeClicked() {
+        viewModelScope.launch {
+            showChooseSpaceType.value = true
+        }
+    }
+
     fun onCreateSpaceClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false

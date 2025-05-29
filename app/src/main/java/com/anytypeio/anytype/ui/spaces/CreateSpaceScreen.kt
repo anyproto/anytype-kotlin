@@ -58,7 +58,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.bumptech.glide.integration.compose.placeholder
 
 @Composable
 fun CreateSpaceScreen(
@@ -215,22 +214,6 @@ private fun DebugCreateSpaceLevelChatToggle(isChatToggleChecked: MutableState<Bo
             color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_primary),
             style = BodyRegular
         )
-    }
-}
-
-@Composable
-private fun CreateSpaceButton(
-    modifier: Modifier,
-    onCreateButtonClicked: () -> Unit,
-    isLoading: State<Boolean>,
-    enabled: Boolean
-) {
-    Box(
-        modifier = modifier
-            .height(78.dp)
-            .fillMaxWidth()
-    ) {
-
     }
 }
 

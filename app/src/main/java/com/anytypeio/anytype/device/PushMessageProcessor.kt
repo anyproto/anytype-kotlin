@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.device
 
 import android.util.Base64
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 
 interface PushMessageProcessor {

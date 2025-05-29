@@ -7,28 +7,35 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
 import timber.log.Timber
 
-class NotificationBuilder(
+class NotificationBuilderImpl(
     private val context: Context,
-    private val notificationManager: NotificationManager
-) {
+    private val notificationManager: NotificationManager,
+    private val resourceProvider: StringResourceProvider
+) : NotificationBuilder {
 
-    private val attachmentText get() = context.getString(R.string.attachment)
-
+    private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
 
-    fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
+    override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
+        val channelId = "${spaceId}_${message.chatId}"
 
-        // 1) Build the intent that'll open your MainActivity in the right chat
+        ensureChannelExists(
+            channelId = channelId,
+            channelName = sanitizeChannelName(message.spaceName)
+        )
+
+        // Create pending intent to open chat
         val pending = createChatPendingIntent(
             context = context,
             chatId = message.chatId,
@@ -37,18 +44,9 @@ class NotificationBuilder(
 
         // Format the notification body text
         val bodyText = message.formatNotificationBody(attachmentText)
-
-        // 2) put it all on one line: "Author: <bodyText>"
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
-        val channelName = sanitizeChannelName(message.spaceName)
-
-        createNotificationChannelIfNeeded(
-            channelId = spaceId,
-            channelName = channelName
-        )
-
-        val notif = NotificationCompat.Builder(context, spaceId)
+        val notif = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
@@ -68,29 +66,28 @@ class NotificationBuilder(
         notificationManager.notify(System.currentTimeMillis().toInt(), notif)
     }
 
-    private fun createNotificationChannelIfNeeded(
-        channelId: String,
-        channelName: String
-    ) {
+    /**
+     * Ensures the notification channel (and group) exist before notifying.
+     */
+    private fun ensureChannelExists(channelId: String, channelName: String) {
+        createChannelGroupIfNeeded()
         if (createdChannels.contains(channelId)) return
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                channelName,
-                NotificationManager.IMPORTANCE_HIGH
-            ).apply {
-                description = "New messages notifications"
-                enableLights(true)
-                enableVibration(true)
-                setShowBadge(true)
-                lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    group = CHANNEL_GROUP_ID
-                }
+        val channel = NotificationChannel(
+            channelId,
+            channelName,
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "New messages notifications"
+            enableLights(true)
+            enableVibration(true)
+            setShowBadge(true)
+            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                group = CHANNEL_GROUP_ID
             }
-            notificationManager.createNotificationChannel(channel)
-            createdChannels.add(channelId)
         }
+        notificationManager.createNotificationChannel(channel)
+        createdChannels.add(channelId)
     }
 
     /**
@@ -124,7 +121,8 @@ class NotificationBuilder(
     fun createChannelGroupIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             try {
-                val existingGroup = notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
+                val existingGroup =
+                    notificationManager.getNotificationChannelGroup(CHANNEL_GROUP_ID)
                 if (existingGroup == null) {
                     val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                     notificationManager.createNotificationChannelGroup(group)
@@ -135,12 +133,29 @@ class NotificationBuilder(
                 // Just create the group without checking if it exists
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
-            } catch (e : Exception) {
+            } catch (e: Exception) {
                 Timber.e(e, "Error while creating or getting notification group")
                 val group = NotificationChannelGroup(CHANNEL_GROUP_ID, CHANNEL_GROUP_NAME)
                 notificationManager.createNotificationChannelGroup(group)
             }
         }
+    }
+
+    /**
+     * Deletes notifications and the channel for a specific chat in a space, so that
+     * when the user opens that chat, old notifications are cleared.
+     */
+    override fun clearNotificationChannel(spaceId: String, chatId: String) {
+        val channelId = "${spaceId}_${chatId}"
+
+        // Remove posted notifications for this specific chat channel
+        notificationManager.activeNotifications
+            .filter { it.notification.channelId == channelId }
+            .forEach { notificationManager.cancel(it.id) }
+
+        // Delete the specific chat channel
+        notificationManager.deleteNotificationChannel(channelId)
+        createdChannels.remove(channelId)
     }
 
     private fun sanitizeChannelName(name: String): String {

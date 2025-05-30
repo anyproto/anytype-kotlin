@@ -1,4 +1,6 @@
+import javax.inject.Inject
 import com.android.build.gradle.LibraryPlugin
+import org.gradle.api.tasks.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
 buildscript {
@@ -14,13 +16,17 @@ buildscript {
 
     def githubProperties = new Properties()
     def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
-    githubProperties.load(new FileInputStream(githubPropertiesFile))
+    if (githubPropertiesFile.exists()) {
+        githubProperties.load(new FileInputStream(githubPropertiesFile))
+    }
 
     def apiKeysProperties = new Properties()
     def apiKeysPropertiesFile = file("$rootDir${File.separator}apikeys.properties")
-    apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+    if (apiKeysPropertiesFile.exists()) {
+        apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+    }
 
-    ext.sentryApiKey = apiKeysProperties["sentry_dsn"]
+    ext.sentryApiKey = apiKeysProperties["sentry_dsn"] ?: "MISSING_SENTRY_DSN_KEY"
 
     repositories {
         mavenLocal()
@@ -108,13 +114,70 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-tasks.register("installGitHooks") {
-    setGroup("Build Setup")
-    setDescription("Install local repository git hooks")
-    exec {
-        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+abstract class InstallGitHooksTask extends DefaultTask { 
+
+    private ExecOperations execOps
+
+    @Inject
+    InstallGitHooksTask(ExecOperations execOperations) {
+        this.execOps = execOperations
+    }
+
+    java.lang.String getGroup() {
+        return "Build Setup";
+    }
+
+    java.lang.String getDescription() {
+        return "Install local repository git hooks";
+    }
+
+    @Internal
+    boolean isPosh7Available() {
+        try {
+            logger.debug('checking posh7');
+            ByteArrayOutputStream stdout = new ByteArrayOutputStream()
+            ExecResult result = execOps.exec {
+                commandLine 'cmd', '/c', 'where', 'pwsh.exe'
+                standardOutput = stdout
+            }
+            logger.info('where stdout = ' + stdout.toString() );
+            logger.info('where exit = ' + result.exitValue);
+            return result.exitValue == 0;
+        } catch (Exception e) {
+            logger.error('checking posh7 error ' + e.getMessage());
+            return false
+        }
+    }
+
+    @TaskAction
+    void action() {
+        OperatingSystem os = org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem; 
+        String shell = 'sh'
+        String commandFlag = '-c'
+
+        if (os.isWindows()) {
+            logger.lifecycle('Running on Windows.')
+
+            if (isPosh7Available()) {
+                shell = 'pwsh.exe'
+                logger.lifecycle('Using pwsh.exe')
+            } else {
+                shell = 'powershell.exe'
+                commandFlag = '-Command'
+                logger.lifecycle('pwsh.exe not found. Falling back to powershell.exe')
+            }
+        }
+
+        ByteArrayOutputStream stdout = new ByteArrayOutputStream()
+        ExecResult result = execOps.exec {
+            commandLine shell, commandFlag, 'git config core.hooksPath .githooks'
+            standardOutput = stdout
+        }
+        logger.info('githooks stdout = ' + stdout.toString() );
     }
 }
+
+tasks.register("installGitHooks", InstallGitHooksTask)
 
 var initialTaskNames = getProject().getGradle().getStartParameter().getTaskNames()
 getProject().getGradle().getStartParameter().setTaskNames(

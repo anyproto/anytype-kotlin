@@ -1,14 +1,19 @@
 package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -20,10 +25,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -45,20 +52,20 @@ fun ChooseSpaceTypeScreen(
 
     ModalBottomSheet(
         modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .padding(horizontal = 8.dp)
-            .padding(bottom = 8.dp),
+            .fillMaxWidth(),
+          //  .padding(horizontal = 8.dp),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = colorResource(id = R.color.background_primary),
-        shape = RoundedCornerShape(16.dp),
-        dragHandle = null
+        containerColor = Color.Transparent,//colorResource(id = R.color.widget_background),
+        contentColor = Color.Transparent,//colorResource(id = R.color.widget_background),
+        scrimColor = Color.Transparent,
+        dragHandle = null,
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
+                .background(shape = RoundedCornerShape(16.dp), color = colorResource(id = R.color.widget_background))
         ) {
             Dragger(modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -68,6 +75,7 @@ fun ChooseSpaceTypeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(72.dp)
+                    .padding(horizontal = 16.dp)
                     .noRippleThrottledClickable {
                         onCreateChatClicked()
                     },
@@ -99,6 +107,7 @@ fun ChooseSpaceTypeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(72.dp)
+                    .padding(horizontal = 16.dp)
                     .noRippleThrottledClickable {
                         onCreateSpaceClicked()
                     },

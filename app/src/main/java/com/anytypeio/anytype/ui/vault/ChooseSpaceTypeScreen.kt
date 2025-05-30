@@ -5,18 +5,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +23,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -53,12 +45,10 @@ fun ChooseSpaceTypeScreen(
     ModalBottomSheet(
         modifier = Modifier
             .fillMaxWidth(),
-          //  .padding(horizontal = 8.dp),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = Color.Transparent,//colorResource(id = R.color.widget_background),
-        contentColor = Color.Transparent,//colorResource(id = R.color.widget_background),
-        scrimColor = Color.Transparent,
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
         dragHandle = null,
     ) {
         Column(

@@ -23,7 +23,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -89,6 +88,10 @@ fun CreateSpaceScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(16.dp)
+            )
             .imePadding()
     ) {
         Dragger(
@@ -265,51 +268,46 @@ fun SpaceIcon(
                 isIconMenuExpanded.value = !isIconMenuExpanded.value
             }
         )
-        MaterialTheme(
-            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
+        DropdownMenu(
+            modifier = Modifier,
+            expanded = isIconMenuExpanded.value,
+            offset = DpOffset(x = 0.dp, y = 6.dp),
+            onDismissRequest = {
+                isIconMenuExpanded.value = false
+            },
+            shape = RoundedCornerShape(10.dp),
+            containerColor = colorResource(id = R.color.background_secondary)
         ) {
-            DropdownMenu(
-                modifier = Modifier
-                    .background(
-                        shape = RoundedCornerShape(10.dp),
-                        color = colorResource(id = R.color.background_secondary)),
-                expanded = isIconMenuExpanded.value,
-                offset = DpOffset(x = 0.dp, y = 6.dp),
-                onDismissRequest = {
-                    isIconMenuExpanded.value = false
-                }
-            ) {
-                if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onSpaceIconUploadClicked()
-                            isIconMenuExpanded.value = false
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.profile_settings_apply_upload_image),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
-                }
-                if (spaceIconView is SpaceIconView.Image) {
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp,
+            if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                DropdownMenuItem(
+                    onClick = {
+                        onSpaceIconUploadClicked()
+                        isIconMenuExpanded.value = false
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.profile_settings_apply_upload_image),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
                     )
-                    DropdownMenuItem(
-                        onClick = {
-                            isIconMenuExpanded.value = false
-                            onSpaceIconRemoveClicked()
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.remove_image),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
+                }
+            }
+            if (spaceIconView is SpaceIconView.Image) {
+                Divider(
+                    paddingStart = 0.dp,
+                    paddingEnd = 0.dp,
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        isIconMenuExpanded.value = false
+                        onSpaceIconRemoveClicked()
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.remove_image),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
                 }
             }
         }

@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.spaces
 
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,7 +20,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -37,18 +42,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -61,13 +69,13 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun CreateSpaceScreen(
-    spaceIconView: SpaceIconView.Placeholder,
+    spaceIconView: SpaceIconView,
     onCreate: (Name, IsSpaceLevelChatSwitchChecked) -> Unit,
-    onSpaceIconClicked: () -> Unit,
+    onSpaceIconUploadClicked: () -> Unit,
+    onSpaceIconRemoveClicked: () -> Unit,
     isLoading: State<Boolean>,
     isChatSpace: Boolean = false
 ) {
-
     var isSpaceLevelChatSwitchChecked = remember { mutableStateOf(false) }
 
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
@@ -98,12 +106,16 @@ fun CreateSpaceScreen(
             Spacer(modifier = Modifier.height(8.dp))
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                spaceIconView = spaceIconView.copy(
-                    name = innerValue.text.ifEmpty {
-                        stringResource(id = R.string.u)
-                    }
-                ),
-                onSpaceIconClicked = onSpaceIconClicked
+                spaceIconView = when (spaceIconView) {
+                    is SpaceIconView.Placeholder -> spaceIconView.copy(
+                        name = innerValue.text.ifEmpty {
+                            stringResource(id = R.string.u)
+                        }
+                    )
+                    else -> spaceIconView
+                },
+                onSpaceIconUploadClicked = onSpaceIconUploadClicked,
+                onSpaceIconRemoveClicked = onSpaceIconRemoveClicked
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
@@ -211,7 +223,7 @@ private fun DebugCreateSpaceLevelChatToggle(isChatToggleChecked: MutableState<Bo
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = "Enable space-level chat (dev mode)",
-            color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
             style = BodyRegular
         )
     }
@@ -237,13 +249,70 @@ fun Header(isChatSpace: Boolean = false) {
 fun SpaceIcon(
     modifier: Modifier,
     spaceIconView: SpaceIconView,
-    onSpaceIconClicked: () -> Unit
+    onSpaceIconUploadClicked: () -> Unit,
+    onSpaceIconRemoveClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
+
+    val isIconMenuExpanded = remember {
+        mutableStateOf(false)
+    }
+
     Box(modifier = modifier.wrapContentSize()) {
         SpaceIconView(
             icon = spaceIconView,
-            onSpaceIconClick = onSpaceIconClicked
+            onSpaceIconClick = {
+                isIconMenuExpanded.value = !isIconMenuExpanded.value
+            }
         )
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
+        ) {
+            DropdownMenu(
+                modifier = Modifier
+                    .background(
+                        shape = RoundedCornerShape(10.dp),
+                        color = colorResource(id = R.color.background_secondary)),
+                expanded = isIconMenuExpanded.value,
+                offset = DpOffset(x = 0.dp, y = 6.dp),
+                onDismissRequest = {
+                    isIconMenuExpanded.value = false
+                }
+            ) {
+                if (ActivityResultContracts.PickVisualMedia.isPhotoPickerAvailable(context)) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onSpaceIconUploadClicked()
+                            isIconMenuExpanded.value = false
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.profile_settings_apply_upload_image),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+                if (spaceIconView is SpaceIconView.Image) {
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp,
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            isIconMenuExpanded.value = false
+                            onSpaceIconRemoveClicked()
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.remove_image),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -298,7 +367,8 @@ fun CreateSpaceScreenPreview() {
             name = "My Space"
         ),
         onCreate = { _, _ -> },
-        onSpaceIconClicked = {},
+        onSpaceIconUploadClicked = {},
+        onSpaceIconRemoveClicked = {},
         isChatSpace = true,
         isLoading = state
     )

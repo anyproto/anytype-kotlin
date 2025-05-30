@@ -15,13 +15,11 @@ import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.domain.media.UploadFile
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,102 +67,84 @@ class CreateSpaceViewModel(
             return
         }
         viewModelScope.launch {
-            createSpace.stream(
-                CreateSpace.Params(
-                    details = mapOf(
-                        Relations.NAME to name,
-                        Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
-                            is SpaceIconView.Placeholder -> icon.color.index.toDouble()
-                            else -> SystemColor.SKY.index.toDouble()
-                        }
-                    ),
-                    shouldApplyEmptyUseCase = true,
-                    withChat = withChat
-                )
-            ).collect { result ->
+            val params = CreateSpace.Params(
+                details = mapOf(
+                    Relations.NAME to name,
+                    Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
+                        is SpaceIconView.Placeholder -> icon.color.index.toDouble()
+                        else -> SystemColor.SKY.index.toDouble()
+                    }
+                ),
+                shouldApplyEmptyUseCase = true,
+                withChat = withChat
+            )
+            createSpace.stream(params = params).collect { result ->
                 result.fold(
                     onLoading = { isInProgress.value = true },
-                    onSuccess = { response ->
-                        val space = response.space.id
-                        analytics.sendEvent(
-                            eventName = EventsDictionary.createSpace,
-                            props = Props(
-                                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
-                            )
-                        )
-                        setNewSpaceAsCurrentSpace(space)
-                        
-                        // Handle image upload if an image was selected
-                        when (val icon = spaceIconView.value) {
-                            is SpaceIconView.Image -> {
-                                uploadFile.async(
-                                    UploadFile.Params(
-                                        path = icon.url,
-                                        space = Space(space),
-                                        type = Block.Content.File.Type.IMAGE,
-                                        createTypeWidgetIfMissing = false
-                                    )
-                                ).fold(
-                                    onSuccess = { file ->
-                                        // Set the uploaded file as space icon
-                                        setSpaceDetails.async(
-                                            SetSpaceDetails.Params(
-                                                space = Space(space),
-                                                details = mapOf(
-                                                    Relations.ICON_IMAGE to file.id
-                                                )
-                                            )
-                                        ).fold(
-                                            onSuccess = {
-                                                Timber.d("Successfully set space icon: $file")
-                                            },
-                                            onFailure = { error ->
-                                                Timber.e(error, "Error setting space icon")
-                                            }
-                                        )
-                                        Timber.d("Successfully created space: $space").also {
-                                            isInProgress.value = false
-                                            commands.emit(
-                                                Command.SwitchSpace(
-                                                    space = Space(space),
-                                                    startingObject = response.startingObject
-                                                )
-                                            )
-                                        }
-                                    },
-                                    onFailure = { error ->
-                                        Timber.e(error, "Error uploading space icon")
-                                        sendToast("Error while creating space, please try again.")
-                                        isInProgress.value = false
-                                    }
-                                )
-                            }
-                            else -> {
-                                Timber.d("Successfully created space: $space").also {
-                                    isInProgress.value = false
-                                    commands.emit(
-                                        Command.SwitchSpace(
-                                            space = Space(space),
-                                            startingObject = response.startingObject
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while creating space").also {
-                            sendToast("Error while creating space, please try again.")
-                            isInProgress.value = false
-                        }
-                    }
+                    onSuccess = { onSpaceCreated(it) },
+                    onFailure = { onError(it) }
                 )
             }
         }
     }
 
-    private suspend fun setNewSpaceAsCurrentSpace(space: Id) {
-        spaceManager.set(space)
+    private suspend fun onSpaceCreated(response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result) {
+        val spaceId = response.space.id
+        analytics.sendEvent(
+            eventName = EventsDictionary.createSpace,
+            props = Props(
+                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
+            )
+        )
+        spaceManager.set(spaceId)
+
+        when (val icon = spaceIconView.value) {
+            is SpaceIconView.Image -> uploadAndSetIcon(
+                url = icon.url,
+                spaceId = spaceId,
+                startingObject = response.startingObject
+            )
+            else -> finishCreation(spaceId, response.startingObject)
+        }
+    }
+
+    private suspend fun uploadAndSetIcon(url: Url, spaceId: Id, startingObject: Id?) {
+        uploadFile.async(
+            UploadFile.Params(
+                path = url,
+                space = Space(spaceId),
+                type = Block.Content.File.Type.IMAGE,
+                createTypeWidgetIfMissing = false
+            )
+        ).fold(
+            onSuccess = { file ->
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = Space(spaceId),
+                        details = mapOf(Relations.ICON_IMAGE to file.id)
+                    )
+                )
+                finishCreation(spaceId, startingObject)
+            },
+            onFailure = { onError(it) }
+        )
+    }
+
+    private suspend fun finishCreation(spaceId: Id, startingObject: Id?) {
+        Timber.d("Space created: %s", spaceId)
+        isInProgress.value = false
+        commands.emit(
+            Command.SwitchSpace(
+                space = Space(spaceId),
+                startingObject = startingObject
+            )
+        )
+    }
+
+    private fun onError(error: Throwable) {
+        Timber.e(error, "Error creating space")
+        sendToast("Error while creating space, please try again.")
+        isInProgress.value = false
     }
 
     fun onSpaceIconRemovedClicked() {

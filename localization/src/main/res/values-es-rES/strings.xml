@@ -1164,13 +1164,13 @@
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
     <string name="multiplayer_request_to_join_explanation">Cuando el propietario del espacio apruebe tu solicitud, tendrás acceso al espacio con los derechos que el propietario determine.</string>
-    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
-    <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Acceder a %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">Te han invitado a unirte a %1$s, un espacio creado por %2$s</string>
     <string name="multiplayer_request_to_join_without_approve_button">Acceder al espacio</string>
     <string name="multiplayer_request_to_join_sent_title">Solicitud enviada</string>
     <string name="multiplayer_request_to_join_sent_description">Recibirás una notificación cuando el propietario del espacio apruebe tu solicitud.</string>
-    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
-    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Gestionar espacios</string>
+    <string name="multiplayer_request_to_join_loading_text"> Espera, estamos configurándolo todo. Será solo un momento.</string>
     <string name="multiplayer_space_request_to_join">Solicitar acceso</string>
     <string name="multiplayer_space_request_to_join_msg">Tienes una invitación al espacio %1$s, creado por %2$s. Envía una solicitud para que el propietario del espacio te dé acceso.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Escribe tu comentario</string>
@@ -1234,6 +1234,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s se ha incorporado al espacio %2$s con derechos de acceso de edición</string>
     <string name="multiplayer_notification_member_request_approved">Solicitud aprobada</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Tu solicitud para acceder al espacio %1$s se ha aprobado con derechos de solo lectura. El espacio estará pronto disponible en tu dispositivo.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">Tu solicitud de acceso al espacio %1$s se ha aprobado. El espacio estará pronto disponible en tu dispositivo.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">Tu solicitud de acceso al espacio %1$s se ha aprobado con derechos de edición. El espacio estará pronto disponible en tu dispositivo.</string>
     <string name="multiplayer_notification_member_removed_from_space_title">El espacio «%1$s» ya no está accesible.</string>
     <string name="multiplayer_notification_member_removed_from_space">Te han eliminado del espacio «%1$s» o el propietario ha eliminado ese espacio.</string>
@@ -1586,7 +1587,7 @@ En concreto,
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>
     <string name="copy">Copiar</string>
-    <string name="copy_text">Copy Text</string>
+    <string name="copy_text">Copiar texto</string>
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>

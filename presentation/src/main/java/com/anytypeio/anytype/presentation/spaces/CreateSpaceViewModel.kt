@@ -8,16 +8,17 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.spaces.CreateSpace
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,14 +30,15 @@ class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
-    private val spaceViewContainer: SpaceViewSubscriptionContainer
+    private val uploadFile: UploadFile,
+    private val setSpaceDetails: SetSpaceDetails
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val spaceIconView : MutableStateFlow<SpaceIconView.Placeholder> = MutableStateFlow(
+    val spaceIconView : MutableStateFlow<SpaceIconView> = MutableStateFlow(
         SpaceIconView.Placeholder(
             color = SystemColor.entries.random()
         )
@@ -50,8 +52,13 @@ class CreateSpaceViewModel(
 
     val isDismissed = MutableStateFlow(false)
 
-    fun onCreateSpace(name: String, isSpaceLevelChatSwitchChecked: Boolean) {
-        Timber.d("onCreateSpace, isSpaceLevelChatSwitchChecked: $isSpaceLevelChatSwitchChecked")
+    fun onImageSelected(url: Url) {
+        Timber.d("onImageSelected: $url")
+        spaceIconView.value = SpaceIconView.Image(url = url)
+    }
+
+    fun onCreateSpace(name: String, withChat: Boolean) {
+        Timber.d("onCreateSpace, withChat: $withChat")
         if (isDismissed.value) {
             return
         }
@@ -59,55 +66,88 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        val numberOfActiveSpaces = spaceViewContainer.get().filter { it.isActive }.size
         viewModelScope.launch {
-            createSpace.stream(
-                CreateSpace.Params(
-                    details = mapOf(
-                        Relations.NAME to name,
-                        Relations.ICON_OPTION to spaceIconView.value.color.index.toDouble()
-                    ),
-                    shouldApplyEmptyUseCase = true,
-                    withChat = BuildConfig.DEBUG && isSpaceLevelChatSwitchChecked
-                )
-            ).collect { result ->
+            val params = CreateSpace.Params(
+                details = mapOf(
+                    Relations.NAME to name,
+                    Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
+                        is SpaceIconView.Placeholder -> icon.color.index.toDouble()
+                        else -> SystemColor.SKY.index.toDouble()
+                    }
+                ),
+                shouldApplyEmptyUseCase = true,
+                withChat = withChat
+            )
+            createSpace.stream(params = params).collect { result ->
                 result.fold(
                     onLoading = { isInProgress.value = true },
-                    onSuccess = { response ->
-                        val space = response.space.id
-                        analytics.sendEvent(
-                            eventName = EventsDictionary.createSpace,
-                            props = Props(
-                                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
-                            )
-                        )
-                        setNewSpaceAsCurrentSpace(space)
-                        Timber.d("Successfully created space: $space").also {
-                            isInProgress.value = false
-                            commands.emit(
-                                Command.SwitchSpace(
-                                    space = Space(space),
-                                    startingObject = response.startingObject
-                                )
-                            )
-                        }
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while creating space").also {
-                            sendToast("Error while creating space, please try again.")
-                            isInProgress.value = false
-                        }
-                    }
+                    onSuccess = { onSpaceCreated(it) },
+                    onFailure = { onError(it) }
                 )
             }
         }
     }
 
-    private suspend fun setNewSpaceAsCurrentSpace(space: Id) {
-        spaceManager.set(space)
+    private suspend fun onSpaceCreated(response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result) {
+        val spaceId = response.space.id
+        analytics.sendEvent(
+            eventName = EventsDictionary.createSpace,
+            props = Props(
+                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
+            )
+        )
+        spaceManager.set(spaceId)
+
+        when (val icon = spaceIconView.value) {
+            is SpaceIconView.Image -> uploadAndSetIcon(
+                url = icon.url,
+                spaceId = spaceId,
+                startingObject = response.startingObject
+            )
+            else -> finishCreation(spaceId, response.startingObject)
+        }
     }
 
-    fun onSpaceIconClicked() {
+    private suspend fun uploadAndSetIcon(url: Url, spaceId: Id, startingObject: Id?) {
+        uploadFile.async(
+            UploadFile.Params(
+                path = url,
+                space = Space(spaceId),
+                type = Block.Content.File.Type.IMAGE,
+                createTypeWidgetIfMissing = false
+            )
+        ).fold(
+            onSuccess = { file ->
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = Space(spaceId),
+                        details = mapOf(Relations.ICON_IMAGE to file.id)
+                    )
+                )
+                finishCreation(spaceId, startingObject)
+            },
+            onFailure = { onError(it) }
+        )
+    }
+
+    private suspend fun finishCreation(spaceId: Id, startingObject: Id?) {
+        Timber.d("Space created: %s", spaceId)
+        isInProgress.value = false
+        commands.emit(
+            Command.SwitchSpace(
+                space = Space(spaceId),
+                startingObject = startingObject
+            )
+        )
+    }
+
+    private fun onError(error: Throwable) {
+        Timber.e(error, "Error creating space")
+        sendToast("Error while creating space, please try again.")
+        isInProgress.value = false
+    }
+
+    fun onSpaceIconRemovedClicked() {
         proceedWithResettingRandomSpaceGradient()
     }
 
@@ -121,7 +161,8 @@ class CreateSpaceViewModel(
         private val createSpace: CreateSpace,
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
-        private val spaceViewContainer: SpaceViewSubscriptionContainer
+        private val uploadFile: UploadFile,
+        private val setSpaceDetails: SetSpaceDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -130,7 +171,8 @@ class CreateSpaceViewModel(
             createSpace = createSpace,
             spaceManager = spaceManager,
             analytics = analytics,
-            spaceViewContainer = spaceViewContainer
+            uploadFile = uploadFile,
+            setSpaceDetails = setSpaceDetails
         ) as T
     }
 

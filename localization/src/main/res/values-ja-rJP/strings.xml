@@ -38,10 +38,10 @@
     <string name="about_terms_of_use">利用規約</string>
     <string name="about_privacy_policy">プライバシーポリシー</string>
     <string name="about_acknowledgements">謝辞</string>
-    <string name="about_meta_info">アプリバージョン: %1$s\nビルド番号: %2$d\nライブラリバージョン: %3$s\nアカウント\u00A0ID:\u00A0%4$s\nデバイス\u00A0ID:\u00A0%5$s\nアナリティクス\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_new">アプリバージョン: %1$s\nビルド番号: %2$d\nライブラリバージョン: %3$s\nアカウント\u00A0ID:\u00A0%4$s\nデバイス\u00A0ID:\u00A0%5$s\nアナリティクス\u00A0ID:\u00A0%6$s\nイーサリアムアドレス\u00A0ID:\u00A0%7$s</string>
-    <string name="about_meta_info_for_copy">デバイス: %1$s\nAndroidバージョン: %2$d\nアプリバージョン: %3$s\nビルド番号: %4$d\nライブラリバージョン: %5$s\nアカウント\u00A0ID:\u00A0%6$s\nデバイス\u00A0ID:\u00A0%7$s\nアナリティクス\u00A0ID:\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">デバイス: %1$s\nAndroidバージョン: %2$d\nアプリバージョン: %3$s\nビルド番号: %4$d\nライブラリバージョン: %5$s\nアカウント\u00A0ID:\u00A0%6$s\nデバイス\u00A0ID:\u00A0%7$s\nアナリティクス\u00A0ID:\u00A0%8$s\nイーサリアムアドレス\u00A0ID:\u00A0%9$s</string>
+    <string name="about_meta_info">アプリバージョン： %1$s\nビルド番号： %2$d\nライブラリバージョン： %3$s\nアカウント\u00A0ID：\u00A0%4$s\nデバイス\u00A0ID：\u00A0%5$s\nアナリティクス\u00A0ID：\u00A0%6$s</string>
+    <string name="about_meta_info_new">アプリバージョン： %1$s\nビルド番号： %2$d\nライブラリバージョン： %3$s\nアカウント\u00A0ID：\u00A0%4$s\nデバイス\u00A0ID：\u00A0%5$s\nアナリティクス\u00A0ID：\u00A0%6$s\nイーサリアムアドレス\u00A0ID：\u00A0%7$s</string>
+    <string name="about_meta_info_for_copy">デバイス： %1$s\nAndroidバージョン： %2$d\nアプリバージョン： %3$s\nビルド番号： %4$d\nライブラリバージョン： %5$s\nアカウント\u00A0ID：\u00A0%6$s\nデバイス\u00A0ID：\u00A0%7$s\nアナリティクス\u00A0ID：\u00A0%8$s</string>
+    <string name="about_meta_info_for_copy_new">デバイス： %1$s\nAndroidバージョン： %2$d\nアプリバージョン： %3$s\nビルド番号： %4$d\nライブラリバージョン： %5$s\nアカウント\u00A0ID：\u00A0%6$s\nデバイス\u00A0ID：\u00A0%7$s\nアナリティクス\u00A0ID：\u00A0%8$s\nイーサリアムアドレス\u00A0ID：\u00A0%9$s</string>
     <string name="space">スペース</string>
     <string name="space_name">スペース名</string>
     <string name="default_space">マイスペース</string>
@@ -50,8 +50,8 @@
     <string name="profile_settings_apply_upload_image">画像をアップロード</string>
     <string name="remove_image">画像を削除</string>
     <string name="delete_space">スペースを削除</string>
-    <string name="you_can_store">%1$sまで無料で暗号化されたバックアップノードに保存することができます。上限に達すると、デバイス内だけで保存されるようになります。</string>
-    <string name="in_order_to_save">お使いのデバイスの空き容量を増やしたい場合は、すべてのファイルを暗号化されたバックアップノードに移行することができます。ファイルは開く際に自動的に読み込まれます。</string>
+    <string name="you_can_store">無料で%1$sまで、データを暗号化した上でノードにバックアップできます。上限に達すると、お使いのデバイス内にのみ保存されるようになります。</string>
+    <string name="in_order_to_save">お使いのデバイスの空き容量を増やしたい場合は、すべてのファイルを暗号化されたバックアップノードに移行できます。ファイルは開く際に自動的に読み込まれます。</string>
     <string name="manage_files">ファイル管理</string>
     <string name="local_storage">ローカルストレージ</string>
     <string name="offload_files">ファイルを移行</string>
@@ -63,7 +63,7 @@
     <string name="account_name">名前</string>
     <string name="space_settings">スペース設定</string>
     <string name="data_management">データ管理</string>
-    <string name="deleted_account_danger_zone_msg">削除申請は30日以内であれば取り消すことが可能です。30日経過すると、あなたの暗号化された保管庫のデータはバックアップノードから完全に削除され、新しいデバイスからAnytypeにログインすることは出来なくなります。</string>
+    <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
     <string name="snackbar_template_add">タイプに追加されました</string>
     <string name="settings_membership">メンバーシップ</string>
@@ -179,8 +179,8 @@
     <string name="untitled_collection">無題のコレクション</string>
     <string name="archived">アーカイブ済み</string>
     <string name="loading">読み込み中…</string>
-    <string name="loading_wait">読み込み中です。少々お待ち下さい...</string>
-    <string name="loading_file">ファイルを読み込み中です。少々お待ち下さい...</string>
+    <string name="loading_wait">読み込み中です。少々お待ちください</string>
+    <string name="loading_file">ファイルを読み込み中です。少々お待ちください</string>
     <string name="error_while_loading">読み込みエラー</string>
     <string name="error_while_loading_picture">画像読み込みエラー</string>
     <string name="block_with_a_picture">画像付きブロック</string>
@@ -190,7 +190,7 @@
     <string name="bookmark_error_menu_button">ブックマークエラーメニューボタン</string>
     <string name="bookmark_error">問題が発生しました。もう一度お試しください。</string>
     <string name="deleted_type">削除されたタイプ</string>
-    <string name="deleted_type_in_set">タイプ: 削除されました</string>
+    <string name="deleted_type_in_set">タイプ：削除されました</string>
     <string name="menu_item_bold">太字</string>
     <string name="menu_item_italic">イタリック</string>
     <string name="menu_item_strike">取り消し線</string>
@@ -231,7 +231,7 @@
     <string name="paste">貼り付け</string>
     <string name="select">セレクト</string>
     <string name="search">検索</string>
-    <string name="search_hint">検索...</string>
+    <string name="search_hint">検索…</string>
     <string name="relations">プロパティ</string>
     <string name="fields">項目</string>
     <string name="download">ダウンロード</string>
@@ -264,7 +264,7 @@
     </plurals>
     <string name="button_new">新規</string>
     <string name="viewer_default_title">すべて</string>
-    <string name="sync_status_unknown">準備中...</string>
+    <string name="sync_status_unknown">準備中…</string>
     <string name="sync_status_offline">接続なし</string>
     <string name="sync_status_syncing">同期中…</string>
     <string name="sync_status_synced">同期完了</string>
@@ -276,7 +276,7 @@
     <string name="sync_status_toast_synced_staging">Anytypeステージ環境へのバックアップ</string>
     <string name="sync_status_toast_synced_local">ローカルのみ</string>
     <string name="sync_status_toast_synced_self_hosted">セルフホストネットワークでのバックアップ</string>
-    <string name="sync_status_toast_failed">同期に失敗しました。再試行中...</string>
+    <string name="sync_status_toast_failed">同期に失敗しました。再試行中…</string>
     <string name="sync_status_toast_incompatible">バージョンが古くなっています。Anytype を更新してください</string>
     <string name="relation_format_description">説明</string>
     <string name="relation_format_title">見出し1</string>
@@ -314,7 +314,7 @@
     <string name="value">値</string>
     <string name="empty">未入力</string>
     <string name="dv_cell_description_hint">テキストを追加…</string>
-    <string name="dv_cell_number_hint">数字を追加...</string>
+    <string name="dv_cell_number_hint">数字を追加…</string>
     <string name="unknown_object_type">不明なタイプ</string>
     <string name="relation_format_short_text">短いテキスト</string>
     <string name="relation_format_long_text">テキスト</string>
@@ -428,8 +428,8 @@
     <string name="card">カード</string>
     <string name="inline">インライン</string>
     <string name="set_view">ビューを変更</string>
-    <string name="inline_set">クエリ (インライン)</string>
-    <string name="inline_collection">コレクション (インライン)</string>
+    <string name="inline_set">クエリ（インライン）</string>
+    <string name="inline_collection">コレクション（インライン）</string>
     <string name="fit_image">画像を合わせる</string>
     <string name="image_preview">画像プレビュー</string>
     <string name="hide_icon">アイコンを非表示</string>
@@ -487,15 +487,15 @@
     <string name="error_find_block">選択されたブロックが見つかりませんでした</string>
     <string name="error_block_selection">ブロック選択エラー</string>
     <string name="undefined">未定義</string>
-    <string name="set_by_relation">プロパティ: %1$s</string>
-    <string name="set_by_relations">プロパティ: %1$s</string>
-    <string name="set_by_type">タイプ: %1$s</string>
+    <string name="set_by_relation">プロパティ：%1$s</string>
+    <string name="set_by_relations">プロパティ：%1$s</string>
+    <string name="set_by_type">タイプ：%1$s</string>
     <string name="my_types">作成したタイプ</string>
     <string name="my_relations">作成したプロパティ</string>
     <string name="type_added">タイプ「%1$s」が追加されました</string>
     <string name="block_data_view_content_description_title">データソースとなるクエリ名</string>
-    <string name="block_data_view_content_description_no_source">クエリ (インライン)にソースがありません</string>
-    <string name="block_data_view_content_description_no_data">クエリ (インライン)にタイプがありません</string>
+    <string name="block_data_view_content_description_no_source">クエリ（インライン）にソースがありません</string>
+    <string name="block_data_view_content_description_no_data">ソースにタイプがありません</string>
     <string name="object_search_recently_opened_section_title">最近開かれた</string>
     <string name="widget_source_anytype_library">Anytypeライブラリ</string>
     <string name="widget_source_default_lists">デフォルトリスト</string>
@@ -556,7 +556,7 @@
     <string name="view_kanban">ボード</string>
     <string name="page_cover">カバー画像</string>
     <string name="editor_toolbar">ボタン</string>
-    <string name="wait_a_bit_message">しばらくお待ちください。まもなくです...</string>
+    <string name="wait_a_bit_message">少々お待ちください。まもなくです…</string>
     <string name="confirm">確定</string>
     <string name="code_empty">招待コードがnullです</string>
     <string name="enter_invitation_hint">招待コード</string>
@@ -602,7 +602,7 @@
     <string name="greet_user">こんにちは!</string>
     <string name="enter_your_code">招待コードを入力</string>
     <string name="organize_everything">Anytypeへようこそ</string>
-    <string name="setting_up_the_wallet">ウォレットを設定中...</string>
+    <string name="setting_up_the_wallet">ウォレットを設定中…</string>
     <string name="sign_clock">⏳</string>
     <string name="back">戻る</string>
     <string name="create_a_new_profile">新しいプロフィールを作成</string>
@@ -630,7 +630,7 @@
     <string name="pickit_drive">ドライブファイルが選択されました</string>
     <string name="pickit_file_selected">ファイルが不明なプロバイダから選択されました</string>
     <string name="pickit_local_file">ローカルファイルが選択されました</string>
-    <string name="pickit_waiting">ファイルが選択されるのを待っています...</string>
+    <string name="pickit_waiting">ファイルの選択を待機中…</string>
     <string name="profile_wallpaper">壁紙</string>
     <string name="content_desc_wallpaper">壁紙アイコン</string>
     <string name="content_desc_key">キーチェーンアイコン</string>
@@ -788,8 +788,8 @@
         <item>ローカルモード</item>
         <item>セルフホスト</item>
     </string-array>
-    <string name="snack_link_to">をリンクしました リンク先 : </string>
-    <string name="snack_move_to">を移動しました 移動先 : </string>
+    <string name="snack_link_to">をリンクしました リンク先：</string>
+    <string name="snack_move_to">を移動しました 移動先：</string>
     <string name="recovery_phrase_copied">鍵がコピーされました</string>
     <string name="type_editing_title">タイプ設定</string>
     <string name="relation_editing_title">プロパティ設定</string>
@@ -817,8 +817,8 @@
     <string name="sync_status_local_only">ローカルモード</string>
     <string name="mail_more_space_body">Anytypeチーム担当者の方へ\nストレージ容量の上限に達したため、容量の追加を希望します。現在の上限は%1$sです。アカウントIDは%2$sです。ご対応のほど、よろしくお願いいたします。%3$s</string>
     <string name="go_to_the_app">アプリに移動</string>
-    <string name="exiting_please_wait">終了中... 少々お待ち下さい</string>
-    <string name="loading_please_wait">読み込み中... 少々お待ち下さい</string>
+    <string name="exiting_please_wait">終了中です。少々お待ち下さい…</string>
+    <string name="loading_please_wait">読み込み中です。少々お待ち下さい…</string>
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
@@ -994,7 +994,7 @@
     <string name="onboarding_auth_description">自分だけのデジタル空間で、創作と共同編集を。暗号化、オフライン、そして[オープン](%@)に。</string>
     <string name="onboarding_terms_and_policy_prefix">"続行することで同意したものとみなします。 "</string>
     <string name="onboarding_terms_and_policy_terms">利用規約</string>
-    <string name="onboarding_terms_and_policy_infix">"及び"</string>
+    <string name="onboarding_terms_and_policy_infix">"および"</string>
     <string name="onboarding_terms_and_policy_privacy">プライバシーポリシー</string>
     <string name="onboarding_new_vault_button_text">初めて利用する</string>
     <string name="onboarding_enter_my_vault">次へ</string>
@@ -1005,27 +1005,27 @@
     <string name="onboarding_void_title">これは保管庫です。</string>
     <string name="onboarding_void_description">作成したデータはすべて暗号化され、安全に保管されます。データはお使いのデバイス内に保存され、分散ネットワークにバックアップされます。</string>
     <string name="onboarding_this_is_your_key_title">これがあなたの鍵です</string>
-    <string name="onboarding_key_description">これがログインIDとパスワードの代わりとなります。紛失しないようにご自身で大切に保管してください。あとでアプリの設定画面から確認できます。さらに詳しく</string>
+    <string name="onboarding_key_description">これがログインIDとパスワードの代わりとなります。紛失しないよう、ご自身で大切に保管してください。あとでアプリの設定画面から確認できます。</string>
     <string name="onboarding_show_my_key">鍵を表示</string>
     <string name="onboarding_tap_to_reveal">鍵を表示してコピー</string>
     <string name="onboarding_key_skip">あとで</string>
     <string name="onboarding_key_not_now">あとで</string>
     <string name="onboarding_key_copy">クリップボードにコピー</string>
     <string name="onboarding_soul_creation_placeholder">Anytype ID</string>
-    <string name="onboarding_soul_creation">アカウントを作成中...</string>
-    <string name="onboarding_type_your_key">あなたの鍵を入力</string>
+    <string name="onboarding_soul_creation">アカウントを作成中…</string>
+    <string name="onboarding_type_your_key">鍵を入力してください</string>
     <string name="onboarding_login_or">または</string>
     <string name="onboarding_entering_void_title">保管庫にログイン中</string>
     <string name="onboarding_your_key_can_t_be_empty">鍵を入力してください</string>
-    <string name="onboarding_your_name">名前を入力</string>
+    <string name="onboarding_your_name">表示名を入力</string>
     <string name="onboarding_mnemonic_read_more">さらに詳しく</string>
     <string name="onboarding_key_additional_info">あとでアプリの設定画面から確認できます。</string>
-    <string name="onboarding_what_is_the_key">鍵とは何ですか?</string>
+    <string name="onboarding_what_is_the_key">この鍵とは？</string>
     <string name="onboarding_recovery_phrase_description">これはリカバリーフレーズと呼ばれるものです。このデバイス上で魔法のように作られた12個のランダムな単語の組み合わせです。</string>
     <string name="onboarding_recovery_phrase_description_2">この単語の組み合わせを知っている人だけが、保管庫にアクセスすることができます。</string>
     <string name="onboarding_recovery_phrase_description_3">そして今、この組み合わせを知っているのは世界であなただけです。</string>
     <string name="onboarding_recovery_phrase_description_4">たとえ地球上のすべての計算リソースを使ったとしてもアクセスできません。もし鍵を紛失した場合、二度と復元することはできません。そのため、絶対に紛失しないようにしてください!</string>
-    <string name="onboarding_how_to_save_my_phrase">おすすめの保管方法はありますか?</string>
+    <string name="onboarding_how_to_save_my_phrase">おすすめの保管方法は？</string>
     <string name="onboarding_how_to_save_my_phrase_2">最も簡単な方法は、パスワードマネージャーを使うことです。</string>
     <string name="onboarding_how_to_save_my_phrase_3">最も安全な方法は、紙に書いて、ネットから切り離した安全な場所に保管することです。</string>
     <!--endregion-->
@@ -1073,7 +1073,7 @@
     <string name="sharing_menu_save_as_videos_option">動画</string>
     <string name="sharing_menu_data">データ</string>
     <string name="sharing_menu_add_to_anytype_header_title">Anytypeに追加</string>
-    <string name="sharing_menu_add_to_anytype_error">Anytypeファイルアップロードエラー: %1$s</string>
+    <string name="sharing_menu_add_to_anytype_error">Anytypeファイルアップロードエラー：%1$s</string>
     <string name="sharing_menu_add_to_anytype_success">すべてのファイルが正常にアップロードされました</string>
     <string name="sharing_menu_toast_object_added">新しいオブジェクトがスペース「%1$s」に追加されました</string>
     <string name="sharing_menu_btn_add">追加</string>
@@ -1108,10 +1108,10 @@
     <string name="settings_use_yamux">予備のマルチプレックスライブラリを使用する</string>
     <string name="settings_share_local_logs">ローカルログを共有</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">モバイル版では、まだボードビューに対応していません。\nビューの種類を変更するか(設定 -&gt; ビュー)、新しく作成してください。</string>
-    <string name="error_calendar_view_not_supported">モバイル版では、まだカレンダービューに対応していません。\nビューの種類を変更するか(設定 -&gt; ビュー)、新しく作成してください。</string>
-    <string name="error_graph_view_not_supported">モバイル版では、まだグラフビューに対応していません。\nビューの種類を変更するか(設定 -&gt; ビュー)、新しく作成してください。</string>
-    <string name="error_generic_view_not_supported">モバイル版では、まだこのビューに対応していません。\nビューの種類を変更するか(設定 -&gt; ビュー)、新しく作成してください。</string>
+    <string name="error_kanban_view_not_supported">モバイル版では、まだボードビューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>
+    <string name="error_calendar_view_not_supported">モバイル版では、まだカレンダービューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>
+    <string name="error_graph_view_not_supported">モバイル版では、まだグラフビューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>
+    <string name="error_generic_view_not_supported">モバイル版では、まだこのビューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>
     <string name="create_object_section_pinned">ピン留め</string>
     <string name="any_object_creation_menu_pin_on_top">ピン留め</string>
     <string name="any_object_creation_menu_unpin">ピン留め解除</string>
@@ -1133,13 +1133,13 @@
     <string name="object_values_empty_not_editable">プロパティが空です</string>
     <string name="object_values_delete_title">本当によろしいですか？</string>
     <string name="object_values_delete_description">オブジェクトがごみ箱に移動されます。</string>
-    <string name="hint_enter_name">名前を入力...</string>
+    <string name="hint_enter_name">名前を入力…</string>
     <string name="create_object">オブジェクトを作成</string>
     <string name="msg_query_cannot_be_changed">このクエリはデスクトップ版でのみ変更できます</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">鍵が正しくありません</string>
     <string name="network">ネットワーク</string>
-    <string name="network_with_colon">ネットワーク:</string>
+    <string name="network_with_colon">ネットワーク：</string>
     <string name="network_settings_anytype_network">Anytype Network</string>
     <string name="network_settings_anytype_network_description">Anytype Networkにバックアップします</string>
     <string name="network_settings_local_only">ローカルモード</string>
@@ -1149,7 +1149,7 @@
     <string name="network_settings_networks_section">ネットワーク設定</string>
     <string name="network_settings_troubleshooting_section">トラブルシューティング</string>
     <string name="network_settings_provide_config_hint">タップして、ネットワーク設定ファイルを登録</string>
-    <string name="network_settings_self_host_config">現在の設定: %1$s</string>
+    <string name="network_settings_self_host_config">現在の設定：%1$s</string>
     <string name="widget_types_show">種類を表示</string>
     <string name="widget_types_hide">種類を非表示</string>
     <!--endregion-->
@@ -1269,7 +1269,7 @@
     <string name="multiplayer_error_space_is_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="multiplayer_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
     <string name="multiplayer_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
-    <string name="multiplayer_error_request_failed">おっと！リクエストの送信に失敗しました。インターネット接続を確認し、もう一度お試しください。</string>
+    <string name="multiplayer_error_request_failed">申し訳ありません。リクエストの送信に失敗しました。インターネット接続を確認し、もう一度お試しください。</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">このリンクは利用できません</string>
     <string name="multiplayer_invite_link_space_not_found">この招待リンクは無効です。スペースが見つかりませんでした。</string>
     <string name="multiplayer_invite_link_request_already_sent">リクエストを送信しました</string>
@@ -1324,14 +1324,14 @@
     </string-array>
     <string name="payments_tier_details_info_builder">複数人での共同作業とストレージ容量を増加させましょう</string>
     <string-array name="payments_benefits_builder">
-        <item>あなただけの名前(7文字以上)</item>
+        <item>ANY名（7文字以上）</item>
         <item>128 GBのネットワークストレージ</item>
         <item>25名の編集メンバー</item>
         <item>優先サポート</item>
     </string-array>
     <string name="payments_tier_details_info_cocreator">私たちの活動を応援し、限定コンテンツや特別な特典を入手しましょう</string>
     <string-array name="payments_benefits_cocreator">
-        <item>あなただけの名前(5文字以上)</item>
+        <item>ANY名（5文字以上）</item>
         <item>256GBのネットワークストレージ</item>
         <item>25名の編集メンバー</item>
         <item>チームとのチャット</item>
@@ -1344,7 +1344,7 @@
     <string name="payments_email_subtitle">あなたの保管庫と結びつけられることは一切ありません。</string>
     <string name="payments_email_checkbox_text">最新情報や無料特典を受け取る!</string>
     <string name="payments_email_hint">メールアドレス</string>
-    <string name="payments_tier_current_title">加入状況:</string>
+    <string name="payments_tier_current_title">加入状況：</string>
     <string name="payments_tier_current_valid">有効期限</string>
     <string name="payments_tier_current_paid_by">支払方法</string>
     <string name="payments_tier_current_paid_by_card">Stripe</string>
@@ -1369,24 +1369,24 @@
     <string name="membership_support_subject">メンバーシップ画面エラーレポート - %1$s</string>
     <string name="membership_support_body">        Anytypeチーム担当者の方へ\n\n
 
-        アプリ使用中に、メンバーシップ画面にて、エラーが表示されました。詳しくは以下の通りです。:\n
+        アプリ使用中に、メンバーシップ画面にて、エラーが表示されました。詳しくは以下の通りです。\n
 
-        - エラーメッセージ: %1$s\n
-        - 状況説明:      \n
-        - 発生日時: %2$s\n
-        - お使いのデバイス名: %3$s\n
-        - お使いのOS: %4$s\n
-        - アプリバージョン: %5$s\n
+        - エラーメッセージ：%1$s\n
+        - 状況説明:：\n
+        - 発生日時：%2$s\n
+        - お使いのデバイス名：%3$s\n
+        - お使いのOS：%4$s\n
+        - アプリバージョン：%5$s\n
 
-        追記:\n\n
+        追記：\n\n
 
         本件の解決にご協力いただき、ありがとうございます。\n\n
 
-        よろしくお願いいたします。       \n
+        よろしくお願いいたします。\n
     </string>
     <string name="payments_email_to">membership-upgrade@anytype.io</string>
     <string name="payments_email_subject"> %1$sへのアップグレード</string>
-    <string name="payments_email_body">Anytypeチーム担当者の方へ\n現在利用しておりますAnytypeのメンバーシップについて、変更したくご連絡いたしました。\n(下記のオプションの中から必要なものをお選びいただき、詳細をご記入ください)\n
+    <string name="payments_email_body">Anytypeチーム担当者の方へ\n現在利用しておりますAnytypeのメンバーシップについて、変更したくご連絡いたしました。\n（下記のオプションの中から必要なものをお選びいただき、詳細をご記入ください）\n
 \n
 ・リモートストレージの追加\n
 ・スペース編集者の追加\n
@@ -1432,7 +1432,7 @@
     <string name="gallery_experience_install_new">新しいスペースにインポート</string>
     <string name="gallery_experience_alert_title_success">インポート完了</string>
     <string name="gallery_experience_alert_subtitle_success">新しいスペースに「%1$s」がインポートされました。スペースを開いて使い始めましょう。</string>
-    <string name="gallery_experience_alert_title_error">おっと!</string>
+    <string name="gallery_experience_alert_title_error">申し訳ありません</string>
     <string name="gallery_experience_alert_button_space">スペースを開く</string>
     <string name="gallery_experience_alert_button_error">閉じる</string>
     <string name="membership_btn_join">参加</string>
@@ -1441,18 +1441,18 @@
     <string name="notifications_prompt_description">スペースへの参加や退出のリクエストがあった際に通知を受け取るには、通知を有効にしてください。</string>
     <string name="notifications_prompt_primary_button_text">有効化</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">クリップボードからブックマークを作成</string>
-    <string name="error_unexpected_layout">エラー: 予期しないレイアウト</string>
-    <string name="error_non_valid_object">エラー: オブジェクトIDがありません</string>
-    <string name="membership_price_pending">保留中...</string>
+    <string name="error_unexpected_layout">エラー：予期しないレイアウト</string>
+    <string name="error_non_valid_object">エラー：オブジェクトIDがありません</string>
+    <string name="membership_price_pending">保留中…</string>
     <string name="per_period">%1$sごと</string>
     <string name="free_for">無料期間 %1$s</string>
-    <string name="free_for_unknown">無料期限...</string>
+    <string name="free_for_unknown">無料期限…</string>
     <string name="free_until">無料期限</string>
     <string name="membership_valid_forever">有効期限 無期限</string>
-    <string name="membership_valid_for_unknown">有効期限...</string>
+    <string name="membership_valid_for_unknown">有効期限…</string>
     <string name="membership_agree_start">続行することで同意したものとみなします。</string>
     <string name="membership_agree_terms">利用規約</string>
-    <string name="membership_agree_middle">及び</string>
+    <string name="membership_agree_middle">および</string>
     <string name="membership_agree_privacy">プライバシーポリシー</string>
     <string name="membership_support_already_acquired">他のプラットフォームにて、既にメンバーシップにご加入いただいているようです。</string>
     <string name="membership_support_different_subscription">異なるIDの契約が見つかりました</string>
@@ -1483,7 +1483,7 @@
     <string name="error_login_select_vault_error">保管庫選択エラーです。</string>
     <string name="error_login_account_deleted_error">このアカウントは削除されました。別のアカウントを使用するか、新しいアカウントを作成してください。</string>
     <string name="error_login_account_need_update_error">アカウントを取得できません。Anytypeアプリを最新版に更新してください。</string>
-    <string name="global_search_related_to">"関連: "</string>
+    <string name="global_search_related_to">"関連："</string>
     <string name="global_search_no_related_objects_found">関連するオブジェクトが見つかりません</string>
     <string name="sort_empty_values_desc">未入力の値を表示</string>
     <string name="sort_empty_values_bottom">下に表示</string>
@@ -1495,7 +1495,7 @@
     <string name="sync_status_self_host">セルフホスト</string>
     <string name="sync_status_self_host_synced">同期完了</string>
     <plurals name="sync_status_self_host_syncing">
-        <item quantity="other">%1$d件を同期中...</item>
+        <item quantity="other">%1$d件を同期中…</item>
     </plurals>
     <string name="sync_status_p2p">P2P接続</string>
     <plurals name="sync_status_p2p_devices">
@@ -1507,9 +1507,9 @@
     <string name="sync_status_anytype_network">Anytype Network</string>
     <string name="sync_status_anytype_end_to_end">エンドツーエンド暗号化</string>
     <plurals name="sync_status_network_items">
-        <item quantity="other">%1$d件を同期中...</item>
+        <item quantity="other">%1$d件を同期中…</item>
     </plurals>
-    <string name="sync_status_anytype_network_connecting">ネットワーク接続中...</string>
+    <string name="sync_status_anytype_network_connecting">ネットワーク接続中…</string>
     <string name="sync_status_anytype_network_no_connecting">接続なし</string>
     <string name="sync_status_anytype_sync_slow">同期が遅くなる可能性があります。アプリを更新してください。</string>
     <string name="sync_status_storage_limit_exceed">ストレージ上限に達しました</string>
@@ -1558,7 +1558,7 @@
     <string name="all_content_no_results_description">別のキーワードで検索してください。</string>
     <string name="all_content_error_title">問題が発生しました。</string>
     <string name="onboarding_my_first_space">初めてのマイスペース</string>
-    <string name="all_content_error_unexpected_layout">エラー: 予期しないレイアウト</string>
+    <string name="all_content_error_unexpected_layout">エラー：予期しないレイアウト</string>
     <string name="all_content_toast_relation_added">プロパティが追加されました</string>
     <string name="all_content_toast_relation_removed">プロパティが削除されました</string>
     <string name="all_content_toast_type_added">タイプが追加されました</string>
@@ -1579,10 +1579,10 @@
     <string name="chats_edit_message">メッセージを編集</string>
     <string name="chats_message_edited">編集済み</string>
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
-    <string name="write_a_message">メッセージを入力...</string>
+    <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>
     <string name="date_layout_empty_items">この日付にはまだ何もありません</string>
-    <string name="date_layout_alert_date_out_of_range">選択した日付は期間外です。(年 %1$d から %2$d）。この期間内で日付を選択してください。</string>
+    <string name="date_layout_alert_date_out_of_range">選択した日付は期間外です。（年 %1$d から %2$d）。この期間内で日付を選択してください。</string>
     <string name="date_layout_item_created_by">作成者</string>
     <string name="chat_attachment_object">既存のオブジェクトを選択</string>
     <string name="chat_attachment_file">ファイルをアップロード</string>
@@ -1732,11 +1732,11 @@
     <string name="migration_screen_what_to_expect_description">更新中は読み込み画面が表示されます。完了後、通常通りアプリをご利用いただけます。</string>
     <string name="object_type_icon_change_title">アイコンを変更</string>
     <string name="object_type_icon_remove">削除</string>
-    <string name="object_type_icon_change_title_search_hint">検索...</string>
+    <string name="object_type_icon_change_title_search_hint">検索…</string>
     <string name="space_invite_link_copied">招待リンクがコピーされました</string>
     <string name="object_type_create_new_title">タイプを作成</string>
     <string name="object_type_rename_title">タイプ名を変更</string>
-    <string name="object_type_create_plural_title">タイプ名 (複数形)</string>
+    <string name="object_type_create_plural_title">タイプ名（複数形）</string>
     <string name="object_type_create_title_hint">プロジェクトなど</string>
     <string name="object_type_create_plural_title_hint">Projectsなど</string>
     <string name="object_conflict_screen_title">タイプに合わせてリセット</string>
@@ -1753,11 +1753,11 @@
     <string name="space_properties_screen_section_my_types">作成したプロパティ</string>
     <string name="space_properties_screen_section_system_types">標準プロパティ</string>
     <string name="space_properties_screen_menu_move_to_bin">ゴミ箱に移動</string>
-    <string name="onboarding_error_while_creating_account_space_is_missing">アカウント作成中にエラーが発生しました: スペースがありません</string>
-    <string name="onboarding_set_your_name_title">あなたの名前を設定しましょう</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">アカウント作成中にエラーが発生しました：スペースがありません</string>
+    <string name="onboarding_set_your_name_title">名前を設定しましょう</string>
     <string name="onboarding_soul_creation_description">何かを共有した相手にのみ表示されます。入力された名前が一元管理されることはありません。</string>
     <string name="onboarding_email_add_title">最新情報を受け取る</string>
-    <string name="onboarding_email_add_description">便利な使い方や活用のコツ、製品の更新情報などをお届けします。ご登録いただいたメールアドレスが個人を特定する情報と関連付けられることはありません。お客様のデータが第三者に共有されることは一切ございません。</string>
+    <string name="onboarding_email_add_description">便利な使い方や活用のコツ、製品の更新情報などをお届けします。ご登録いただいたメールアドレスが個人を特定する情報と関連付けられることはなく、お客様のデータが第三者に共有されることも一切ありません。</string>
     <string name="onboarding_enter_email">メールアドレスを入力</string>
     <string name="onboarding_button_continue">続行</string>
     <string name="onboarding_button_skip">あとで</string>

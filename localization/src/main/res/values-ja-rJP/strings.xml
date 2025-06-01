@@ -28,7 +28,7 @@
     <string name="dark">ダーク</string>
     <string name="system">標準</string>
     <string name="settings">設定</string>
-    <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか?</string>
+    <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
     <string name="about_help_and_community">ヘルプ&amp;コミュニティ</string>
     <string name="about_what_is_new">更新情報</string>
@@ -526,7 +526,7 @@
     <string name="random">おまかせ</string>
     <string name="choose">選択</string>
     <string name="attributes">属性</string>
-    <string name="file_delete_alert_title">これらのファイルを完全に削除しますか?</string>
+    <string name="file_delete_alert_title">これらのファイルを完全に削除しますか？</string>
     <string name="file_delete_alert_subtitle">この操作を取り消すことはできません。</string>
     <string name="file_delete_cancel">キャンセル</string>
     <string name="file_delete_delete">削除</string>
@@ -568,14 +568,14 @@
     <string name="login_with_recovery_phrase">鍵でログイン</string>
     <string name="or_scan_qr_code">QRコードをスキャン</string>
     <string name="choose_pin_code">PINコード入力</string>
-    <string name="congratulations">おめでとうございます!</string>
+    <string name="congratulations">おめでとうございます！</string>
     <string name="time_to_update_title">更新が必要です</string>
     <string name="time_to_update_text">新しいAnytypeで作成または変更されたデータがあります。\nすべてのデータと最新機能を利用するには、アプリを更新する必要があります。</string>
     <string name="update">更新</string>
     <string name="later">あとで</string>
-    <string name="let_us_start">さあ、始めましょう!</string>
-    <string name="you_ve_created_your_first_profile">初めてのプロフィールが完成しました!</string>
-    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">デバイス内に保存され、共有するまで他者に公開されることはありません!</string>
+    <string name="let_us_start">さあ、始めましょう！</string>
+    <string name="you_ve_created_your_first_profile">初めてのプロフィールが完成しました！</string>
+    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">デバイス内に保存され、共有するまで他者に公開されることはありません。</string>
     <string name="choose_profile">プロフィールを選択</string>
     <string name="logout">ログアウト</string>
     <string name="add_profile">プロフィールを追加</string>
@@ -598,8 +598,8 @@
     <string name="i_ve_written_it_down">書き留めました</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain despair</string>
     <string name="show_and_copy_mnemonic">鍵を表示してコピー</string>
-    <string name="greet">%1$sさん、こんにちは!</string>
-    <string name="greet_user">こんにちは!</string>
+    <string name="greet">%1$sさん、こんにちは！</string>
+    <string name="greet_user">こんにちは！</string>
     <string name="enter_your_code">招待コードを入力</string>
     <string name="organize_everything">Anytypeへようこそ</string>
     <string name="setting_up_the_wallet">ウォレットを設定中…</string>
@@ -729,8 +729,8 @@
     <string name="object_diagnostics">診断情報</string>
     <string name="provide_name">新しいオブジェクト名</string>
     <string name="soon">まもなく</string>
-    <string name="are_you_sure_delete_one_object">本当に1個のオブジェクトを削除してもよろしいですか?</string>
-    <string name="are_you_sure_delete_n_objects">本当に%1$d個のオブジェクトを削除してもよろしいですか?</string>
+    <string name="are_you_sure_delete_one_object">本当に1個のオブジェクトを削除してもよろしいですか？</string>
+    <string name="are_you_sure_delete_n_objects">本当に%1$d個のオブジェクトを削除してもよろしいですか？</string>
     <string name="delete_irrevocably">これらのオブジェクトは完全に削除されます。この操作は取り消せません。</string>
     <string name="delete_irrevocably_one_object">このオブジェクトは完全に削除されます。この操作は取り消せません。</string>
     <string name="shared">共有済み</string>
@@ -761,8 +761,8 @@
     <string name="planned_for_deletion_in_n_days">この保管庫は%1$d日後に削除されます</string>
     <string name="planned_for_deletion_tomorrow">この保管庫は明日に削除されます</string>
     <string name="planned_for_deletion_today">この保管庫は本日中に削除されます</string>
-    <string name="planned_for_deletion_unknown">この保管庫は?日後に削除されます</string>
-    <string name="are_you_sure_to_delete_account">本当に保管庫を削除してもよろしいですか?</string>
+    <string name="planned_for_deletion_unknown">この保管庫は？日後に削除されます</string>
+    <string name="are_you_sure_to_delete_account">本当に保管庫を削除してもよろしいですか？</string>
     <string name="deleted_account_warning_msg">すべてのデバイスからログアウトされます。30日以内であれば、保管庫を復元できます。その後、完全に削除されます。</string>
     <string name="use_template">テンプレートを選択</string>
     <string name="swipe_to_choose">スワイプして選択</string>
@@ -801,7 +801,7 @@
     <string name="empty_list_widget_no_view">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="this_widget_has_no_object">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="emoji">絵文字</string>
-    <string name="almost_there">あともう少しです!</string>
+    <string name="almost_there">あともう少しです！</string>
     <string name="i_did_not_not_complete_migration">まだ移行していません</string>
     <string name="not_completed_migration_steps">まだ移行していません</string>
     <string name="almost_there_subtitle">このアプリを使用するには、保管庫の移行が必要です。以下の手順のどれかに従ってください。</string>
@@ -831,7 +831,7 @@
     <string name="network_id">ネットワークID</string>
     <string name="delete_space_subtitle">このスペースは完全に削除されます。この操作を元に戻すことはできません。すべてのデータが完全に削除され、永久にアクセスできなくなりますので、ご注意ください</string>
     <string name="delete_space_title_with_param">スペース「%1$s」を削除</string>
-    <string name="delete_space_title">本当にスペースを削除してもよろしいですか?</string>
+    <string name="delete_space_title">本当にスペースを削除してもよろしいですか？</string>
     <string name="space_id_copied_toast_msg">スペースIDがコピーされました</string>
     <string name="network_id_copied_toast_msg">ネットワークIDがコピーされました</string>
     <string name="created_by_id_copied_toast_msg">作成者のIDがコピーされました</string>
@@ -858,7 +858,7 @@
     <string name="log_in">ログイン</string>
     <string name="create_object_section_library">Anytypeライブラリ</string>
     <string name="bin_empty_title">ごみ箱が空です。</string>
-    <string name="bin_empty_subtitle">すべて片付いていますね!</string>
+    <string name="bin_empty_subtitle">きれいに片付いていますね！</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">スタイル</string>
     <string name="slash_widget_main_media">メディア</string>
@@ -1024,7 +1024,7 @@
     <string name="onboarding_recovery_phrase_description">これはリカバリーフレーズと呼ばれるものです。このデバイス上で魔法のように作られた12個のランダムな単語の組み合わせです。</string>
     <string name="onboarding_recovery_phrase_description_2">この単語の組み合わせを知っている人だけが、保管庫にアクセスすることができます。</string>
     <string name="onboarding_recovery_phrase_description_3">そして今、この組み合わせを知っているのは世界であなただけです。</string>
-    <string name="onboarding_recovery_phrase_description_4">たとえ地球上のすべての計算リソースを使ったとしてもアクセスできません。もし鍵を紛失した場合、二度と復元することはできません。そのため、絶対に紛失しないようにしてください!</string>
+    <string name="onboarding_recovery_phrase_description_4">たとえ地球上のすべての計算リソースを使ったとしてもアクセスできません。もし鍵を紛失した場合、二度と復元することはできません。そのため、絶対に紛失しないようにしてください！</string>
     <string name="onboarding_how_to_save_my_phrase">おすすめの保管方法は？</string>
     <string name="onboarding_how_to_save_my_phrase_2">最も簡単な方法は、パスワードマネージャーを使うことです。</string>
     <string name="onboarding_how_to_save_my_phrase_3">最も安全な方法は、紙に書いて、ネットから切り離した安全な場所に保管することです。</string>
@@ -1312,7 +1312,7 @@
     <string name="payments_tier_details_name_hint">あなた自身</string>
     <string name="payments_tier_details_name_min">最低7文字</string>
     <string name="payments_tier_details_name_error">この名前は既に使用されています。</string>
-    <string name="payments_tier_details_name_validated">「%1$s」は利用可能です!</string>
+    <string name="payments_tier_details_name_validated">「%1$s」は利用可能です！</string>
     <string name="payments_tier_details_name_validating">名前を検証中</string>
     <string name="payments_tier_details_free_forever">無期限</string>
     <string name="payments_tier_details_valid_until">%1$sまで有効</string>
@@ -1340,9 +1340,9 @@
     <string name="payments_detials_button_pay">クレジットカードでの支払い</string>
     <string name="payments_detials_button_submit">送信</string>
     <string name="payments_details_whats_included">特典内容</string>
-    <string name="payments_email_title">最新情報や無料特典を受け取りましょう!</string>
+    <string name="payments_email_title">最新情報や無料特典を受け取りましょう！</string>
     <string name="payments_email_subtitle">あなたの保管庫と結びつけられることは一切ありません。</string>
-    <string name="payments_email_checkbox_text">最新情報や無料特典を受け取る!</string>
+    <string name="payments_email_checkbox_text">最新情報や無料特典を受け取る！</string>
     <string name="payments_email_hint">メールアドレス</string>
     <string name="payments_tier_current_title">加入状況：</string>
     <string name="payments_tier_current_valid">有効期限</string>
@@ -1362,7 +1362,7 @@
     <string name="payments_code_resend_in">%1$d秒後に再送信</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">ネットワーク %1$sへようこそ</string>
-    <string name="payments_welcome_subtitle">ご興味をお持ちいただき、ありがとうございます!</string>
+    <string name="payments_welcome_subtitle">ご興味をお持ちいただき、ありがとうございます！</string>
     <string name="payments_welcome_button">続行</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
@@ -1372,7 +1372,7 @@
         アプリ使用中に、メンバーシップ画面にて、エラーが表示されました。詳しくは以下の通りです。\n
 
         - エラーメッセージ：%1$s\n
-        - 状況説明:：\n
+        - 状況説明：：\n
         - 発生日時：%2$s\n
         - お使いのデバイス名：%3$s\n
         - お使いのOS：%4$s\n
@@ -1398,7 +1398,7 @@
     <string name="membership_name_cache_error">エラーが発生しました。しばらくしてからもう一度お試しください。</string>
     <string name="membership_name_cant_connect">接続できません。インターネット接続を確認してください</string>
     <string name="membership_name_invalid_chars">使用できない文字が含まれています</string>
-    <string name="membership_name_not_logged">ログインしていません! 😵‍💫</string>
+    <string name="membership_name_not_logged">ログインしていません！😵‍💫</string>
     <string name="membership_name_payment_node_error">エラーが発生しました。しばらくしてからもう一度お試しください。</string>
     <string name="membership_name_tier_features_no_name">このプランでは名前は使用できません</string>
     <string name="membership_name_tier_not_found">プランが見つかりませんでした。あとでもう一度お試しください</string>
@@ -1652,7 +1652,7 @@
     <string name="object_types_human">連絡先</string>
     <string name="object_type_settings_item_remove">タイプを削除</string>
     <string name="chats_alert_delete_this_message_description">あとから復元することはできません。</string>
-    <string name="chats_alert_delete_this_message">このメッセージを削除してもよろしいですか?</string>
+    <string name="chats_alert_delete_this_message">このメッセージを削除してもよろしいですか？</string>
     <string name="object_set_of_title">クエリ</string>
     <string name="migration_update_is_in_progress">更新が進行中</string>
     <string name="migration_this_shouldn_t_take_long">これには数分かかることがあります。完了するまでアプリを閉じずに、そのままお待ちください。</string>
@@ -1740,7 +1740,7 @@
     <string name="object_type_create_title_hint">プロジェクトなど</string>
     <string name="object_type_create_plural_title_hint">Projectsなど</string>
     <string name="object_conflict_screen_title">タイプに合わせてリセット</string>
-    <string name="object_conflict_screen_description">タイプとは異なるレイアウトが設定されています。タイプに合わせてリセットしますか?</string>
+    <string name="object_conflict_screen_description">タイプとは異なるレイアウトが設定されています。タイプに合わせてリセットしますか？</string>
     <string name="object_conflict_screen_action_button">デフォルトに戻す</string>
     <string name="object_conflict_menu_item_title">タイプに合わせてリセット</string>
     <string name="widget_source_suggested">提案</string>

@@ -854,7 +854,7 @@
     <string name="recent">最近編集された</string>
     <string name="recently_opened">最近開かれた</string>
     <string name="bin">ゴミ箱</string>
-    <string name="synced_files">同期されたファイル</string>
+    <string name="synced_files">同期済みファイル</string>
     <string name="log_in">ログイン</string>
     <string name="create_object_section_library">Anytypeライブラリ</string>
     <string name="bin_empty_title">ごみ箱が空です。</string>
@@ -990,7 +990,7 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">あらゆる情報をここに</string>
-    <string name="onboarding_auth_subtitle">暗号化、オフライン、そしてオープンに。</string>
+    <string name="onboarding_auth_subtitle">暗号化、オフライン、\nそしてオープンに。</string>
     <string name="onboarding_auth_description">自分だけのデジタル空間で、創作と共同編集を。暗号化、オフライン、そして[オープン](%@)に。</string>
     <string name="onboarding_terms_and_policy_prefix">"続行することで同意したものとみなします。 "</string>
     <string name="onboarding_terms_and_policy_terms">利用規約</string>
@@ -1141,14 +1141,14 @@
     <string name="network">ネットワーク</string>
     <string name="network_with_colon">ネットワーク:</string>
     <string name="network_settings_anytype_network">Anytype Network</string>
-    <string name="network_settings_anytype_network_description">Anytype Networkにバックアップ</string>
+    <string name="network_settings_anytype_network_description">Anytype Networkにバックアップします</string>
     <string name="network_settings_local_only">ローカルモード</string>
-    <string name="network_settings_local_only_description">バックアップせず、ローカルネットワークを通して同期</string>
+    <string name="network_settings_local_only_description">バックアップを行わず、ローカルネットワークを通して同期します</string>
     <string name="network_settings_self_host">セルフホスト</string>
-    <string name="network_settings_self_host_description">セルフホストのネットワークでバックアップ</string>
+    <string name="network_settings_self_host_description">セルフホストしたネットワークでバックアップします</string>
     <string name="network_settings_networks_section">ネットワーク設定</string>
     <string name="network_settings_troubleshooting_section">トラブルシューティング</string>
-    <string name="network_settings_provide_config_hint">タップしてネットワーク設定ファイルを登録</string>
+    <string name="network_settings_provide_config_hint">タップして、ネットワーク設定ファイルを登録</string>
     <string name="network_settings_self_host_config">現在の設定: %1$s</string>
     <string name="widget_types_show">種類を表示</string>
     <string name="widget_types_hide">種類を非表示</string>

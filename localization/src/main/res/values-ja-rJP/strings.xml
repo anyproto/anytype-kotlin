@@ -30,10 +30,10 @@
     <string name="settings">設定</string>
     <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
-    <string name="about_help_and_community">ヘルプ&amp;コミュニティ</string>
+    <string name="about_help_and_community">ヘルプとコミュニティ</string>
     <string name="about_what_is_new">更新情報</string>
     <string name="about_anytype_community">Anytypeコミュニティ</string>
-    <string name="about_help_and_tutorials">ヘルプ&amp;チュートリアル</string>
+    <string name="about_help_and_tutorials">ヘルプとチュートリアル</string>
     <string name="about_legal">規約</string>
     <string name="about_terms_of_use">利用規約</string>
     <string name="about_privacy_policy">プライバシーポリシー</string>
@@ -220,7 +220,7 @@
     <string name="action_bar_replace">置き換え</string>
     <string name="action_bar_add_caption">キャプションを追加</string>
     <string name="action_bar_rename">名前を変更</string>
-    <string name="action_bar_sam">スクロール &amp; 移動</string>
+    <string name="action_bar_sam">スクロールと移動</string>
     <string name="more">その他</string>
     <string name="done">完了</string>
     <string name="select_scroll_and_move_blocks">まずはブロックを選択してください</string>

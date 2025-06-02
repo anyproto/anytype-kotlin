@@ -1786,4 +1786,5 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
     <string name="vault_create_space">Spazio</string>
     <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
+    <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
 </resources>

@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -114,8 +115,8 @@ fun VaultScreen(
         }
     )
 
-    Box(
-        Modifier
+    Scaffold(
+        modifier = Modifier
             .fillMaxSize()
             .background(
                 color = colorResource(id = R.color.background_primary)
@@ -125,25 +126,27 @@ fun VaultScreen(
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier
+            ),
+        topBar = {
+            VaultScreenToolbar(
+                profile = profile,
+                onPlusClicked = onCreateSpaceClicked,
+                onSettingsClicked = onSettingsClicked,
+                spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                isScrolled = isScrolled.value
             )
-    ) {
-        VaultScreenToolbar(
-            profile = profile,
-            onPlusClicked = onCreateSpaceClicked,
-            onSettingsClicked = onSettingsClicked,
-            spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
-            isScrolled = isScrolled.value
-        )
-
+        }
+    ) { paddings ->
         if (spaces.isEmpty()) {
             VaultEmptyState(
+                modifier = Modifier.padding(paddings),
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(top = 48.dp)
+                    .padding(paddings)
                     .dragContainer(dragDropState),
                 state = lazyListState,
                 verticalArrangement = Arrangement.spacedBy(8.dp)

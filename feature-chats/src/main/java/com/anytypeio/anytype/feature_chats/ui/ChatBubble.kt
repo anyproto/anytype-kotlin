@@ -158,7 +158,7 @@ fun Bubble(
         // Rendering text with attachments
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentWidth()
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)

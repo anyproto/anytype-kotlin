@@ -339,7 +339,7 @@ fun Bubble(
                         DropdownMenuItem(
                             text = {
                                 Text(
-                                    text = stringResource(R.string.copy_text),
+                                    text = stringResource(R.string.copy_plain_text),
                                     color = colorResource(id = R.color.text_primary),
                                     modifier = Modifier.padding(end = 64.dp)
                                 )

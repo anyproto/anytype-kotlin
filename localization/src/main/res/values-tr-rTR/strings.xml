@@ -822,8 +822,8 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="personal">Varsayılan</string>
-    <string name="create_space">Create space</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_space">Alan oluştur</string>
+    <string name="create_chat">Sohbet oluştur</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>

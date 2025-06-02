@@ -1785,4 +1785,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_chat_description">Voor real-time gesprekken</string>
     <string name="vault_create_space">Ruimte</string>
     <string name="vault_create_space_description">Voor georganiseerde inhoud en gegevens</string>
+    <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
 </resources>

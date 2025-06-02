@@ -413,7 +413,6 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
-        Timber.d("DROID-2966 getMentionedMembers with query: $query")
         val results = members.get().let { store ->
             when (store) {
                 is Store.Data -> {
@@ -430,10 +429,8 @@ class ChatViewModel @Inject constructor(
                                 isUser = member.identity == account
                             )
                         }.filter { m ->
-                            if (query != null && query.query.trim().isNotEmpty()) {
-                                val q = query.query.trim()
-                                Timber.d("DROID-2966 query: $q")
-                                m.name.contains(q, true)
+                            if (query != null) {
+                                m.name.contains(query.query, true)
                             } else {
                                 true
                             }

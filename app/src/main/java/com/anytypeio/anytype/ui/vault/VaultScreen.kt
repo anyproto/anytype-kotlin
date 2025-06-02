@@ -56,6 +56,7 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.conditional
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -68,6 +69,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.profile.AccountProfile
@@ -203,6 +205,13 @@ fun VaultScreenToolbar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .conditionalBackground(
+                    condition = isScrolled,
+                ) {
+                    background(
+                        color = colorResource(R.color.navigation_panel),
+                    )
+                }
                 .height(44.dp)
         ) {
             if (isScrolled) {

@@ -96,7 +96,7 @@ val BodyRegular = TextStyle(
     letterSpacing = (-0.024).em
 )
 
-//Content/Body/Regular
+//Content/Misc/Chat
 val ContentMiscChat = TextStyle(
     fontFamily = fontInterRegular,
     fontWeight = FontWeight.W400,

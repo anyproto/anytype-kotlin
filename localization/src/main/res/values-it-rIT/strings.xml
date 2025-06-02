@@ -822,7 +822,9 @@
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
     <string name="personal">Default</string>
-    <string name="create_space">Crea uno spazio</string>
+    <string name="create_space">Create space</string>
+    <string name="create_chat">Create chat</string>
+    <string name="create_space_change_icon">Cambia icona</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipo</string>
     <string name="format">Formato</string>
@@ -1170,7 +1172,7 @@
     <string name="multiplayer_request_to_join_without_approve_button">Unisciti allo Spazio</string>
     <string name="multiplayer_request_to_join_sent_title">Richiesta inviata</string>
     <string name="multiplayer_request_to_join_sent_description">Riceverai una notifica quando il proprietario dello spazio approverà la tua richiesta.</string>
-    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Gestisci spazi</string>
     <string name="multiplayer_request_to_join_loading_text">Tieni duro: stiamo preparando le cose per te. Ci vorrà solo un attimo.</string>
     <string name="multiplayer_space_request_to_join">Richiesta di adesione</string>
     <string name="multiplayer_space_request_to_join_msg">Sei stato invitato a unirti allo spazio %1$s, creato da %2$s. Invia una richiesta così il proprietario dello spazio può farti entrare.</string>
@@ -1235,7 +1237,7 @@
     <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s si è unito allo spazio %2$s con diritti di accesso di modifica</string>
     <string name="multiplayer_notification_member_request_approved">Richiesta approvata</string>
     <string name="multiplayer_notification_member_request_approved_with_read_only_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso in sola lettura. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
-    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s space has been approved. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">La richiesta di adesione allo spazio %1$s è stata approvata. Lo spazio sarà presto disponibile sul tuo dispositivo.</string>
     <string name="multiplayer_notification_member_request_approved_with_edit_rights">La tua richiesta di unirti allo spazio %1$s è stata approvata con diritti di accesso per la modifica. Lo spazio sarà disponibile sul tuo dispositivo a breve.</string>
     <string name="multiplayer_notification_member_removed_from_space_title">Lo spazio \"%1$s\" non è più accessibile.</string>
     <string name="multiplayer_notification_member_removed_from_space">Sei stato rimosso dallo spazio \"%1$s\", oppure lo spazio è stato eliminato dal proprietario.</string>
@@ -1588,7 +1590,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>
     <string name="copy">Copia</string>
-    <string name="copy_text">Copy Text</string>
+    <string name="copy_text">Copia Testo</string>
     <string name="chats_edit_message">Modifica messaggio</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
@@ -1780,4 +1782,8 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_description">Ricevi una notifica immediata quando qualcuno ti invia un messaggio o ti menziona nei tuoi spazi.</string>
     <string name="notifications_modal_success_button">Abilita le notifiche</string>
     <string name="notifications_modal_cancel_button">Non ora</string>
+    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
+    <string name="vault_create_space">Spazio</string>
+    <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
 </resources>

@@ -817,6 +817,7 @@ message Event {
                     anytype.model.Block.Content.Dataview.View.Size cardSize = 5; // Gallery card size
                     bool coverFit = 6; // Image fits container
                     string groupRelationKey = 7; // Group view by this relationKey
+                    string endRelationKey = 16;
                     bool groupBackgroundColors = 8; // Enable backgrounds in groups
                     int32 pageLimit = 9; // Limit of objects shown in widget
                     string defaultTemplateId = 10; // Id of template object set default for the view

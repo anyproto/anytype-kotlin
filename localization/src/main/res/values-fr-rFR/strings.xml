@@ -822,7 +822,9 @@
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
     <string name="personal">Default</string>
-    <string name="create_space">Créer un espace</string>
+    <string name="create_space">Create space</string>
+    <string name="create_chat">Create chat</string>
+    <string name="create_space_change_icon">Changer d\'icône</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
@@ -1776,4 +1778,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notifications_modal_description">Recevez une notification instantanée lorsque quelqu\'un vous envoie des messages ou vous mentionne dans vos espaces.</string>
     <string name="notifications_modal_success_button">Activer les notifications</string>
     <string name="notifications_modal_cancel_button">Plus tard</string>
+    <string name="vault_create_chat">Messagerie</string>
+    <string name="vault_create_chat_description">Pour les conversations en temps réel</string>
+    <string name="vault_create_space">Espace</string>
+    <string name="vault_create_space_description">Pour un contenu et des données organisés</string>
 </resources>

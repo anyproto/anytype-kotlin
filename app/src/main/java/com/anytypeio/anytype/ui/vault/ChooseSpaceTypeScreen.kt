@@ -73,7 +73,7 @@ fun ChooseSpaceTypeScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_space_type_chat),
-                    contentDescription = "Create Chat Space",
+                    contentDescription = "Create Chat",
                     modifier = Modifier.size(56.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
@@ -105,7 +105,7 @@ fun ChooseSpaceTypeScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_space_type_space),
-                    contentDescription = "Create Chat Space",
+                    contentDescription = "Create Space",
                     modifier = Modifier.size(56.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))

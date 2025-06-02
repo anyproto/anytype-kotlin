@@ -687,7 +687,6 @@ class ChatContainer @Inject constructor(
         private val ATTACHMENT_KEYS = listOf(
             Relations.ID,
             Relations.SPACE_ID,
-            Relations.UNIQUE_KEY,
             Relations.PICTURE,
             Relations.SOURCE,
             Relations.DESCRIPTION,

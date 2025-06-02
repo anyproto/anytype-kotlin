@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
+import androidx.compose.material3.TimeInput
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
@@ -381,6 +382,7 @@ class ChatViewModel @Inject constructor(
         selection: IntRange,
         text: String
     ) {
+        Timber.d("DROID-2966 onChatBoxInputChanged")
         val query = resolveMentionQuery(
             text = text,
             selectionStart = selection.start
@@ -393,7 +395,7 @@ class ChatViewModel @Inject constructor(
                     query = query
                 )
             } else {
-                Timber.w("Query is empty or results are empty when mention is triggered")
+                Timber.w("DROID-2966 Query is empty or results are empty when mention is triggered")
             }
         } else if (shouldHideMention(text, selection.start)) {
             mentionPanelState.value = MentionPanelState.Hidden
@@ -411,6 +413,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
+        Timber.d("DROID-2966 getMentionedMembers with query: $query")
         val results = members.get().let { store ->
             when (store) {
                 is Store.Data -> {
@@ -427,8 +430,10 @@ class ChatViewModel @Inject constructor(
                                 isUser = member.identity == account
                             )
                         }.filter { m ->
-                            if (query != null) {
-                                m.name.contains(query.query, true)
+                            if (query != null && query.query.trim().isNotEmpty()) {
+                                val q = query.query.trim()
+                                Timber.d("DROID-2966 query: $q")
+                                m.name.contains(q, true)
                             } else {
                                 true
                             }
@@ -1045,10 +1050,15 @@ class ChatViewModel @Inject constructor(
 
     private fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
-        if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
-        val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
+        if (atIndex == -1) return null
+
+        val beforeAt = text.getOrNull(atIndex - 1)
+        if (beforeAt != null && beforeAt.isLetterOrDigit()) return null
+
+        val endIndex = text.indexOfAny(charArrayOf(' ', '\n'), startIndex = atIndex)
+            .takeIf { it != -1 } ?: text.length
+
         val query = text.substring(atIndex + 1, endIndex)
-        // Allow empty queries if there's no space after '@'
         return MentionPanelState.Query(query, atIndex until endIndex)
     }
 

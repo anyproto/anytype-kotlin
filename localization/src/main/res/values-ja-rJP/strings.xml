@@ -1578,6 +1578,7 @@
     <string name="chat">チャット</string>
     <string name="copy">コピー</string>
     <string name="copy_text">テキストをコピー</string>
+    <string name="copy_plain_text">テキストをコピー</string>
     <string name="chats_edit_message">メッセージを編集</string>
     <string name="chats_message_edited">編集済み</string>
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>

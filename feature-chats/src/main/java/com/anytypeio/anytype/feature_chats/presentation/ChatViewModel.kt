@@ -266,6 +266,8 @@ class ChatViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions
+                            .toList()
+                            .sortedByDescending { (emoji, ids) -> ids.size }
                             .map { (emoji, ids) ->
                                 ChatView.Message.Reaction(
                                     emoji = emoji,

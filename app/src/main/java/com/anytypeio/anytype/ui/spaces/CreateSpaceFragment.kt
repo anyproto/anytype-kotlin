@@ -57,7 +57,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
                 CreateSpaceScreen(
                     spaceIconView = vm.spaceIconView.collectAsState().value,
-                    onCreate = { name, isSpaceLevelChatSwitchChecked ->
+                    onCreate = { name ->
                         vm.onCreateSpace(
                             name = name,
                             withChat = spaceType == TYPE_CHAT

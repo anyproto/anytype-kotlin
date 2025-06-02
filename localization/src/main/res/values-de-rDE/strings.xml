@@ -1785,4 +1785,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
     <string name="vault_create_space">Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
+    <string name="vault_empty_state_text">There are no spaces yet</string>
 </resources>

@@ -26,6 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,11 +41,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -62,6 +65,7 @@ import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -92,6 +96,12 @@ fun VaultScreen(
     spaceList = spaces
 
     val lazyListState = rememberLazyListState()
+    val isScrolled = remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
     val dragDropState = rememberDragDropState(
         lazyListState = lazyListState,
         onDragEnd = {
@@ -121,7 +131,8 @@ fun VaultScreen(
             profile = profile,
             onPlusClicked = onCreateSpaceClicked,
             onSettingsClicked = onSettingsClicked,
-            spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT
+            spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+            isScrolled = isScrolled.value
         )
 
         if (spaces.isEmpty()) {
@@ -185,81 +196,102 @@ fun VaultScreenToolbar(
     profile: AccountProfile,
     spaceCountLimitReached: Boolean = false,
     onPlusClicked: () -> Unit,
-    onSettingsClicked: () -> Unit
+    onSettingsClicked: () -> Unit,
+    isScrolled: Boolean = false
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.vault_my_spaces),
-            style = Title1,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.align(Alignment.Center)
-        )
-        when(profile) {
-            is AccountProfile.Data -> {
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(44.dp)
+        ) {
+            if (isScrolled) {
+                Text(
+                    text = stringResource(R.string.vault_my_spaces),
+                    style = Title1,
+                    color = colorResource(id = R.color.text_primary),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
 
-                Box(
-                    Modifier
-                        .align(Alignment.CenterStart)
-                        .padding(start = 16.dp)
-                        .size(32.dp)
-                        .noRippleClickable {
-                            onSettingsClicked()
-                        }
-                ) {
-                    when(val icon = profile.icon) {
-                        is ProfileIconView.Image -> {
-                            GlideImage(
-                                model = icon.url,
-                                contentDescription = "Custom image profile",
-                                contentScale = ContentScale.Crop,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                            )
-                        }
-                        else -> {
-                            val nameFirstChar = if (profile.name.isEmpty()) {
-                                stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
-                            } else {
-                                profile.name.first().uppercaseChar().toString()
+            when (profile) {
+                is AccountProfile.Data -> {
+                    Box(
+                        Modifier
+                            .align(Alignment.CenterStart)
+                            .padding(start = 16.dp)
+                            .size(28.dp)
+                            .noRippleClickable {
+                                onSettingsClicked()
                             }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(CircleShape)
-                                    .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
-                            ) {
-                                Text(
-                                    text = nameFirstChar,
-                                    style = AvatarTitle.copy(
-                                        fontSize = 20.sp
-                                    ),
-                                    color = colorResource(id = R.color.text_white),
-                                    modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        when (val icon = profile.icon) {
+                            is ProfileIconView.Image -> {
+                                Image(
+                                    painter = rememberAsyncImagePainter(icon.url),
+                                    contentDescription = "Custom image profile",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
                                 )
+                            }
+
+                            else -> {
+                                val nameFirstChar = if (profile.name.isEmpty()) {
+                                    stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                                } else {
+                                    profile.name.first().uppercaseChar().toString()
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
+                                        .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
+                                ) {
+                                    Text(
+                                        text = nameFirstChar,
+                                        style = AvatarTitle.copy(
+                                            fontSize = 20.sp
+                                        ),
+                                        color = colorResource(id = R.color.text_white),
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
                             }
                         }
                     }
                 }
+
+                AccountProfile.Idle -> {
+                    // Draw nothing
+                }
             }
-            AccountProfile.Idle -> {
-                // Draw nothing
+
+            if (!spaceCountLimitReached) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_plus_18),
+                    contentDescription = "Plus button",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                        .size(32.dp)
+                        .noRippleClickable {
+                            onPlusClicked()
+                        }
+                )
             }
         }
-        if (!spaceCountLimitReached) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_vault_top_toolbar_plus),
-                contentDescription = "Plus button",
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 16.dp)
-                    .noRippleClickable {
-                        onPlusClicked()
-                    }
+
+        if (!isScrolled) {
+            Text(
+                modifier = Modifier.padding(top = 3.dp, bottom = 8.dp, start = 16.dp),
+                text = stringResource(R.string.vault_my_spaces),
+                style = HeadlineTitle.copy(
+                    fontSize = 34.sp
+                ),
+                color = colorResource(id = R.color.text_primary),
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -296,6 +328,7 @@ fun VaultSpaceCard(
                             Modifier
                         }
                     }
+
                     is Wallpaper.Gradient -> {
                         Modifier.background(
                             brush = Brush.verticalGradient(
@@ -307,6 +340,7 @@ fun VaultSpaceCard(
                             shape = RoundedCornerShape(20.dp)
                         )
                     }
+
                     is Wallpaper.Default -> {
                         Modifier.background(
                             brush = Brush.verticalGradient(
@@ -383,7 +417,7 @@ fun VaultSpaceCard(
                 }
                 Spacer(modifier = Modifier.width(8.dp))
             }
-            
+
             if (unreadMessageCount > 0) {
                 val shape = if (unreadMentionCount > 9) {
                     CircleShape
@@ -507,13 +541,48 @@ fun LoadingSpaceCardPreview() {
 }
 
 @Composable
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-fun VaultScreenToolbarPreview() {
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - Not Scrolled"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - Not Scrolled"
+)
+fun VaultScreenToolbarNotScrolledPreview() {
     VaultScreenToolbar(
         onPlusClicked = {},
         onSettingsClicked = {},
-        profile = AccountProfile.Idle
+        profile = AccountProfile.Data(
+            name = "John Doe",
+            icon = ProfileIconView.Placeholder(name = "Jd")
+        ),
+        isScrolled = false
+    )
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - Scrolled"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - Scrolled"
+)
+fun VaultScreenToolbarScrolledPreview() {
+    VaultScreenToolbar(
+        onPlusClicked = {},
+        onSettingsClicked = {},
+        profile = AccountProfile.Data(
+            name = "John Doe",
+            icon = ProfileIconView.Placeholder(name = "Jd")
+        ),
+        isScrolled = true
     )
 }
 

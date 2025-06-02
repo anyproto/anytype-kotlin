@@ -39,9 +39,9 @@
     <string name="about_privacy_policy">プライバシーポリシー</string>
     <string name="about_acknowledgements">謝辞</string>
     <string name="about_meta_info">アプリバージョン： %1$s\nビルド番号： %2$d\nライブラリバージョン： %3$s\nアカウント\u00A0ID：\u00A0%4$s\nデバイス\u00A0ID：\u00A0%5$s\nアナリティクス\u00A0ID：\u00A0%6$s</string>
-    <string name="about_meta_info_new">アプリバージョン： %1$s\nビルド番号： %2$d\nライブラリバージョン： %3$s\nアカウント\u00A0ID：\u00A0%4$s\nデバイス\u00A0ID：\u00A0%5$s\nアナリティクス\u00A0ID：\u00A0%6$s\nイーサリアムアドレス\u00A0ID：\u00A0%7$s</string>
+    <string name="about_meta_info_new">アプリバージョン： %1$s\nビルド番号： %2$d\nライブラリバージョン： %3$s\nアカウント\u00A0ID：\u00A0%4$s\nデバイス\u00A0ID：\u00A0%5$s\nアナリティクス\u00A0ID：\u00A0%6$s\nイーサリアムキー\u00A0ID：\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">デバイス： %1$s\nAndroidバージョン： %2$d\nアプリバージョン： %3$s\nビルド番号： %4$d\nライブラリバージョン： %5$s\nアカウント\u00A0ID：\u00A0%6$s\nデバイス\u00A0ID：\u00A0%7$s\nアナリティクス\u00A0ID：\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">デバイス： %1$s\nAndroidバージョン： %2$d\nアプリバージョン： %3$s\nビルド番号： %4$d\nライブラリバージョン： %5$s\nアカウント\u00A0ID：\u00A0%6$s\nデバイス\u00A0ID：\u00A0%7$s\nアナリティクス\u00A0ID：\u00A0%8$s\nイーサリアムアドレス\u00A0ID：\u00A0%9$s</string>
+    <string name="about_meta_info_for_copy_new">デバイス： %1$s\nAndroidバージョン： %2$d\nアプリバージョン： %3$s\nビルド番号： %4$d\nライブラリバージョン： %5$s\nアカウント\u00A0ID：\u00A0%6$s\nデバイス\u00A0ID：\u00A0%7$s\nアナリティクス\u00A0ID：\u00A0%8$s\nイーサリアムキー\u00A0ID：\u00A0%9$s</string>
     <string name="space">スペース</string>
     <string name="space_name">スペース名</string>
     <string name="default_space">マイスペース</string>

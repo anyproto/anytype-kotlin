@@ -247,15 +247,6 @@ fun Bubble(
                                     }
                                 }
                             }
-                            if (isEdited) {
-                                withStyle(
-                                    style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                                ) {
-                                    append(
-                                        " (${stringResource(R.string.chats_message_edited)})"
-                                    )
-                                }
-                            }
 
                             withStyle(
                                 style = SpanStyle(
@@ -263,9 +254,13 @@ fun Bubble(
                                 )
                             ) {
                                 append(
-                                    timestamp.formatTimeInMillis(
-                                        TIME_H24
-                                    )
+                                    timestamp.formatTimeInMillis(TIME_H24).let {
+                                        if (isEdited) {
+                                            "${stringResource(R.string.chats_message_edited)} $it"
+                                        } else {
+                                            it
+                                        }
+                                    }
                                 )
                             }
                         },
@@ -273,12 +268,17 @@ fun Bubble(
                         color = colorResource(id = R.color.text_primary),
                     )
                     // Rendering message timestamp
+
                     Text(
                         modifier = Modifier
                             .align(Alignment.BottomEnd),
-                        text = timestamp.formatTimeInMillis(
-                            TIME_H24
-                        ),
+                        text = timestamp.formatTimeInMillis(TIME_H24).let {
+                            if (isEdited) {
+                                "${stringResource(R.string.chats_message_edited)} $it"
+                            } else {
+                                it
+                            }
+                        },
                         style = Caption2Regular,
                         color = colorResource(id = R.color.transparent_active),
                         maxLines = 1

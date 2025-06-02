@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 sealed class SpaceIconView {
     data object Loading : SpaceIconView()
     data class Placeholder(
-        val color: SystemColor = SystemColor.YELLOW,
+        val color: SystemColor = SystemColor.SKY,
         val name: String = ""
     ): SpaceIconView()
     data class Image(val url: Url) : SpaceIconView()

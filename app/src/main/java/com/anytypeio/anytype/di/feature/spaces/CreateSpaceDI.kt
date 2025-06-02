@@ -6,16 +6,13 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
-import dagger.Provides
 
 @Component(
     dependencies = [CreateSpaceDependencies::class],
@@ -50,5 +47,4 @@ interface CreateSpaceDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
-    fun spaceViewContainer(): SpaceViewSubscriptionContainer
 }

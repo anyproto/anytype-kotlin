@@ -320,11 +320,18 @@
         <action
             android:id="@+id/actionCreateSpaceFromVault"
             app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/actionCreateChatFromVault"
+            app:destination="@id/createSpaceScreen" />
     </fragment>
 
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
+        <argument
+            android:name="arg.space_type"
+            android:defaultValue="space"
+            app:argType="string" />
         <action
             android:id="@+id/exitToVaultAction"
             app:popUpTo="@+id/vaultScreen"

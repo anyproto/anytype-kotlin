@@ -149,7 +149,7 @@ android {
         }
     }
 
-    ndkVersion "23.2.8568313"
+    ndkVersion "28.1.13356709"
     namespace 'com.anytypeio.anytype'
 }
 

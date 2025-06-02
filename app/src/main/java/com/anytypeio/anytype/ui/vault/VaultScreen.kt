@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,8 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -62,6 +61,7 @@ import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -74,52 +74,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.ui.text.style.TextAlign
-import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 
-
-@Composable
-fun VaultEmptyState(
-    onCreateSpaceClicked: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_vault_create_space),
-            contentDescription = "Empty state icon",
-            modifier = Modifier.wrapContentSize()
-        )
-        
-        Spacer(modifier = Modifier.height(12.dp))
-        
-        Text(
-            text = stringResource(id = R.string.vault_empty_state_text),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
-        )
-        
-        Spacer(modifier = Modifier.height(12.dp))
-
-        ButtonSecondary(
-            onClick = onCreateSpaceClicked,
-            modifier = Modifier,
-            size = ButtonSize.Small,
-            text = stringResource(id = R.string.create_space),
-        )
-    }
-}
 
 @Composable
 fun VaultScreen(

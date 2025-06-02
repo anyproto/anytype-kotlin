@@ -23,6 +23,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -73,8 +75,51 @@ import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.text.style.TextAlign
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 
+
+@Composable
+fun VaultEmptyState(
+    onCreateSpaceClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_vault_create_space),
+            contentDescription = "Empty state icon",
+            modifier = Modifier.wrapContentSize()
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+        
+        Text(
+            text = stringResource(id = R.string.vault_empty_state_text),
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        
+        Spacer(modifier = Modifier.height(12.dp))
+
+        ButtonSecondary(
+            onClick = onCreateSpaceClicked,
+            modifier = Modifier,
+            size = ButtonSize.Small,
+            text = stringResource(id = R.string.create_space),
+        )
+    }
+}
 
 @Composable
 fun VaultScreen(
@@ -117,68 +162,64 @@ fun VaultScreen(
                     Modifier
             )
     ) {
+        VaultScreenToolbar(
+            profile = profile,
+            onPlusClicked = onCreateSpaceClicked,
+            onSettingsClicked = onSettingsClicked,
+            spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT
+        )
 
-       VaultScreenToolbar(
-           profile = profile,
-           onPlusClicked = onCreateSpaceClicked,
-           onSettingsClicked = onSettingsClicked,
-           spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT
-       )
-
-       LazyColumn(
-           modifier = Modifier
-               .fillMaxSize()
-               .padding(top = 48.dp)
-               .dragContainer(dragDropState)
-           ,
-           state = lazyListState,
-           verticalArrangement = Arrangement.spacedBy(8.dp)
-       ) {
-           itemsIndexed(
-               items = spaceList,
-               key = { _, item ->
-                   item.space.id
-               }
-           ) { idx, item ->
-               if (idx == 0) {
-                   Spacer(modifier = Modifier.height(4.dp))
-               }
-               DraggableItem(dragDropState = dragDropState, index = idx) {
-                   if (item.space.isLoading) {
-                       LoadingSpaceCard()
-                   } else {
-                       VaultSpaceCard(
-                           title = item.space.name.orEmpty(),
-                           subtitle = when (item.space.spaceAccessType) {
-                               SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
-                               SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
-                               SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
-                               else -> EMPTY_STRING_VALUE
-                           },
-                           wallpaper = item.wallpaper,
-                           onCardClicked = { onSpaceClicked(item) },
-                           icon = item.icon,
-                           unreadMessageCount = item.unreadMessageCount,
-                           unreadMentionCount = item.unreadMentionCount
-                       )
-                   }
-               }
-               if (idx == spaces.lastIndex && spaces.size < SelectSpaceViewModel.MAX_SPACE_COUNT) {
-                   VaultSpaceAddCard(
-                       onCreateSpaceClicked = onCreateSpaceClicked
-                   )
-                   Spacer(modifier = Modifier.height(40.dp))
-               }
-           }
-           if (spaceList.isEmpty()) {
-               item {
-                   VaultSpaceAddCard(
-                       onCreateSpaceClicked = onCreateSpaceClicked
-                   )
-                   Spacer(modifier = Modifier.height(40.dp))
-               }
-           }
-       }
+        if (spaces.isEmpty()) {
+            VaultEmptyState(
+                onCreateSpaceClicked = onCreateSpaceClicked
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 48.dp)
+                    .dragContainer(dragDropState),
+                state = lazyListState,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                itemsIndexed(
+                    items = spaceList,
+                    key = { _, item ->
+                        item.space.id
+                    }
+                ) { idx, item ->
+                    if (idx == 0) {
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                    DraggableItem(dragDropState = dragDropState, index = idx) {
+                        if (item.space.isLoading) {
+                            LoadingSpaceCard()
+                        } else {
+                            VaultSpaceCard(
+                                title = item.space.name.orEmpty(),
+                                subtitle = when (item.space.spaceAccessType) {
+                                    SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
+                                    SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
+                                    SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
+                                    else -> EMPTY_STRING_VALUE
+                                },
+                                wallpaper = item.wallpaper,
+                                onCardClicked = { onSpaceClicked(item) },
+                                icon = item.icon,
+                                unreadMessageCount = item.unreadMessageCount,
+                                unreadMentionCount = item.unreadMentionCount
+                            )
+                        }
+                    }
+                    if (idx == spaces.lastIndex && spaces.size < SelectSpaceViewModel.MAX_SPACE_COUNT) {
+                        VaultSpaceAddCard(
+                            onCreateSpaceClicked = onCreateSpaceClicked
+                        )
+                        Spacer(modifier = Modifier.height(40.dp))
+                    }
+                }
+            }
+        }
     }
 }
 

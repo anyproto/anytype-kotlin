@@ -69,14 +69,12 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 @Composable
 fun CreateSpaceScreen(
     spaceIconView: SpaceIconView,
-    onCreate: (Name, IsSpaceLevelChatSwitchChecked) -> Unit,
+    onCreate: (Name) -> Unit,
     onSpaceIconUploadClicked: () -> Unit,
     onSpaceIconRemoveClicked: () -> Unit,
     isLoading: State<Boolean>,
     isChatSpace: Boolean = false
 ) {
-    var isSpaceLevelChatSwitchChecked = remember { mutableStateOf(false) }
-
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
@@ -159,7 +157,6 @@ fun CreateSpaceScreen(
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
-                            onCreate(innerValue.text, isSpaceLevelChatSwitchChecked.value)
                         }
                     ),
                     textStyle = BodySemiBold.copy(
@@ -172,7 +169,8 @@ fun CreateSpaceScreen(
                         unfocusedContainerColor = colorResource(id = R.color.transparent),
                         focusedIndicatorColor = colorResource(id = R.color.shape_primary),
                         unfocusedIndicatorColor = colorResource(id = R.color.shape_tertiary),
-                    )
+                    ),
+                    singleLine = true
                 )
             }
         }
@@ -180,7 +178,7 @@ fun CreateSpaceScreen(
             onClick = {
                 focusManager.clearFocus()
                 keyboardController?.hide()
-                onCreate(innerValue.text, isSpaceLevelChatSwitchChecked.value)
+                onCreate(innerValue.text)
             },
             text = stringResource(id = R.string.create),
             size = ButtonSize.Large,
@@ -364,7 +362,7 @@ fun CreateSpaceScreenPreview() {
             color = SystemColor.RED,
             name = "My Space"
         ),
-        onCreate = { _, _ -> },
+        onCreate = { },
         onSpaceIconUploadClicked = {},
         onSpaceIconRemoveClicked = {},
         isChatSpace = true,

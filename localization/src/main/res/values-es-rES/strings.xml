@@ -822,7 +822,9 @@
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
     <string name="personal">Por defecto</string>
-    <string name="create_space">Crear un espacio</string>
+    <string name="create_space">Create space</string>
+    <string name="create_chat">Create chat</string>
+    <string name="create_space_change_icon">Cambiar icono</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
     <string name="format">Formato</string>
@@ -1779,4 +1781,8 @@ En concreto,
     <string name="notifications_modal_description">Recibe notificaciones al instante cuando te envíen un mensaje o te mencionen en tus espacios.</string>
     <string name="notifications_modal_success_button">Activar notificaciones</string>
     <string name="notifications_modal_cancel_button">Ahora no</string>
+    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
+    <string name="vault_create_space">Espacio</string>
+    <string name="vault_create_space_description">Para contenido y datos organizados</string>
 </resources>

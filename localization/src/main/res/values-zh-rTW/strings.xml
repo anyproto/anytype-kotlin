@@ -820,7 +820,9 @@
     <string name="exiting_please_wait">正在離開... 請稍候</string>
     <string name="loading_please_wait">正在載入... 請稍候</string>
     <string name="personal">預設</string>
-    <string name="create_space">Create a space</string>
+    <string name="create_space">Create space</string>
+    <string name="create_chat">Create chat</string>
+    <string name="create_space_change_icon">更改圖示</string>
     <string name="generic_error">發生錯誤。請再試一次。</string>
     <string name="type">類型</string>
     <string name="format">Format</string>
@@ -1766,4 +1768,8 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">稍後</string>
+    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
+    <string name="vault_create_space">空間</string>
+    <string name="vault_create_space_description">For organized content and data</string>
 </resources>

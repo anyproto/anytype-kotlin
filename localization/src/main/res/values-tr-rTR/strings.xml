@@ -822,7 +822,9 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="personal">Varsayılan</string>
-    <string name="create_space">Bir alan oluştur</string>
+    <string name="create_space">Create space</string>
+    <string name="create_chat">Create chat</string>
+    <string name="create_space_change_icon">Simgeyi değiştir</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Biçim</string>
@@ -1779,4 +1781,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_modal_description">Alanlarınızda biri size mesaj attığında veya sizden bahsettiğinde anında bildirim alın.</string>
     <string name="notifications_modal_success_button">Bildirimleri etkinleştir</string>
     <string name="notifications_modal_cancel_button">Şimdi değil</string>
+    <string name="vault_create_chat">Sohbet</string>
+    <string name="vault_create_chat_description">Gerçek zamanlı görüşmeler için</string>
+    <string name="vault_create_space">Alan</string>
+    <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
 </resources>

@@ -1859,6 +1859,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat">Chat</string>
     <string name="copy">Copy</string>
     <string name="copy_text">Copy Text</string>
+    <string name="copy_plain_text">Copy Plain Text</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>

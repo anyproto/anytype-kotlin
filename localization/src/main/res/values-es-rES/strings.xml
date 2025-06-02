@@ -1590,6 +1590,7 @@ En concreto,
     <string name="chat">Chat</string>
     <string name="copy">Copiar</string>
     <string name="copy_text">Copiar texto</string>
+    <string name="copy_plain_text">Copiar texto simple</string>
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>

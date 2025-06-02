@@ -1773,4 +1773,5 @@
     <string name="vault_create_chat_description">リアルタイムな会話に</string>
     <string name="vault_create_space">スペース</string>
     <string name="vault_create_space_description">情報とデータの管理に</string>
+    <string name="vault_empty_state_text">まだスペースがありません</string>
 </resources>

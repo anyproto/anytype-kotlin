@@ -107,6 +107,7 @@ class ChatViewModel @Inject constructor(
     val showNotificationPermissionDialog = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
+    private val messageRateLimiter = MessageRateLimiter()
 
     private var account: Id = ""
 
@@ -627,6 +628,10 @@ class ChatViewModel @Inject constructor(
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
                     // TODO consider moving this use-case inside chat container
+                    if (messageRateLimiter.shouldShowRateLimitWarning()) {
+                        uXCommands.emit(UXCommand.ShowRateLimitWarning)
+                    }
+
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
@@ -1181,6 +1186,7 @@ class ChatViewModel @Inject constructor(
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
         data class OpenFullScreenImage(val url: String) : UXCommand()
+        data object ShowRateLimitWarning: UXCommand()
     }
 
     sealed class ChatBoxMode {

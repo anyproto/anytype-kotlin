@@ -1877,6 +1877,9 @@ Please provide specific details of your needs here.</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
 
+    <string name="chat_send_message_rate_limit_title">Hold up! Turbo typing detected!</string>
+    <string name="chat_send_message_rate_limit_desc">Looks like you\'re sending messages at lightning speed. Give it a sec before your next one.</string>
+
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>

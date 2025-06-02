@@ -1772,4 +1772,5 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">空間</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_empty_state_text">There are no spaces yet</string>
 </resources>

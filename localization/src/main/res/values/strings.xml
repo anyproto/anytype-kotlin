@@ -1859,6 +1859,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat">Chat</string>
     <string name="copy">Copy</string>
     <string name="copy_text">Copy Text</string>
+    <string name="copy_plain_text">Copy Plain Text</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
@@ -1875,6 +1876,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
+
+    <string name="chat_send_message_rate_limit_title">Hold up! Turbo typing detected!</string>
+    <string name="chat_send_message_rate_limit_desc">Looks like you\'re sending messages at lightning speed. Give it a sec before your next one.</string>
 
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
@@ -2076,5 +2080,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
+
+    <string name="vault_empty_state_text">There are no spaces yet</string>
 
 </resources>

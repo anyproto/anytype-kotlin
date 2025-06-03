@@ -822,8 +822,8 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="personal">Varsayılan</string>
-    <string name="create_space">Create space</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_space">Alan oluştur</string>
+    <string name="create_chat">Sohbet oluştur</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
@@ -1590,6 +1590,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat">Sohbet</string>
     <string name="copy">Kopyala</string>
     <string name="copy_text">Metni Kopyala</string>
+    <string name="copy_plain_text">Düz Metni Kopyala</string>
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
@@ -1785,4 +1786,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_create_chat_description">Gerçek zamanlı görüşmeler için</string>
     <string name="vault_create_space">Alan</string>
     <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
+    <string name="vault_empty_state_text">Henüz alan yok</string>
 </resources>

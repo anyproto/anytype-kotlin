@@ -1616,6 +1616,7 @@
     <string name="chat">Чат</string>
     <string name="copy">Капіяваць</string>
     <string name="copy_text">Copy Text</string>
+    <string name="copy_plain_text">Copy Plain Text</string>
     <string name="chats_edit_message">Рэдагаваць паведамленне</string>
     <string name="chats_message_edited">адрэдагавана</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
@@ -1811,4 +1812,5 @@
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">Прастора</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_empty_state_text">There are no spaces yet</string>
 </resources>

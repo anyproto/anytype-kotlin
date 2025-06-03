@@ -1573,6 +1573,7 @@
     <string name="chat">聊天</string>
     <string name="copy">拷贝</string>
     <string name="copy_text">Copy Text</string>
+    <string name="copy_plain_text">复制纯文本</string>
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
@@ -1768,4 +1769,5 @@
     <string name="vault_create_chat_description">实时对话</string>
     <string name="vault_create_space">空间</string>
     <string name="vault_create_space_description">用于有组织的内容与数据</string>
+    <string name="vault_empty_state_text">还没有空间</string>
 </resources>

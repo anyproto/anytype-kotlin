@@ -60,16 +60,15 @@ import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
+import com.anytypeio.anytype.core_ui.views.ContentMiscChat
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -159,7 +158,7 @@ fun Bubble(
         // Rendering text with attachments
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .wrapContentWidth()
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)
@@ -248,15 +247,6 @@ fun Bubble(
                                     }
                                 }
                             }
-                            if (isEdited) {
-                                withStyle(
-                                    style = SpanStyle(color = colorResource(id = R.color.text_tertiary))
-                                ) {
-                                    append(
-                                        " (${stringResource(R.string.chats_message_edited)})"
-                                    )
-                                }
-                            }
 
                             withStyle(
                                 style = SpanStyle(
@@ -264,22 +254,31 @@ fun Bubble(
                                 )
                             ) {
                                 append(
-                                    timestamp.formatTimeInMillis(
-                                        TIME_H24
-                                    )
+                                    timestamp.formatTimeInMillis(TIME_H24).let {
+                                        if (isEdited) {
+                                            "${stringResource(R.string.chats_message_edited)} $it"
+                                        } else {
+                                            it
+                                        }
+                                    }
                                 )
                             }
                         },
-                        style = BodyRegular,
+                        style = ContentMiscChat,
                         color = colorResource(id = R.color.text_primary),
                     )
                     // Rendering message timestamp
+
                     Text(
                         modifier = Modifier
                             .align(Alignment.BottomEnd),
-                        text = timestamp.formatTimeInMillis(
-                            TIME_H24
-                        ),
+                        text = timestamp.formatTimeInMillis(TIME_H24).let {
+                            if (isEdited) {
+                                "${stringResource(R.string.chats_message_edited)} $it"
+                            } else {
+                                it
+                            }
+                        },
                         style = Caption2Regular,
                         color = colorResource(id = R.color.transparent_active),
                         maxLines = 1

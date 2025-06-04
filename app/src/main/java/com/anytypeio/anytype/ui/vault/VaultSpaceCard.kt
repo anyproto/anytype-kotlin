@@ -16,22 +16,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -43,6 +43,7 @@ import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.chatPreviewTextStyle
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
@@ -112,7 +113,9 @@ fun VaultChatCard(
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
-    chatPreview: Chat.Preview? = null
+    chatPreview: Chat.Preview? = null,
+    unreadMessageCount: Int = 0,
+    unreadMentionCount: Int = 0,
 ) {
     Box(
         modifier = Modifier
@@ -137,7 +140,9 @@ fun VaultChatCard(
             subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,
-            messageTime = messageTime
+            messageTime = messageTime,
+            unreadMessageCount = unreadMessageCount,
+            unreadMentionCount = unreadMentionCount
         )
     }
 }
@@ -157,7 +162,7 @@ private fun BoxScope.ContentChat(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(start = 68.dp, end = 56.dp),
+            .padding(start = 68.dp),
         verticalArrangement = Arrangement.Center
     ) {
         Box(
@@ -183,93 +188,85 @@ private fun BoxScope.ContentChat(
                 )
             }
         }
-        
-        if (creatorName != null && messageText != null) {
-            StyledChatPreview(
-                creatorName = creatorName,
-                messageText = messageText
-            )
-        } else {
-            Text(
-                text = subtitle,
-                style = Title2,
-                color = colorResource(id = R.color.text_secondary),
-                modifier = Modifier,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
-    Row(
-        modifier = Modifier
-            .align(Alignment.CenterEnd)
-            .padding(end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        if (unreadMentionCount > 0) {
-            Box(
-                modifier = Modifier
-                    .background(
-                        color = colorResource(R.color.glyph_active),
-                        shape = CircleShape
-                    )
-                    .size(18.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_chat_widget_mention),
-                    contentDescription = null
-                )
-            }
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+        Row(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (creatorName != null && messageText != null) {
+                val annotatedString = buildAnnotatedString {
+                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                        append(creatorName)
+                    }
+                    append(": ")
+                    append(messageText)
+                }
 
-        if (unreadMessageCount > 0) {
-            val shape = if (unreadMentionCount > 9) {
-                CircleShape
-            } else {
-                RoundedCornerShape(100.dp)
-            }
-            Box(
-                modifier = Modifier
-                    .height(18.dp)
-                    .background(
-                        color = colorResource(R.color.glyph_active),
-                        shape = shape
-                    )
-                    .padding(horizontal = 5.dp),
-                contentAlignment = Alignment.Center
-            ) {
                 Text(
-                    text = unreadMessageCount.toString(),
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_white),
+                    modifier = Modifier.weight(1f),
+                    text = annotatedString,
+                    style = chatPreviewTextStyle,
+                    color = colorResource(id = R.color.text_secondary),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
+            } else {
+                Text(
+                    text = subtitle,
+                    style = Title2,
+                    color = colorResource(id = R.color.text_secondary),
+                    modifier = Modifier.weight(1f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Row(
+                modifier = Modifier.wrapContentWidth().padding(start = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (unreadMentionCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.glyph_active),
+                                shape = CircleShape
+                            )
+                            .size(18.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_chat_widget_mention),
+                            contentDescription = null
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(4.dp))
+                }
+
+                if (unreadMessageCount > 0) {
+                    val shape = if (unreadMentionCount > 9) {
+                        CircleShape
+                    } else {
+                        RoundedCornerShape(100.dp)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .height(18.dp)
+                            .background(
+                                color = colorResource(R.color.glyph_active),
+                                shape = shape
+                            )
+                            .padding(horizontal = 5.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = unreadMessageCount.toString(),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_white),
+                        )
+                    }
+                }
             }
         }
     }
-}
-
-@Composable
-private fun StyledChatPreview(
-    creatorName: String,
-    messageText: String
-) {
-    val annotatedString = buildAnnotatedString {
-        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-            append(creatorName)
-        }
-        append(": ")
-        append(messageText)
-    }
-    
-    Text(
-        text = annotatedString,
-        style = Title2,
-        color = colorResource(id = R.color.text_secondary),
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis
-    )
 }
 
 //@Composable
@@ -291,7 +288,84 @@ private fun StyledChatPreview(
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     name = "Chat Space Card Preview"
 )
-fun VaultChatSpaceCardPreview() {
+fun ChatWithMentionAndMessage() {
+    VaultChatCard(
+        title = "B&O Museum",
+        onCardClicked = {},
+        icon = SpaceIconView.Placeholder(),
+        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        creatorName = "John Doe",
+        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        messageTime = "18:32",
+        unreadMessageCount = 32,
+        unreadMentionCount = 1,
+        chatPreview = Chat.Preview(
+            space = SpaceId("space-id"),
+            chat = "chat-id",
+            message = Chat.Message(
+                id = "message-id",
+                createdAt = System.currentTimeMillis(),
+                modifiedAt = 0L,
+                attachments = emptyList(),
+                reactions = emptyMap(),
+                creator = "creator-id",
+                replyToMessageId = "",
+                content = Chat.Message.Content(
+                    text = "Hello, this is a preview message.",
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                order = "order-id"
+            )
+        )
+    )
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Chat Space Card Preview"
+)
+fun ChatWithMention() {
+    VaultChatCard(
+        title = "B&O Museum",
+        onCardClicked = {},
+        icon = SpaceIconView.Placeholder(),
+        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        creatorName = "John Doe",
+        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        messageTime = "18:32",
+        unreadMentionCount = 1,
+        chatPreview = Chat.Preview(
+            space = SpaceId("space-id"),
+            chat = "chat-id",
+            message = Chat.Message(
+                id = "message-id",
+                createdAt = System.currentTimeMillis(),
+                modifiedAt = 0L,
+                attachments = emptyList(),
+                reactions = emptyMap(),
+                creator = "creator-id",
+                replyToMessageId = "",
+                content = Chat.Message.Content(
+                    text = "Hello, this is a preview message.",
+                    marks = emptyList(),
+                    style = Block.Content.Text.Style.P
+                ),
+                order = "order-id"
+            )
+        )
+    )
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Chat Space Card Preview"
+)
+fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
         onCardClicked = {},

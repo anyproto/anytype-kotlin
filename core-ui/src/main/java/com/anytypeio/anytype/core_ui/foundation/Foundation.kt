@@ -23,11 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.Membership.Status
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -36,7 +37,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
 
 @Composable
 fun Toolbar(
@@ -344,7 +344,7 @@ fun Announcement(
     }
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 fun WarningPreview() {
     Warning(
@@ -357,7 +357,7 @@ fun WarningPreview() {
     )
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 fun AnnouncementPreview() {
     Announcement(

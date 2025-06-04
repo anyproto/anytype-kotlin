@@ -46,7 +46,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -54,7 +53,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -64,15 +62,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.core_models.primitives.Space
-import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.ContentMiscChat
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -567,7 +563,7 @@ private fun ChatBoxUserInput(
             onValueChange(newValue, updatedSpans)
 
         },
-        textStyle = BodyRegular.copy(
+        textStyle = ContentMiscChat.copy(
             color = colorResource(id = R.color.text_primary)
         ),
         modifier = modifier
@@ -582,7 +578,7 @@ private fun ChatBoxUserInput(
                 text = text.text,
                 hint = stringResource(R.string.write_a_message),
                 innerTextField = innerTextField,
-                textStyle = BodyRegular.copy(color = colorResource(R.color.text_tertiary))
+                textStyle = ContentMiscChat.copy(color = colorResource(R.color.text_tertiary))
             )
         },
         visualTransformation = AnnotatedTextTransformation(spans)

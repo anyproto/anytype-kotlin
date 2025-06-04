@@ -69,8 +69,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -108,6 +111,7 @@ fun ChatScreenWrapper(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showReactionSheet by remember { mutableStateOf(false) }
+    var showSendRateLimitWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Box(
         modifier = modifier.fillMaxSize()
@@ -245,6 +249,9 @@ fun ChatScreenWrapper(
                     is UXCommand.OpenFullScreenImage -> {
                         onRequestOpenFullScreenImage(command.url)
                     }
+                    is UXCommand.ShowRateLimitWarning -> {
+                        showSendRateLimitWarning = true
+                    }
                 }
             }
         }
@@ -261,6 +268,34 @@ fun ChatScreenWrapper(
         ) {
             SelectChatReactionScreen(
                 onEmojiClicked = {}
+            )
+        }
+    }
+
+    if (showSendRateLimitWarning) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showSendRateLimitWarning = false
+            },
+            sheetState = sheetState,
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithOneButton(
+                    title = stringResource(R.string.chat_send_message_rate_limit_title),
+                    firstButtonText = stringResource(id = R.string.button_okay),
+                    firstButtonType = BUTTON_SECONDARY,
+                    description = stringResource(R.string.chat_send_message_rate_limit_desc),
+                    icon = AlertConfig.Icon(
+                        gradient = GRADIENT_TYPE_RED,
+                        icon = R.drawable.ic_alert_message
+                    )
+                ),
+                onFirstButtonClicked = {
+                    showSendRateLimitWarning = false
+                }
             )
         }
     }

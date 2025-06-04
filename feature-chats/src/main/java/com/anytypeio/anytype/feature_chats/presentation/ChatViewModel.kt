@@ -107,6 +107,7 @@ class ChatViewModel @Inject constructor(
     val showNotificationPermissionDialog = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
+    private val messageRateLimiter = MessageRateLimiter()
 
     private var account: Id = ""
 
@@ -266,6 +267,8 @@ class ChatViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions
+                            .toList()
+                            .sortedByDescending { (emoji, ids) -> ids.size }
                             .map { (emoji, ids) ->
                                 ChatView.Message.Reaction(
                                     emoji = emoji,
@@ -381,6 +384,7 @@ class ChatViewModel @Inject constructor(
         selection: IntRange,
         text: String
     ) {
+        Timber.d("DROID-2966 onChatBoxInputChanged")
         val query = resolveMentionQuery(
             text = text,
             selectionStart = selection.start
@@ -393,7 +397,7 @@ class ChatViewModel @Inject constructor(
                     query = query
                 )
             } else {
-                Timber.w("Query is empty or results are empty when mention is triggered")
+                Timber.w("DROID-2966 Query is empty or results are empty when mention is triggered")
             }
         } else if (shouldHideMention(text, selection.start)) {
             mentionPanelState.value = MentionPanelState.Hidden
@@ -624,6 +628,10 @@ class ChatViewModel @Inject constructor(
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
                     // TODO consider moving this use-case inside chat container
+                    if (messageRateLimiter.shouldShowRateLimitWarning()) {
+                        uXCommands.emit(UXCommand.ShowRateLimitWarning)
+                    }
+
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
                             chat = vmParams.ctx,
@@ -1045,10 +1053,15 @@ class ChatViewModel @Inject constructor(
 
     private fun resolveMentionQuery(text: String, selectionStart: Int): MentionPanelState.Query? {
         val atIndex = text.lastIndexOf('@', selectionStart - 1)
-        if (atIndex == -1 || (atIndex > 0 && text[atIndex - 1].isLetterOrDigit())) return null
-        val endIndex = text.indexOf(' ', atIndex).takeIf { it != -1 } ?: text.length
+        if (atIndex == -1) return null
+
+        val beforeAt = text.getOrNull(atIndex - 1)
+        if (beforeAt != null && beforeAt.isLetterOrDigit()) return null
+
+        val endIndex = text.indexOfAny(charArrayOf(' ', '\n'), startIndex = atIndex)
+            .takeIf { it != -1 } ?: text.length
+
         val query = text.substring(atIndex + 1, endIndex)
-        // Allow empty queries if there's no space after '@'
         return MentionPanelState.Query(query, atIndex until endIndex)
     }
 
@@ -1173,6 +1186,7 @@ class ChatViewModel @Inject constructor(
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
         data class OpenFullScreenImage(val url: String) : UXCommand()
+        data object ShowRateLimitWarning: UXCommand()
     }
 
     sealed class ChatBoxMode {

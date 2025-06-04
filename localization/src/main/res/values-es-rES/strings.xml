@@ -822,8 +822,8 @@
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
     <string name="personal">Por defecto</string>
-    <string name="create_space">Create space</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_space">Crear espacio</string>
+    <string name="create_chat">Crear chat</string>
     <string name="create_space_change_icon">Cambiar icono</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
@@ -1590,6 +1590,7 @@ En concreto,
     <string name="chat">Chat</string>
     <string name="copy">Copiar</string>
     <string name="copy_text">Copiar texto</string>
+    <string name="copy_plain_text">Copiar texto simple</string>
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
@@ -1785,4 +1786,5 @@ En concreto,
     <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
     <string name="vault_create_space">Espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
+    <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
 </resources>

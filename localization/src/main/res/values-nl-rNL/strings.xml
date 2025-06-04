@@ -1590,6 +1590,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat">Chat</string>
     <string name="copy">Kopiëren</string>
     <string name="copy_text">Copy Text</string>
+    <string name="copy_plain_text">Kopieer platte tekst</string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
@@ -1785,4 +1786,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_chat_description">Voor real-time gesprekken</string>
     <string name="vault_create_space">Ruimte</string>
     <string name="vault_create_space_description">Voor georganiseerde inhoud en gegevens</string>
+    <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
 </resources>

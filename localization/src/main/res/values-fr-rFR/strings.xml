@@ -1587,6 +1587,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chat">Messagerie</string>
     <string name="copy">Copier</string>
     <string name="copy_text">Copier le texte</string>
+    <string name="copy_plain_text">Copier le texte brut</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
@@ -1782,4 +1783,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="vault_create_chat_description">Pour les conversations en temps réel</string>
     <string name="vault_create_space">Espace</string>
     <string name="vault_create_space_description">Pour un contenu et des données organisés</string>
+    <string name="vault_empty_state_text">Il n\'y a pas encore d\'espaces</string>
 </resources>

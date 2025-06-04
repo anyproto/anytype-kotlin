@@ -11,6 +11,8 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -137,20 +139,23 @@ class VaultViewModel(
                             }
 
                             chatPreview != null -> {
-                                val allMembers = members.get()
-                                val member = allMembers.let { type ->
-                                    when (type) {
-                                        is Store.Data -> type.members.find { member ->
-                                            member.identity == chatPreview.message?.creator
-                                        }
-
-                                        is Store.Empty -> null
+                                val creator = chatPreview.message?.creator ?: ""
+                                val previewText = if (creator.isNotEmpty()) {
+                                    val creatorObj = chatPreview.dependencies.find {
+                                        it.getSingleValue<String>(
+                                            Relations.IDENTITY
+                                        ) == creator
                                     }
-                                }
-                                
-                                val previewText = chatPreview.message?.content?.text?.let { text ->
-                                    val creatorName = member?.name ?: chatPreview.message.creatorName.ifEmpty { "Unknown" }
-                                    "$creatorName: $text"
+                                    if (creatorObj != null) {
+                                        chatPreview.message?.content?.text?.let { text ->
+                                            val creatorName = creatorObj.name
+                                            "$creatorName: $text"
+                                        }
+                                    } else {
+                                        chatPreview.message?.content?.text
+                                    }
+                                } else {
+                                    chatPreview.message?.content?.text
                                 }
                                 
                                 VaultSpaceView.Chat(

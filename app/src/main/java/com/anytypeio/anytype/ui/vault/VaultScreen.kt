@@ -159,6 +159,7 @@ fun VaultScreen(
                                         //onSpaceClicked(item)
                                     },
                                     icon = item.icon,
+                                    previewText = item.previewText,
                                     chatPreview = item.chatPreview
                                 )
                             }

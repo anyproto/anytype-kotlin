@@ -101,6 +101,7 @@ fun VaultChatCard(
     title: String,
     onCardClicked: () -> Unit,
     icon: SpaceIconView,
+    previewText: String? = null,
     chatPreview: Chat.Preview? = null
 ) {
     Box(
@@ -123,7 +124,7 @@ fun VaultChatCard(
         )
         ContentChat(
             title = title,
-            subtitle = chatPreview?.message?.content?.text.orEmpty()
+            subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty()
         )
     }
 }
@@ -232,6 +233,7 @@ fun VaultChatSpaceCardPreview() {
         title = "B&O Museum",
         onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
+        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",

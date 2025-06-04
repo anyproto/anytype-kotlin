@@ -69,11 +69,13 @@ object UtilModule {
     @Singleton
     fun provideDateProvider(
         localeProvider: LocaleProvider,
-        appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+        appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+        stringResourceProvider: StringResourceProvider
     ): DateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
         localeProvider = localeProvider,
-        appDefaultDateFormatProvider = appDefaultDateFormatProvider
+        appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+        stringResourceProvider = stringResourceProvider
     )
 
     @JvmStatic

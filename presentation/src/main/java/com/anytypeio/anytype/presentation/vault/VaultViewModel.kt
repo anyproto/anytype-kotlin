@@ -19,9 +19,9 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -29,7 +29,6 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
-import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -62,9 +61,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -80,7 +76,8 @@ class VaultViewModel(
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val dateProvider: DateProvider
 ) : NavigationViewModel<VaultViewModel.Navigation>(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -157,9 +154,9 @@ class VaultViewModel(
                                     messageText
                                 }
                                 
-                                val messageTime = chatPreview.message?.createdAt?.let { timestamp ->
-                                    if (timestamp > 0) {
-                                        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+                                val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+                                    if (timeInSeconds > 0) {
+                                        dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
                                     } else null
                                 }
                                 
@@ -474,7 +471,8 @@ class VaultViewModel(
         private val profileContainer: ProfileSubscriptionManager,
         private val chatPreviewContainer: ChatPreviewContainer,
         private val pendingIntentStore: PendingIntentStore,
-        private val stringResourceProvider: StringResourceProvider
+        private val stringResourceProvider: StringResourceProvider,
+        private val dateProvider: DateProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -493,7 +491,8 @@ class VaultViewModel(
             profileContainer = profileContainer,
             chatPreviewContainer = chatPreviewContainer,
             pendingIntentStore = pendingIntentStore,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            dateProvider = dateProvider
         ) as T
     }
 

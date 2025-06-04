@@ -5,8 +5,11 @@ import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import java.time.ZoneId
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.util.Locale
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -27,6 +30,9 @@ class DateProviderImplTest {
     @Mock
     lateinit var observeVaultSettings: ObserveVaultSettings
 
+    @Mock
+    lateinit var stringResourceProvider: StringResourceProvider
+
     lateinit var dateProviderImpl: DateProvider
 
     lateinit var appDefaultDateFormatProvider: AppDefaultDateFormatProvider
@@ -36,7 +42,8 @@ class DateProviderImplTest {
         MockitoAnnotations.openMocks(this)
         appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider)
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
-        Mockito.`when`(localeProvider.language()).thenReturn("en")
+        Mockito.`when`(localeProvider.language()).thenReturn(Locale.getDefault().language)
+        Mockito.`when`(stringResourceProvider.getYesterday()).thenReturn("Yesterday")
     }
 
     @Test
@@ -78,6 +85,7 @@ class DateProviderImplTest {
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
                 appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(
@@ -127,6 +135,7 @@ class DateProviderImplTest {
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
                 appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
@@ -173,6 +182,7 @@ class DateProviderImplTest {
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
                 appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
@@ -218,11 +228,257 @@ class DateProviderImplTest {
                 defaultZoneId = zoneId,
                 localeProvider = localeProvider,
                 appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
             )
             val startOfDayInLocalZone =
                 dateProviderImpl.adjustFromStartOfDayInUserTimeZoneToUTC(utcTimestamp * 1000)
 
             assertEquals(expected, startOfDayInLocalZone)
         }
+    }
+
+    // MARK: getChatPreviewDate Tests
+
+    @Test
+    fun getChatPreviewDate_todayTimestamp_returnsTimeFormat() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from today (e.g., 18:32) in the default timezone
+        val todayDateTime = LocalDateTime.now(ZoneId.of("UTC"))
+            .withHour(18)
+            .withMinute(32)
+            .withSecond(0)
+            .withNano(0)
+        val todayTimestamp = todayDateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(todayTimestamp)
+        
+        // Then: Should return time in HH:mm format
+        assertEquals("18:32", result)
+    }
+
+    @Test
+    fun getChatPreviewDate_yesterdayTimestamp_returnsYesterdayString() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from yesterday in UTC
+        val yesterdayDateTime = LocalDateTime.now(ZoneId.of("UTC"))
+            .minusDays(1)
+            .withHour(14)
+            .withMinute(30)
+            .withSecond(0)
+            .withNano(0)
+        val yesterdayTimestamp = yesterdayDateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(yesterdayTimestamp)
+        
+        // Then: Should return localized "Yesterday" string
+        assertEquals("Yesterday", result)
+    }
+
+    @Test
+    fun getChatPreviewDate_currentYearNotTodayOrYesterday_returnsDateWithoutYear() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from current year but not today or yesterday (e.g., April 12)
+        val currentYear = LocalDateTime.now().year
+        val dateTime = LocalDateTime.of(currentYear, 4, 12, 10, 0, 0)
+        val timestamp = dateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return date in "MMM d" format
+        assertTrue("Result should contain month and day", result.matches(Regex("\\w{3} \\d{1,2}")))
+    }
+
+    @Test
+    fun getChatPreviewDate_previousYear_returnsDateWithYear() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from previous year (e.g., April 12, 2023)
+        val previousYear = LocalDateTime.now().year - 1
+        val dateTime = LocalDateTime.of(previousYear, 4, 12, 15, 45, 0)
+        val timestamp = dateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return date in "MMM d, yyyy" format
+        assertTrue("Result should contain month, day and year", 
+            result.matches(Regex("\\w{3} \\d{1,2}, \\d{4}")))
+    }
+
+    @Test
+    fun getChatPreviewDate_futureYear_returnsDateWithYear() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from future year (e.g., September 27, 2025)
+        val futureYear = LocalDateTime.now().year + 1
+        val dateTime = LocalDateTime.of(futureYear, 9, 27, 9, 15, 0)
+        val timestamp = dateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return date in "MMM d, yyyy" format
+        assertTrue("Result should contain month, day and year", 
+            result.matches(Regex("\\w{3} \\d{1,2}, \\d{4}")))
+    }
+
+    @Test
+    fun getChatPreviewDate_midnightToday_returnsTimeFormat() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from today at midnight (00:00) in UTC
+        val todayMidnight = LocalDateTime.now(ZoneId.of("UTC"))
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0)
+            .withNano(0)
+        val timestamp = todayMidnight.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return time in HH:mm format
+        assertEquals("00:00", result)
+    }
+
+    @Test
+    fun getChatPreviewDate_endOfDay_returnsTimeFormat() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from today at end of day (23:59) in UTC
+        val todayEndOfDay = LocalDateTime.now(ZoneId.of("UTC"))
+            .withHour(23)
+            .withMinute(59)
+            .withSecond(59)
+            .withNano(0)
+        val timestamp = todayEndOfDay.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return time in HH:mm format
+        assertEquals("23:59", result)
+    }
+
+    @Test
+    fun getChatPreviewDate_differentTimeZone_handlesCorrectly() = runTest(dispatcher) {
+        // Given: DateProvider with different timezone (GMT+8)
+        val gmtPlus8DateProvider = DateProviderImpl(
+            defaultZoneId = ZoneId.of("GMT+8"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        
+        // A timestamp that could be today in one timezone but yesterday in another
+        val timestamp = LocalDateTime.now(ZoneId.of("GMT+8"))
+            .withHour(10)
+            .withMinute(30)
+            .toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = gmtPlus8DateProvider.getChatPreviewDate(timestamp)
+        
+        // Then: Should handle timezone correctly
+        assertNotNull("Result should not be null", result)
+        assertTrue("Result should be either time format or yesterday", 
+            result.matches(Regex("\\d{2}:\\d{2}")) || result == "Yesterday")
+    }
+
+    @Test
+    fun getChatPreviewDate_localizedYesterday_usesStringResourceProvider() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: Mock returns localized "Yesterday" string
+        val localizedYesterday = "Ieri" // Italian for "Yesterday"
+        Mockito.`when`(stringResourceProvider.getYesterday()).thenReturn(localizedYesterday)
+        
+        val yesterdayDateTime = LocalDateTime.now()
+            .minusDays(1)
+            .withHour(10)
+            .withMinute(0)
+        val timestamp = yesterdayDateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return localized string
+        assertEquals(localizedYesterday, result)
+    }
+
+    @Test
+    fun getChatPreviewDate_zeroTimestamp_handlesGracefully() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: Edge case with timestamp 0
+        val timestamp = 0L
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should handle gracefully without crashing
+        assertNotNull("Result should not be null", result)
+        assertTrue("Result should be valid", result.isNotBlank())
+    }
+
+    @Test
+    fun getChatPreviewDate_veryOldDate_returnsDateWithYear() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A very old timestamp (e.g., from 1990)
+        val oldDateTime = LocalDateTime.of(1990, 12, 25, 14, 30, 0)
+        val timestamp = oldDateTime.toEpochSecond(ZoneOffset.UTC)
+        
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+        
+        // Then: Should return date with year
+        assertTrue("Result should contain year", result.contains("1990"))
     }
 }

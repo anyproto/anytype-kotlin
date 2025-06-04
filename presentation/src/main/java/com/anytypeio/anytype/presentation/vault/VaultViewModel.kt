@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.vault
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -11,9 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -25,15 +22,12 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
-import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.GetVaultSettings
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.SetVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,8 +42,12 @@ import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.util.StringResourceProviderImpl
-import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.*
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenChat
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenDateObject
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenObject
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenParticipant
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenSet
+import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.OpenType
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -58,7 +56,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
@@ -69,7 +66,6 @@ import timber.log.Timber
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val getSpaceWallpapers: GetSpaceWallpapers,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val observeVaultSettings: ObserveVaultSettings,
@@ -81,7 +77,6 @@ class VaultViewModel(
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
-    private val members: ActiveSpaceMemberSubscriptionContainer,
     private val stringResourceProvider: StringResourceProvider
 ) : NavigationViewModel<VaultViewModel.Navigation>(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -454,7 +449,6 @@ class VaultViewModel(
 
     class Factory @Inject constructor(
         private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        private val getSpaceWallpapers: GetSpaceWallpapers,
         private val urlBuilder: UrlBuilder,
         private val spaceManager: SpaceManager,
         private val saveCurrentSpace: SaveCurrentSpace,
@@ -467,7 +461,6 @@ class VaultViewModel(
         private val profileContainer: ProfileSubscriptionManager,
         private val chatPreviewContainer: ChatPreviewContainer,
         private val pendingIntentStore: PendingIntentStore,
-        private val members: ActiveSpaceMemberSubscriptionContainer,
         private val stringResourceProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -475,7 +468,6 @@ class VaultViewModel(
             modelClass: Class<T>
         ) = VaultViewModel(
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            getSpaceWallpapers = getSpaceWallpapers,
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             saveCurrentSpace = saveCurrentSpace,
@@ -488,7 +480,6 @@ class VaultViewModel(
             profileContainer = profileContainer,
             chatPreviewContainer = chatPreviewContainer,
             pendingIntentStore = pendingIntentStore,
-            members = members,
             stringResourceProvider = stringResourceProvider
         ) as T
     }

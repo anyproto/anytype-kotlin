@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -86,6 +85,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun profileContainer(): ProfileSubscriptionManager
     fun chatPreviewContainer(): ChatPreviewContainer
     fun pendingIntentStore(): PendingIntentStore
-    fun provideMembers(): ActiveSpaceMemberSubscriptionContainer
     fun stringResourceProvider(): StringResourceProvider
 }

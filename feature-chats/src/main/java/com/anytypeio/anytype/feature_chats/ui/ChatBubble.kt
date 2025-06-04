@@ -84,6 +84,7 @@ fun Bubble(
     timestamp: Long,
     attachments: List<ChatView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
+    shouldHideUsername: Boolean = false,
     isEdited: Boolean = false,
     isMaxReactionCountReached: Boolean = false,
     reactions: List<ChatView.Message.Reaction> = emptyList(),
@@ -145,7 +146,7 @@ fun Bubble(
             )
         }
         // Bubble username section
-        if (!isUserAuthor) {
+        if (!isUserAuthor && !shouldHideUsername) {
             Text(
                 text = name.ifEmpty { stringResource(R.string.untitled) },
                 style = Caption1Medium,

@@ -191,8 +191,21 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
-            val messageViews = buildList<ChatView> {
+            val messageViews = buildList {
+
+                var prevCreator: String? = null
+                var prevDateInterval: Long = 0
+
                 result.messages.forEach { msg ->
+
+                    val isPrevTimeIntervalBig = if (prevDateInterval > 0) {
+                        (msg.createdAt - prevDateInterval) > ChatConfig.GROUPING_DATE_INTERVAL_IN_SECONDS
+                    } else {
+                        false
+                    }
+
+                    val shouldHideUsername = prevCreator == msg.creator && !isPrevTimeIntervalBig
+
                     val allMembers = members.get()
                     val member = allMembers.let { type ->
                         when (type) {
@@ -265,6 +278,7 @@ class ChatViewModel @Inject constructor(
                         author = member?.name ?: msg.creator.takeLast(5),
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
+                        shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         reactions = msg.reactions
                             .toList()
@@ -365,6 +379,9 @@ class ChatViewModel @Inject constructor(
                         previousDate = currDate
                     }
                     add(view)
+
+                    prevCreator = msg.creator
+                    prevDateInterval = msg.createdAt
                 }
             }.reversed()
             ChatViewState(

@@ -18,8 +18,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -102,6 +107,8 @@ fun VaultChatCard(
     onCardClicked: () -> Unit,
     icon: SpaceIconView,
     previewText: String? = null,
+    creatorName: String? = null,
+    messageText: String? = null,
     chatPreview: Chat.Preview? = null
 ) {
     Box(
@@ -124,7 +131,9 @@ fun VaultChatCard(
         )
         ContentChat(
             title = title,
-            subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty()
+            subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty(),
+            creatorName = creatorName,
+            messageText = messageText
         )
     }
 }
@@ -133,6 +142,8 @@ fun VaultChatCard(
 private fun BoxScope.ContentChat(
     title: String,
     subtitle: String,
+    creatorName: String? = null,
+    messageText: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
 ) {
@@ -150,14 +161,22 @@ private fun BoxScope.ContentChat(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
-            text = subtitle,
-            style = Title2,
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
+        
+        if (creatorName != null && messageText != null) {
+            StyledChatPreview(
+                creatorName = creatorName,
+                messageText = messageText
+            )
+        } else {
+            Text(
+                text = subtitle,
+                style = Title2,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
     Row(
         modifier = Modifier
@@ -209,6 +228,28 @@ private fun BoxScope.ContentChat(
     }
 }
 
+@Composable
+private fun StyledChatPreview(
+    creatorName: String,
+    messageText: String
+) {
+    val annotatedString = buildAnnotatedString {
+        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+            append(creatorName)
+        }
+        append(": ")
+        append(messageText)
+    }
+    
+    Text(
+        text = annotatedString,
+        style = Title2,
+        color = colorResource(id = R.color.text_secondary),
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
 //@Composable
 ////@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 //@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
@@ -234,6 +275,8 @@ fun VaultChatSpaceCardPreview() {
         onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        creatorName = "John Doe",
+        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",

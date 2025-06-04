@@ -135,22 +135,23 @@ class VaultViewModel(
 
                             chatPreview != null -> {
                                 val creator = chatPreview.message?.creator ?: ""
-                                val previewText = if (creator.isNotEmpty()) {
+                                val messageText = chatPreview.message?.content?.text
+                                
+                                val creatorName = if (creator.isNotEmpty()) {
                                     val creatorObj = chatPreview.dependencies.find {
                                         it.getSingleValue<String>(
                                             Relations.IDENTITY
                                         ) == creator
                                     }
-                                    if (creatorObj != null) {
-                                        chatPreview.message?.content?.text?.let { text ->
-                                            val creatorName = creatorObj.name
-                                            "$creatorName: $text"
-                                        }
-                                    } else {
-                                        chatPreview.message?.content?.text
-                                    }
+                                    creatorObj?.name ?: "Unknown"
                                 } else {
-                                    chatPreview.message?.content?.text
+                                    null
+                                }
+                                
+                                val previewText = if (creatorName != null && messageText != null) {
+                                    "$creatorName: $messageText"
+                                } else {
+                                    messageText
                                 }
                                 
                                 VaultSpaceView.Chat(
@@ -160,7 +161,9 @@ class VaultViewModel(
                                         spaceGradientProvider = SpaceGradientProvider.Default
                                     ),
                                     chatPreview = chatPreview,
-                                    previewText = previewText
+                                    previewText = previewText,
+                                    creatorName = creatorName,
+                                    messageText = messageText
                                 )
                             }
 
@@ -507,7 +510,9 @@ class VaultViewModel(
             val unreadMentionCount: Int = 0,
             val chatMessage: Chat.Message.Content? = null,
             val chatPreview: Chat.Preview? = null,
-            val previewText: String? = null
+            val previewText: String? = null,
+            val creatorName: String? = null,
+            val messageText: String? = null
         ) : VaultSpaceView()
     }
 

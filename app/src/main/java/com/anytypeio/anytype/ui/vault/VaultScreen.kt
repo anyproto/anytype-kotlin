@@ -160,6 +160,8 @@ fun VaultScreen(
                                     },
                                     icon = item.icon,
                                     previewText = item.previewText,
+                                    creatorName = item.creatorName,
+                                    messageText = item.messageText,
                                     chatPreview = item.chatPreview
                                 )
                             }

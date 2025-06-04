@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +33,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -43,41 +41,26 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
-import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
-import com.anytypeio.anytype.core_ui.views.BodySemiBold
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
-import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 
@@ -85,7 +68,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 fun VaultScreen(
     profile: AccountProfile,
     spaces: List<VaultSpaceView>,
-    onSpaceClicked: (VaultSpaceView) -> Unit,
+    onSpaceClicked: (VaultSpaceView.Space) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onOrderChanged: (List<Id>) -> Unit
@@ -155,36 +138,48 @@ fun VaultScreen(
                     items = spaceList,
                     key = { _, item ->
                         item.space.id
+                    },
+                    contentType = { _, item ->
+                        when (item) {
+                            is VaultSpaceView.Chat -> TYPE_CHAT
+                            is VaultSpaceView.Space -> TYPE_SPACE
+                            is VaultSpaceView.Loading -> TYPE_LOADING
+                        }
                     }
                 ) { idx, item ->
                     if (idx == 0) {
                         Spacer(modifier = Modifier.height(4.dp))
                     }
-                    DraggableItem(dragDropState = dragDropState, index = idx) {
-                        if (item.space.isLoading) {
-                            LoadingSpaceCard()
-                        } else {
-                            VaultSpaceCard(
-                                title = item.space.name.orEmpty(),
-                                subtitle = when (item.space.spaceAccessType) {
-                                    SpaceAccessType.PRIVATE -> stringResource(id = R.string.space_type_private_space)
-                                    SpaceAccessType.DEFAULT -> stringResource(id = R.string.space_type_default_space)
-                                    SpaceAccessType.SHARED -> stringResource(id = R.string.space_type_shared_space)
-                                    else -> EMPTY_STRING_VALUE
-                                },
-                                wallpaper = item.wallpaper,
-                                onCardClicked = { onSpaceClicked(item) },
-                                icon = item.icon,
-                                unreadMessageCount = item.unreadMessageCount,
-                                unreadMentionCount = item.unreadMentionCount
-                            )
+                    when (item) {
+                        is VaultSpaceView.Chat -> {
+                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                                VaultChatCard(
+                                    title = item.space.name.orEmpty(),
+                                    onCardClicked = {
+                                        //onSpaceClicked(item)
+                                    },
+                                    icon = item.icon,
+                                    chatPreview = item.chatPreview
+                                )
+                            }
                         }
-                    }
-                    if (idx == spaces.lastIndex && spaces.size < SelectSpaceViewModel.MAX_SPACE_COUNT) {
-                        VaultSpaceAddCard(
-                            onCreateSpaceClicked = onCreateSpaceClicked
-                        )
-                        Spacer(modifier = Modifier.height(40.dp))
+                        is VaultSpaceView.Loading -> {
+                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                                LoadingSpaceCard()
+                            }
+                        }
+                        is VaultSpaceView.Space -> {
+                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                                VaultSpaceCard(
+                                    title = item.space.name.orEmpty(),
+                                    subtitle = item.accessType,
+                                    onCardClicked = {
+                                        //onSpaceClicked(item)
+                                    },
+                                    icon = item.icon,
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -303,154 +298,6 @@ fun VaultScreenToolbar(
                 color = colorResource(id = R.color.text_primary),
                 textAlign = TextAlign.Center
             )
-        }
-    }
-}
-
-@Composable
-fun VaultSpaceCard(
-    title: String,
-    subtitle: String,
-    onCardClicked: () -> Unit,
-    icon: SpaceIconView,
-    wallpaper: Wallpaper,
-    unreadMessageCount: Int = 0,
-    unreadMentionCount: Int = 0
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(96.dp)
-            .padding(horizontal = 8.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .then(
-                when (wallpaper) {
-                    is Wallpaper.Color -> {
-                        val color = WallpaperColor.entries.find {
-                            it.code == wallpaper.code
-                        }
-                        if (color != null) {
-                            Modifier.background(
-                                color = Color(color.hex.toColorInt()).copy(0.3f),
-                                shape = RoundedCornerShape(20.dp)
-                            )
-                        } else {
-                            Modifier
-                        }
-                    }
-
-                    is Wallpaper.Gradient -> {
-                        Modifier.background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = wallpaper.code,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                    }
-
-                    is Wallpaper.Default -> {
-                        Modifier.background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = CoverGradient.SKY,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                    }
-
-                    else -> Modifier
-                }
-            )
-            .clickable {
-                onCardClicked()
-            }
-    ) {
-        SpaceIconView(
-            icon = icon,
-            onSpaceIconClick = {
-                onCardClicked()
-            },
-            mainSize = 64.dp,
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .align(Alignment.CenterStart)
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    top = 24.dp,
-                    start = 96.dp,
-                    end = 16.dp
-                )
-        ) {
-            Text(
-                text = title.ifEmpty { stringResource(id = R.string.untitled) },
-                style = BodySemiBold,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = subtitle,
-                style = Relations3,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.alpha(0.6f)
-            )
-        }
-        Row(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (unreadMentionCount > 0) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = colorResource(R.color.glyph_active),
-                            shape = CircleShape
-                        )
-                        .size(18.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_chat_widget_mention),
-                        contentDescription = null
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-
-            if (unreadMessageCount > 0) {
-                val shape = if (unreadMentionCount > 9) {
-                    CircleShape
-                } else {
-                    RoundedCornerShape(100.dp)
-                }
-                Box(
-                    modifier = Modifier
-                        .height(18.dp)
-                        .background(
-                            color = colorResource(R.color.glyph_active),
-                            shape = shape
-                        )
-                        .padding(horizontal = 5.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = unreadMessageCount.toString(),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_white),
-                    )
-                }
-            }
         }
     }
 }
@@ -596,43 +443,32 @@ fun VaultScreenToolbarScrolledPreview() {
     )
 }
 
-@Composable
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-fun VaultSpaceCardPreview() {
-    VaultSpaceCard(
-        title = "B&O Museum",
-        subtitle = "Private space",
-        onCardClicked = {},
-        wallpaper = Wallpaper.Default,
-        icon = SpaceIconView.Placeholder(),
-        unreadMentionCount = 1,
-        unreadMessageCount = 9
-    )
-}
+//@Composable
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+//fun VaultScreenPreview() {
+//    VaultScreen(
+//        spaces = buildList {
+//            add(
+//                VaultSpaceView(
+//                    space = ObjectWrapper.SpaceView(
+//                        mapOf(
+//                            Relations.NAME to "B&O Museum",
+//                            Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
+//                        )
+//                    ),
+//                    icon = SpaceIconView.Placeholder()
+//                )
+//            )
+//        },
+//        onSpaceClicked = {},
+//        onCreateSpaceClicked = {},
+//        onSettingsClicked = {},
+//        onOrderChanged = {},
+//        profile = AccountProfile.Idle
+//    )
+//}
 
-@Composable
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-fun VaultScreenPreview() {
-    VaultScreen(
-        spaces = buildList {
-            add(
-                VaultSpaceView(
-                    space = ObjectWrapper.SpaceView(
-                        mapOf(
-                            Relations.NAME to "B&O Museum",
-                            Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
-                        )
-                    ),
-                    icon = SpaceIconView.Placeholder()
-                )
-            )
-        },
-        onSpaceClicked = {},
-        onCreateSpaceClicked = {},
-        onSettingsClicked = {},
-        onOrderChanged = {},
-        profile = AccountProfile.Idle
-    )
-}
+const val TYPE_CHAT = "chat"
+const val TYPE_SPACE = "space"
+const val TYPE_LOADING = "loading"

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.resources
 
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 
 interface StringResourceProvider {
     fun getRelativeDateName(relativeDate: RelativeDate): String
@@ -11,4 +12,5 @@ interface StringResourceProvider {
     fun getPropertiesFormatPrettyString(format: RelationFormat): String
     fun getDefaultSpaceName(): String
     fun getAttachmentText(): String
+    fun getSpaceAccessTypeName(accessType: SpaceAccessType?): String
 }

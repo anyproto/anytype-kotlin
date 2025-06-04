@@ -150,6 +150,7 @@ class DateProviderImpl @Inject constructor(
         try {
             val locale = localeProvider.locale()
             val formatter = SimpleDateFormat(pattern, locale)
+            formatter.timeZone = java.util.TimeZone.getTimeZone(defaultZoneId)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
             Timber.e(e, "Error formatting timestamp to date string")

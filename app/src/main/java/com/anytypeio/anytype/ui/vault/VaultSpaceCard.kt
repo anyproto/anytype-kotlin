@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -109,6 +111,7 @@ fun VaultChatCard(
     previewText: String? = null,
     creatorName: String? = null,
     messageText: String? = null,
+    messageTime: String? = null,
     chatPreview: Chat.Preview? = null
 ) {
     Box(
@@ -133,7 +136,8 @@ fun VaultChatCard(
             title = title,
             subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
-            messageText = messageText
+            messageText = messageText,
+            messageTime = messageTime
         )
     }
 }
@@ -144,9 +148,11 @@ private fun BoxScope.ContentChat(
     subtitle: String,
     creatorName: String? = null,
     messageText: String? = null,
+    messageTime: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
 ) {
+    
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -154,13 +160,29 @@ private fun BoxScope.ContentChat(
             .padding(start = 68.dp, end = 56.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = title.ifEmpty { stringResource(id = R.string.untitled) },
-            style = BodySemiBold,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterStart),
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                style = BodySemiBold,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (messageTime != null) {
+                Text(
+                    text = messageTime,
+                    style = Relations2,
+                    color = colorResource(id = R.color.transparent_active),
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
         
         if (creatorName != null && messageText != null) {
             StyledChatPreview(
@@ -277,12 +299,13 @@ fun VaultChatSpaceCardPreview() {
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+        messageTime = "18:32",
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
             message = Chat.Message(
                 id = "message-id",
-                createdAt = 0L,
+                createdAt = System.currentTimeMillis(),
                 modifiedAt = 0L,
                 attachments = emptyList(),
                 reactions = emptyMap(),

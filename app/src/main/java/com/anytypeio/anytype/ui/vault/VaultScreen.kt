@@ -162,6 +162,7 @@ fun VaultScreen(
                                     previewText = item.previewText,
                                     creatorName = item.creatorName,
                                     messageText = item.messageText,
+                                    messageTime = item.messageTime,
                                     chatPreview = item.chatPreview
                                 )
                             }

@@ -62,6 +62,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -154,6 +157,12 @@ class VaultViewModel(
                                     messageText
                                 }
                                 
+                                val messageTime = chatPreview.message?.createdAt?.let { timestamp ->
+                                    if (timestamp > 0) {
+                                        SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(timestamp))
+                                    } else null
+                                }
+                                
                                 VaultSpaceView.Chat(
                                     space = space,
                                     icon = space.spaceIcon(
@@ -163,7 +172,8 @@ class VaultViewModel(
                                     chatPreview = chatPreview,
                                     previewText = previewText,
                                     creatorName = creatorName,
-                                    messageText = messageText
+                                    messageText = messageText,
+                                    messageTime = messageTime
                                 )
                             }
 
@@ -512,7 +522,8 @@ class VaultViewModel(
             val chatPreview: Chat.Preview? = null,
             val previewText: String? = null,
             val creatorName: String? = null,
-            val messageText: String? = null
+            val messageText: String? = null,
+            val messageTime: String? = null
         ) : VaultSpaceView()
     }
 

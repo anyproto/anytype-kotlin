@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,8 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
@@ -70,7 +74,7 @@ import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -96,6 +100,7 @@ fun Bubble(
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false
 ) {
+    val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
     if (showDeleteMessageWarning) {
@@ -167,9 +172,15 @@ fun Bubble(
                     shape = RoundedCornerShape(16.dp)
                 )
                 .clip(RoundedCornerShape(16.dp))
-                .clickable {
-                    showDropdownMenu = !showDropdownMenu
-                }
+                .combinedClickable(
+                    onClick = {
+                        showDropdownMenu = !showDropdownMenu
+                    },
+                    onLongClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showDropdownMenu = !showDropdownMenu
+                    }
+                )
                 .padding(vertical = 4.dp)
         ) {
             BubbleAttachments(
@@ -177,6 +188,7 @@ fun Bubble(
                 isUserAuthor = isUserAuthor,
                 onAttachmentClicked = onAttachmentClicked,
                 onAttachmentLongClicked = {
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showDropdownMenu = true
                 }
             )

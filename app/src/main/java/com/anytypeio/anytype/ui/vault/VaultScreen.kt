@@ -60,7 +60,7 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
-import com.anytypeio.anytype.presentation.vault.VaultViewModel.VaultSpaceView
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
 
@@ -68,7 +68,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 fun VaultScreen(
     profile: AccountProfile,
     spaces: List<VaultSpaceView>,
-    onSpaceClicked: (VaultSpaceView.Space) -> Unit,
+    onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onOrderChanged: (List<Id>) -> Unit
@@ -156,7 +156,7 @@ fun VaultScreen(
                                 VaultChatCard(
                                     title = item.space.name.orEmpty(),
                                     onCardClicked = {
-                                        //onSpaceClicked(item)
+                                        onSpaceClicked(item)
                                     },
                                     icon = item.icon,
                                     previewText = item.previewText,
@@ -178,7 +178,7 @@ fun VaultScreen(
                                     title = item.space.name.orEmpty(),
                                     subtitle = item.accessType,
                                     onCardClicked = {
-                                        //onSpaceClicked(item)
+                                        onSpaceClicked(item)
                                     },
                                     icon = item.icon,
                                 )

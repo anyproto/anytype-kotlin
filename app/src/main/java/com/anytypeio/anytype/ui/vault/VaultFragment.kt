@@ -15,7 +15,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
@@ -25,9 +24,10 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
+import com.anytypeio.anytype.presentation.vault.VaultCommand
+import com.anytypeio.anytype.presentation.vault.VaultNavigation
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
-import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation
-import com.anytypeio.anytype.presentation.vault.VaultViewModel.Command
+import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -35,7 +35,6 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
@@ -47,7 +46,7 @@ class VaultFragment : BaseComposeFragment() {
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
     @Inject
-    lateinit var factory: VaultViewModel.Factory
+    lateinit var factory: VaultViewModelFactory
 
     private val vm by viewModels<VaultViewModel> { factory }
 
@@ -68,7 +67,7 @@ class VaultFragment : BaseComposeFragment() {
                         onOrderChanged = vm::onOrderChanged,
                         profile = vm.profileView.collectAsStateWithLifecycle().value
                     )
-                    
+
                     if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
                         ChooseSpaceTypeScreen(
                             onCreateChatClicked = {
@@ -88,14 +87,14 @@ class VaultFragment : BaseComposeFragment() {
                 vm.commands.collect { command -> proceed(command) }
             }
             LaunchedEffect(Unit) {
-                vm.navigation.collect { command -> proceed(command) }
+                vm.navigations.collect { command -> proceed(command) }
             }
         }
     }
 
-    private fun proceed(command: Command) {
+    private fun proceed(command: VaultCommand) {
         when (command) {
-            is Command.EnterSpaceHomeScreen -> {
+            is VaultCommand.EnterSpaceHomeScreen -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
@@ -108,7 +107,8 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening space from vault")
                 }
             }
-            is Command.EnterSpaceLevelChat -> {
+
+            is VaultCommand.EnterSpaceLevelChat -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenChatFromVault,
@@ -121,7 +121,8 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening space-level chat from vault")
                 }
             }
-            is Command.CreateNewSpace -> {
+
+            is VaultCommand.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionCreateSpaceFromVault,
@@ -131,7 +132,8 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening create space screen from vault")
                 }
             }
-            Command.CreateChat -> {
+
+            VaultCommand.CreateChat -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionCreateChatFromVault,
@@ -141,7 +143,8 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening create chat screen from vault")
                 }
             }
-            is Command.OpenProfileSettings -> {
+
+            is VaultCommand.OpenProfileSettings -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.profileSettingsScreen,
@@ -151,13 +154,15 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(it, "Error while opening profile settings from vault")
                 }
             }
-            is Command.Deeplink.Invite -> {
+
+            is VaultCommand.Deeplink.Invite -> {
                 findNavController().navigate(
                     R.id.requestJoinSpaceScreen,
                     RequestJoinSpaceFragment.args(link = command.link)
                 )
             }
-            is Command.Deeplink.GalleryInstallation -> {
+
+            is VaultCommand.Deeplink.GalleryInstallation -> {
                 findNavController().navigate(
                     R.id.galleryInstallationScreen,
                     GalleryInstallationFragment.args(
@@ -166,14 +171,16 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 )
             }
-            is Command.Deeplink.MembershipScreen -> {
+
+            is VaultCommand.Deeplink.MembershipScreen -> {
                 findNavController().navigate(
                     R.id.paymentsScreen,
                     MembershipFragment.args(command.tierId),
                     Builder().setLaunchSingleTop(true).build()
                 )
             }
-            is Command.Deeplink.DeepLinkToObjectNotWorking -> {
+
+            is VaultCommand.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
@@ -181,9 +188,9 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
 
-    private fun proceed(destination: Navigation) {
+    private fun proceed(destination: VaultNavigation) {
         when (destination) {
-            is Navigation.OpenObject -> runCatching {
+            is VaultNavigation.OpenObject -> runCatching {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
                     HomeScreenFragment.args(
@@ -198,7 +205,8 @@ class VaultFragment : BaseComposeFragment() {
             }.onFailure {
                 Timber.e(it, "Error while opening object from vault")
             }
-            is Navigation.OpenSet -> runCatching {
+
+            is VaultNavigation.OpenSet -> runCatching {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
                     HomeScreenFragment.args(
@@ -214,7 +222,8 @@ class VaultFragment : BaseComposeFragment() {
             }.onFailure {
                 Timber.e(it, "Error while opening set or collection from vault")
             }
-            is Navigation.OpenChat -> {
+
+            is VaultNavigation.OpenChat -> {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
                     HomeScreenFragment.args(
@@ -227,7 +236,8 @@ class VaultFragment : BaseComposeFragment() {
                     space = destination.space
                 )
             }
-            is Navigation.OpenDateObject -> {
+
+            is VaultNavigation.OpenDateObject -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
@@ -245,7 +255,7 @@ class VaultFragment : BaseComposeFragment() {
                 }
             }
 
-            is Navigation.OpenParticipant -> {
+            is VaultNavigation.OpenParticipant -> {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
@@ -262,8 +272,13 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(e, "Error while opening participant object from widgets")
                 }
             }
-            is Navigation.OpenType -> {
+
+            is VaultNavigation.OpenType -> {
                 Timber.e("Illegal command: type cannot be opened from vault")
+            }
+
+            is VaultNavigation.ShowError -> {
+                toast(destination.message)
             }
         }
     }
@@ -304,7 +319,7 @@ class VaultFragment : BaseComposeFragment() {
     companion object {
         private const val SHOW_MNEMONIC_KEY = "arg.vault-screen.show-mnemonic"
         private const val DEEP_LINK_KEY = "arg.vault-screen.deep-link"
-        fun args(deeplink: String?) : Bundle = bundleOf(
+        fun args(deeplink: String?): Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink
         )
     }

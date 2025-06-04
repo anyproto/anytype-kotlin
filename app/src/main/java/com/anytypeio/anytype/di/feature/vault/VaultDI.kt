@@ -23,7 +23,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.vault.VaultViewModel
+import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
 import dagger.Component
@@ -55,7 +55,7 @@ object VaultModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: VaultViewModel.Factory
+            factory: VaultViewModelFactory
         ): ViewModelProvider.Factory
 
         @PerScreen

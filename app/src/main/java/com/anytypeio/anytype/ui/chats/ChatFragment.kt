@@ -99,10 +99,9 @@ class ChatFragment : BaseComposeFragment() {
                     val notificationsSheetState =
                         rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
-                    val showInviteLinkModal = vm.shouldShowInviteModal.collectAsStateWithLifecycle().value
+                    val inviteModalState = vm.inviteModalState.collectAsStateWithLifecycle().value
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
-                    val shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value
                     val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
 
                     Column(
@@ -196,63 +195,61 @@ class ChatFragment : BaseComposeFragment() {
                         componentManager().globalSearchComponent.release()
                     }
 
-                    if (showInviteLinkModal) {
-                        ModalBottomSheet(
-                            onDismissRequest = {
-                                vm.onInviteModalDismissed()
-                            },
-                            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                            containerColor = Color.Transparent,
-                            contentColor = Color.Transparent,
-                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                            dragHandle = null
-                        ) {
-                            when (shareLinkViewState) {
-                                is ShareLinkViewState.Shared -> {
-                                    ShareInviteLinkCard(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 8.dp)
-                                            .background(
-                                                shape = RoundedCornerShape(16.dp),
-                                                color = colorResource(id = R.color.widget_background)
-                                            ),
-                                        link = shareLinkViewState.link,
-                                        isCurrentUserOwner = canCreateInviteLink,
-                                        onShareInviteClicked = { vm.onShareInviteLinkFromCardClicked() },
-                                        onDeleteLinkClicked = { vm.onDeleteLinkClicked() },
-                                        onShowQrCodeClicked = { vm.onShareQrCodeClicked() }
-                                    )
-                                }
-                                is ShareLinkViewState.NotGenerated -> {
-                                    GenerateInviteLinkCard(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 8.dp)
-                                            .background(
-                                                shape = RoundedCornerShape(16.dp),
-                                                color = colorResource(id = R.color.widget_background)
-                                            ),
-                                        onGenerateInviteLinkClicked = {
-                                            vm.onGenerateInviteLinkClicked()
-                                        }
-                                    )
-                                }
-                                else -> {
-                                    GenerateInviteLinkCard(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 8.dp)
-                                            .background(
-                                                shape = RoundedCornerShape(16.dp),
-                                                color = colorResource(id = R.color.widget_background)
-                                            ),
-                                        onGenerateInviteLinkClicked = {
-                                            vm.onGenerateInviteLinkClicked()
-                                        }
-                                    )
-                                }
+                    when (inviteModalState) {
+                        is ChatViewModel.InviteModalState.ShowShareCard -> {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    vm.onInviteModalDismissed()
+                                },
+                                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                                dragHandle = null
+                            ) {
+                                ShareInviteLinkCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .background(
+                                            shape = RoundedCornerShape(16.dp),
+                                            color = colorResource(id = R.color.widget_background)
+                                        ),
+                                    link = inviteModalState.link,
+                                    isCurrentUserOwner = canCreateInviteLink,
+                                    onShareInviteClicked = { vm.onShareInviteLinkFromCardClicked() },
+                                    onDeleteLinkClicked = { vm.onDeleteLinkClicked() },
+                                    onShowQrCodeClicked = { vm.onShareQrCodeClicked() }
+                                )
                             }
+                        }
+                        is ChatViewModel.InviteModalState.ShowGenerateCard -> {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    vm.onInviteModalDismissed()
+                                },
+                                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                                dragHandle = null
+                            ) {
+                                GenerateInviteLinkCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .background(
+                                            shape = RoundedCornerShape(16.dp),
+                                            color = colorResource(id = R.color.widget_background)
+                                        ),
+                                    onGenerateInviteLinkClicked = {
+                                        vm.onGenerateInviteLinkClicked()
+                                    }
+                                )
+                            }
+                        }
+                        ChatViewModel.InviteModalState.Hidden -> {
+                            // No modal shown
                         }
                     }
                 }

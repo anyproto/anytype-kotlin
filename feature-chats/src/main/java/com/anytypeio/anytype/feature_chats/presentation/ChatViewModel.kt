@@ -121,8 +121,7 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val canCreateInviteLink = MutableStateFlow(false)
-    val shouldShowInviteModal = MutableStateFlow(false)
-    val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
+    val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -184,7 +183,9 @@ class ChatViewModel @Inject constructor(
                 chatState.messages.isEmpty()
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
-                shouldShowInviteModal.value = shouldShow
+                if (shouldShow) {
+                    inviteModalState.value = InviteModalState.ShowGenerateCard
+                }
             }
         }
 
@@ -1058,7 +1059,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onInviteModalDismissed() {
-        shouldShowInviteModal.value = false
+        inviteModalState.value = InviteModalState.Hidden
     }
 
     fun onGenerateInviteLinkClicked() {
@@ -1084,7 +1085,7 @@ class ChatViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     Timber.e(error, "Error while making space shareable")
-                    shouldShowInviteModal.value = false
+                    inviteModalState.value = InviteModalState.Hidden
                     // TODO: Handle error properly
                 }
             )
@@ -1109,13 +1110,11 @@ class ChatViewModel @Inject constructor(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
-                shareLinkViewState.value = ShareLinkViewState.Shared(inviteLink.scheme)
-                shouldShowInviteModal.value = false
-                commands.emit(ViewModelCommand.ShareInviteLink(inviteLink.scheme))
+                inviteModalState.value = InviteModalState.ShowShareCard(inviteLink.scheme)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
-                shouldShowInviteModal.value = false
+                inviteModalState.value = InviteModalState.Hidden
                 // TODO: Handle error properly
             }
         )
@@ -1123,19 +1122,33 @@ class ChatViewModel @Inject constructor(
 
     fun onShareInviteLinkClicked() {
         viewModelScope.launch {
-            // Always show the modal - it will display the appropriate card based on shareLinkViewState
-            shouldShowInviteModal.value = true
+            // Check if we already have a link, if so show share card, otherwise show generate card
+            when (val currentState = inviteModalState.value) {
+                is InviteModalState.ShowShareCard -> {
+                    // Already showing share card - do nothing or could toggle visibility
+                    return@launch
+                }
+                else -> {
+                    // Check if we have an existing link
+                    val existingLink = getSpaceInviteLink.async(vmParams.space)
+                    if (existingLink.isSuccess) {
+                        inviteModalState.value = InviteModalState.ShowShareCard(existingLink.getOrThrow().scheme)
+                    } else {
+                        inviteModalState.value = InviteModalState.ShowGenerateCard
+                    }
+                }
+            }
         }
     }
 
     fun onShareInviteLinkFromCardClicked() {
         viewModelScope.launch {
-            when (val value = shareLinkViewState.value) {
-                is ShareLinkViewState.Shared -> {
-                    commands.emit(ViewModelCommand.ShareInviteLink(value.link))
+            when (val state = inviteModalState.value) {
+                is InviteModalState.ShowShareCard -> {
+                    commands.emit(ViewModelCommand.ShareInviteLink(state.link))
                 }
                 else -> {
-                    Timber.w("Ignoring share invite click while in state: $value")
+                    Timber.w("Ignoring share invite click while in state: $state")
                 }
             }
         }
@@ -1143,12 +1156,12 @@ class ChatViewModel @Inject constructor(
 
     fun onShareQrCodeClicked() {
         viewModelScope.launch {
-            when (val value = shareLinkViewState.value) {
-                is ShareLinkViewState.Shared -> {
-                    commands.emit(ViewModelCommand.ShareQrCode(value.link))
+            when (val state = inviteModalState.value) {
+                is InviteModalState.ShowShareCard -> {
+                    commands.emit(ViewModelCommand.ShareQrCode(state.link))
                 }
                 else -> {
-                    Timber.w("Ignoring QR-code click while in state: $value")
+                    Timber.w("Ignoring QR-code click while in state: $state")
                 }
             }
         }
@@ -1174,12 +1187,11 @@ class ChatViewModel @Inject constructor(
                 ).fold(
                     onSuccess = {
                         Timber.d("Revoked space invite link")
-                        shareLinkViewState.value = ShareLinkViewState.NotGenerated
-                        shouldShowInviteModal.value = false
+                        inviteModalState.value = InviteModalState.Hidden
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link")
-                        shouldShowInviteModal.value = false
+                        inviteModalState.value = InviteModalState.Hidden
                         // TODO: Handle error properly
                     }
                 )
@@ -1369,35 +1381,14 @@ class ChatViewModel @Inject constructor(
             spaceViews.observe().collect { spaces ->
                 val space = spaces.firstOrNull { it.targetSpaceId == vmParams.space.id }
                 spaceAccessType.value = space?.spaceAccessType
-                setShareLinkViewState(space, canCreateInviteLink.value)
             }
         }
     }
 
-    private suspend fun setShareLinkViewState(
-        space: ObjectWrapper.SpaceView?,
-        isCurrentUserOwner: Boolean
-    ) {
-        shareLinkViewState.value = when (space?.spaceAccessType) {
-            SpaceAccessType.PRIVATE -> {
-                if (isCurrentUserOwner)
-                    ShareLinkViewState.NotGenerated
-                else
-                    ShareLinkViewState.Init
-            }
-            SpaceAccessType.SHARED -> {
-                val link = getSpaceInviteLink.async(vmParams.space)
-                if (link.isSuccess) {
-                    ShareLinkViewState.Shared(link.getOrThrow().scheme)
-                } else {
-                    if (isCurrentUserOwner)
-                        ShareLinkViewState.NotGenerated
-                    else
-                        ShareLinkViewState.Init
-                }
-            }
-            else -> ShareLinkViewState.Init
-        }
+    sealed class InviteModalState {
+        data object Hidden : InviteModalState()
+        data object ShowGenerateCard : InviteModalState()
+        data class ShowShareCard(val link: String) : InviteModalState()
     }
 
     sealed class ViewModelCommand {

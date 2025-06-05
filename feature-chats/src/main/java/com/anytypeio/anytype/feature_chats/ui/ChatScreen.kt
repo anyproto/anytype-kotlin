@@ -237,7 +237,7 @@ fun ChatScreenWrapper(
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
-            onShareInviteClicked = { /* TODO: implement share invite */ },
+            onShareInviteClicked = { vm.onShareInviteLinkClicked() },
             canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()

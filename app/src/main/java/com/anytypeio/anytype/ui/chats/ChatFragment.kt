@@ -9,9 +9,11 @@ import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -27,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -193,12 +196,19 @@ class ChatFragment : BaseComposeFragment() {
                                 vm.onInviteModalDismissed()
                             },
                             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                            containerColor = colorResource(id = R.color.background_secondary),
+                            containerColor = Color.Transparent,
+                            contentColor = Color.Transparent,
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                             dragHandle = null
                         ) {
                             GenerateInviteLinkCard(
-                                modifier = Modifier.padding(16.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp)
+                                    .background(
+                                        shape = RoundedCornerShape(16.dp),
+                                        color = colorResource(id = R.color.widget_background)
+                                    ),
                                 onGenerateInviteLinkClicked = {
                                     vm.onGenerateInviteLink()
                                 }

@@ -91,6 +91,13 @@ sealed interface ChatView {
                 val ext: String
             ): Attachment()
 
+            data class Video(
+                val target: Id,
+                val url: String,
+                val name: String,
+                val ext: String
+            ): Attachment()
+
             data class Link(
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,
@@ -111,7 +118,8 @@ sealed interface ChatView {
 
             data class Media(
                 val uri: String,
-                val state: State = State.Idle
+                val state: State = State.Idle,
+                val isVideo: Boolean = false
             ): ChatBoxAttachment()
 
             data class File(
@@ -123,6 +131,11 @@ sealed interface ChatView {
 
             sealed class Existing : ChatBoxAttachment() {
                 data class Image(
+                    val target: Id,
+                    val url: Url
+                ) : Existing()
+
+                data class Video(
                     val target: Id,
                     val url: Url
                 ) : Existing()

@@ -61,6 +61,7 @@ roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.1.0'
+coilVideoVersion = '3.2.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
 
@@ -98,6 +99,7 @@ glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersio
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
 glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideComposeVersion" }
 coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion"  }
+coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }

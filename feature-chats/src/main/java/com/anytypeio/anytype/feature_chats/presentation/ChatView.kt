@@ -28,6 +28,7 @@ sealed interface ChatView {
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
+        val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null

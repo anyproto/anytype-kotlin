@@ -69,6 +69,7 @@ import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
+import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -394,6 +395,22 @@ class ChatFragment : BaseComposeFragment() {
                                     toast("QR Code sharing - to be implemented")
                                 }.onFailure {
                                     Timber.e(it, "Error while opening QR code")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ShowDeleteLinkWarning -> {
+                                runCatching {
+                                    val dialog = DeleteSpaceInviteLinkWarning()
+                                    dialog.onAccepted = {
+                                        vm.onDeleteLinkAccepted().also {
+                                            dialog.dismiss()
+                                        }
+                                    }
+                                    dialog.onCancelled = {
+                                        // Do nothing.
+                                    }
+                                    dialog.show(childFragmentManager, null)
+                                }.onFailure {
+                                    Timber.e(it, "Error while showing delete link warning")
                                 }
                             }
                         }

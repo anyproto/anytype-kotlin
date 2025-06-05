@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
+import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -100,7 +101,8 @@ class ChatViewModel @Inject constructor(
     private val notificationBuilder: NotificationBuilder,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val makeSpaceShareable: MakeSpaceShareable,
-    private val getSpaceInviteLink: GetSpaceInviteLink
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val revokeSpaceInviteLink: RevokeSpaceInviteLink
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -1153,9 +1155,38 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onDeleteLinkClicked() {
-        // TODO: For Chat spaces, we might want to show a confirmation dialog
-        // For now, just log it - this will be implemented when delete functionality is needed
-        Timber.d("onDeleteLinkClicked - to be implemented")
+        Timber.d("onDeleteLinkClicked")
+        viewModelScope.launch {
+            if (canCreateInviteLink.value) {
+                commands.emit(ViewModelCommand.ShowDeleteLinkWarning)
+            } else {
+                Timber.w("Something wrong with permissions.")
+            }
+        }
+    }
+
+    fun onDeleteLinkAccepted() {
+        Timber.d("onDeleteLinkAccepted")
+        viewModelScope.launch {
+            if (canCreateInviteLink.value) {
+                revokeSpaceInviteLink.async(
+                    params = vmParams.space
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Revoked space invite link")
+                        shareLinkViewState.value = ShareLinkViewState.NotGenerated
+                        shouldShowInviteModal.value = false
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Error while revoking space invite link")
+                        shouldShowInviteModal.value = false
+                        // TODO: Handle error properly
+                    }
+                )
+            } else {
+                Timber.w("Something wrong with permissions.")
+            }
+        }
     }
 
     fun onMentionClicked(member: Id) {
@@ -1379,6 +1410,7 @@ class ChatViewModel @Inject constructor(
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
+        data object ShowDeleteLinkWarning : ViewModelCommand()
     }
 
     sealed class UXCommand {

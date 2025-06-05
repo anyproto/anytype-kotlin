@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
+import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -111,4 +112,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun generateSpaceInviteLink(): GenerateSpaceInviteLink
     fun makeSpaceShareable(): MakeSpaceShareable
     fun getSpaceInviteLink(): GetSpaceInviteLink
+    fun revokeSpaceInviteLink(): RevokeSpaceInviteLink
 }

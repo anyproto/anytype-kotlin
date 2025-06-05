@@ -140,7 +140,7 @@ class ChatViewModel @Inject constructor(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
                         ),
-                        showIcon = false
+                        showIcon = true
                     )
                 }.collect {
                     header.value = it

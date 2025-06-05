@@ -25,10 +25,11 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 
 @Composable
 fun VaultEmptyState(
+    modifier: Modifier = Modifier,
     onCreateSpaceClicked: () -> Unit
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,

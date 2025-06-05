@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.util
 
 import android.content.Context
+import androidx.compose.ui.res.stringResource
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.R
 import javax.inject.Inject
@@ -58,5 +61,18 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
 
     override fun getAttachmentText(): String {
         return context.getString(R.string.attachment)
+    }
+
+    override fun getSpaceAccessTypeName(accessType: SpaceAccessType?): String {
+        return when (accessType) {
+            SpaceAccessType.PRIVATE -> context.getString(R.string.space_type_private_space)
+            SpaceAccessType.DEFAULT -> context.getString(R.string.space_type_default_space)
+            SpaceAccessType.SHARED -> context.getString(R.string.space_type_shared_space)
+            null -> EMPTY_STRING_VALUE
+        }
+    }
+
+    override fun getYesterday(): String {
+        return context.getString(R.string.yesterday)
     }
 }

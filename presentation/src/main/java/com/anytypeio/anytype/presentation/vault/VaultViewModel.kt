@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.vault
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -10,47 +9,48 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.GetVaultSettings
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.SetVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
-import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.vault.VaultViewModel.Navigation.*
-import javax.inject.Inject
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenChat
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenDateObject
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
+import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.emitAll
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
@@ -61,7 +61,6 @@ import timber.log.Timber
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val getSpaceWallpapers: GetSpaceWallpapers,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val observeVaultSettings: ObserveVaultSettings,
@@ -72,11 +71,15 @@ class VaultViewModel(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
-    private val pendingIntentStore: PendingIntentStore
-) : NavigationViewModel<VaultViewModel.Navigation>(), DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
+    private val pendingIntentStore: PendingIntentStore,
+    private val stringResourceProvider: StringResourceProvider,
+    private val dateProvider: DateProvider
+) : ViewModel(),
+    DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
-    val commands = MutableSharedFlow<Command>(replay = 0)
+    val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+    val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
 
     val profileView = profileContainer.observe().map { obj ->
@@ -93,55 +96,129 @@ class VaultViewModel(
     init {
         Timber.i("VaultViewModel, init")
         viewModelScope.launch {
-            val wallpapers = getSpaceWallpapers.async(Unit).getOrNull() ?: emptyMap()
             combine(
                 spaceViewSubscriptionContainer
                     .observe()
                     .take(1)
                     .onCompletion {
                         emitAll(
-                            spaceViewSubscriptionContainer
-                                .observe()
-                                .debounce(SPACE_VAULT_DEBOUNCE_DURATION)
+                            spaceViewSubscriptionContainer.observe()
                         )
                     },
                 observeVaultSettings.flow(),
                 chatPreviewContainer.observePreviews()
-            ) { spaces, settings, chatPreviews ->
-                spaces
-                    .filter { space -> (space.isActive || space.isLoading) }
-                    .map { space ->
-                        val chatPreview = space.targetSpaceId?.let { spaceId ->
-                            chatPreviews.find { it.space.id == spaceId }
-                        }
-                        
-                        VaultSpaceView(
-                            space = space,
-                            icon = space.spaceIcon(
-                                builder = urlBuilder,
-                                spaceGradientProvider = SpaceGradientProvider.Default
-                            ),
-                            wallpaper = wallpapers.getOrDefault(
-                                key = space.targetSpaceId,
-                                defaultValue = Wallpaper.Default
-                            ),
-                            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
-                            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0
-                        )
-                    }.sortedBy { space ->
-                        val idx = settings.orderOfSpaces.indexOf(
-                            space.space.id
-                        )
-                        if (idx == -1) {
-                            Int.MIN_VALUE
-                        } else {
-                            idx
-                        }
-                    }
-            }.collect {
-                spaces.value = it
+            ) { spacesFromFlow, settings, chatPreviews ->
+                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews)
+            }.collect { resultingSpaceViews ->
+                spaces.value = resultingSpaceViews
             }
         }
+    }
+
+    private fun transformToVaultSpaceViews(
+        spacesFromFlow: List<ObjectWrapper.SpaceView>,
+        settings: VaultSettings,
+        chatPreviews: List<Chat.Preview>
+    ): List<VaultSpaceView> {
+        return spacesFromFlow
+            .filter { space -> (space.isActive || space.isLoading) }
+            .map { space ->
+                val chatPreview = space.targetSpaceId?.let { spaceId ->
+                    chatPreviews.find { it.space.id == spaceId }
+                }
+                mapToVaultSpaceViewItem(space, chatPreview)
+            }.sortedBy { spaceView ->
+                val idx = settings.orderOfSpaces.indexOf(
+                    spaceView.space.id
+                )
+                if (idx == -1) {
+                    Int.MIN_VALUE
+                } else {
+                    idx
+                }
+            }
+    }
+
+    private fun mapToVaultSpaceViewItem(
+        space: ObjectWrapper.SpaceView,
+        chatPreview: Chat.Preview?
+    ): VaultSpaceView {
+        return when {
+            space.isLoading -> createLoadingView(space)
+            chatPreview != null -> createChatView(space, chatPreview)
+            else -> createStandardSpaceView(space)
+        }
+    }
+
+    private fun createLoadingView(
+        space: ObjectWrapper.SpaceView
+    ): VaultSpaceView.Loading {
+        Timber.d("Space ${space.id} is loading")
+        return VaultSpaceView.Loading(
+            space = space,
+            icon = space.spaceIcon(
+                builder = urlBuilder,
+                spaceGradientProvider = SpaceGradientProvider.Default
+            )
+        )
+    }
+
+    private fun createChatView(
+        space: ObjectWrapper.SpaceView,
+        chatPreview: Chat.Preview
+    ): VaultSpaceView.Chat {
+        val creator = chatPreview.message?.creator ?: ""
+        val messageText = chatPreview.message?.content?.text
+
+        val creatorName = if (creator.isNotEmpty()) {
+            val creatorObj = chatPreview.dependencies.find {
+                it.getSingleValue<String>(
+                    Relations.IDENTITY
+                ) == creator
+            }
+            creatorObj?.name ?: "Unknown"
+        } else {
+            null
+        }
+
+        val previewText = if (creatorName != null && messageText != null) {
+            "$creatorName: $messageText"
+        } else {
+            messageText
+        }
+
+        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+            if (timeInSeconds > 0) {
+                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
+            } else null
+        }
+
+        return VaultSpaceView.Chat(
+            space = space,
+            icon = space.spaceIcon(
+                builder = urlBuilder,
+                spaceGradientProvider = SpaceGradientProvider.Default
+            ),
+            chatPreview = chatPreview,
+            previewText = previewText,
+            creatorName = creatorName,
+            messageText = messageText,
+            messageTime = messageTime
+        )
+    }
+
+    private fun createStandardSpaceView(
+        space: ObjectWrapper.SpaceView
+    ): VaultSpaceView.Space {
+        return VaultSpaceView.Space(
+            space = space,
+            icon = space.spaceIcon(
+                builder = urlBuilder,
+                spaceGradientProvider = SpaceGradientProvider.Default
+            ),
+            accessType = stringResourceProvider
+                .getSpaceAccessTypeName(accessType = space.spaceAccessType)
+        )
     }
 
     fun onSpaceClicked(view: VaultSpaceView) {
@@ -170,7 +247,7 @@ class VaultViewModel(
 
     fun onSettingsClicked() {
         viewModelScope.launch {
-            commands.emit(Command.OpenProfileSettings)
+            commands.emit(VaultCommand.OpenProfileSettings)
         }
     }
 
@@ -189,14 +266,14 @@ class VaultViewModel(
     fun onCreateSpaceClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(Command.CreateNewSpace)
+            commands.emit(VaultCommand.CreateNewSpace)
         }
     }
 
     fun onCreateChatClicked() {
-        viewModelScope.launch { 
+        viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(Command.CreateChat) 
+            commands.emit(VaultCommand.CreateChat)
         }
     }
 
@@ -222,7 +299,7 @@ class VaultViewModel(
             when (deeplink) {
                 is DeepLinkResolver.Action.Import.Experience -> {
                     commands.emit(
-                        Command.Deeplink.GalleryInstallation(
+                        VaultCommand.Deeplink.GalleryInstallation(
                             deepLinkType = deeplink.type,
                             deepLinkSource = deeplink.source
                         )
@@ -231,25 +308,27 @@ class VaultViewModel(
 
                 is DeepLinkResolver.Action.Invite -> {
                     delay(1000)
-                    commands.emit(Command.Deeplink.Invite(deeplink.link))
+                    commands.emit(VaultCommand.Deeplink.Invite(deeplink.link))
                 }
+
                 is DeepLinkResolver.Action.Unknown -> {
                     if (BuildConfig.DEBUG) {
-                        sendToast("Could not resolve deeplink")
+                        //sendToast("Could not resolve deeplink")
                     }
                 }
+
                 is DeepLinkResolver.Action.DeepLinkToObject -> {
                     onDeepLinkToObjectAwait(
                         obj = deeplink.obj,
                         space = deeplink.space,
                         switchSpaceIfObjectFound = true
                     ).collect { result ->
-                        when(result) {
+                        when (result) {
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
                                 if (link != null) {
                                     commands.emit(
-                                        Command.Deeplink.Invite(
+                                        VaultCommand.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(
                                                 contentId = link.cid,
                                                 encryptionKey = link.key
@@ -257,22 +336,25 @@ class VaultViewModel(
                                         )
                                     )
                                 } else {
-                                    commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                    commands.emit(VaultCommand.Deeplink.DeepLinkToObjectNotWorking)
                                 }
                             }
+
                             is DeepLinkToObjectDelegate.Result.Success -> {
                                 proceedWithNavigation(result.obj.navigation())
                             }
                         }
                     }
                 }
+
                 is DeepLinkResolver.Action.DeepLinkToMembership -> {
                     commands.emit(
-                        Command.Deeplink.MembershipScreen(
+                        VaultCommand.Deeplink.MembershipScreen(
                             tierId = deeplink.tierId
                         )
                     )
                 }
+
                 else -> {
                     Timber.d("No deep link")
                 }
@@ -288,7 +370,7 @@ class VaultViewModel(
             delay(1000) // Simulate some delay
             pendingIntentStore.getDeepLinkInvite()?.let { deeplink ->
                 Timber.d("Processing pending deeplink: $deeplink")
-                commands.emit(Command.Deeplink.Invite(deeplink))
+                commands.emit(VaultCommand.Deeplink.Invite(deeplink))
                 pendingIntentStore.clearDeepLinkInvite()
             }
         }
@@ -306,16 +388,19 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                if (spaceUxType == SpaceUxType.CHAT && chat != null && ChatConfig.isChatAllowed(space = targetSpace)) {
+                if (spaceUxType == SpaceUxType.CHAT && chat != null && ChatConfig.isChatAllowed(
+                        space = targetSpace
+                    )
+                ) {
                     commands.emit(
-                        Command.EnterSpaceLevelChat(
+                        VaultCommand.EnterSpaceLevelChat(
                             space = Space(targetSpace),
                             chat = chat
                         )
                     )
                 } else {
                     commands.emit(
-                        Command.EnterSpaceHomeScreen(
+                        VaultCommand.EnterSpaceHomeScreen(
                             space = Space(targetSpace)
                         )
                     )
@@ -325,135 +410,67 @@ class VaultViewModel(
     }
 
     private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
-        when(navigation) {
+        val nav = when (navigation) {
             is OpenObjectNavigation.OpenDataView -> {
-                navigate(
-                    OpenSet(
-                        ctx = navigation.target,
-                        space = navigation.space,
-                        view = null
-                    )
+                OpenSet(
+                    ctx = navigation.target,
+                    space = navigation.space,
+                    view = null
                 )
             }
+
             is OpenObjectNavigation.OpenEditor -> {
-                navigate(
-                    OpenObject(
-                        ctx = navigation.target,
-                        space = navigation.space
-                    )
+
+                OpenObject(
+                    ctx = navigation.target,
+                    space = navigation.space
                 )
+
             }
+
             is OpenObjectNavigation.OpenChat -> {
-                navigate(
-                    OpenChat(
-                        ctx = navigation.target,
-                        space = navigation.space
-                    )
+                OpenChat(
+                    ctx = navigation.target,
+                    space = navigation.space
                 )
+
             }
+
             is OpenObjectNavigation.UnexpectedLayoutError -> {
-                sendToast("Unexpected layout: ${navigation.layout}")
+                VaultNavigation.ShowError("Unexpected layout: ${navigation.layout}")
             }
+
             OpenObjectNavigation.NonValidObject -> {
-                sendToast("Object id is missing")
+                VaultNavigation.ShowError("Object id is missing")
             }
+
             is OpenObjectNavigation.OpenDateObject -> {
-                navigate(
-                    OpenDateObject(
-                        ctx = navigation.target,
-                        space = navigation.space
-                    )
+                OpenDateObject(
+                    ctx = navigation.target,
+                    space = navigation.space
                 )
+
             }
+
             is OpenObjectNavigation.OpenParticipant -> {
-                navigate(
-                    OpenParticipant(
-                        ctx = navigation.target,
-                        space = navigation.space
-                    )
+                OpenParticipant(
+                    ctx = navigation.target,
+                    space = navigation.space
                 )
+
             }
+
             is OpenObjectNavigation.OpenType -> {
-                navigate(
-                    OpenType(
-                        target = navigation.target,
-                        space = navigation.space
-                    )
+                OpenType(
+                    target = navigation.target,
+                    space = navigation.space
                 )
             }
         }
-    }
-
-    class Factory @Inject constructor(
-        private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        private val getSpaceWallpapers: GetSpaceWallpapers,
-        private val urlBuilder: UrlBuilder,
-        private val spaceManager: SpaceManager,
-        private val saveCurrentSpace: SaveCurrentSpace,
-        private val setVaultSpaceOrder: SetVaultSpaceOrder,
-        private val observeVaultSettings: ObserveVaultSettings,
-        private val analytics: Analytics,
-        private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-        private val appActionManager: AppActionManager,
-        private val spaceInviteResolver: SpaceInviteResolver,
-        private val profileContainer: ProfileSubscriptionManager,
-        private val chatPreviewContainer: ChatPreviewContainer,
-        private val pendingIntentStore: PendingIntentStore
-    ) : ViewModelProvider.Factory {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(
-            modelClass: Class<T>
-        ) = VaultViewModel(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            getSpaceWallpapers = getSpaceWallpapers,
-            urlBuilder = urlBuilder,
-            spaceManager = spaceManager,
-            saveCurrentSpace = saveCurrentSpace,
-            setVaultSpaceOrder = setVaultSpaceOrder,
-            observeVaultSettings = observeVaultSettings,
-            analytics = analytics,
-            deepLinkToObjectDelegate = deepLinkToObjectDelegate,
-            appActionManager = appActionManager,
-            spaceInviteResolver = spaceInviteResolver,
-            profileContainer = profileContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            pendingIntentStore = pendingIntentStore
-        ) as T
-    }
-
-    data class VaultSpaceView(
-        val space: ObjectWrapper.SpaceView,
-        val icon: SpaceIconView,
-        val wallpaper: Wallpaper = Wallpaper.Default,
-        val unreadMessageCount: Int = 0,
-        val unreadMentionCount: Int = 0,
-    )
-
-    sealed class Command {
-        data class EnterSpaceHomeScreen(val space: Space): Command()
-        data class EnterSpaceLevelChat(val space: Space, val chat: Id): Command()
-        data object CreateNewSpace: Command()
-        data object CreateChat: Command()
-        data object OpenProfileSettings: Command()
-
-        sealed class Deeplink : Command() {
-            data object DeepLinkToObjectNotWorking: Deeplink()
-            data class Invite(val link: String) : Deeplink()
-            data class GalleryInstallation(
-                val deepLinkType: String,
-                val deepLinkSource: String
-            ) : Deeplink()
-            data class MembershipScreen(val tierId: String?) : Deeplink()
+        viewModelScope.launch {
+            Timber.d("Proceeding with navigation: $nav")
+            navigations.emit(nav)
         }
-    }
-
-    sealed class Navigation {
-        data class OpenChat(val ctx: Id, val space: Id) : Navigation()
-        data class OpenObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
-        data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
-        data class OpenParticipant(val ctx: Id, val space: Id) : Navigation()
-        data class OpenType(val target: Id, val space: Id) : Navigation()
     }
 
     companion object {

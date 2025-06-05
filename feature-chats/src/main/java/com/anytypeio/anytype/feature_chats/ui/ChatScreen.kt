@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -398,6 +399,8 @@ fun ChatScreen(
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
+    val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
+
     // Applying view model intents
     LaunchedEffect(intent) {
         when (intent) {
@@ -412,7 +415,11 @@ fun ChatScreen(
                     if (intent.smooth) {
                         lazyListState.animateScrollToItem(index)
                     } else {
-                        lazyListState.scrollToItem(index)
+                        if (intent.startOfUnreadMessageSection) {
+                            lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+                        } else {
+                            lazyListState.scrollToItem(index)
+                        }
                     }
                     awaitFrame()
                 } else {
@@ -588,10 +595,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.mentions.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -633,10 +642,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.messages.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -695,6 +706,7 @@ fun ChatScreen(
                                                             end = span.end + lengthDifference
                                                         )
                                                     }
+
                                                     is ChatBoxSpan.Markup -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,
@@ -792,6 +804,7 @@ fun ChatScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Messages(
     modifier: Modifier = Modifier,
@@ -813,6 +826,7 @@ fun Messages(
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
+
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -906,6 +920,25 @@ fun Messages(
                 if (idx == messages.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))
                 }
+
+                if (msg.startOfUnreadMessageSection) {
+                    Box(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillParentMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.chat_new_messages_section_text),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            style = Caption1Medium,
+                            color = colorResource(R.color.transparent_active),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
             } else if (msg is ChatView.DateSection) {
                 Text(
                     text = msg.formattedDate,

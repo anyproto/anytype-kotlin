@@ -187,7 +187,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
+            Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.firstUnreadMessageId}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
@@ -368,7 +368,8 @@ class ChatViewModel @Inject constructor(
                             )
                         } else {
                             ChatView.Message.Avatar.Initials(member?.name.orEmpty())
-                        }
+                        },
+                        startOfUnreadMessageSection = result.firstUnreadMessageId == msg.id
                     )
                     val currDate = ChatView.DateSection(
                         formattedDate = dateFormatter.format(msg.createdAt * 1000),

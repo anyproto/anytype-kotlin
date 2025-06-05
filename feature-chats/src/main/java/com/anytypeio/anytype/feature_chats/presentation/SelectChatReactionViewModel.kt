@@ -79,7 +79,7 @@ class SelectChatReactionViewModel @Inject constructor(
 
     val views = combine(default, recentlyUsed, queries) { default, recentlyUsed, (query, results) ->
         buildList {
-            if (recentlyUsed.isNotEmpty()) {
+            if (query.isEmpty() && recentlyUsed.isNotEmpty()) {
                 add(ReactionPickerView.RecentUsedSection)
                 addAll(
                     recentlyUsed.map { unicode ->

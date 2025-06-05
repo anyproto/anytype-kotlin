@@ -105,6 +105,7 @@ class ChatViewModel @Inject constructor(
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
+    val canCreateInviteLink = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
@@ -126,6 +127,8 @@ class ChatViewModel @Inject constructor(
                     } else {
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
+                    // Update invite link creation permission (only owners can create invite links)
+                    canCreateInviteLink.value = permission?.isOwner() == true
                 }
         }
 
@@ -140,7 +143,7 @@ class ChatViewModel @Inject constructor(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
                         ),
-                        showIcon = false
+                        showIcon = true
                     )
                 }.collect {
                     header.value = it

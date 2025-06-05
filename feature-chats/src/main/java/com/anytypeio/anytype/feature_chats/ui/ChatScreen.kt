@@ -75,6 +75,9 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -233,6 +236,8 @@ fun ChatScreenWrapper(
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
+            onShareInviteClicked = { /* TODO: implement share invite */ },
+            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
                 .value is ChatBoxMode.ReadOnly
@@ -381,6 +386,8 @@ fun ChatScreen(
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
+    onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 
@@ -558,7 +565,9 @@ fun ChatScreen(
                 onMemberIconClicked = onMemberIconClicked,
                 onMentionClicked = onMentionClicked,
                 onScrollToReplyClicked = onScrollToReplyClicked,
-                isReadOnly = isReadOnly
+                isReadOnly = isReadOnly,
+                onShareInviteClicked = onShareInviteClicked,
+                canCreateInviteLink = canCreateInviteLink
             )
 
             GoToMentionButton(
@@ -809,6 +818,8 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
@@ -927,6 +938,8 @@ fun Messages(
                     Column(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
+                            .padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AlertIcon(
                             icon = AlertConfig.Icon(
@@ -935,18 +948,30 @@ fun Messages(
                             )
                         )
                         Text(
-                            text = stringResource(R.string.chat_empty_state_message),
-                            style = Caption1Regular,
+                            text = stringResource(R.string.chat_empty_state_title),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 10.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_subtitle),
+                            style = BodyRegular,
                             color = colorResource(id = R.color.text_secondary),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    top = 12.dp
-                                )
                         )
+                        if (canCreateInviteLink) {
+                            ButtonSecondary(
+                                text = stringResource(R.string.chat_empty_state_share_invite_button),
+                                onClick = { onShareInviteClicked() },
+                                size = ButtonSize.SmallSecondary,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
                     }
                 }
             }

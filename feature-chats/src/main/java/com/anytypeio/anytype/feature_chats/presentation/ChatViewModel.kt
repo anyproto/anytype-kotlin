@@ -122,6 +122,7 @@ class ChatViewModel @Inject constructor(
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val canCreateInviteLink = MutableStateFlow(false)
     val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
+    val isGeneratingInviteLink = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -1064,6 +1065,7 @@ class ChatViewModel @Inject constructor(
 
     fun onGenerateInviteLinkClicked() {
         viewModelScope.launch {
+            isGeneratingInviteLink.value = true
             proceedWithGeneratingInviteLink()
         }
     }
@@ -1085,6 +1087,7 @@ class ChatViewModel @Inject constructor(
                 },
                 onFailure = { error ->
                     Timber.e(error, "Error while making space shareable")
+                    isGeneratingInviteLink.value = false
                     inviteModalState.value = InviteModalState.Hidden
                     // TODO: Handle error properly
                 }
@@ -1110,10 +1113,12 @@ class ChatViewModel @Inject constructor(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
+                isGeneratingInviteLink.value = false
                 inviteModalState.value = InviteModalState.ShowShareCard(inviteLink.scheme)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
+                isGeneratingInviteLink.value = false
                 inviteModalState.value = InviteModalState.Hidden
                 // TODO: Handle error properly
             }

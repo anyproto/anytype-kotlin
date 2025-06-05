@@ -103,6 +103,7 @@ class ChatFragment : BaseComposeFragment() {
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
                     val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
+                    val isGeneratingInviteLink = vm.isGeneratingInviteLink.collectAsStateWithLifecycle().value
 
                     Column(
                         modifier = Modifier
@@ -244,7 +245,8 @@ class ChatFragment : BaseComposeFragment() {
                                         ),
                                     onGenerateInviteLinkClicked = {
                                         vm.onGenerateInviteLinkClicked()
-                                    }
+                                    },
+                                    isLoading = isGeneratingInviteLink
                                 )
                             }
                         }

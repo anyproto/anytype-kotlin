@@ -301,7 +301,7 @@ class ChatViewModel @Inject constructor(
                                     val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
                                         target = attachment.target,
-                                        url = urlBuilder.medium(path = attachment.target),
+                                        url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
                                         ext = wrapper?.fileExt.orEmpty()
                                     )

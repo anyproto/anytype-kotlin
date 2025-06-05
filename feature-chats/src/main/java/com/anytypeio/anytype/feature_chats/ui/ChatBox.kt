@@ -270,7 +270,7 @@ fun ChatBox(
                                     onClick = {
                                         showDropdownMenu = false
                                         uploadMediaLauncher.launch(
-                                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                                         )
                                     }
                                 )

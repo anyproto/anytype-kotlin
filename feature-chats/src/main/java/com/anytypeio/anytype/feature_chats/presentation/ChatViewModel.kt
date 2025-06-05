@@ -545,14 +545,13 @@ class ChatViewModel @Inject constructor(
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri,
-                                    type = Block.Content.File.Type.IMAGE
+                                    path = attachment.uri
                                 )
                             ).onSuccess { file ->
                                 add(
                                     Chat.Message.Attachment(
                                         target = file.id,
-                                        type = Chat.Message.Attachment.Type.Image
+                                        type = Chat.Message.Attachment.Type.File
                                     )
                                 )
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {

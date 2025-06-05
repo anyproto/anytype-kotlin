@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -51,6 +54,7 @@ fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
+    onPlayVideoAttachmentClicked: (ChatView.Message.Attachment.Video) -> Unit,
     isUserAuthor: Boolean
 ) {
     val context = LocalContext.current
@@ -79,6 +83,19 @@ fun BubbleAttachments(
                             color = colorResource(R.color.shape_tertiary),
                             shape = RoundedCornerShape(12.dp)
                         )
+                        .combinedClickable(
+                            onClick = {
+//                                onPlayVideoAttachmentClicked(attachment)
+                                val intent = Intent(Intent.ACTION_VIEW).apply {
+                                    setDataAndType(Uri.parse(attachment.url), "video/*")
+                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+                                }
+                                context.startActivity(intent)
+                            },
+                            onLongClick = {
+                                onAttachmentLongClicked(attachment)
+                            }
+                        )
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier
@@ -99,6 +116,12 @@ fun BubbleAttachments(
                             .build(),
                         contentDescription = null,
                         contentScale = ContentScale.Crop
+                    )
+
+                    Image(
+                        modifier = Modifier.align(Alignment.Center),
+                        painter = painterResource(id = R.drawable.ic_chat_attachment_play),
+                        contentDescription = "Play button"
                     )
                 }
             }

@@ -317,6 +317,14 @@ class ChatViewModel @Inject constructor(
                                                 ext = wrapper.fileExt.orEmpty()
                                             )
                                         }
+                                        ObjectType.Layout.VIDEO -> {
+                                            ChatView.Message.Attachment.Video(
+                                                target = attachment.target,
+                                                url = urlBuilder.large(path = attachment.target),
+                                                name = wrapper.name.orEmpty(),
+                                                ext = wrapper.fileExt.orEmpty()
+                                            )
+                                        }
                                         ObjectType.Layout.BOOKMARK -> {
                                             ChatView.Message.Attachment.Bookmark(
                                                 id = wrapper.id,
@@ -736,6 +744,9 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.Attachment.Video -> {
+                            // TODO
+                        }
                         is ChatView.Message.Attachment.Bookmark -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Link(
@@ -839,6 +850,13 @@ class ChatViewModel @Inject constructor(
                                     attachment.name
                                 }
                             }
+                            is ChatView.Message.Attachment.Video -> {
+                                if (attachment.ext.isNotEmpty()) {
+                                    "${attachment.name}.${attachment.ext}"
+                                } else {
+                                    attachment.name
+                                }
+                            }
                             is ChatView.Message.Attachment.Gallery -> {
                                 val first = attachment.images.firstOrNull()
                                 if (first != null) {
@@ -893,8 +911,11 @@ class ChatViewModel @Inject constructor(
                         )
                     )
                 }
-                is ChatView.Message.Attachment.Gallery -> {
+                is ChatView.Message.Attachment.Video -> {
                     // TODO
+                }
+                is ChatView.Message.Attachment.Gallery -> {
+                    // Do nothing.
                 }
                 is ChatView.Message.Attachment.Bookmark -> {
                     commands.emit(ViewModelCommand.Browse(attachment.url))

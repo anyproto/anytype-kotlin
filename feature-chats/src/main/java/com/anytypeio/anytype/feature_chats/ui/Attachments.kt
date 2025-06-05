@@ -22,11 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.video.videoFrameMillis
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -48,6 +53,7 @@ fun BubbleAttachments(
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
+    val context = LocalContext.current
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
             is ChatView.Message.Attachment.Gallery -> {
@@ -62,6 +68,38 @@ fun BubbleAttachments(
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                     index += rowSize
+                }
+            }
+            is ChatView.Message.Attachment.Video -> {
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .size(292.dp)
+                        .background(
+                            color = colorResource(R.color.shape_tertiary),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                            .size(48.dp),
+                        color = colorResource(R.color.glyph_active),
+                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
+                    )
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(292.dp)
+                            .clip(RoundedCornerShape(12.dp)),
+                        model = ImageRequest.Builder(context)
+                            .data(attachment.url)
+                            .videoFrameMillis(0)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop
+                    )
                 }
             }
             is ChatView.Message.Attachment.Image -> {

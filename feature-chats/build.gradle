@@ -40,6 +40,7 @@ dependencies {
     implementation libs.composeMaterial
 
     implementation libs.coilCompose
+    implementation libs.coilVideo
     annotationProcessor libs.glideCompiler
     implementation libs.glideCompose
 

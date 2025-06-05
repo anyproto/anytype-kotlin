@@ -91,6 +91,13 @@ sealed interface ChatView {
                 val ext: String
             ): Attachment()
 
+            data class Video(
+                val target: Id,
+                val url: String,
+                val name: String,
+                val ext: String
+            ): Attachment()
+
             data class Link(
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,

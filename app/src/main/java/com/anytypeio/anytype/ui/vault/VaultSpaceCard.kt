@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.vault
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,12 +31,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -270,8 +269,7 @@ private fun BoxScope.ContentChat(
 }
 
 @Composable
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
+@DefaultPreviews
 fun VaultSpaceCardPreview() {
     VaultSpaceCard(
         title = "B&O Museum",
@@ -282,11 +280,7 @@ fun VaultSpaceCardPreview() {
 }
 
 @Composable
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Chat Space Card Preview"
-)
+@DefaultPreviews
 fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
@@ -321,11 +315,7 @@ fun ChatWithMentionAndMessage() {
 }
 
 @Composable
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Chat Space Card Preview"
-)
+@DefaultPreviews
 fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
@@ -359,11 +349,7 @@ fun ChatWithMention() {
 }
 
 @Composable
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Chat Space Card Preview"
-)
+@DefaultPreviews
 fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",

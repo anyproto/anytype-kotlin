@@ -237,6 +237,7 @@ fun ChatScreenWrapper(
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
             onShareInviteClicked = { /* TODO: implement share invite */ },
+            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
                 .value is ChatBoxMode.ReadOnly
@@ -386,6 +387,7 @@ fun ChatScreen(
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
     onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 
@@ -564,7 +566,8 @@ fun ChatScreen(
                 onMentionClicked = onMentionClicked,
                 onScrollToReplyClicked = onScrollToReplyClicked,
                 isReadOnly = isReadOnly,
-                onShareInviteClicked = onShareInviteClicked
+                onShareInviteClicked = onShareInviteClicked,
+                canCreateInviteLink = canCreateInviteLink
             )
 
             GoToMentionButton(
@@ -816,6 +819,7 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
@@ -960,12 +964,14 @@ fun Messages(
                             modifier = Modifier
                                 .fillMaxWidth()
                         )
-                        ButtonSecondary(
-                            text = stringResource(R.string.chat_empty_state_share_invite_button),
-                            onClick = { onShareInviteClicked() },
-                            size = ButtonSize.SmallSecondary,
-                            modifier = Modifier.padding(top = 10.dp)
-                        )
+                        if (canCreateInviteLink) {
+                            ButtonSecondary(
+                                text = stringResource(R.string.chat_empty_state_share_invite_button),
+                                onClick = { onShareInviteClicked() },
+                                size = ButtonSize.SmallSecondary,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
                     }
                 }
             }

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +27,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel.ReactionPickerView
@@ -35,9 +38,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 @Composable
 fun SelectChatReactionScreen(
     views: List<ReactionPickerView> = emptyList(),
-    onEmojiClicked: (String) -> Unit
+    onEmojiClicked: (String) -> Unit,
+    onQueryChanged: (String) -> Unit
 ) {
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -45,14 +49,21 @@ fun SelectChatReactionScreen(
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
-                .align(Alignment.TopCenter)
+                .align(Alignment.CenterHorizontally)
         )
+        Spacer(modifier = Modifier.height(6.dp))
+        SearchField(
+            onQueryChanged = onQueryChanged,
+            onFocused = {
+                // Do nothing
+            }
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(6),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(
-                    top = 16.dp,
                     start = 16.dp,
                     end = 16.dp
                 ),
@@ -149,6 +160,7 @@ fun PickerPreview() {
                 )
             )
         },
-        onEmojiClicked = {}
+        onEmojiClicked = {},
+        onQueryChanged = {}
     )
 }

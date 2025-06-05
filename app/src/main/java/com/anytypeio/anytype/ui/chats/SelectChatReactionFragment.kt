@@ -20,7 +20,6 @@ import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewMo
 import com.anytypeio.anytype.feature_chats.ui.SelectChatReactionScreen
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
-import kotlin.getValue
 
 class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
 
@@ -44,7 +43,8 @@ class SelectChatReactionFragment : BaseBottomSheetComposeFragment() {
             ) {
                 SelectChatReactionScreen(
                     views = vm.views.collectAsStateWithLifecycle(initialValue = emptyList()).value,
-                    onEmojiClicked = vm::onEmojiClicked
+                    onEmojiClicked = vm::onEmojiClicked,
+                    onQueryChanged = vm::onQueryChanged
                 )
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->

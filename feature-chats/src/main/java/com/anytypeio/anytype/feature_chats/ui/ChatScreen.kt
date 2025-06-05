@@ -114,7 +114,6 @@ fun ChatScreenWrapper(
     onViewChatReaction: (Id, String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    var showReactionSheet by remember { mutableStateOf(false) }
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Box(
@@ -260,21 +259,6 @@ fun ChatScreenWrapper(
                     }
                 }
             }
-        }
-    }
-    if (showReactionSheet) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                showReactionSheet = false
-            },
-            sheetState = sheetState,
-            containerColor = colorResource(id = R.color.background_secondary),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            dragHandle = null
-        ) {
-            SelectChatReactionScreen(
-                onEmojiClicked = {}
-            )
         }
     }
 

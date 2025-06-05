@@ -130,7 +130,7 @@ class ChatContainer @Inject constructor(
 
         var intent: Intent = Intent.None
 
-        var firstUnreadMessageId: Id? = null
+        var initialUnreadSectionMessageId: Id? = null
 
         val initial = buildList {
             if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
@@ -146,7 +146,7 @@ class ChatContainer @Inject constructor(
                             smooth = false,
                             startOfUnreadMessageSection = true
                         )
-                        firstUnreadMessageId = target.id
+                        initialUnreadSectionMessageId = target.id
                     }
                 }
                 addAll(aroundUnread)
@@ -168,7 +168,7 @@ class ChatContainer @Inject constructor(
                     messages = initial,
                     state = initialState,
                     intent = intent,
-                    initialUnreadSectionMessageId = firstUnreadMessageId
+                    initialUnreadSectionMessageId = initialUnreadSectionMessageId
                 )
             ) { state, transform ->
                 when (transform) {
@@ -231,7 +231,7 @@ class ChatContainer @Inject constructor(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
                                             state = state.state,
-                                            initialUnreadSectionMessageId = firstUnreadMessageId
+                                            initialUnreadSectionMessageId = initialUnreadSectionMessageId
                                         )
                                     } else {
                                         val messages = try {
@@ -245,7 +245,7 @@ class ChatContainer @Inject constructor(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
                                             state = state.state,
-                                            initialUnreadSectionMessageId = firstUnreadMessageId
+                                            initialUnreadSectionMessageId = initialUnreadSectionMessageId
                                         )
                                     }
                                 } else {

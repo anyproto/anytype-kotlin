@@ -12,6 +12,8 @@ object ChatConfig {
     const val MAX_MESSAGE_CHARACTER_LIMIT = 2000
     const val MAX_MESSAGE_CHARACTER_OFFSET_LIMIT = 1950
 
+    const val GROUPING_DATE_INTERVAL_IN_SECONDS = 60
+
     /**
      * Spaces for beta-testing space-level chats
      */

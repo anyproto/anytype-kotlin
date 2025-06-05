@@ -860,6 +860,7 @@ fun Messages(
                         timestamp = msg.timestamp,
                         attachments = msg.attachments,
                         isUserAuthor = msg.isUserAuthor,
+                        shouldHideUsername = msg.shouldHideUsername,
                         isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,
                         onReacted = { emoji ->

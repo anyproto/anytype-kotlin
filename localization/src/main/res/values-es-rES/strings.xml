@@ -1594,8 +1594,8 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
-    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_title">Este chat está vacío.</string>
+    <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
     <string name="chat_empty_state_share_invite_button">Compartir enlace de invitación</string>
     <string name="write_a_message">Escribir mensaje…</string>
     <string name="date_layout_mentioned_in">Menciones</string>
@@ -1792,5 +1792,5 @@ En concreto,
     <string name="vault_create_space">Espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
-    <string name="chat_new_messages_section_text">New messages</string>
+    <string name="chat_new_messages_section_text">Mensajes nuevos</string>
 </resources>

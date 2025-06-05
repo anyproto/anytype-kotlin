@@ -1,14 +1,11 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,22 +15,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -46,6 +39,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 fun BubbleAttachments(
@@ -266,21 +260,27 @@ fun Bookmark(
             text = url,
             modifier = Modifier.padding(horizontal = 12.dp),
             style = Relations3,
-            color = colorResource(R.color.transparent_active)
+            color = colorResource(R.color.transparent_active),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = title,
             modifier = Modifier.padding(horizontal = 12.dp),
             style = Title2,
-            color = colorResource(R.color.text_primary)
+            color = colorResource(R.color.text_primary),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = description,
             modifier = Modifier.padding(horizontal = 12.dp),
             style = Relations3,
-            color = colorResource(R.color.transparent_active)
+            color = colorResource(R.color.transparent_active),
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(8.dp))
     }

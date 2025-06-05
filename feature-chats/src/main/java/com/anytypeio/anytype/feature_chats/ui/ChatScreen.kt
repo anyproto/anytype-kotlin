@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,6 +76,9 @@ import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -232,6 +236,8 @@ fun ChatScreenWrapper(
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
+            onShareInviteClicked = { /* TODO: implement share invite */ },
+            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
                 .value is ChatBoxMode.ReadOnly
@@ -365,6 +371,8 @@ fun ChatScreen(
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
+    onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 
@@ -382,6 +390,8 @@ fun ChatScreen(
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
+    val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
+
     // Applying view model intents
     LaunchedEffect(intent) {
         when (intent) {
@@ -396,7 +406,11 @@ fun ChatScreen(
                     if (intent.smooth) {
                         lazyListState.animateScrollToItem(index)
                     } else {
-                        lazyListState.scrollToItem(index)
+                        if (intent.startOfUnreadMessageSection) {
+                            lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+                        } else {
+                            lazyListState.scrollToItem(index)
+                        }
                     }
                     awaitFrame()
                 } else {
@@ -542,7 +556,9 @@ fun ChatScreen(
                 onMemberIconClicked = onMemberIconClicked,
                 onMentionClicked = onMentionClicked,
                 onScrollToReplyClicked = onScrollToReplyClicked,
-                isReadOnly = isReadOnly
+                isReadOnly = isReadOnly,
+                onShareInviteClicked = onShareInviteClicked,
+                canCreateInviteLink = canCreateInviteLink
             )
 
             GoToMentionButton(
@@ -572,10 +588,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.mentions.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -617,10 +635,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.messages.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -679,6 +699,7 @@ fun ChatScreen(
                                                             end = span.end + lengthDifference
                                                         )
                                                     }
+
                                                     is ChatBoxSpan.Markup -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,
@@ -776,6 +797,7 @@ fun ChatScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Messages(
     modifier: Modifier = Modifier,
@@ -793,10 +815,13 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    onShareInviteClicked: () -> Unit,
+    canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
+
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -890,6 +915,25 @@ fun Messages(
                 if (idx == messages.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))
                 }
+
+                if (msg.startOfUnreadMessageSection) {
+                    Box(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillParentMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.chat_new_messages_section_text),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            style = Caption1Medium,
+                            color = colorResource(R.color.transparent_active),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
             } else if (msg is ChatView.DateSection) {
                 Text(
                     text = msg.formattedDate,
@@ -911,6 +955,8 @@ fun Messages(
                     Column(
                         modifier = Modifier
                             .align(Alignment.CenterStart)
+                            .padding(horizontal = 20.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         AlertIcon(
                             icon = AlertConfig.Icon(
@@ -919,18 +965,30 @@ fun Messages(
                             )
                         )
                         Text(
-                            text = stringResource(R.string.chat_empty_state_message),
-                            style = Caption1Regular,
+                            text = stringResource(R.string.chat_empty_state_title),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 10.dp)
+                        )
+                        Text(
+                            text = stringResource(R.string.chat_empty_state_subtitle),
+                            style = BodyRegular,
                             color = colorResource(id = R.color.text_secondary),
                             textAlign = TextAlign.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(
-                                    start = 20.dp,
-                                    end = 20.dp,
-                                    top = 12.dp
-                                )
                         )
+                        if (canCreateInviteLink) {
+                            ButtonSecondary(
+                                text = stringResource(R.string.chat_empty_state_share_invite_button),
+                                onClick = { onShareInviteClicked() },
+                                size = ButtonSize.SmallSecondary,
+                                modifier = Modifier.padding(top = 10.dp)
+                            )
+                        }
                     }
                 }
             }

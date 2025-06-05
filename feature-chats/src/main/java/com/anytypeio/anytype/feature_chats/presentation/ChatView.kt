@@ -31,7 +31,8 @@ sealed interface ChatView {
         val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
         val avatar: Avatar = Avatar.Initials(),
-        val reply: Reply? = null
+        val reply: Reply? = null,
+        val startOfUnreadMessageSection: Boolean = false
     ) : ChatView {
 
         val isMaxReactionCountReached: Boolean =

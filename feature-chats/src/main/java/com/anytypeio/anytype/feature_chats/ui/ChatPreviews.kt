@@ -88,7 +88,8 @@ fun ChatPreview() {
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
         onMentionClicked = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        onShareInviteClicked = {}
     )
 }
 
@@ -138,7 +139,8 @@ fun ChatPreview2() {
         onViewChatReaction = { a, b -> },
         onMemberIconClicked = {},
         onMentionClicked = {},
-        onScrollToReplyClicked = {}
+        onScrollToReplyClicked = {},
+        onShareInviteClicked = {}
     )
 }
 
@@ -202,7 +204,8 @@ fun ChatScreenPreview() {
         onScrollToBottomClicked = {},
         onVisibleRangeChanged = { _, _ -> },
         onUrlInserted = {},
-        onGoToMentionClicked = {}
+        onGoToMentionClicked = {},
+        onShareInviteClicked = {}
     )
 }
 

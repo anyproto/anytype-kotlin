@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -56,6 +57,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -581,7 +583,10 @@ private fun ChatBoxUserInput(
                 textStyle = ContentMiscChat.copy(color = colorResource(R.color.text_tertiary))
             )
         },
-        visualTransformation = AnnotatedTextTransformation(spans)
+        visualTransformation = AnnotatedTextTransformation(spans),
+        keyboardOptions = KeyboardOptions(
+            capitalization = KeyboardCapitalization.Sentences
+        )
     )
 }
 

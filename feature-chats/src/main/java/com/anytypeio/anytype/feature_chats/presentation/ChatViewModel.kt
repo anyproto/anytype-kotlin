@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
@@ -106,6 +107,7 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val canCreateInviteLink = MutableStateFlow(false)
+    val shouldShowInviteModal = MutableStateFlow(false)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
@@ -148,6 +150,26 @@ class ChatViewModel @Inject constructor(
                 }.collect {
                     header.value = it
                 }
+        }
+
+        // Check if we should show invite modal for newly created Chat spaces
+        viewModelScope.launch {
+            combine(
+                spaceViews.observe(vmParams.space),
+                canCreateInviteLink,
+                uiState
+            ) { spaceView, canCreateInvite, chatState ->
+                // Show invite modal if:
+                // 1. It's a Chat space (spaceUxType == SpaceUxType.CHAT)
+                // 2. User can create invite links (is owner)
+                // 3. Chat is empty (no messages) - indicates it's newly created
+                spaceView.spaceUxType == SpaceUxType.CHAT &&
+                canCreateInvite && 
+                chatState.messages.isEmpty()
+            }.collect { shouldShow ->
+                Timber.d("DROID-3626 Should show invite modal: $shouldShow")
+                shouldShowInviteModal.value = shouldShow
+            }
         }
 
         viewModelScope.launch {
@@ -1015,6 +1037,20 @@ class ChatViewModel @Inject constructor(
                 Timber.e("Space member not found in space-level chat")
             }
         }
+    }
+
+    fun onInviteModalDismissed() {
+        shouldShowInviteModal.value = false
+    }
+
+    fun onGenerateInviteLink() {
+        // TODO: Implement actual invite link generation logic
+        // For now, just dismiss the modal
+        shouldShowInviteModal.value = false
+    }
+
+    fun onShareInviteLinkClicked() {
+        shouldShowInviteModal.value = true
     }
 
     fun onMentionClicked(member: Id) {

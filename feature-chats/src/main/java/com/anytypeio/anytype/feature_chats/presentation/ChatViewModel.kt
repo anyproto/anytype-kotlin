@@ -533,6 +533,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Video -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.File
+                                )
+                            )
+                        }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
                             chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                 set(
@@ -744,7 +752,12 @@ class ChatViewModel @Inject constructor(
                             )
                         }
                         is ChatView.Message.Attachment.Video -> {
-                            // TODO
+                            add(
+                                ChatView.Message.ChatBoxAttachment.Existing.Video(
+                                    target = a.target,
+                                    url = a.url
+                                )
+                            )
                         }
                         is ChatView.Message.Attachment.Bookmark -> {
                             add(

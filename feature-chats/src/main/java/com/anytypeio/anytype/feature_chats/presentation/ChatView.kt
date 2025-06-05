@@ -134,6 +134,11 @@ sealed interface ChatView {
                     val url: Url
                 ) : Existing()
 
+                data class Video(
+                    val target: Id,
+                    val url: Url
+                ) : Existing()
+
                 data class Link(
                     val target: Id,
                     val name: String,

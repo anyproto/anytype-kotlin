@@ -54,7 +54,6 @@ fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
-    onPlayVideoAttachmentClicked: (ChatView.Message.Attachment.Video) -> Unit,
     isUserAuthor: Boolean
 ) {
     val context = LocalContext.current

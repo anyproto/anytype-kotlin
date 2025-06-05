@@ -191,9 +191,6 @@ fun Bubble(
                 onAttachmentLongClicked = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showDropdownMenu = true
-                },
-                onPlayVideoAttachmentClicked = {
-
                 }
             )
             if (content.msg.isNotEmpty()) {

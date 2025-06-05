@@ -168,7 +168,7 @@ class ChatContainer @Inject constructor(
                     messages = initial,
                     state = initialState,
                     intent = intent,
-                    firstUnreadMessageId = firstUnreadMessageId
+                    initialUnreadSectionMessageId = firstUnreadMessageId
                 )
             ) { state, transform ->
                 when (transform) {
@@ -184,7 +184,7 @@ class ChatContainer @Inject constructor(
                             messages = loadTheNextPage(state.messages, chat),
                             intent = Intent.None,
                             state = state.state,
-                            firstUnreadMessageId = null
+                            initialUnreadSectionMessageId = null
                         )
                     }
                     is Transformation.Commands.LoadAround -> {
@@ -231,7 +231,7 @@ class ChatContainer @Inject constructor(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
                                             state = state.state,
-                                            firstUnreadMessageId = firstUnreadMessageId
+                                            initialUnreadSectionMessageId = firstUnreadMessageId
                                         )
                                     } else {
                                         val messages = try {
@@ -245,7 +245,7 @@ class ChatContainer @Inject constructor(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
                                             state = state.state,
-                                            firstUnreadMessageId = firstUnreadMessageId
+                                            initialUnreadSectionMessageId = firstUnreadMessageId
                                         )
                                     }
                                 } else {
@@ -260,7 +260,7 @@ class ChatContainer @Inject constructor(
                                         messages = messages,
                                         intent = Intent.ScrollToBottom,
                                         state = state.state,
-                                        firstUnreadMessageId = null
+                                        initialUnreadSectionMessageId = null
                                     )
                                 }
                             } else {
@@ -285,7 +285,7 @@ class ChatContainer @Inject constructor(
                                         messages = messages,
                                         intent = Intent.ScrollToBottom,
                                         state = state.state,
-                                        firstUnreadMessageId = null
+                                        initialUnreadSectionMessageId = null
                                     )
                                 }
                             }
@@ -594,7 +594,7 @@ class ChatContainer @Inject constructor(
         return ChatStreamState(
             messages = messageList,
             state = countersState,
-            firstUnreadMessageId = firstUnreadMessageId
+            initialUnreadSectionMessageId = initialUnreadSectionMessageId
         )
     }
 
@@ -716,13 +716,13 @@ class ChatContainer @Inject constructor(
 
     /**
      * Messages sorted — from the oldest to the latest.
-     * @property [firstUnreadMessageId] used when opening chat with unread messages.
+     * @property [initialUnreadSectionMessageId] used when opening chat with unread messages.
      */
     data class ChatStreamState(
         val messages: List<Chat.Message>,
         val state: Chat.State = Chat.State(),
         val intent: Intent = Intent.None,
-        val firstUnreadMessageId: String? = null
+        val initialUnreadSectionMessageId: String? = null
     )
 
     sealed class Intent {

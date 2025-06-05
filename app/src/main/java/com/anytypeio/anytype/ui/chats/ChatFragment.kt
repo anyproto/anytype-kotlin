@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.*
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -91,6 +92,7 @@ class ChatFragment : BaseComposeFragment() {
                     val notificationsSheetState =
                         rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+                    val showInviteLinkModal = vm.shouldShowInviteModal.collectAsStateWithLifecycle().value
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
 
@@ -183,6 +185,25 @@ class ChatFragment : BaseComposeFragment() {
                         }
                     } else {
                         componentManager().globalSearchComponent.release()
+                    }
+
+                    if (showInviteLinkModal) {
+                        ModalBottomSheet(
+                            onDismissRequest = {
+                                vm.onInviteModalDismissed()
+                            },
+                            sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                            containerColor = colorResource(id = R.color.background_secondary),
+                            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                            dragHandle = null
+                        ) {
+                            GenerateInviteLinkCard(
+                                modifier = Modifier.padding(16.dp),
+                                onGenerateInviteLinkClicked = {
+                                    vm.onGenerateInviteLink()
+                                }
+                            )
+                        }
                     }
                 }
                 LaunchedEffect(Unit) {

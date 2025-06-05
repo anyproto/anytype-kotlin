@@ -13,15 +13,17 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.vault.VaultViewModel
+import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
 import dagger.Component
@@ -53,7 +55,7 @@ object VaultModule {
         @PerScreen
         @Binds
         fun bindViewModelFactory(
-            factory: VaultViewModel.Factory
+            factory: VaultViewModelFactory
         ): ViewModelProvider.Factory
 
         @PerScreen
@@ -84,4 +86,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun profileContainer(): ProfileSubscriptionManager
     fun chatPreviewContainer(): ChatPreviewContainer
     fun pendingIntentStore(): PendingIntentStore
+    fun stringResourceProvider(): StringResourceProvider
+    fun dateProvider(): DateProvider
 }

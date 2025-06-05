@@ -349,3 +349,11 @@ val HeadlineTitleSemibold =
         lineHeight = 32.sp,
         letterSpacing = (-0.017).em
     )
+
+val chatPreviewTextStyle = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W500,
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = (-0.014).em
+)

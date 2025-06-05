@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -84,12 +85,7 @@ fun BubbleAttachments(
                         )
                         .combinedClickable(
                             onClick = {
-//                                onPlayVideoAttachmentClicked(attachment)
-                                val intent = Intent(Intent.ACTION_VIEW).apply {
-                                    setDataAndType(Uri.parse(attachment.url), "video/*")
-                                    flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-                                }
-                                context.startActivity(intent)
+                                requestPlayingVideoByOS(attachment, context)
                             },
                             onLongClick = {
                                 onAttachmentLongClicked(attachment)
@@ -204,6 +200,17 @@ fun BubbleAttachments(
             }
         }
     }
+}
+
+private fun requestPlayingVideoByOS(
+    attachment: ChatView.Message.Attachment.Video,
+    context: Context
+) {
+    val intent = Intent(Intent.ACTION_VIEW).apply {
+        setDataAndType(Uri.parse(attachment.url), "video/*")
+        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+    context.startActivity(intent)
 }
 
 @OptIn(ExperimentalFoundationApi::class)

@@ -241,7 +241,7 @@ private fun BoxScope.ContentChat(
                 }
 
                 if (unreadMessageCount > 0) {
-                    val shape = if (unreadMentionCount > 9) {
+                    val shape = if (unreadMentionCount > MENTION_COUNT_THRESHOLD) {
                         CircleShape
                     } else {
                         RoundedCornerShape(100.dp)
@@ -380,3 +380,5 @@ fun ChatPreview() {
         )
     )
 }
+
+const val MENTION_COUNT_THRESHOLD = 9

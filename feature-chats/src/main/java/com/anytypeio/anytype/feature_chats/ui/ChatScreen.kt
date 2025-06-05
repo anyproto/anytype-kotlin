@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -941,11 +942,11 @@ fun Messages(
                             .padding(horizontal = 20.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        AlertIcon(
-                            icon = AlertConfig.Icon(
-                                gradient = GRADIENT_TYPE_BLUE,
-                                icon = R.drawable.ic_alert_message
-                            )
+                        Image(
+                            modifier = Modifier.size(56.dp),
+                            painter = painterResource(id = R.drawable.ic_vault_create_space),
+                            contentDescription = "Empty state icon",
+                            colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
                         )
                         Text(
                             text = stringResource(R.string.chat_empty_state_title),

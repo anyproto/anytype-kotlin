@@ -118,7 +118,8 @@ sealed interface ChatView {
 
             data class Media(
                 val uri: String,
-                val state: State = State.Idle
+                val state: State = State.Idle,
+                val isVideo: Boolean = false
             ): ChatBoxAttachment()
 
             data class File(

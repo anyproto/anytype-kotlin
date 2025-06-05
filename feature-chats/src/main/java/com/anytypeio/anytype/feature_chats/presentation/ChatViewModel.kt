@@ -553,13 +553,20 @@ class ChatViewModel @Inject constructor(
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri
+                                    path = attachment.uri,
+                                    type = if (attachment.isVideo)
+                                        Block.Content.File.Type.VIDEO
+                                    else
+                                        Block.Content.File.Type.IMAGE
                                 )
                             ).onSuccess { file ->
                                 add(
                                     Chat.Message.Attachment(
                                         target = file.id,
-                                        type = Chat.Message.Attachment.Type.File
+                                        type = if (attachment.isVideo)
+                                            Chat.Message.Attachment.Type.File
+                                        else
+                                            Chat.Message.Attachment.Type.Image
                                     )
                                 )
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
@@ -955,11 +962,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onChatBoxMediaPicked(uris: List<String>) {
+    fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value += uris.map {
+        chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
-                uri = it
+                uri = uri.uri,
+                isVideo = uri.isVideo
             )
         }
     }
@@ -1225,6 +1233,11 @@ class ChatViewModel @Inject constructor(
             }
         }
     }
+
+    data class ChatBoxMediaUri(
+        val uri: String,
+        val isVideo: Boolean = false
+    )
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

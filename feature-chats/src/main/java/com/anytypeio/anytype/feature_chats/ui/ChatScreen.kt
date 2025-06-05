@@ -83,6 +83,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
@@ -191,7 +192,17 @@ fun ChatScreenWrapper(
             onReplyMessage = vm::onReplyMessage,
             onClearReplyClicked = vm::onClearReplyClicked,
             onChatBoxMediaPicked = { uris ->
-                vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
+                vm.onChatBoxMediaPicked(
+                    uris.map {
+                        ChatViewModel.ChatBoxMediaUri(
+                            uri = it.parseImagePath(context = context),
+                            isVideo = isVideo(
+                                uri = it,
+                                context = context
+                            )
+                        )
+                    }
+                )
             },
             onChatBoxFilePicked = { uris ->
                 val infos = uris.mapNotNull { uri ->

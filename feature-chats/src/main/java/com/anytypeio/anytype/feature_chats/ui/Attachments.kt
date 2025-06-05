@@ -48,6 +48,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import timber.log.Timber
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
@@ -57,6 +58,7 @@ fun BubbleAttachments(
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
+    Timber.d("Binding attachments: $attachments")
     val context = LocalContext.current
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {

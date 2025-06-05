@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.chats
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.core_utils.intents.SystemAction.*
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
+import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -66,6 +68,7 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -98,6 +101,8 @@ class ChatFragment : BaseComposeFragment() {
                     val showInviteLinkModal = vm.shouldShowInviteModal.collectAsStateWithLifecycle().value
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
+                    val shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value
+                    val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
 
                     Column(
                         modifier = Modifier
@@ -201,18 +206,52 @@ class ChatFragment : BaseComposeFragment() {
                             shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                             dragHandle = null
                         ) {
-                            GenerateInviteLinkCard(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 8.dp)
-                                    .background(
-                                        shape = RoundedCornerShape(16.dp),
-                                        color = colorResource(id = R.color.widget_background)
-                                    ),
-                                onGenerateInviteLinkClicked = {
-                                    vm.onGenerateInviteLink()
+                            when (shareLinkViewState) {
+                                is ShareLinkViewState.Shared -> {
+                                    ShareInviteLinkCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .background(
+                                                shape = RoundedCornerShape(16.dp),
+                                                color = colorResource(id = R.color.widget_background)
+                                            ),
+                                        link = shareLinkViewState.link,
+                                        isCurrentUserOwner = canCreateInviteLink,
+                                        onShareInviteClicked = { vm.onShareInviteLinkFromCardClicked() },
+                                        onDeleteLinkClicked = { vm.onDeleteLinkClicked() },
+                                        onShowQrCodeClicked = { vm.onShareQrCodeClicked() }
+                                    )
                                 }
-                            )
+                                is ShareLinkViewState.NotGenerated -> {
+                                    GenerateInviteLinkCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .background(
+                                                shape = RoundedCornerShape(16.dp),
+                                                color = colorResource(id = R.color.widget_background)
+                                            ),
+                                        onGenerateInviteLinkClicked = {
+                                            vm.onGenerateInviteLinkClicked()
+                                        }
+                                    )
+                                }
+                                else -> {
+                                    GenerateInviteLinkCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp)
+                                            .background(
+                                                shape = RoundedCornerShape(16.dp),
+                                                color = colorResource(id = R.color.widget_background)
+                                            ),
+                                        onGenerateInviteLinkClicked = {
+                                            vm.onGenerateInviteLinkClicked()
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -335,6 +374,26 @@ class ChatFragment : BaseComposeFragment() {
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error while opening bookmark from chat")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
+                                runCatching {
+                                    val intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, command.link)
+                                        type = "text/plain"
+                                    }
+                                    startActivity(Intent.createChooser(intent, null))
+                                }.onFailure {
+                                    Timber.e(it, "Error while sharing invite link")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ShareQrCode -> {
+                                runCatching {
+                                    Timber.d("ShareQrCode command received with link: ${command.link}")
+                                    toast("QR Code sharing - to be implemented")
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening QR code")
                                 }
                             }
                         }

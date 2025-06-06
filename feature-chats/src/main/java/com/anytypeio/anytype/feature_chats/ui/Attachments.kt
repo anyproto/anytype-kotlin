@@ -72,6 +72,7 @@ fun BubbleAttachments(
                 rowConfig.forEachIndexed { idx, rowSize ->
                     BubbleGalleryRowLayout(
                         onAttachmentClicked = onAttachmentClicked,
+                        onAttachmentLongClicked = onAttachmentLongClicked,
                         images = attachment.images.slice(index until index + rowSize)
                     )
                     if (idx != rowConfig.lastIndex) {

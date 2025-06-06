@@ -822,8 +822,8 @@
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
     <string name="personal">Default</string>
-    <string name="create_space">Create space</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_space">Crea spazio</string>
+    <string name="create_chat">Crea una chat</string>
     <string name="create_space_change_icon">Cambia icona</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipo</string>
@@ -1595,8 +1595,8 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Modifica messaggio</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
-    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_title">Questa chat è vuota.</string>
+    <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
     <string name="chat_empty_state_share_invite_button">Condividi il link di invito</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
     <string name="date_layout_mentioned_in">Menzioni</string>
@@ -1793,5 +1793,5 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">Spazio</string>
     <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
     <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
-    <string name="chat_new_messages_section_text">New messages</string>
+    <string name="chat_new_messages_section_text">Nuovi messaggi</string>
 </resources>

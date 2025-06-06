@@ -193,6 +193,30 @@ class VaultViewModel(
             } else null
         }
 
+        // Build attachment previews with proper URLs
+        val attachmentPreviews = chatPreview.message?.attachments?.take(3)?.map { attachment ->
+            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+            when (attachment.type) {
+                Chat.Message.Attachment.Type.Image -> {
+                    VaultSpaceView.AttachmentPreview(
+                        type = VaultSpaceView.AttachmentType.IMAGE,
+                        imageUrl = urlBuilder.thumbnail(attachment.target)
+                    )
+                }
+                Chat.Message.Attachment.Type.File, Chat.Message.Attachment.Type.Link -> {
+                    val mimeType = dependency?.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+                    val fileExt = dependency?.getSingleValue<String>(Relations.FILE_EXT)
+                    VaultSpaceView.AttachmentPreview(
+                        type = if (attachment.type == Chat.Message.Attachment.Type.File) 
+                               VaultSpaceView.AttachmentType.FILE 
+                               else VaultSpaceView.AttachmentType.LINK,
+                        mimeType = mimeType,
+                        fileExtension = fileExt
+                    )
+                }
+            }
+        } ?: emptyList()
+
         return VaultSpaceView.Chat(
             space = space,
             icon = space.spaceIcon(
@@ -205,7 +229,8 @@ class VaultViewModel(
             messageText = messageText,
             messageTime = messageTime,
             unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0
+            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            attachmentPreviews = attachmentPreviews
         )
     }
 

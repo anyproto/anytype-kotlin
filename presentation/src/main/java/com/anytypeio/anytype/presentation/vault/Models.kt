@@ -31,8 +31,20 @@ sealed class VaultSpaceView {
         val previewText: String? = null,
         val creatorName: String? = null,
         val messageText: String? = null,
-        val messageTime: String? = null
+        val messageTime: String? = null,
+        val attachmentPreviews: List<AttachmentPreview> = emptyList()
     ) : VaultSpaceView()
+
+    data class AttachmentPreview(
+        val type: AttachmentType,
+        val imageUrl: String? = null,
+        val mimeType: String? = null,
+        val fileExtension: String? = null
+    )
+
+    enum class AttachmentType {
+        IMAGE, FILE, LINK
+    }
 }
 
 sealed class VaultCommand {

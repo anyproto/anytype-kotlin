@@ -165,7 +165,8 @@ fun VaultScreen(
                                     messageTime = item.messageTime,
                                     chatPreview = item.chatPreview,
                                     unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews
                                 )
                             }
                         }

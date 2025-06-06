@@ -22,6 +22,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -32,11 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -44,6 +50,7 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.chatPreviewTextStyle
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
 fun VaultSpaceCard(
@@ -115,6 +122,7 @@ fun VaultChatCard(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
     Box(
         modifier = Modifier
@@ -141,7 +149,9 @@ fun VaultChatCard(
             messageText = messageText,
             messageTime = messageTime,
             unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount
+            unreadMentionCount = unreadMentionCount,
+            chatPreview = chatPreview,
+            attachmentPreviews = attachmentPreviews
         )
     }
 }
@@ -155,6 +165,8 @@ private fun BoxScope.ContentChat(
     messageTime: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
+    chatPreview: Chat.Preview? = null,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
 
     Column(
@@ -190,6 +202,45 @@ private fun BoxScope.ContentChat(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
+            // Show attachment previews if available
+            if (attachmentPreviews.isNotEmpty()) {
+                Row(
+                    modifier = Modifier.padding(end = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    attachmentPreviews.forEach { preview ->
+                        when (preview.type) {
+                            VaultSpaceView.AttachmentType.IMAGE -> {
+                                if (!preview.imageUrl.isNullOrEmpty()) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(preview.imageUrl),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(18.dp)
+                                            .clip(RoundedCornerShape(2.dp)),
+                                        contentScale = ContentScale.Crop
+                                    )
+                                } else {
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_mime_image),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                            VaultSpaceView.AttachmentType.FILE, VaultSpaceView.AttachmentType.LINK -> {
+                                val iconResource = preview.mimeType.getMimeIcon(preview.fileExtension)
+                                Image(
+                                    painter = painterResource(iconResource),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            
             if (creatorName != null && messageText != null) {
                 val annotatedString = buildAnnotatedString {
                     withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
@@ -208,8 +259,30 @@ private fun BoxScope.ContentChat(
                     overflow = TextOverflow.Ellipsis
                 )
             } else {
+                // Show attachment text if no message text
+                val attachmentText = if (attachmentPreviews.isNotEmpty()) {
+                    val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
+                    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE || it.type == VaultSpaceView.AttachmentType.LINK }
+                    
+                    when {
+                        imageCount > 0 && fileCount == 0 -> {
+                            if (imageCount == 1) "1 Image" else "$imageCount Images"
+                        }
+                        imageCount == 0 && fileCount > 0 -> {
+                            if (fileCount == 1) "1 Attachment" else "$fileCount Attachments"
+                        }
+                        imageCount > 0 && fileCount > 0 -> {
+                            val totalCount = imageCount + fileCount
+                            if (totalCount == 1) "1 Attachment" else "$totalCount Attachments"
+                        }
+                        else -> ""
+                    }
+                } else {
+                    ""
+                }
+                
                 Text(
-                    text = subtitle.ifEmpty { stringResource(id = R.string.chat) },
+                    text = if (attachmentText.isNotEmpty()) attachmentText else subtitle.ifEmpty { stringResource(id = R.string.chat) },
                     style = Title2,
                     color = colorResource(id = R.color.text_secondary),
                     modifier = Modifier.weight(1f),

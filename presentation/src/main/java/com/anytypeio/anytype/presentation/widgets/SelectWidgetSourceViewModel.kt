@@ -74,15 +74,15 @@ class SelectWidgetSourceViewModel(
     var config : Config = Config.None
 
     val viewState = flow {
-        val spaceView = spaceViews.get(vmParams.space)
-        val hasChat = !spaceView?.chatId.isNullOrEmpty()
-        val isChatSpace = spaceView?.spaceUxType == SpaceUxType.CHAT
         emitAll(
             combine(
-                stateData
-                    .asFlow(),
-                suggested.filterIsInstance<SuggestedWidgetsState.Default>()
-            ) { state, suggested ->
+                stateData.asFlow(),
+                suggested.filterIsInstance<SuggestedWidgetsState.Default>(),
+                spaceViews.observe(vmParams.space)
+            ) { state, suggested, spaceView ->
+                val hasChat = !spaceView.chatId.isNullOrEmpty()
+                val isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
+                
                 when(state) {
                     is ObjectSearchView.Success -> {
                         state.copy(

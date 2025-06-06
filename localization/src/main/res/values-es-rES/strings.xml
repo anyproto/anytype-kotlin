@@ -1594,6 +1594,9 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
+    <string name="chat_empty_state_title">Este chat está vacío.</string>
+    <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
+    <string name="chat_empty_state_share_invite_button">Compartir enlace de invitación</string>
     <string name="write_a_message">Escribir mensaje…</string>
     <string name="date_layout_mentioned_in">Menciones</string>
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
@@ -1605,6 +1608,8 @@ En concreto,
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
+    <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>
+    <string name="chat_send_message_rate_limit_desc">Parece que estás enviando mensajes a la velocidad de la luz. Espera un poco para el siguiente.</string>
     <string name="object_type_empty_items_title">Aquí no hay nada.</string>
     <string name="object_type_empty_items_subtitle">Crea tus primeros objetos para empezar.</string>
     <string name="object_type_menu_delete">Eliminar por completo</string>
@@ -1787,4 +1792,5 @@ En concreto,
     <string name="vault_create_space">Espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
+    <string name="chat_new_messages_section_text">Mensajes nuevos</string>
 </resources>

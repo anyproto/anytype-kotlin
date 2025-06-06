@@ -1581,6 +1581,9 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">分享邀請連結</string>
     <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">There is nothing here for this date yet</string>
@@ -1592,6 +1595,8 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_upload">上傳</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
+    <string name="chat_send_message_rate_limit_title">Hold up! Turbo typing detected!</string>
+    <string name="chat_send_message_rate_limit_desc">Looks like you\'re sending messages at lightning speed. Give it a sec before your next one.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
@@ -1774,4 +1779,5 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">空間</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

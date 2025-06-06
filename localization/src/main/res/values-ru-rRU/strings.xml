@@ -1623,6 +1623,9 @@
     <string name="chats_edit_message">Редактировать сообщение</string>
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">Поделится ссылкой на приглашение </string>
     <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Упоминания</string>
     <string name="date_layout_empty_items">Здесь пока ничего нет для этой даты</string>
@@ -1634,6 +1637,8 @@
     <string name="chat_attachment_upload">Загрузить</string>
     <string name="chats_reply">Ответить</string>
     <string name="chats_add_reaction">Добавить реакцию</string>
+    <string name="chat_send_message_rate_limit_title">Удерживаем! Обнаружен Turbo typing!</string>
+    <string name="chat_send_message_rate_limit_desc">Похоже, вы отправляете сообщения со скоростью молнии. Дайте секунду перед следующим.</string>
     <string name="object_type_empty_items_title">Здесь пусто.</string>
     <string name="object_type_empty_items_subtitle">Здесь пусто. Создайте свои первые объекты, чтобы начать работу.</string>
     <string name="object_type_menu_delete">Удалить полностью</string>
@@ -1816,4 +1821,5 @@
     <string name="vault_create_space">Пространство</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

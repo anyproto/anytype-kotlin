@@ -1582,6 +1582,9 @@
     <string name="chats_edit_message">メッセージを編集</string>
     <string name="chats_message_edited">編集済み</string>
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
+    <string name="chat_empty_state_title">まだメッセージがありません。</string>
+    <string name="chat_empty_state_subtitle">招待して会話を始めましょう！</string>
+    <string name="chat_empty_state_share_invite_button">招待リンクを共有</string>
     <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>
     <string name="date_layout_empty_items">この日付にはまだ何もありません</string>
@@ -1593,6 +1596,8 @@
     <string name="chat_attachment_upload">アップロード</string>
     <string name="chats_reply">返信</string>
     <string name="chats_add_reaction">リアクションを追加</string>
+    <string name="chat_send_message_rate_limit_title">お待ちください！ 異常なタイピングが検出されました！</string>
+    <string name="chat_send_message_rate_limit_desc">メッセージを送信するスピードが速すぎます。少し時間を置いてから、もう一度送信してください。</string>
     <string name="object_type_empty_items_title">何もありません。</string>
     <string name="object_type_empty_items_subtitle">最初のプロジェクトを作成して、使い始めましょう。</string>
     <string name="object_type_menu_delete">完全に削除</string>
@@ -1775,4 +1780,5 @@
     <string name="vault_create_space">スペース</string>
     <string name="vault_create_space_description">情報とデータの管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
+    <string name="chat_new_messages_section_text">新着メッセージ</string>
 </resources>

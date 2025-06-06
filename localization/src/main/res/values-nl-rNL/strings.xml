@@ -1594,6 +1594,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">Deel uitnodigingslink</string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
@@ -1605,6 +1608,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chats_reply">Antwoord</string>
     <string name="chats_add_reaction">Voeg reactie toe</string>
+    <string name="chat_send_message_rate_limit_title">Wacht even! Turbo typen gedetecteerd!</string>
+    <string name="chat_send_message_rate_limit_desc">Het lijkt erop dat je berichten met lichtsnelheid verstuurt. Wacht even voor je volgende bericht.</string>
     <string name="object_type_empty_items_title">Het is hier leeg.</string>
     <string name="object_type_empty_items_subtitle">Maak je eerste objecten om te beginnen.</string>
     <string name="object_type_menu_delete">Verwijder volledig</string>
@@ -1787,4 +1792,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_space">Ruimte</string>
     <string name="vault_create_space_description">Voor georganiseerde inhoud en gegevens</string>
     <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

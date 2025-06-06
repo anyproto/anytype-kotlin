@@ -1591,6 +1591,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chats_edit_message">Edit message</string>
     <string name="chats_message_edited">edited</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">Compartilhar link de convite</string>
     <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Não há nada aqui para esta data ainda</string>
@@ -1602,6 +1605,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_attachment_upload">Fazer upload</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Adicionar reação</string>
+    <string name="chat_send_message_rate_limit_title">Aguente aí! Digitação rápida detectada!</string>
+    <string name="chat_send_message_rate_limit_desc">Parece que você está enviando mensagens com velocidade relâmpago. Dê um segundo antes do seu próximo.</string>
     <string name="object_type_empty_items_title">It’s empty here.</string>
     <string name="object_type_empty_items_subtitle">Create your first objects to get started.</string>
     <string name="object_type_menu_delete">Delete completely</string>
@@ -1784,4 +1789,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="vault_create_space">Espaço</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

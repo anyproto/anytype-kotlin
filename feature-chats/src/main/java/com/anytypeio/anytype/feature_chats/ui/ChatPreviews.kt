@@ -205,7 +205,8 @@ fun ChatScreenPreview() {
         onVisibleRangeChanged = { _, _ -> },
         onUrlInserted = {},
         onGoToMentionClicked = {},
-        onShareInviteClicked = {}
+        onShareInviteClicked = {},
+        onImageCaptured = {}
     )
 }
 

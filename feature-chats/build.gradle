@@ -34,6 +34,7 @@ dependencies {
 
     implementation libs.appcompat
     implementation libs.compose
+    implementation libs.activityCompose
     implementation libs.composeFoundation
     implementation libs.composeToolingPreview
     implementation libs.composeMaterial3

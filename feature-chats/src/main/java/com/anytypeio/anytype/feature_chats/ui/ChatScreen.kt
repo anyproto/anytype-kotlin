@@ -70,10 +70,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
-import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -252,7 +250,17 @@ fun ChatScreenWrapper(
             canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
-                .value is ChatBoxMode.ReadOnly
+                .value is ChatBoxMode.ReadOnly,
+            onImageCaptured = {
+                vm.onChatBoxMediaPicked(
+                    uris = listOf(
+                        ChatViewModel.ChatBoxMediaUri(
+                            uri = it.toString(),
+                            isVideo = false
+                        )
+                    )
+                )
+            }
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -369,6 +377,7 @@ fun ChatScreen(
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
+    onImageCaptured: (Uri) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
@@ -803,7 +812,8 @@ fun ChatScreen(
                 },
                 text = text,
                 spans = spans,
-                onUrlInserted = onUrlInserted
+                onUrlInserted = onUrlInserted,
+                onImageCaptured = onImageCaptured
             )
         }
     }

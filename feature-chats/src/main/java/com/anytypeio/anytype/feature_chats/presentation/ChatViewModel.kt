@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 
 class ChatViewModel @Inject constructor(
     private val vmParams: Params.Default,
@@ -129,11 +128,12 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
+    private var capturedImageUri: String? = null
+
     private var account: Id = ""
 
     init {
-
-//        generateDummyChatHistory()
+        Timber.d("DROID-2966 init")
 
         viewModelScope.launch {
             spacePermissionProvider
@@ -1006,7 +1006,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
-        Timber.d("onChatBoxMediaPicked: $uris")
+        Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = uri.uri,
@@ -1016,7 +1016,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
-        Timber.d("onChatBoxFilePicked: $infos")
+        Timber.d("DROID-2966 onChatBoxFilePicked: $infos")
         chatBoxAttachments.value += infos.map { info ->
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import android.Manifest
 import android.net.Uri
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -39,6 +40,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +50,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,9 +74,11 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.feature_chats.tools.launchCamera
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -99,9 +103,12 @@ fun ChatBox(
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
+    onImageCaptured: (Uri) -> Unit
 ) {
 
-    val length = text.text.length
+    val context = LocalContext.current
+
+    // LAUNCHERS
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.PickMultipleVisualMedia(maxItems = ChatConfig.MAX_ATTACHMENT_COUNT)
@@ -115,11 +122,40 @@ fun ChatBox(
         onChatBoxFilePicked(uris.take(ChatConfig.MAX_ATTACHMENT_COUNT))
     }
 
+    var capturedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture()
+    ) { isSuccess ->
+        if (isSuccess && capturedImageUri != null) {
+            onImageCaptured(Uri.parse(capturedImageUri))
+            capturedImageUri = null
+        } else {
+            Timber.w("DROID-2966 Failed to capture image")
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            launchCamera(
+                context = context,
+                launcher = cameraLauncher,
+                onUriReceived = { capturedImageUri = it.toString() }
+            )
+        } else {
+            context.toast(context.getString(R.string.chat_camera_permission_denied))
+        }
+    }
+
+    // END OF LAUNCHERS
+
+    val length = text.text.length
+
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
-
-    val focus = LocalFocusManager.current
 
     var isFocused by remember { mutableStateOf(false) }
 
@@ -264,6 +300,22 @@ fun ChatBox(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
+                                            text = stringResource(R.string.chat_box_camera),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
                                             text = stringResource(R.string.chat_attachment_media),
                                             color = colorResource(id = R.color.text_primary)
                                         )
@@ -337,12 +389,14 @@ fun ChatBox(
                     ) {
                         Text(
                             text = "${text.text.length} / ${ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT}",
-                            modifier = Modifier.padding(
-                                horizontal = 8.dp,
-                                vertical = 3.dp
-                            ).align(
-                                Alignment.Center
-                            ),
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 8.dp,
+                                    vertical = 3.dp
+                                )
+                                .align(
+                                    Alignment.Center
+                                ),
                             style = Caption1Regular,
                             color = if (length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
                                 colorResource(R.color.palette_system_red)
@@ -487,6 +541,9 @@ fun ChatBox(
                     uploadMediaLauncher.launch(
                         PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
+                },
+                onCameraCaptureClicked = {
+                    permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
             )
         }
@@ -779,13 +836,16 @@ fun ChatBoxEditPanel(
     onStyleClicked: () -> Unit,
     onMentionClicked: () -> Unit,
     onUploadMediaClicked: () -> Unit,
-    onUploadFileClicked: () -> Unit
+    onUploadFileClicked: () -> Unit,
+    onCameraCaptureClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier.fillMaxWidth().height(52.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
@@ -834,6 +894,22 @@ fun ChatBoxEditPanel(
                         onClick = {
                             showDropdownMenu = false
                             onAttachObjectClicked()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_box_camera),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCameraCaptureClicked()
                         }
                     )
                     Divider(
@@ -958,6 +1034,7 @@ fun ChatBoxEditPanelPreview() {
         onStyleClicked = {},
         onAttachObjectClicked = {},
         onUploadFileClicked = {},
-        onUploadMediaClicked = {}
+        onUploadMediaClicked = {},
+        onCameraCaptureClicked = {}
     )
 }

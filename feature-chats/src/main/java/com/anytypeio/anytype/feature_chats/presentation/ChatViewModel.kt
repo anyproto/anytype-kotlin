@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 
 class ChatViewModel @Inject constructor(
     private val vmParams: Params.Default,
@@ -129,11 +128,12 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
+    private var capturedImageUri: String? = null
+
     private var account: Id = ""
 
     init {
-
-//        generateDummyChatHistory()
+        Timber.d("DROID-2966 init")
 
         viewModelScope.launch {
             spacePermissionProvider
@@ -593,10 +593,17 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
                             }
+                            val path = if (attachment.capturedByCamera) {
+                                withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }.orEmpty()
+                            } else {
+                                attachment.uri
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri,
+                                    path = path,
                                     type = if (attachment.isVideo)
                                         Block.Content.File.Type.VIDEO
                                     else
@@ -621,6 +628,7 @@ class ChatViewModel @Inject constructor(
                                     )
                                 }
                             }.onFailure {
+                                Timber.e(it, "DROID-2966 Error while uploading file as attachment")
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                     set(
                                         index = idx,
@@ -1006,17 +1014,18 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
-        Timber.d("onChatBoxMediaPicked: $uris")
+        Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = uri.uri,
-                isVideo = uri.isVideo
+                isVideo = uri.isVideo,
+                capturedByCamera = uri.capturedByCamera
             )
         }
     }
 
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
-        Timber.d("onChatBoxFilePicked: $infos")
+        Timber.d("DROID-2966 onChatBoxFilePicked: $infos")
         chatBoxAttachments.value += infos.map { info ->
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
@@ -1451,7 +1460,8 @@ class ChatViewModel @Inject constructor(
 
     data class ChatBoxMediaUri(
         val uri: String,
-        val isVideo: Boolean = false
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false
     )
 
     sealed class ViewModelCommand {

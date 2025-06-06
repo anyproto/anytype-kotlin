@@ -14,6 +14,8 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -128,9 +130,11 @@ class GalleryInstallationViewModel(
             val params = CreateSpace.Params(
                 details = mapOf(
                     Relations.NAME to manifestInfo.title,
-                    Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
+                    Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
+                    Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble(),
                 ),
-                shouldApplyEmptyUseCase = true
+                withChat = false,
+                useCase = SpaceCreationUseCase.EMPTY_MOBILE
             )
             createSpace.async(params).fold(
                 onSuccess = { result ->

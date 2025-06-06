@@ -118,7 +118,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     it is WidgetView.SpaceWidget.View
                 } as? WidgetView.SpaceWidget.View)
                 val windowInsetsModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Modifier.windowInsetsPadding(WindowInsets.statusBars)
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 } else {
                     Modifier
                 }

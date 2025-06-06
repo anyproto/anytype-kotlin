@@ -163,7 +163,9 @@ fun VaultScreen(
                                     creatorName = item.creatorName,
                                     messageText = item.messageText,
                                     messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview
+                                    chatPreview = item.chatPreview,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount
                                 )
                             }
                         }

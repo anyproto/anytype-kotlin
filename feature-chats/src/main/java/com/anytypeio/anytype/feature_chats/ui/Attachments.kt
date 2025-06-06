@@ -21,6 +21,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +36,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -48,7 +53,6 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import timber.log.Timber
 
 @Composable
 @OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
@@ -58,7 +62,7 @@ fun BubbleAttachments(
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
     isUserAuthor: Boolean
 ) {
-    Timber.d("Binding attachments: $attachments")
+    var isVideoPreviewLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     attachments.forEachIndexed { idx, attachment ->
         when (attachment) {
@@ -94,14 +98,16 @@ fun BubbleAttachments(
                             }
                         )
                 ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .align(alignment = Alignment.Center)
-                            .size(48.dp),
-                        color = colorResource(R.color.glyph_active),
-                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                        strokeWidth = 4.dp
-                    )
+                    if (!isVideoPreviewLoaded) {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center)
+                                .size(48.dp),
+                            color = colorResource(R.color.glyph_active),
+                            trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                            strokeWidth = 4.dp
+                        )
+                    }
                     AsyncImage(
                         modifier = Modifier
                             .size(292.dp)
@@ -112,14 +118,18 @@ fun BubbleAttachments(
                             .crossfade(true)
                             .build(),
                         contentDescription = null,
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Crop,
+                        onState = { state ->
+                            isVideoPreviewLoaded = state is AsyncImagePainter.State.Success
+                        }
                     )
-
-                    Image(
-                        modifier = Modifier.align(Alignment.Center),
-                        painter = painterResource(id = R.drawable.ic_chat_attachment_play),
-                        contentDescription = "Play button"
-                    )
+                    if (isVideoPreviewLoaded) {
+                        Image(
+                            modifier = Modifier.align(Alignment.Center),
+                            painter = painterResource(id = R.drawable.ic_chat_attachment_play),
+                            contentDescription = "Play button"
+                        )
+                    }
                 }
             }
             is ChatView.Message.Attachment.Image -> {

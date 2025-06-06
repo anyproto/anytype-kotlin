@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -83,6 +84,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
@@ -114,7 +116,6 @@ fun ChatScreenWrapper(
     onViewChatReaction: (Id, String) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    var showReactionSheet by remember { mutableStateOf(false) }
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
     Box(
@@ -192,7 +193,17 @@ fun ChatScreenWrapper(
             onReplyMessage = vm::onReplyMessage,
             onClearReplyClicked = vm::onClearReplyClicked,
             onChatBoxMediaPicked = { uris ->
-                vm.onChatBoxMediaPicked(uris.map { it.parseImagePath(context = context) })
+                vm.onChatBoxMediaPicked(
+                    uris.map {
+                        ChatViewModel.ChatBoxMediaUri(
+                            uri = it.parseImagePath(context = context),
+                            isVideo = isVideo(
+                                uri = it,
+                                context = context
+                            )
+                        )
+                    }
+                )
             },
             onChatBoxFilePicked = { uris ->
                 val infos = uris.mapNotNull { uri ->
@@ -260,21 +271,6 @@ fun ChatScreenWrapper(
                     }
                 }
             }
-        }
-    }
-    if (showReactionSheet) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                showReactionSheet = false
-            },
-            sheetState = sheetState,
-            containerColor = colorResource(id = R.color.background_secondary),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            dragHandle = null
-        ) {
-            SelectChatReactionScreen(
-                onEmojiClicked = {}
-            )
         }
     }
 
@@ -406,6 +402,8 @@ fun ChatScreen(
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
+    val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
+
     // Applying view model intents
     LaunchedEffect(intent) {
         when (intent) {
@@ -420,7 +418,11 @@ fun ChatScreen(
                     if (intent.smooth) {
                         lazyListState.animateScrollToItem(index)
                     } else {
-                        lazyListState.scrollToItem(index)
+                        if (intent.startOfUnreadMessageSection) {
+                            lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+                        } else {
+                            lazyListState.scrollToItem(index)
+                        }
                     }
                     awaitFrame()
                 } else {
@@ -598,10 +600,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.mentions.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -643,10 +647,12 @@ fun ChatScreen(
                 ) {
                     Text(
                         text = counter.messages.toString(),
-                        modifier = Modifier.align(Alignment.Center).padding(
-                            horizontal = 5.dp,
-                            vertical = 2.dp
-                        ),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
                         color = colorResource(R.color.glyph_white),
                         style = Caption1Regular
                     )
@@ -705,6 +711,7 @@ fun ChatScreen(
                                                             end = span.end + lengthDifference
                                                         )
                                                     }
+
                                                     is ChatBoxSpan.Markup -> {
                                                         span.copy(
                                                             start = span.start + lengthDifference,
@@ -802,6 +809,7 @@ fun ChatScreen(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Messages(
     modifier: Modifier = Modifier,
@@ -825,6 +833,7 @@ fun Messages(
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
+
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -918,6 +927,25 @@ fun Messages(
                 if (idx == messages.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))
                 }
+
+                if (msg.startOfUnreadMessageSection) {
+                    Box(
+                        modifier = Modifier
+                            .height(50.dp)
+                            .fillParentMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.chat_new_messages_section_text),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            style = Caption1Medium,
+                            color = colorResource(R.color.transparent_active),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
             } else if (msg is ChatView.DateSection) {
                 Text(
                     text = msg.formattedDate,

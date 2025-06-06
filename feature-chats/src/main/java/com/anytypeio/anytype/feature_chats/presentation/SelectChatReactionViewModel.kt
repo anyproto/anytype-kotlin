@@ -16,9 +16,17 @@ import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -42,9 +50,36 @@ class SelectChatReactionViewModel @Inject constructor(
 
     private val recentlyUsed = MutableStateFlow<List<String>>(emptyList())
 
-    val views = combine(default, recentlyUsed) { default, recentlyUsed ->
-        buildList<ReactionPickerView> {
-            if (recentlyUsed.isNotEmpty()) {
+    private val rawQuery = MutableStateFlow("")
+
+    @OptIn(FlowPreview::class)
+    private val debouncedQuery = rawQuery
+        .debounce(DEBOUNCE_DURATION)
+        .distinctUntilChanged()
+        .onStart { emit(rawQuery.value) }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val queries = debouncedQuery.flatMapLatest { query ->
+        flow {
+            val emojis = if (query.isEmpty()) {
+                emptyList()
+            } else {
+                suggester.search(query).map { result ->
+                    ReactionPickerView.Emoji(
+                        unicode = result.emoji,
+                        page = -1,
+                        index = -1,
+                        emojified = Emojifier.safeUri(result.emoji)
+                    )
+                }
+            }
+            emit(query to emojis)
+        }
+    }.flowOn(dispatchers.io)
+
+    val views = combine(default, recentlyUsed, queries) { default, recentlyUsed, (query, results) ->
+        buildList {
+            if (query.isEmpty() && recentlyUsed.isNotEmpty()) {
                 add(ReactionPickerView.RecentUsedSection)
                 addAll(
                     recentlyUsed.map { unicode ->
@@ -57,11 +92,16 @@ class SelectChatReactionViewModel @Inject constructor(
                     }
                 )
             }
-            addAll(default)
+            if (query.isEmpty()) {
+                addAll(default)
+            } else {
+                addAll(results)
+            }
         }
     }
 
     init {
+
         viewModelScope.launch {
             observeRecentlyUsedChatReactions
                 .flow()
@@ -126,6 +166,10 @@ class SelectChatReactionViewModel @Inject constructor(
         }
     }
 
+    fun onQueryChanged(input: String) {
+        rawQuery.value = input
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val emojiProvider: EmojiProvider,
@@ -165,5 +209,6 @@ class SelectChatReactionViewModel @Inject constructor(
 
     companion object {
         const val MAX_RECENTLY_USED_COUNT = 20
+        const val DEBOUNCE_DURATION = 300L
     }
 }

@@ -180,7 +180,7 @@ class ChatViewModel @Inject constructor(
                 // 2. User can create invite links (is owner)
                 // 3. Chat is empty (no messages) - indicates it's newly created
                 spaceView.spaceUxType == SpaceUxType.CHAT &&
-                canCreateInvite && 
+                canCreateInvite &&
                 chatState.messages.isEmpty()
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
@@ -232,7 +232,7 @@ class ChatViewModel @Inject constructor(
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space).distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
-            Timber.d("DROID-2966 Chat counter state from container: ${result.state}")
+            Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.initialUnreadSectionMessageId}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
             var previousDate: ChatView.DateSection? = null
@@ -343,7 +343,7 @@ class ChatViewModel @Inject constructor(
                                     val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
                                         target = attachment.target,
-                                        url = urlBuilder.medium(path = attachment.target),
+                                        url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
                                         ext = wrapper?.fileExt.orEmpty()
                                     )
@@ -353,6 +353,14 @@ class ChatViewModel @Inject constructor(
                                     when (wrapper?.layout) {
                                         ObjectType.Layout.IMAGE -> {
                                             ChatView.Message.Attachment.Image(
+                                                target = attachment.target,
+                                                url = urlBuilder.large(path = attachment.target),
+                                                name = wrapper.name.orEmpty(),
+                                                ext = wrapper.fileExt.orEmpty()
+                                            )
+                                        }
+                                        ObjectType.Layout.VIDEO -> {
+                                            ChatView.Message.Attachment.Video(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
@@ -413,7 +421,8 @@ class ChatViewModel @Inject constructor(
                             )
                         } else {
                             ChatView.Message.Avatar.Initials(member?.name.orEmpty())
-                        }
+                        },
+                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id
                     )
                     val currDate = ChatView.DateSection(
                         formattedDate = dateFormatter.format(msg.createdAt * 1000),
@@ -566,6 +575,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.ChatBoxAttachment.Existing.Video -> {
+                            add(
+                                Chat.Message.Attachment(
+                                    target = attachment.target,
+                                    type = Chat.Message.Attachment.Type.File
+                                )
+                            )
+                        }
                         is ChatView.Message.ChatBoxAttachment.Media -> {
                             chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                 set(
@@ -579,13 +596,19 @@ class ChatViewModel @Inject constructor(
                                 UploadFile.Params(
                                     space = vmParams.space,
                                     path = attachment.uri,
-                                    type = Block.Content.File.Type.IMAGE
+                                    type = if (attachment.isVideo)
+                                        Block.Content.File.Type.VIDEO
+                                    else
+                                        Block.Content.File.Type.IMAGE
                                 )
                             ).onSuccess { file ->
                                 add(
                                     Chat.Message.Attachment(
                                         target = file.id,
-                                        type = Chat.Message.Attachment.Type.Image
+                                        type = if (attachment.isVideo)
+                                            Chat.Message.Attachment.Type.File
+                                        else
+                                            Chat.Message.Attachment.Type.Image
                                     )
                                 )
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
@@ -777,6 +800,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+                        is ChatView.Message.Attachment.Video -> {
+                            add(
+                                ChatView.Message.ChatBoxAttachment.Existing.Video(
+                                    target = a.target,
+                                    url = a.url
+                                )
+                            )
+                        }
                         is ChatView.Message.Attachment.Bookmark -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Link(
@@ -880,6 +911,13 @@ class ChatViewModel @Inject constructor(
                                     attachment.name
                                 }
                             }
+                            is ChatView.Message.Attachment.Video -> {
+                                if (attachment.ext.isNotEmpty()) {
+                                    "${attachment.name}.${attachment.ext}"
+                                } else {
+                                    attachment.name
+                                }
+                            }
                             is ChatView.Message.Attachment.Gallery -> {
                                 val first = attachment.images.firstOrNull()
                                 if (first != null) {
@@ -934,8 +972,11 @@ class ChatViewModel @Inject constructor(
                         )
                     )
                 }
-                is ChatView.Message.Attachment.Gallery -> {
+                is ChatView.Message.Attachment.Video -> {
                     // TODO
+                }
+                is ChatView.Message.Attachment.Gallery -> {
+                    // Do nothing.
                 }
                 is ChatView.Message.Attachment.Bookmark -> {
                     commands.emit(ViewModelCommand.Browse(attachment.url))
@@ -963,11 +1004,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onChatBoxMediaPicked(uris: List<String>) {
+    fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value += uris.map {
+        chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
-                uri = it
+                uri = uri.uri,
+                isVideo = uri.isVideo
             )
         }
     }
@@ -1101,7 +1143,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private suspend fun generateInviteLink(
-        inviteType: InviteType, 
+        inviteType: InviteType,
         permissions: SpaceMemberPermissions
     ) {
         generateSpaceInviteLink.async(
@@ -1395,6 +1437,11 @@ class ChatViewModel @Inject constructor(
         data object ShowGenerateCard : InviteModalState()
         data class ShowShareCard(val link: String) : InviteModalState()
     }
+
+    data class ChatBoxMediaUri(
+        val uri: String,
+        val isVideo: Boolean = false
+    )
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

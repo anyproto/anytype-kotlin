@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 
 
 // ---------------------- BLOCKS ------------------------
@@ -642,5 +643,14 @@ fun InviteType.toMiddleware(): MInviteType = when (this) {
     InviteType.MEMBER -> MInviteType.Member
     InviteType.GUEST -> MInviteType.Guest
     InviteType.WITHOUT_APPROVE -> MInviteType.WithoutApprove
+}
+
+fun SpaceCreationUseCase.toMiddlewareModel(): Rpc.Object.ImportUseCase.Request.UseCase = when (this) {
+    SpaceCreationUseCase.NONE -> Rpc.Object.ImportUseCase.Request.UseCase.NONE
+    SpaceCreationUseCase.GET_STARTED -> Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
+    SpaceCreationUseCase.EMPTY -> Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+    SpaceCreationUseCase.GUIDE_ONLY -> Rpc.Object.ImportUseCase.Request.UseCase.GUIDE_ONLY
+    SpaceCreationUseCase.GET_STARTED_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
+    SpaceCreationUseCase.EMPTY_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
 }
 

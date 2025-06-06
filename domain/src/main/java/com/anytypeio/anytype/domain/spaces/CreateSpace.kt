@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -17,13 +18,13 @@ class CreateSpace @Inject constructor(
         command = Command.CreateSpace(
             details = params.details,
             withChat = params.withChat,
-            shouldApplyEmptyUseCase = params.shouldApplyEmptyUseCase
+            useCase = params.useCase
         )
     )
 
     data class Params(
         val details: Struct,
         val withChat: Boolean = false,
-        val shouldApplyEmptyUseCase: Boolean = false
+        val useCase: SpaceCreationUseCase = SpaceCreationUseCase.GET_STARTED_MOBILE
     )
 }

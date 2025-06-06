@@ -203,7 +203,9 @@ class VaultViewModel(
             previewText = previewText,
             creatorName = creatorName,
             messageText = messageText,
-            messageTime = messageTime
+            messageTime = messageTime,
+            unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
+            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0
         )
     }
 

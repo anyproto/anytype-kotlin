@@ -1973,10 +1973,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
-            useCase = if (command.shouldApplyEmptyUseCase)
-                Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
-            else
-               Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE,
+            useCase = command.useCase.toMiddlewareModel(),
             withChat = command.withChat
         )
         logRequestIfDebug(request)

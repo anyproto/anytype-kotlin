@@ -115,15 +115,16 @@ class HomeScreenFragment : BaseComposeFragment(),
                 val view = (vm.views.collectAsStateWithLifecycle().value.find {
                     it is WidgetView.SpaceWidget.View
                 } as? WidgetView.SpaceWidget.View)
+                val windowInsetsModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                } else {
+                    Modifier
+                }
+
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .then(
-                            if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                                Modifier.windowInsetsPadding(WindowInsets.systemBars)
-                            else
-                                Modifier
-                        )
+                        .then(windowInsetsModifier)
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,

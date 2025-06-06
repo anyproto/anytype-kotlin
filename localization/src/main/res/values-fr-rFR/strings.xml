@@ -1591,6 +1591,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chats_edit_message">Modifier le message</string>
     <string name="chats_message_edited">modifié</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">Partager le lien d\'invitation</string>
     <string name="write_a_message">Ecrire un message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Il n\'y a encore rien ici pour cette date</string>
@@ -1602,6 +1605,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chat_attachment_upload">Mettre en ligne</string>
     <string name="chats_reply">Répondre</string>
     <string name="chats_add_reaction">Ajouter une Réaction</string>
+    <string name="chat_send_message_rate_limit_title">Attendez ! Frappe turbo détectée !</string>
+    <string name="chat_send_message_rate_limit_desc">Il semble que vous envoyez des messages à la vitesse de la foudre. Attendez un instant avant le suivant.</string>
     <string name="object_type_empty_items_title">C\'est vide ici.</string>
     <string name="object_type_empty_items_subtitle">Créez vos premiers objets pour commencer.</string>
     <string name="object_type_menu_delete">Supprimer complètement</string>
@@ -1784,4 +1789,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="vault_create_space">Espace</string>
     <string name="vault_create_space_description">Pour un contenu et des données organisés</string>
     <string name="vault_empty_state_text">Il n\'y a pas encore d\'espaces</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

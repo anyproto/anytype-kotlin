@@ -1581,6 +1581,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chats_edit_message">Suting pesan</string>
     <string name="chats_message_edited">disunting</string>
     <string name="chat_empty_state_message">Belum ada pesan.\nJadilah yang memulai diskusi!</string>
+    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_share_invite_button">Bagikan tautan undangan</string>
     <string name="write_a_message">Tulis pesan …</string>
     <string name="date_layout_mentioned_in">Sebutan</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>
@@ -1592,6 +1595,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chats_reply">Balas</string>
     <string name="chats_add_reaction">Tambahkan Reaksi</string>
+    <string name="chat_send_message_rate_limit_title">Bentar-bentar, banter banget!</string>
+    <string name="chat_send_message_rate_limit_desc">Sepertinya kamu mengirimkan terlalu banyak pesan. Tunggu sebentar sebelum mengirim pesan lagi.</string>
     <string name="object_type_empty_items_title">Di sini kosong.</string>
     <string name="object_type_empty_items_subtitle">Buat objek pertamamu untuk memulai.</string>
     <string name="object_type_menu_delete">Hapus seluruhnya</string>
@@ -1774,4 +1779,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_space">Ruang</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
+    <string name="chat_new_messages_section_text">New messages</string>
 </resources>

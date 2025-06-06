@@ -593,10 +593,17 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
                             }
+                            val path = if (attachment.capturedByCamera) {
+                                withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }.orEmpty()
+                            } else {
+                                attachment.uri
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri,
+                                    path = path,
                                     type = if (attachment.isVideo)
                                         Block.Content.File.Type.VIDEO
                                     else
@@ -621,6 +628,7 @@ class ChatViewModel @Inject constructor(
                                     )
                                 }
                             }.onFailure {
+                                Timber.e(it, "DROID-2966 Error while uploading file as attachment")
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                     set(
                                         index = idx,
@@ -1010,7 +1018,8 @@ class ChatViewModel @Inject constructor(
         chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = uri.uri,
-                isVideo = uri.isVideo
+                isVideo = uri.isVideo,
+                capturedByCamera = uri.capturedByCamera
             )
         }
     }
@@ -1451,7 +1460,8 @@ class ChatViewModel @Inject constructor(
 
     data class ChatBoxMediaUri(
         val uri: String,
-        val isVideo: Boolean = false
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false
     )
 
     sealed class ViewModelCommand {

@@ -256,7 +256,8 @@ fun ChatScreenWrapper(
                     uris = listOf(
                         ChatViewModel.ChatBoxMediaUri(
                             uri = it.toString(),
-                            isVideo = false
+                            isVideo = false,
+                            capturedByCamera = true
                         )
                     )
                 )

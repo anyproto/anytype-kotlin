@@ -1,7 +1,8 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -26,11 +27,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.DecodeFormat
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 
-@OptIn(ExperimentalGlideComposeApi::class)
+@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun BubbleGalleryRowLayout(
     images: List<ChatView.Message.Attachment.Image>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -64,9 +66,14 @@ fun BubbleGalleryRowLayout(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(shape = RoundedCornerShape(12.dp))
-                        .clickable {
-                            onAttachmentClicked(image)
-                        }
+                        .combinedClickable(
+                            onClick = {
+                                onAttachmentClicked(image)
+                            },
+                            onLongClick = {
+                                onAttachmentLongClicked(image)
+                            }
+                        )
                 ) {
                     it
                         .override(512, 512)

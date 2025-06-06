@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -24,7 +25,8 @@ import timber.log.Timber
 class DateProviderImpl @Inject constructor(
     private val defaultZoneId: ZoneId,
     private val localeProvider: LocaleProvider,
-    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+    private val stringResourceProvider: StringResourceProvider
 ) : DateProvider {
 
     private val defaultDateFormat get() = appDefaultDateFormatProvider.provide()
@@ -148,6 +150,7 @@ class DateProviderImpl @Inject constructor(
         try {
             val locale = localeProvider.locale()
             val formatter = SimpleDateFormat(pattern, locale)
+            formatter.timeZone = java.util.TimeZone.getTimeZone(defaultZoneId)
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
             Timber.e(e, "Error formatting timestamp to date string")
@@ -255,6 +258,38 @@ class DateProviderImpl @Inject constructor(
 
         // Check if the year is within the desired range
         return year in yearRange.first()..yearRange.last()
+    }
+
+    override fun getChatPreviewDate(
+        timeInSeconds: TimeInSeconds,
+        timeStyle: Int
+    ): String {
+        val dateType = calculateDateType(timeInSeconds)
+        val timestamp = timeInSeconds * 1000 // Convert seconds to milliseconds
+
+        return when (dateType) {
+            DateType.TODAY -> {
+                // Show time in HH:mm format
+                formatToDateString(timestamp, "HH:mm")
+            }
+            DateType.YESTERDAY -> {
+                // Show "Yesterday" localized
+                stringResourceProvider.getYesterday()
+            }
+            else -> {
+                // Check if it's current year
+                val currentYear = getLocalDateOfTime(System.currentTimeMillis()).year
+                val messageYear = getLocalDateOfTime(timestamp).year
+
+                if (currentYear == messageYear) {
+                    // Show "MMM d" format (e.g., "Apr 12")
+                    formatToDateString(timestamp, "MMM d")
+                } else {
+                    // Show "MMM d, yyyy" format (e.g., "Apr 12, 2024")
+                    formatToDateString(timestamp, "MMM d, yyyy")
+                }
+            }
+        }
     }
 }
 

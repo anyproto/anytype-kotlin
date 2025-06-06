@@ -55,6 +55,15 @@ interface ChatPreviewContainer {
                     .scan(initial = initial) { previews, events ->
                         events.fold(previews) { state, event ->
                             when (event) {
+                                is Event.Command.Chats.Add -> {
+                                    state.map { preview ->
+                                        if (preview.chat == event.context) {
+                                            preview.copy(message = event.message)
+                                        } else {
+                                            preview
+                                        }
+                                    }
+                                }
                                 is Event.Command.Chats.Update -> {
                                     state.map { preview ->
                                         if (preview.chat == event.context && preview.message?.id == event.id) {

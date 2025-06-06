@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -71,7 +72,8 @@ fun ShareInviteLinkCardOwnerPreview() {
 fun GenerateInviteLinkCardPreview() {
     GenerateInviteLinkCard(
         modifier = Modifier,
-        onGenerateInviteLinkClicked = {}
+        onGenerateInviteLinkClicked = {},
+        isLoading = false
     )
 }
 
@@ -203,7 +205,8 @@ fun ShareInviteLinkCard(
 @Composable
 fun GenerateInviteLinkCard(
     modifier: Modifier = Modifier,
-    onGenerateInviteLinkClicked: () -> Unit
+    onGenerateInviteLinkClicked: () -> Unit,
+    isLoading: Boolean = false
 ) {
     ElevatedCard(
         modifier = modifier,
@@ -240,13 +243,14 @@ fun GenerateInviteLinkCard(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
         ) {
-            ButtonPrimary(
+            ButtonPrimaryLoading(
                 text = stringResource(R.string.multiplayer_generate_invite_link),
                 onClick = onGenerateInviteLinkClicked,
                 size = ButtonSize.Large,
-                modifier = Modifier
+                modifierButton = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(48.dp),
+                loading = isLoading
             )
         }
         Spacer(modifier = Modifier.height(20.dp))

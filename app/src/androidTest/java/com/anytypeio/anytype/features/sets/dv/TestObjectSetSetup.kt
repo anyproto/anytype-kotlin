@@ -69,6 +69,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -87,6 +88,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -244,7 +246,10 @@ abstract class TestObjectSetSetup {
     private val dateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
         localeProvider = localeProvider,
-        appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider)
+        appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider),
+        stringResourceProvider = mock(
+            StringResourceProvider::class.java
+        )
     )
 
     open fun setup() {

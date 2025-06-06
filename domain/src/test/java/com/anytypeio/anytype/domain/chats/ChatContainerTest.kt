@@ -483,7 +483,10 @@ class ChatContainerTest {
             )
 
             assertEquals(
-                expected = ChatContainer.Intent.ScrollToMessage(id = "90"),
+                expected = ChatContainer.Intent.ScrollToMessage(
+                    id = "90",
+                    startOfUnreadMessageSection = true
+                ),
                 actual = initial.intent,
             )
 

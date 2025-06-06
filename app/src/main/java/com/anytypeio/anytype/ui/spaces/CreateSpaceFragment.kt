@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -86,24 +87,38 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                             is CreateSpaceViewModel.Command.SwitchSpace -> {
                                 runCatching {
                                     findNavController().navigate(R.id.exitToVaultAction)
-                                    findNavController().navigate(
-                                        R.id.actionOpenSpaceFromVault,
-                                        args = HomeScreenFragment.args(
-                                            space = command.space.id,
-                                            deeplink = null
-                                        )
-                                    )
-                                    command.startingObject
-                                        ?.takeIf { it.isNotEmpty() }
-                                        ?.let { startingObject ->
-                                            findNavController().navigate(
-                                                R.id.objectNavigation,
-                                                EditorFragment.args(
-                                                    ctx = startingObject,
-                                                    space = command.space.id
-                                                )
+                                    
+                                    // Check if this is a Chat space creation
+                                    if (spaceType == TYPE_CHAT) {
+                                        // For Chat spaces, navigate directly to chat screen
+                                        findNavController().navigate(
+                                            R.id.actionOpenChatFromVault,
+                                            ChatFragment.args(
+                                                space = command.space.id,
+                                                ctx = command.space.id // Use space ID as chat context for new Chat spaces
                                             )
-                                        }
+                                        )
+                                    } else {
+                                        // For regular spaces, use existing navigation logic
+                                        findNavController().navigate(
+                                            R.id.actionOpenSpaceFromVault,
+                                            args = HomeScreenFragment.args(
+                                                space = command.space.id,
+                                                deeplink = null
+                                            )
+                                        )
+                                        command.startingObject
+                                            ?.takeIf { it.isNotEmpty() }
+                                            ?.let { startingObject ->
+                                                findNavController().navigate(
+                                                    R.id.objectNavigation,
+                                                    EditorFragment.args(
+                                                        ctx = startingObject,
+                                                        space = command.space.id
+                                                    )
+                                                )
+                                            }
+                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while exiting to vault or opening created space")
                                 }

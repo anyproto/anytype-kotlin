@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.chats
 
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,12 +10,13 @@ import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -22,11 +24,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -41,10 +46,11 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.intents.SystemAction
-import com.anytypeio.anytype.core_utils.intents.SystemAction.*
+import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
+import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
+import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -62,6 +68,9 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
+import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -91,8 +100,13 @@ class ChatFragment : BaseComposeFragment() {
                     val notificationsSheetState =
                         rememberModalBottomSheetState(skipPartiallyExpanded = true)
                     var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+                    val inviteModalState = vm.inviteModalState.collectAsStateWithLifecycle().value
                     val showNotificationPermissionDialog =
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
+                    val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
+                    val isGeneratingInviteLink = vm.isGeneratingInviteLink.collectAsStateWithLifecycle().value
+
+                    ErrorScreen()
 
                     Column(
                         modifier = Modifier
@@ -113,7 +127,7 @@ class ChatFragment : BaseComposeFragment() {
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onMarkupLinkClicked = { proceedWithAction(SystemAction.OpenUrl(it)) },
+                            onMarkupLinkClicked = { proceedWithAction(OpenUrl(it)) },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,
                             onViewChatReaction = { msg, emoji ->
@@ -183,6 +197,65 @@ class ChatFragment : BaseComposeFragment() {
                         }
                     } else {
                         componentManager().globalSearchComponent.release()
+                    }
+
+                    when (inviteModalState) {
+                        is ChatViewModel.InviteModalState.ShowShareCard -> {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    vm.onInviteModalDismissed()
+                                },
+                                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                                dragHandle = null
+                            ) {
+                                ShareInviteLinkCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .background(
+                                            shape = RoundedCornerShape(16.dp),
+                                            color = colorResource(id = R.color.widget_background)
+                                        ),
+                                    link = inviteModalState.link,
+                                    isCurrentUserOwner = canCreateInviteLink,
+                                    onShareInviteClicked = { vm.onShareInviteLinkFromCardClicked() },
+                                    onDeleteLinkClicked = { vm.onDeleteLinkClicked() },
+                                    onShowQrCodeClicked = { vm.onShareQrCodeClicked() }
+                                )
+                            }
+                        }
+                        is ChatViewModel.InviteModalState.ShowGenerateCard -> {
+                            ModalBottomSheet(
+                                onDismissRequest = {
+                                    vm.onInviteModalDismissed()
+                                },
+                                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                                containerColor = Color.Transparent,
+                                contentColor = Color.Transparent,
+                                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                                dragHandle = null
+                            ) {
+                                GenerateInviteLinkCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp)
+                                        .background(
+                                            shape = RoundedCornerShape(16.dp),
+                                            color = colorResource(id = R.color.widget_background)
+                                        ),
+                                    onGenerateInviteLinkClicked = {
+                                        vm.onGenerateInviteLinkClicked()
+                                    },
+                                    isLoading = isGeneratingInviteLink
+                                )
+                            }
+                        }
+                        ChatViewModel.InviteModalState.Hidden -> {
+                            // No modal shown
+                        }
                     }
                 }
                 LaunchedEffect(Unit) {
@@ -306,6 +379,42 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
                             }
+                            is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
+                                runCatching {
+                                    val intent = Intent().apply {
+                                        action = Intent.ACTION_SEND
+                                        putExtra(Intent.EXTRA_TEXT, command.link)
+                                        type = "text/plain"
+                                    }
+                                    startActivity(Intent.createChooser(intent, null))
+                                }.onFailure {
+                                    Timber.e(it, "Error while sharing invite link")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ShareQrCode -> {
+                                runCatching {
+                                    Timber.d("ShareQrCode command received with link: ${command.link}")
+                                    toast("QR Code sharing - to be implemented")
+                                }.onFailure {
+                                    Timber.e(it, "Error while opening QR code")
+                                }
+                            }
+                            is ChatViewModel.ViewModelCommand.ShowDeleteLinkWarning -> {
+                                runCatching {
+                                    val dialog = DeleteSpaceInviteLinkWarning()
+                                    dialog.onAccepted = {
+                                        vm.onDeleteLinkAccepted().also {
+                                            dialog.dismiss()
+                                        }
+                                    }
+                                    dialog.onCancelled = {
+                                        // Do nothing.
+                                    }
+                                    dialog.show(childFragmentManager, null)
+                                }.onFailure {
+                                    Timber.e(it, "Error while showing delete link warning")
+                                }
+                            }
                         }
                     }
                 }
@@ -347,6 +456,25 @@ class ChatFragment : BaseComposeFragment() {
 
     override fun onApplyWindowRootInsets(view: View) {
         // Do not apply.
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen() {
+        val errorStateScreen = vm.errorState.collectAsStateWithLifecycle()
+        when (val state = errorStateScreen.value) {
+            ChatViewModel.UiErrorState.Hidden -> {
+                // Do nothing
+            }
+            is ChatViewModel.UiErrorState.Show -> {
+                BaseAlertDialog(
+                    dialogText = state.msg,
+                    buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                    onButtonClick = vm::hideError,
+                    onDismissRequest = vm::hideError
+                )
+            }
+        }
     }
 
     companion object {

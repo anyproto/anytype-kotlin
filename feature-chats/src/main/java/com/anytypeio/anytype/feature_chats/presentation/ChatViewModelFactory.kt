@@ -13,6 +13,10 @@ import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
+import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -43,7 +47,11 @@ class ChatViewModelFactory @Inject constructor(
     private val createObjectFromUrl: CreateObjectFromUrl,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val spacePermissionProvider: UserPermissionProvider,
-    private val notificationBuilder: NotificationBuilder
+    private val notificationBuilder: NotificationBuilder,
+    private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val makeSpaceShareable: MakeSpaceShareable,
+    private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val revokeSpaceInviteLink: RevokeSpaceInviteLink
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -66,6 +74,10 @@ class ChatViewModelFactory @Inject constructor(
         createObjectFromUrl = createObjectFromUrl,
         notificationPermissionManager = notificationPermissionManager,
         spacePermissionProvider = spacePermissionProvider,
-        notificationBuilder = notificationBuilder
+        notificationBuilder = notificationBuilder,
+        generateSpaceInviteLink = generateSpaceInviteLink,
+        makeSpaceShareable = makeSpaceShareable,
+        getSpaceInviteLink = getSpaceInviteLink,
+        revokeSpaceInviteLink = revokeSpaceInviteLink
     ) as T
 }

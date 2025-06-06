@@ -30,6 +30,10 @@ interface DateProvider {
     fun isSameMinute(timestamp1: Long, timestamp2: Long): Boolean
     fun getLocalDateOfTime(epochMilli: Long): LocalDate
     fun isTimestampWithinYearRange(timeStampInMillis: Long, yearRange: IntRange): Boolean
+    fun getChatPreviewDate(
+        timeInSeconds: TimeInSeconds,
+        timeStyle: Int = DEFAULT_DATE_FORMAT_STYLE
+    ): String
 }
 
 interface DateTypeNameProvider {

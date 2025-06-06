@@ -10,7 +10,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -116,13 +118,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                     it is WidgetView.SpaceWidget.View
                 } as? WidgetView.SpaceWidget.View)
                 val windowInsetsModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                    Modifier.windowInsetsPadding(WindowInsets.statusBars)
                 } else {
                     Modifier
                 }
 
                 Column(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(windowInsetsModifier)
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,
@@ -182,8 +186,14 @@ class HomeScreenFragment : BaseComposeFragment(),
         modifier: Modifier = Modifier,
         showSpaceWidget: Boolean = true
     ) {
+        val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+            modifier.windowInsetsPadding(WindowInsets.navigationBars)
+        } else {
+            modifier
+        }
+        
         HomeScreen(
-            modifier = modifier,
+            modifier = contentModifier,
             widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
@@ -566,6 +576,10 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
+    }
+
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do nothing. Compose code will handle insets.
     }
 
     companion object {

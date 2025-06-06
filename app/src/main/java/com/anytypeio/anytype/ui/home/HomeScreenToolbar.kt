@@ -121,16 +121,22 @@ fun HomeScreenToolbar(
                 }
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_vault_settings),
-            contentDescription = "Settings icon",
+        Box(
             modifier = Modifier
+                .fillMaxHeight()
+                .width(56.dp)
                 .align(Alignment.CenterEnd)
-                .padding(end = 17.dp)
                 .noRippleClickable {
                     onSettingsClicked()
-                }
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_vault_settings),
+                contentDescription = "Settings icon",
+                modifier = Modifier
+            )
+        }
     }
 }
 

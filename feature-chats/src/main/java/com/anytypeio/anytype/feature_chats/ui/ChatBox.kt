@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import android.Manifest
 import android.net.Uri
 import android.util.Patterns
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -73,6 +74,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -136,9 +138,13 @@ fun ChatBox(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Proceed to camera capture
+            launchCamera(
+                context = context,
+                launcher = cameraLauncher,
+                onUriReceived = { capturedImageUri = it.toString() }
+            )
         } else {
-            // Show rationale or error
+            context.toast(context.getString(R.string.chat_camera_permission_denied))
         }
     }
 
@@ -299,13 +305,7 @@ fun ChatBox(
                                     },
                                     onClick = {
                                         showDropdownMenu = false
-                                        launchCamera(
-                                            context = context,
-                                            launcher = cameraLauncher,
-                                            onUriReceived = {
-                                                capturedImageUri = it.toString()
-                                            }
-                                        )
+                                        permissionLauncher.launch(Manifest.permission.CAMERA)
                                     }
                                 )
                                 Divider(
@@ -542,13 +542,7 @@ fun ChatBox(
                     )
                 },
                 onCameraCaptureClicked = {
-                    launchCamera(
-                        context = context,
-                        launcher = cameraLauncher,
-                        onUriReceived = {
-                            capturedImageUri = it.toString()
-                        }
-                    )
+                    permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
             )
         }

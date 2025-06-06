@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.home
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +7,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,7 +37,6 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -73,9 +66,9 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
-import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import javax.inject.Inject
 
 class HomeScreenFragment : BaseComposeFragment(),
     ObjectTypeSelectionListener,
@@ -117,16 +110,9 @@ class HomeScreenFragment : BaseComposeFragment(),
                 val view = (vm.views.collectAsStateWithLifecycle().value.find {
                     it is WidgetView.SpaceWidget.View
                 } as? WidgetView.SpaceWidget.View)
-                val windowInsetsModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
-                } else {
-                    Modifier
-                }
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .then(windowInsetsModifier)
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,
@@ -186,14 +172,8 @@ class HomeScreenFragment : BaseComposeFragment(),
         modifier: Modifier = Modifier,
         showSpaceWidget: Boolean = true
     ) {
-        val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            modifier.windowInsetsPadding(WindowInsets.navigationBars)
-        } else {
-            modifier
-        }
-        
         HomeScreen(
-            modifier = contentModifier,
+            modifier = modifier,
             widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
@@ -576,10 +556,6 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing. Compose code will handle insets.
     }
 
     companion object {

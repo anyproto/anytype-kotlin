@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -820,7 +819,6 @@ fun ChatScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Messages(
     modifier: Modifier = Modifier,

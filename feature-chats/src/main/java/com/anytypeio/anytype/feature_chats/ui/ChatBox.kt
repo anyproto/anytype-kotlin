@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.Context
 import android.net.Uri
 import android.util.Patterns
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -68,7 +66,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
-import androidx.core.content.FileProvider
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
@@ -80,8 +77,8 @@ import com.anytypeio.anytype.core_ui.views.ContentMiscChat
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
+import com.anytypeio.anytype.feature_chats.tools.launchCamera
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import java.io.File
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -126,14 +123,15 @@ fun ChatBox(
         onChatBoxFilePicked(uris.take(ChatConfig.MAX_ATTACHMENT_COUNT))
     }
 
-    var imageUriString by rememberSaveable { mutableStateOf<String?>(null) }
+    var capturedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
 
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { isSuccess ->
         if (isSuccess) {
-            Timber.d("DROID-2966 Captured image URI: $imageUriString")
-            onImageCaptured(Uri.parse(imageUriString))
+            onImageCaptured(Uri.parse(capturedImageUri))
+        } else {
+            Timber.w("DROID-2966 Failed to capture image")
         }
     }
 
@@ -290,6 +288,28 @@ fun ChatBox(
                                     onClick = {
                                         showDropdownMenu = false
                                         onAttachObjectClicked()
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_box_camera),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        launchCamera(
+                                            context = context,
+                                            launcher = cameraLauncher,
+                                            onUriReceived = {
+                                                capturedImageUri = it.toString()
+                                            }
+                                        )
                                     }
                                 )
                                 Divider(
@@ -530,35 +550,13 @@ fun ChatBox(
                         context = context,
                         launcher = cameraLauncher,
                         onUriReceived = {
-                            Timber.d("DROID-2966 Captured image URI: $it")
-                            imageUriString = it.toString()
+                            capturedImageUri = it.toString()
                         }
                     )
                 }
             )
         }
     }
-}
-
-fun launchCamera(
-    context: Context,
-    launcher: ManagedActivityResultLauncher<Uri, Boolean>,
-    onUriReceived: (Uri) -> Unit
-) {
-    val photoFile = File.createTempFile("IMG_", ".jpg", context.cacheDir).apply {
-        createNewFile()
-        deleteOnExit()
-    }
-
-    val uri = FileProvider.getUriForFile(
-        context,
-        "${context.packageName}.provider",
-        photoFile
-    )
-
-    onUriReceived(uri)
-
-    launcher.launch(uri)
 }
 
 @Composable

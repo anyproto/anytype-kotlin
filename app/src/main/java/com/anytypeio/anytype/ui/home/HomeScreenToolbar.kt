@@ -3,16 +3,15 @@ package com.anytypeio.anytype.ui.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -23,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -44,16 +43,22 @@ fun HomeScreenToolbar(
             .height(52.dp)
     ) {
 
-        Image(
-            painter = painterResource(R.drawable.ic_default_top_back),
-            contentDescription = "Back button",
+        Box(
             modifier = Modifier
-                .padding(start = 16.dp)
+                .fillMaxHeight()
+                .width(56.dp)
                 .align(Alignment.CenterStart)
                 .noRippleClickable {
                     onBackButtonClicked()
-                }
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_default_top_back),
+                contentDescription = "Back button",
+                modifier = Modifier
+            )
+        }
 
         SpaceIconView(
             modifier = Modifier
@@ -68,7 +73,7 @@ fun HomeScreenToolbar(
 
         Text(
             text = name.ifEmpty { stringResource(R.string.untitled) },
-            style = PreviewTitle2Medium,
+            style = ModalTitle,
             color = colorResource(R.color.text_primary),
             modifier = Modifier
                 .fillMaxWidth()
@@ -116,16 +121,22 @@ fun HomeScreenToolbar(
                 }
         )
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_vault_settings),
-            contentDescription = "Settings icon",
+        Box(
             modifier = Modifier
+                .fillMaxHeight()
+                .width(56.dp)
                 .align(Alignment.CenterEnd)
-                .padding(end = 17.dp)
                 .noRippleClickable {
                     onSettingsClicked()
-                }
-        )
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_vault_settings),
+                contentDescription = "Settings icon",
+                modifier = Modifier
+            )
+        }
     }
 }
 

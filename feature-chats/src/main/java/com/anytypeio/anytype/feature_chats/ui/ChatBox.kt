@@ -50,7 +50,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -107,8 +106,6 @@ fun ChatBox(
 
     val context = LocalContext.current
 
-    val length = text.text.length
-
     // LAUNCHERS
 
     val uploadMediaLauncher = rememberLauncherForActivityResult(
@@ -147,12 +144,11 @@ fun ChatBox(
 
     // END OF LAUNCHERS
 
+    val length = text.text.length
 
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
-
-    val focus = LocalFocusManager.current
 
     var isFocused by remember { mutableStateOf(false) }
 

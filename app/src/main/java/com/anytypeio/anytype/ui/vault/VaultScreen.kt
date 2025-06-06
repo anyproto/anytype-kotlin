@@ -102,6 +102,7 @@ fun VaultScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
             .then(
                 if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)

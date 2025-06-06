@@ -806,8 +806,10 @@ class ChatViewModel @Inject constructor(
                 }
             }
 
-            withContext(dispatchers.io) {
-                clearChatsTempFolder()
+            if (shouldClearChatTempFolder) {
+                withContext(dispatchers.io) {
+                    clearChatsTempFolder()
+                }
             }
         }
     }

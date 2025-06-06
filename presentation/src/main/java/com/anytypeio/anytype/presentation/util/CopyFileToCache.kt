@@ -4,6 +4,9 @@ import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
 import com.anytypeio.anytype.core_utils.ext.msg
+import java.io.File
+import java.io.FileOutputStream
+import java.lang.ref.WeakReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -11,9 +14,6 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
-import java.lang.ref.WeakReference
 
 /**
  * Interface defining the contract for copying files to a cache directory.
@@ -42,6 +42,8 @@ interface CopyFileToCacheDirectory {
      * @return `true` if the operation is active, `false` otherwise.
      */
     fun isActive(): Boolean
+
+    fun delete(uri: String): Boolean
 }
 
 /**
@@ -212,6 +214,37 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
         return result
     }
+
+    override fun delete(uri: String): Boolean {
+        val context = mContext?.get() ?: return false
+        return try {
+            val path = Uri.parse(uri).path ?: return false
+            val file = File(path)
+
+            // Optional: check if file is in cache or external files dir
+            val allowedRoots = listOfNotNull(
+                context.cacheDir?.absolutePath,
+                context.getExternalFilesDir(null)?.absolutePath
+            )
+
+            if (allowedRoots.any { file.absolutePath.startsWith(it) }) {
+                if (!file.exists()) {
+                    Timber.w("File does not exist: $path")
+                    return false
+                }
+
+                val deleted = file.delete()
+                Timber.d("Attempting to delete file: $path → deleted=$deleted")
+                deleted
+            } else {
+                Timber.w("Blocked delete attempt outside allowed folders: $path")
+                false
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error deleting file at $uri")
+            false
+        }
+    }
 }
 
 /**
@@ -328,6 +361,19 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             }
         }
         return result
+    }
+
+    override fun delete(uri: String): Boolean {
+        val context = mContext?.get() ?: return false
+        return try {
+            val file = File(Uri.parse(uri).path ?: return false)
+            val deleted = file.delete()
+            Timber.d("Attempting to delete file by uri: $uri → $deleted")
+            deleted
+        } catch (e: Exception) {
+            Timber.e(e, "Error deleting file by uri: $uri")
+            false
+        }
     }
 
     companion object {

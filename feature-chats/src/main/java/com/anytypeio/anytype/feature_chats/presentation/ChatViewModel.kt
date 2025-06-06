@@ -124,6 +124,7 @@ class ChatViewModel @Inject constructor(
     val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
     val isGeneratingInviteLink = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
+    val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
@@ -1131,7 +1132,9 @@ class ChatViewModel @Inject constructor(
                     Timber.e(error, "Error while making space shareable")
                     isGeneratingInviteLink.value = false
                     inviteModalState.value = InviteModalState.Hidden
-                    // TODO: Handle error properly
+                    errorState.value = UiErrorState.Show(
+                        "Failed to make space shareable. Please try again."
+                    )
                 }
             )
         } else {
@@ -1162,7 +1165,9 @@ class ChatViewModel @Inject constructor(
                 Timber.e(error, "Error while generating invite link")
                 isGeneratingInviteLink.value = false
                 inviteModalState.value = InviteModalState.Hidden
-                // TODO: Handle error properly
+                errorState.value = UiErrorState.Show(
+                    "Failed to generate invite link. Please try again."
+                )
             }
         )
     }
@@ -1239,7 +1244,9 @@ class ChatViewModel @Inject constructor(
                     onFailure = { e ->
                         Timber.e(e, "Error while revoking space invite link")
                         inviteModalState.value = InviteModalState.Hidden
-                        // TODO: Handle error properly
+                        errorState.value = UiErrorState.Show(
+                            "Failed to delete invite link. Please try again."
+                        )
                     }
                 )
             } else {
@@ -1423,6 +1430,10 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun hideError() {
+        errorState.value = UiErrorState.Hidden
+    }
+
     private fun proceedWithSpaceSubscription() {
         viewModelScope.launch {
             spaceViews.observe().collect { spaces ->
@@ -1519,6 +1530,11 @@ class ChatViewModel @Inject constructor(
             val title: String,
             val showIcon: Boolean
         ) : HeaderView()
+    }
+
+    sealed class UiErrorState {
+        data object Hidden : UiErrorState()
+        data class Show(val msg: String) : UiErrorState()
     }
 
     sealed class Params {

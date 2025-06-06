@@ -24,11 +24,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -68,6 +70,7 @@ import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -102,6 +105,8 @@ class ChatFragment : BaseComposeFragment() {
                         vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
                     val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
                     val isGeneratingInviteLink = vm.isGeneratingInviteLink.collectAsStateWithLifecycle().value
+
+                    ErrorScreen()
 
                     Column(
                         modifier = Modifier
@@ -451,6 +456,25 @@ class ChatFragment : BaseComposeFragment() {
 
     override fun onApplyWindowRootInsets(view: View) {
         // Do not apply.
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen() {
+        val errorStateScreen = vm.errorState.collectAsStateWithLifecycle()
+        when (val state = errorStateScreen.value) {
+            ChatViewModel.UiErrorState.Hidden -> {
+                // Do nothing
+            }
+            is ChatViewModel.UiErrorState.Show -> {
+                BaseAlertDialog(
+                    dialogText = state.msg,
+                    buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
+                    onButtonClick = vm::hideError,
+                    onDismissRequest = vm::hideError
+                )
+            }
+        }
     }
 
     companion object {

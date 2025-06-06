@@ -10,9 +10,11 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -66,6 +68,11 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
+        val (uxType, useCase) = if (withChat) {
+            SpaceUxType.CHAT to SpaceCreationUseCase.NONE
+        } else {
+            SpaceUxType.DATA to SpaceCreationUseCase.EMPTY_MOBILE
+        }
         viewModelScope.launch {
             val params = CreateSpace.Params(
                 details = mapOf(
@@ -73,9 +80,10 @@ class CreateSpaceViewModel(
                     Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
                         is SpaceIconView.Placeholder -> icon.color.index.toDouble()
                         else -> SystemColor.SKY.index.toDouble()
-                    }
+                    },
+                    Relations.SPACE_UX_TYPE to uxType.code.toDouble()
                 ),
-                shouldApplyEmptyUseCase = true,
+                useCase = useCase,
                 withChat = withChat
             )
             createSpace.stream(params = params).collect { result ->

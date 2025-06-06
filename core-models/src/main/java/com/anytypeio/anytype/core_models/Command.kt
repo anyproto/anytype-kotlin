@@ -478,7 +478,7 @@ sealed class Command {
     data class CreateSpace(
         val details: Struct,
         val withChat: Boolean,
-        val shouldApplyEmptyUseCase: Boolean
+        val useCase: SpaceCreationUseCase
     ) {
         data class Result(
             val space: SpaceId,

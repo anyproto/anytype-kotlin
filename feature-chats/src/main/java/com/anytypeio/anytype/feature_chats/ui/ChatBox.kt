@@ -63,6 +63,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
@@ -209,7 +210,6 @@ fun ChatBox(
                         .clip(CircleShape)
                         .clickable {
                             scope.launch {
-                                focus.clearFocus(force = true)
                                 showDropdownMenu = true
                             }
                         }
@@ -242,7 +242,8 @@ fun ChatBox(
                                     .align(Alignment.BottomEnd)
                                     .defaultMinSize(
                                         minWidth = 252.dp
-                                    )
+                                    ),
+                                properties = PopupProperties(focusable = false)
                             ) {
                                 DropdownMenuItem(
                                     text = {
@@ -820,7 +821,8 @@ fun ChatBoxEditPanel(
                         .align(Alignment.BottomEnd)
                         .defaultMinSize(
                             minWidth = 252.dp
-                        )
+                        ),
+                    properties = PopupProperties(focusable = false)
                 ) {
                     DropdownMenuItem(
                         text = {

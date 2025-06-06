@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -73,7 +73,7 @@ fun HomeScreenToolbar(
 
         Text(
             text = name.ifEmpty { stringResource(R.string.untitled) },
-            style = PreviewTitle2Medium,
+            style = ModalTitle,
             color = colorResource(R.color.text_primary),
             modifier = Modifier
                 .fillMaxWidth()

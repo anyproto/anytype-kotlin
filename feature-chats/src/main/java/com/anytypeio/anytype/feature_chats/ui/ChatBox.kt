@@ -129,6 +129,7 @@ fun ChatBox(
     ) { isSuccess ->
         if (isSuccess) {
             onImageCaptured(Uri.parse(capturedImageUri))
+            capturedImageUri = null
         } else {
             Timber.w("DROID-2966 Failed to capture image")
         }

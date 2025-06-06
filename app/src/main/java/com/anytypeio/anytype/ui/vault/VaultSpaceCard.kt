@@ -209,7 +209,7 @@ private fun BoxScope.ContentChat(
                 )
             } else {
                 Text(
-                    text = subtitle,
+                    text = subtitle.ifEmpty { stringResource(id = R.string.chat) },
                     style = Title2,
                     color = colorResource(id = R.color.text_secondary),
                     modifier = Modifier.weight(1f),

@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -101,15 +102,13 @@ fun VaultScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                color = colorResource(id = R.color.background_primary)
-            )
             .then(
                 if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier.windowInsetsPadding(WindowInsets.systemBars)
                 else
                     Modifier
             ),
+        backgroundColor = colorResource(id = R.color.background_primary),
         topBar = {
             VaultScreenToolbar(
                 profile = profile,

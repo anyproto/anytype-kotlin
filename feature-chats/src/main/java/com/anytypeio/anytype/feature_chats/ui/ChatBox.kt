@@ -127,7 +127,7 @@ fun ChatBox(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { isSuccess ->
-        if (isSuccess) {
+        if (isSuccess && capturedImageUri != null) {
             onImageCaptured(Uri.parse(capturedImageUri))
             capturedImageUri = null
         } else {

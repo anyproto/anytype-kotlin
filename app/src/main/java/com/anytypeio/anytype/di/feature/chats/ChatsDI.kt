@@ -15,6 +15,10 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
+import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -105,4 +109,8 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun storelessSubscriptionContainer(): StorelessSubscriptionContainer
     fun notificationBuilder(): NotificationBuilder
+    fun generateSpaceInviteLink(): GenerateSpaceInviteLink
+    fun makeSpaceShareable(): MakeSpaceShareable
+    fun getSpaceInviteLink(): GetSpaceInviteLink
+    fun revokeSpaceInviteLink(): RevokeSpaceInviteLink
 }

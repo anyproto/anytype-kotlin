@@ -172,7 +172,9 @@
         android:label="Chat" >
         <action
             android:id="@+id/actionOpenWidgetsFromChat"
-            app:destination="@id/homeScreen" />
+            app:destination="@id/homeScreen"
+            app:popUpTo="@id/vaultScreen"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <dialog

@@ -122,9 +122,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 }
 
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .then(windowInsetsModifier)
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     HomeScreenToolbar(
                         spaceIconView = view?.icon ?: SpaceIconView.Loading,

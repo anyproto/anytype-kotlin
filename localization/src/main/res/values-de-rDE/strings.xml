@@ -823,7 +823,7 @@
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="personal">Standard</string>
     <string name="create_space">Create space</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_chat">Chat erstellen</string>
     <string name="create_space_change_icon">Symbol ändern</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
@@ -1011,7 +1011,7 @@
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
     <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Enthüllen und kopieren</string>
     <string name="onboarding_key_skip">Überspringen</string>
     <string name="onboarding_key_not_now">Nicht jetzt</string>
     <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
@@ -1589,12 +1589,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
     <string name="copy">Kopieren</string>
-    <string name="copy_text">Copy Text</string>
+    <string name="copy_text">Text kopieren</string>
     <string name="copy_plain_text">Klartext kopieren</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_title">Dieser Chat ist leer.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
     <string name="chat_empty_state_share_invite_button">Einladungslink teilen</string>
     <string name="write_a_message">Eine Nachricht schreiben...</string>
@@ -1655,7 +1655,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="day_of_week_saturday">Samstag</string>
     <string name="day_of_week_sunday">Sonntag</string>
     <string name="file">Datei</string>
-    <string name="attachment">Attachment</string>
+    <string name="attachment">Anhang</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; Leute</string>
@@ -1782,7 +1782,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_button_continue">Fortfahren</string>
     <string name="onboarding_button_skip">Überspringen</string>
     <string name="onboarding_email_error">Incorrect email</string>
-    <string name="onboarding_name_error">Enter name</string>
+    <string name="onboarding_name_error">Name eingeben</string>
     <string name="notifications_modal_title">Push-Benachrichtigungen einschalten</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Benachrichtigungen aktivieren</string>
@@ -1792,7 +1792,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_create_space">Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
-    <string name="chat_new_messages_section_text">New messages</string>
+    <string name="chat_new_messages_section_text">Neue Nachrichten</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

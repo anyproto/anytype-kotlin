@@ -95,8 +95,6 @@ fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentV
 fragmentTesting = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentVersion" }
 exoPlayerCore = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerVersion" }
 exoPlayerUi = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayerVersion" }
-exoPlayerMedia3 = { module = "androidx.media3:media3-exoplayer", version.ref = "exoplayerMedia3Version" }
-androidXMedia3Ui = { module = "androidx.media3:media3-ui", version.ref = "media3UiVersion" }
 wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVersion" }
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }

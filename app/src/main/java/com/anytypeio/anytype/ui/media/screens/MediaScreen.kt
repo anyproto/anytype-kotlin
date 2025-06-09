@@ -3,17 +3,19 @@ package com.anytypeio.anytype.ui.media.screens
 import android.media.MediaPlayer.MEDIA_INFO_BUFFERING_END
 import android.media.MediaPlayer.MEDIA_INFO_BUFFERING_START
 import android.net.Uri
-import android.widget.MediaController
 import android.widget.VideoView
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,8 +30,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -41,11 +41,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
@@ -63,7 +67,7 @@ fun MediaScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when (mediaType) {
             MediaActivity.TYPE_IMAGE -> ImageViewer(url = url)
-            MediaActivity.TYPE_VIDEO -> VideoPlayer2(url = url)
+            MediaActivity.TYPE_VIDEO -> VideoPlayer(url = url)
             else -> UnknownMediaType()
         }
 
@@ -94,25 +98,7 @@ private fun ImageViewer(url: String) {
 
 @Composable
 private fun VideoPlayer(url: String) {
-    val context = LocalContext.current
-
-    AndroidView(
-        factory = { ctx ->
-            VideoView(ctx).apply {
-                setVideoURI(Uri.parse(url))
-                setMediaController(MediaController(ctx).also { it.setAnchorView(this) })
-                setOnPreparedListener { start() }
-            }
-        },
-        modifier = Modifier.fillMaxSize()
-    )
-}
-
-@Composable
-private fun VideoPlayer2(url: String) {
-    val context = LocalContext.current
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
-
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
     var videoDuration by remember { mutableStateOf(0) }
@@ -220,27 +206,18 @@ private fun VideoPlayer2(url: String) {
                         style = BodyCallout,
                         modifier = Modifier.alpha(0.5f)
                     )
-                    Slider(
+                    DotScrubberSlider(
                         value = currentPosition.toFloat(),
                         onValueChange = {
                             userSeeking = true
                             currentPosition = it.toInt()
-                        },
-                        onValueChangeFinished = {
                             videoViewRef.value?.seekTo(currentPosition)
                             userSeeking = false
                         },
-                        valueRange = 0f..(videoDuration.coerceAtLeast(1).toFloat()),
+                        valueRange = 0f..videoDuration.coerceAtLeast(1).toFloat(),
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp)
-                            .alpha(0.5f)
-                        ,
-                        colors = SliderDefaults.colors(
-                            thumbColor = Color.White,
-                            activeTrackColor = Color.White,
-                            inactiveTrackColor = Color.White.copy(alpha = 0.3f)
-                        )
                     )
                     Text(
                         text = formatMillis(videoDuration),
@@ -295,14 +272,6 @@ private fun VideoPlayer2(url: String) {
     }
 }
 
-// Format milliseconds to mm:ss
-private fun formatMillis(millis: Int): String {
-    val totalSeconds = millis / 1000
-    val minutes = totalSeconds / 60
-    val seconds = totalSeconds % 60
-    return "%d:%02d".format(minutes, seconds)
-}
-
 @Composable
 private fun UnknownMediaType() {
     Box(
@@ -314,4 +283,83 @@ private fun UnknownMediaType() {
             style = MaterialTheme.typography.bodyLarge
         )
     }
+}
+
+@Composable
+fun DotScrubberSlider(
+    value: Float,
+    onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
+    trackHeight: Dp = 4.dp,
+    dotRadius: Dp = 6.dp
+) {
+    val density = LocalDensity.current
+    val trackHeightPx = with(density) { trackHeight.toPx() }
+    val dotRadiusPx = with(density) { dotRadius.toPx() }
+
+    var sliderWidth by remember { mutableStateOf(1f) }
+
+    BoxWithConstraints(
+        modifier = modifier
+            .height(dotRadius * 2)
+            .fillMaxWidth()
+            .pointerInput(Unit) {
+                detectTapGestures { offset ->
+                    val ratio = offset.x / size.width
+                    val newValue = (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
+                        .coerceIn(valueRange)
+                    onValueChange(newValue)
+                }
+            }
+    ) {
+        sliderWidth = constraints.maxWidth.toFloat()
+
+        val valueRatio = (value - valueRange.start) / (valueRange.endInclusive - valueRange.start)
+        val thumbCenterX = sliderWidth * valueRatio
+
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            // Inactive track
+            drawRoundRect(
+                color = Color.White.copy(alpha = 0.3f),
+                topLeft = Offset(0f, size.height / 2 - trackHeightPx / 2),
+                size = Size(size.width, trackHeightPx),
+                cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2)
+            )
+
+            // Active track
+            drawRoundRect(
+                color = Color.White,
+                topLeft = Offset(0f, size.height / 2 - trackHeightPx / 2),
+                size = Size(thumbCenterX, trackHeightPx),
+                cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2)
+            )
+
+            // Thumb dot
+            drawCircle(
+                color = Color.White,
+                radius = dotRadiusPx,
+                center = Offset(thumbCenterX, size.height / 2)
+            )
+        }
+
+        // Drag support
+        Modifier
+            .pointerInput(Unit) {
+                detectDragGestures { change, _ ->
+                    val x = change.position.x.coerceIn(0f, sliderWidth)
+                    val newRatio = x / sliderWidth
+                    val newValue = valueRange.start + newRatio * (valueRange.endInclusive - valueRange.start)
+                    onValueChange(newValue.coerceIn(valueRange))
+                }
+            }
+    }
+}
+
+// Format milliseconds to mm:ss
+private fun formatMillis(millis: Int): String {
+    val totalSeconds = millis / 1000
+    val minutes = totalSeconds / 60
+    val seconds = totalSeconds % 60
+    return "%d:%02d".format(minutes, seconds)
 }

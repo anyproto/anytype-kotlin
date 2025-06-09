@@ -2837,7 +2837,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws
-    fun chatReadAllMessages(command: Command.ChatCommand.ReadAll) {
+    fun chatReadAllMessages() {
         val request = Rpc.Chat.ReadAll.Request()
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatReadAll(request) }

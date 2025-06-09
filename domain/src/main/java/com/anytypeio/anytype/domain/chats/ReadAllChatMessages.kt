@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class ReadAllMessages @Inject constructor(
+class ReadAllChatMessages @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, Unit>(dispatchers.io) {

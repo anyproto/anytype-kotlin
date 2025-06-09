@@ -41,9 +41,11 @@ class DebugViewModel @Inject constructor(
                 .async(Unit)
                 .onSuccess {
                     Timber.d("readAllMessages success")
+                    commands.emit(Command.Toast("readAllMessages success"))
                 }
                 .onFailure {
                     Timber.e(it, "readAllMessages failure")
+                    commands.emit(Command.Toast("readAllMessages failure: ${it.message}"))
                 }
         }
     }
@@ -62,6 +64,7 @@ class DebugViewModel @Inject constructor(
     }
 
     sealed class Command {
+        data class Toast(val msg: String): Command()
         data class ExportWorkingDirectory(
             val folderName: String,
             val exportFileName: String

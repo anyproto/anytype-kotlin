@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.ZIP_MIME_TYPE
 import com.anytypeio.anytype.core_utils.tools.zipDirectory
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -48,6 +49,9 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                             folderName = cmd.folderName,
                             exportFileName = cmd.exportFileName
                         )
+                    }
+                    is DebugViewModel.Command.Toast -> {
+                        toast(cmd.msg)
                     }
                 }
             }

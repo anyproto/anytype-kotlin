@@ -12,6 +12,6 @@ class ReadAllChatMessages @Inject constructor(
 ) : ResultInteractor<Unit, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit) {
-        repo.readAllMessages(Command.ChatCommand.ReadAll)
+        repo.readAllMessages()
     }
 }

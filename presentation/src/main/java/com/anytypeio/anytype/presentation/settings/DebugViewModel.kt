@@ -5,12 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ReadAllMessages
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DebugViewModel @Inject constructor(
     private val getAccount: GetAccount,
@@ -39,7 +41,10 @@ class DebugViewModel @Inject constructor(
             readAllMessages
                 .async(Unit)
                 .onSuccess {
-                    // do nothing
+                    Timber.d("readAllMessages success")
+                }
+                .onFailure {
+                    Timber.e(it, "readAllMessages failure")
                 }
         }
     }

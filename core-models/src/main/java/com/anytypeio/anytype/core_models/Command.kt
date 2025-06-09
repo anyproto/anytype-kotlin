@@ -683,7 +683,7 @@ sealed class Command {
             val emoji: String
         ) : ChatCommand()
 
-        data class ReadAll : ChatCommand()
+        data object ReadAll : ChatCommand()
     }
 
     /**

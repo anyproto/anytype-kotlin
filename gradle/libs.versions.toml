@@ -18,8 +18,8 @@ accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
 fragmentVersion = "1.8.6"
 exoplayerVersion = "2.19.1"
-exoplayerMedia3Version = "1.2.0"
-media3UiVersion = "1.2.0"
+exoplayerMedia3Version = "1.7.1"
+media3UiVersion = "1.7.1"
 wireVersion = "4.9.8"
 glideVersion = "4.16.0"
 glideComposeVersion = "1.0.0-beta01"
@@ -96,7 +96,7 @@ fragmentTesting = { module = "androidx.fragment:fragment-testing", version.ref =
 exoPlayerCore = { module = "com.google.android.exoplayer:exoplayer-core", version.ref = "exoplayerVersion" }
 exoPlayerUi = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayerVersion" }
 exoPlayerMedia3 = { module = "androidx.media3:media3-exoplayer", version.ref = "exoplayerMedia3Version" }
-androidXMedia3Ui = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "media3UiVersion" }
+androidXMedia3Ui = { module = "androidx.media3:media3-ui", version.ref = "media3UiVersion" }
 wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVersion" }
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }

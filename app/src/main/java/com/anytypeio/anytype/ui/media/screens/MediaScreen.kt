@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.ui.media.screens
 
+import android.net.Uri
+import android.widget.MediaController
+import android.widget.VideoView
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,17 +13,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.ui.media.MediaActivity
 
@@ -64,24 +62,14 @@ private fun ImageViewer(url: String) {
 
 @Composable
 private fun VideoPlayer(url: String) {
-    val appContext = LocalContext.current.applicationContext
-    val exoPlayer = remember {
-        ExoPlayer.Builder(appContext).build().apply {
-            setMediaItem(MediaItem.fromUri(url))
-            prepare()
-        }
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.release()
-        }
-    }
+    val context = LocalContext.current
 
     AndroidView(
         factory = { ctx ->
-            PlayerView(ctx).apply {
-                player = exoPlayer
+            VideoView(ctx).apply {
+                setVideoURI(Uri.parse(url))
+                setMediaController(MediaController(ctx).also { it.setAnchorView(this) })
+                setOnPreparedListener { start() }
             }
         },
         modifier = Modifier.fillMaxSize()
@@ -99,4 +87,4 @@ private fun UnknownMediaType() {
             style = MaterialTheme.typography.bodyLarge
         )
     }
-} 
+}

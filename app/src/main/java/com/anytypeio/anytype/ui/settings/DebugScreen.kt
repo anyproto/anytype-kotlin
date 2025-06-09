@@ -68,10 +68,10 @@ private fun ActionItem(
         color = colorResource(R.color.text_primary),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
             .clickable {
                 onClick()
             }
+            .padding(20.dp)
     )
 }
 

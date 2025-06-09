@@ -234,8 +234,6 @@ dependencies {
 
     implementation libs.exoPlayerCore
     implementation libs.exoPlayerUi
-//    implementation libs.exoPlayerMedia3
-//    implementation libs.androidXMedia3Ui
 
     implementation libs.amplitude
 

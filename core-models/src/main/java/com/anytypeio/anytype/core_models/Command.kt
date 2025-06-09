@@ -682,6 +682,8 @@ sealed class Command {
             val msg: Id,
             val emoji: String
         ) : ChatCommand()
+
+        data class ReadAll : ChatCommand()
     }
 
     /**

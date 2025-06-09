@@ -25,7 +25,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 
 @Composable
 fun DebugScreen(
-    onExportAllClicked: () -> Unit
+    onExportAllClicked: () -> Unit,
+    onReadAllChats: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -44,6 +45,11 @@ fun DebugScreen(
         ActionItem(
             title = "Export work directory",
             onClick = onExportAllClicked
+        )
+
+        ActionItem(
+            title = "Read all (chats)",
+            onClick = onReadAllChats
         )
 
         Divider()
@@ -73,6 +79,7 @@ private fun ActionItem(
 @Composable
 fun DebugScreenPreview() {
     DebugScreen(
-        onExportAllClicked = {}
+        onExportAllClicked = {},
+        onReadAllChats = {}
     )
 }

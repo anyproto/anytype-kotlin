@@ -1068,7 +1068,11 @@ class BlockDataRepository(
     }
 
     override suspend fun readChatMessages(command: Command.ChatCommand.ReadMessages) {
-        return remote.readChatMessages(command)
+        remote.readChatMessages(command)
+    }
+
+    override suspend fun readAllMessages(command: Command.ChatCommand.ReadAll) {
+        remote.readAllMessages(command)
     }
 
     override suspend fun editChatMessage(command: Command.ChatCommand.EditMessage) {

@@ -24,11 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.ui.media.MediaActivity
 import kotlinx.coroutines.delay
@@ -69,19 +66,6 @@ fun MediaScreen(
             MediaActivity.TYPE_IMAGE -> ImageViewer(url = url)
             MediaActivity.TYPE_VIDEO -> VideoPlayer(url = url)
             else -> UnknownMediaType()
-        }
-
-        IconButton(
-            onClick = onClose,
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(16.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Close,
-                contentDescription = "Close",
-                tint = MaterialTheme.colorScheme.onSurface
-            )
         }
     }
 }
@@ -354,6 +338,16 @@ fun DotScrubberSlider(
                 }
             }
     }
+}
+
+@DefaultPreviews
+@Composable
+private fun MediaScreenVideoPreview() {
+    MediaScreen(
+        url = "",
+        onClose = {},
+        mediaType = MediaActivity.TYPE_VIDEO
+    )
 }
 
 // Format milliseconds to mm:ss

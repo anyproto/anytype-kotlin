@@ -99,7 +99,8 @@ fun Bubble(
     onAddReactionClicked: () -> Unit,
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -186,12 +187,12 @@ fun Bubble(
         ) {
             BubbleAttachments(
                 attachments = attachments,
-                isUserAuthor = isUserAuthor,
                 onAttachmentClicked = onAttachmentClicked,
                 onAttachmentLongClicked = {
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showDropdownMenu = true
-                }
+                },
+                onRequestVideoPlayer = onRequestVideoPlayer
             )
             if (content.msg.isNotEmpty()) {
                 Box(

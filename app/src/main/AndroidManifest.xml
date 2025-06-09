@@ -135,6 +135,10 @@
             android:exported="false"
             android:screenOrientation="fullSensor"
             tools:replace="screenOrientation" />
+        <activity
+            android:name=".ui.media.MediaActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="false" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

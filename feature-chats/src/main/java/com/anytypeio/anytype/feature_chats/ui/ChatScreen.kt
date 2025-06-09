@@ -110,7 +110,8 @@ fun ChatScreenWrapper(
     onMarkupLinkClicked: (String) -> Unit,
     onRequestOpenFullScreenImage: (String) -> Unit,
     onSelectChatReaction: (String) -> Unit,
-    onViewChatReaction: (Id, String) -> Unit
+    onViewChatReaction: (Id, String) -> Unit,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
@@ -260,7 +261,8 @@ fun ChatScreenWrapper(
                         )
                     )
                 )
-            }
+            },
+            onRequestVideoPlayer = onRequestVideoPlayer
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -394,7 +396,8 @@ fun ChatScreen(
     onGoToMentionClicked: () -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -579,7 +582,8 @@ fun ChatScreen(
                 onScrollToReplyClicked = onScrollToReplyClicked,
                 isReadOnly = isReadOnly,
                 onShareInviteClicked = onShareInviteClicked,
-                canCreateInviteLink = canCreateInviteLink
+                canCreateInviteLink = canCreateInviteLink,
+                onRequestVideoPlayer = onRequestVideoPlayer
             )
 
             GoToMentionButton(
@@ -838,7 +842,8 @@ fun Messages(
     onScrollToReplyClicked: (Id) -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
@@ -930,7 +935,8 @@ fun Messages(
                             onViewChatReaction(msg.id, emoji)
                         },
                         onMentionClicked = onMentionClicked,
-                        isReadOnly = isReadOnly
+                        isReadOnly = isReadOnly,
+                        onRequestVideoPlayer = onRequestVideoPlayer
                     )
                 }
                 if (idx == messages.lastIndex) {

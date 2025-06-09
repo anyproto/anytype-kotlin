@@ -89,7 +89,8 @@ fun ChatPreview() {
         onMemberIconClicked = {},
         onMentionClicked = {},
         onScrollToReplyClicked = {},
-        onShareInviteClicked = {}
+        onShareInviteClicked = {},
+        onRequestVideoPlayer = {}
     )
 }
 
@@ -140,7 +141,8 @@ fun ChatPreview2() {
         onMemberIconClicked = {},
         onMentionClicked = {},
         onScrollToReplyClicked = {},
-        onShareInviteClicked = {}
+        onShareInviteClicked = {},
+        onRequestVideoPlayer = {}
     )
 }
 

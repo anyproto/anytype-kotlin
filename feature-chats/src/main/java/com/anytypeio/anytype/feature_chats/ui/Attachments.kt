@@ -60,7 +60,7 @@ fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
-    isUserAuthor: Boolean
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
 ) {
     var isVideoPreviewLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -91,12 +91,8 @@ fun BubbleAttachments(
                             shape = RoundedCornerShape(12.dp)
                         )
                         .combinedClickable(
-                            onClick = {
-                                requestPlayingVideoByOS(attachment, context)
-                            },
-                            onLongClick = {
-                                onAttachmentLongClicked(attachment)
-                            }
+                            onClick = { onRequestVideoPlayer(attachment) },
+                            onLongClick = { onAttachmentLongClicked(attachment) }
                         )
                 ) {
                     if (!isVideoPreviewLoaded) {
@@ -215,7 +211,7 @@ fun BubbleAttachments(
     }
 }
 
-private fun requestPlayingVideoByOS(
+private fun requestPlayingVideoByExternalApps(
     attachment: ChatView.Message.Attachment.Video,
     context: Context
 ) {

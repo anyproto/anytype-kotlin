@@ -2840,7 +2840,7 @@ class Middleware @Inject constructor(
     fun chatReadAllMessages(command: Command.ChatCommand.ReadAll) {
         val request = Rpc.Chat.ReadAll.Request()
         logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.chatReadAllMessages(request) }
+        val (response, time) = measureTimedValue { service.chatReadAll(request) }
         logResponseIfDebug(response, time)
     }
 

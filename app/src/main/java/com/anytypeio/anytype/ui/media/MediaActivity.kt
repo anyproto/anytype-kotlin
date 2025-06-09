@@ -50,6 +50,7 @@ class MediaActivity : ComponentActivity() {
             val intent = Intent(context, MediaActivity::class.java).apply {
                 putExtra(EXTRA_URL, url)
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
+                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             context.startActivity(intent)
         }

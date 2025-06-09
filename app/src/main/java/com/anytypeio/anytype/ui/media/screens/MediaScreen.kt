@@ -9,13 +9,17 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -25,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -35,6 +40,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -44,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.ui.media.MediaActivity
 import kotlinx.coroutines.delay
 
@@ -123,10 +130,10 @@ private fun VideoPlayer2(url: String) {
         }
     }
 
-    // Auto-hide controls after 3 seconds
+    // Auto-hide controls after n seconds
     LaunchedEffect(showControls, isPlaying) {
         if (showControls && isPlaying) {
-            delay(3000)
+            delay(1500)
             showControls = false
         }
     }
@@ -210,7 +217,8 @@ private fun VideoPlayer2(url: String) {
                     Text(
                         text = formatMillis(currentPosition),
                         color = Color.White,
-                        style = MaterialTheme.typography.bodySmall
+                        style = BodyCallout,
+                        modifier = Modifier.alpha(0.5f)
                     )
                     Slider(
                         value = currentPosition.toFloat(),
@@ -226,42 +234,62 @@ private fun VideoPlayer2(url: String) {
                         modifier = Modifier
                             .weight(1f)
                             .padding(horizontal = 8.dp)
+                            .alpha(0.5f)
+                        ,
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.White,
+                            activeTrackColor = Color.White,
+                            inactiveTrackColor = Color.White.copy(alpha = 0.3f)
+                        )
                     )
                     Text(
                         text = formatMillis(videoDuration),
                         color = Color.White,
-                        style = MaterialTheme.typography.bodySmall
+                        style = BodyCallout,
+                        modifier = Modifier.alpha(0.5f)
                     )
                 }
 
+                Spacer(modifier = Modifier.height(8.dp))
 
-
-                // Play/Pause
-                IconButton(
-                    onClick = {
-                        val player = videoViewRef.value ?: return@IconButton
-                        if (player.isPlaying) {
-                            player.pause()
-                            isPlaying = false
-                            showControls = true
-                        } else {
-                            player.start()
-                            isPlaying = true
-                        }
-                    }
-                ) {
-                    if (isPlaying) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_chat_attachment_play),
-                            contentDescription = "Play"
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(R.drawable.ci_stop),
-                            contentDescription = "Pause"
-                        )
-                    }
+                if (!isPlaying) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_chat_attachment_play),
+                        contentDescription = "Play",
+                        modifier = Modifier
+                            .size(18.dp)
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
+                            }
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color.White)
+                            .size(18.dp)
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
+                            }
+                    )
                 }
+
+                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }

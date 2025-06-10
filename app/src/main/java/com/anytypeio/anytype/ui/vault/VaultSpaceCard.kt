@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -34,6 +35,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
@@ -44,6 +47,8 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.chatPreviewTextStyle
@@ -243,84 +248,21 @@ private fun BoxScope.ContentChat(
                 }
             }
             
-            if (creatorName != null && messageText != null) {
-                val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(creatorName)
-                    }
-                    append(": ")
-                    append(messageText)
-                }
-
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = annotatedString,
-                    style = chatPreviewTextStyle,
-                    color = colorResource(id = R.color.text_secondary),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            } else {
-                // Show attachment text if no message text
-                val attachmentText = if (attachmentPreviews.isNotEmpty()) {
-                    val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
-                    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }
-                    val linkCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.LINK }
-                    val totalCount = imageCount + fileCount + linkCount
-                    
-                    when {
-                        // Single link attachment - show object name
-                        linkCount == 1 && imageCount == 0 && fileCount == 0 -> {
-                            attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title ?: "1 Object"
-                        }
-                        // Multiple links only - show "N Objects"
-                        linkCount > 1 && imageCount == 0 && fileCount == 0 -> {
-                            "$linkCount Objects"
-                        }
-                        // Images only
-                        imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
-                            if (imageCount == 1) "1 Image" else "$imageCount Images"
-                        }
-                        // Files only
-                        fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
-                            if (fileCount == 1) "1 Attachment" else "$fileCount Attachments"
-                        }
-                        // Mixed types - show total count as attachments
-                        else -> {
-                            if (totalCount == 1) "1 Attachment" else "$totalCount Attachments"
-                        }
-                    }
-                } else {
-                    ""
-                }
-                
-                Row(
-                    modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    // Show attachment count text only if more than 3 attachments and no message text
-                    val shouldShowAttachmentCount = attachmentPreviews.size > 3 && attachmentText.isNotEmpty()
-                    
-                    if (shouldShowAttachmentCount) {
-                        Text(
-                            text = attachmentText,
-                            style = Title2,
-                            color = colorResource(id = R.color.text_secondary),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    } else {
-                        Text(
-                            text = if (attachmentText.isNotEmpty()) attachmentText else subtitle.ifEmpty { stringResource(id = R.string.chat) },
-                            style = Title2,
-                            color = colorResource(id = R.color.text_secondary),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
+            // Build the text content according to the new logic
+            val displayText = buildChatDisplayText(
+                creatorName = creatorName,
+                messageText = messageText,
+                attachmentPreviews = attachmentPreviews,
+                fallbackSubtitle = subtitle.ifEmpty { stringResource(id = R.string.chat) }
+            )
+            
+            Text(
+                modifier = Modifier.weight(1f),
+                text = displayText,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
 
             Row(
                 modifier = Modifier
@@ -837,6 +779,116 @@ fun ChatWithMultipleLinksOnlyNoText() {
 
 @Composable
 @DefaultPreviews
+fun ChatWithSingleImageNoMessage() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Single Image Demo",
+        icon = SpaceIconView.Placeholder(),
+        creatorName = "Alice",
+        messageTime = "09:00",
+        // Single image, no message: "Alice: [] Image"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithSingleLinkWithMessage() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Single Link With Text",
+        icon = SpaceIconView.Placeholder(),
+        creatorName = "Bob",
+        messageText = "Check this out",
+        messageTime = "10:00",
+        // Single link with message: "Bob: [] API Documentation Check this out"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                title = "API Documentation"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithMultipleImagesNoMessage() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Multiple Images Demo",
+        icon = SpaceIconView.Placeholder(),
+        creatorName = "Charlie",
+        messageTime = "11:00",
+        // Multiple images, no message: "Charlie: [][][] 3 Images"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithMultipleObjectsWithMessage() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Multiple Objects Demo",
+        icon = SpaceIconView.Placeholder(),
+        creatorName = "Dana",
+        messageText = "Here are some resources",
+        messageTime = "12:00",
+        // Multiple objects with message: "Dana: [][][] 3 Objects Here are some resources"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                title = "Documentation"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                title = "Tools"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                title = "Analytics"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
 fun ChatEmpty() {
     VaultChatCard(
         modifier = Modifier
@@ -847,6 +899,262 @@ fun ChatEmpty() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "08:00"
     )
+}
+
+@Composable
+private fun buildChatDisplayText(
+    creatorName: String?,
+    messageText: String?,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    fallbackSubtitle: String
+): AnnotatedString {
+    return buildAnnotatedString {
+        if (creatorName != null) {
+            // Creator name in PreviewTitle2Medium style
+            withStyle(style = SpanStyle(
+                fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                fontWeight = FontWeight.W500,
+                fontSize = 15.sp,
+                letterSpacing = (-0.016).em
+            )) {
+                append(creatorName)
+                append(": ")
+            }
+        }
+        
+        val attachmentCount = attachmentPreviews.size
+        val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
+        val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }
+        val linkCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.LINK }
+        
+        when {
+            // A. attachments size <= 1
+            attachmentCount <= 1 -> {
+                when {
+                    messageText.isNullOrEmpty() -> {
+                        // Single attachment, no message text
+                        when {
+                            imageCount == 1 -> {
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("Image")
+                                }
+                            }
+                            fileCount == 1 -> {
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("File")
+                                }
+                            }
+                            linkCount == 1 -> {
+                                val linkTitle = attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title ?: "Object"
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append(linkTitle)
+                                }
+                            }
+                            else -> {
+                                // No attachments, no message, show fallback
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(fallbackSubtitle)
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        // Single attachment, with message text
+                        when {
+                            linkCount == 1 -> {
+                                // For links: show title + messageText
+                                val linkTitle = attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title ?: "Object"
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append(linkTitle)
+                                    append(" ")
+                                }
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                            else -> {
+                                // For files/images: just show messageText
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // B. attachments size >= 2
+            else -> {
+                when {
+                    messageText.isNullOrEmpty() -> {
+                        // Multiple attachments, no message text
+                        when {
+                            imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
+                                // Images only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$imageCount Images")
+                                }
+                            }
+                            fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
+                                // Files only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$fileCount Files")
+                                }
+                            }
+                            linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
+                                // Objects only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$linkCount Objects")
+                                }
+                            }
+                            else -> {
+                                // Mixed types
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$attachmentCount Attachments")
+                                }
+                            }
+                        }
+                    }
+                    else -> {
+                        // Multiple attachments, with message text
+                        when {
+                            imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
+                                // Images only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$imageCount Images ")
+                                }
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                            fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
+                                // Files only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$fileCount Files ")
+                                }
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                            linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
+                                // Objects only
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$linkCount Objects ")
+                                }
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                            else -> {
+                                // Mixed types
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
+                                    fontWeight = FontWeight.W500,
+                                    fontSize = 15.sp,
+                                    letterSpacing = (-0.016).em
+                                )) {
+                                    append("$attachmentCount Attachments ")
+                                }
+                                withStyle(style = SpanStyle(
+                                    fontFamily = com.anytypeio.anytype.core_ui.views.fontInterRegular,
+                                    fontWeight = FontWeight.W400,
+                                    fontSize = 17.sp,
+                                    letterSpacing = (-0.024).em
+                                )) {
+                                    append(messageText)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 const val MENTION_COUNT_THRESHOLD = 9

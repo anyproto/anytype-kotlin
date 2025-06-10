@@ -2390,6 +2390,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatReadAll(request: Rpc.Chat.ReadAll.Request): Rpc.Chat.ReadAll.Response {
+        val encoded = Service.chatReadAll(
+            Rpc.Chat.ReadAll.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.ReadAll.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.ReadAll.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatReadMessages(request: Rpc.Chat.ReadMessages.Request): Rpc.Chat.ReadMessages.Response {
         val encoded = Service.chatReadMessages(
             Rpc.Chat.ReadMessages.Request.ADAPTER.encode(request)

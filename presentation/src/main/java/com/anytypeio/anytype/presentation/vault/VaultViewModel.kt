@@ -146,10 +146,22 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?
     ): VaultSpaceView {
+        // Debug logging to diagnose the issue
+        Timber.d("Space ${space.id}: Space name: ${space.name}, isLoading=${space.isLoading}, isActive=${space.isActive}, chatPreview=${chatPreview != null}, spaceLocalStatus=${space.spaceLocalStatus}, spaceAccountStatus=${space.spaceAccountStatus}")
+        
         return when {
-            space.isLoading -> createLoadingView(space)
-            chatPreview != null -> createChatView(space, chatPreview)
-            else -> createStandardSpaceView(space)
+            space.isLoading -> {
+                Timber.d("Creating loading view for space ${space.id}")
+                createLoadingView(space)
+            }
+            chatPreview != null -> {
+                Timber.d("Creating chat view for space ${space.id}")
+                createChatView(space, chatPreview)
+            }
+            else -> {
+                Timber.d("Creating standard space view for space ${space.id}")
+                createStandardSpaceView(space)
+            }
         }
     }
 

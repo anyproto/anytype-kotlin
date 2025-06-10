@@ -207,14 +207,15 @@ private fun BoxScope.ContentChat(
             }
         }
         Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val density = LocalDensity.current
             var prefixPx by remember { mutableStateOf(0) }
             val firstLineIndent: TextUnit = with(density) { prefixPx.toSp() }
 
-            Box(modifier = Modifier.fillMaxWidth()){
+            Box(modifier = Modifier.weight(1f) ){
                 Row(
                     modifier = Modifier
                         .onGloballyPositioned { prefixPx = it.size.width }
@@ -304,7 +305,6 @@ private fun BoxScope.ContentChat(
             }
 
             Row(
-                modifier = Modifier.wrapContentWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (unreadMentionCount > 0) {

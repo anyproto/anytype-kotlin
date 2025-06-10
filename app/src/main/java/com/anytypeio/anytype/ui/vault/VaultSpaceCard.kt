@@ -44,6 +44,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.style.TextIndent
+import androidx.compose.ui.unit.TextUnit
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
@@ -204,21 +207,104 @@ private fun BoxScope.ContentChat(
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.weight(1f),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ChatContentWithProperIndent(
-                creatorName = creatorName,
-                messageText = messageText,
-                attachmentPreviews = attachmentPreviews,
-                fallbackSubtitle = subtitle.ifEmpty { stringResource(id = R.string.chat) },
-                modifier = Modifier.weight(1f)
-            )
+            val density = LocalDensity.current
+            var prefixPx by remember { mutableStateOf(0) }
+            val firstLineIndent: TextUnit = with(density) { prefixPx.toSp() }
+
+            Box(modifier = Modifier.fillMaxWidth()){
+                Row(
+                    modifier = Modifier
+                        .onGloballyPositioned { prefixPx = it.size.width }
+                        .wrapContentWidth()
+                        .wrapContentHeight(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    // Show creatorName first if available
+                    if (creatorName != null) {
+                        Text(
+                            text = "$creatorName: ",
+                            style = PreviewTitle2Medium,
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                    }
+
+                    // Show attachment icons after creatorName
+                    if (attachmentPreviews.isNotEmpty()) {
+                        attachmentPreviews.take(3).forEach { preview ->
+                            when (preview.type) {
+                                VaultSpaceView.AttachmentType.IMAGE -> {
+                                    if (!preview.imageUrl.isNullOrEmpty()) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(preview.imageUrl),
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .size(18.dp)
+                                                .clip(RoundedCornerShape(2.dp)),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    } else {
+                                        Image(
+                                            painter = painterResource(R.drawable.ic_mime_image),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                }
+                                VaultSpaceView.AttachmentType.FILE -> {
+                                    val iconResource = preview.mimeType.getMimeIcon(preview.fileExtension)
+                                    Image(
+                                        painter = painterResource(iconResource),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                                VaultSpaceView.AttachmentType.LINK -> {
+                                    val linkIcon =
+                                        preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
+                                    ListWidgetObjectIcon(
+                                        icon = linkIcon,
+                                        modifier = Modifier,
+                                        iconSize = 18.dp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // --- body --------------------
+                val displayText = buildChatContentText(
+                    messageText = messageText,
+                    attachmentPreviews = attachmentPreviews,
+                    fallbackSubtitle = subtitle.ifEmpty { stringResource(id = R.string.chat) }
+                )
+
+                val finalText = buildAnnotatedString {
+                    withStyle(
+                        ParagraphStyle(
+                            textIndent = TextIndent(firstLine = firstLineIndent)
+                        )
+                    ) {
+                        append(displayText)
+                    }
+                }
+
+                Text(
+                    text = finalText,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    color = colorResource(id = R.color.text_secondary),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
 
             Row(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .padding(start = 8.dp),
+                modifier = Modifier.wrapContentWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (unreadMentionCount > 0) {
@@ -860,91 +946,7 @@ fun ChatContentWithProperIndent(
     fallbackSubtitle: String,
     modifier: Modifier = Modifier
 ) {
-    val density = LocalDensity.current
-    var prefixPx by remember { mutableStateOf(0) }
 
-    // --- prefix (measured, but not clipped) -------------------------
-    Row(
-        modifier = Modifier
-            .onGloballyPositioned { prefixPx = it.size.width }
-            .wrapContentWidth()
-            .wrapContentHeight(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Show creatorName first if available
-        if (creatorName != null) {
-            Text(
-                text = "$creatorName: ",
-                style = PreviewTitle2Medium,
-                color = colorResource(id = R.color.text_secondary)
-            )
-        }
-        
-        // Show attachment icons after creatorName
-        if (attachmentPreviews.isNotEmpty()) {
-            Row(
-                modifier = Modifier.padding(end = 6.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                attachmentPreviews.take(3).forEach { preview ->
-                    when (preview.type) {
-                        VaultSpaceView.AttachmentType.IMAGE -> {
-                            if (!preview.imageUrl.isNullOrEmpty()) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(preview.imageUrl),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(18.dp)
-                                        .clip(RoundedCornerShape(2.dp)),
-                                    contentScale = ContentScale.Crop
-                                )
-                            } else {
-                                Image(
-                                    painter = painterResource(R.drawable.ic_mime_image),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-                        }
-                        VaultSpaceView.AttachmentType.FILE -> {
-                            val iconResource = preview.mimeType.getMimeIcon(preview.fileExtension)
-                            Image(
-                                painter = painterResource(iconResource),
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        VaultSpaceView.AttachmentType.LINK -> {
-                            val linkIcon =
-                                preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
-                            ListWidgetObjectIcon(
-                                icon = linkIcon,
-                                modifier = Modifier,
-                                iconSize = 18.dp
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // --- body (indented by the measured prefix) --------------------
-    val displayText = buildChatContentText(
-        messageText = messageText,
-        attachmentPreviews = attachmentPreviews,
-        fallbackSubtitle = fallbackSubtitle
-    )
-    
-    Text(
-        text = displayText,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-        color = colorResource(id = R.color.text_secondary),
-        modifier = modifier
-            //.padding(start = with(density) { prefixPx.toDp() })
-    )
 }
 
 @Composable

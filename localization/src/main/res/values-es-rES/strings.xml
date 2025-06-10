@@ -1574,7 +1574,7 @@ En concreto,
     <string name="onboarding_my_first_space">Mi Primer Espacio</string>
     <string name="all_content_error_unexpected_layout">Error: diseño inesperado</string>
     <string name="all_content_toast_relation_added">Propiedad añadida</string>
-    <string name="all_content_toast_relation_removed">Propiedad quitada</string>
+    <string name="all_content_toast_relation_removed">Propiedad removida</string>
     <string name="all_content_toast_type_added">Tipo de objeto añadido</string>
     <string name="all_content_toast_type_removed">Tipo de objeto eliminado</string>
     <string name="all_content_toast_archived">Objeto archivado</string>
@@ -1793,4 +1793,6 @@ En concreto,
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
     <string name="chat_new_messages_section_text">Mensajes nuevos</string>
+    <string name="chat_box_camera">Cámara</string>
+    <string name="chat_camera_permission_denied">Sin acceso a la cámara</string>
 </resources>

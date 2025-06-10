@@ -1781,4 +1781,6 @@
     <string name="vault_create_space_description">情報とデータの管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
+    <string name="chat_box_camera">カメラ</string>
+    <string name="chat_camera_permission_denied">カメラへのアクセスが拒否されました</string>
 </resources>

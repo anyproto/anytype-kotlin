@@ -3,7 +3,6 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -70,10 +69,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
-import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -113,7 +110,8 @@ fun ChatScreenWrapper(
     onMarkupLinkClicked: (String) -> Unit,
     onRequestOpenFullScreenImage: (String) -> Unit,
     onSelectChatReaction: (String) -> Unit,
-    onViewChatReaction: (Id, String) -> Unit
+    onViewChatReaction: (Id, String) -> Unit,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
@@ -252,7 +250,19 @@ fun ChatScreenWrapper(
             canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
-                .value is ChatBoxMode.ReadOnly
+                .value is ChatBoxMode.ReadOnly,
+            onImageCaptured = {
+                vm.onChatBoxMediaPicked(
+                    uris = listOf(
+                        ChatViewModel.ChatBoxMediaUri(
+                            uri = it.toString(),
+                            isVideo = false,
+                            capturedByCamera = true
+                        )
+                    )
+                )
+            },
+            onRequestVideoPlayer = onRequestVideoPlayer
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -369,6 +379,7 @@ fun ChatScreen(
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
+    onImageCaptured: (Uri) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
@@ -385,7 +396,8 @@ fun ChatScreen(
     onGoToMentionClicked: () -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -570,7 +582,8 @@ fun ChatScreen(
                 onScrollToReplyClicked = onScrollToReplyClicked,
                 isReadOnly = isReadOnly,
                 onShareInviteClicked = onShareInviteClicked,
-                canCreateInviteLink = canCreateInviteLink
+                canCreateInviteLink = canCreateInviteLink,
+                onRequestVideoPlayer = onRequestVideoPlayer
             )
 
             GoToMentionButton(
@@ -803,13 +816,13 @@ fun ChatScreen(
                 },
                 text = text,
                 spans = spans,
-                onUrlInserted = onUrlInserted
+                onUrlInserted = onUrlInserted,
+                onImageCaptured = onImageCaptured
             )
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Messages(
     modifier: Modifier = Modifier,
@@ -829,7 +842,8 @@ fun Messages(
     onScrollToReplyClicked: (Id) -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
-    isReadOnly: Boolean = false
+    isReadOnly: Boolean = false,
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
@@ -921,7 +935,8 @@ fun Messages(
                             onViewChatReaction(msg.id, emoji)
                         },
                         onMentionClicked = onMentionClicked,
-                        isReadOnly = isReadOnly
+                        isReadOnly = isReadOnly,
+                        onRequestVideoPlayer = onRequestVideoPlayer
                     )
                 }
                 if (idx == messages.lastIndex) {

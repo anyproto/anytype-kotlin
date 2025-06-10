@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -51,7 +52,8 @@ class ChatViewModelFactory @Inject constructor(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val revokeSpaceInviteLink: RevokeSpaceInviteLink
+    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
+    private val clearChatsTempFolder: ClearChatsTempFolder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -78,6 +80,7 @@ class ChatViewModelFactory @Inject constructor(
         generateSpaceInviteLink = generateSpaceInviteLink,
         makeSpaceShareable = makeSpaceShareable,
         getSpaceInviteLink = getSpaceInviteLink,
-        revokeSpaceInviteLink = revokeSpaceInviteLink
+        revokeSpaceInviteLink = revokeSpaceInviteLink,
+        clearChatsTempFolder = clearChatsTempFolder
     ) as T
 }

@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
+import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -76,7 +77,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 
 class ChatViewModel @Inject constructor(
     private val vmParams: Params.Default,
@@ -102,7 +102,8 @@ class ChatViewModel @Inject constructor(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val revokeSpaceInviteLink: RevokeSpaceInviteLink
+    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
+    private val clearChatsTempFolder: ClearChatsTempFolder
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -129,11 +130,12 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
+    private var capturedImageUri: String? = null
+
     private var account: Id = ""
 
     init {
-
-//        generateDummyChatHistory()
+        Timber.d("DROID-2966 init")
 
         viewModelScope.launch {
             spacePermissionProvider
@@ -547,6 +549,8 @@ class ChatViewModel @Inject constructor(
 
             val normalizedMarkup = (markup + parsedUrls).sortedBy { it.range.first }
 
+            var shouldClearChatTempFolder = false
+
             chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
                 val currAttachments = chatBoxAttachments.value
@@ -593,16 +597,32 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
                             }
+                            val path = if (attachment.capturedByCamera) {
+                                shouldClearChatTempFolder = true
+                                withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }.orEmpty()
+                            } else {
+                                attachment.uri
+                            }
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
-                                    path = attachment.uri,
+                                    path = path,
                                     type = if (attachment.isVideo)
                                         Block.Content.File.Type.VIDEO
                                     else
                                         Block.Content.File.Type.IMAGE
                                 )
                             ).onSuccess { file ->
+                                withContext(dispatchers.io) {
+                                    val isDeleted = copyFileToCacheDirectory.delete(path)
+                                    if (isDeleted) {
+                                        Timber.d("DROID-2966 Successfully deleted temp file: ${attachment.uri}")
+                                    } else {
+                                        Timber.w("DROID-2966 Error while deleting temp file: ${attachment.uri}")
+                                    }
+                                }
                                 add(
                                     Chat.Message.Attachment(
                                         target = file.id,
@@ -621,6 +641,7 @@ class ChatViewModel @Inject constructor(
                                     )
                                 }
                             }.onFailure {
+                                Timber.e(it, "DROID-2966 Error while uploading file as attachment")
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                     set(
                                         index = idx,
@@ -680,7 +701,7 @@ class ChatViewModel @Inject constructor(
                                         type = Block.Content.File.Type.NONE
                                     )
                                 ).onSuccess { file ->
-                                    // TODO delete file.
+                                    copyFileToCacheDirectory.delete(path)
                                     add(
                                         Chat.Message.Attachment(
                                             target = file.id,
@@ -782,6 +803,12 @@ class ChatViewModel @Inject constructor(
                 }
                 is ChatBoxMode.ReadOnly -> {
                     // Do nothing.
+                }
+            }
+
+            if (shouldClearChatTempFolder) {
+                withContext(dispatchers.io) {
+                    clearChatsTempFolder()
                 }
             }
         }
@@ -1006,17 +1033,18 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
-        Timber.d("onChatBoxMediaPicked: $uris")
+        Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
         chatBoxAttachments.value += uris.map { uri ->
             ChatView.Message.ChatBoxAttachment.Media(
                 uri = uri.uri,
-                isVideo = uri.isVideo
+                isVideo = uri.isVideo,
+                capturedByCamera = uri.capturedByCamera
             )
         }
     }
 
     fun onChatBoxFilePicked(infos: List<DefaultFileInfo>) {
-        Timber.d("onChatBoxFilePicked: $infos")
+        Timber.d("DROID-2966 onChatBoxFilePicked: $infos")
         chatBoxAttachments.value += infos.map { info ->
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
@@ -1451,7 +1479,8 @@ class ChatViewModel @Inject constructor(
 
     data class ChatBoxMediaUri(
         val uri: String,
-        val isVideo: Boolean = false
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false
     )
 
     sealed class ViewModelCommand {

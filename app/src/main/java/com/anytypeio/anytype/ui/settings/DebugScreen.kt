@@ -25,7 +25,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 
 @Composable
 fun DebugScreen(
-    onExportAllClicked: () -> Unit
+    onExportAllClicked: () -> Unit,
+    onReadAllChats: () -> Unit
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -46,6 +47,11 @@ fun DebugScreen(
             onClick = onExportAllClicked
         )
 
+        ActionItem(
+            title = "Read all (chats)",
+            onClick = onReadAllChats
+        )
+
         Divider()
 
     }
@@ -62,10 +68,10 @@ private fun ActionItem(
         color = colorResource(R.color.text_primary),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp)
             .clickable {
                 onClick()
             }
+            .padding(20.dp)
     )
 }
 
@@ -73,6 +79,7 @@ private fun ActionItem(
 @Composable
 fun DebugScreenPreview() {
     DebugScreen(
-        onExportAllClicked = {}
+        onExportAllClicked = {},
+        onReadAllChats = {}
     )
 }

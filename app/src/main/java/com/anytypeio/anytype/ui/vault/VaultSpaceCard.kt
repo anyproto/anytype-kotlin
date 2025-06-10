@@ -272,14 +272,32 @@ private fun BoxScope.ContentChat(
                     ""
                 }
                 
-                Text(
-                    text = if (attachmentText.isNotEmpty()) attachmentText else subtitle.ifEmpty { stringResource(id = R.string.chat) },
-                    style = Title2,
-                    color = colorResource(id = R.color.text_secondary),
+                Row(
                     modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Show attachment count text only if more than 3 attachments and no message text
+                    val shouldShowAttachmentCount = attachmentPreviews.size > 3 && attachmentText.isNotEmpty()
+                    
+                    if (shouldShowAttachmentCount) {
+                        Text(
+                            text = attachmentText,
+                            style = Title2,
+                            color = colorResource(id = R.color.text_secondary),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    } else {
+                        Text(
+                            text = if (attachmentText.isNotEmpty()) attachmentText else subtitle.ifEmpty { stringResource(id = R.string.chat) },
+                            style = Title2,
+                            color = colorResource(id = R.color.text_secondary),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
             }
 
             Row(
@@ -437,6 +455,90 @@ fun ChatPreview() {
                     style = Block.Content.Text.Style.P
                 ),
                 order = "order-id"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithManyAttachmentsNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "File Archive",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "09:30",
+        // No message text, so should show "5 Images" 
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            // These extra attachments should trigger the count text
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithManyMixedAttachmentsNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Mixed Files",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "14:15",
+        // No message text, should show "6 Attachments"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/pdf",
+                fileExtension = "pdf"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/vnd.ms-excel",
+                fileExtension = "xlsx"
+            ),
+            // Additional attachments for count
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "text/plain",
+                fileExtension = "txt"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html"
             )
         )
     )

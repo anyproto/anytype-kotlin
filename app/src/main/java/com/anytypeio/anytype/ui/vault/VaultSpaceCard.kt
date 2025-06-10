@@ -197,9 +197,21 @@ private fun BoxScope.ContentChat(
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Show attachment previews if available
+            // Show creatorName first if available
+            if (creatorName != null) {
+                Text(
+                    text = "$creatorName: ",
+                    style = PreviewTitle2Medium,
+                    color = colorResource(id = R.color.text_secondary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            
+            // Show attachment icons after creatorName
             if (attachmentPreviews.isNotEmpty()) {
                 Row(
                     modifier = Modifier.padding(end = 6.dp),
@@ -248,9 +260,8 @@ private fun BoxScope.ContentChat(
                 }
             }
             
-            // Build the text content according to the new logic
-            val displayText = buildChatDisplayText(
-                creatorName = creatorName,
+            // Build and show the attachment/message text (without creatorName now)
+            val displayText = buildChatContentText(
                 messageText = messageText,
                 attachmentPreviews = attachmentPreviews,
                 fallbackSubtitle = subtitle.ifEmpty { stringResource(id = R.string.chat) }
@@ -902,26 +913,12 @@ fun ChatEmpty() {
 }
 
 @Composable
-private fun buildChatDisplayText(
-    creatorName: String?,
+private fun buildChatContentText(
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
     fallbackSubtitle: String
 ): AnnotatedString {
     return buildAnnotatedString {
-        if (creatorName != null) {
-            // Creator name in PreviewTitle2Medium style
-            withStyle(style = SpanStyle(
-                fontFamily = com.anytypeio.anytype.core_ui.views.fontInterMedium,
-                fontWeight = FontWeight.W500,
-                fontSize = 15.sp,
-                letterSpacing = (-0.016).em
-            )) {
-                append(creatorName)
-                append(": ")
-            }
-        }
-        
         val attachmentCount = attachmentPreviews.size
         val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
         val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }

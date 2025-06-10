@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -45,6 +46,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,7 +75,8 @@ class VaultViewModel(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val fieldParser: FieldParser
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -194,7 +197,7 @@ class VaultViewModel(
         }
 
         // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.take(3)?.map { attachment ->
+        val attachmentPreviews = chatPreview.message?.attachments?.take(3)?.mapNotNull { attachment ->
             val dependency = chatPreview.dependencies.find { it.id == attachment.target }
             when (attachment.type) {
                 Chat.Message.Attachment.Type.Image -> {
@@ -203,15 +206,28 @@ class VaultViewModel(
                         imageUrl = urlBuilder.thumbnail(attachment.target)
                     )
                 }
-                Chat.Message.Attachment.Type.File, Chat.Message.Attachment.Type.Link -> {
+                Chat.Message.Attachment.Type.File -> {
                     val mimeType = dependency?.getSingleValue<String>(Relations.FILE_MIME_TYPE)
                     val fileExt = dependency?.getSingleValue<String>(Relations.FILE_EXT)
                     VaultSpaceView.AttachmentPreview(
-                        type = if (attachment.type == Chat.Message.Attachment.Type.File) 
-                               VaultSpaceView.AttachmentType.FILE 
-                               else VaultSpaceView.AttachmentType.LINK,
+                        type = VaultSpaceView.AttachmentType.FILE,
                         mimeType = mimeType,
                         fileExtension = fileExt
+                    )
+                }
+                Chat.Message.Attachment.Type.Link -> {
+                    val obj = chatPreview.dependencies.find { it.id == attachment.target }
+                    if (obj == null) {
+                        Timber.w("Object for link attachment not found: ${attachment.target}")
+                        return@mapNotNull null
+                    }
+                    VaultSpaceView.AttachmentPreview(
+                        type = VaultSpaceView.AttachmentType.LINK,
+                        objectIcon = obj.objectIcon(
+                            builder = urlBuilder,
+                            objType = null
+                        ),
+                        title = fieldParser.getObjectName(objectWrapper = obj)
                     )
                 }
             }

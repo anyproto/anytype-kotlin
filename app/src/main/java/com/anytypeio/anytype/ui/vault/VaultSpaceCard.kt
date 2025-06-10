@@ -47,6 +47,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.chatPreviewTextStyle
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
@@ -198,7 +200,7 @@ private fun BoxScope.ContentChat(
                     modifier = Modifier.padding(end = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    attachmentPreviews.forEach { preview ->
+                    attachmentPreviews.take(3).forEach { preview ->
                         when (preview.type) {
                             VaultSpaceView.AttachmentType.IMAGE -> {
                                 if (!preview.imageUrl.isNullOrEmpty()) {
@@ -219,12 +221,21 @@ private fun BoxScope.ContentChat(
                                     )
                                 }
                             }
-                            VaultSpaceView.AttachmentType.FILE, VaultSpaceView.AttachmentType.LINK -> {
+                            VaultSpaceView.AttachmentType.FILE -> {
                                 val iconResource = preview.mimeType.getMimeIcon(preview.fileExtension)
                                 Image(
                                     painter = painterResource(iconResource),
                                     contentDescription = null,
                                     modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            VaultSpaceView.AttachmentType.LINK -> {
+                                val linkIcon =
+                                    preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
+                                ListWidgetObjectIcon(
+                                    icon = linkIcon,
+                                    modifier = Modifier,
+                                    iconSize = 18.dp
                                 )
                             }
                         }
@@ -253,20 +264,31 @@ private fun BoxScope.ContentChat(
                 // Show attachment text if no message text
                 val attachmentText = if (attachmentPreviews.isNotEmpty()) {
                     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
-                    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE || it.type == VaultSpaceView.AttachmentType.LINK }
+                    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }
+                    val linkCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.LINK }
+                    val totalCount = imageCount + fileCount + linkCount
                     
                     when {
-                        imageCount > 0 && fileCount == 0 -> {
+                        // Single link attachment - show object name
+                        linkCount == 1 && imageCount == 0 && fileCount == 0 -> {
+                            attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title ?: "1 Object"
+                        }
+                        // Multiple links only - show "N Objects"
+                        linkCount > 1 && imageCount == 0 && fileCount == 0 -> {
+                            "$linkCount Objects"
+                        }
+                        // Images only
+                        imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
                             if (imageCount == 1) "1 Image" else "$imageCount Images"
                         }
-                        imageCount == 0 && fileCount > 0 -> {
+                        // Files only
+                        fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
                             if (fileCount == 1) "1 Attachment" else "$fileCount Attachments"
                         }
-                        imageCount > 0 && fileCount > 0 -> {
-                            val totalCount = imageCount + fileCount
+                        // Mixed types - show total count as attachments
+                        else -> {
                             if (totalCount == 1) "1 Attachment" else "$totalCount Attachments"
                         }
-                        else -> ""
                     }
                 } else {
                     ""
@@ -301,7 +323,9 @@ private fun BoxScope.ContentChat(
             }
 
             Row(
-                modifier = Modifier.wrapContentWidth().padding(start = 8.dp),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (unreadMentionCount > 0) {
@@ -538,9 +562,290 @@ fun ChatWithManyMixedAttachmentsNoText() {
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
                 mimeType = "text/html",
-                fileExtension = "html"
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🌐"),
+                title = "Web Resource"
             )
         )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithImageAttachments() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Design Team",
+        icon = SpaceIconView.Placeholder(),
+        previewText = "Alice: Check out these designs",
+        creatorName = "Alice",
+        messageText = "Check out these designs",
+        messageTime = "10:45",
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null // Use null to show placeholder icon instead
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithFileAttachments() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Project Discussion",
+        icon = SpaceIconView.Placeholder(),
+        previewText = "Bob: Here are the documents",
+        creatorName = "Bob",
+        messageText = "Here are the documents",
+        messageTime = "14:22",
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/pdf",
+                fileExtension = "pdf"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/vnd.ms-excel",
+                fileExtension = "xlsx"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithLinkAttachments() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Resource Sharing",
+        icon = SpaceIconView.Placeholder(),
+        previewText = "Charlie: Found some useful links",
+        creatorName = "Charlie",
+        messageText = "Found some useful links",
+        messageTime = "11:30",
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔗"),
+                title = "Resource Link 1"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Bookmark(
+                    image = "",
+                    fallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                ),
+                title = "Documentation"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📋"),
+                title = "Project Board"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithMixedAttachments() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Development Updates",
+        icon = SpaceIconView.Placeholder(),
+        previewText = "Dana: Latest progress and resources",
+        creatorName = "Dana",
+        messageText = "Latest progress and resources",
+        messageTime = "16:30",
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/pdf",
+                fileExtension = "pdf"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🌐"),
+                title = "External Link"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithAttachmentsNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Media Sharing",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "12:15",
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.IMAGE,
+                imageUrl = null
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                mimeType = "text/html",
+                fileExtension = "html",
+                objectIcon = ObjectIcon.Bookmark(
+                    image = "",
+                    fallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                ),
+                title = "Shared Resource"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithManyLinksNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Reference Links",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "15:45",
+        // No message text, should show "5 Attachments" for mixed link/file types
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                title = "Documentation"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                title = "Tools"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                title = "Analytics"
+            ),
+            // These extra attachments should trigger the count text
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔗"),
+                title = "Reference"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.FILE,
+                mimeType = "application/pdf",
+                fileExtension = "pdf"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithSingleLinkNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Single Link",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "09:15",
+        // Single link should show object name instead of "1 Object"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                title = "API Documentation"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithMultipleLinksOnlyNoText() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Multiple Links Only",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "10:30",
+        // Multiple links only should show "3 Objects"
+        attachmentPreviews = listOf(
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                title = "Documentation"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                title = "Tools"
+            ),
+            VaultSpaceView.AttachmentPreview(
+                type = VaultSpaceView.AttachmentType.LINK,
+                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                title = "Analytics"
+            )
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun ChatEmpty() {
+    VaultChatCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 16.dp),
+        title = "Empty Chat",
+        icon = SpaceIconView.Placeholder(),
+        messageTime = "08:00"
     )
 }
 

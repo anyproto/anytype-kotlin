@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -34,7 +35,8 @@ class VaultViewModelFactory @Inject constructor(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -54,6 +56,7 @@ class VaultViewModelFactory @Inject constructor(
         chatPreviewContainer = chatPreviewContainer,
         pendingIntentStore = pendingIntentStore,
         stringResourceProvider = stringResourceProvider,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        fieldParser = fieldParser
     ) as T
 }

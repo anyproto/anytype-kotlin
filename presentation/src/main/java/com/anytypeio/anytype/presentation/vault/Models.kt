@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class VaultSpaceView {
@@ -39,7 +40,9 @@ sealed class VaultSpaceView {
         val type: AttachmentType,
         val imageUrl: String? = null,
         val mimeType: String? = null,
-        val fileExtension: String? = null
+        val fileExtension: String? = null,
+        val objectIcon: ObjectIcon? = null,
+        val title: String? = null
     )
 
     enum class AttachmentType {

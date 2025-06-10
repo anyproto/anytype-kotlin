@@ -154,10 +154,14 @@ fun VaultScreen(
                         is VaultSpaceView.Chat -> {
                             DraggableItem(dragDropState = dragDropState, index = idx) {
                                 VaultChatCard(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(80.dp)
+                                        .padding(horizontal = 16.dp)
+                                        .clickable {
+                                            onSpaceClicked(item)
+                                        },
                                     title = item.space.name.orEmpty(),
-                                    onCardClicked = {
-                                        onSpaceClicked(item)
-                                    },
                                     icon = item.icon,
                                     previewText = item.previewText,
                                     creatorName = item.creatorName,

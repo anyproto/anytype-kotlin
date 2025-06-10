@@ -37,8 +37,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -112,8 +110,8 @@ private fun BoxScope.ContentSpace(
 
 @Composable
 fun VaultChatCard(
+    modifier: Modifier = Modifier,
     title: String,
-    onCardClicked: () -> Unit,
     icon: SpaceIconView,
     previewText: String? = null,
     creatorName: String? = null,
@@ -125,19 +123,11 @@ fun VaultChatCard(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(horizontal = 16.dp)
-            .clickable {
-                onCardClicked()
-            }
+        modifier = modifier
     ) {
         SpaceIconView(
             icon = icon,
-            onSpaceIconClick = {
-                onCardClicked()
-            },
+            onSpaceIconClick = {},
             mainSize = 56.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -205,8 +195,8 @@ private fun BoxScope.ContentChat(
             // Show attachment previews if available
             if (attachmentPreviews.isNotEmpty()) {
                 Row(
-                    modifier = Modifier.padding(end = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    modifier = Modifier.padding(end = 6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     attachmentPreviews.forEach { preview ->
                         when (preview.type) {
@@ -224,7 +214,8 @@ private fun BoxScope.ContentChat(
                                     Image(
                                         painter = painterResource(R.drawable.ic_mime_image),
                                         contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier.size(18.dp),
+                                        contentScale = ContentScale.Crop
                                     )
                                 }
                             }
@@ -357,7 +348,6 @@ fun VaultSpaceCardPreview() {
 fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
@@ -392,7 +382,6 @@ fun ChatWithMentionAndMessage() {
 fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
@@ -426,7 +415,6 @@ fun ChatWithMention() {
 fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",

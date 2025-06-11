@@ -25,30 +25,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -312,45 +305,11 @@ private fun buildChatContentWithInlineIcons(
                     placeholderVerticalAlign = PlaceholderVerticalAlign.Center
                 )
             ) {
-                when (preview.type) {
-                    VaultSpaceView.AttachmentType.IMAGE -> {
-                        if (!preview.imageUrl.isNullOrEmpty()) {
-                            Image(
-                                painter = rememberAsyncImagePainter(preview.imageUrl),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .clip(RoundedCornerShape(2.dp)),
-                                contentScale = ContentScale.Crop
-                            )
-                        } else {
-                            Image(
-                                painter = painterResource(R.drawable.ic_mime_image),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-                        }
-                    }
-
-                    VaultSpaceView.AttachmentType.FILE -> {
-                         val fileIcon = preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
-                         ListWidgetObjectIcon(
-                             icon = fileIcon,
-                             modifier = Modifier.fillMaxSize(),
-                             iconSize = 18.dp
-                         )
-                     }
-
-                    VaultSpaceView.AttachmentType.LINK -> {
-                        val linkIcon = preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
-                        ListWidgetObjectIcon(
-                            icon = linkIcon,
-                            modifier = Modifier.fillMaxSize(),
-                            iconSize = 18.dp
-                        )
-                    }
-                }
+                ListWidgetObjectIcon(
+                    icon = preview.objectIcon,
+                    modifier = Modifier.fillMaxSize(),
+                    iconSize = 18.dp
+                )
             }
 
             // Add small space after icon if not the last one
@@ -601,28 +560,28 @@ fun ChatWithManyAttachmentsNoText() {
         title = "File Archive",
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:30",
-        // No message text, so should show "5 Images" 
+        // No message text, so should show "5 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             // These extra attachments should trigger the count text
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -643,33 +602,28 @@ fun ChatWithManyMixedAttachmentsNoText() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/pdf",
-                fileExtension = "pdf"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/vnd.ms-excel",
-                fileExtension = "xlsx"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             // Additional attachments for count
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "text/plain",
-                fileExtension = "txt"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🌐"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Web Resource"
             )
         )
@@ -693,15 +647,15 @@ fun ChatWithImageAttachments() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null // Use null to show placeholder icon instead
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -724,13 +678,11 @@ fun ChatWithFileAttachments() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/pdf",
-                fileExtension = "pdf"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/vnd.ms-excel",
-                fileExtension = "xlsx"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -753,15 +705,11 @@ fun ChatWithLinkAttachments() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔗"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Resource Link 1"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
                 objectIcon = ObjectIcon.Bookmark(
                     image = "",
                     fallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
@@ -770,9 +718,7 @@ fun ChatWithLinkAttachments() {
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📋"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Project Board"
             )
         )
@@ -796,18 +742,15 @@ fun ChatWithMixedAttachments() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/pdf",
-                fileExtension = "pdf"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🌐"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "External Link"
             )
         )
@@ -828,16 +771,11 @@ fun ChatWithAttachmentsNoText() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                mimeType = "text/html",
-                fileExtension = "html",
-                objectIcon = ObjectIcon.Bookmark(
-                    image = "",
-                    fallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
-                ),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Shared Resource"
             )
         )
@@ -859,29 +797,28 @@ fun ChatWithManyLinksNoText() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Documentation"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Tools"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Analytics"
             ),
             // These extra attachments should trigger the count text
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔗"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Reference"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
-                mimeType = "application/pdf",
-                fileExtension = "pdf"
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -902,7 +839,7 @@ fun ChatWithSingleLinkNoText() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "API Documentation"
             )
         )
@@ -924,17 +861,17 @@ fun ChatWithMultipleLinksOnlyNoText() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Documentation"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Tools"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Analytics"
             )
         )
@@ -957,7 +894,7 @@ fun ChatWithSingleImageNoMessage() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -980,7 +917,7 @@ fun ChatWithSingleLinkWithMessage() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "API Documentation"
             )
         )
@@ -1003,15 +940,15 @@ fun ChatWithMultipleImagesNoMessage() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
-                imageUrl = null
+                objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         )
     )
@@ -1034,17 +971,17 @@ fun ChatWithMultipleObjectsWithMessage() {
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📚"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Documentation"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "🔧"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Tools"
             ),
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
-                objectIcon = ObjectIcon.Basic.Emoji(unicode = "📊"),
+                objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Analytics"
             )
         )

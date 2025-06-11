@@ -218,9 +218,8 @@ private fun BoxScope.ContentChat(
                     modifier = Modifier
                         .onGloballyPositioned { prefixPx = it.size.width }
                         .wrapContentWidth()
-                        .wrapContentHeight(),
+                        .height(20.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     // Show creatorName first if available
                     if (creatorName != null) {
@@ -234,7 +233,8 @@ private fun BoxScope.ContentChat(
 
                     // Show attachment icons after creatorName
                     if (attachmentPreviews.isNotEmpty()) {
-                        attachmentPreviews.take(3).forEach { preview ->
+                        attachmentPreviews.take(3).forEachIndexed { index, preview ->
+                            val paddingStart = if (index == 0) 0.dp else 2.dp
                             when (preview.type) {
                                 VaultSpaceView.AttachmentType.IMAGE -> {
                                     if (!preview.imageUrl.isNullOrEmpty()) {
@@ -242,6 +242,7 @@ private fun BoxScope.ContentChat(
                                             painter = rememberAsyncImagePainter(preview.imageUrl),
                                             contentDescription = null,
                                             modifier = Modifier
+                                                .padding(start = paddingStart)
                                                 .size(18.dp)
                                                 .clip(RoundedCornerShape(2.dp)),
                                             contentScale = ContentScale.Crop
@@ -250,7 +251,9 @@ private fun BoxScope.ContentChat(
                                         Image(
                                             painter = painterResource(R.drawable.ic_mime_image),
                                             contentDescription = null,
-                                            modifier = Modifier.size(18.dp),
+                                            modifier = Modifier
+                                                .padding(start = paddingStart)
+                                                .size(18.dp),
                                             contentScale = ContentScale.Crop
                                         )
                                     }
@@ -260,7 +263,9 @@ private fun BoxScope.ContentChat(
                                     Image(
                                         painter = painterResource(iconResource),
                                         contentDescription = null,
-                                        modifier = Modifier.size(18.dp)
+                                        modifier = Modifier
+                                            .padding(start = paddingStart)
+                                            .size(18.dp)
                                     )
                                 }
                                 VaultSpaceView.AttachmentType.LINK -> {
@@ -268,16 +273,13 @@ private fun BoxScope.ContentChat(
                                         preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
                                     ListWidgetObjectIcon(
                                         icon = linkIcon,
-                                        modifier = Modifier,
+                                        modifier = Modifier
+                                            .padding(start = paddingStart),
                                         iconSize = 18.dp
                                     )
                                 }
                             }
                         }
-                    }
-
-                    if (attachmentPreviews.isNotEmpty()) {
-                        Spacer(modifier = Modifier.width(4.dp))
                     }
                 }
 
@@ -299,11 +301,11 @@ private fun BoxScope.ContentChat(
                 }
 
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = finalText,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )
             }

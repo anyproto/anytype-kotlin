@@ -38,10 +38,7 @@ sealed class VaultSpaceView {
 
     data class AttachmentPreview(
         val type: AttachmentType,
-        val imageUrl: String? = null,
-        val mimeType: String? = null,
-        val fileExtension: String? = null,
-        val objectIcon: ObjectIcon? = null,
+        val objectIcon: ObjectIcon,
         val title: String? = null
     )
 

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -186,12 +187,12 @@ private fun BoxScope.ContentChat(
             .padding(start = 68.dp),
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth().height(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                modifier = Modifier
-                    .align(Alignment.CenterStart),
+                modifier = Modifier.weight(1f).padding(end = 8.dp),
                 text = title.ifEmpty { stringResource(id = R.string.untitled) },
                 style = BodySemiBold,
                 color = colorResource(id = R.color.text_primary),
@@ -203,15 +204,13 @@ private fun BoxScope.ContentChat(
                     text = messageTime,
                     style = Relations2,
                     color = colorResource(id = R.color.transparent_active),
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd),
+                    modifier = Modifier.wrapContentSize(),
                     textAlign = TextAlign.Center,
                 )
             }
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
         ) {
             
             val (chatText, inlineContent) = buildChatContentWithInlineIcons(
@@ -231,6 +230,7 @@ private fun BoxScope.ContentChat(
             )
 
             Row(
+                modifier = Modifier.padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (unreadMentionCount > 0) {

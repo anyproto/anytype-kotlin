@@ -7,7 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -467,102 +469,105 @@ fun ChatBox(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
+                .animateContentSize()
         ) {
-            if (showMarkup) {
-                ChatBoxMarkup(
-                    modifier = Modifier.weight(1.0f),
-                    selectionStart = text.selection.start,
-                    selectionEnd = text.selection.end,
-                    spans = spans,
-                    onBackClicked = {
-                        showMarkup = false
-                    },
-                    onMarkupEvent = { event ->
-                        scope.launch {
-                            val selection = text.selection
-                            if (selection.start == selection.end) return@launch // No selection, nothing to apply
+            AnimatedContent(
+                targetState = showMarkup,
+                label = "PANELS",
+                modifier = Modifier.weight(1.0f)
+            ) { isMarkup ->
+                if (isMarkup) {
+                    ChatBoxMarkup(
+                        selectionStart = text.selection.start,
+                        selectionEnd = text.selection.end,
+                        spans = spans,
+                        onBackClicked = {
+                            showMarkup = false
+                        },
+                        onMarkupEvent = { event ->
+                            scope.launch {
+                                val selection = text.selection
+                                if (selection.start == selection.end) return@launch // No selection, nothing to apply
 
-                            val newSpan = when (event) {
-                                ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
-                                    style = SpanStyle(fontWeight = FontWeight.Bold),
-                                    start = selection.start,
-                                    end = selection.end,
-                                    type = ChatBoxSpan.Markup.BOLD
-                                )
+                                val newSpan = when (event) {
+                                    ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontWeight = FontWeight.Bold),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.BOLD
+                                    )
 
-                                ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
-                                    style = SpanStyle(fontStyle = FontStyle.Italic),
-                                    start = selection.start,
-                                    end = selection.end,
-                                    type = ChatBoxSpan.Markup.ITALIC
-                                )
+                                    ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontStyle = FontStyle.Italic),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.ITALIC
+                                    )
 
-                                ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
-                                    style = SpanStyle(textDecoration = TextDecoration.LineThrough),
-                                    start = selection.start,
-                                    end = selection.end,
-                                    type = ChatBoxSpan.Markup.STRIKETHROUGH
-                                )
+                                    ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(textDecoration = TextDecoration.LineThrough),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.STRIKETHROUGH
+                                    )
 
-                                ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
-                                    style = SpanStyle(textDecoration = TextDecoration.Underline),
-                                    start = selection.start,
-                                    end = selection.end,
-                                    type = ChatBoxSpan.Markup.UNDERLINE
-                                )
+                                    ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(textDecoration = TextDecoration.Underline),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.UNDERLINE
+                                    )
 
-                                ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
-                                    style = SpanStyle(fontFamily = FontFamily.Monospace),
-                                    start = selection.start,
-                                    end = selection.end,
-                                    type = ChatBoxSpan.Markup.CODE
-                                )
+                                    ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontFamily = FontFamily.Monospace),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.CODE
+                                    )
+                                }
+
+                                val updatedSpans = toggleSpan(text, spans, newSpan)
+                                onValueChange(text, updatedSpans)
                             }
-
-                            val updatedSpans = toggleSpan(text, spans, newSpan)
-                            onValueChange(text, updatedSpans)
                         }
-                    }
-                )
-            } else {
-                ChatBoxEditPanel(
-                    modifier = Modifier
-                        .weight(1.0f)
-                    ,
-                    onAttachObjectClicked = onAttachObjectClicked,
-                    onMentionClicked = {
-                        val selection = text.selection
-                        val cursorPosition = selection.start
-                        val updatedText = text.text.substring(0, cursorPosition) +
-                                "@" +
-                                text.text.substring(cursorPosition)
+                    )
+                } else {
+                    ChatBoxEditPanel(
+                        onAttachObjectClicked = onAttachObjectClicked,
+                        onMentionClicked = {
+                            val selection = text.selection
+                            val cursorPosition = selection.start
+                            val updatedText = text.text.substring(0, cursorPosition) +
+                                    "@" +
+                                    text.text.substring(cursorPosition)
 
-                        // Update the cursor position after the inserted '@' character
-                        val newSelection = TextRange(cursorPosition + 1)
+                            // Update the cursor position after the inserted '@' character
+                            val newSelection = TextRange(cursorPosition + 1)
 
-                        // Notify parent with the updated text without any new spans
-                        onValueChange(
-                            TextFieldValue(updatedText, selection = newSelection),
-                            spans // Keep existing spans without adding any
-                        )
-                    },
-                    onStyleClicked = {
-                        showMarkup = true
-                    },
-                    onUploadFileClicked = {
-                        uploadFileLauncher.launch(
-                            arrayOf("*/*")
-                        )
-                    },
-                    onUploadMediaClicked = {
-                        uploadMediaLauncher.launch(
-                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    },
-                    onCameraCaptureClicked = {
-                        permissionLauncher.launch(Manifest.permission.CAMERA)
-                    }
-                )
+                            // Notify parent with the updated text without any new spans
+                            onValueChange(
+                                TextFieldValue(updatedText, selection = newSelection),
+                                spans // Keep existing spans without adding any
+                            )
+                        },
+                        onStyleClicked = {
+                            showMarkup = true
+                        },
+                        onUploadFileClicked = {
+                            uploadFileLauncher.launch(
+                                arrayOf("*/*")
+                            )
+                        },
+                        onUploadMediaClicked = {
+                            uploadMediaLauncher.launch(
+                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        onCameraCaptureClicked = {
+                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    )
+                }
             }
 
             AnimatedVisibility(
@@ -823,7 +828,8 @@ fun ChatBoxMarkup(
         Row(
             modifier = modifier
                 .fillMaxWidth()
-                .height(52.dp),
+                .height(52.dp)
+            ,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Fixed back button

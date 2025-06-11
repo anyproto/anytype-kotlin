@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -152,7 +153,7 @@ fun VaultScreen(
                             .weight(weight = 1f, fill = false), // Take only needed space
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        item {
+                        item(key = "unread_header") {
                             Spacer(modifier = Modifier.height(4.dp))
                             UnreadSectionHeader()
                         }
@@ -224,15 +225,9 @@ fun VaultScreen(
                             .weight(1f) // Take remaining space
                             .dragContainer(dragDropState),
                         state = mainSpacesLazyListState,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = if (!sections.hasUnreadSpaces) PaddingValues(top = 4.dp) else PaddingValues(0.dp)
                     ) {
-                        // Add top spacing only if no unread section
-                        if (!sections.hasUnreadSpaces) {
-                            item {
-                                Spacer(modifier = Modifier.height(4.dp))
-                            }
-                        }
-                        
                         itemsIndexed(
                             items = mainSpaceList,
                             key = { _, item -> "main_${item.space.id}" },

@@ -466,47 +466,9 @@ private fun buildChatContentWithInlineIcons(
                     }
 
                     else -> {
-                        // Multiple attachments, with message text
-                        when {
-                            imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
-                                // Images only
-                                withStyle(style = spanTitle2Medium) {
-                                    append("$imageCount Images ")
-                                }
-                                withStyle(style = spanTitle2Regular) {
-                                    append(messageText)
-                                }
-                            }
-
-                            fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
-                                // Files only
-                                withStyle(style = spanTitle2Medium) {
-                                    append("$fileCount Files ")
-                                }
-                                withStyle(style = spanTitle2Regular){
-                                    append(messageText)
-                                }
-                            }
-
-                            linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
-                                // Objects only
-                                withStyle(style = spanTitle2Medium) {
-                                    append("$linkCount Objects ")
-                                }
-                                withStyle(style = spanTitle2Regular){
-                                    append(messageText)
-                                }
-                            }
-
-                            else -> {
-                                // Mixed types
-                                withStyle(style = spanTitle2Medium) {
-                                    append("$attachmentCount Attachments ")
-                                }
-                                withStyle(style = spanTitle2Regular) {
-                                    append(messageText)
-                                }
-                            }
+                        // Multiple attachments, with message text - just show message text
+                        withStyle(style = spanTitle2Regular) {
+                            append(messageText)
                         }
                     }
                 }

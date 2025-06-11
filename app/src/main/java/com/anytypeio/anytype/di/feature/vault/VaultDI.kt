@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -88,4 +90,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun pendingIntentStore(): PendingIntentStore
     fun stringResourceProvider(): StringResourceProvider
     fun dateProvider(): DateProvider
+    fun fieldParser(): FieldParser
+    fun storeOfObjectTypes(): StoreOfObjectTypes
 }

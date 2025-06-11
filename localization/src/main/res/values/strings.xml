@@ -412,6 +412,7 @@
     <string name="query">Query</string>
     <string name="select_query">Select query</string>
     <string name="objects">Objects</string>
+    <string name="object_1">Object</string>
     <string name="your_objects">Your objects</string>
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>
@@ -1930,7 +1931,11 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
     <string name="file">File</string>
+    <string name="files">Files</string>
+    <string name="image">Image</string>
+    <string name="images">Images</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 

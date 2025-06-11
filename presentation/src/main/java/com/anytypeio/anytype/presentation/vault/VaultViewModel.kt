@@ -150,7 +150,7 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?
     ): VaultSpaceView {
-        // Debug logging to diagnose the issue
+        // Debug logging to diagnose the missing spaces issue
         Timber.d("Space ${space.id}: Space name: ${space.name}, isLoading=${space.isLoading}, isActive=${space.isActive}, chatPreview=${chatPreview != null}, spaceLocalStatus=${space.spaceLocalStatus}, spaceAccountStatus=${space.spaceAccountStatus}")
         
         return when {

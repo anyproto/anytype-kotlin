@@ -85,6 +85,7 @@ class VaultViewModel(
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
+    val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -116,8 +117,9 @@ class VaultViewModel(
                 chatPreviewContainer.observePreviews()
             ) { spacesFromFlow, settings, chatPreviews ->
                 transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews)
-            }.collect { resultingSpaceViews ->
-                spaces.value = resultingSpaceViews
+            }.collect { resultingSections ->
+                sections.value = resultingSections
+                spaces.value = resultingSections.allSpaces // For backward compatibility
             }
         }
     }
@@ -126,24 +128,38 @@ class VaultViewModel(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         settings: VaultSettings,
         chatPreviews: List<Chat.Preview>
-    ): List<VaultSpaceView> {
-        return spacesFromFlow
+    ): VaultSectionView {
+        val allSpaces = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
             .map { space ->
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
                     chatPreviews.find { it.space.id == spaceId }
                 }
                 mapToVaultSpaceViewItem(space, chatPreview)
-            }.sortedBy { spaceView ->
-                val idx = settings.orderOfSpaces.indexOf(
-                    spaceView.space.id
-                )
-                if (idx == -1) {
-                    Int.MIN_VALUE
-                } else {
-                    idx
-                }
             }
+        
+        // Split into unread and main lists
+        val (unreadSpaces, regularSpaces) = allSpaces.partition { it.hasUnreadMessages }
+        
+        // Sort unread by lastMessageDate (newest first)
+        val sortedUnreadSpaces = unreadSpaces.sortedByDescending { it.lastMessageDate ?: 0L }
+        
+        // Sort main list by user-defined order
+        val sortedMainSpaces = regularSpaces.sortedBy { spaceView ->
+            val idx = settings.orderOfSpaces.indexOf(
+                spaceView.space.id
+            )
+            if (idx == -1) {
+                Int.MIN_VALUE
+            } else {
+                idx
+            }
+        }
+        
+        return VaultSectionView(
+            unreadSpaces = sortedUnreadSpaces,
+            mainSpaces = sortedMainSpaces
+        )
     }
 
     private suspend fun mapToVaultSpaceViewItem(

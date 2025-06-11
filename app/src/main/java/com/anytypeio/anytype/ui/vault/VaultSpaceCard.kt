@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,13 +28,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.chats.Chat
@@ -40,10 +45,13 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.core_ui.views.chatPreviewTextStyle
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
 fun VaultSpaceCard(
@@ -105,8 +113,8 @@ private fun BoxScope.ContentSpace(
 
 @Composable
 fun VaultChatCard(
+    modifier: Modifier = Modifier,
     title: String,
-    onCardClicked: () -> Unit,
     icon: SpaceIconView,
     previewText: String? = null,
     creatorName: String? = null,
@@ -115,22 +123,15 @@ fun VaultChatCard(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp)
-            .padding(horizontal = 16.dp)
-            .clickable {
-                onCardClicked()
-            }
+        modifier = modifier
     ) {
         SpaceIconView(
             icon = icon,
-            onSpaceIconClick = {
-                onCardClicked()
-            },
             mainSize = 56.dp,
+            onSpaceIconClick = {},
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )
@@ -141,7 +142,9 @@ fun VaultChatCard(
             messageText = messageText,
             messageTime = messageTime,
             unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount
+            unreadMentionCount = unreadMentionCount,
+            chatPreview = chatPreview,
+            attachmentPreviews = attachmentPreviews
         )
     }
 }
@@ -155,21 +158,27 @@ private fun BoxScope.ContentChat(
     messageTime: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
+    chatPreview: Chat.Preview? = null,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(start = 68.dp),
-        verticalArrangement = Arrangement.Center
+            .padding(start = 68.dp, top = 8.dp),
+        verticalArrangement = Arrangement.Top
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(24.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 modifier = Modifier
-                    .align(Alignment.CenterStart),
+                    .weight(1f)
+                    .padding(end = 8.dp),
                 text = title.ifEmpty { stringResource(id = R.string.untitled) },
                 style = BodySemiBold,
                 color = colorResource(id = R.color.text_primary),
@@ -181,45 +190,33 @@ private fun BoxScope.ContentChat(
                     text = messageTime,
                     style = Relations2,
                     color = colorResource(id = R.color.transparent_active),
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd),
+                    modifier = Modifier.wrapContentSize(),
                     textAlign = TextAlign.Center,
                 )
             }
         }
         Row(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
-            if (creatorName != null && messageText != null) {
-                val annotatedString = buildAnnotatedString {
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append(creatorName)
-                    }
-                    append(": ")
-                    append(messageText)
-                }
 
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = annotatedString,
-                    style = chatPreviewTextStyle,
-                    color = colorResource(id = R.color.text_secondary),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            } else {
-                Text(
-                    text = subtitle,
-                    style = Title2,
-                    color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.weight(1f),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            val (chatText, inlineContent) = buildChatContentWithInlineIcons(
+                creatorName = creatorName,
+                messageText = messageText,
+                attachmentPreviews = attachmentPreviews,
+                fallbackSubtitle = subtitle.ifEmpty { stringResource(id = R.string.chat) }
+            )
+
+            Text(
+                text = chatText,
+                inlineContent = inlineContent,
+                modifier = Modifier.weight(1f),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_secondary),
+            )
 
             Row(
-                modifier = Modifier.wrapContentWidth().padding(start = 8.dp),
+                modifier = Modifier.padding(start = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (unreadMentionCount > 0) {
@@ -269,6 +266,179 @@ private fun BoxScope.ContentChat(
 }
 
 @Composable
+private fun buildChatContentWithInlineIcons(
+    creatorName: String?,
+    messageText: String?,
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    fallbackSubtitle: String
+): Pair<AnnotatedString, Map<String, InlineTextContent>> {
+
+    val spanTitle2Medium = PreviewTitle2Medium.toSpanStyle()
+    val spanTitle2Regular = PreviewTitle2Regular.toSpanStyle()
+
+    val attachmentCount = attachmentPreviews.size
+    val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
+    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }
+    val linkCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.LINK }
+
+    val inlineContentMap = mutableMapOf<String, InlineTextContent>()
+
+    val text = buildAnnotatedString {
+        // Add creator name if available
+        if (creatorName != null) {
+            withStyle(style = spanTitle2Medium) {
+                append("$creatorName: ")
+            }
+        }
+
+        // Add attachment icons (max 3)
+        attachmentPreviews.take(3).forEachIndexed { index, preview ->
+            val iconId = "attachment_$index"
+            appendInlineContent(iconId, "[icon]")
+
+            // Create the inline content for this attachment
+            inlineContentMap[iconId] = InlineTextContent(
+                Placeholder(
+                    width = 18.sp,
+                    height = 18.sp,
+                    placeholderVerticalAlign = PlaceholderVerticalAlign.Center
+                )
+            ) {
+                ListWidgetObjectIcon(
+                    icon = preview.objectIcon,
+                    modifier = Modifier.fillMaxSize(),
+                    iconSize = 18.dp
+                )
+            }
+
+            // Add small space after icon if not the last one
+            if (index < attachmentPreviews.take(3).size - 1) {
+                append(" ")
+            }
+        }
+
+        // Add space after icons if there are any and we have content to follow
+        if (attachmentPreviews.isNotEmpty() && (messageText != null || attachmentCount > 3)) {
+            append(" ")
+        }
+
+        // Determine what text to show
+        when {
+            // Case A: attachments size <= 1
+            attachmentCount <= 1 -> {
+                when {
+                    messageText.isNullOrEmpty() -> {
+                        // Single attachment, no message text
+                        when {
+                            imageCount == 1 -> {
+                                withStyle(style = spanTitle2Medium) {
+                                    append(stringResource(R.string.image))
+                                }
+                            }
+
+                            fileCount == 1 -> {
+                                withStyle(style = spanTitle2Medium) {
+                                    append(stringResource(R.string.file))
+                                }
+                            }
+
+                            linkCount == 1 -> {
+                                val linkTitle =
+                                    attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
+                                        ?: stringResource(R.string.objects)
+                                withStyle(style = spanTitle2Medium) {
+                                    append(linkTitle)
+                                }
+                            }
+
+                            else -> {
+                                // No attachments, no message, show fallback
+                                withStyle(style = spanTitle2Regular) {
+                                    append(fallbackSubtitle)
+                                }
+                            }
+                        }
+                    }
+
+                    else -> {
+                        // Single attachment, with message text
+                        when {
+                            linkCount == 1 -> {
+                                // For links: show title + messageText
+                                val linkTitle =
+                                    attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
+                                        ?: stringResource(R.string.object_1)
+                                withStyle(style = spanTitle2Medium) {
+                                    append(linkTitle)
+                                    append(" ")
+                                }
+                                withStyle(style = spanTitle2Regular) {
+                                    append(messageText)
+                                }
+                            }
+
+                            else -> {
+                                // For files/images: just show messageText
+                                withStyle(style = spanTitle2Regular) {
+                                    append(messageText)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Case B: attachments size >= 2
+            else -> {
+                when {
+                    messageText.isNullOrEmpty() -> {
+                        // Multiple attachments, no message text
+                        when {
+                            imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
+                                // Images only
+                                withStyle(style = spanTitle2Medium) {
+                                    append("$imageCount ${stringResource(R.string.images)}")
+                                }
+                            }
+
+                            fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
+                                // Files only
+                                withStyle(style = spanTitle2Medium) {
+                                    append("$fileCount ${stringResource(R.string.files)}")
+                                }
+                            }
+
+                            linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
+                                // Objects only
+                                withStyle(style = spanTitle2Medium) {
+                                    append("$linkCount ${stringResource(R.string.objects)}")
+                                }
+                            }
+
+                            else -> {
+                                // Mixed types
+                                withStyle(style = spanTitle2Medium) {
+                                    append("$attachmentCount ${stringResource(R.string.attachments)}")
+                                }
+                            }
+                        }
+                    }
+
+                    else -> {
+                        // Multiple attachments, with message text - just show message text
+                        withStyle(style = spanTitle2Regular) {
+                            append(messageText)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return Pair(text, inlineContentMap)
+}
+
+@Composable
 @DefaultPreviews
 fun VaultSpaceCardPreview() {
     VaultSpaceCard(
@@ -284,7 +454,6 @@ fun VaultSpaceCardPreview() {
 fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
@@ -319,7 +488,6 @@ fun ChatWithMentionAndMessage() {
 fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
@@ -353,7 +521,6 @@ fun ChatWithMention() {
 fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder(),
         previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",

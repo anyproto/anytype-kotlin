@@ -12,6 +12,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_utils.ext.runSafely
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.ui.main.MainActivity
@@ -86,8 +87,11 @@ class NotificationBuilderImpl(
                 group = CHANNEL_GROUP_ID
             }
         }
-        notificationManager.createNotificationChannel(channel)
-        createdChannels.add(channelId)
+        runSafely("creating notification channel and adding to created channels") {
+            notificationManager.createNotificationChannel(channel)
+            val added = createdChannels.add(channelId)
+            Timber.d("Notification channel created: $channelId, success: $added")
+        }
     }
 
     /**

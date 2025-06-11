@@ -24,6 +24,9 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -45,6 +48,8 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,7 +78,9 @@ class VaultViewModel(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val fieldParser: FieldParser,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -115,7 +122,7 @@ class VaultViewModel(
         }
     }
 
-    private fun transformToVaultSpaceViews(
+    private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         settings: VaultSettings,
         chatPreviews: List<Chat.Preview>
@@ -139,14 +146,28 @@ class VaultViewModel(
             }
     }
 
-    private fun mapToVaultSpaceViewItem(
+    private suspend fun mapToVaultSpaceViewItem(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?
     ): VaultSpaceView {
+        // Debug logging to diagnose the missing spaces issue
+        if (BuildConfig.DEBUG) {
+            Timber.d("Space ${space.id}: Space name: ${space.name}, isLoading=${space.isLoading}, isActive=${space.isActive}, chatPreview=${chatPreview != null}, spaceLocalStatus=${space.spaceLocalStatus}, spaceAccountStatus=${space.spaceAccountStatus}")
+        }
+        
         return when {
-            space.isLoading -> createLoadingView(space)
-            chatPreview != null -> createChatView(space, chatPreview)
-            else -> createStandardSpaceView(space)
+            space.isLoading -> {
+                Timber.d("Creating loading view for space ${space.id}")
+                createLoadingView(space)
+            }
+            chatPreview != null -> {
+                Timber.d("Creating chat view for space ${space.id}")
+                createChatView(space, chatPreview)
+            }
+            else -> {
+                Timber.d("Creating standard space view for space ${space.id}")
+                createStandardSpaceView(space)
+            }
         }
     }
 
@@ -163,7 +184,7 @@ class VaultViewModel(
         )
     }
 
-    private fun createChatView(
+    private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview
     ): VaultSpaceView.Chat {
@@ -193,6 +214,49 @@ class VaultViewModel(
             } else null
         }
 
+        // Build attachment previews with proper URLs
+        val attachmentPreviews = chatPreview.message?.attachments?.mapNotNull { attachment ->
+            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+            if (dependency?.isValid != true) {
+                Timber.w("Object for attachment ${attachment.target} not valid")
+                return@mapNotNull null
+            } else {
+                when (attachment.type) {
+                    Chat.Message.Attachment.Type.Image -> {
+                        VaultSpaceView.AttachmentPreview(
+                            type = VaultSpaceView.AttachmentType.IMAGE,
+                            objectIcon = dependency.objectIcon(
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                            ),
+                        )
+                    }
+                    Chat.Message.Attachment.Type.File -> {
+                        val mimeType = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+                        val fileExt = dependency.getSingleValue<String>(Relations.FILE_EXT)
+                        VaultSpaceView.AttachmentPreview(
+                            type = VaultSpaceView.AttachmentType.FILE,
+                            objectIcon = ObjectIcon.File(
+                                mime = mimeType,
+                                extensions = fileExt,
+                                fileName = ""
+                            )
+                        )
+                    }
+                    Chat.Message.Attachment.Type.Link -> {
+                        VaultSpaceView.AttachmentPreview(
+                            type = VaultSpaceView.AttachmentType.LINK,
+                            objectIcon = dependency.objectIcon(
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                            ),
+                            title = fieldParser.getObjectName(objectWrapper = dependency)
+                        )
+                    }
+                }
+            }
+        } ?: emptyList()
+
         return VaultSpaceView.Chat(
             space = space,
             icon = space.spaceIcon(
@@ -205,7 +269,8 @@ class VaultViewModel(
             messageText = messageText,
             messageTime = messageTime,
             unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0
+            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            attachmentPreviews = attachmentPreviews
         )
     }
 

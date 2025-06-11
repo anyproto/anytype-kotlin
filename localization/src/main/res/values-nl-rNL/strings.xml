@@ -360,6 +360,7 @@
     <string name="query">Opdracht</string>
     <string name="select_query">Selecteer zoekopdracht</string>
     <string name="objects">Objecten</string>
+    <string name="object_1">Object</string>
     <string name="your_objects">Jouw objecten</string>
     <string name="web_pages">Internetpagina\'s</string>
     <string name="select_files">Selecteer bestanden</string>
@@ -1655,7 +1656,11 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="day_of_week_saturday">Zaterdag</string>
     <string name="day_of_week_sunday">Zondag</string>
     <string name="file">Bestand</string>
+    <string name="files">Bestanden</string>
+    <string name="image">Afbeelding</string>
+    <string name="images">Afbeeldingen</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Maak je eerste ruimte om aan de slag te gaan</string>
     <string name="space_list_empty_state_it_is_empty_here">Het is hier leeg.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; Mensen</string>

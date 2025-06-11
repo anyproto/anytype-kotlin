@@ -222,7 +222,17 @@ private fun VideoPlayer(url: String) {
                             shape = CircleShape
                         ).align(
                             Alignment.Center
-                        )
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
+                            }
+                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_play),
@@ -231,17 +241,6 @@ private fun VideoPlayer(url: String) {
                                 .align(Alignment.Center)
                                 .padding(12.dp)
                                 .size(24.dp)
-                                .clickable {
-                                    val player = videoViewRef.value ?: return@clickable
-                                    if (player.isPlaying) {
-                                        player.pause()
-                                        isPlaying = false
-                                        showControls = true
-                                    } else {
-                                        player.start()
-                                        isPlaying = true
-                                    }
-                                }
                         )
                     }
                 } else {
@@ -251,7 +250,17 @@ private fun VideoPlayer(url: String) {
                             shape = CircleShape
                         ).align(
                             Alignment.Center
-                        )
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
+                            }
+                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_pause),
@@ -260,17 +269,6 @@ private fun VideoPlayer(url: String) {
                                 .align(Alignment.Center)
                                 .padding(12.dp)
                                 .size(24.dp)
-                                .clickable {
-                                    val player = videoViewRef.value ?: return@clickable
-                                    if (player.isPlaying) {
-                                        player.pause()
-                                        isPlaying = false
-                                        showControls = true
-                                    } else {
-                                        player.start()
-                                        isPlaying = true
-                                    }
-                                }
                         )
                     }
                 }

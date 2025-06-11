@@ -91,22 +91,24 @@ fun VaultScreen(
 
     mainSpaceList = sections.mainSpaces
 
-    val lazyListState = rememberLazyListState()
+    // Simple drag drop state - only for main spaces LazyColumn
+    val mainSpacesLazyListState = rememberLazyListState()
     val isScrolled = remember {
         derivedStateOf {
-            lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+            mainSpacesLazyListState.firstVisibleItemIndex > 0 || mainSpacesLazyListState.firstVisibleItemScrollOffset > 0
         }
     }
-
     val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
+        lazyListState = mainSpacesLazyListState,
         onDragEnd = {
             onOrderChanged(
                 mainSpaceList.map { it.space.id }
             )
         },
         onMove = { fromIndex, toIndex ->
-            mainSpaceList = mainSpaceList.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+            mainSpaceList = mainSpaceList.toMutableList().apply { 
+                add(toIndex, removeAt(fromIndex)) 
+            }
         }
     )
 
@@ -136,120 +138,153 @@ fun VaultScreen(
                 modifier = Modifier.padding(paddings),
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
-        } else {
-            LazyColumn(
+                } else {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddings)
-                    .dragContainer(dragDropState),
-                state = lazyListState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                // Unread Section (Non-draggable)
                 if (sections.hasUnreadSpaces) {
-//                    item {
-//                        Spacer(modifier = Modifier.height(4.dp))
-//                        UnreadSectionHeader()
-//                    }
-                    itemsIndexed(
-                        items = sections.unreadSpaces,
-                        key = { _, item -> "unread_${item.space.id}" },
-                        contentType = { _, item ->
-                            when (item) {
-                                is VaultSpaceView.Chat -> TYPE_CHAT
-                                is VaultSpaceView.Space -> TYPE_SPACE
-                                is VaultSpaceView.Loading -> TYPE_LOADING
-                            }
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(weight = 1f, fill = false), // Take only needed space
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            UnreadSectionHeader()
                         }
-                    ) { _, item ->
-                        when (item) {
-                            is VaultSpaceView.Chat -> {
-                                VaultChatCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(80.dp)
-                                        .padding(horizontal = 16.dp)
-                                        .clickable {
+                        itemsIndexed(
+                            items = sections.unreadSpaces,
+                            key = { _, item -> "unread_${item.space.id}" },
+                            contentType = { _, item ->
+                                when (item) {
+                                    is VaultSpaceView.Chat -> TYPE_CHAT
+                                    is VaultSpaceView.Space -> TYPE_SPACE
+                                    is VaultSpaceView.Loading -> TYPE_LOADING
+                                }
+                            }
+                        ) { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> {
+                                    VaultChatCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .padding(horizontal = 16.dp)
+                                            .clickable {
+                                                onSpaceClicked(item)
+                                            },
+                                        title = item.space.name.orEmpty(),
+                                        icon = item.icon,
+                                        previewText = item.previewText,
+                                        creatorName = item.creatorName,
+                                        messageText = item.messageText,
+                                        messageTime = item.messageTime,
+                                        chatPreview = item.chatPreview,
+                                        unreadMessageCount = item.unreadMessageCount,
+                                        unreadMentionCount = item.unreadMentionCount,
+                                        attachmentPreviews = item.attachmentPreviews
+                                    )
+                                }
+                                is VaultSpaceView.Loading -> {
+                                    LoadingSpaceCard()
+                                }
+                                is VaultSpaceView.Space -> {
+                                    VaultSpaceCard(
+                                        title = item.space.name.orEmpty(),
+                                        subtitle = item.accessType,
+                                        onCardClicked = {
                                             onSpaceClicked(item)
                                         },
-                                    title = item.space.name.orEmpty(),
-                                    icon = item.icon,
-                                    previewText = item.previewText,
-                                    creatorName = item.creatorName,
-                                    messageText = item.messageText,
-                                    messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview,
-                                    unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews
-                                )
-                            }
-                            is VaultSpaceView.Loading -> {
-                                LoadingSpaceCard()
-                            }
-                            is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    onCardClicked = {
-                                        onSpaceClicked(item)
-                                    },
-                                    icon = item.icon,
-                                )
+                                        icon = item.icon,
+                                    )
+                                }
                             }
                         }
+                    }
+                    
+                    // Divider between sections
+                    if (sections.mainSpaces.isNotEmpty()) {
+                        Divider(
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            color = colorResource(id = R.color.shape_primary),
+                            thickness = 0.5.dp
+                        )
                     }
                 }
-
-                itemsIndexed(
-                    items = mainSpaceList,
-                    key = { _, item -> "main_${item.space.id}" },
-                    contentType = { _, item ->
-                        when (item) {
-                            is VaultSpaceView.Chat -> TYPE_CHAT
-                            is VaultSpaceView.Space -> TYPE_SPACE
-                            is VaultSpaceView.Loading -> TYPE_LOADING
-                        }
-                    }
-                ) { idx, item ->
-                    when (item) {
-                        is VaultSpaceView.Chat -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
-                                VaultChatCard(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(80.dp)
-                                        .padding(horizontal = 16.dp)
-                                        .clickable {
-                                            onSpaceClicked(item)
-                                        },
-                                    title = item.space.name.orEmpty(),
-                                    icon = item.icon,
-                                    previewText = item.previewText,
-                                    creatorName = item.creatorName,
-                                    messageText = item.messageText,
-                                    messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview,
-                                    unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews
-                                )
+                
+                // Main Spaces Section (Draggable)
+                if (sections.mainSpaces.isNotEmpty()) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f) // Take remaining space
+                            .dragContainer(dragDropState),
+                        state = mainSpacesLazyListState,
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        // Add top spacing only if no unread section
+                        if (!sections.hasUnreadSpaces) {
+                            item {
+                                Spacer(modifier = Modifier.height(4.dp))
                             }
                         }
-                        is VaultSpaceView.Loading -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
-                                LoadingSpaceCard()
+                        
+                        itemsIndexed(
+                            items = mainSpaceList,
+                            key = { _, item -> "main_${item.space.id}" },
+                            contentType = { _, item ->
+                                when (item) {
+                                    is VaultSpaceView.Chat -> TYPE_CHAT
+                                    is VaultSpaceView.Space -> TYPE_SPACE
+                                    is VaultSpaceView.Loading -> TYPE_LOADING
+                                }
                             }
-                        }
-                        is VaultSpaceView.Space -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
-                                VaultSpaceCard(
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    onCardClicked = {
-                                        onSpaceClicked(item)
-                                    },
-                                    icon = item.icon,
-                                )
+                        ) { idx, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> {
+                                    DraggableItem(dragDropState = dragDropState, index = idx) {
+                                        VaultChatCard(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(80.dp)
+                                                .padding(horizontal = 16.dp)
+                                                .clickable {
+                                                    onSpaceClicked(item)
+                                                },
+                                            title = item.space.name.orEmpty(),
+                                            icon = item.icon,
+                                            previewText = item.previewText,
+                                            creatorName = item.creatorName,
+                                            messageText = item.messageText,
+                                            messageTime = item.messageTime,
+                                            chatPreview = item.chatPreview,
+                                            unreadMessageCount = item.unreadMessageCount,
+                                            unreadMentionCount = item.unreadMentionCount,
+                                            attachmentPreviews = item.attachmentPreviews
+                                        )
+                                    }
+                                }
+                                is VaultSpaceView.Loading -> {
+                                    DraggableItem(dragDropState = dragDropState, index = idx) {
+                                        LoadingSpaceCard()
+                                    }
+                                }
+                                is VaultSpaceView.Space -> {
+                                    DraggableItem(dragDropState = dragDropState, index = idx) {
+                                        VaultSpaceCard(
+                                            title = item.space.name.orEmpty(),
+                                            subtitle = item.accessType,
+                                            onCardClicked = {
+                                                onSpaceClicked(item)
+                                            },
+                                            icon = item.icon,
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

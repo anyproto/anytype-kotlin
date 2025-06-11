@@ -61,7 +61,22 @@ sealed class VaultSpaceView {
 }
 
 /**
- * Data structure for organizing vault spaces into sections
+ * Data structure for organizing vault spaces into sections using a two-tier approach:
+ * 
+ * ## Architecture:
+ * 1. **regularOrder** - Single source of truth for user-defined space order (stored in VaultSettings.orderOfSpaces)
+ * 2. **unreadSet** - Set of space IDs that currently have unread messages
+ * 
+ * ## Rendering Logic:
+ * - **topSection**: Unread spaces sorted by lastMessageDate (newest first) - Non-draggable
+ * - **mainSection**: All other spaces in user-defined order - Draggable
+ * 
+ * ## Key Principles:
+ * - regularOrder changes ONLY when user drags in main section
+ * - unreadSet is updated automatically on message arrival/read events
+ * - We NEVER touch regularOrder when a chat becomes unread/read
+ * - Chats automatically "return" to their saved position when marked as read
+ * 
  * @property unreadSpaces List of spaces with unread messages, auto-sorted by lastMessageDate (newest first)
  * @property mainSpaces List of spaces in user-defined order (from VaultSettings.orderOfSpaces)
  */

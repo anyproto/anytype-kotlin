@@ -129,6 +129,7 @@ class VaultViewModel(
         settings: VaultSettings,
         chatPreviews: List<Chat.Preview>
     ): VaultSectionView {
+        // Map all active spaces to VaultSpaceView objects
         val allSpaces = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
             .map { space ->
@@ -137,28 +138,39 @@ class VaultViewModel(
                 }
                 mapToVaultSpaceViewItem(space, chatPreview)
             }
-        
-        // Split into unread and main lists
-        val (unreadSpaces, regularSpaces) = allSpaces.partition { it.hasUnreadMessages }
-        
-        // Sort unread by lastMessageDate (newest first)
-        val sortedUnreadSpaces = unreadSpaces.sortedByDescending { it.lastMessageDate ?: 0L }
-        
-        // Sort main list by user-defined order
-        val sortedMainSpaces = regularSpaces.sortedBy { spaceView ->
-            val idx = settings.orderOfSpaces.indexOf(
-                spaceView.space.id
-            )
-            if (idx == -1) {
-                Int.MIN_VALUE
-            } else {
-                idx
-            }
+
+        // Create a map for quick lookup
+        val spaceViewMap = allSpaces.associateBy { it.space.id }
+
+        // Extract unread set - IDs of spaces with unread messages
+        val unreadSet = allSpaces
+            .filter { it.hasUnreadMessages }
+            .map { it.space.id }
+            .toSet()
+
+        // Regular order - user-defined order from settings
+        // This is our single source of truth for the user's preferred order
+        val regularOrder = settings.orderOfSpaces.filter { spaceId ->
+            spaceViewMap.containsKey(spaceId)
         }
-        
+
+        // Add any spaces that aren't in the saved order (new spaces) at the end
+        val unmanagedSpaceIds = allSpaces.map { it.space.id } - regularOrder.toSet()
+        val fullRegularOrder = regularOrder + unmanagedSpaceIds
+
+        // Top section: unread spaces sorted by last message time (newest first)
+        val unreadSpaces = allSpaces
+            .filter { it.space.id in unreadSet }
+            .sortedByDescending { it.lastMessageDate ?: 0L }
+
+        // Main section: all other spaces in user-defined order
+        val mainSpaces = fullRegularOrder
+            .filter { spaceId -> spaceId !in unreadSet }
+            .mapNotNull { spaceId -> spaceViewMap[spaceId] }
+
         return VaultSectionView(
-            unreadSpaces = sortedUnreadSpaces,
-            mainSpaces = sortedMainSpaces
+            unreadSpaces = unreadSpaces,
+            mainSpaces = mainSpaces
         )
     }
 
@@ -335,7 +347,9 @@ class VaultViewModel(
     }
 
     fun onOrderChanged(order: List<Id>) {
-        Timber.d("onOrderChanged")
+        Timber.d("onOrderChanged: $order")
+        // This only affects the regularOrder (user-defined order) for the main section
+        // Unread chats remain in the top section unaffected by this reordering
         viewModelScope.launch { analytics.sendEvent(eventName = EventsDictionary.reorderSpace) }
         viewModelScope.launch { setVaultSpaceOrder.async(params = order) }
     }

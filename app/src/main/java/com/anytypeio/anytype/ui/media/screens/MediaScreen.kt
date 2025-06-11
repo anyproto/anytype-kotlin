@@ -105,7 +105,7 @@ private fun VideoPlayer(url: String) {
     // Auto-hide controls after n seconds
     LaunchedEffect(showControls, isPlaying) {
         if (showControls && isPlaying) {
-            delay(1500)
+            delay(DELAY_BEFORE_HIDING_CONTROLS)
             showControls = false
         }
     }
@@ -380,3 +380,5 @@ private fun formatMillis(millis: Int): String {
     val seconds = totalSeconds % 60
     return "%d:%02d".format(minutes, seconds)
 }
+
+const val DELAY_BEFORE_HIDING_CONTROLS = 1000L

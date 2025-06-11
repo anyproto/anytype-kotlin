@@ -174,8 +174,8 @@ private fun BoxScope.ContentChat(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(start = 68.dp),
-        verticalArrangement = Arrangement.Center
+            .padding(start = 68.dp, top = 8.dp),
+        verticalArrangement = Arrangement.Top
     ) {
         Row(
             modifier = Modifier
@@ -394,7 +394,7 @@ private fun buildChatContentWithInlineIcons(
 
                             else -> {
                                 // No attachments, no message, show fallback
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = spanTitle2Regular) {
                                     append(fallbackSubtitle)
                                 }
                             }

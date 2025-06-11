@@ -131,6 +131,7 @@ fun VaultChatCard(
         SpaceIconView(
             icon = icon,
             mainSize = 56.dp,
+            onSpaceIconClick = {},
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )

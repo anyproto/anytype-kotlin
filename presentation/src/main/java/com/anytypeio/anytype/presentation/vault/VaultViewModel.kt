@@ -209,7 +209,7 @@ class VaultViewModel(
         }
 
         // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.take(3)?.mapNotNull { attachment ->
+        val attachmentPreviews = chatPreview.message?.attachments?.mapNotNull { attachment ->
             val dependency = chatPreview.dependencies.find { it.id == attachment.target }
             when (attachment.type) {
                 Chat.Message.Attachment.Type.Image -> {

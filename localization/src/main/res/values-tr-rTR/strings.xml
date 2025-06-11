@@ -360,6 +360,7 @@
     <string name="query">Sorgu</string>
     <string name="select_query">Sorgu seç</string>
     <string name="objects">Nesneler</string>
+    <string name="object_1">Nesne</string>
     <string name="your_objects">Nesneleriniz</string>
     <string name="web_pages">Web sayfaları</string>
     <string name="select_files">Dosyaları seçin</string>
@@ -1655,7 +1656,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="day_of_week_saturday">Cumartesi</string>
     <string name="day_of_week_sunday">Pazar</string>
     <string name="file">Dosya</string>
+    <string name="files">Dosyalar</string>
+    <string name="image">Görsel</string>
+    <string name="images">Görseller</string>
     <string name="attachment">Ek dosya</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Başlamak için ilk alanınızı oluşturun</string>
     <string name="space_list_empty_state_it_is_empty_here">Burası boş.</string>
     <string name="emoji_category_smileys_and_people">Suratlar &amp; İnsanlar</string>

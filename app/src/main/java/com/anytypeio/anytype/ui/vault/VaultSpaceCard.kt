@@ -333,20 +333,20 @@ private fun buildChatContentWithInlineIcons(
                         when {
                             imageCount == 1 -> {
                                 withStyle(style = spanTitle2Medium) {
-                                    append("Image")
+                                    append(stringResource(R.string.image))
                                 }
                             }
 
                             fileCount == 1 -> {
                                 withStyle(style = spanTitle2Medium) {
-                                    append("File")
+                                    append(stringResource(R.string.file))
                                 }
                             }
 
                             linkCount == 1 -> {
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
-                                        ?: "Object"
+                                        ?: stringResource(R.string.objects)
                                 withStyle(style = spanTitle2Medium) {
                                     append(linkTitle)
                                 }
@@ -398,28 +398,28 @@ private fun buildChatContentWithInlineIcons(
                             imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
                                 // Images only
                                 withStyle(style = spanTitle2Medium) {
-                                    append("$imageCount Images")
+                                    append("$imageCount ${stringResource(R.string.images)}")
                                 }
                             }
 
                             fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
                                 // Files only
                                 withStyle(style = spanTitle2Medium) {
-                                    append("$fileCount Files")
+                                    append("$fileCount ${stringResource(R.string.files)}")
                                 }
                             }
 
                             linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
                                 // Objects only
                                 withStyle(style = spanTitle2Medium) {
-                                    append("$linkCount Objects")
+                                    append("$linkCount ${stringResource(R.string.objects)}")
                                 }
                             }
 
                             else -> {
                                 // Mixed types
                                 withStyle(style = spanTitle2Medium) {
-                                    append("$attachmentCount Attachments")
+                                    append("$attachmentCount ${stringResource(R.string.attachments)}")
                                 }
                             }
                         }

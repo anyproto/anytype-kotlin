@@ -334,13 +334,13 @@ private fun buildChatContentWithInlineIcons(
                     }
 
                     VaultSpaceView.AttachmentType.FILE -> {
-                        val iconResource = preview.mimeType.getMimeIcon(preview.fileExtension)
-                        Image(
-                            painter = painterResource(iconResource),
-                            contentDescription = null,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    }
+                         val fileIcon = preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
+                         ListWidgetObjectIcon(
+                             icon = fileIcon,
+                             modifier = Modifier.fillMaxSize(),
+                             iconSize = 18.dp
+                         )
+                     }
 
                     VaultSpaceView.AttachmentType.LINK -> {
                         val linkIcon = preview.objectIcon ?: ObjectIcon.TypeIcon.Default.DEFAULT
@@ -377,6 +377,7 @@ private fun buildChatContentWithInlineIcons(
                                     append("Image")
                                 }
                             }
+
                             fileCount == 1 -> {
                                 withStyle(style = spanTitle2Medium) {
                                     append("File")

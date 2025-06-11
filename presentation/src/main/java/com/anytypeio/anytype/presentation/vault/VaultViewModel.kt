@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -224,7 +225,11 @@ class VaultViewModel(
                     VaultSpaceView.AttachmentPreview(
                         type = VaultSpaceView.AttachmentType.FILE,
                         mimeType = mimeType,
-                        fileExtension = fileExt
+                        fileExtension = fileExt,
+                        objectIcon = ObjectIcon.File(
+                            mime = mimeType,
+                            fileName = fileExt
+                        )
                     )
                 }
                 Chat.Message.Attachment.Type.Link -> {

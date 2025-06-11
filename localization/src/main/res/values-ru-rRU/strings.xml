@@ -362,6 +362,7 @@
     <string name="query">Запрос</string>
     <string name="select_query">Выберите запрос</string>
     <string name="objects">Объекты</string>
+    <string name="object_1">Объект</string>
     <string name="your_objects">Ваши объекты</string>
     <string name="web_pages">Веб-страницы</string>
     <string name="select_files">Выберите файлы</string>
@@ -1684,7 +1685,11 @@
     <string name="day_of_week_saturday">Суббота</string>
     <string name="day_of_week_sunday">Воскресенье</string>
     <string name="file">Файл</string>
+    <string name="files">Files</string>
+    <string name="image">Image</string>
+    <string name="images">Images</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Создайте свое первое место, чтобы начать</string>
     <string name="space_list_empty_state_it_is_empty_here">Здесь пусто.</string>
     <string name="emoji_category_smileys_and_people">Смайлы и люди</string>

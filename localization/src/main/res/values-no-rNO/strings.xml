@@ -360,6 +360,7 @@
     <string name="query">Query</string>
     <string name="select_query">Velg spørring</string>
     <string name="objects">Objekter</string>
+    <string name="object_1">Objekt</string>
     <string name="your_objects">Dine objekter</string>
     <string name="web_pages">Nettsider</string>
     <string name="select_files">Velg filer</string>
@@ -1655,7 +1656,11 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
     <string name="file">Fil</string>
+    <string name="files">Files</string>
+    <string name="image">Image</string>
+    <string name="images">Images</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>

@@ -359,6 +359,7 @@
     <string name="query">Kueri</string>
     <string name="select_query">Pilih kueri</string>
     <string name="objects">Objek</string>
+    <string name="object_1">Objek</string>
     <string name="your_objects">Objekmu</string>
     <string name="web_pages">Halaman web</string>
     <string name="select_files">Pilih berkas</string>
@@ -1642,7 +1643,11 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="day_of_week_saturday">Sabtu</string>
     <string name="day_of_week_sunday">Minggu</string>
     <string name="file">Berkas</string>
+    <string name="files">Berkas</string>
+    <string name="image">Gambar</string>
+    <string name="images">Gambar</string>
     <string name="attachment">Lampiran</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
     <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
     <string name="emoji_category_smileys_and_people">Smiley &amp; Orang</string>

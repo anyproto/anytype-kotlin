@@ -412,6 +412,7 @@
     <string name="query">Query</string>
     <string name="select_query">Select query</string>
     <string name="objects">Objects</string>
+    <string name="object_1">Object</string>
     <string name="your_objects">Your objects</string>
     <string name="web_pages">Web pages</string>
     <string name="select_files">Select files</string>

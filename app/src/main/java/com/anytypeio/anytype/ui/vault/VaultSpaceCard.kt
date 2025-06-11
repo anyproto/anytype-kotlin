@@ -368,7 +368,7 @@ private fun buildChatContentWithInlineIcons(
                                 // For links: show title + messageText
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
-                                        ?: "Object"
+                                        ?: stringResource(R.string.object_1)
                                 withStyle(style = spanTitle2Medium) {
                                     append(linkTitle)
                                     append(" ")

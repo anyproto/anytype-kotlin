@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +43,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +64,8 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
@@ -68,10 +74,13 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.DragEvent
+import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.DragEvent.OnDragEnd
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
@@ -80,6 +89,7 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.ui.settings.typography
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -302,12 +312,38 @@ fun VaultScreen(
 
 @Composable
 fun UnreadSectionHeader() {
-    Text(
-        text = stringResource(R.string.vault_unread_section_title),
-        style = HeadlineTitle,
-        color = colorResource(id = R.color.text_secondary),
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.vault_unread_section_title),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun AllSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.vault_all_section_title),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 8.dp)
+        )
+    }
 }
 
 // Original VaultScreen function for backward compatibility
@@ -626,51 +662,80 @@ fun VaultScreenAnotherWay(
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
-    onOrderChanged: (List<Id>) -> Unit
+    onOrderChanged: (String, String) -> Unit,
+    onDragEnd: () -> Unit = { /* No-op */ }
 ) {
+
     var mainSpaceList by remember {
         mutableStateOf<List<VaultSpaceView>>(sections.mainSpaces)
     }
 
     mainSpaceList = sections.mainSpaces
 
-    // Reorderable LazyColumn state for single list approach
+    val hapticFeedback = rememberReorderHapticFeedback()
+
     val lazyListState = rememberLazyListState()
+
+    val reorderableLazyState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        onOrderChanged(
+            from.key as String,
+            to.key as String
+        )
+        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+    }
+
+    var isDragging by remember { mutableStateOf(false) }
+
+    LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
+        if (reorderableLazyState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
+            onDragEnd()
+            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+        }
+    }
+
+    val scrollState = rememberScrollState()
+
+//    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+//        // Calculate offset due to unread section items
+//        val unreadSectionOffset = if (sections.hasUnreadSpaces) {
+//            1 + sections.unreadSpaces.size + (if (sections.mainSpaces.isNotEmpty()) 1 else 0) // header + unread items + divider
+//        } else {
+//            0
+//        }
+//
+//        // Adjust indices to only affect main section items
+//        val adjustedFromIndex = (from.index - unreadSectionOffset).coerceAtLeast(0)
+//        val adjustedToIndex = (to.index - unreadSectionOffset).coerceAtLeast(0)
+//
+//        // Only process if both indices are within main section
+//        if (adjustedFromIndex < mainSpaceList.size && adjustedToIndex < mainSpaceList.size) {
+//            mainSpaceList = mainSpaceList.toMutableList().apply {
+//                add(adjustedToIndex, removeAt(adjustedFromIndex))
+//            }
+//        }
+//    }
+
     val isScrolled = remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
         }
     }
-    
-    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        // Calculate offset due to unread section items
-        val unreadSectionOffset = if (sections.hasUnreadSpaces) {
-            1 + sections.unreadSpaces.size + (if (sections.mainSpaces.isNotEmpty()) 1 else 0) // header + unread items + divider
-        } else {
-            0
-        }
-        
-        // Adjust indices to only affect main section items
-        val adjustedFromIndex = (from.index - unreadSectionOffset).coerceAtLeast(0)
-        val adjustedToIndex = (to.index - unreadSectionOffset).coerceAtLeast(0)
-        
-        // Only process if both indices are within main section
-        if (adjustedFromIndex < mainSpaceList.size && adjustedToIndex < mainSpaceList.size) {
-            mainSpaceList = mainSpaceList.toMutableList().apply { 
-                add(adjustedToIndex, removeAt(adjustedFromIndex)) 
-            }
-        }
-    }
 
-    LaunchedEffect(reorderableLazyListState.isAnyItemDragging) {
-        if (!reorderableLazyListState.isAnyItemDragging) {
-            onOrderChanged(mainSpaceList.map { it.space.id })
-        }
-    }
+//    LaunchedEffect(reorderableLazyListState.isAnyItemDragging) {
+//        if (!reorderableLazyListState.isAnyItemDragging) {
+//            onOrderChanged(mainSpaceList.map { it.space.id })
+//        }
+//    }
 
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
             .background(color = colorResource(id = R.color.background_primary))
             .then(
                 if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -762,12 +827,8 @@ fun VaultScreenAnotherWay(
                     
                     // Divider between sections
                     if (sections.mainSpaces.isNotEmpty()) {
-                        item(key = "divider") {
-                            Divider(
-                                modifier = Modifier.padding(vertical = 8.dp),
-                                color = colorResource(id = R.color.shape_primary),
-                                thickness = 0.5.dp
-                            )
+                        item(key = "all_section") {
+                            AllSectionHeader()
                         }
                     }
                 }
@@ -786,13 +847,22 @@ fun VaultScreenAnotherWay(
                         }
                     ) { idx, item ->
                         ReorderableItem(
-                            state = reorderableLazyListState,
+                            state = reorderableLazyState,
                             key = "main_${item.space.id}"
                         ) { isDragging ->
+                            Log.d("VaultScreen", "Item $idx isDragging: $isDragging")
                             when (item) {
                                 is VaultSpaceView.Chat -> {
                                     VaultChatCard(
                                         modifier = Modifier
+                                            .draggableHandle(
+                                                onDragStarted = {
+                                                    hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                                },
+                                                onDragStopped = {
+                                                    hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                                }
+                                            )
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
@@ -814,6 +884,14 @@ fun VaultScreenAnotherWay(
                                 }
                                 is VaultSpaceView.Loading -> {
                                     Box(modifier = Modifier
+                                        .draggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                            }
+                                        )
                                         //.conditionalBackground(isDragging)
                                     ) {
                                         LoadingSpaceCard()
@@ -821,6 +899,14 @@ fun VaultScreenAnotherWay(
                                 }
                                 is VaultSpaceView.Space -> {
                                     Box(modifier = Modifier
+                                        .draggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                            }
+                                        )
                                         //.conditionalBackground(isDragging)
                                     ) {
                                         VaultSpaceCard(

@@ -349,12 +349,8 @@ class VaultViewModel(
         }
     }
 
-    fun onOrderChanged(fromKey: String, toKey: String) {
-        Timber.d("onOrderChanged: from=$fromKey, to=$toKey")
-        
-        // Extract space IDs from keys (remove "main_" prefix)
-        val fromSpaceId = fromKey.removePrefix("main_")
-        val toSpaceId = toKey.removePrefix("main_")
+    fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
+        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
         
         // Get current settings to work with the existing order
         val currentSections = sections.value

@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,15 +22,14 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,8 +66,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
@@ -80,10 +76,13 @@ import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.ui.settings.typography
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import kotlinx.coroutines.delay
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
 @Composable
@@ -247,7 +246,7 @@ fun VaultScreen(
                 if (sections.mainSpaces.isNotEmpty()) {
                     itemsIndexed(
                         items = mainSpaceList,
-                        key = { _, item -> "main_${item.space.id}" },
+                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
                         contentType = { _, item ->
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
@@ -673,10 +672,11 @@ fun VaultScreenWithUnreadSection(
     val lazyListState = rememberLazyListState()
 
     val reorderableLazyState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        onOrderChanged(
-            from.key as String,
-            to.key as String
-        )
+        // Extract space IDs from keys (remove prefix) before passing to ViewModel
+        val fromSpaceId = (from.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        val toSpaceId = (to.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        
+        onOrderChanged(fromSpaceId, toSpaceId)
         hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
     }
 
@@ -686,7 +686,7 @@ fun VaultScreenWithUnreadSection(
         if (reorderableLazyState.isAnyItemDragging) {
             isDragging = true
             // Optional: Add a small delay to avoid triggering on very short drags
-            //delay(50)
+            delay(50)
         } else if (isDragging) {
             isDragging = false
             onDragEnd()
@@ -694,39 +694,11 @@ fun VaultScreenWithUnreadSection(
         }
     }
 
-    val scrollState = rememberScrollState()
-
-//    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-//        // Calculate offset due to unread section items
-//        val unreadSectionOffset = if (sections.hasUnreadSpaces) {
-//            1 + sections.unreadSpaces.size + (if (sections.mainSpaces.isNotEmpty()) 1 else 0) // header + unread items + divider
-//        } else {
-//            0
-//        }
-//
-//        // Adjust indices to only affect main section items
-//        val adjustedFromIndex = (from.index - unreadSectionOffset).coerceAtLeast(0)
-//        val adjustedToIndex = (to.index - unreadSectionOffset).coerceAtLeast(0)
-//
-//        // Only process if both indices are within main section
-//        if (adjustedFromIndex < mainSpaceList.size && adjustedToIndex < mainSpaceList.size) {
-//            mainSpaceList = mainSpaceList.toMutableList().apply {
-//                add(adjustedToIndex, removeAt(adjustedFromIndex))
-//            }
-//        }
-//    }
-
     val isScrolled = remember {
         derivedStateOf {
             lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
         }
     }
-
-//    LaunchedEffect(reorderableLazyListState.isAnyItemDragging) {
-//        if (!reorderableLazyListState.isAnyItemDragging) {
-//            onOrderChanged(mainSpaceList.map { it.space.id })
-//        }
-//    }
 
     Scaffold(
         modifier = Modifier
@@ -823,7 +795,6 @@ fun VaultScreenWithUnreadSection(
                         }
                     }
                     
-                    // Divider between sections
                     if (sections.mainSpaces.isNotEmpty()) {
                         item(key = "all_section") {
                             AllSectionHeader()
@@ -835,7 +806,7 @@ fun VaultScreenWithUnreadSection(
                 if (sections.mainSpaces.isNotEmpty()) {
                     itemsIndexed(
                         items = mainSpaceList,
-                        key = { _, item -> "main_${item.space.id}" },
+                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
                         contentType = { _, item ->
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
@@ -846,9 +817,8 @@ fun VaultScreenWithUnreadSection(
                     ) { idx, item ->
                         ReorderableItem(
                             state = reorderableLazyState,
-                            key = "main_${item.space.id}"
+                            key = "$MAIN_SECTION_KEY_PREFIX${item.space.id}"
                         ) { isDragging ->
-                            Log.d("VaultScreen", "Item $idx isDragging: $isDragging")
                             when (item) {
                                 is VaultSpaceView.Chat -> {
                                     VaultChatCard(
@@ -864,7 +834,6 @@ fun VaultScreenWithUnreadSection(
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
-                                            //.conditionalBackground(isDragging)
                                             .clickable {
                                                 onSpaceClicked(item)
                                             },
@@ -890,7 +859,6 @@ fun VaultScreenWithUnreadSection(
                                                 hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
                                             }
                                         )
-                                        //.conditionalBackground(isDragging)
                                     ) {
                                         LoadingSpaceCard()
                                     }
@@ -905,7 +873,6 @@ fun VaultScreenWithUnreadSection(
                                                 hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
                                             }
                                         )
-                                        //.conditionalBackground(isDragging)
                                     ) {
                                         VaultSpaceCard(
                                             modifier = Modifier.animateItem(),
@@ -930,6 +897,8 @@ fun VaultScreenWithUnreadSection(
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 const val TYPE_LOADING = "loading"
+
+private const val MAIN_SECTION_KEY_PREFIX = "main_"
 
 // Preview functions for the new unread section logic
 @Preview(

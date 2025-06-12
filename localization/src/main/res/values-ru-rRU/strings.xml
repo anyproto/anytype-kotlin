@@ -1566,6 +1566,8 @@
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
     <string name="vault_my_spaces">Мои пространства</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">Все</string>
     <string name="all_content_title_all_content">Все объекты</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

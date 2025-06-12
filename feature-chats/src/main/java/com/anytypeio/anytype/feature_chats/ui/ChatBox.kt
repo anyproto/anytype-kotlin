@@ -87,6 +87,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.tools.launchCamera
+import com.anytypeio.anytype.feature_chats.tools.launchVideoRecorder
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -174,7 +175,7 @@ fun ChatBox(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            launchCamera(
+            launchVideoRecorder(
                 context = context,
                 launcher = recordVideoLauncher,
                 onUriReceived = { capturedVideoUri = it.toString() }

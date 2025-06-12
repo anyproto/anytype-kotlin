@@ -17,22 +17,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import coil3.video.videoFrameMillis
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import timber.log.Timber
 
 @Composable
 internal fun ChatBoxAttachments(
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit
 ) {
+    val context = LocalContext.current
+
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,26 +117,55 @@ internal fun ChatBoxAttachments(
                 is ChatView.Message.ChatBoxAttachment.Media -> {
                     item {
                         Box(modifier = Modifier.padding()) {
-                            Image(
-                                painter = rememberAsyncImagePainter(attachment.uri),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .padding(
-                                        top = 12.dp,
-                                        end = 4.dp
-                                    )
-                                    .size(72.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .alpha(
-                                        if (attachment.state is ChatView.Message.ChatBoxAttachment.State.Uploading) {
-                                            0.3f
-                                        } else {
-                                            1f
-                                        }
-                                    )
-                                ,
-                                contentScale = ContentScale.Crop
-                            )
+                            if (attachment.isVideo) {
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .size(72.dp)
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .size(72.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .alpha(
+                                            if (attachment.state is ChatView.Message.ChatBoxAttachment.State.Uploading) {
+                                                0.3f
+                                            } else {
+                                                1f
+                                            }
+                                        ),
+                                    model = ImageRequest.Builder(context)
+                                        .data(attachment.uri)
+                                        .videoFrameMillis(0)
+                                        .crossfade(true)
+                                        .build(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    onState = { state ->
+                                        Timber.d("Chat box video attachment state for ${attachment.uri}: $state")
+                                    }
+                                )
+                            } else {
+                                Image(
+                                    painter = rememberAsyncImagePainter(attachment.uri),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 12.dp,
+                                            end = 4.dp
+                                        )
+                                        .size(72.dp)
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .alpha(
+                                            if (attachment.state is ChatView.Message.ChatBoxAttachment.State.Uploading) {
+                                                0.3f
+                                            } else {
+                                                1f
+                                            }
+                                        ),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
                             Image(
                                 painter = painterResource(R.drawable.ic_clear_chatbox_attachment),
                                 contentDescription = "Clear attachment icon",

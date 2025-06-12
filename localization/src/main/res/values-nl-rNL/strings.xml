@@ -1799,5 +1799,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

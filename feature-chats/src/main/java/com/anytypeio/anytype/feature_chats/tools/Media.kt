@@ -37,6 +37,34 @@ fun launchCamera(
     launcher.launch(uri)
 }
 
+fun launchVideoRecorder(
+    context: Context,
+    launcher: ManagedActivityResultLauncher<Uri, Boolean>,
+    onUriReceived: (Uri) -> Unit
+) {
+    val tempDir = File(context.cacheDir, CHATS_TEMP_FOLDER_NAME)
+    if (!tempDir.exists()) {
+        val created = tempDir.mkdirs()
+        Timber.d("Created video temp dir: $created at ${tempDir.absolutePath}")
+    }
+
+    val videoFile = File.createTempFile("VID_", ".mp4", tempDir).apply {
+        createNewFile()
+        deleteOnExit()
+    }
+
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        videoFile
+    )
+
+    Timber.d("Launching video recorder with URI: $uri (path: ${videoFile.absolutePath})")
+
+    onUriReceived(uri)
+    launcher.launch(uri)
+}
+
 const val CHATS_TEMP_FOLDER_NAME = "chats_temp_folder"
 
 class ClearChatsTempFolder @Inject constructor(

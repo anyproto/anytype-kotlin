@@ -7,26 +7,33 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.LocalOverscrollConfiguration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -36,6 +43,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -79,6 +87,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.tools.launchCamera
+import com.anytypeio.anytype.feature_chats.tools.launchVideoRecorder
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -103,7 +112,8 @@ fun ChatBox(
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
-    onImageCaptured: (Uri) -> Unit
+    onImageCaptured: (Uri) -> Unit,
+    onVideoCaptured: (Uri) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -123,8 +133,9 @@ fun ChatBox(
     }
 
     var capturedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
+    var capturedVideoUri by rememberSaveable { mutableStateOf<String?>(null) }
 
-    val cameraLauncher = rememberLauncherForActivityResult(
+    val takePhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { isSuccess ->
         if (isSuccess && capturedImageUri != null) {
@@ -135,14 +146,39 @@ fun ChatBox(
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val recordVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { isSuccess ->
+        if (isSuccess && capturedVideoUri != null) {
+            onVideoCaptured(Uri.parse(capturedVideoUri))
+            capturedVideoUri = null
+        } else {
+            Timber.w("DROID-2966 Failed to capture image")
+        }
+    }
+
+    val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             launchCamera(
                 context = context,
-                launcher = cameraLauncher,
+                launcher = takePhotoLauncher,
                 onUriReceived = { capturedImageUri = it.toString() }
+            )
+        } else {
+            context.toast(context.getString(R.string.chat_camera_permission_denied))
+        }
+    }
+
+    val recordVideoPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            launchVideoRecorder(
+                context = context,
+                launcher = recordVideoLauncher,
+                onUriReceived = { capturedVideoUri = it.toString() }
             )
         } else {
             context.toast(context.getString(R.string.chat_camera_permission_denied))
@@ -300,13 +336,29 @@ fun ChatBox(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            text = stringResource(R.string.chat_box_camera),
+                                            text = stringResource(R.string.chat_box_take_photo),
                                             color = colorResource(id = R.color.text_primary)
                                         )
                                     },
                                     onClick = {
                                         showDropdownMenu = false
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_box_record_video),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
                                     }
                                 )
                                 Divider(
@@ -406,8 +458,9 @@ fun ChatBox(
                     }
                 }
             }
+
             AnimatedVisibility(
-                visible = attachments.isNotEmpty() || text.text.isNotEmpty(),
+                visible = (attachments.isNotEmpty() || text.text.isNotEmpty()) && !isFocused,
                 exit = fadeOut() + scaleOut(),
                 enter = fadeIn() + scaleIn(),
                 modifier = Modifier.align(Alignment.Bottom)
@@ -439,7 +492,7 @@ fun ChatBox(
                         contentDescription = "Send message button",
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(horizontal = 4.dp, vertical = 4.dp)
+                            .padding(start = 4.dp, end = 8.dp, top = 4.dp, bottom = 4.dp)
                             .alpha(
                                 if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
                                     0.3f
@@ -455,97 +508,158 @@ fun ChatBox(
 
         // Markup panel
 
-        if (showMarkup) {
-            ChatBoxMarkup(
-                selectionStart = text.selection.start,
-                selectionEnd = text.selection.end,
-                spans = spans,
-                onBackClicked = {
-                    showMarkup = false
-                },
-                onMarkupEvent = { event ->
-                    scope.launch {
-                        val selection = text.selection
-                        if (selection.start == selection.end) return@launch // No selection, nothing to apply
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .animateContentSize()
+        ) {
+            AnimatedContent(
+                targetState = showMarkup,
+                label = "PANELS",
+                modifier = Modifier.weight(1.0f)
+            ) { isMarkup ->
+                if (isMarkup) {
+                    ChatBoxMarkup(
+                        selectionStart = text.selection.start,
+                        selectionEnd = text.selection.end,
+                        spans = spans,
+                        onBackClicked = {
+                            showMarkup = false
+                        },
+                        onMarkupEvent = { event ->
+                            scope.launch {
+                                val selection = text.selection
+                                if (selection.start == selection.end) return@launch // No selection, nothing to apply
 
-                        val newSpan = when (event) {
-                            ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
-                                style = SpanStyle(fontWeight = FontWeight.Bold),
-                                start = selection.start,
-                                end = selection.end,
-                                type = ChatBoxSpan.Markup.BOLD
-                            )
+                                val newSpan = when (event) {
+                                    ChatMarkupEvent.Bold -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontWeight = FontWeight.Bold),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.BOLD
+                                    )
 
-                            ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
-                                style = SpanStyle(fontStyle = FontStyle.Italic),
-                                start = selection.start,
-                                end = selection.end,
-                                type = ChatBoxSpan.Markup.ITALIC
-                            )
+                                    ChatMarkupEvent.Italic -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontStyle = FontStyle.Italic),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.ITALIC
+                                    )
 
-                            ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
-                                style = SpanStyle(textDecoration = TextDecoration.LineThrough),
-                                start = selection.start,
-                                end = selection.end,
-                                type = ChatBoxSpan.Markup.STRIKETHROUGH
-                            )
+                                    ChatMarkupEvent.Strike -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(textDecoration = TextDecoration.LineThrough),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.STRIKETHROUGH
+                                    )
 
-                            ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
-                                style = SpanStyle(textDecoration = TextDecoration.Underline),
-                                start = selection.start,
-                                end = selection.end,
-                                type = ChatBoxSpan.Markup.UNDERLINE
-                            )
+                                    ChatMarkupEvent.Underline -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(textDecoration = TextDecoration.Underline),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.UNDERLINE
+                                    )
 
-                            ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
-                                style = SpanStyle(fontFamily = FontFamily.Monospace),
-                                start = selection.start,
-                                end = selection.end,
-                                type = ChatBoxSpan.Markup.CODE
-                            )
+                                    ChatMarkupEvent.Code -> ChatBoxSpan.Markup(
+                                        style = SpanStyle(fontFamily = FontFamily.Monospace),
+                                        start = selection.start,
+                                        end = selection.end,
+                                        type = ChatBoxSpan.Markup.CODE
+                                    )
+                                }
+
+                                val updatedSpans = toggleSpan(text, spans, newSpan)
+                                onValueChange(text, updatedSpans)
+                            }
                         }
+                    )
+                } else {
+                    ChatBoxEditPanel(
+                        onAttachObjectClicked = onAttachObjectClicked,
+                        onMentionClicked = {
+                            val selection = text.selection
+                            val cursorPosition = selection.start
+                            val updatedText = text.text.substring(0, cursorPosition) +
+                                    "@" +
+                                    text.text.substring(cursorPosition)
 
-                        val updatedSpans = toggleSpan(text, spans, newSpan)
-                        onValueChange(text, updatedSpans)
-                    }
+                            // Update the cursor position after the inserted '@' character
+                            val newSelection = TextRange(cursorPosition + 1)
+
+                            // Notify parent with the updated text without any new spans
+                            onValueChange(
+                                TextFieldValue(updatedText, selection = newSelection),
+                                spans // Keep existing spans without adding any
+                            )
+                        },
+                        onStyleClicked = {
+                            showMarkup = true
+                        },
+                        onUploadFileClicked = {
+                            uploadFileLauncher.launch(
+                                arrayOf("*/*")
+                            )
+                        },
+                        onUploadMediaClicked = {
+                            uploadMediaLauncher.launch(
+                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
+                        },
+                        onTakePhotoClicked = {
+                            takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        },
+                        onRecordVideoClicked = {
+                            recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    )
                 }
-            )
-        } else {
-            ChatBoxEditPanel(
-                onAttachObjectClicked = onAttachObjectClicked,
-                onMentionClicked = {
-                    val selection = text.selection
-                    val cursorPosition = selection.start
-                    val updatedText = text.text.substring(0, cursorPosition) +
-                            "@" +
-                            text.text.substring(cursorPosition)
+            }
 
-                    // Update the cursor position after the inserted '@' character
-                    val newSelection = TextRange(cursorPosition + 1)
-
-                    // Notify parent with the updated text without any new spans
-                    onValueChange(
-                        TextFieldValue(updatedText, selection = newSelection),
-                        spans // Keep existing spans without adding any
+            AnimatedVisibility(
+                visible = (attachments.isNotEmpty() || text.text.isNotEmpty()),
+                exit = fadeOut() + scaleOut(),
+                enter = fadeIn() + scaleIn(),
+                modifier = Modifier
+            ) {
+                Box(
+                    modifier = Modifier
+                        .padding(start = 12.dp, end = 12.dp)
+                        .fillMaxHeight()
+                        .align(Alignment.CenterVertically)
+                        .clip(CircleShape)
+                        .then(
+                            if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT) {
+                                Modifier
+                            } else {
+                                Modifier
+                                    .clickable {
+                                        onMessageSent(text.text, spans)
+                                        clearText()
+                                        // Bypass resetScroll in edit mode because editing a message does not require
+                                        // resetting the scroll position, unlike sending a new message.
+                                        if (mode !is ChatBoxMode.EditMessage) {
+                                            resetScroll()
+                                        }
+                                        showMarkup = false
+                                    }
+                            }
+                        )
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_send_message),
+                        contentDescription = "Send message button",
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .alpha(
+                                if (mode.isSendingMessageBlocked || length > ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT)
+                                    0.3f
+                                else
+                                    FULL_ALPHA
+                            )
                     )
-                },
-                onStyleClicked = {
-                    showMarkup = true
-                },
-                onUploadFileClicked = {
-                    uploadFileLauncher.launch(
-                        arrayOf("*/*")
-                    )
-                },
-                onUploadMediaClicked = {
-                    uploadMediaLauncher.launch(
-                        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                    )
-                },
-                onCameraCaptureClicked = {
-                    permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
-            )
+            }
         }
     }
 }
@@ -726,8 +840,10 @@ fun toggleSpan(
         }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ChatBoxMarkup(
+    modifier: Modifier = Modifier,
     selectionStart: Int,
     selectionEnd: Int,
     spans: List<ChatBoxSpan> = emptyList(),
@@ -752,73 +868,85 @@ fun ChatBoxMarkup(
     val isUnderline = ChatBoxSpan.Markup.UNDERLINE in activeTypes
     val isCode = ChatBoxSpan.Markup.CODE in activeTypes
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp),
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
+    CompositionLocalProvider(
+        LocalOverscrollConfiguration provides null
     ) {
-        // Back button never has an active state
-        MarkupIcon(
-            onClick = onBackClicked,
-            resId = R.drawable.ic_markup_panel_back
-        )
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(52.dp)
+            ,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Fixed back button
+            MarkupIcon(
+                onClick = onBackClicked,
+                resId = R.drawable.ic_markup_panel_back,
+                modifier = Modifier.padding(start = 12.dp, end = 12.dp)
+            )
 
-        // Bold
-        MarkupIcon(
-            onClick = { onMarkupEvent(ChatMarkupEvent.Bold) },
-            resId = if (isBold)
-                R.drawable.ic_toolbar_markup_bold_active
-            else
-                R.drawable.ic_toolbar_markup_bold
-        )
+            // Scrollable toolbar
+            Row(
+                modifier = Modifier
+                    .horizontalScroll(rememberScrollState())
+                    .fillMaxWidth()
+                    .weight(1.0f)
+                    .height(52.dp),
+                horizontalArrangement = Arrangement.SpaceAround,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                MarkupIcon(
+                    onClick = { onMarkupEvent(ChatMarkupEvent.Bold) },
+                    resId = if (isBold)
+                        R.drawable.ic_toolbar_markup_bold_active
+                    else
+                        R.drawable.ic_toolbar_markup_bold
+                )
 
-        // Italic
-        MarkupIcon(
-            onClick = { onMarkupEvent(ChatMarkupEvent.Italic) },
-            resId = if (isItalic)
-                R.drawable.ic_toolbar_markup_italic_active
-            else
-                R.drawable.ic_toolbar_markup_italic
-        )
+                MarkupIcon(
+                    onClick = { onMarkupEvent(ChatMarkupEvent.Italic) },
+                    resId = if (isItalic)
+                        R.drawable.ic_toolbar_markup_italic_active
+                    else
+                        R.drawable.ic_toolbar_markup_italic
+                )
 
-        // Strikethrough
-        MarkupIcon(
-            onClick = { onMarkupEvent(ChatMarkupEvent.Strike) },
-            resId = if (isStrike)
-                R.drawable.ic_toolbar_markup_strike_through_active
-            else
-                R.drawable.ic_toolbar_markup_strike_through
-        )
+                MarkupIcon(
+                    onClick = { onMarkupEvent(ChatMarkupEvent.Strike) },
+                    resId = if (isStrike)
+                        R.drawable.ic_toolbar_markup_strike_through_active
+                    else
+                        R.drawable.ic_toolbar_markup_strike_through
+                )
 
-        // Underline
-        MarkupIcon(
-            onClick = { onMarkupEvent(ChatMarkupEvent.Underline) },
-            resId = if (isUnderline)
-                R.drawable.ic_toolbar_markup_underline_active
-            else
-                R.drawable.ic_toolbar_markup_underline
-        )
+                MarkupIcon(
+                    onClick = { onMarkupEvent(ChatMarkupEvent.Underline) },
+                    resId = if (isUnderline)
+                        R.drawable.ic_toolbar_markup_underline_active
+                    else
+                        R.drawable.ic_toolbar_markup_underline
+                )
 
-        // Code
-        MarkupIcon(
-            onClick = { onMarkupEvent(ChatMarkupEvent.Code) },
-            resId = if (isCode)
-                R.drawable.ic_toolbar_markup_code_active
-            else
-                R.drawable.ic_toolbar_markup_code
-        )
+                MarkupIcon(
+                    onClick = { onMarkupEvent(ChatMarkupEvent.Code) },
+                    resId = if (isCode)
+                        R.drawable.ic_toolbar_markup_code_active
+                    else
+                        R.drawable.ic_toolbar_markup_code
+                )
+            }
+        }
     }
 }
 
 @Composable
 private fun MarkupIcon(
+    modifier: Modifier = Modifier,
     onClick: () -> Unit,
     @DrawableRes resId: Int
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .size(32.dp)
             .noRippleClickable { onClick() },
         contentAlignment = Alignment.Center
@@ -832,18 +960,20 @@ private fun MarkupIcon(
 
 @Composable
 fun ChatBoxEditPanel(
+    modifier: Modifier = Modifier,
     onAttachObjectClicked: () -> Unit,
     onStyleClicked: () -> Unit,
     onMentionClicked: () -> Unit,
     onUploadMediaClicked: () -> Unit,
     onUploadFileClicked: () -> Unit,
-    onCameraCaptureClicked: () -> Unit
+    onTakePhotoClicked: () -> Unit,
+    onRecordVideoClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -903,13 +1033,29 @@ fun ChatBoxEditPanel(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = stringResource(R.string.chat_box_camera),
+                                text = stringResource(R.string.chat_box_take_photo),
                                 color = colorResource(id = R.color.text_primary)
                             )
                         },
                         onClick = {
                             showDropdownMenu = false
-                            onCameraCaptureClicked()
+                            onTakePhotoClicked()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_box_record_video),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onRecordVideoClicked()
                         }
                     )
                     Divider(
@@ -1035,6 +1181,7 @@ fun ChatBoxEditPanelPreview() {
         onAttachObjectClicked = {},
         onUploadFileClicked = {},
         onUploadMediaClicked = {},
-        onCameraCaptureClicked = {}
+        onTakePhotoClicked = {},
+        onRecordVideoClicked = {}
     )
 }

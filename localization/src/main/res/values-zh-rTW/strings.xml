@@ -359,6 +359,7 @@
     <string name="query">Query</string>
     <string name="select_query">指定查詢</string>
     <string name="objects">物件</string>
+    <string name="object_1">物件</string>
     <string name="your_objects">你的物件</string>
     <string name="web_pages">網頁</string>
     <string name="select_files">選擇檔案</string>
@@ -1642,7 +1643,11 @@ Please provide specific details of your needs here.</string>
     <string name="day_of_week_saturday">Saturday</string>
     <string name="day_of_week_sunday">Sunday</string>
     <string name="file">檔案</string>
+    <string name="files">檔案</string>
+    <string name="image">圖像</string>
+    <string name="images">圖像</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>

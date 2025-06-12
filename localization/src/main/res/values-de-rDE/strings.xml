@@ -360,6 +360,7 @@
     <string name="query">Abfrage</string>
     <string name="select_query">Abfrage auswählen</string>
     <string name="objects">Objekte</string>
+    <string name="object_1">Objekt</string>
     <string name="your_objects">Deine Objekte</string>
     <string name="web_pages">Webseiten</string>
     <string name="select_files">Dateien auswählen</string>
@@ -1655,7 +1656,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="day_of_week_saturday">Samstag</string>
     <string name="day_of_week_sunday">Sonntag</string>
     <string name="file">Datei</string>
+    <string name="files">Dateien</string>
+    <string name="image">Bild</string>
+    <string name="images">Bilder</string>
     <string name="attachment">Anhang</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; Leute</string>

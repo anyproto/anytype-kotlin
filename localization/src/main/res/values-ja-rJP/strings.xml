@@ -359,6 +359,7 @@
     <string name="query">クエリ</string>
     <string name="select_query">条件を指定</string>
     <string name="objects">オブジェクト</string>
+    <string name="object_1">オブジェクト</string>
     <string name="your_objects">作成したオブジェクト</string>
     <string name="web_pages">Webページ</string>
     <string name="select_files">ファイルを選択</string>
@@ -821,7 +822,7 @@
     <string name="loading_please_wait">読み込み中です。少々お待ち下さい…</string>
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
-    <string name="create_chat">チャットを開始</string>
+    <string name="create_chat">チャットを作成</string>
     <string name="create_space_change_icon">アイコンを変更</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
     <string name="type">種類</string>
@@ -1643,7 +1644,11 @@
     <string name="day_of_week_saturday">土</string>
     <string name="day_of_week_sunday">日</string>
     <string name="file">ファイル</string>
+    <string name="files">ファイル</string>
+    <string name="image">画像</string>
+    <string name="images">画像</string>
     <string name="attachment">添付ファイル</string>
+    <string name="attachments">添付ファイル</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">まずは最初のスペースを作成しましょう</string>
     <string name="space_list_empty_state_it_is_empty_here">何もありません。</string>
     <string name="emoji_category_smileys_and_people">表情と人物</string>
@@ -1776,9 +1781,9 @@
     <string name="notifications_modal_success_button">通知を有効化</string>
     <string name="notifications_modal_cancel_button">あとで</string>
     <string name="vault_create_chat">チャット</string>
-    <string name="vault_create_chat_description">リアルタイムな会話に</string>
+    <string name="vault_create_chat_description">チームでの会話や共同作業に</string>
     <string name="vault_create_space">スペース</string>
-    <string name="vault_create_space_description">情報とデータの管理に</string>
+    <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
     <string name="chat_box_camera">カメラ</string>

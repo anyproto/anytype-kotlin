@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,6 +45,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -103,7 +105,7 @@ private fun VideoPlayer(url: String) {
     // Auto-hide controls after n seconds
     LaunchedEffect(showControls, isPlaying) {
         if (showControls && isPlaying) {
-            delay(1500)
+            delay(DELAY_BEFORE_HIDING_CONTROLS)
             showControls = false
         }
     }
@@ -172,16 +174,18 @@ private fun VideoPlayer(url: String) {
             enter = fadeIn(),
             exit = fadeOut()
         ) {
-            Column(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(24.dp),
-                verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(24.dp)
             ) {
                 // SeekBar + time
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                    ,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
@@ -211,46 +215,63 @@ private fun VideoPlayer(url: String) {
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
-
                 if (!isPlaying) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_chat_attachment_play),
-                        contentDescription = "Play",
-                        modifier = Modifier
-                            .size(18.dp)
-                            .clickable {
-                                val player = videoViewRef.value ?: return@clickable
-                                if (player.isPlaying) {
-                                    player.pause()
-                                    isPlaying = false
-                                    showControls = true
-                                } else {
-                                    player.start()
-                                    isPlaying = true
-                                }
+                    Box(
+                        modifier = Modifier.background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        ).align(
+                            Alignment.Center
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
                             }
-                    )
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_player_play),
+                            contentDescription = "Play button",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(12.dp)
+                                .size(24.dp)
+                        )
+                    }
                 } else {
                     Box(
-                        modifier = Modifier
-                            .background(color = Color.White)
-                            .size(18.dp)
-                            .clickable {
-                                val player = videoViewRef.value ?: return@clickable
-                                if (player.isPlaying) {
-                                    player.pause()
-                                    isPlaying = false
-                                    showControls = true
-                                } else {
-                                    player.start()
-                                    isPlaying = true
-                                }
+                        modifier = Modifier.background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        ).align(
+                            Alignment.Center
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
                             }
-                    )
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_player_pause),
+                            contentDescription = "Pause button",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(12.dp)
+                                .size(24.dp)
+                        )
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -357,3 +378,5 @@ private fun formatMillis(millis: Int): String {
     val seconds = totalSeconds % 60
     return "%d:%02d".format(minutes, seconds)
 }
+
+const val DELAY_BEFORE_HIDING_CONTROLS = 1000L

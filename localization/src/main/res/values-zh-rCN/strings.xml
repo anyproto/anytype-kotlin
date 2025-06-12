@@ -359,6 +359,7 @@
     <string name="query">查询</string>
     <string name="select_query">选择查询</string>
     <string name="objects">对象</string>
+    <string name="object_1">对象</string>
     <string name="your_objects">您的对象</string>
     <string name="web_pages">网页页面</string>
     <string name="select_files">选择文件</string>
@@ -1638,7 +1639,11 @@
     <string name="day_of_week_saturday">星期六</string>
     <string name="day_of_week_sunday">星期天 </string>
     <string name="file">文件</string>
+    <string name="files">文件</string>
+    <string name="image">图片</string>
+    <string name="images">图片</string>
     <string name="attachment">Attachment</string>
+    <string name="attachments">Attachments</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">创建您的第一个空间以开始</string>
     <string name="space_list_empty_state_it_is_empty_here">这里是空的</string>
     <string name="emoji_category_smileys_and_people">表情与人物</string>

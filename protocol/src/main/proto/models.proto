@@ -386,10 +386,9 @@ message Block {
                 bool isVisible = 2;
                 int32 width = 3; // the displayed column % calculated based on other visible relations
                 // bool isReadOnly = 4; // deprecated
-
-                bool dateIncludeTime = 5;
-                TimeFormat timeFormat = 6;
-                DateFormat dateFormat = 7;
+                bool dateIncludeTime = 5; // deprecated
+                TimeFormat timeFormat = 6; // deprecated
+                DateFormat dateFormat = 7; // deprecated
                 FormulaType formula = 8;
                 Block.Align align = 9;
 
@@ -854,6 +853,7 @@ message Relation {
     Scope scope = 20; // deprecated, to be removed
     string creator = 21; // creator profile id
     int64 revision = 22; // revision of system relation. Used to check if we should change relation content or not
+    bool includeTime = 23; // indicates whether value of relation with date format should be processed with seconds precision
 
     message Option {
         string id = 1; // id generated automatically if omitted

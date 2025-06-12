@@ -1524,6 +1524,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">Ruangku</string>
+    <string name="vault_unread_section_title">Belum dibaca</string>
+    <string name="vault_all_section_title">Semua</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>

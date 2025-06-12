@@ -371,6 +371,8 @@ class VaultViewModel(
             val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
             
             // Store pending order to be saved in onDragEnd
+            // Merge unreadSpaceIds with newMainOrder to ensure that unread spaces are included in the order.
+            // Use distinct() to remove duplicates and maintain a unique list of space IDs.
             pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
             
             // Update local sections state immediately for UI responsiveness

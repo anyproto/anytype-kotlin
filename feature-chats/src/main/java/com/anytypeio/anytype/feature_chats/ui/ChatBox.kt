@@ -57,7 +57,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -88,6 +87,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.tools.launchCamera
+import com.anytypeio.anytype.feature_chats.tools.launchVideoRecorder
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -112,7 +112,8 @@ fun ChatBox(
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
-    onImageCaptured: (Uri) -> Unit
+    onImageCaptured: (Uri) -> Unit,
+    onVideoCaptured: (Uri) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -132,8 +133,9 @@ fun ChatBox(
     }
 
     var capturedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
+    var capturedVideoUri by rememberSaveable { mutableStateOf<String?>(null) }
 
-    val cameraLauncher = rememberLauncherForActivityResult(
+    val takePhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { isSuccess ->
         if (isSuccess && capturedImageUri != null) {
@@ -144,14 +146,39 @@ fun ChatBox(
         }
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
+    val recordVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { isSuccess ->
+        if (isSuccess && capturedVideoUri != null) {
+            onVideoCaptured(Uri.parse(capturedVideoUri))
+            capturedVideoUri = null
+        } else {
+            Timber.w("DROID-2966 Failed to capture image")
+        }
+    }
+
+    val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             launchCamera(
                 context = context,
-                launcher = cameraLauncher,
+                launcher = takePhotoLauncher,
                 onUriReceived = { capturedImageUri = it.toString() }
+            )
+        } else {
+            context.toast(context.getString(R.string.chat_camera_permission_denied))
+        }
+    }
+
+    val recordVideoPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            launchVideoRecorder(
+                context = context,
+                launcher = recordVideoLauncher,
+                onUriReceived = { capturedVideoUri = it.toString() }
             )
         } else {
             context.toast(context.getString(R.string.chat_camera_permission_denied))
@@ -309,13 +336,29 @@ fun ChatBox(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            text = stringResource(R.string.chat_box_camera),
+                                            text = stringResource(R.string.chat_box_take_photo),
                                             color = colorResource(id = R.color.text_primary)
                                         )
                                     },
                                     onClick = {
                                         showDropdownMenu = false
-                                        permissionLauncher.launch(Manifest.permission.CAMERA)
+                                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_box_record_video),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
                                     }
                                 )
                                 Divider(
@@ -563,8 +606,11 @@ fun ChatBox(
                                 PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
                         },
-                        onCameraCaptureClicked = {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
+                        onTakePhotoClicked = {
+                            takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        },
+                        onRecordVideoClicked = {
+                            recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                     )
                 }
@@ -920,7 +966,8 @@ fun ChatBoxEditPanel(
     onMentionClicked: () -> Unit,
     onUploadMediaClicked: () -> Unit,
     onUploadFileClicked: () -> Unit,
-    onCameraCaptureClicked: () -> Unit
+    onTakePhotoClicked: () -> Unit,
+    onRecordVideoClicked: () -> Unit
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -986,13 +1033,29 @@ fun ChatBoxEditPanel(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = stringResource(R.string.chat_box_camera),
+                                text = stringResource(R.string.chat_box_take_photo),
                                 color = colorResource(id = R.color.text_primary)
                             )
                         },
                         onClick = {
                             showDropdownMenu = false
-                            onCameraCaptureClicked()
+                            onTakePhotoClicked()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_box_record_video),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onRecordVideoClicked()
                         }
                     )
                     Divider(
@@ -1118,6 +1181,7 @@ fun ChatBoxEditPanelPreview() {
         onAttachObjectClicked = {},
         onUploadFileClicked = {},
         onUploadMediaClicked = {},
-        onCameraCaptureClicked = {}
+        onTakePhotoClicked = {},
+        onRecordVideoClicked = {}
     )
 }

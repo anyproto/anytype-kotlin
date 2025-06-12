@@ -1796,5 +1796,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="vault_empty_state_text">Il n\'y a pas encore d\'espaces</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Caméra</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

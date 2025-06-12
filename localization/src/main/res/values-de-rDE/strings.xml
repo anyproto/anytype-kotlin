@@ -1537,6 +1537,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">Alle</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

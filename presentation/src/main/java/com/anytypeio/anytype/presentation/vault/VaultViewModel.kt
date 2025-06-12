@@ -89,6 +89,9 @@ class VaultViewModel(
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
+    
+    // Local state for tracking order changes during drag operations
+    private var pendingMainSpacesOrder: List<Id>? = null
 
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -362,33 +365,36 @@ class VaultViewModel(
         val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
         
         if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
-            // Create new ordered list by moving the item
+            // Create new ordered list by moving the item (only update local state)
             val newMainSpacesList = currentMainSpaces.toMutableList()
             val movedItem = newMainSpacesList.removeAt(fromIndex)
             newMainSpacesList.add(toIndex, movedItem)
             
-            // The setVaultSpaceOrder expects the complete user's preferred order
-            // This should be the main spaces in their new order, plus any unread spaces
-            // that may not currently be in the main list
+            // Store the new order for later persistence in onDragEnd
             val newMainOrder = newMainSpacesList.map { it.space.id }
             val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
             
-            // The user's preferred order should include all spaces, not just the current main ones
-            // We need to preserve the original order for spaces not in the main section
-            val allCurrentSpaceIds = (unreadSpaceIds + newMainOrder).distinct()
+            // Store pending order to be saved in onDragEnd
+            pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
             
-            viewModelScope.launch { 
-                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
-                setVaultSpaceOrder.async(params = allCurrentSpaceIds)
-            }
+            // Update local sections state immediately for UI responsiveness
+            val updatedSections = currentSections.copy(mainSpaces = newMainSpacesList)
+            sections.value = updatedSections
+            spaces.value = updatedSections.allSpaces // For backward compatibility
         }
     }
     
     fun onDragEnd() {
         Timber.d("onDragEnd called")
-        // This can be used for any cleanup or additional actions after drag ends
-        // For now, we don't need to do anything special here since the order
-        // change is handled in onOrderChanged
+        // Persist the order changes made during the drag operation
+        pendingMainSpacesOrder?.let { newOrder ->
+            viewModelScope.launch { 
+                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
+                setVaultSpaceOrder.async(params = newOrder)
+                // Clear pending order after persistence
+                pendingMainSpacesOrder = null
+            }
+        }
     }
 
     fun onChooseSpaceTypeClicked() {

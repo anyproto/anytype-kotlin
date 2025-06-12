@@ -404,7 +404,7 @@ fun VaultScreenToolbar(
                     Box(
                         Modifier
                             .align(Alignment.CenterStart)
-                            .padding(start = 16.dp)
+                            .padding(start = 18.dp)
                             .size(28.dp)
                             .noRippleClickable {
                                 onSettingsClicked()
@@ -432,7 +432,7 @@ fun VaultScreenToolbar(
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .clip(CircleShape)
-                                        .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
+                                        .background(colorResource(id = R.color.glyph_active))
                                 ) {
                                     Text(
                                         text = nameFirstChar,
@@ -458,12 +458,13 @@ fun VaultScreenToolbar(
                     painter = painterResource(id = R.drawable.ic_plus_18),
                     contentDescription = "Plus button",
                     modifier = Modifier
+                        .padding(end = 18.dp)
+                        .size(28.dp)
                         .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                        .size(32.dp)
                         .noRippleClickable {
                             onPlusClicked()
-                        }
+                        },
+                    contentScale = ContentScale.Fit
                 )
             }
         }

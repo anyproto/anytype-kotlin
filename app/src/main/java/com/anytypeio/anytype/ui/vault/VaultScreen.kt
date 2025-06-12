@@ -796,7 +796,7 @@ fun VaultScreenAnotherWay(
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
-                                            .conditionalBackground(isDragging)
+                                            //.conditionalBackground(isDragging)
                                             .clickable {
                                                 onSpaceClicked(item)
                                             },
@@ -813,12 +813,16 @@ fun VaultScreenAnotherWay(
                                     )
                                 }
                                 is VaultSpaceView.Loading -> {
-                                    Box(modifier = Modifier.conditionalBackground(isDragging)) {
+                                    Box(modifier = Modifier
+                                        //.conditionalBackground(isDragging)
+                                    ) {
                                         LoadingSpaceCard()
                                     }
                                 }
                                 is VaultSpaceView.Space -> {
-                                    Box(modifier = Modifier.conditionalBackground(isDragging)) {
+                                    Box(modifier = Modifier
+                                        //.conditionalBackground(isDragging)
+                                    ) {
                                         VaultSpaceCard(
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,

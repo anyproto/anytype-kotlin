@@ -55,13 +55,14 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
 fun VaultSpaceCard(
+    modifier: Modifier,
     title: String,
     subtitle: String,
     onCardClicked: () -> Unit,
     icon: SpaceIconView,
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
             .padding(horizontal = 16.dp)
@@ -442,6 +443,7 @@ private fun buildChatContentWithInlineIcons(
 @DefaultPreviews
 fun VaultSpaceCardPreview() {
     VaultSpaceCard(
+        modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
         onCardClicked = {},

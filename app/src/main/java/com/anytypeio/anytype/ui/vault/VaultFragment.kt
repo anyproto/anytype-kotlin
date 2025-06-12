@@ -65,6 +65,7 @@ class VaultFragment : BaseComposeFragment() {
                         onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                         onSettingsClicked = vm::onSettingsClicked,
                         onOrderChanged = vm::onOrderChanged,
+                        onDragEnd = vm::onDragEnd,
                         profile = vm.profileView.collectAsStateWithLifecycle().value
                     )
 

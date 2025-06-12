@@ -225,6 +225,7 @@ fun VaultScreen(
                             }
                             is VaultSpaceView.Space -> {
                                 VaultSpaceCard(
+                                    modifier = Modifier.animateItem(),
                                     title = item.space.name.orEmpty(),
                                     subtitle = item.accessType,
                                     onCardClicked = {
@@ -293,6 +294,7 @@ fun VaultScreen(
                             is VaultSpaceView.Space -> {
                                 DraggableItem(dragDropState = dragDropState, index = idx) {
                                     VaultSpaceCard(
+                                        modifier = Modifier.animateItem(),
                                         title = item.space.name.orEmpty(),
                                         subtitle = item.accessType,
                                         onCardClicked = {
@@ -690,7 +692,7 @@ fun VaultScreenAnotherWay(
         if (reorderableLazyState.isAnyItemDragging) {
             isDragging = true
             // Optional: Add a small delay to avoid triggering on very short drags
-            delay(50)
+            //delay(50)
         } else if (isDragging) {
             isDragging = false
             onDragEnd()
@@ -791,6 +793,7 @@ fun VaultScreenAnotherWay(
                             is VaultSpaceView.Chat -> {
                                 VaultChatCard(
                                     modifier = Modifier
+                                        .animateItem()
                                         .fillMaxWidth()
                                         .height(80.dp)
                                         .padding(horizontal = 16.dp)
@@ -814,6 +817,7 @@ fun VaultScreenAnotherWay(
                             }
                             is VaultSpaceView.Space -> {
                                 VaultSpaceCard(
+                                    modifier = Modifier.animateItem(),
                                     title = item.space.name.orEmpty(),
                                     subtitle = item.accessType,
                                     onCardClicked = {
@@ -855,7 +859,7 @@ fun VaultScreenAnotherWay(
                                 is VaultSpaceView.Chat -> {
                                     VaultChatCard(
                                         modifier = Modifier
-                                            .draggableHandle(
+                                            .longPressDraggableHandle(
                                                 onDragStarted = {
                                                     hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
                                                 },
@@ -884,7 +888,7 @@ fun VaultScreenAnotherWay(
                                 }
                                 is VaultSpaceView.Loading -> {
                                     Box(modifier = Modifier
-                                        .draggableHandle(
+                                        .longPressDraggableHandle(
                                             onDragStarted = {
                                                 hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
                                             },
@@ -899,7 +903,7 @@ fun VaultScreenAnotherWay(
                                 }
                                 is VaultSpaceView.Space -> {
                                     Box(modifier = Modifier
-                                        .draggableHandle(
+                                        .longPressDraggableHandle(
                                             onDragStarted = {
                                                 hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
                                             },
@@ -910,6 +914,7 @@ fun VaultScreenAnotherWay(
                                         //.conditionalBackground(isDragging)
                                     ) {
                                         VaultSpaceCard(
+                                            modifier = Modifier.animateItem(),
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,
                                             onCardClicked = {

@@ -59,7 +59,7 @@ class VaultFragment : BaseComposeFragment() {
         setContent {
             MaterialTheme(typography = typography) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    VaultScreenAnotherWay(
+                    VaultScreenWithUnreadSection(
                         sections = vm.sections.collectAsStateWithLifecycle().value,
                         onSpaceClicked = vm::onSpaceClicked,
                         onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,

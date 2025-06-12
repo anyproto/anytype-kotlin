@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -55,7 +54,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -71,7 +69,6 @@ import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -79,8 +76,6 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.DragEvent
-import com.anytypeio.anytype.feature_object_type.fields.FieldEvent.DragEvent.OnDragEnd
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
@@ -89,7 +84,6 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.ui.settings.typography
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import kotlinx.coroutines.delay
 
 
 @Composable
@@ -658,7 +652,7 @@ fun VaultScreenToolbarScrolledPreview() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun VaultScreenAnotherWay(
+fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
     sections: VaultSectionView,
     onSpaceClicked: (VaultSpaceView) -> Unit,

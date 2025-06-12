@@ -202,7 +202,7 @@ class RequestJoinSpaceViewModel(
             createTime = System.currentTimeMillis(),
             status = NotificationStatus.CREATED,
             isLocal = true,
-            payload = NotificationPayload.ParticipantRequestApproved(
+            payload = NotificationPayload.ParticipantWithoutApprovalRequestApproved(
                 spaceId = data.space,
                 spaceName = data.spaceName
             ),

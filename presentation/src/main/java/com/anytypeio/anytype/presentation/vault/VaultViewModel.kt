@@ -346,12 +346,49 @@ class VaultViewModel(
         }
     }
 
-    fun onOrderChanged(order: List<Id>) {
-        Timber.d("onOrderChanged: $order")
-        // This only affects the regularOrder (user-defined order) for the main section
-        // Unread chats remain in the top section unaffected by this reordering
-        viewModelScope.launch { analytics.sendEvent(eventName = EventsDictionary.reorderSpace) }
-        viewModelScope.launch { setVaultSpaceOrder.async(params = order) }
+    fun onOrderChanged(fromKey: String, toKey: String) {
+        Timber.d("onOrderChanged: from=$fromKey, to=$toKey")
+        
+        // Extract space IDs from keys (remove "main_" prefix)
+        val fromSpaceId = fromKey.removePrefix("main_")
+        val toSpaceId = toKey.removePrefix("main_")
+        
+        // Get current settings to work with the existing order
+        val currentSections = sections.value
+        val currentMainSpaces = currentSections.mainSpaces
+        
+        // Find indices in the current main spaces list
+        val fromIndex = currentMainSpaces.indexOfFirst { it.space.id == fromSpaceId }
+        val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
+        
+        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
+            // Create new ordered list by moving the item
+            val newMainSpacesList = currentMainSpaces.toMutableList()
+            val movedItem = newMainSpacesList.removeAt(fromIndex)
+            newMainSpacesList.add(toIndex, movedItem)
+            
+            // The setVaultSpaceOrder expects the complete user's preferred order
+            // This should be the main spaces in their new order, plus any unread spaces
+            // that may not currently be in the main list
+            val newMainOrder = newMainSpacesList.map { it.space.id }
+            val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
+            
+            // The user's preferred order should include all spaces, not just the current main ones
+            // We need to preserve the original order for spaces not in the main section
+            val allCurrentSpaceIds = (unreadSpaceIds + newMainOrder).distinct()
+            
+            viewModelScope.launch { 
+                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
+                setVaultSpaceOrder.async(params = allCurrentSpaceIds)
+            }
+        }
+    }
+    
+    fun onDragEnd() {
+        Timber.d("onDragEnd called")
+        // This can be used for any cleanup or additional actions after drag ends
+        // For now, we don't need to do anything special here since the order
+        // change is handled in onOrderChanged
     }
 
     fun onChooseSpaceTypeClicked() {

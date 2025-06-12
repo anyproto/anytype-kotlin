@@ -1794,6 +1794,8 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">All</string>
 
     <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>

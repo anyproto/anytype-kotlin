@@ -85,9 +85,13 @@ class VaultViewModel(
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
+    val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
+    
+    // Local state for tracking order changes during drag operations
+    private var pendingMainSpacesOrder: List<Id>? = null
 
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -116,8 +120,9 @@ class VaultViewModel(
                 chatPreviewContainer.observePreviews()
             ) { spacesFromFlow, settings, chatPreviews ->
                 transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews)
-            }.collect { resultingSpaceViews ->
-                spaces.value = resultingSpaceViews
+            }.collect { resultingSections ->
+                sections.value = resultingSections
+                spaces.value = resultingSections.allSpaces // For backward compatibility
             }
         }
     }
@@ -126,24 +131,50 @@ class VaultViewModel(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         settings: VaultSettings,
         chatPreviews: List<Chat.Preview>
-    ): List<VaultSpaceView> {
-        return spacesFromFlow
+    ): VaultSectionView {
+        // Map all active spaces to VaultSpaceView objects
+        val allSpaces = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
             .map { space ->
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
                     chatPreviews.find { it.space.id == spaceId }
                 }
                 mapToVaultSpaceViewItem(space, chatPreview)
-            }.sortedBy { spaceView ->
-                val idx = settings.orderOfSpaces.indexOf(
-                    spaceView.space.id
-                )
-                if (idx == -1) {
-                    Int.MIN_VALUE
-                } else {
-                    idx
-                }
             }
+
+        // Create a map for quick lookup
+        val spaceViewMap = allSpaces.associateBy { it.space.id }
+
+        // Extract unread set - IDs of spaces with unread messages
+        val unreadSet = allSpaces
+            .filter { it.hasUnreadMessages }
+            .map { it.space.id }
+            .toSet()
+
+        // Regular order - user-defined order from settings
+        // This is our single source of truth for the user's preferred order
+        val regularOrder = settings.orderOfSpaces.filter { spaceId ->
+            spaceViewMap.containsKey(spaceId)
+        }
+
+        // Add any spaces that aren't in the saved order (new spaces) at the end
+        val unmanagedSpaceIds = allSpaces.map { it.space.id } - regularOrder.toSet()
+        val fullRegularOrder = regularOrder + unmanagedSpaceIds
+
+        // Top section: unread spaces sorted by last message time (newest first)
+        val unreadSpaces = allSpaces
+            .filter { it.space.id in unreadSet }
+            .sortedByDescending { it.lastMessageDate ?: 0L }
+
+        // Main section: all other spaces in user-defined order
+        val mainSpaces = fullRegularOrder
+            .filter { spaceId -> spaceId !in unreadSet }
+            .mapNotNull { spaceId -> spaceViewMap[spaceId] }
+
+        return VaultSectionView(
+            unreadSpaces = unreadSpaces,
+            mainSpaces = mainSpaces
+        )
     }
 
     private suspend fun mapToVaultSpaceViewItem(
@@ -318,10 +349,50 @@ class VaultViewModel(
         }
     }
 
-    fun onOrderChanged(order: List<Id>) {
-        Timber.d("onOrderChanged")
-        viewModelScope.launch { analytics.sendEvent(eventName = EventsDictionary.reorderSpace) }
-        viewModelScope.launch { setVaultSpaceOrder.async(params = order) }
+    fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
+        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
+        
+        // Get current settings to work with the existing order
+        val currentSections = sections.value
+        val currentMainSpaces = currentSections.mainSpaces
+        
+        // Find indices in the current main spaces list
+        val fromIndex = currentMainSpaces.indexOfFirst { it.space.id == fromSpaceId }
+        val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
+        
+        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
+            // Create new ordered list by moving the item (only update local state)
+            val newMainSpacesList = currentMainSpaces.toMutableList()
+            val movedItem = newMainSpacesList.removeAt(fromIndex)
+            newMainSpacesList.add(toIndex, movedItem)
+            
+            // Store the new order for later persistence in onDragEnd
+            val newMainOrder = newMainSpacesList.map { it.space.id }
+            val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
+            
+            // Store pending order to be saved in onDragEnd
+            // Merge unreadSpaceIds with newMainOrder to ensure that unread spaces are included in the order.
+            // Use distinct() to remove duplicates and maintain a unique list of space IDs.
+            pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
+            
+            // Update local sections state immediately for UI responsiveness
+            val updatedSections = currentSections.copy(mainSpaces = newMainSpacesList)
+            sections.value = updatedSections
+            spaces.value = updatedSections.allSpaces // For backward compatibility
+        }
+    }
+    
+    fun onDragEnd() {
+        Timber.d("onDragEnd called")
+        // Persist the order changes made during the drag operation
+        pendingMainSpacesOrder?.let { newOrder ->
+            viewModelScope.launch { 
+                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
+                setVaultSpaceOrder.async(params = newOrder)
+                // Clear pending order after persistence
+                pendingMainSpacesOrder = null
+            }
+        }
     }
 
     fun onChooseSpaceTypeClicked() {

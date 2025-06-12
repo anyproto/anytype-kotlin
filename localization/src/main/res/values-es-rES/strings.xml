@@ -1537,6 +1537,8 @@ En concreto,
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
     <string name="vault_my_spaces">Mis espacios</string>
+    <string name="vault_unread_section_title">No leído</string>
+    <string name="vault_all_section_title">Todo</string>
     <string name="all_content_title_all_content">Todos los objetos</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>

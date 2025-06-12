@@ -262,6 +262,17 @@ fun ChatScreenWrapper(
                     )
                 )
             },
+            onVideoCaptured = {
+                vm.onChatBoxMediaPicked(
+                    uris = listOf(
+                        ChatViewModel.ChatBoxMediaUri(
+                            uri = it.toString(),
+                            isVideo = true,
+                            capturedByCamera = true
+                        )
+                    )
+                )
+            },
             onRequestVideoPlayer = onRequestVideoPlayer
         )
         LaunchedEffect(Unit) {
@@ -380,6 +391,7 @@ fun ChatScreen(
     onAttachObjectClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onImageCaptured: (Uri) -> Unit,
+    onVideoCaptured: (Uri) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
     onAddReactionClicked: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
@@ -817,7 +829,8 @@ fun ChatScreen(
                 text = text,
                 spans = spans,
                 onUrlInserted = onUrlInserted,
-                onImageCaptured = onImageCaptured
+                onImageCaptured = onImageCaptured,
+                onVideoCaptured = onVideoCaptured
             )
         }
     }

@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Seus direitos de acesso foram alterados para somente leitura no espaço %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Seus direitos de acesso foram alterados para editar no espaço %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Seu pedido para se juntar ao espaço %1$s foi recusado.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Pedido recusado</string>
     <string name="multiplayer_notification_view_request">Exibição</string>
     <string name="multiplayer_notification_go_to_space">Ir para espaço</string>
@@ -1534,6 +1535,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
     <string name="vault_my_spaces">Meus Espaços</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">Todos</string>
     <string name="all_content_title_all_content">Todos os Objetos</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
@@ -1796,5 +1799,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Câmara</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

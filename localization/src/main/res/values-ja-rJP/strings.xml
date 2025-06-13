@@ -1241,6 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">あなたのアクセス権が閲覧可能権限にスペース「%1$s」では変更されました。</string>
     <string name="multiplayer_notification_member_permission_change_edit">あなたのアクセス権が編集可能権限にスペース「%1$s」では変更されました。</string>
     <string name="multiplayer_notification_member_join_request_declined">スペース「%1$s」への参加リクエストが拒否されました。</string>
+    <string name="multiplayer_notification_member_join_without_approval">%1$sに参加しました。</string>
     <string name="multiplayer_notification_request_declined">リクエストが拒否されました</string>
     <string name="multiplayer_notification_view_request">ビュー</string>
     <string name="multiplayer_notification_go_to_space">スペースに移動</string>
@@ -1525,6 +1526,8 @@
     <string name="version_history_error_get_members">メンバー取得エラー</string>
     <string name="new_object">新しいオブジェクト</string>
     <string name="vault_my_spaces">自分のスペース</string>
+    <string name="vault_unread_section_title">未読</string>
+    <string name="vault_all_section_title">すべて</string>
     <string name="all_content_title_all_content">すべてのオブジェクト</string>
     <string name="all_content_title_only_unlinked">リンクのない</string>
     <string name="all_content_title_only_unlinked_description">グラフビューで、どのオブジェクトともリンクやバックリンクなどの繋がりのないオブジェクトです。</string>
@@ -1787,5 +1790,7 @@
     <string name="vault_empty_state_text">まだスペースがありません</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
     <string name="chat_box_camera">カメラ</string>
+    <string name="chat_box_take_photo">写真を撮る</string>
+    <string name="chat_box_record_video">動画を撮る</string>
     <string name="chat_camera_permission_denied">カメラへのアクセスが拒否されました</string>
 </resources>

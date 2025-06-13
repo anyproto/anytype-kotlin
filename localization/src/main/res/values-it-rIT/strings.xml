@@ -19,7 +19,7 @@
     <string name="space_debug">Space debug</string>
     <string name="data">Dati</string>
     <string name="mode">Modalità</string>
-    <string name="log_out">Esci</string>
+    <string name="log_out">Disconnetti</string>
     <string name="pin_code">Codice PIN</string>
     <string name="access">Accesso</string>
     <string name="wallpaper">Wallpaper</string>
@@ -1246,6 +1246,7 @@
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">La tua richiesta di unirti allo spazio %1$s è stata rifiutata.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Richiesta non approvata</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>
@@ -1538,6 +1539,8 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
     <string name="vault_my_spaces">I miei Spazi</string>
+    <string name="vault_unread_section_title">Non letto</string>
+    <string name="vault_all_section_title">Tutto</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
@@ -1661,7 +1664,7 @@ Please provide specific details of your needs here.</string>
     <string name="image">Immagine</string>
     <string name="images">Immagini</string>
     <string name="attachment">Allegato</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments">Allegati</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea il tuo primo spazio per iniziare</string>
     <string name="space_list_empty_state_it_is_empty_here">È vuoto qui.</string>
     <string name="emoji_category_smileys_and_people">Faccine &amp; Persone</string>
@@ -1800,5 +1803,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
     <string name="chat_new_messages_section_text">Nuovi messaggi</string>
     <string name="chat_box_camera">Fotocamera</string>
-    <string name="chat_camera_permission_denied">Camera permission denied</string>
+    <string name="chat_box_take_photo">Scatta Foto</string>
+    <string name="chat_box_record_video">Registra Video</string>
+    <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
 </resources>

@@ -1253,6 +1253,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Вашы правы доступу былі зменены толькі на доступ для чытання ў прасторы %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Вашы правы доступу былі зменены на рэдагаванне ў прасторы %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Ваш запыт на далучэнне да прасторы %1$s быў адхілены.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Запыт адхілены</string>
     <string name="multiplayer_notification_view_request">Выгляд</string>
     <string name="multiplayer_notification_go_to_space">Перайсці ў прастору</string>
@@ -1563,6 +1564,8 @@
     <string name="version_history_error_get_members">Памылка атрымання ўдзельнікаў</string>
     <string name="new_object">Новы аб\'ект</string>
     <string name="vault_my_spaces">Мае прасторы</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">Усе</string>
     <string name="all_content_title_all_content">Усе аб\'екты</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
@@ -1825,5 +1828,7 @@
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

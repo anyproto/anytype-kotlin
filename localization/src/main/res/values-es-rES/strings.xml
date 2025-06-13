@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Tus derechos de acceso al espacio %1$s ahora son de solo lectura.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Tus derechos de acceso al espacio %1$s ahora son de edición.</string>
     <string name="multiplayer_notification_member_join_request_declined">Tu solicitud de acceso al espacio %1$s se ha rechazado.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Solicitud rechazada</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Ir al espacio</string>
@@ -1537,6 +1538,8 @@ En concreto,
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
     <string name="vault_my_spaces">Mis espacios</string>
+    <string name="vault_unread_section_title">No leído</string>
+    <string name="vault_all_section_title">Todo</string>
     <string name="all_content_title_all_content">Todos los objetos</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
@@ -1660,7 +1663,7 @@ En concreto,
     <string name="image">Imagen</string>
     <string name="images">Imágenes</string>
     <string name="attachment">Adjunto</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments">Adjuntos</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea tu primer espacio para empezar</string>
     <string name="space_list_empty_state_it_is_empty_here">Aquí no hay nada.</string>
     <string name="emoji_category_smileys_and_people">Emoticonos y personas</string>
@@ -1799,5 +1802,7 @@ En concreto,
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
     <string name="chat_new_messages_section_text">Mensajes nuevos</string>
     <string name="chat_box_camera">Cámara</string>
+    <string name="chat_box_take_photo">Hacer foto</string>
+    <string name="chat_box_record_video">Grabar vídeo</string>
     <string name="chat_camera_permission_denied">Sin acceso a la cámara</string>
 </resources>

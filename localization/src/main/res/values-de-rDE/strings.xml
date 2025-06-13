@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Deine Zugriffsrechte wurden im Space %1$s auf „Nur Lesen“ geändert.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Deine Zugriffsrechte wurden im Space %1$s auf „Bearbeiten“  geändert.</string>
     <string name="multiplayer_notification_member_join_request_declined">Deine Anfrage, dem Space %1$s beizutreten, wurde abgelehnt.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Anfrage abgelehnt</string>
     <string name="multiplayer_notification_view_request">Ansicht</string>
     <string name="multiplayer_notification_go_to_space">Gehe zum Space</string>

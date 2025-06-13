@@ -66,12 +66,13 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
-import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
@@ -428,21 +429,13 @@ fun VaultScreenToolbar(
                                 } else {
                                     profile.name.first().uppercaseChar().toString()
                                 }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(CircleShape)
-                                        .background(colorResource(id = R.color.glyph_active))
-                                ) {
-                                    Text(
-                                        text = nameFirstChar,
-                                        style = AvatarTitle.copy(
-                                            fontSize = 20.sp
-                                        ),
-                                        color = colorResource(id = R.color.text_white),
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
+                                ListWidgetObjectIcon(
+                                    modifier = Modifier.fillMaxSize(),
+                                    icon = ObjectIcon.Profile.Avatar(
+                                        name = nameFirstChar
+                                    ),
+                                    iconSize = 28.dp
+                                )
                             }
                         }
                     }

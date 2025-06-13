@@ -4,7 +4,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -24,12 +22,9 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -203,36 +198,6 @@ fun CreateSpaceScreen(
 }
 
 @Composable
-private fun DebugCreateSpaceLevelChatToggle(isChatToggleChecked: MutableState<Boolean>) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .height(52.dp)
-    ) {
-        Switch(
-            checked = isChatToggleChecked.value,
-            onCheckedChange = {
-                isChatToggleChecked.value = it
-            },
-            colors = SwitchDefaults.colors().copy(
-                checkedBorderColor = Color.Transparent,
-                uncheckedBorderColor = Color.Transparent,
-                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
-                uncheckedTrackColor = colorResource(R.color.shape_secondary)
-            )
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "Enable space-level chat (dev mode)",
-            color = colorResource(id = R.color.text_primary),
-            style = BodyRegular
-        )
-    }
-}
-
-@Composable
 fun Header(isChatSpace: Boolean = false) {
     Box(
         modifier = Modifier
@@ -352,8 +317,6 @@ fun UseCase() {
         )
     }
 }
-
-typealias IsSpaceLevelChatSwitchChecked = Boolean
 
 @DefaultPreviews
 @Composable

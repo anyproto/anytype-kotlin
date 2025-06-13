@@ -1663,7 +1663,7 @@ Please provide specific details of your needs here.</string>
     <string name="image">Immagine</string>
     <string name="images">Immagini</string>
     <string name="attachment">Allegato</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments">Allegati</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Crea il tuo primo spazio per iniziare</string>
     <string name="space_list_empty_state_it_is_empty_here">È vuoto qui.</string>
     <string name="emoji_category_smileys_and_people">Faccine &amp; Persone</string>
@@ -1804,5 +1804,5 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_camera">Fotocamera</string>
     <string name="chat_box_take_photo">Take Photo</string>
     <string name="chat_box_record_video">Record Video</string>
-    <string name="chat_camera_permission_denied">Camera permission denied</string>
+    <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
 </resources>

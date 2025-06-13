@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
@@ -418,6 +419,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening object type in main activity")
+                }
+            }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = this,
+                        url = dest.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL: ${dest.url}")
+                    toast("Failed to open URL")
                 }
             }
         }

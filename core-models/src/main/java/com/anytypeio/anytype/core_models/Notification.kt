@@ -55,6 +55,11 @@ sealed class NotificationPayload {
         val permissions: SpaceMemberPermissions? = null
     ) : NotificationPayload()
 
+    data class ParticipantWithoutApprovalRequestApproved(
+        val spaceId: SpaceId,
+        val spaceName: String
+    ) : NotificationPayload()
+
 
     data class ParticipantRemove(
         val spaceId: SpaceId,

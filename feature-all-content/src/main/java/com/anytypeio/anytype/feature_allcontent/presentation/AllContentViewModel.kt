@@ -610,12 +610,8 @@ class AllContentViewModel(
 
     fun onItemClicked(item: UiContentItem.Item) {
         Timber.d("onItemClicked: ${item.id}")
-        val layout = item.layout ?: return
         proceedWithNavigation(
-            navigation = layout.navigation(
-                target = item.id,
-                space = vmParams.spaceId.id
-            )
+            navigation = item.obj.navigation()
         )
         viewModelScope.launch {
             sendAnalyticsAllContentResult(analytics = analytics)
@@ -682,6 +678,9 @@ class AllContentViewModel(
                             space = navigation.space
                         )
                     )
+                }
+                is OpenObjectNavigation.OpenBookmarkUrl -> {
+                    commands.emit(Command.OpenUrl(navigation.url))
                 }
             }
         }
@@ -933,6 +932,7 @@ class AllContentViewModel(
         data class NavigateToBin(val space: Id) : Command()
         data class NavigateToParticipant(val objectId: Id, val space: Id) : Command()
         data class NavigateToDateObject(val objectId: Id, val space: Id) : Command()
+        data class OpenUrl(val url: String) : Command()
         sealed class SendToast: Command() {
             data class Error(val message: String) : SendToast()
             data class RelationRemoved(val name: String) : SendToast()

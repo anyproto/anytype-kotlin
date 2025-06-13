@@ -21,6 +21,7 @@ dependencies {
     ksp libs.daggerCompiler
 
     implementation libs.appcompat
+    implementation libs.customTabs
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid

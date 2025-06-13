@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.Action
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
@@ -148,6 +149,42 @@ class AnytypeNotificationService @Inject constructor(
                     body = body,
                     actions = buildList {
                         add(NotificationCompat.Action(0, actionTitle, activity))
+                    }
+                )
+            }
+            is NotificationPayload.ParticipantWithoutApprovalRequestApproved -> {
+                Timber.d("Processing auto-approved join notification : ${notification}")
+                val placeholder = context.resources.getString(R.string.untitled)
+                val title = context.resources.getString(
+                    R.string.multiplayer_notification_member_request_approved
+                )
+                val actionTitle = context.resources.getString(
+                    R.string.multiplayer_notification_go_to_space
+                )
+                val body = context.resources.getString(
+                    R.string.multiplayer_notification_member_join_without_approval,
+                    payload.spaceName.ifEmpty { placeholder }
+                )
+                val intent = Intent(context, MainActivity::class.java).apply {
+                    putExtra(Relations.SPACE_ID, payload.spaceId.id)
+                    putExtra(NOTIFICATION_TYPE, REQUEST_APPROVED_TYPE)
+                    putExtra(NOTIFICATION_ID_KEY, notification.id)
+                    setType(REQUEST_APPROVED_TYPE.toString())
+                    setAction(NOTIFICATION_INTENT_ACTION)
+                }
+
+                val activity = PendingIntent.getActivity(
+                    context,
+                    notification.hashCode(),
+                    intent,
+                    getDefaultFlags()
+                )
+                showBasicNotification(
+                    tag = notification.id,
+                    title = title,
+                    body = body,
+                    actions = buildList {
+                        add(Action(0, actionTitle, activity))
                     }
                 )
             }

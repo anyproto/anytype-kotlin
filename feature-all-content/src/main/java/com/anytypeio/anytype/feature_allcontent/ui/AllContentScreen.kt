@@ -61,6 +61,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.bottomBorder
@@ -907,9 +910,19 @@ private fun ShowMoveToBinSnackbar(
 @DefaultPreviews
 @Composable
 fun MtSwipeToDismissListItems() {
+    val dummyObj = ObjectWrapper.Basic(
+        mapOf(
+            "id" to "1",
+            "name" to "Name",
+            "description" to "Description11",
+            Relations.SPACE_ID to "1",
+            Relations.LAYOUT to ObjectType.Layout.BASIC.code
+        )
+    )
     SwipeToDismissListItems(
         item = UiContentItem.Item(
             id = "1",
+            obj = dummyObj,
             name = "Name",
             description = "Description11",
             typeName = "Type11",

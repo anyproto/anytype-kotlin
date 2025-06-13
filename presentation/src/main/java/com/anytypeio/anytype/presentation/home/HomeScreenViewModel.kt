@@ -1601,6 +1601,13 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                navigate(
+                    Navigation.OpenBookmarkUrl(
+                        url = navigation.url
+                    )
+                )
+            }
         }
     }
 
@@ -2640,6 +2647,7 @@ class HomeScreenViewModel(
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
         data class OpenType(val target: Id, val space: Id) : Navigation()
         data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
+        data class OpenBookmarkUrl(val url: String) : Navigation() // Added for opening bookmark URLs from widgets
     }
 
     sealed class ViewerSpaceSettingsState {
@@ -2905,15 +2913,26 @@ sealed class OpenObjectNavigation {
     data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
+    data class OpenBookmarkUrl(val url: String) : OpenObjectNavigation() // For opening bookmark URLs
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
+        ObjectType.Layout.BOOKMARK -> {
+            val url = getValue<String>(Relations.SOURCE)
+            if (url.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(
+                    target = id,
+                    space = requireNotNull(spaceId)
+                )
+            } else {
+                OpenObjectNavigation.OpenBookmarkUrl(url)
+            }
+        }
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK -> {
+        ObjectType.Layout.TODO -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
                 space = requireNotNull(spaceId)
@@ -2972,69 +2991,6 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
         else -> {
             OpenObjectNavigation.UnexpectedLayoutError(layout)
-        }
-    }
-}
-
-fun ObjectType.Layout.navigation(
-    target: Id,
-    space: Id
-) : OpenObjectNavigation {
-    return when (this) {
-        ObjectType.Layout.BASIC,
-        ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK -> {
-            OpenObjectNavigation.OpenEditor(
-                target = target,
-                space = space
-            )
-        }
-        in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.PROFILE -> {
-            OpenObjectNavigation.OpenEditor(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenChat(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDateObject(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenParticipant(
-                target = target,
-                space = space
-            )
-        }
-        ObjectType.Layout.OBJECT_TYPE -> {
-            OpenObjectNavigation.OpenType(
-                target = target,
-                space = space
-            )
-        }
-        else -> {
-            OpenObjectNavigation.UnexpectedLayoutError(this)
         }
     }
 }

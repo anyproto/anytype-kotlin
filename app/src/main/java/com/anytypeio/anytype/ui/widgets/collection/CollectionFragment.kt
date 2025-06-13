@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.widgets.collection
 
 import android.os.Build
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -161,6 +163,18 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening participant object from Collection screen")
+                }
+            }
+
+            is Command.OpenUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = requireActivity(),
+                        url = command.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL: ${command.url}")
+                    toast("Failed to open URL")
                 }
             }
         }

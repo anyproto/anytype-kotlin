@@ -94,12 +94,14 @@ import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.Relation.*
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
@@ -1278,7 +1280,7 @@ open class ObjectSetFragment :
                     context = themeWrapper,
                     view = featuredRelations.findViewById(command.anchor),
                     onChangeTypeClicked = {
-                        vm.onClickListener(ListenerType.Relation.SetQuery(queries = emptyList()))
+                        vm.onClickListener(SetQuery(queries = emptyList()))
                     },
                     onConvertToCollection = {
                         vm.proceedWithConvertingToCollection()
@@ -1304,6 +1306,13 @@ open class ObjectSetFragment :
             }
             ObjectSetCommand.Intent.OpenAppStore -> {
                 startMarketPageOrWeb()
+            }
+
+            is ObjectSetCommand.Browse -> {
+                ActivityCustomTabsHelper.openUrl(
+                    activity = requireActivity(),
+                    url = command.url
+                )
             }
         }
     }

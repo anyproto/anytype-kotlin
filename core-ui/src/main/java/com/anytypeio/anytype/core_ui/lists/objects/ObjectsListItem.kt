@@ -15,6 +15,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -131,7 +133,16 @@ fun PreviewObjectListItem() {
             createdBy = "Some user",
             layout = ObjectType.Layout.BASIC,
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
-            isPossibleToDelete = true
+            isPossibleToDelete = true,
+            obj = ObjectWrapper.Basic(
+                mapOf(
+                    "id" to "1",
+                    "name" to "Name",
+                    "description" to "Description11",
+                    Relations.SPACE_ID to "1",
+                    Relations.LAYOUT to ObjectType.Layout.BASIC.code
+                )
+            )
         )
     )
 }

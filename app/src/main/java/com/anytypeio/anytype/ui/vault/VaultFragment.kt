@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.os.Build.VERSION.SDK_INT
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -59,12 +60,13 @@ class VaultFragment : BaseComposeFragment() {
         setContent {
             MaterialTheme(typography = typography) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    VaultScreen(
-                        spaces = vm.spaces.collectAsStateWithLifecycle().value,
+                    VaultScreenWithUnreadSection(
+                        sections = vm.sections.collectAsStateWithLifecycle().value,
                         onSpaceClicked = vm::onSpaceClicked,
                         onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                         onSettingsClicked = vm::onSettingsClicked,
                         onOrderChanged = vm::onOrderChanged,
+                        onDragEnd = vm::onDragEnd,
                         profile = vm.profileView.collectAsStateWithLifecycle().value
                     )
 
@@ -275,6 +277,18 @@ class VaultFragment : BaseComposeFragment() {
 
             is VaultNavigation.OpenType -> {
                 Timber.e("Illegal command: type cannot be opened from vault")
+            }
+
+            is VaultNavigation.OpenUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = requireActivity(),
+                        url = destination.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL: ${destination.url}")
+                    toast("Failed to open URL")
+                }
             }
 
             is VaultNavigation.ShowError -> {

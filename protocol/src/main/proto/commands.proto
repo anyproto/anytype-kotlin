@@ -693,6 +693,7 @@ message Rpc {
                 oneof auth {
                     string mnemonic = 1; // cold auth
                     string appKey = 2; // persistent app key, that can be used to restore session
+                    string token = 3; // token from the previous session
                 }
             }
 
@@ -1385,7 +1386,7 @@ message Rpc {
             message Request {
                 google.protobuf.Struct details = 1; // object details
                 anytype.Rpc.Object.ImportUseCase.Request.UseCase useCase = 2; // use case
-                bool withChat = 3; // create space-level chat; temporary solution, should be removed after chats released for all users
+                bool withChat = 3; // deprecated
             }
 
             message Response {
@@ -2228,6 +2229,7 @@ message Rpc {
                 string spaceId = 5;
                 string collectionId = 6;
                 repeated string setSource = 7;
+                bool includeTypeEdges = 8;
             }
 
             message Edge {

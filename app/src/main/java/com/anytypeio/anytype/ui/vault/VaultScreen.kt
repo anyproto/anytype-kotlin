@@ -2,13 +2,14 @@ package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,10 +24,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,55 +52,88 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
 import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
 import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
-import com.anytypeio.anytype.core_ui.views.AvatarTitle
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.conditionalBackground
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
+import com.anytypeio.anytype.ui.settings.typography
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import kotlinx.coroutines.delay
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
 @Composable
 fun VaultScreen(
     profile: AccountProfile,
-    spaces: List<VaultSpaceView>,
+    sections: VaultSectionView,
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onOrderChanged: (List<Id>) -> Unit
 ) {
-    var spaceList by remember {
-        mutableStateOf<List<VaultSpaceView>>(spaces)
+    var mainSpaceList by remember {
+        mutableStateOf<List<VaultSpaceView>>(sections.mainSpaces)
     }
 
-    spaceList = spaces
+    mainSpaceList = sections.mainSpaces
 
-    val lazyListState = rememberLazyListState()
+    // Simple drag drop state - only for main spaces LazyColumn
+    val mainSpacesLazyListState = rememberLazyListState()
     val isScrolled = remember {
         derivedStateOf {
-            lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+            mainSpacesLazyListState.firstVisibleItemIndex > 0 || mainSpacesLazyListState.firstVisibleItemScrollOffset > 0
         }
     }
-
     val dragDropState = rememberDragDropState(
-        lazyListState = lazyListState,
+        lazyListState = mainSpacesLazyListState,
         onDragEnd = {
             onOrderChanged(
-                spaceList.map { it.space.id }
+                mainSpaceList.map { it.space.id }
             )
         },
         onMove = { fromIndex, toIndex ->
-            spaceList = spaceList.toMutableList().apply { add(toIndex, removeAt(fromIndex)) }
+            // Calculate offset due to unread section items
+            val unreadSectionOffset = if (sections.hasUnreadSpaces) {
+                1 + sections.unreadSpaces.size + (if (sections.mainSpaces.isNotEmpty()) 1 else 0) // header + unread items + divider
+            } else {
+                0
+            }
+            
+            // Adjust indices to only affect main section items
+            val adjustedFromIndex = fromIndex - unreadSectionOffset
+            val adjustedToIndex = toIndex - unreadSectionOffset
+            
+            // Only process if both indices are within main section
+            if (adjustedFromIndex >= 0 && adjustedToIndex >= 0 && 
+                adjustedFromIndex < mainSpaceList.size && adjustedToIndex <= mainSpaceList.size) {
+                mainSpaceList = mainSpaceList.toMutableList().apply { 
+                    add(adjustedToIndex, removeAt(adjustedFromIndex)) 
+                }
+            }
         }
     )
 
@@ -115,44 +153,47 @@ fun VaultScreen(
                 profile = profile,
                 onPlusClicked = onCreateSpaceClicked,
                 onSettingsClicked = onSettingsClicked,
-                spaceCountLimitReached = spaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                 isScrolled = isScrolled.value
             )
         }
     ) { paddings ->
-        if (spaces.isEmpty()) {
+        if (sections.allSpaces.isEmpty()) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
-        } else {
+                } else {
+            // Single LazyColumn with combined content
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddings)
                     .dragContainer(dragDropState),
-                state = lazyListState,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                state = mainSpacesLazyListState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(top = 4.dp)
             ) {
-                itemsIndexed(
-                    items = spaceList,
-                    key = { _, item ->
-                        item.space.id
-                    },
-                    contentType = { _, item ->
-                        when (item) {
-                            is VaultSpaceView.Chat -> TYPE_CHAT
-                            is VaultSpaceView.Space -> TYPE_SPACE
-                            is VaultSpaceView.Loading -> TYPE_LOADING
+                // Unread Section Header and Items
+                if (sections.hasUnreadSpaces) {
+                    item(key = "unread_header") {
+                        UnreadSectionHeader()
+                    }
+                    
+                    itemsIndexed(
+                        items = sections.unreadSpaces,
+                        key = { _, item -> "unread_${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                                is VaultSpaceView.Loading -> TYPE_LOADING
+                            }
                         }
-                    }
-                ) { idx, item ->
-                    if (idx == 0) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                    }
-                    when (item) {
-                        is VaultSpaceView.Chat -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                    ) { _, item ->
+                        // Unread items are not draggable
+                        when (item) {
+                            is VaultSpaceView.Chat -> {
                                 VaultChatCard(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -173,22 +214,89 @@ fun VaultScreen(
                                     attachmentPreviews = item.attachmentPreviews
                                 )
                             }
-                        }
-                        is VaultSpaceView.Loading -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                            is VaultSpaceView.Loading -> {
                                 LoadingSpaceCard()
                             }
-                        }
-                        is VaultSpaceView.Space -> {
-                            DraggableItem(dragDropState = dragDropState, index = idx) {
+                            is VaultSpaceView.Space -> {
                                 VaultSpaceCard(
+                                    modifier = Modifier.animateItem(),
                                     title = item.space.name.orEmpty(),
                                     subtitle = item.accessType,
                                     onCardClicked = {
                                         onSpaceClicked(item)
                                     },
-                                    icon = item.icon,
+                                    icon = item.icon
                                 )
+                            }
+                        }
+                    }
+                    
+                    // Divider between sections
+                    if (sections.mainSpaces.isNotEmpty()) {
+                        item(key = "divider") {
+                            Divider(
+                                modifier = Modifier.padding(vertical = 8.dp),
+                                color = colorResource(id = R.color.shape_primary),
+                                thickness = 0.5.dp
+                            )
+                        }
+                    }
+                }
+
+                // Main Section Items (Draggable)
+                if (sections.mainSpaces.isNotEmpty()) {
+                    itemsIndexed(
+                        items = mainSpaceList,
+                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                                is VaultSpaceView.Loading -> TYPE_LOADING
+                            }
+                        }
+                    ) { idx, item ->
+                        when (item) {
+                            is VaultSpaceView.Chat -> {
+                                DraggableItem(dragDropState = dragDropState, index = idx) {
+                                    VaultChatCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .padding(horizontal = 16.dp)
+                                            .clickable {
+                                                onSpaceClicked(item)
+                                            },
+                                        title = item.space.name.orEmpty(),
+                                        icon = item.icon,
+                                        previewText = item.previewText,
+                                        creatorName = item.creatorName,
+                                        messageText = item.messageText,
+                                        messageTime = item.messageTime,
+                                        chatPreview = item.chatPreview,
+                                        unreadMessageCount = item.unreadMessageCount,
+                                        unreadMentionCount = item.unreadMentionCount,
+                                        attachmentPreviews = item.attachmentPreviews
+                                    )
+                                }
+                            }
+                            is VaultSpaceView.Loading -> {
+                                DraggableItem(dragDropState = dragDropState, index = idx) {
+                                    LoadingSpaceCard()
+                                }
+                            }
+                            is VaultSpaceView.Space -> {
+                                DraggableItem(dragDropState = dragDropState, index = idx) {
+                                    VaultSpaceCard(
+                                        modifier = Modifier.animateItem(),
+                                        title = item.space.name.orEmpty(),
+                                        subtitle = item.accessType,
+                                        onCardClicked = {
+                                            onSpaceClicked(item)
+                                        },
+                                        icon = item.icon
+                                    )
+                                }
                             }
                         }
                     }
@@ -198,6 +306,68 @@ fun VaultScreen(
     }
 }
 
+@Composable
+fun UnreadSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.vault_unread_section_title),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun AllSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            text = stringResource(R.string.vault_all_section_title),
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 8.dp)
+        )
+    }
+}
+
+// Original VaultScreen function for backward compatibility
+@Composable
+fun VaultScreen(
+    profile: AccountProfile,
+    spaces: List<VaultSpaceView>,
+    onSpaceClicked: (VaultSpaceView) -> Unit,
+    onCreateSpaceClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
+    onOrderChanged: (List<Id>) -> Unit
+) {
+    // Convert to VaultSectionView for compatibility
+    val sections = VaultSectionView(
+        unreadSpaces = emptyList(),
+        mainSpaces = spaces
+    )
+
+    // Call the new VaultScreen function
+    VaultScreen(
+        profile = profile,
+        sections = sections,
+        onSpaceClicked = onSpaceClicked,
+        onCreateSpaceClicked = onCreateSpaceClicked,
+        onSettingsClicked = onSettingsClicked,
+        onOrderChanged = onOrderChanged
+    )
+}
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -235,7 +405,7 @@ fun VaultScreenToolbar(
                     Box(
                         Modifier
                             .align(Alignment.CenterStart)
-                            .padding(start = 16.dp)
+                            .padding(start = 18.dp)
                             .size(28.dp)
                             .noRippleClickable {
                                 onSettingsClicked()
@@ -259,21 +429,13 @@ fun VaultScreenToolbar(
                                 } else {
                                     profile.name.first().uppercaseChar().toString()
                                 }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(CircleShape)
-                                        .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary))
-                                ) {
-                                    Text(
-                                        text = nameFirstChar,
-                                        style = AvatarTitle.copy(
-                                            fontSize = 20.sp
-                                        ),
-                                        color = colorResource(id = R.color.text_white),
-                                        modifier = Modifier.align(Alignment.Center)
-                                    )
-                                }
+                                ListWidgetObjectIcon(
+                                    modifier = Modifier.fillMaxSize(),
+                                    icon = ObjectIcon.Profile.Avatar(
+                                        name = nameFirstChar
+                                    ),
+                                    iconSize = 28.dp
+                                )
                             }
                         }
                     }
@@ -289,12 +451,13 @@ fun VaultScreenToolbar(
                     painter = painterResource(id = R.drawable.ic_plus_18),
                     contentDescription = "Plus button",
                     modifier = Modifier
+                        .padding(end = 18.dp)
+                        .size(28.dp)
                         .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                        .size(32.dp)
                         .noRippleClickable {
                             onPlusClicked()
-                        }
+                        },
+                    contentScale = ContentScale.Fit
                 )
             }
         }
@@ -480,6 +643,513 @@ fun VaultScreenToolbarScrolledPreview() {
 //    )
 //}
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun VaultScreenWithUnreadSection(
+    profile: AccountProfile,
+    sections: VaultSectionView,
+    onSpaceClicked: (VaultSpaceView) -> Unit,
+    onCreateSpaceClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
+    onOrderChanged: (String, String) -> Unit,
+    onDragEnd: () -> Unit = { /* No-op */ }
+) {
+
+    var mainSpaceList by remember {
+        mutableStateOf<List<VaultSpaceView>>(sections.mainSpaces)
+    }
+
+    mainSpaceList = sections.mainSpaces
+
+    val hapticFeedback = rememberReorderHapticFeedback()
+
+    val lazyListState = rememberLazyListState()
+
+    val reorderableLazyState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        // Extract space IDs from keys (remove prefix) before passing to ViewModel
+        val fromSpaceId = (from.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        val toSpaceId = (to.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        
+        onOrderChanged(fromSpaceId, toSpaceId)
+        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+    }
+
+    var isDragging by remember { mutableStateOf(false) }
+
+    LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
+        if (reorderableLazyState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
+            onDragEnd()
+            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+        }
+    }
+
+    val isScrolled = remember {
+        derivedStateOf {
+            lazyListState.firstVisibleItemIndex > 0 || lazyListState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
+    Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .nestedScroll(rememberNestedScrollInteropConnection())
+            .background(color = colorResource(id = R.color.background_primary))
+            .then(
+                if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
+                else
+                    Modifier
+            ),
+        backgroundColor = colorResource(id = R.color.background_primary),
+        topBar = {
+            VaultScreenToolbar(
+                profile = profile,
+                onPlusClicked = onCreateSpaceClicked,
+                onSettingsClicked = onSettingsClicked,
+                spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                isScrolled = isScrolled.value
+            )
+        }
+    ) { paddings ->
+        if (sections.allSpaces.isEmpty()) {
+            VaultEmptyState(
+                modifier = Modifier.padding(paddings),
+                onCreateSpaceClicked = onCreateSpaceClicked
+            )
+        } else {
+            // Single LazyColumn with reorderable approach
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddings),
+                state = lazyListState,
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(top = 4.dp)
+            ) {
+                // Unread Section Header and Items (Non-draggable)
+                if (sections.hasUnreadSpaces) {
+                    item(key = "unread_header") {
+                        UnreadSectionHeader()
+                    }
+                    
+                    itemsIndexed(
+                        items = sections.unreadSpaces,
+                        key = { _, item -> "unread_${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                                is VaultSpaceView.Loading -> TYPE_LOADING
+                            }
+                        }
+                    ) { _, item ->
+                        // Unread items are not draggable
+                        when (item) {
+                            is VaultSpaceView.Chat -> {
+                                VaultChatCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .fillMaxWidth()
+                                        .height(80.dp)
+                                        .padding(horizontal = 16.dp)
+                                        .clickable {
+                                            onSpaceClicked(item)
+                                        },
+                                    title = item.space.name.orEmpty(),
+                                    icon = item.icon,
+                                    previewText = item.previewText,
+                                    creatorName = item.creatorName,
+                                    messageText = item.messageText,
+                                    messageTime = item.messageTime,
+                                    chatPreview = item.chatPreview,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews
+                                )
+                            }
+                            is VaultSpaceView.Loading -> {
+                                LoadingSpaceCard()
+                            }
+                            is VaultSpaceView.Space -> {
+                                VaultSpaceCard(
+                                    modifier = Modifier.animateItem(),
+                                    title = item.space.name.orEmpty(),
+                                    subtitle = item.accessType,
+                                    onCardClicked = {
+                                        onSpaceClicked(item)
+                                    },
+                                    icon = item.icon
+                                )
+                            }
+                        }
+                    }
+                    
+                    if (sections.mainSpaces.isNotEmpty()) {
+                        item(key = "all_section") {
+                            AllSectionHeader()
+                        }
+                    }
+                }
+
+                // Main Section Items (Draggable using ReorderableItem)
+                if (sections.mainSpaces.isNotEmpty()) {
+                    itemsIndexed(
+                        items = mainSpaceList,
+                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                                is VaultSpaceView.Loading -> TYPE_LOADING
+                            }
+                        }
+                    ) { idx, item ->
+                        ReorderableItem(
+                            state = reorderableLazyState,
+                            key = "$MAIN_SECTION_KEY_PREFIX${item.space.id}"
+                        ) { isDragging ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> {
+                                    VaultChatCard(
+                                        modifier = Modifier
+                                            .longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                                },
+                                                onDragStopped = {
+                                                    hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                                }
+                                            )
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .padding(horizontal = 16.dp)
+                                            .clickable {
+                                                onSpaceClicked(item)
+                                            },
+                                        title = item.space.name.orEmpty(),
+                                        icon = item.icon,
+                                        previewText = item.previewText,
+                                        creatorName = item.creatorName,
+                                        messageText = item.messageText,
+                                        messageTime = item.messageTime,
+                                        chatPreview = item.chatPreview,
+                                        unreadMessageCount = item.unreadMessageCount,
+                                        unreadMentionCount = item.unreadMentionCount,
+                                        attachmentPreviews = item.attachmentPreviews
+                                    )
+                                }
+                                is VaultSpaceView.Loading -> {
+                                    Box(modifier = Modifier
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                            }
+                                        )
+                                    ) {
+                                        LoadingSpaceCard()
+                                    }
+                                }
+                                is VaultSpaceView.Space -> {
+                                    Box(modifier = Modifier
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.START)
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.END)
+                                            }
+                                        )
+                                    ) {
+                                        VaultSpaceCard(
+                                            modifier = Modifier.animateItem(),
+                                            title = item.space.name.orEmpty(),
+                                            subtitle = item.accessType,
+                                            onCardClicked = {
+                                                onSpaceClicked(item)
+                                            },
+                                            icon = item.icon
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 const val TYPE_LOADING = "loading"
+
+private const val MAIN_SECTION_KEY_PREFIX = "main_"
+
+// Preview functions for the new unread section logic
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - Unread Section"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - Unread Section"
+)
+@Composable
+fun VaultScreenUnreadSectionPreview() {
+    MaterialTheme(typography = typography) {
+        VaultScreen(
+            profile = AccountProfile.Data(
+                name = "John Doe",
+                icon = ProfileIconView.Placeholder(name = "JD")
+            ),
+            sections = VaultSectionView(
+                unreadSpaces = listOf(
+                    VaultSpaceView.Chat(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "chat1",
+                                Relations.NAME to "Design Team Chat",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "DT"),
+                        chatPreview = Chat.Preview(
+                            space = SpaceId("space-id"),
+                            chat = "chat-id",
+                            message = Chat.Message(
+                                id = "message-id",
+                                createdAt = System.currentTimeMillis(),
+                                modifiedAt = 0L,
+                                attachments = emptyList(),
+                                reactions = emptyMap(),
+                                creator = "creator-id",
+                                replyToMessageId = "",
+                                content = Chat.Message.Content(
+                                    text = "Hello, this is a preview message.",
+                                    marks = emptyList(),
+                                    style = Block.Content.Text.Style.P
+                                ),
+                                order = "order-id"
+                            )
+                        ),
+                        previewText = "Alice: Hey team, the new designs are ready for review!",
+                        creatorName = "Alice",
+                        messageText = "Hey team, the new designs are ready for review!",
+                        messageTime = "5m",
+                        unreadMessageCount = 3,
+                        unreadMentionCount = 1,
+                        attachmentPreviews = emptyList()
+                    ),
+                    VaultSpaceView.Chat(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "chat2",
+                                Relations.NAME to "Product Planning",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.PRIVATE.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "PP"),
+                        chatPreview = Chat.Preview(
+                            space = SpaceId("space-id"),
+                            chat = "chat-id",
+                            message = Chat.Message(
+                                id = "message-id",
+                                createdAt = System.currentTimeMillis(),
+                                modifiedAt = 0L,
+                                attachments = emptyList(),
+                                reactions = emptyMap(),
+                                creator = "creator-id",
+                                replyToMessageId = "",
+                                content = Chat.Message.Content(
+                                    text = "Hello, this is a preview message.",
+                                    marks = emptyList(),
+                                    style = Block.Content.Text.Style.P
+                                ),
+                                order = "order-id"
+                            )
+                        ),
+                        previewText = "Bob: Let's schedule the sprint planning meeting",
+                        creatorName = "Bob",
+                        messageText = "Let's schedule the sprint planning meeting",
+                        messageTime = "15m",
+                        unreadMessageCount = 1,
+                        unreadMentionCount = 0,
+                        attachmentPreviews = emptyList()
+                    )
+                ),
+                mainSpaces = listOf(
+                    VaultSpaceView.Space(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "space1",
+                                Relations.NAME to "Personal Notes",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.PRIVATE.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "PN"),
+                        accessType = "Private"
+                    ),
+                    VaultSpaceView.Chat(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "chat3",
+                                Relations.NAME to "General Discussion",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "GD"),
+                        chatPreview = Chat.Preview(
+                            space = SpaceId("space-id"),
+                            chat = "chat-id",
+                            message = Chat.Message(
+                                id = "message-id",
+                                createdAt = System.currentTimeMillis(),
+                                modifiedAt = 0L,
+                                attachments = emptyList(),
+                                reactions = emptyMap(),
+                                creator = "creator-id",
+                                replyToMessageId = "",
+                                content = Chat.Message.Content(
+                                    text = "Hello, this is a preview message.",
+                                    marks = emptyList(),
+                                    style = Block.Content.Text.Style.P
+                                ),
+                                order = "order-id"
+                            )
+                        ),
+                        previewText = "Charlie: Thanks for the update!",
+                        creatorName = "Charlie",
+                        messageText = "Thanks for the update!",
+                        messageTime = "2h",
+                        unreadMessageCount = 0, // No unread messages
+                        unreadMentionCount = 0,
+                        attachmentPreviews = emptyList()
+                    ),
+                    VaultSpaceView.Space(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "space2",
+                                Relations.NAME to "Work Projects",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.PRIVATE.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "WP"),
+                        accessType = "Private"
+                    )
+                )
+            ),
+            onSpaceClicked = {},
+            onCreateSpaceClicked = {},
+            onSettingsClicked = {},
+            onOrderChanged = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - No Unread Messages"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - No Unread Messages"
+)
+@Composable
+fun VaultScreenNoUnreadPreview() {
+    MaterialTheme(typography = typography) {
+        VaultScreen(
+            profile = AccountProfile.Data(
+                name = "Jane Smith",
+                icon = ProfileIconView.Placeholder(name = "JS")
+            ),
+            sections = VaultSectionView(
+                unreadSpaces = emptyList(), // No unread messages
+                mainSpaces = listOf(
+                    VaultSpaceView.Space(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "space1",
+                                Relations.NAME to "Personal Notes",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.PRIVATE.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "PN"),
+                        accessType = "Private"
+                    ),
+                    VaultSpaceView.Chat(
+                        space = ObjectWrapper.SpaceView(
+                            mapOf(
+                                Relations.ID to "chat1",
+                                Relations.NAME to "Team Chat",
+                                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
+                            )
+                        ),
+                        icon = SpaceIconView.Placeholder(name = "TC"),
+                        chatPreview = Chat.Preview(
+                            space = SpaceId("space-id"),
+                            chat = "chat-id",
+                            message = Chat.Message(
+                                id = "message-id",
+                                createdAt = System.currentTimeMillis(),
+                                modifiedAt = 0L,
+                                attachments = emptyList(),
+                                reactions = emptyMap(),
+                                creator = "creator-id",
+                                replyToMessageId = "",
+                                content = Chat.Message.Content(
+                                    text = "Hello, this is a preview message.",
+                                    marks = emptyList(),
+                                    style = Block.Content.Text.Style.P
+                                ),
+                                order = "order-id"
+                            )
+                        ),
+                        previewText = "Alice: All caught up!",
+                        creatorName = "Alice",
+                        messageText = "All caught up!",
+                        messageTime = "1h",
+                        unreadMessageCount = 0, // No unread messages
+                        unreadMentionCount = 0,
+                        attachmentPreviews = emptyList()
+                    )
+                )
+            ),
+            onSpaceClicked = {},
+            onCreateSpaceClicked = {},
+            onSettingsClicked = {},
+            onOrderChanged = {}
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - Unread Section Header Only"
+)
+@Composable
+fun UnreadSectionHeaderPreview() {
+    MaterialTheme(typography = typography) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorResource(id = R.color.background_primary))
+                .padding(vertical = 16.dp)
+        ) {
+            UnreadSectionHeader()
+        }
+    }
+}

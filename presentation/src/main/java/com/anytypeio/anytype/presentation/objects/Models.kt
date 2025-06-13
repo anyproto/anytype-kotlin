@@ -130,6 +130,7 @@ sealed class UiObjectsListItem {
 
     data class Item(
         override val id: String,
+        val obj: ObjectWrapper.Basic,
         val name: String,
         val space: SpaceId,
         val type: String? = null,
@@ -155,6 +156,7 @@ suspend fun ObjectWrapper.Basic.toUiObjectsListItem(
     val layout = obj.layout ?: ObjectType.Layout.BASIC
     return UiObjectsListItem.Item(
         id = obj.id,
+        obj = obj,
         space = space,
         name = fieldParser.getObjectName(obj),
         type = typeUrl,
@@ -166,31 +168,6 @@ suspend fun ObjectWrapper.Basic.toUiObjectsListItem(
             }
         }?.name,
         layout = layout,
-        icon = obj.objectIcon(
-            builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeOfObject(obj)
-        ),
-        isPossibleToDelete = isOwnerOrEditor
-    )
-}
-
-suspend fun ObjectWrapper.Basic.toUiObjectsListItem(
-    space: SpaceId,
-    urlBuilder: UrlBuilder,
-    typeName: String?,
-    fieldParser: FieldParser,
-    isOwnerOrEditor: Boolean,
-    storeOfObjectTypes: StoreOfObjectTypes
-): UiObjectsListItem {
-    val obj = this
-    val typeUrl = obj.getProperType()
-    return UiObjectsListItem.Item(
-        id = obj.id,
-        space = space,
-        name = fieldParser.getObjectName(obj),
-        type = typeUrl,
-        typeName = typeName,
-        layout = obj.layout,
         icon = obj.objectIcon(
             builder = urlBuilder,
             objType = storeOfObjectTypes.getTypeOfObject(obj)

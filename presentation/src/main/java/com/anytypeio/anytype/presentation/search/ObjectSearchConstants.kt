@@ -251,14 +251,6 @@ object ObjectSearchConstants {
             )
         }
     }
-
-    val sortAddObjectToRelation = listOf(
-        DVSort(
-            relationKey = Relations.NAME,
-            type = DVSortType.ASC,
-            relationFormat = RelationFormat.LONG_TEXT
-        )
-    )
     //endregion
 
     //region ADD OBJECT TO FILTER
@@ -412,9 +404,6 @@ object ObjectSearchConstants {
             value = true
         )
     )
-
-    const val limitTabFavorites = 100
-
     //endregion
 
     //region TAB RECENT
@@ -696,18 +685,8 @@ object ObjectSearchConstants {
         Relations.BACKLINKS,
         Relations.LAST_USED_DATE,
         Relations.DESCRIPTION,
-        Relations.TIMESTAMP
-    )
-
-    val defaultOptionKeys = listOf(
-        Relations.NAME,
-        Relations.RELATION_OPTION_COLOR
-    )
-
-    val objectCoverKeys = listOf(
-        Relations.COVER_TYPE,
-        Relations.COVER_ID,
-        Relations.PAGE_COVER
+        Relations.TIMESTAMP,
+        Relations.SOURCE
     )
 
     val defaultDataViewKeys = listOf(
@@ -736,35 +715,8 @@ object ObjectSearchConstants {
         Relations.FILE_EXT,
         Relations.FILE_MIME_TYPE,
         Relations.RESTRICTIONS,
-        Relations.TARGET_OBJECT_TYPE
-    )
-
-    val defaultRelationKeys = listOf(
-        Relations.ID,
-        Relations.SPACE_ID,
-        Relations.TARGET_SPACE_ID,
-        Relations.UNIQUE_KEY,
-        Relations.NAME,
-        Relations.PLURAL_NAME,
-        Relations.DESCRIPTION,
-        Relations.ICON_EMOJI,
-        Relations.ICON_NAME,
-        Relations.ICON_OPTION,
-        Relations.TYPE,
-        Relations.LAYOUT,
-        Relations.IS_ARCHIVED,
-        Relations.IS_DELETED,
-        Relations.IS_HIDDEN,
-        Relations.SNIPPET,
-        Relations.RESTRICTIONS,
-        Relations.SOURCE_OBJECT,
-        Relations.RELATION_FORMAT,
-        Relations.RELATION_KEY,
-        Relations.RELATION_OPTION_COLOR,
-        Relations.RELATION_DEFAULT_VALUE,
-        Relations.RELATION_FORMAT_OBJECT_TYPES,
-        Relations.RELATION_READ_ONLY_VALUE,
-        Relations.LAST_USED_DATE
+        Relations.TARGET_OBJECT_TYPE,
+        Relations.SOURCE
     )
 
     val defaultFilesKeys = defaultKeys + listOf(
@@ -1005,7 +957,8 @@ object ObjectSearchConstants {
         Relations.DEFAULT_TEMPLATE_ID,
         Relations.SPACE_ID,
         Relations.RESTRICTIONS,
-        Relations.LAST_USED_DATE
+        Relations.LAST_USED_DATE,
+        Relations.SOURCE
     )
 
     //endregion
@@ -1307,24 +1260,6 @@ object ObjectSearchConstants {
         Relations.PARTICIPANT_STATUS,
         Relations.PARTICIPANT_PERMISSIONS,
         Relations.LAYOUT
-    )
-
-    val spaceViewKeys = listOf(
-        Relations.ID,
-        Relations.TARGET_SPACE_ID,
-        Relations.CHAT_ID,
-        Relations.NAME,
-        Relations.ICON_IMAGE,
-        Relations.ICON_EMOJI,
-        Relations.ICON_NAME,
-        Relations.ICON_OPTION,
-        Relations.CREATED_DATE,
-        Relations.SPACE_ACCOUNT_STATUS,
-        Relations.SPACE_ACCESS_TYPE,
-        Relations.SPACE_LOCAL_STATUS,
-        Relations.SHARED_SPACES_LIMIT,
-        Relations.READERS_LIMIT,
-        Relations.WRITERS_LIMIT,
     )
 
     //region SPACE VIEW

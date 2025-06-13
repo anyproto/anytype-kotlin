@@ -120,4 +120,6 @@ sealed class ObjectSetCommand {
     }
 
     data object ShowOnlyAccessError : ObjectSetCommand()
+
+    data class Browse(val url: String) : ObjectSetCommand()
 }

@@ -117,6 +117,9 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
             is CollectionViewModel.Command.OpenTypeObject -> {
                 // Do nothing
             }
+            is CollectionViewModel.Command.OpenUrl -> {
+                // Do nothing for remote files
+            }
         }
     }
 

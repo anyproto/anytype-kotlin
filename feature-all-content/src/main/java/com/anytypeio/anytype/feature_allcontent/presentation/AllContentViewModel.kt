@@ -610,12 +610,8 @@ class AllContentViewModel(
 
     fun onItemClicked(item: UiContentItem.Item) {
         Timber.d("onItemClicked: ${item.id}")
-        val layout = item.layout ?: return
         proceedWithNavigation(
-            navigation = layout.navigation(
-                target = item.id,
-                space = vmParams.spaceId.id
-            )
+            navigation = item.obj.navigation()
         )
         viewModelScope.launch {
             sendAnalyticsAllContentResult(analytics = analytics)

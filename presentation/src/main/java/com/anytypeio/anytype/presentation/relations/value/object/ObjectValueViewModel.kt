@@ -240,7 +240,8 @@ class ObjectValueViewModel(
             ),
             isSelected = isSelected,
             number = number,
-            restrictions = obj.restrictions
+            restrictions = obj.restrictions,
+            obj = obj
         )
     }.let { mappedOptions ->
         if (!isInitialSortDone) {
@@ -357,14 +358,9 @@ class ObjectValueViewModel(
     }
 
     private fun onOpenObjectAction(item: ObjectValueItem.Object) {
-        val nav = item.view.layout?.navigation(
-            target = item.view.id,
-            space = item.view.space
-        )
-        viewModelScope.launch{
-            if (nav != null) {
-                navigation.emit(nav)
-            }
+        val nav = item.obj.navigation()
+        viewModelScope.launch {
+            navigation.emit(nav)
         }
     }
 
@@ -484,6 +480,7 @@ sealed class ObjectValueItem {
         val view: DefaultObjectView,
         val isSelected: Boolean,
         val number: Int = Int.MAX_VALUE,
-        val restrictions: List<ObjectRestriction> = emptyList()
+        val restrictions: List<ObjectRestriction> = emptyList(),
+        val obj: ObjectWrapper.Basic
     ) : ObjectValueItem()
 }

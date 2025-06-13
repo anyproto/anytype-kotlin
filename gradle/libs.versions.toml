@@ -4,6 +4,7 @@ kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
 androidxCoreVersion = "1.16.0"
+customTabsVersion = "1.8.0"
 
 androidxComposeVersion = '1.7.8'
 composeMaterial3Version = '1.3.2'
@@ -160,6 +161,7 @@ playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" 
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
+customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
 
 [bundles]
 

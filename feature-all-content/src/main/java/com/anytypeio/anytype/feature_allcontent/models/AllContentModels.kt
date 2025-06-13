@@ -91,12 +91,13 @@ sealed class UiContentItem {
     }
 
     data class Item(
-        override val id: String,
-        val name: String,
+        override val id: Id,
+        val obj: ObjectWrapper.Basic,
         val space: SpaceId,
-        val type: String? = null,
-        val typeName: String? = null,
+        val name: String = "",
         val description: String? = null,
+        val type: Id? = null,
+        val typeName: String? = null,
         val layout: ObjectType.Layout? = null,
         val icon: ObjectIcon = ObjectIcon.None,
         val lastModifiedDate: Long = 0L,
@@ -200,6 +201,7 @@ suspend fun ObjectWrapper.Basic.toAllContentItem(
     return UiContentItem.Item(
         id = obj.id,
         space = space,
+        obj = obj,
         name = fieldParser.getObjectNameOrPluralsForTypes(obj),
         description = getDescriptionOrSnippet(),
         type = typeUrl,

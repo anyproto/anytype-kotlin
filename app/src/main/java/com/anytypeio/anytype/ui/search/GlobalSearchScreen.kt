@@ -74,6 +74,8 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -730,6 +732,16 @@ private fun DefaultMetaStatusRelation(
     )
 }
 
+fun dummyObject() = ObjectWrapper.Basic(
+    mapOf(
+        "id" to "1",
+        "name" to "Name",
+        "description" to "Description11",
+        Relations.SPACE_ID to "1",
+        Relations.LAYOUT to ObjectType.Layout.BASIC.code
+    )
+)
+
 @Preview(
     name = "Dark Mode",
     showBackground = true,
@@ -750,7 +762,8 @@ private fun DefaultGlobalSearchItemViewPreview() {
             type = "Band",
             meta = GlobalSearchItemView.Meta.None,
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -778,7 +791,8 @@ private fun DefaultGlobalSearchItemViewWithLongTitlePreview() {
             type = "Band",
             meta = GlobalSearchItemView.Meta.None,
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -809,7 +823,8 @@ private fun DefaultGlobalSearchItemViewWithBlockMetaPreview() {
                 highlights = emptyList()
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -843,7 +858,8 @@ private fun DefaultGlobalSearchItemViewBlockTwoHighlightsMetaPreview() {
                 )
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -878,7 +894,8 @@ private fun DefaultGlobalSearchItemViewRelationTwoHighlightsMetaPreview() {
                 )
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -910,7 +927,8 @@ private fun DefaultGlobalSearchItemViewTagRelationPreview() {
                 color = ThemeColor.TEAL
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -942,7 +960,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationPreview() {
                 color = ThemeColor.TEAL
             ),
             layout = ObjectType.Layout.BASIC,
-            icon = ObjectIcon.Basic.Emoji("🎵")
+            icon = ObjectIcon.Basic.Emoji("🎵"),
+            obj = dummyObject()
         ),
         onObjectClicked = {},
         onShowRelatedClicked = {},
@@ -975,7 +994,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                     type = "Band",
                     meta = GlobalSearchItemView.Meta.None,
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID2",
@@ -988,7 +1008,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID3",
@@ -1001,7 +1022,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID4",
@@ -1017,7 +1039,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         )
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID5",
@@ -1029,7 +1052,8 @@ private fun DefaultGlobalSearchItemViewStatusRelationScreenPreview() {
                         highlights = emptyList()
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 )
             )
         ),
@@ -1062,7 +1086,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                 type = "Band",
                 meta = GlobalSearchItemView.Meta.None,
                 layout = ObjectType.Layout.BASIC,
-                icon = ObjectIcon.Basic.Emoji("🎵")
+                icon = ObjectIcon.Basic.Emoji("🎵"),
+                obj = dummyObject()
             ),
             views = listOf(
                 GlobalSearchItemView(
@@ -1072,7 +1097,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                     type = "Band",
                     meta = GlobalSearchItemView.Meta.None,
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID2",
@@ -1085,7 +1111,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID3",
@@ -1098,7 +1125,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         color = ThemeColor.TEAL
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID4",
@@ -1114,7 +1142,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         )
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 ),
                 GlobalSearchItemView(
                     id = "ID5",
@@ -1126,7 +1155,8 @@ private fun DefaultGlobalSearchItemViewWithRelatedScreenPreview() {
                         highlights = emptyList()
                     ),
                     layout = ObjectType.Layout.BASIC,
-                    icon = ObjectIcon.Basic.Emoji("🎵")
+                    icon = ObjectIcon.Basic.Emoji("🎵"),
+                    obj = dummyObject()
                 )
             )
         ),

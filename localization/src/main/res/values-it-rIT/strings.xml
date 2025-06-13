@@ -1246,6 +1246,7 @@
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">La tua richiesta di unirti allo spazio %1$s è stata rifiutata.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Richiesta non approvata</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>

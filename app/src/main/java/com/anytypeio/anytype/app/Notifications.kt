@@ -152,7 +152,7 @@ class AnytypeNotificationService @Inject constructor(
                 )
             }
             is NotificationPayload.ParticipantWithoutApprovalRequestApproved -> {
-                Timber.d("Processing participant request approved notification : ${notification}")
+                Timber.d("Processing auto-approved join notification : ${notification}")
                 val placeholder = context.resources.getString(R.string.untitled)
                 val title = context.resources.getString(
                     R.string.multiplayer_notification_member_request_approved

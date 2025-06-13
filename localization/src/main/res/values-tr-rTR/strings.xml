@@ -1245,7 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_permission_change_edit">%1$s alanındaki erişim haklarınız düzenleyici olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_join_request_declined">%1$s alanına katılma isteğiniz reddedildi.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">%1$s alanına katıldınız.</string>
     <string name="multiplayer_notification_request_declined">Talep reddedildi</string>
     <string name="multiplayer_notification_view_request">Görüntüle</string>
     <string name="multiplayer_notification_go_to_space">Alana git</string>

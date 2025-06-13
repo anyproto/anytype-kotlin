@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.search
 
 import android.os.Bundle
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -143,6 +144,17 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 )
                             }.onFailure {
                                 Timber.e(it, "Error while opening object type from ")
+                            }
+                        }
+                        is OpenObjectNavigation.OpenBookmarkUrl -> {
+                            try {
+                                ActivityCustomTabsHelper.openUrl(
+                                    activity = requireActivity(),
+                                    url = nav.url
+                                )
+                            } catch (e: Throwable) {
+                                Timber.e(e, "Error opening bookmark URL: ${nav.url}")
+                                toast("Failed to open URL")
                             }
                         }
                     }

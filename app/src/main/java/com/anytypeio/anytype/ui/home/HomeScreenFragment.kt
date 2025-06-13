@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.home
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -523,6 +525,17 @@ class HomeScreenFragment : BaseComposeFragment(),
                         )
                 }.onFailure {
                     Timber.e(it, "Error while opening space settings")
+                }
+            }
+            is Navigation.OpenBookmarkUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = requireActivity(),
+                        url = destination.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL: ${destination.url}")
+                    toast("Failed to open URL")
                 }
             }
         }

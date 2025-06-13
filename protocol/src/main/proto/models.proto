@@ -661,6 +661,7 @@ message Account {
         string profileObjectId = 4; // profile block id
         string marketplaceWorkspaceId = 11; // marketplace workspace id
         string workspaceObjectId = 15; // workspace object id. used for space-level chat
+        string spaceChatId = 16; // space-level chat if exists
 
         string deviceId = 8;
         string accountSpaceId = 9; // the first created private space. It's filled only when account is created

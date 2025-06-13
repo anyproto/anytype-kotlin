@@ -683,6 +683,9 @@ class AllContentViewModel(
                         )
                     )
                 }
+                is OpenObjectNavigation.OpenBookmarkUrl -> {
+                    commands.emit(Command.OpenUrl(navigation.url))
+                }
             }
         }
     }

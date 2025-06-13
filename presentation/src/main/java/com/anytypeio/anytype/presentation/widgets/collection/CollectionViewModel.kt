@@ -993,6 +993,11 @@ class CollectionViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                commands.emit(
+                    OpenUrl(url = navigation.url)
+                )
+            }
         }
     }
 

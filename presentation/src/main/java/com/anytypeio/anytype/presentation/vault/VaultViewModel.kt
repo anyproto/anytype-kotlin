@@ -604,6 +604,9 @@ class VaultViewModel(
                     space = navigation.space
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                VaultNavigation.OpenUrl(url = navigation.url)
+            }
         }
         viewModelScope.launch {
             Timber.d("Proceeding with navigation: $nav")

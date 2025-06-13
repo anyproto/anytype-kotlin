@@ -4596,6 +4596,9 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                dispatch(Command.Browse(url = navigation.url))
+            }
         }
     }
 

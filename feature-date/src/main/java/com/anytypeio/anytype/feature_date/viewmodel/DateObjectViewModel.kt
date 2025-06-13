@@ -674,6 +674,11 @@ class DateObjectViewModel(
                         )
                     )
                 }
+                is OpenObjectNavigation.OpenBookmarkUrl -> {
+                    effects.emit(
+                        DateObjectCommand.OpenUrl(url = navigation.url)
+                    )
+                }
                 OpenObjectNavigation.NonValidObject -> {
                     Timber.e("Object id is missing")
                 }

@@ -1601,6 +1601,13 @@ class HomeScreenViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                navigate(
+                    Navigation.OpenBookmarkUrl(
+                        url = navigation.url
+                    )
+                )
+            }
         }
     }
 
@@ -2912,10 +2919,20 @@ sealed class OpenObjectNavigation {
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
+        ObjectType.Layout.BOOKMARK -> {
+            val url = getValue<String>(Relations.SOURCE)
+            if (url.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(
+                    target = id,
+                    space = requireNotNull(spaceId)
+                )
+            } else {
+                OpenObjectNavigation.OpenBookmarkUrl(url)
+            }
+        }
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO,
-        ObjectType.Layout.BOOKMARK -> {
+        ObjectType.Layout.TODO -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
                 space = requireNotNull(spaceId)

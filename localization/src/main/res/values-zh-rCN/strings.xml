@@ -1241,6 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空间中的访问权限已更改为只读。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空间中的访问权限已更改为可编辑。</string>
     <string name="multiplayer_notification_member_join_request_declined">您加入 %1$s 空间的请求已被拒绝。</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">请求被拒绝</string>
     <string name="multiplayer_notification_view_request">视图</string>
     <string name="multiplayer_notification_go_to_space">转到空间</string>

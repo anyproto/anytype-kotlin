@@ -1241,7 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">あなたのアクセス権が閲覧可能権限にスペース「%1$s」では変更されました。</string>
     <string name="multiplayer_notification_member_permission_change_edit">あなたのアクセス権が編集可能権限にスペース「%1$s」では変更されました。</string>
     <string name="multiplayer_notification_member_join_request_declined">スペース「%1$s」への参加リクエストが拒否されました。</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">%1$sに参加しました。</string>
     <string name="multiplayer_notification_request_declined">リクエストが拒否されました</string>
     <string name="multiplayer_notification_view_request">ビュー</string>
     <string name="multiplayer_notification_go_to_space">スペースに移動</string>

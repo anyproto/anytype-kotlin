@@ -55,7 +55,10 @@ fun ChooseSpaceTypeScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 8.dp)
-                .background(shape = RoundedCornerShape(16.dp), color = colorResource(id = R.color.widget_background))
+                .background(
+                    shape = RoundedCornerShape(16.dp),
+                    color = colorResource(id = R.color.background_secondary)
+                )
         ) {
             Dragger(modifier = Modifier
                 .align(Alignment.CenterHorizontally)

@@ -119,6 +119,7 @@ import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.device.launchMediaPicker
@@ -986,11 +987,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.Browse -> {
                     try {
-                        Intent(Intent.ACTION_VIEW).apply {
-                            data = Uri.parse(command.url)
-                        }.let {
-                            startActivity(it)
-                        }
+                        ActivityCustomTabsHelper.openUrl(
+                            activity = requireActivity(),
+                            url = command.url
+                        )
                     } catch (e: Throwable) {
                         toast("Couldn't parse url: ${command.url}")
                     }

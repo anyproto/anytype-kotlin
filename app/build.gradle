@@ -244,6 +244,7 @@ dependencies {
 
     implementation libs.androidxSecurityCrypto
     implementation libs.middleware
+    implementation libs.customTabs
 
     implementation libs.wireRuntime
 

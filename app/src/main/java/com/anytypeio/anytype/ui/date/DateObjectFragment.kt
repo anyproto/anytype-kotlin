@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.date
 
 import android.os.Build
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -189,6 +190,18 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         )
                     }.onFailure {
                         Timber.w("Error while opening participant screen")
+                    }
+                }
+
+                is DateObjectCommand.OpenUrl -> {
+                    try {
+                        ActivityCustomTabsHelper.openUrl(
+                            activity = requireActivity(),
+                            url = effect.url
+                        )
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Error opening bookmark URL: ${effect.url}")
+                        toast("Failed to open URL")
                     }
                 }
             }

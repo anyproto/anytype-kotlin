@@ -357,10 +357,7 @@ class GlobalSearchViewModel @Inject constructor(
         Timber.d("onObjectClicked, globalSearchItemView $globalSearchItemView")
         viewModelScope.launch {
             navigation.emit(
-                globalSearchItemView.layout.navigation(
-                    target = globalSearchItemView.id,
-                    space = globalSearchItemView.space.id
-                )
+                globalSearchItemView.obj.navigation()
             )
         }
         viewModelScope.launch {
@@ -509,6 +506,7 @@ class GlobalSearchViewModel @Inject constructor(
  */
 data class GlobalSearchItemView(
     val id: Id,
+    val obj: ObjectWrapper.Basic,
     val icon: ObjectIcon,
     val space: SpaceId,
     val layout: ObjectType.Layout,
@@ -561,6 +559,7 @@ suspend fun Command.SearchWithMeta.Result.view(
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
+        obj = wrapper,
         icon = wrapper.objectIcon(
             builder = urlBuilder,
             objType = storeOfObjectTypes.getTypeOfObject(wrapper)

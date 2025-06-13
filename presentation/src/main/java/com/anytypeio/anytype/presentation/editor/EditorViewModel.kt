@@ -3205,22 +3205,19 @@ class EditorViewModel(
                 val target = content.targetObjectId
                 if (target != null) {
                     val obj = orchestrator.stores.details.current().getBookmarkObject(target)
-                    if (obj?.isArchived == true || obj?.isDeleted == true) {
-                        val source = obj.source
-                        if (!source.isNullOrBlank()) {
-                            commands.postValue(
-                                EventWrapper(
-                                    Command.Browse(source)
-                                )
+                    val source = obj?.source
+                    if (!source.isNullOrBlank()) {
+                        // Always open bookmark URLs in browser (Custom Tabs)
+                        commands.postValue(
+                            EventWrapper(
+                                Command.Browse(source)
                             )
-                        } else {
-                            sendToast("Source is missing for this object")
-                        }
+                        )
                     } else {
-                        proceedWithOpeningObjectByLayout(target = target)
+                        sendToast("Source is missing for this bookmark")
                     }
                 } else {
-                    sendToast("Couldn't find the target of the link")
+                    sendToast("Couldn't find the target of the bookmark")
                 }
             }
             is Content.DataView -> {
@@ -4599,6 +4596,9 @@ class EditorViewModel(
                     )
                 )
             }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                dispatch(Command.Browse(url = navigation.url))
+            }
         }
     }
 
@@ -5958,7 +5958,7 @@ class EditorViewModel(
                             type = EventsDictionary.Type.bookmark
                         )
                     } else {
-                        sendToast("This bookmark doesn’t have a source.")
+                        sendToast("This bookmark doesn't have a source.")
                     }
                 }
                 is Content.File -> {
@@ -5970,7 +5970,7 @@ class EditorViewModel(
                             type = EventsDictionary.Type.bookmark
                         )
                     } else {
-                        sendToast("This object doesn’t have a target id")
+                        sendToast("This object doesn't have a target id")
                     }
                 }
                 else -> sendToast("Unexpected object")

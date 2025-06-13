@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.allcontent
 
 import android.os.Build
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -243,6 +244,17 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         )
                     }.onFailure {
                         Timber.w("Error while opening participant screen")
+                    }
+                }
+                is AllContentViewModel.Command.OpenUrl -> {
+                    try {
+                        ActivityCustomTabsHelper.openUrl(
+                            activity = requireActivity(),
+                            url = command.url
+                        )
+                    } catch (e: Throwable) {
+                        Timber.e(e, "Error opening bookmark URL: ${command.url}")
+                        toast("Failed to open URL")
                     }
                 }
             }

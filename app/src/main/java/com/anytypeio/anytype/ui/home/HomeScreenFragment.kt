@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -66,9 +67,9 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import javax.inject.Inject
 
 class HomeScreenFragment : BaseComposeFragment(),
     ObjectTypeSelectionListener,
@@ -523,6 +524,17 @@ class HomeScreenFragment : BaseComposeFragment(),
                         )
                 }.onFailure {
                     Timber.e(it, "Error while opening space settings")
+                }
+            }
+            is Navigation.OpenBookmarkUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = requireActivity(),
+                        url = destination.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL: ${destination.url}")
+                    toast("Failed to open URL")
                 }
             }
         }

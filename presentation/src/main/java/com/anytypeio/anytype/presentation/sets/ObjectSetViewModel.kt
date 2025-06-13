@@ -1003,7 +1003,6 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
             val relation = storeOfRelations.getByKey(cell.relationKey)
-
             if (relation == null) {
                 toast("Could not found this relation. Please, try again later.")
                 Timber.e("onGridCellClicked, Relation [${cell.relationKey}] is empty")
@@ -1013,7 +1012,6 @@ class ObjectSetViewModel(
                 Timber.e("onGridCellClicked, Viewer is empty")
                 return@launch
             }
-
             when (cell) {
                 is CellView.Description,
                 is CellView.Number,
@@ -1737,10 +1735,15 @@ class ObjectSetViewModel(
         navigateByLayout(target, space, layout, identityProfileLink)
     }
 
-    private suspend fun proceedWithNavigation(
-        obj: ObjectWrapper.Basic,
-        identityProfileLink: Id? = null
-    ) {
+    private suspend fun proceedWithNavigation(obj: ObjectWrapper.Basic, identityProfileLink: Id? = null) {
+        // If the object is a bookmark, open its URL in a Custom Tab
+        if (obj.layout == ObjectType.Layout.BOOKMARK) {
+            val url = obj.getSingleValue<String>(Relations.SOURCE)
+            if (!url.isNullOrBlank()) {
+                dispatch(ObjectSetCommand.Browse(url))
+                return
+            }
+        }
         if (obj.id == vmParams.ctx) {
             toast("You are already here")
             Timber.d("proceedWithNavigation, target == vmParams.ctx")

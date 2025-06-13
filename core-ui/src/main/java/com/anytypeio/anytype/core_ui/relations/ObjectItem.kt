@@ -207,6 +207,18 @@ fun PreviewObjectItem() {
             ),
             isSelected = true,
             number = 1,
+            restrictions = emptyList(),
+            obj = com.anytypeio.anytype.core_models.ObjectWrapper.Basic(
+                mapOf(
+                    "id" to "1",
+                    "name" to "Object",
+                    "type" to "Type",
+                    "typeName" to "Type Name",
+                    "description" to "Description",
+                    "icon" to "emoji",
+                    "space" to "space-1"
+                )
+            )
         ),
         action = {},
         isEditable = true

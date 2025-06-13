@@ -198,7 +198,7 @@ fun ProfileSettingsScreen(
         item {
             ActionWithProgressBar(
                 name = stringResource(R.string.log_out),
-                color = colorResource(R.color.palette_dark_red),
+                color = colorResource(R.color.palette_system_red),
                 onClick = onLogoutClicked,
                 isInProgress = isLogoutInProgress
             )

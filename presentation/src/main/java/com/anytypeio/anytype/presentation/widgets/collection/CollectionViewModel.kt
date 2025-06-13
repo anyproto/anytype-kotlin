@@ -1100,6 +1100,7 @@ class CollectionViewModel(
         data class OpenTypeObject(val target: Id, val space: Id) : Command()
         data class OpenParticipant(val target: Id, val space: Id) : Command()
         data class OpenShareScreen(val space: SpaceId) : Command()
+        data class OpenUrl(val url: String) : Command()
 
         data object ToDesktop : Command()
         data class ToSearch(val space: Id) : Command()

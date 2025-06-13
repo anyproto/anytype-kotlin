@@ -118,5 +118,6 @@ sealed class VaultNavigation {
     data class OpenDateObject(val ctx: Id, val space: Id) : VaultNavigation()
     data class OpenParticipant(val ctx: Id, val space: Id) : VaultNavigation()
     data class OpenType(val target: Id, val space: Id) : VaultNavigation()
+    data class OpenUrl(val url: String) : VaultNavigation()
     data class ShowError(val message: String) : VaultNavigation()
 }

@@ -2640,6 +2640,7 @@ class HomeScreenViewModel(
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
         data class OpenType(val target: Id, val space: Id) : Navigation()
         data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
+        data class OpenBookmarkUrl(val url: String) : Navigation() // Added for opening bookmark URLs from widgets
     }
 
     sealed class ViewerSpaceSettingsState {
@@ -2905,6 +2906,7 @@ sealed class OpenObjectNavigation {
     data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
+    data class OpenBookmarkUrl(val url: String) : OpenObjectNavigation() // For opening bookmark URLs
 }
 
 fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {

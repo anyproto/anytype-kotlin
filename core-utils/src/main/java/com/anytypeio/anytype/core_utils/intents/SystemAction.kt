@@ -51,7 +51,10 @@ fun Fragment.proceedWithAction(action: SystemAction) = when(action) {
         try {
             val url = action.url.normalizeUrl()
             requireActivity().let { activity ->
-                ActivityCustomTabsHelper.openUrl(activity, url)
+                ActivityCustomTabsHelper.openUrl(
+                    activity = activity,
+                    url = url
+                )
             }
         } catch (e: Exception) {
             toast("An error occurred. Url may be invalid: ${e.message}")

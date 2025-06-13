@@ -5958,7 +5958,7 @@ class EditorViewModel(
                             type = EventsDictionary.Type.bookmark
                         )
                     } else {
-                        sendToast("This bookmark doesn’t have a source.")
+                        sendToast("This bookmark doesn't have a source.")
                     }
                 }
                 is Content.File -> {
@@ -5970,7 +5970,7 @@ class EditorViewModel(
                             type = EventsDictionary.Type.bookmark
                         )
                     } else {
-                        sendToast("This object doesn’t have a target id")
+                        sendToast("This object doesn't have a target id")
                     }
                 }
                 else -> sendToast("Unexpected object")

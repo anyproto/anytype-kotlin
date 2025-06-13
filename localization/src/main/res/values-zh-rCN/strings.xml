@@ -19,7 +19,7 @@
     <string name="space_debug">空间调试</string>
     <string name="data">数据</string>
     <string name="mode">模式</string>
-    <string name="log_out">登出</string>
+    <string name="log_out">退出登录</string>
     <string name="pin_code">PIN 码</string>
     <string name="access">访问</string>
     <string name="wallpaper">壁纸</string>

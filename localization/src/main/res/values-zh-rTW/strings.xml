@@ -1241,6 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">您在 %1$s 空間的存取權限已變更為唯讀存取。</string>
     <string name="multiplayer_notification_member_permission_change_edit">您在 %1$s 空間的存取權限已變更為編輯存取。</string>
     <string name="multiplayer_notification_member_join_request_declined">您請求加入的 %1$s 空間已被拒絕。</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">請求已拒絕</string>
     <string name="multiplayer_notification_view_request">檢視</string>
     <string name="multiplayer_notification_go_to_space">前往空間</string>

@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Je toegangsrechten zijn gewijzigd naar bewerken in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Jouw verzoek om deel te nemen aan de ruimte %1$s is afgewezen.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Verzoek afgewezen</string>
     <string name="multiplayer_notification_view_request">Weergave</string>
     <string name="multiplayer_notification_go_to_space">Ga naar ruimte</string>

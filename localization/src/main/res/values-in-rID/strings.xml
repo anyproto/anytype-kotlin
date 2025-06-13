@@ -19,7 +19,7 @@
     <string name="space_debug">Debug ruang</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
-    <string name="log_out">Keluar</string>
+    <string name="log_out">Keluar log</string>
     <string name="pin_code">Kode PIN</string>
     <string name="access">Akses</string>
     <string name="wallpaper">Latar belakang</string>
@@ -1241,6 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
     <string name="multiplayer_notification_member_join_request_declined">Permintaanmu bergabung ke ruang %1$s telah ditolak.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Permintaan ditolak</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
@@ -1524,6 +1525,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
     <string name="vault_my_spaces">Ruangku</string>
+    <string name="vault_unread_section_title">Belum dibaca</string>
+    <string name="vault_all_section_title">Semua</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
@@ -1786,5 +1789,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="chat_new_messages_section_text">Pesan baru</string>
     <string name="chat_box_camera">Kamera</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Izin kamera ditolak</string>
 </resources>

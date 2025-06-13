@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_permission_change_edit">%1$s alanındaki erişim haklarınız düzenleyici olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_join_request_declined">%1$s alanına katılma isteğiniz reddedildi.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Talep reddedildi</string>
     <string name="multiplayer_notification_view_request">Görüntüle</string>
     <string name="multiplayer_notification_go_to_space">Alana git</string>
@@ -1537,6 +1538,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
     <string name="vault_my_spaces">Alanlarım</string>
+    <string name="vault_unread_section_title">Okunmamış</string>
+    <string name="vault_all_section_title">Hepsi</string>
     <string name="all_content_title_all_content">Tüm Nesneler</string>
     <string name="all_content_title_only_unlinked">Sadece bağlantısız</string>
     <string name="all_content_title_only_unlinked_description">Grafikteki diğer nesnelerle doğrudan bağlantısı veya geri bağlantısı olmayan bağlantısız nesneler.</string>
@@ -1799,5 +1802,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_empty_state_text">Henüz alan yok</string>
     <string name="chat_new_messages_section_text">Yeni mesajlar</string>
     <string name="chat_box_camera">Kamera</string>
+    <string name="chat_box_take_photo">Fotoğraf Çek</string>
+    <string name="chat_box_record_video">Video Kaydet</string>
     <string name="chat_camera_permission_denied">Kamera izni reddedildi</string>
 </resources>

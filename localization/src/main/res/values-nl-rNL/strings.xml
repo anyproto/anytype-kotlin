@@ -19,7 +19,7 @@
     <string name="space_debug">Debug ruimte</string>
     <string name="data">Gegevens</string>
     <string name="mode">Instelling</string>
-    <string name="log_out">Log uit</string>
+    <string name="log_out">Meld af</string>
     <string name="pin_code">Pincode</string>
     <string name="access">Toegang</string>
     <string name="wallpaper">Achtergrond</string>
@@ -1245,6 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Je toegangsrechten zijn gewijzigd naar alleen-lezen in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Je toegangsrechten zijn gewijzigd naar bewerken in de ruimte %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">Jouw verzoek om deel te nemen aan de ruimte %1$s is afgewezen.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Verzoek afgewezen</string>
     <string name="multiplayer_notification_view_request">Weergave</string>
     <string name="multiplayer_notification_go_to_space">Ga naar ruimte</string>
@@ -1537,6 +1538,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="version_history_error_get_members">Fout bij het ophalen van leden</string>
     <string name="new_object">Nieuw object</string>
     <string name="vault_my_spaces">Mijn Ruimtes</string>
+    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_all_section_title">Alles</string>
     <string name="all_content_title_all_content">Alle objecten</string>
     <string name="all_content_title_only_unlinked">Alleen niet-gekoppeld</string>
     <string name="all_content_title_only_unlinked_description">Niet-gekoppelde objecten die geen directe koppeling of terugkoppeling hebben met andere objecten binnen de weergave.</string>
@@ -1799,5 +1802,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
+    <string name="chat_box_take_photo">Take Photo</string>
+    <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 </resources>

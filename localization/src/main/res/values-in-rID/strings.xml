@@ -1241,6 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
     <string name="multiplayer_notification_member_join_request_declined">Permintaanmu bergabung ke ruang %1$s telah ditolak.</string>
+    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Permintaan ditolak</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>

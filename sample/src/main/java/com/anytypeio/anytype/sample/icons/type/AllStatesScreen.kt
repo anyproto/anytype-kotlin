@@ -77,6 +77,28 @@ fun AllStatesScreen() {
             ) {
                 ListWidgetObjectIcon(
                     ObjectIcon.Basic.Image(
+                        hash = "http://slowwly.robertomurray.co.uk/delay/9000/url/https://sample-videos.com/img/Sample-jpg-image-5mb.jpg"
+                    ),
+                    modifier = Modifier
+                )
+                Text(
+                    modifier = Modifier.padding(start = 12.dp),
+                    text = "[ObjectIcon.Basic.Image], Loading state, iconSize 48",
+                    style = Title2,
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+
+        item {
+            Row(
+                modifier = basicModifier,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ListWidgetObjectIcon(
+                    ObjectIcon.Basic.Image(
                         hash = "https://sample1111-videos.com/img/Sample-jpg-image-5mb.jpg",
                         fallback = ObjectIcon.TypeIcon.Fallback(
                             rawValue = "document"

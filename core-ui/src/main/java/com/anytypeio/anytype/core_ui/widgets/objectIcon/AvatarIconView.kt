@@ -107,7 +107,8 @@ fun ProfileImageView(
         is AsyncImagePainter.State.Loading -> {
             LoadingIndicator(
                 containerModifier = modifier,
-                containerSize = iconSize
+                containerSize = iconSize,
+                withCircleBackground = true
             )
         }
 

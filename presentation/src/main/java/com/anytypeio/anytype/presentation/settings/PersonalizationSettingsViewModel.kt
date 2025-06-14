@@ -139,6 +139,7 @@ class PersonalizationSettingsViewModel(
                 )
             ).process(
                 success = { wrappers ->
+                    val defaultObjectType = getDefaultObjectType.async(SpaceId(spaceManager.get())).getOrNull()?.type
                     val types = wrappers
                         .map { ObjectWrapper.Type(it.map) }
                         .sortedBy { keys.indexOf(it.uniqueKey) }
@@ -146,7 +147,8 @@ class PersonalizationSettingsViewModel(
                     val actions = types.map { type ->
                         AppActionManager.Action.CreateNew(
                             type = TypeKey(type.uniqueKey),
-                            name = type.name.orEmpty()
+                            name = type.name.orEmpty(),
+                            isDefault = type.uniqueKey == defaultObjectType?.key
                         )
                     }
                     appActionManager.setup(actions = actions)

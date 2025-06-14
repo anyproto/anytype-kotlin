@@ -19,7 +19,9 @@ dependencyResolutionManagement {
      */
     def githubProperties = new Properties()
     def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
-    githubProperties.load(new FileInputStream(githubPropertiesFile))
+    if (githubPropertiesFile.exists()) {
+        githubProperties.load(new FileInputStream(githubPropertiesFile))
+    }
 
     repositories {
         mavenLocal()

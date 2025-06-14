@@ -379,7 +379,7 @@ private fun EmojiIconsScreen() {
                 iconSize = 48.dp
             )
 
-            val name = "Basic.Emoji, fallbackm iconSize 48"
+            val name = "Basic.Emoji, fallback iconSize 48"
 
             Text(
                 modifier = Modifier.padding(start = 12.dp),

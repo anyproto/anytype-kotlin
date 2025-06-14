@@ -36,6 +36,7 @@ import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
+import com.anytypeio.anytype.ui_settings.space.new_settings.NotificationsPreferenceSheet
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import java.io.File
 import javax.inject.Inject
@@ -74,6 +75,16 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
             }
             LaunchedEffect(Unit) {
                 observeCommands()
+            }
+
+            if (vm.showNotificationsSheet.collectAsStateWithLifecycle().value) {
+                NotificationsPreferenceSheet(
+                    currentState = vm.notificationState.collectAsStateWithLifecycle().value,
+                    onSelect = { state ->
+                        vm.setNotificationState(space, state)
+                    },
+                    onDismiss = { vm.onNotificationSettingsCancelled() }
+                )
             }
         }
     }

@@ -57,4 +57,11 @@ sealed class UiSpaceSettingsItem {
     data object Bin : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()
     data object DeleteSpace : UiSpaceSettingsItem()
+    data class Notifications(
+        val state: NotificationState
+    ) : UiSpaceSettingsItem() {
+        enum class NotificationState {
+            ALL, MENTIONS, DISABLE
+        }
+    }
 }

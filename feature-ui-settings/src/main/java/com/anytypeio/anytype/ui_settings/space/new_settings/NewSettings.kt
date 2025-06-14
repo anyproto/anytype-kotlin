@@ -43,6 +43,9 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnNotificationsSettingsClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
@@ -198,7 +201,7 @@ fun NewSpaceSettingsScreen(
                                         .fillMaxWidth()
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnDefaultObjectTypeClicked(item.id)) },
+                                        .clickable { uiEvent(OnDefaultObjectTypeClicked(item.id)) },
                                     name = item.name,
                                     icon = item.icon
                                 )
@@ -339,7 +342,7 @@ fun NewSpaceSettingsScreen(
                                 AutoCreateWidgetItem(
                                     onCheckedStatusChanged = { isChecked ->
                                         uiEvent(
-                                            UiEvent.OnAutoCreateWidgetSwitchChanged(
+                                            OnAutoCreateWidgetSwitchChanged(
                                                 widget = item.widget,
                                                 isAutoCreateEnabled = isChecked
                                             )
@@ -352,6 +355,21 @@ fun NewSpaceSettingsScreen(
                         is UiSpaceSettingsItem.Spacer -> {
                             item {
                                 Spacer(modifier = Modifier.height(item.height.dp))
+                            }
+                        }
+
+                        is UiSpaceSettingsItem.Notifications -> {
+                            item {
+                                NotificationsItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            OnNotificationsSettingsClicked(state = item.state)
+                                        },
+                                    item = item
+                                )
                             }
                         }
                     }

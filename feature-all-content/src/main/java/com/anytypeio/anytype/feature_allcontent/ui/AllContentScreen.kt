@@ -280,7 +280,7 @@ fun AllContentMainScreen(
         },
         content = { paddingValues ->
             val contentModifier =
-                if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .fillMaxSize()

@@ -54,6 +54,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.*
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications.NotificationState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlin.collections.map
@@ -97,6 +98,9 @@ class SpaceSettingsViewModel(
     val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
+
+    val notificationState = MutableStateFlow(NotificationState.ALL)
+    val showNotificationsSheet = MutableStateFlow(false)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -267,6 +271,9 @@ class SpaceSettingsViewModel(
                         }
                     }
 
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Notifications(notificationState.value))
+
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
                     add(Spacer(height = 8))
@@ -317,25 +324,25 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShowDeleteSpaceWarning) }
+                viewModelScope.launch { commands.emit(ShowDeleteSpaceWarning) }
             }
             UiEvent.OnLeaveSpaceClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+                viewModelScope.launch { commands.emit(ShowLeaveSpaceWarning) }
             }
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageRemoteStorage)
+                    commands.emit(ManageRemoteStorage)
                 }
             }
             UiEvent.OnBinClick -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageBin(vmParams.space))
+                    commands.emit(ManageBin(vmParams.space))
                 }
             }
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.ManageSharedSpace(vmParams.space)
+                        ManageSharedSpace(vmParams.space)
                     )
                 }
             }
@@ -348,12 +355,12 @@ class SpaceSettingsViewModel(
                         .async(vmParams.space)
                         .onFailure {
                             commands.emit(
-                                Command.ManageSharedSpace(vmParams.space)
+                                ManageSharedSpace(vmParams.space)
                             )
                         }
                         .onSuccess { link ->
                             commands.emit(
-                                Command.ShowInviteLinkQrCode(link.scheme)
+                                ShowInviteLinkQrCode(link.scheme)
                             )
                         }
                 }
@@ -361,7 +368,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.DESCRIPTION to uiEvent.description
@@ -373,7 +380,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveTitleClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.NAME to uiEvent.title
@@ -387,18 +394,18 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSelectWallpaperClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.OpenWallpaperPicker)
+                    commands.emit(OpenWallpaperPicker)
                 }
             }
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageSharedSpace(vmParams.space))
+                    commands.emit(ManageSharedSpace(vmParams.space))
                 }
             }
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.SelectDefaultObjectType(
+                        SelectDefaultObjectType(
                             space = vmParams.space,
                             excludedTypeIds = buildList {
                                 val curr = uiEvent.currentDefaultObjectTypeId
@@ -429,6 +436,19 @@ class SpaceSettingsViewModel(
             UiEvent.OnPropertiesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenPropertiesScreen(vmParams.space))
+                }
+            }
+
+            is UiEvent.OnNotificationsSettingsClicked -> {
+                Timber.d("onNotificationsSettingsClicked: ${uiEvent.state}")
+                showNotificationsSheet.value = true
+                viewModelScope.launch {
+                    notificationState.value = uiEvent.state
+//                    commands.emit(
+//                        Command.OpenNotificationsSettings(
+//                            state = uiEvent.state
+//                        )
+//                    )
                 }
             }
         }
@@ -715,6 +735,26 @@ class SpaceSettingsViewModel(
             }
             appActionManager.setup(actions = actions)
         }
+    }
+
+    fun fetchNotificationState() {
+        viewModelScope.launch {
+            // Call backend to get current topic for this space
+            // Map topic to NotificationState and update notificationState.value
+        }
+    }
+
+    fun setNotificationState(space: Id, newState: NotificationState) {
+        showNotificationsSheet.value = false
+        viewModelScope.launch {
+            // Call backend with PushNotificationsSet.Request
+            // On success: notificationState.value = newState
+            // On failure: revert and show error
+        }
+    }
+
+    fun onNotificationSettingsCancelled() {
+        showNotificationsSheet.value = false
     }
 
     data class SpaceData(

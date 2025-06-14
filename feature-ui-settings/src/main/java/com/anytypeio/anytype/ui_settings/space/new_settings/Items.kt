@@ -86,7 +86,25 @@ fun MembersItem(
         modifier = modifier,
         title = stringResource(id = R.string.space_settings_members_button_members),
         icon = R.drawable.ic_members_24,
-        count = item.count
+        count = item.count.toString()
+    )
+}
+
+@Composable
+fun NotificationsItem(
+    modifier: Modifier = Modifier,
+    item: UiSpaceSettingsItem.Notifications
+) {
+    val (icon, supportText) = when (item.state) {
+        UiSpaceSettingsItem.Notifications.NotificationState.ALL -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_all_short)
+        UiSpaceSettingsItem.Notifications.NotificationState.MENTIONS -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_mentions_short)
+        UiSpaceSettingsItem.Notifications.NotificationState.DISABLE -> R.drawable.ic_bell_cross_24 to stringResource(id = R.string.notifications_disable_short)
+    }
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.notifications_title),
+        icon = icon,
+        count = supportText
     )
 }
 
@@ -285,7 +303,7 @@ fun BaseButton(
     modifier: Modifier = Modifier,
     icon: Int? = null,
     title: String,
-    count: Int? = null,
+    count: String? = null,
     textColor: Int = R.color.text_primary,
 ) {
     Row(
@@ -319,7 +337,7 @@ fun BaseButton(
                 modifier = Modifier
                     .wrapContentSize()
                     .padding(horizontal = 6.dp),
-                text = "$count",
+                text = count,
                 textAlign = TextAlign.Center,
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_secondary),

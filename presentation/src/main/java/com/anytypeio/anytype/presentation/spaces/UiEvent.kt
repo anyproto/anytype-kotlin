@@ -33,4 +33,6 @@ sealed class UiEvent {
         data object OnRemoveIconClicked : IconMenu()
     }
 
+    data class OnNotificationsSettingsClicked(val state: UiSpaceSettingsItem.Notifications.NotificationState) :
+        UiEvent()
 }

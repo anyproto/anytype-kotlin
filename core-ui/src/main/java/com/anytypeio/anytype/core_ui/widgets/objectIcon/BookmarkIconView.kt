@@ -32,7 +32,8 @@ fun BookmarkIconView(
         is AsyncImagePainter.State.Loading -> {
             LoadingIndicator(
                 containerModifier = modifier,
-                containerSize = backgroundSize
+                containerSize = backgroundSize,
+                withCircleBackground = true
             )
         }
         is AsyncImagePainter.State.Error -> {

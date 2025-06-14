@@ -1,0 +1,74 @@
+[
+  {
+    "codes": "1F600",
+    "char": "😀",
+    "name": "grinning face",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F603",
+    "char": "😃",
+    "name": "grinning face with big eyes",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F604",
+    "char": "😄",
+    "name": "grinning face with smiling eyes",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F601",
+    "char": "😁",
+    "name": "beaming face with smiling eyes",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F606",
+    "char": "😆",
+    "name": "grinning squinting face",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F605",
+    "char": "😅",
+    "name": "grinning face with sweat",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F923",
+    "char": "🤣",
+    "name": "rolling on the floor laughing",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F602",
+    "char": "😂",
+    "name": "face with tears of joy",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  },
+  {
+    "codes": "1F642",
+    "char": "🙂",
+    "name": "slightly smiling face",
+    "category": "Smileys & Emotion (face-smiling)",
+    "group": "Smileys & Emotion",
+    "subgroup": "face-smiling"
+  }
+]

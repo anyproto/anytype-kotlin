@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -153,7 +154,7 @@ fun Bubble(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onHorizontalDrag = { change, dragAmount ->
-                        change.consumePositionChange()
+                        change.consume()
                         swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
                     },
                     onDragEnd = {
@@ -547,3 +548,5 @@ fun ChatUserAvatar(
         }
     }
 }
+
+val SWIPE_THRESHOLD_DP = 40.dp

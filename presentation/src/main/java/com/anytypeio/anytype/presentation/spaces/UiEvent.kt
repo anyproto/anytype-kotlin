@@ -33,4 +33,9 @@ sealed class UiEvent {
         data object OnRemoveIconClicked : IconMenu()
     }
 
+    sealed class OnNotificationsSetting : UiEvent() {
+        data object All : OnNotificationsSetting()
+        data object Mentions : OnNotificationsSetting()
+        data object None : OnNotificationsSetting()
+    }
 }

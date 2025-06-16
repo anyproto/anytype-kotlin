@@ -2099,4 +2099,12 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 
+    <string name="notifications_title">Notifications</string>
+    <string name="notifications_all">All activity</string>
+    <string name="notifications_mentions">Mentions only</string>
+    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_all_short">All</string>
+    <string name="notifications_mentions_short">Mentions</string>
+    <string name="notifications_disable_short">Disable</string>
+
 </resources>

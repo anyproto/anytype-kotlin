@@ -92,6 +92,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -579,6 +580,42 @@ fun ChatScreen(
         }
     }
 
+    val currentTopMessageDate = remember { mutableStateOf<String?>(null) }
+    val isFloatingDateVisible = remember { mutableStateOf(false) }
+
+    LaunchedEffect(lazyListState, messages) {
+        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.index }
+            .filterNotNull()
+            .distinctUntilChanged()
+            .collect { index ->
+                (messages.getOrNull(index) as? ChatView.Message)?.let { msg ->
+                    currentTopMessageDate.value = msg.formattedDate
+                }
+            }
+    }
+
+    var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (isScrolling) {
+                    // Show header immediately on scroll start
+                    isFloatingDateVisible.value = true
+
+                    // Cancel existing debounce job if still running
+                    scrollDebounceJob?.cancel()
+                } else {
+                    // Start debounce to hide after 1500ms of no scroll
+                    scrollDebounceJob = scope.launch {
+                        delay(1500)
+                        isFloatingDateVisible.value = false
+                    }
+                }
+            }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -803,6 +840,25 @@ fun ChatScreen(
                             Divider()
                         }
                     }
+                }
+            }
+
+            if (isFloatingDateVisible.value && currentTopMessageDate.value != null) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = currentTopMessageDate.value ?: "",
+                        style = Caption1Medium,
+                        color = Color.White,
+                    )
                 }
             }
         }

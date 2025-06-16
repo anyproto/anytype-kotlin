@@ -246,6 +246,8 @@ class ChatViewModel @Inject constructor(
 
                 result.messages.forEach { msg ->
 
+                    val formattedMsgDate = dateFormatter.format(msg.createdAt * 1000)
+
                     val isPrevTimeIntervalBig = if (prevDateInterval > 0) {
                         (msg.createdAt - prevDateInterval) > ChatConfig.GROUPING_DATE_INTERVAL_IN_SECONDS
                     } else {
@@ -425,10 +427,11 @@ class ChatViewModel @Inject constructor(
                         } else {
                             ChatView.Message.Avatar.Initials(member?.name.orEmpty())
                         },
-                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id
+                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id,
+                        formattedDate = formattedMsgDate
                     )
                     val currDate = ChatView.DateSection(
-                        formattedDate = dateFormatter.format(msg.createdAt * 1000),
+                        formattedDate = formattedMsgDate,
                         timeInMillis = msg.createdAt * 1000L
                     )
                     if (currDate.formattedDate != previousDate?.formattedDate) {

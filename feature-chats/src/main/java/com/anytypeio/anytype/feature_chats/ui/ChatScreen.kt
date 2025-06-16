@@ -580,18 +580,20 @@ fun ChatScreen(
         }
     }
 
+    val topVisibleIndex by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+    }
     val currentTopMessageDate = remember { mutableStateOf<String?>(null) }
     val isFloatingDateVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(lazyListState, messages) {
-        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .filterNotNull()
-            .distinctUntilChanged()
-            .collect { index ->
-                (messages.getOrNull(index) as? ChatView.Message)?.let { msg ->
-                    currentTopMessageDate.value = msg.formattedDate
-                }
-            }
+    LaunchedEffect(topVisibleIndex) {
+        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
+        val newDate = msg?.formattedDate
+        if (newDate != null && newDate != currentTopMessageDate.value) {
+            currentTopMessageDate.value = newDate
+        }
     }
 
     var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }

@@ -201,7 +201,8 @@ class ChatContainer @Inject constructor(
                             messages = messages,
                             intent = Intent.ScrollToMessage(
                                 id = transform.message,
-                                smooth = true
+                                smooth = true,
+                                highlight = true
                             ),
                             state = state.state
                         )
@@ -280,7 +281,6 @@ class ChatContainer @Inject constructor(
                                             logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                                         }
                                     }
-
                                     ChatStreamState(
                                         messages = messages,
                                         intent = Intent.ScrollToBottom,
@@ -737,9 +737,9 @@ class ChatContainer @Inject constructor(
         data class ScrollToMessage(
             val id: Id,
             val smooth: Boolean = false,
-            val startOfUnreadMessageSection: Boolean = false
+            val startOfUnreadMessageSection: Boolean = false,
+            val highlight: Boolean = false
         ) : Intent()
-        data class Highlight(val id: Id) : Intent()
         data object ScrollToBottom : Intent()
         data object None : Intent()
     }

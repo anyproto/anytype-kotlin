@@ -90,7 +90,9 @@ fun ChatPreview() {
         onMentionClicked = {},
         onScrollToReplyClicked = {},
         onShareInviteClicked = {},
-        onRequestVideoPlayer = {}
+        onRequestVideoPlayer = {},
+        highlightedMessageId = null,
+        onHighlightMessage = {}
     )
 }
 
@@ -142,7 +144,9 @@ fun ChatPreview2() {
         onMentionClicked = {},
         onScrollToReplyClicked = {},
         onShareInviteClicked = {},
-        onRequestVideoPlayer = {}
+        onRequestVideoPlayer = {},
+        highlightedMessageId = null,
+        onHighlightMessage = {}
     )
 }
 
@@ -238,7 +242,8 @@ fun BubblePreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        isHighlighted = false
     )
 }
 
@@ -268,7 +273,8 @@ fun BubbleEditedPreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        isHighlighted = false
     )
 }
 
@@ -305,6 +311,7 @@ fun BubbleWithAttachmentPreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        isHighlighted = false
     )
 }

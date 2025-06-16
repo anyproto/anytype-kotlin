@@ -416,8 +416,20 @@ fun ChatScreen(
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
 
+    val scope = rememberCoroutineScope()
+
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
+    }
+
+    var highlightedMessageId by remember { mutableStateOf<Id?>(null) }
+
+    val triggerHighlight: (Id) -> Unit = { id ->
+        highlightedMessageId = id
+        scope.launch {
+            delay(1000)
+            highlightedMessageId = null
+        }
     }
 
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
@@ -426,14 +438,13 @@ fun ChatScreen(
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    val scope = rememberCoroutineScope()
-
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
     val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
 
     // Applying view model intents
     LaunchedEffect(intent) {
+        Timber.d("DROID-2966 New intent: $intent")
         when (intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 isPerformingScrollIntent.value = true
@@ -453,6 +464,12 @@ fun ChatScreen(
                         }
                     }
                     awaitFrame()
+
+                    if (intent.highlight) {
+                        highlightedMessageId = intent.id
+                        delay(500)
+                        highlightedMessageId = null
+                    }
                 } else {
                     Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
@@ -466,9 +483,6 @@ fun ChatScreen(
                 awaitFrame()
                 isPerformingScrollIntent.value = false
                 onClearIntent()
-            }
-            is ChatContainer.Intent.Highlight -> {
-                // maybe flash background, etc.
             }
             ChatContainer.Intent.None -> Unit
         }
@@ -609,7 +623,9 @@ fun ChatScreen(
                 isReadOnly = isReadOnly,
                 onShareInviteClicked = onShareInviteClicked,
                 canCreateInviteLink = canCreateInviteLink,
-                onRequestVideoPlayer = onRequestVideoPlayer
+                onRequestVideoPlayer = onRequestVideoPlayer,
+                highlightedMessageId = highlightedMessageId,
+                onHighlightMessage = triggerHighlight
             )
 
             GoToMentionButton(
@@ -867,10 +883,12 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    onHighlightMessage: (Id) -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
+    highlightedMessageId: Id?
 ) {
 //    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
     val scope = rememberCoroutineScope()
@@ -890,6 +908,9 @@ fun Messages(
             }
         ) { idx, msg ->
             if (msg is ChatView.Message) {
+
+                val isHighlighted = msg.id == highlightedMessageId
+
                 if (idx == 0)
                     Spacer(modifier = Modifier.height(36.dp))
                 Row(
@@ -949,6 +970,7 @@ fun Messages(
                             scope.launch {
                                 if (targetIndex != -1 && targetIndex < scrollState.layoutInfo.totalItemsCount) {
                                     scrollState.animateScrollToItem(index = targetIndex)
+                                    onHighlightMessage(reply.msg)
                                 } else {
                                     // Defer to VM: message likely not yet in the list (e.g. paged)
                                     onScrollToReplyClicked(reply.msg)
@@ -963,7 +985,8 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer
+                        onRequestVideoPlayer = onRequestVideoPlayer,
+                        isHighlighted = isHighlighted
                     )
                 }
                 if (idx == messages.lastIndex) {

@@ -1805,4 +1805,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_box_take_photo">Fotoğraf Çek</string>
     <string name="chat_box_record_video">Video Kaydet</string>
     <string name="chat_camera_permission_denied">Kamera izni reddedildi</string>
+    <string name="notifications_title">Bildirimler</string>
+    <string name="notifications_all">Tüm etkinlikler</string>
+    <string name="notifications_mentions">Sadece bahsetmeler</string>
+    <string name="notifications_disable">Bildirimleri devre dışı bırak</string>
+    <string name="notifications_all_short">Hepsi</string>
+    <string name="notifications_mentions_short">Bahsetmeler</string>
+    <string name="notifications_disable_short">Disable</string>
 </resources>

@@ -101,7 +101,7 @@ class SpaceSettingsViewModel(
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
-    val notificationState = MutableStateFlow(NotificationState.ALL)
+    val _notificationState = MutableStateFlow(NotificationState.ALL)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -190,7 +190,7 @@ class SpaceSettingsViewModel(
             combine(
                 restrictions,
                 otherFlows,
-                notificationState
+                _notificationState
             ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), notificationState ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
@@ -309,7 +309,7 @@ class SpaceSettingsViewModel(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true,
-                    notificationState = NotificationState.ALL,
+                    notificationState = notificationState
                 )
 
             }.collect { update ->
@@ -749,7 +749,7 @@ class SpaceSettingsViewModel(
                 Timber.d("Notifications enabled, fetching space-specific state")
             } else {
                 // Permissions not granted, show disabled state
-                notificationState.value = NotificationState.DISABLE
+                _notificationState.value = NotificationState.DISABLE
                 Timber.d("Notification permissions not granted")
             }
         }
@@ -767,7 +767,7 @@ class SpaceSettingsViewModel(
             // TODO: Call backend with PushNotificationsSet.Request
             // On success: notificationState.value = newState
             // On failure: revert and show error
-            notificationState.value = newState // Optimistic update
+            _notificationState.value = newState // Optimistic update
             Timber.d("Setting notification state to: $newState for space: $space")
         }
     }
@@ -784,7 +784,7 @@ class SpaceSettingsViewModel(
     fun onNotificationPermissionDenied() {
         viewModelScope.launch {
             notificationPermissionManager.onPermissionDenied()
-            notificationState.value = NotificationState.DISABLE
+            _notificationState.value = NotificationState.DISABLE
             Timber.d("Notification permission denied")
         }
     }

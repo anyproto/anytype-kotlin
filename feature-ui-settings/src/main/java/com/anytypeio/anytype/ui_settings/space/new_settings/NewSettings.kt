@@ -450,7 +450,10 @@ fun NewSpaceSettingsScreen(
     if (showNotificationsSettings) {
         NotificationsPreferenceSheet(
             currentState = uiState.notificationState,
-            uiEvent = uiEvent,
+            uiEvent = {
+                showNotificationsSettings = false
+                uiEvent(it)
+            },
             onDismiss = {
                 showNotificationsSettings = false
             }

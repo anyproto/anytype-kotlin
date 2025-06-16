@@ -186,8 +186,9 @@ class SpaceSettingsViewModel(
 
             combine(
                 restrictions,
-                otherFlows
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
+                otherFlows,
+                notificationState
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), notificationState ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -271,7 +272,7 @@ class SpaceSettingsViewModel(
                     }
 
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Notifications(state = notificationState.value))
+                    add(UiSpaceSettingsItem.Notifications(state = notificationState))
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
@@ -439,9 +440,16 @@ class SpaceSettingsViewModel(
                 }
             }
 
-            UiEvent.OnNotificationsSetting.All -> TODO()
-            UiEvent.OnNotificationsSetting.Mentions -> TODO()
-            UiEvent.OnNotificationsSetting.None -> TODO()
+            is UiEvent.OnNotificationsSetting -> {
+                setNotificationState(
+                    space = vmParams.space.id,
+                    newState = when (uiEvent) {
+                        UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
+                        UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
+                        UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
+                    }
+                )
+            }
         }
     }
 
@@ -740,6 +748,7 @@ class SpaceSettingsViewModel(
             // Call backend with PushNotificationsSet.Request
             // On success: notificationState.value = newState
             // On failure: revert and show error
+            notificationState.value = newState // Optimistic update
         }
     }
 

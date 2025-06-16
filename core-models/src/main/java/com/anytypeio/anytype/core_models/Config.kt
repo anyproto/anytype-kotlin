@@ -20,5 +20,6 @@ data class Config(
     val device: Id,
     val network: Id,
     val workspaceObjectId: Id,
-    val ethereumAddress: String = ""
+    val ethereumAddress: String = "",
+    val spaceChatId: Id?
 )

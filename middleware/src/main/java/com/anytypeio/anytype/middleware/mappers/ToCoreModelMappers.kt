@@ -844,7 +844,8 @@ fun Account.Info.config(): Config = Config(
     device = deviceId,
     network = networkId,
     workspaceObjectId = workspaceObjectId,
-    ethereumAddress = ethereumAddress
+    ethereumAddress = ethereumAddress,
+    spaceChatId = spaceChatId.ifEmpty { null }
 )
 
 fun MManifestInfo.toCoreModel(): ManifestInfo {

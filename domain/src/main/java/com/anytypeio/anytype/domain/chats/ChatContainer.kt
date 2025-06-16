@@ -280,7 +280,6 @@ class ChatContainer @Inject constructor(
                                             logger.logException(e, "DROID-2966 Error while scrolling to bottom")
                                         }
                                     }
-
                                     ChatStreamState(
                                         messages = messages,
                                         intent = Intent.ScrollToBottom,

@@ -1798,5 +1798,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable">Nonaktifkan notifikasi</string>
     <string name="notifications_all_short">Semua</string>
     <string name="notifications_mentions_short">Sebutan</string>
-    <string name="notifications_disable_short">Disable</string>
+    <string name="notifications_disable_short">Nonaktifkan</string>
 </resources>

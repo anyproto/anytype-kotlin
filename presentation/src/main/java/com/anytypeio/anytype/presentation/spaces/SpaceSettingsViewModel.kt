@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
@@ -89,7 +90,8 @@ class SpaceSettingsViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val notificationPermissionManager: NotificationPermissionManager
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -109,6 +111,7 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
+        fetchNotificationState()
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -738,18 +741,66 @@ class SpaceSettingsViewModel(
 
     fun fetchNotificationState() {
         viewModelScope.launch {
-            // Call backend to get current topic for this space
-            // Map topic to NotificationState and update notificationState.value
+            // Check if notifications are enabled system-wide
+            if (!notificationPermissionManager.shouldShowPermissionDialog()) {
+                // Permissions are granted, get space-specific notification state
+                // TODO: Call backend to get current topic for this space
+                // Map topic to NotificationState and update notificationState.value
+                Timber.d("Notifications enabled, fetching space-specific state")
+            } else {
+                // Permissions not granted, show disabled state
+                notificationState.value = NotificationState.DISABLE
+                Timber.d("Notification permissions not granted")
+            }
         }
     }
 
     fun setNotificationState(space: Id, newState: NotificationState) {
         viewModelScope.launch {
-            // Call backend with PushNotificationsSet.Request
+            // Check if trying to enable notifications without system permission
+            if (newState != NotificationState.DISABLE && notificationPermissionManager.shouldShowPermissionDialog()) {
+                // Need to request permission first
+                commands.emit(Command.RequestNotificationPermission)
+                return@launch
+            }
+            
+            // TODO: Call backend with PushNotificationsSet.Request
             // On success: notificationState.value = newState
             // On failure: revert and show error
             notificationState.value = newState // Optimistic update
+            Timber.d("Setting notification state to: $newState for space: $space")
         }
+    }
+
+    // Notification permission handling methods
+    fun onNotificationPermissionGranted() {
+        viewModelScope.launch {
+            notificationPermissionManager.onPermissionGranted()
+            fetchNotificationState() // Refresh notification state
+            Timber.d("Notification permission granted")
+        }
+    }
+
+    fun onNotificationPermissionDenied() {
+        viewModelScope.launch {
+            notificationPermissionManager.onPermissionDenied()
+            notificationState.value = NotificationState.DISABLE
+            Timber.d("Notification permission denied")
+        }
+    }
+
+    fun onNotificationPermissionRequested() {
+        notificationPermissionManager.onPermissionRequested()
+        Timber.d("Notification permission requested")
+    }
+
+    fun onNotificationPermissionDismissed() {
+        notificationPermissionManager.onPermissionDismissed()
+        Timber.d("Notification permission dialog dismissed")
+    }
+
+    fun shouldShowNotificationPermissionDialog(): Boolean {
+        return notificationPermissionManager.shouldShowPermissionDialog()
     }
 
     data class SpaceData(
@@ -791,6 +842,7 @@ class SpaceSettingsViewModel(
         data object ManageRemoteStorage : Command()
         data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
+        data object RequestNotificationPermission : Command()
     }
 
     class Factory @Inject constructor(
@@ -817,7 +869,8 @@ class SpaceSettingsViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
-        private val getAccount: GetAccount
+        private val getAccount: GetAccount,
+        private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -846,7 +899,8 @@ class SpaceSettingsViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,
-            getAccount = getAccount
+            getAccount = getAccount,
+            notificationPermissionManager = notificationPermissionManager
         ) as T
     }
 

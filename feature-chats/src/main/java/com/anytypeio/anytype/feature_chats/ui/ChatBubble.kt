@@ -109,7 +109,7 @@ fun Bubble(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
     isHighlighted: Boolean
 ) {
-    val swipeThreshold = with(LocalDensity.current) { 40.dp.toPx() }
+    val swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() }
     var swipeOffsetX by remember { mutableStateOf(0f) }
 
     val haptic = LocalHapticFeedback.current

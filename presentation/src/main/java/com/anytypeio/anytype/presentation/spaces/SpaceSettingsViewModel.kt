@@ -50,6 +50,7 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -91,7 +92,8 @@ class SpaceSettingsViewModel(
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
     private val getAccount: GetAccount,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -764,11 +766,23 @@ class SpaceSettingsViewModel(
                 return@launch
             }
             
-            // TODO: Call backend with PushNotificationsSet.Request
-            // On success: notificationState.value = newState
-            // On failure: revert and show error
-            _notificationState.value = newState // Optimistic update
-            Timber.d("Setting notification state to: $newState for space: $space")
+            // Call backend to set notification state
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = space,
+                    mode = newState
+                )
+            ).fold(
+                onSuccess = {
+                    _notificationState.value = newState
+                    Timber.d("Successfully set notification state to: $newState for space: $space")
+                },
+                onFailure = { error ->
+                    Timber.e("Failed to set notification state: $error")
+                    sendToast("Failed to update notification settings")
+                    // Don't update the state on failure to show the user the actual current state
+                }
+            )
         }
     }
 
@@ -870,7 +884,8 @@ class SpaceSettingsViewModel(
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
         private val getAccount: GetAccount,
-        private val notificationPermissionManager: NotificationPermissionManager
+        private val notificationPermissionManager: NotificationPermissionManager,
+        private val setSpaceNotificationMode: SetSpaceNotificationMode
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -900,13 +915,10 @@ class SpaceSettingsViewModel(
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,
             getAccount = getAccount,
-            notificationPermissionManager = notificationPermissionManager
+            notificationPermissionManager = notificationPermissionManager,
+            setSpaceNotificationMode = setSpaceNotificationMode
         ) as T
     }
 
     data class VmParams(val space: SpaceId)
-
-    companion object {
-        const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
-    }
 }

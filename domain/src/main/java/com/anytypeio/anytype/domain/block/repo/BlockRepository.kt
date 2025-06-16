@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -533,4 +534,6 @@ interface BlockRepository {
     suspend fun getLinkPreview(url: Url): LinkPreview
 
     suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
+
+    suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
 }

@@ -1122,4 +1122,8 @@ class BlockMiddleware(
     override suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic {
         return middleware.createObjectFromUrl(space = space, url = url)
     }
+
+    override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState) {
+        middleware.setSpaceMode(spaceViewId = spaceViewId, mode = mode)
+    }
 }

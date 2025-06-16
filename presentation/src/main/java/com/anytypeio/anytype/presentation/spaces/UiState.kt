@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -11,7 +12,8 @@ sealed class UiSpaceSettingsState {
     data class SpaceSettings(
         val spaceTechInfo: SpaceTechInfo,
         val items: List<UiSpaceSettingsItem>,
-        val isEditEnabled: Boolean
+        val isEditEnabled: Boolean,
+        val notificationState: NotificationState
     ) : UiSpaceSettingsState() {
         val name: String = items.filterIsInstance<UiSpaceSettingsItem.Name>()
             .firstOrNull()?.name ?: EMPTY_STRING_VALUE
@@ -59,9 +61,5 @@ sealed class UiSpaceSettingsItem {
     data object DeleteSpace : UiSpaceSettingsItem()
     data class Notifications(
         val state: NotificationState
-    ) : UiSpaceSettingsItem() {
-        enum class NotificationState {
-            ALL, MENTIONS, DISABLE
-        }
-    }
+    ) : UiSpaceSettingsItem()
 }

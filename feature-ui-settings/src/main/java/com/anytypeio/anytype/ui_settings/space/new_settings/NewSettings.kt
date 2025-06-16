@@ -45,7 +45,6 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
-import com.anytypeio.anytype.presentation.spaces.UiEvent.OnNotificationsSettingsClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
@@ -75,6 +74,7 @@ fun NewSpaceSettingsScreen(
     var showEditDescription by remember { mutableStateOf(false) }
     var showEditTitle by remember { mutableStateOf(false) }
     var showTechInfo by remember { mutableStateOf(false) }
+    var showNotificationsSettings by remember { mutableStateOf(false) }
 
     Scaffold(
         modifier = Modifier.fillMaxWidth(),
@@ -366,7 +366,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            OnNotificationsSettingsClicked(state = item.state)
+                                            showNotificationsSettings = true
                                         },
                                     item = item
                                 )
@@ -443,6 +443,16 @@ fun NewSpaceSettingsScreen(
                 SpaceInfoScreen(
                     spaceTechInfo = uiState.spaceTechInfo
                 )
+            }
+        )
+    }
+
+    if (showNotificationsSettings) {
+        NotificationsPreferenceSheet(
+            currentState = uiState.notificationState,
+            uiEvent = uiEvent,
+            onDismiss = {
+                showNotificationsSettings = false
             }
         )
     }

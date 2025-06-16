@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -54,7 +55,6 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.*
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications.NotificationState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
 import kotlin.collections.map
@@ -100,7 +100,6 @@ class SpaceSettingsViewModel(
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     val notificationState = MutableStateFlow(NotificationState.ALL)
-    val showNotificationsSheet = MutableStateFlow(false)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -272,7 +271,7 @@ class SpaceSettingsViewModel(
                     }
 
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Notifications(notificationState.value))
+                    add(UiSpaceSettingsItem.Notifications(state = notificationState.value))
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
@@ -305,7 +304,8 @@ class SpaceSettingsViewModel(
                 UiSpaceSettingsState.SpaceSettings(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
-                    isEditEnabled = permission?.isOwnerOrEditor() == true
+                    isEditEnabled = permission?.isOwnerOrEditor() == true,
+                    notificationState = NotificationState.ALL,
                 )
 
             }.collect { update ->
@@ -439,18 +439,9 @@ class SpaceSettingsViewModel(
                 }
             }
 
-            is UiEvent.OnNotificationsSettingsClicked -> {
-                Timber.d("onNotificationsSettingsClicked: ${uiEvent.state}")
-                showNotificationsSheet.value = true
-                viewModelScope.launch {
-                    notificationState.value = uiEvent.state
-//                    commands.emit(
-//                        Command.OpenNotificationsSettings(
-//                            state = uiEvent.state
-//                        )
-//                    )
-                }
-            }
+            UiEvent.OnNotificationsSetting.All -> TODO()
+            UiEvent.OnNotificationsSetting.Mentions -> TODO()
+            UiEvent.OnNotificationsSetting.None -> TODO()
         }
     }
 
@@ -745,16 +736,11 @@ class SpaceSettingsViewModel(
     }
 
     fun setNotificationState(space: Id, newState: NotificationState) {
-        showNotificationsSheet.value = false
         viewModelScope.launch {
             // Call backend with PushNotificationsSet.Request
             // On success: notificationState.value = newState
             // On failure: revert and show error
         }
-    }
-
-    fun onNotificationSettingsCancelled() {
-        showNotificationsSheet.value = false
     }
 
     data class SpaceData(

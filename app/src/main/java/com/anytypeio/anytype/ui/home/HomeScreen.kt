@@ -513,8 +513,8 @@ private fun WidgetList(
                             .fillMaxWidth()
                             .padding(top = 6.dp, start = 20.dp, end = 20.dp)
                             .height(128.dp)
-                            .animateItemPlacement(
-                                spring(
+                            .animateItem(
+                                placementSpec = spring(
                                     stiffness = Spring.StiffnessHigh,
                                     visibilityThreshold = IntOffset.Zero
                                 )

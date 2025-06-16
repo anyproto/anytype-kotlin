@@ -201,7 +201,8 @@ class ChatContainer @Inject constructor(
                             messages = messages,
                             intent = Intent.ScrollToMessage(
                                 id = transform.message,
-                                smooth = true
+                                smooth = true,
+                                highlight = true
                             ),
                             state = state.state
                         )
@@ -736,9 +737,9 @@ class ChatContainer @Inject constructor(
         data class ScrollToMessage(
             val id: Id,
             val smooth: Boolean = false,
-            val startOfUnreadMessageSection: Boolean = false
+            val startOfUnreadMessageSection: Boolean = false,
+            val highlight: Boolean = false
         ) : Intent()
-        data class Highlight(val id: Id) : Intent()
         data object ScrollToBottom : Intent()
         data object None : Intent()
     }

@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -433,7 +434,9 @@ fun ChatScreen(
 
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
-    val chatBoxFocusRequester = FocusRequester()
+    val chatBoxFocusRequester = remember { FocusRequester() }
+
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
@@ -594,12 +597,22 @@ fun ChatScreen(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
-                        chatBoxFocusRequester.requestFocus()
+                        scope.launch {
+                            delay(100) // optionally delay to let layout settle
+                            chatBoxFocusRequester.requestFocus()
+                            delay(50) // small buffer
+                            keyboardController?.show()
+                        }
                     }
                 },
                 onReplyMessage = {
                     onReplyMessage(it)
-                    chatBoxFocusRequester.requestFocus()
+                    scope.launch {
+                        delay(100) // optionally delay to let layout settle
+                        chatBoxFocusRequester.requestFocus()
+                        delay(50) // small buffer
+                        keyboardController?.show()
+                    }
                 },
                 onMarkupLinkClicked = onMarkupLinkClicked,
                 onAddReactionClicked = onAddReactionClicked,

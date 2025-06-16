@@ -584,7 +584,7 @@ fun ChatScreen(
     val isFloatingDateVisible = remember { mutableStateOf(false) }
 
     LaunchedEffect(lazyListState, messages) {
-        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.firstOrNull()?.index }
+        snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .filterNotNull()
             .distinctUntilChanged()
             .collect { index ->

@@ -1245,7 +1245,7 @@
     <string name="multiplayer_notification_member_permission_change_read">%1$s alanındaki erişim haklarınız salt okunur olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_permission_change_edit">%1$s alanındaki erişim haklarınız düzenleyici olarak değiştirildi.</string>
     <string name="multiplayer_notification_member_join_request_declined">%1$s alanına katılma isteğiniz reddedildi.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">%1$s alanına katıldınız.</string>
     <string name="multiplayer_notification_request_declined">Talep reddedildi</string>
     <string name="multiplayer_notification_view_request">Görüntüle</string>
     <string name="multiplayer_notification_go_to_space">Alana git</string>
@@ -1805,4 +1805,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_box_take_photo">Fotoğraf Çek</string>
     <string name="chat_box_record_video">Video Kaydet</string>
     <string name="chat_camera_permission_denied">Kamera izni reddedildi</string>
+    <string name="notifications_title">Bildirimler</string>
+    <string name="notifications_all">Tüm etkinlikler</string>
+    <string name="notifications_mentions">Sadece bahsetmeler</string>
+    <string name="notifications_disable">Bildirimleri devre dışı bırak</string>
+    <string name="notifications_all_short">Hepsi</string>
+    <string name="notifications_mentions_short">Bahsetmeler</string>
+    <string name="notifications_disable_short">Disable</string>
 </resources>

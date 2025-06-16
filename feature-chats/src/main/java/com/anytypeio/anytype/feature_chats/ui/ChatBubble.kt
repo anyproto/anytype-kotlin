@@ -100,7 +100,8 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    isHighlighted: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -166,6 +167,7 @@ fun Bubble(
         Column(
             modifier = Modifier
                 .wrapContentWidth()
+                .then(if (isHighlighted) Modifier.alpha(0.5f) else Modifier.alpha(1f))
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)

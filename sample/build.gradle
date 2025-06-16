@@ -66,6 +66,9 @@ dependencies {
     implementation libs.preference
     implementation libs.activityCompose
     implementation libs.composeReorderable
+
+    implementation libs.coilCompose
+    implementation libs.coilNetwork
     debugImplementation libs.composeTooling
 
     testImplementation libs.junit

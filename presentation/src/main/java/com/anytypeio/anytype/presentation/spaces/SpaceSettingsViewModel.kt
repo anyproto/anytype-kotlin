@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
@@ -88,7 +90,8 @@ class SpaceSettingsViewModel(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
-    private val getAccount: GetAccount
+    private val getAccount: GetAccount,
+    private val notificationPermissionManager: NotificationPermissionManager
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -98,6 +101,8 @@ class SpaceSettingsViewModel(
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
+    val _notificationState = MutableStateFlow(NotificationState.ALL)
+
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
         viewModelScope.launch {
@@ -106,6 +111,7 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
+        fetchNotificationState()
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -183,8 +189,9 @@ class SpaceSettingsViewModel(
 
             combine(
                 restrictions,
-                otherFlows
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
+                otherFlows,
+                _notificationState
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), notificationState ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -267,6 +274,9 @@ class SpaceSettingsViewModel(
                         }
                     }
 
+                    add(Spacer(height = 8))
+                    add(UiSpaceSettingsItem.Notifications(state = notificationState))
+
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
                     add(Spacer(height = 8))
@@ -298,7 +308,8 @@ class SpaceSettingsViewModel(
                 UiSpaceSettingsState.SpaceSettings(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
-                    isEditEnabled = permission?.isOwnerOrEditor() == true
+                    isEditEnabled = permission?.isOwnerOrEditor() == true,
+                    notificationState = notificationState
                 )
 
             }.collect { update ->
@@ -317,25 +328,25 @@ class SpaceSettingsViewModel(
                 isDismissed.value = true
             }
             UiEvent.OnDeleteSpaceClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShowDeleteSpaceWarning) }
+                viewModelScope.launch { commands.emit(ShowDeleteSpaceWarning) }
             }
             UiEvent.OnLeaveSpaceClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+                viewModelScope.launch { commands.emit(ShowLeaveSpaceWarning) }
             }
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageRemoteStorage)
+                    commands.emit(ManageRemoteStorage)
                 }
             }
             UiEvent.OnBinClick -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageBin(vmParams.space))
+                    commands.emit(ManageBin(vmParams.space))
                 }
             }
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.ManageSharedSpace(vmParams.space)
+                        ManageSharedSpace(vmParams.space)
                     )
                 }
             }
@@ -348,12 +359,12 @@ class SpaceSettingsViewModel(
                         .async(vmParams.space)
                         .onFailure {
                             commands.emit(
-                                Command.ManageSharedSpace(vmParams.space)
+                                ManageSharedSpace(vmParams.space)
                             )
                         }
                         .onSuccess { link ->
                             commands.emit(
-                                Command.ShowInviteLinkQrCode(link.scheme)
+                                ShowInviteLinkQrCode(link.scheme)
                             )
                         }
                 }
@@ -361,7 +372,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.DESCRIPTION to uiEvent.description
@@ -373,7 +384,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnSaveTitleClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
-                        params = SetSpaceDetails.Params(
+                        params = Params(
                             space = vmParams.space,
                             details = mapOf(
                                 Relations.NAME to uiEvent.title
@@ -387,18 +398,18 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSelectWallpaperClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.OpenWallpaperPicker)
+                    commands.emit(OpenWallpaperPicker)
                 }
             }
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ManageSharedSpace(vmParams.space))
+                    commands.emit(ManageSharedSpace(vmParams.space))
                 }
             }
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        Command.SelectDefaultObjectType(
+                        SelectDefaultObjectType(
                             space = vmParams.space,
                             excludedTypeIds = buildList {
                                 val curr = uiEvent.currentDefaultObjectTypeId
@@ -430,6 +441,17 @@ class SpaceSettingsViewModel(
                 viewModelScope.launch {
                     commands.emit(OpenPropertiesScreen(vmParams.space))
                 }
+            }
+
+            is UiEvent.OnNotificationsSetting -> {
+                setNotificationState(
+                    space = vmParams.space.id,
+                    newState = when (uiEvent) {
+                        UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
+                        UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
+                        UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
+                    }
+                )
             }
         }
     }
@@ -717,6 +739,70 @@ class SpaceSettingsViewModel(
         }
     }
 
+    fun fetchNotificationState() {
+        viewModelScope.launch {
+            // Check if notifications are enabled system-wide
+            if (!notificationPermissionManager.shouldShowPermissionDialog()) {
+                // Permissions are granted, get space-specific notification state
+                // TODO: Call backend to get current topic for this space
+                // Map topic to NotificationState and update notificationState.value
+                Timber.d("Notifications enabled, fetching space-specific state")
+            } else {
+                // Permissions not granted, show disabled state
+                _notificationState.value = NotificationState.DISABLE
+                Timber.d("Notification permissions not granted")
+            }
+        }
+    }
+
+    fun setNotificationState(space: Id, newState: NotificationState) {
+        viewModelScope.launch {
+            // Check if trying to enable notifications without system permission
+            if (newState != NotificationState.DISABLE && notificationPermissionManager.shouldShowPermissionDialog()) {
+                // Need to request permission first
+                commands.emit(Command.RequestNotificationPermission)
+                return@launch
+            }
+            
+            // TODO: Call backend with PushNotificationsSet.Request
+            // On success: notificationState.value = newState
+            // On failure: revert and show error
+            _notificationState.value = newState // Optimistic update
+            Timber.d("Setting notification state to: $newState for space: $space")
+        }
+    }
+
+    // Notification permission handling methods
+    fun onNotificationPermissionGranted() {
+        viewModelScope.launch {
+            notificationPermissionManager.onPermissionGranted()
+            fetchNotificationState() // Refresh notification state
+            Timber.d("Notification permission granted")
+        }
+    }
+
+    fun onNotificationPermissionDenied() {
+        viewModelScope.launch {
+            notificationPermissionManager.onPermissionDenied()
+            _notificationState.value = NotificationState.DISABLE
+            Timber.d("Notification permission denied")
+        }
+    }
+
+    fun onNotificationPermissionRequested() {
+        notificationPermissionManager.onPermissionRequested()
+        Timber.d("Notification permission requested")
+    }
+
+    fun onNotificationPermissionDismissed() {
+        notificationPermissionManager.onPermissionDismissed()
+        Timber.d("Notification permission dialog dismissed")
+    }
+
+    fun shouldShowNotificationPermissionDialog(): Boolean {
+        return notificationPermissionManager.shouldShowPermissionDialog()
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -756,6 +842,7 @@ class SpaceSettingsViewModel(
         data object ManageRemoteStorage : Command()
         data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
+        data object RequestNotificationPermission : Command()
     }
 
     class Factory @Inject constructor(
@@ -782,7 +869,8 @@ class SpaceSettingsViewModel(
         private val getSpaceInviteLink: GetSpaceInviteLink,
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
-        private val getAccount: GetAccount
+        private val getAccount: GetAccount,
+        private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -811,7 +899,8 @@ class SpaceSettingsViewModel(
             getSpaceInviteLink = getSpaceInviteLink,
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,
-            getAccount = getAccount
+            getAccount = getAccount,
+            notificationPermissionManager = notificationPermissionManager
         ) as T
     }
 

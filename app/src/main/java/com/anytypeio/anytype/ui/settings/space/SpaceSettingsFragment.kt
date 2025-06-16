@@ -1,12 +1,24 @@
 package com.anytypeio.anytype.ui.settings.space
 
+import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -37,8 +49,10 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
+import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
@@ -53,9 +67,25 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
 
     private val vm by viewModels<SpaceSettingsViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ) = content {
+        val showNotificationPermissionDialog = remember { mutableStateOf(false) }
+        val notificationSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val scope = rememberCoroutineScope()
+
+        val launcher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted: Boolean ->
+            Timber.d("Notification permission granted: $isGranted")
+            if (isGranted) {
+                vm.onNotificationPermissionGranted()
+            } else {
+                vm.onNotificationPermissionDenied()
+            }
+        }
+
         MaterialTheme(
             typography = typography,
             colors = MaterialTheme.colors.copy(
@@ -73,12 +103,46 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                 }
             }
             LaunchedEffect(Unit) {
-                observeCommands()
+                observeCommands(showNotificationPermissionDialog)
+            }
+
+            // Notification Permission Modal
+            if (showNotificationPermissionDialog.value) {
+                ModalBottomSheet(
+                    onDismissRequest = { 
+                        showNotificationPermissionDialog.value = false
+                        vm.onNotificationPermissionDismissed()
+                    },
+                    sheetState = notificationSheetState,
+                    containerColor = colorResource(id = R.color.background_secondary),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    dragHandle = null
+                ) {
+                    NotificationPermissionContent(
+                        onCancelClicked = { 
+                            scope.launch {
+                                notificationSheetState.hide()
+                            }.invokeOnCompletion {
+                                showNotificationPermissionDialog.value = false
+                                vm.onNotificationPermissionDismissed()
+                            }
+                        },
+                        onEnableNotifications = {
+                            vm.onNotificationPermissionRequested()
+                            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            scope.launch {
+                                notificationSheetState.hide()
+                            }.invokeOnCompletion {
+                                showNotificationPermissionDialog.value = false
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 
-    private suspend fun observeCommands() {
+    private suspend fun observeCommands(showNotificationPermissionDialog: MutableState<Boolean>) {
         vm.commands.collect { command ->
             when (command) {
                 is Command.ShareSpaceDebug -> {
@@ -222,6 +286,10 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                     }.onFailure {
                         Timber.e(it, "Error while opening space types screen")
                     }
+                }
+
+                Command.RequestNotificationPermission -> {
+                    showNotificationPermissionDialog.value = true
                 }
             }
         }

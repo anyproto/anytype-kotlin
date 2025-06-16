@@ -153,6 +153,7 @@ fun Bubble(
             .pointerInput(Unit) {
                 detectHorizontalDragGestures(
                     onHorizontalDrag = { change, dragAmount ->
+                        change.consumePositionChange()
                         swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
                     },
                     onDragEnd = {

@@ -35,6 +35,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -580,21 +581,10 @@ fun ChatScreen(
         }
     }
 
-    val topVisibleIndex by remember {
-        derivedStateOf {
-            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-        }
-    }
-    val currentTopMessageDate = remember { mutableStateOf<String?>(null) }
     val isFloatingDateVisible = remember { mutableStateOf(false) }
 
-    LaunchedEffect(topVisibleIndex) {
-        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
-        val newDate = msg?.formattedDate
-        if (newDate != null && newDate != currentTopMessageDate.value) {
-            currentTopMessageDate.value = newDate
-        }
-    }
+    val floatingDateState = rememberFloatingDateHeaderState(lazyListState, messages)
+
 
     var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
 
@@ -845,7 +835,7 @@ fun ChatScreen(
                 }
             }
 
-            if (isFloatingDateVisible.value && currentTopMessageDate.value != null) {
+            if (isFloatingDateVisible.value && floatingDateState.value != null) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
@@ -857,7 +847,7 @@ fun ChatScreen(
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 ) {
                     Text(
-                        text = currentTopMessageDate.value ?: "",
+                        text = floatingDateState.value ?: "",
                         style = Caption1Medium,
                         color = Color.White,
                     )
@@ -1176,6 +1166,30 @@ fun TopDiscussionToolbar(
             )
         }
     }
+}
+
+@Composable
+fun rememberFloatingDateHeaderState(
+    lazyListState: LazyListState,
+    messages: List<ChatView>
+): State<String?> {
+    val topDate = remember { mutableStateOf<String?>(null) }
+
+    val topVisibleIndex by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+    }
+
+    LaunchedEffect(topVisibleIndex, messages) {
+        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
+        val newDate = msg?.formattedDate
+        if (newDate != null && newDate != topDate.value) {
+            topDate.value = newDate
+        }
+    }
+
+    return topDate
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {

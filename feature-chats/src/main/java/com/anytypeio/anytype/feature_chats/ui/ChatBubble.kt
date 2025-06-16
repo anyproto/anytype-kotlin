@@ -37,7 +37,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.consumePositionChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -112,6 +111,7 @@ fun Bubble(
 ) {
     val swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() }
     var swipeOffsetX by remember { mutableStateOf(0f) }
+    var replyHapticTriggered by remember { mutableStateOf(false) }
 
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -156,17 +156,22 @@ fun Bubble(
                     onHorizontalDrag = { change, dragAmount ->
                         change.consume()
                         swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
+                        if (!replyHapticTriggered && swipeOffsetX < -swipeThreshold) {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            replyHapticTriggered = true
+                        }
                     },
                     onDragEnd = {
                         if (swipeOffsetX < -swipeThreshold) {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                             onReply()
                         }
                         // Animate back to 0
                         swipeOffsetX = 0f
+                        replyHapticTriggered = false
                     },
                     onDragCancel = {
                         swipeOffsetX = 0f
+                        replyHapticTriggered = false
                     }
                 )
             }

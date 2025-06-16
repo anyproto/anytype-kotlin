@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
@@ -26,6 +25,7 @@ import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -130,4 +130,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun profileContainer(): ProfileSubscriptionManager
     fun uriFileProvider(): UriFileProvider
+    fun notificationsPermissionManager(): NotificationPermissionManager
 }

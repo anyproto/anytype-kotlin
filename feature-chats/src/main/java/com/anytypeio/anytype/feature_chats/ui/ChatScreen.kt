@@ -92,6 +92,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPan
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
 import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -420,7 +421,7 @@ fun ChatScreen(
 
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
-    val chatBoxFocusRequester = FocusRequester()
+    val chatBoxFocusRequester = remember { FocusRequester() }
 
     val scope = rememberCoroutineScope()
 
@@ -579,12 +580,18 @@ fun ChatScreen(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
-                        chatBoxFocusRequester.requestFocus()
+                        scope.launch {
+                            delay(100) // optionally delay to let layout settle
+                            chatBoxFocusRequester.requestFocus()
+                        }
                     }
                 },
                 onReplyMessage = {
                     onReplyMessage(it)
-                    chatBoxFocusRequester.requestFocus()
+                    scope.launch {
+                        delay(100) // optionally delay to let layout settle
+                        chatBoxFocusRequester.requestFocus()
+                    }
                 },
                 onMarkupLinkClicked = onMarkupLinkClicked,
                 onAddReactionClicked = onAddReactionClicked,

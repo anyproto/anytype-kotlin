@@ -647,4 +647,7 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectCreateFromUrl(request: Rpc.Object.CreateFromUrl.Request): Rpc.Object.CreateFromUrl.Response
+
+    @Throws(Exception::class)
+    fun setSpaceMode(request: Rpc.PushNotification.SetSpaceMode.Request): Rpc.PushNotification.SetSpaceMode.Response
 }

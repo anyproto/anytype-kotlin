@@ -41,5 +41,6 @@ fun StubConfig(
     analytics = analytics,
     device = device,
     network = network,
-    workspaceObjectId = workspaceObjectId
+    workspaceObjectId = workspaceObjectId,
+    spaceChatId = null
 )

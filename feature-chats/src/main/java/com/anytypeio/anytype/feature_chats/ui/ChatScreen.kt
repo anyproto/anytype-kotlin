@@ -452,7 +452,7 @@ fun ChatScreen(
                     // Cancel existing debounce job if still running
                     scrollDebounceJob?.cancel()
                 } else {
-                    // Start debounce to hide after 1500ms of no scroll
+                    // Start debounce to hide after 1000ms of no scroll
                     scrollDebounceJob = scope.launch {
                         delay(FLOATING_DATE_DELAY)
                         isFloatingDateVisible.value = false

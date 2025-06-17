@@ -6,11 +6,13 @@ import android.app.NotificationManager
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
+import androidx.lifecycle.ProcessLifecycleOwner
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
+import com.anytypeio.anytype.device.AppStateService
 import com.anytypeio.anytype.di.common.ComponentDependenciesProvider
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.HasComponentDependencies
@@ -37,6 +39,9 @@ class AndroidApplication : Application(), HasComponentDependencies {
     lateinit var crashReporter: CrashReporter
 
     @Inject
+    lateinit var appState: AppStateService
+
+    @Inject
     override lateinit var dependencies: ComponentDependenciesProvider
 
     private val main: MainComponent by lazy {
@@ -58,6 +63,7 @@ class AndroidApplication : Application(), HasComponentDependencies {
         super.onCreate()
         setupSignalHandler()
         main.inject(this)
+        ProcessLifecycleOwner.get().lifecycle.addObserver(appState)
         setupAnalytics()
         setupTimber()
         setupCrashReporter()

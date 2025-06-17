@@ -7,6 +7,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -51,9 +53,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -66,6 +71,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
@@ -94,6 +100,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlin.math.roundToInt
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
@@ -929,6 +936,9 @@ fun Messages(
     Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
+    val haptic = LocalHapticFeedback.current
+    val swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() }
+
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -945,6 +955,9 @@ fun Messages(
         ) { idx, msg ->
             if (msg is ChatView.Message) {
 
+                var swipeOffsetX by remember { mutableStateOf(0f) }
+                var replyHapticTriggered by remember { mutableStateOf(false) }
+
                 val isHighlighted = msg.id == highlightedMessageId
 
                 if (idx == 0)
@@ -953,7 +966,33 @@ fun Messages(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .animateItem(),
+                        .animateItem()
+                        .offset { IntOffset(swipeOffsetX.roundToInt(), 0) }
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onHorizontalDrag = { change, dragAmount ->
+                                    change.consume()
+                                    swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
+                                    if (!replyHapticTriggered && swipeOffsetX < -swipeThreshold) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        replyHapticTriggered = true
+                                    }
+                                },
+                                onDragEnd = {
+                                    if (swipeOffsetX < -swipeThreshold) {
+                                        onReplyMessage(msg)
+                                    }
+                                    // Animate back to 0
+                                    swipeOffsetX = 0f
+                                    replyHapticTriggered = false
+                                },
+                                onDragCancel = {
+                                    swipeOffsetX = 0f
+                                    replyHapticTriggered = false
+                                }
+                            )
+                        }
+                    ,
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End
                     else

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -80,7 +79,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -109,13 +108,11 @@ fun Bubble(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
     isHighlighted: Boolean
 ) {
-    val swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() }
-    var swipeOffsetX by remember { mutableStateOf(0f) }
-    var replyHapticTriggered by remember { mutableStateOf(false) }
 
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
+
     if (showDeleteMessageWarning) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -150,31 +147,6 @@ fun Bubble(
     Column(
         modifier = modifier
             .width(IntrinsicSize.Max)
-            .offset { IntOffset(swipeOffsetX.roundToInt(), 0) }
-            .pointerInput(Unit) {
-                detectHorizontalDragGestures(
-                    onHorizontalDrag = { change, dragAmount ->
-                        change.consume()
-                        swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
-                        if (!replyHapticTriggered && swipeOffsetX < -swipeThreshold) {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                            replyHapticTriggered = true
-                        }
-                    },
-                    onDragEnd = {
-                        if (swipeOffsetX < -swipeThreshold) {
-                            onReply()
-                        }
-                        // Animate back to 0
-                        swipeOffsetX = 0f
-                        replyHapticTriggered = false
-                    },
-                    onDragCancel = {
-                        swipeOffsetX = 0f
-                        replyHapticTriggered = false
-                    }
-                )
-            }
     ) {
         if (reply != null) {
             ChatBubbleReply(

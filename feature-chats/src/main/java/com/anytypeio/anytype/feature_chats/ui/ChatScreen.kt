@@ -836,22 +836,12 @@ fun ChatScreen(
             }
 
             if (isFloatingDateVisible.value && floatingDateState.value != null) {
-                Box(
+                FloatingDateHeader(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
-                        .padding(top = 8.dp)
-                        .background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp)
-                ) {
-                    Text(
-                        text = floatingDateState.value ?: "",
-                        style = Caption1Medium,
-                        color = Color.White,
-                    )
-                }
+                        .padding(top = 8.dp),
+                    text = floatingDateState.value.orEmpty()
+                )
             }
         }
 

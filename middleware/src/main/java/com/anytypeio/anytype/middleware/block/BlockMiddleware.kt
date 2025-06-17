@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.DeviceState
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -1100,8 +1100,8 @@ class BlockMiddleware(
         middleware.setDeviceNetworkState(type)
     }
 
-    override suspend fun setDeviceState(deviceState: DeviceState) {
-        middleware.setDeviceState(deviceState)
+    override suspend fun setAppState(state: AppState) {
+        middleware.setAppState(state)
     }
 
     override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {

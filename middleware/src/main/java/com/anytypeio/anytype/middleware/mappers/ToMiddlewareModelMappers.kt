@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.DeviceState
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
@@ -640,9 +640,9 @@ fun DeviceNetworkType.mw(): MDeviceNetworkType = when(this) {
     DeviceNetworkType.NOT_CONNECTED -> MDeviceNetworkType.NOT_CONNECTED
 }
 
-fun DeviceState.toMiddlewareModel(): Rpc.App.SetDeviceState.Request.DeviceState = when(this) {
-    DeviceState.BACKGROUND -> Rpc.App.SetDeviceState.Request.DeviceState.BACKGROUND
-    DeviceState.FOREGROUND -> Rpc.App.SetDeviceState.Request.DeviceState.FOREGROUND
+fun AppState.toMiddlewareModel(): Rpc.App.SetDeviceState.Request.DeviceState = when(this) {
+    AppState.BACKGROUND -> Rpc.App.SetDeviceState.Request.DeviceState.BACKGROUND
+    AppState.FOREGROUND -> Rpc.App.SetDeviceState.Request.DeviceState.FOREGROUND
 }
 
 fun InviteType.toMiddleware(): MInviteType = when (this) {

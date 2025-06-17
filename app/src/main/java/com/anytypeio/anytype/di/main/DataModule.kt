@@ -52,7 +52,7 @@ import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.device.SetDeviceState
+import com.anytypeio.anytype.domain.device.SetAppState
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
@@ -329,16 +329,16 @@ object DataModule {
     fun provideSetDeviceState(
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): SetDeviceState = SetDeviceState(blockRepository, dispatchers)
+    ): SetAppState = SetAppState(blockRepository, dispatchers)
 
     @JvmStatic
     @Provides
     @Singleton
     fun provideAppStateService(
-        setDeviceState: SetDeviceState,
+        setAppState: SetAppState,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
     ): AppStateService = AppStateService(
-        setDeviceState = setDeviceState,
+        setAppState = setAppState,
         coroutineScope = scope
     )
 

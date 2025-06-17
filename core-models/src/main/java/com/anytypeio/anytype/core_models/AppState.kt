@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.core_models
 
-enum class DeviceState {
+enum class AppState {
     BACKGROUND,
     FOREGROUND
 } 

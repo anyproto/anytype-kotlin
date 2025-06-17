@@ -19,7 +19,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.DeviceState
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -1629,9 +1629,9 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun setDeviceState(deviceState: DeviceState): Rpc.App.SetDeviceState.Response {
+    fun setAppState(state: AppState): Rpc.App.SetDeviceState.Response {
         val request = Rpc.App.SetDeviceState.Request(
-            deviceState = deviceState.toMiddlewareModel()
+            deviceState = state.toMiddlewareModel()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.setDeviceState(request) }

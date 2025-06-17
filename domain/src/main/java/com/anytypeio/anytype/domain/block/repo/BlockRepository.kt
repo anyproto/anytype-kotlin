@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
+import com.anytypeio.anytype.core_models.DeviceState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -522,6 +523,8 @@ interface BlockRepository {
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+
+    suspend fun setDeviceState(deviceState: DeviceState)
 
     suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
 

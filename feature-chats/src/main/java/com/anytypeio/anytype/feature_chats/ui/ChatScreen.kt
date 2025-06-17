@@ -1112,53 +1112,6 @@ fun Messages(
 }
 
 @Composable
-fun TopDiscussionToolbar(
-    title: String? = null,
-    isHeaderVisible: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .align(Alignment.Center)
-                    .background(color = Color.Green, shape = CircleShape)
-            )
-        }
-        Text(
-            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
-            style = PreviewTitle2Regular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
-                contentDescription = "Three dots menu",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
-@Composable
 fun rememberFloatingDateHeaderState(
     lazyListState: LazyListState,
     messages: List<ChatView>
@@ -1197,34 +1150,6 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
-@Composable
-fun TrackFloatingDate(
-    lazyListState: LazyListState,
-    messages: List<ChatView>,
-    floatingDateState: MutableState<String?>
-) {
-    val topVisibleIndex by remember {
-        derivedStateOf {
-            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-        }
-    }
-
-    LaunchedEffect(topVisibleIndex, messages) {
-        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
-        val newDate = msg?.formattedDate
-        if (newDate != null && newDate != floatingDateState.value) {
-            floatingDateState.value = newDate
-        }
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-@Composable
-fun TopDiscussionToolbarPreview() {
-    TopDiscussionToolbar()
-}
-
 private const val DATE_KEY_PREFIX = "date-"
 private val JumpToBottomThreshold = 200.dp
-private const val FLOATING_DATE_DELAY = 1500L
+private const val FLOATING_DATE_DELAY = 1000L

@@ -184,8 +184,11 @@ class ChatViewModel @Inject constructor(
                 spaceViews.observe(vmParams.space),
                 canCreateInviteLink,
                 uiState
-            ) { spaceView, canCreateInvite, _ ->
-                spaceView.spaceUxType == SpaceUxType.CHAT && canCreateInvite && inviteLink == null
+            ) { spaceView, canCreateInvite, ui ->
+                spaceView.spaceUxType == SpaceUxType.CHAT
+                        && canCreateInvite
+                        && inviteLink == null
+                        && ui.messages.isEmpty()
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
                 inviteModalState.value = InviteModalState.ShowGenerateCard

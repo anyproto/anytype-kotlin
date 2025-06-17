@@ -35,6 +35,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -434,6 +435,32 @@ fun ChatScreen(
         }
     }
 
+    // Floating date header tracking
+
+    val isFloatingDateVisible = remember { mutableStateOf(false) }
+    val floatingDateState = rememberFloatingDateHeaderState(lazyListState, messages)
+    var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (isScrolling) {
+                    // Show header immediately on scroll start
+                    isFloatingDateVisible.value = true
+
+                    // Cancel existing debounce job if still running
+                    scrollDebounceJob?.cancel()
+                } else {
+                    // Start debounce to hide after 1500ms of no scroll
+                    scrollDebounceJob = scope.launch {
+                        delay(FLOATING_DATE_DELAY)
+                        isFloatingDateVisible.value = false
+                    }
+                }
+            }
+    }
+
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
     val chatBoxFocusRequester = remember { FocusRequester() }
@@ -579,33 +606,6 @@ fun ChatScreen(
         } else {
             Timber.d("DROID-2966 SKIPPED(!): Safe onTopReached dispatched from compose to VM: is empty: ${messages.isEmpty()}, is performing: ${isPerformingScrollIntent.value}")
         }
-    }
-
-    val isFloatingDateVisible = remember { mutableStateOf(false) }
-
-    val floatingDateState = rememberFloatingDateHeaderState(lazyListState, messages)
-
-
-    var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
-
-    LaunchedEffect(lazyListState) {
-        snapshotFlow { lazyListState.isScrollInProgress }
-            .distinctUntilChanged()
-            .collect { isScrolling ->
-                if (isScrolling) {
-                    // Show header immediately on scroll start
-                    isFloatingDateVisible.value = true
-
-                    // Cancel existing debounce job if still running
-                    scrollDebounceJob?.cancel()
-                } else {
-                    // Start debounce to hide after 1500ms of no scroll
-                    scrollDebounceJob = scope.launch {
-                        delay(1500)
-                        isFloatingDateVisible.value = false
-                    }
-                }
-            }
     }
 
     Column(
@@ -938,7 +938,7 @@ fun Messages(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     highlightedMessageId: Id?
 ) {
-//    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
+    Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
     LazyColumn(
@@ -1207,6 +1207,27 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
+@Composable
+fun TrackFloatingDate(
+    lazyListState: LazyListState,
+    messages: List<ChatView>,
+    floatingDateState: MutableState<String?>
+) {
+    val topVisibleIndex by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+        }
+    }
+
+    LaunchedEffect(topVisibleIndex, messages) {
+        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
+        val newDate = msg?.formattedDate
+        if (newDate != null && newDate != floatingDateState.value) {
+            floatingDateState.value = newDate
+        }
+    }
+}
+
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
@@ -1215,5 +1236,5 @@ fun TopDiscussionToolbarPreview() {
 }
 
 private const val DATE_KEY_PREFIX = "date-"
-private const val HEADER_KEY = "key.discussions.item.header"
 private val JumpToBottomThreshold = 200.dp
+private const val FLOATING_DATE_DELAY = 1500L

@@ -255,3 +255,33 @@ fun GoToMentionButtonPreview() {
         onClick = {}
     )
 }
+
+@Composable
+fun FloatingDateHeader(
+    modifier: Modifier,
+    text: String
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = colorResource(R.color.transparent_active),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = text,
+            style = Caption1Medium,
+            color = colorResource(R.color.glyph_white),
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun FloatingDateHeaderPreview() {
+    FloatingDateHeader(
+        modifier = Modifier,
+        text = "Today"
+    )
+}

@@ -968,17 +968,30 @@ fun Messages(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                         .animateItem()
                         .offset { IntOffset(swipeOffsetX.roundToInt(), 0) }
-                        .then(
-                            SwipeGestureHandler(
-                                swipeOffsetX = swipeOffsetX,
-                                onSwipeOffsetChange = { offset -> swipeOffsetX = offset },
-                                replyHapticTriggered = replyHapticTriggered,
-                                onReplyHapticTriggeredChange = { triggered -> replyHapticTriggered = triggered },
-                                swipeThreshold = swipeThreshold,
-                                haptic = haptic,
-                                onReplyMessage = { onReplyMessage(msg) }
+                        .pointerInput(Unit) {
+                            detectHorizontalDragGestures(
+                                onHorizontalDrag = { change, dragAmount ->
+                                    change.consume()
+                                    swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
+                                    if (!replyHapticTriggered && swipeOffsetX < -swipeThreshold) {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        replyHapticTriggered = true
+                                    }
+                                },
+                                onDragEnd = {
+                                    if (swipeOffsetX < -swipeThreshold) {
+                                        onReplyMessage(msg)
+                                    }
+                                    // Animate back to 0
+                                    swipeOffsetX = 0f
+                                    replyHapticTriggered = false
+                                },
+                                onDragCancel = {
+                                    swipeOffsetX = 0f
+                                    replyHapticTriggered = false
+                                }
                             )
-                        )
+                        }
                     ,
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End

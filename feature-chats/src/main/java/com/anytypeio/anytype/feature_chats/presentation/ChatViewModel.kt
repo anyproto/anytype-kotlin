@@ -72,6 +72,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -173,23 +174,21 @@ class ChatViewModel @Inject constructor(
 
         // Check if we should show invite modal for newly created Chat spaces
         viewModelScope.launch {
+
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.space)
+                .onFailure { Timber.e(it, "Error while getting space invite link") }
+                .getOrNull()
+
             combine(
                 spaceViews.observe(vmParams.space),
                 canCreateInviteLink,
                 uiState
-            ) { spaceView, canCreateInvite, chatState ->
-                // Show invite modal if:
-                // 1. It's a Chat space (spaceUxType == SpaceUxType.CHAT)
-                // 2. User can create invite links (is owner)
-                // 3. Chat is empty (no messages) - indicates it's newly created
-                spaceView.spaceUxType == SpaceUxType.CHAT &&
-                canCreateInvite &&
-                chatState.messages.isEmpty()
+            ) { spaceView, canCreateInvite, _ ->
+                spaceView.spaceUxType == SpaceUxType.CHAT && canCreateInvite && inviteLink == null
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
-                if (shouldShow) {
-                    inviteModalState.value = InviteModalState.ShowGenerateCard
-                }
+                inviteModalState.value = InviteModalState.ShowGenerateCard
             }
         }
 

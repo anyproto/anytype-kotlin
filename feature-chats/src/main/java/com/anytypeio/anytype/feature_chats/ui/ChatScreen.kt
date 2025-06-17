@@ -7,6 +7,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,6 +57,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -100,6 +103,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlin.math.abs
+import kotlin.math.atan2
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
@@ -936,9 +941,6 @@ fun Messages(
     Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
-    val haptic = LocalHapticFeedback.current
-    val swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() }
-
     LazyColumn(
         modifier = modifier,
         reverseLayout = true,
@@ -955,9 +957,6 @@ fun Messages(
         ) { idx, msg ->
             if (msg is ChatView.Message) {
 
-                var swipeOffsetX by remember { mutableStateOf(0f) }
-                var replyHapticTriggered by remember { mutableStateOf(false) }
-
                 val isHighlighted = msg.id == highlightedMessageId
 
                 if (idx == 0)
@@ -967,32 +966,10 @@ fun Messages(
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                         .animateItem()
-                        .offset { IntOffset(swipeOffsetX.roundToInt(), 0) }
-                        .pointerInput(Unit) {
-                            detectHorizontalDragGestures(
-                                onHorizontalDrag = { change, dragAmount ->
-                                    change.consume()
-                                    swipeOffsetX = (swipeOffsetX + dragAmount).coerceAtMost(0f)
-                                    if (!replyHapticTriggered && swipeOffsetX < -swipeThreshold) {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        replyHapticTriggered = true
-                                    }
-                                },
-                                onDragEnd = {
-                                    if (swipeOffsetX < -swipeThreshold) {
-                                        onReplyMessage(msg)
-                                    }
-                                    // Animate back to 0
-                                    swipeOffsetX = 0f
-                                    replyHapticTriggered = false
-                                },
-                                onDragCancel = {
-                                    swipeOffsetX = 0f
-                                    replyHapticTriggered = false
-                                }
-                            )
-                        }
-                    ,
+                        .horizontalSwipeToReply(
+                            swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() },
+                            onReplyTriggered = { onReplyMessage(msg) }
+                        ),
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End
                     else
@@ -1190,3 +1167,4 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
 private const val DATE_KEY_PREFIX = "date-"
 private val JumpToBottomThreshold = 200.dp
 private const val FLOATING_DATE_DELAY = 1000L
+private const val MIN_DRAG_DURATION_MS = 200L

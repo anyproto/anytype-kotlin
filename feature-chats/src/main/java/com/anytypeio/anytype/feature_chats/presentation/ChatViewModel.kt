@@ -44,9 +44,11 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -104,7 +106,9 @@ class ChatViewModel @Inject constructor(
     private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
-    private val clearChatsTempFolder: ClearChatsTempFolder
+    private val clearChatsTempFolder: ClearChatsTempFolder,
+    private val openObject: OpenObject,
+    private val closeObject: CloseObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -212,8 +216,21 @@ class ChatViewModel @Inject constructor(
                     account = acc.id
                 }
                 .onFailure {
-                    Timber.e("Failed to find account for space-level chat")
+                    Timber.e(it,"Failed to find account for space-level chat")
                 }
+
+            openObject.async(
+                params = OpenObject.Params(
+                    obj = vmParams.ctx,
+                    spaceId = vmParams.space,
+                    saveAsLastOpened = false
+                )
+            ).onSuccess {
+                Timber.d("DROID-2966 Succesfully opened chat-object session")
+            }.onFailure {
+                Timber.e(it, "Failed to open chat-object session")
+            }
+
             proceedWithObservingChatMessages(
                 account = account,
                 chat = vmParams.ctx
@@ -1071,6 +1088,16 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
+            }
+            closeObject.async(
+                params = CloseObject.Params(
+                    space = vmParams.space,
+                    target = vmParams.ctx
+                )
+            ).onFailure {
+                Timber.e(it, "Error while closing chat object: ${vmParams.ctx}")
+            }.onSuccess {
+                Timber.d("Successfully close chat object: ${vmParams.ctx}")
             }
             if (isSpaceRoot) {
                 Timber.d("Root space screen. Releasing resources...")

@@ -35,6 +35,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -92,6 +94,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -432,6 +435,32 @@ fun ChatScreen(
         }
     }
 
+    // Floating date header tracking
+
+    val isFloatingDateVisible = remember { mutableStateOf(false) }
+    val floatingDateState = rememberFloatingDateHeaderState(lazyListState, messages)
+    var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (isScrolling) {
+                    // Show header immediately on scroll start
+                    isFloatingDateVisible.value = true
+
+                    // Cancel existing debounce job if still running
+                    scrollDebounceJob?.cancel()
+                } else {
+                    // Start debounce to hide after 1000ms of no scroll
+                    scrollDebounceJob = scope.launch {
+                        delay(FLOATING_DATE_DELAY)
+                        isFloatingDateVisible.value = false
+                    }
+                }
+            }
+    }
+
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
     val chatBoxFocusRequester = remember { FocusRequester() }
@@ -492,7 +521,6 @@ fun ChatScreen(
     LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
-                // TODO optimise by only sending event when scrolling towards bottom
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -505,7 +533,6 @@ fun ChatScreen(
                     .filterIsInstance<ChatView.Message>()
 
                 if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
-                    // TODO could be optimised by passing order ID
                     visibleMessages.first().id to visibleMessages.last().id
                 } else null
             }
@@ -805,6 +832,15 @@ fun ChatScreen(
                     }
                 }
             }
+
+            if (isFloatingDateVisible.value && floatingDateState.value != null) {
+                FloatingDateHeader(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp),
+                    text = floatingDateState.value.orEmpty()
+                )
+            }
         }
 
         if (isReadOnly) {
@@ -890,7 +926,7 @@ fun Messages(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     highlightedMessageId: Id?
 ) {
-//    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
+    Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
     LazyColumn(
@@ -1074,50 +1110,27 @@ fun Messages(
 }
 
 @Composable
-fun TopDiscussionToolbar(
-    title: String? = null,
-    isHeaderVisible: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .align(Alignment.Center)
-                    .background(color = Color.Green, shape = CircleShape)
-            )
-        }
-        Text(
-            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
-            style = PreviewTitle2Regular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
-                contentDescription = "Three dots menu",
-                modifier = Modifier.align(Alignment.Center)
-            )
+fun rememberFloatingDateHeaderState(
+    lazyListState: LazyListState,
+    messages: List<ChatView>
+): State<String?> {
+    val topDate = remember { mutableStateOf<String?>(null) }
+
+    val topVisibleIndex by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
         }
     }
+
+    LaunchedEffect(topVisibleIndex, messages) {
+        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
+        val newDate = msg?.formattedDate
+        if (newDate != null && newDate != topDate.value) {
+            topDate.value = newDate
+        }
+    }
+
+    return topDate
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
@@ -1135,13 +1148,6 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-@Composable
-fun TopDiscussionToolbarPreview() {
-    TopDiscussionToolbar()
-}
-
 private const val DATE_KEY_PREFIX = "date-"
-private const val HEADER_KEY = "key.discussions.item.header"
 private val JumpToBottomThreshold = 200.dp
+private const val FLOATING_DATE_DELAY = 1000L

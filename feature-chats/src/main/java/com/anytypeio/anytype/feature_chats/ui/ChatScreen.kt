@@ -521,7 +521,6 @@ fun ChatScreen(
     LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
-                // TODO optimise by only sending event when scrolling towards bottom
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -534,7 +533,6 @@ fun ChatScreen(
                     .filterIsInstance<ChatView.Message>()
 
                 if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
-                    // TODO could be optimised by passing order ID
                     visibleMessages.first().id to visibleMessages.last().id
                 } else null
             }

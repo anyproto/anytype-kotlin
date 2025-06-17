@@ -20,6 +20,7 @@ import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
+import com.anytypeio.anytype.device.AppStateService
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
@@ -49,6 +50,9 @@ import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProviderImpl
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.device.SetDeviceState
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
@@ -62,6 +66,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 
 @Module(includes = [DataModule.Bindings::class])
 object DataModule {
@@ -316,6 +321,25 @@ object DataModule {
         localeProvider: LocaleProvider
     ): AppDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(
         localeProvider = localeProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideSetDeviceState(
+        blockRepository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDeviceState = SetDeviceState(blockRepository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideAppStateService(
+        setDeviceState: SetDeviceState,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): AppStateService = AppStateService(
+        setDeviceState = setDeviceState,
+        coroutineScope = scope
     )
 
     @Provides

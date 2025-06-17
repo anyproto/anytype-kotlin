@@ -78,7 +78,7 @@ interface BlockRemote {
     suspend fun openProfile(id: String, space: SpaceId): Payload
     suspend fun openObjectSet(id: String, space: SpaceId): Payload
     suspend fun openObjectPreview(id: Id, space: SpaceId): Payload
-    suspend fun closePage(id: String, space: Space)
+    suspend fun closeObject(id: String, space: Space)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
     suspend fun setDocumentCoverColor(ctx: String, color: String): Payload

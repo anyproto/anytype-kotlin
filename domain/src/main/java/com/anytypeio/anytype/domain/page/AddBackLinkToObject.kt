@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 class AddBackLinkToObject(
     private val openPage: OpenPage,
     private val createBlock: CreateBlock,
-    private val closeBlock: CloseBlock,
+    private val closeObject: CloseObject,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<AddBackLinkToObject.Params, ObjectWrapper.Basic>(dispatchers.io) {
 
@@ -55,7 +55,7 @@ class AddBackLinkToObject(
                     )
                 )
 
-                closeBlock.run(CloseBlock.Params(params.objectToPlaceLink, params.spaceId))
+                closeObject.run(CloseObject.Params(params.objectToPlaceLink, params.spaceId))
 
                 return ObjectWrapper.Basic(objectDetails)
             }

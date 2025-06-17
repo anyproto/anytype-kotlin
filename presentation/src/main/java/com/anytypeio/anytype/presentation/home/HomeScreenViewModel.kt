@@ -70,7 +70,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -182,7 +182,7 @@ import timber.log.Timber
  */
 class HomeScreenViewModel(
     private val openObject: OpenObject,
-    private val closeObject: CloseBlock,
+    private val closeObject: CloseObject,
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
     private val updateWidget: UpdateWidget,
@@ -304,7 +304,7 @@ class HomeScreenViewModel(
                             if (previouslyOpenedWidgetObject != newConfig.widgets) {
                                 closeObject
                                     .async(
-                                        CloseBlock.Params(
+                                        CloseObject.Params(
                                             target = previouslyOpenedWidgetObject,
                                             space = space
                                         )
@@ -699,7 +699,7 @@ class HomeScreenViewModel(
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
 
         closeObject.stream(
-            CloseBlock.Params(
+            CloseObject.Params(
                 target = widgetObject,
                 space = space
             )
@@ -1956,7 +1956,7 @@ class HomeScreenViewModel(
                 openWidgetObjectsHistory.forEach { (obj, space) ->
                     closeObject
                         .async(
-                            CloseBlock.Params(
+                            CloseObject.Params(
                                 target = obj,
                                 space = space
                             )
@@ -2663,7 +2663,7 @@ class HomeScreenViewModel(
 
     class Factory @Inject constructor(
         private val openObject: OpenObject,
-        private val closeObject: CloseBlock,
+        private val closeObject: CloseObject,
         private val createObject: CreateObject,
         private val createDataViewObject: CreateDataViewObject,
         private val createWidget: CreateWidget,

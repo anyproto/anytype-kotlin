@@ -49,7 +49,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
@@ -117,7 +117,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var openObjectSet: OpenObjectSet
 
     @Mock
-    lateinit var closeBlock: CloseBlock
+    lateinit var closeObject: CloseObject
 
     @Mock
     lateinit var updateText: UpdateText
@@ -276,7 +276,7 @@ open class ObjectSetViewModelTestSetup {
     fun givenViewModel(): ObjectSetViewModel {
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
-            closeBlock = closeBlock,
+            closeObject = closeObject,
             updateText = updateText,
             interceptEvents = interceptEvents,
             createDataViewObject = createDataViewObject,
@@ -372,7 +372,7 @@ open class ObjectSetViewModelTestSetup {
     }
 
     fun stubCloseBlock() {
-        closeBlock.stub {
+        closeObject.stub {
             onBlocking {
                 async(any())
             } doReturn Resultat.success(Unit)

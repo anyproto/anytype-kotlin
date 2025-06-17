@@ -77,7 +77,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
@@ -189,7 +189,7 @@ open class EditorViewModelTest {
     lateinit var openPage: OpenPage
 
     @Mock
-    lateinit var closePage: CloseBlock
+    lateinit var closePage: CloseObject
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
@@ -2652,7 +2652,7 @@ open class EditorViewModelTest {
         vm.proceedWithExitingBack()
 
         verify(closePage, times(1)).async(
-            params = eq(CloseBlock.Params(root, SpaceId(defaultSpace)))
+            params = eq(CloseObject.Params(root, SpaceId(defaultSpace)))
         )
     }
 
@@ -3424,7 +3424,7 @@ open class EditorViewModelTest {
     ) {
 
         closePage.stub {
-            onBlocking { if (context == null) async(any()) else async(CloseBlock.Params(root, SpaceId(defaultSpace))) } doReturn Resultat.success(
+            onBlocking { if (context == null) async(any()) else async(CloseObject.Params(root, SpaceId(defaultSpace))) } doReturn Resultat.success(
                 Unit
             )
         }

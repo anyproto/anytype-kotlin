@@ -73,7 +73,7 @@ class BlockMiddleware(
         space = space
     )
 
-    override suspend fun closePage(id: String, space: Space) {
+    override suspend fun closeObject(id: String, space: Space) {
         middleware.objectClose(id = id, space = space)
     }
 

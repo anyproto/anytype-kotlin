@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
@@ -49,7 +48,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
@@ -101,7 +100,7 @@ abstract class TestObjectSetSetup {
     private lateinit var setObjectDetails: UpdateDetail
     private lateinit var updateText: UpdateText
     private lateinit var createDataViewObject: CreateDataViewObject
-    private lateinit var closeBlock: CloseBlock
+    private lateinit var closeObject: CloseObject
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDataViewQuery: SetDataViewQuery
@@ -276,7 +275,7 @@ abstract class TestObjectSetSetup {
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
-        closeBlock = CloseBlock(repo, dispatchers)
+        closeObject = CloseObject(repo, dispatchers)
         urlBuilder = UrlBuilder(gateway)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         setDocCoverImage = SetDocCoverImage(repo)
@@ -294,7 +293,7 @@ abstract class TestObjectSetSetup {
         )
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
-            closeBlock = closeBlock,
+            closeObject = closeObject,
             interceptEvents = interceptEvents,
             createDataViewObject = createDataViewObject,
             setObjectDetails = setObjectDetails,

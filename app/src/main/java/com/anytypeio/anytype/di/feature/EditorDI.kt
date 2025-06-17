@@ -64,7 +64,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
@@ -245,7 +245,7 @@ object EditorSessionModule {
         params: EditorViewModel.Params,
         permissions: UserPermissionProvider,
         openPage: OpenPage,
-        closePage: CloseBlock,
+        closePage: CloseObject,
         interceptEvents: InterceptEvents,
         updateLinkMarks: UpdateLinkMarks,
         removeLinkMark: RemoveLinkMark,
@@ -532,7 +532,7 @@ object EditorUseCaseModule {
     fun provideClosePageUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): CloseBlock = CloseBlock(
+    ): CloseObject = CloseObject(
         repo = repo,
         dispatchers = dispatchers
     )

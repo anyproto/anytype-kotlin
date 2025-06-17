@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -204,9 +204,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
             // CHECK CLOSE BLOCK COMMAND
             advanceUntilIdle()
-            verifyBlocking(closeBlock, times(1)) {
+            verifyBlocking(closeObject, times(1)) {
                 async(
-                    CloseBlock.Params(
+                    CloseObject.Params(
                         mockObjectSet.root,
                         SpaceId(defaultSpace)
                     )
@@ -284,7 +284,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             }
             // CHECK CLOSE BLOCK COMMAND NOT EMITTED
             advanceUntilIdle()
-            verifyNoInteractions(closeBlock)
+            verifyNoInteractions(closeObject)
         }
     }
 

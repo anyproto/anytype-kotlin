@@ -29,7 +29,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
@@ -58,7 +58,7 @@ open class EditorViewModelFactory @Inject constructor(
     private val params: EditorViewModel.Params,
     private val permissions: UserPermissionProvider,
     private val openPage: OpenPage,
-    private val closeObject: CloseBlock,
+    private val closeObject: CloseObject,
     private val createObjectSet: CreateObjectSet,
     private val createBlockLinkWithObject: CreateBlockLinkWithObject,
     private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,

@@ -56,8 +56,8 @@ enum class SpaceAccessType(val code: Int) {
 }
 
 enum class SpaceUxType(val code: Int) {
-    DATA(0),
-    CHAT(1)
+    CHAT(0),
+    DATA(1)
 }
 
 sealed class SpaceInviteError : Exception() {

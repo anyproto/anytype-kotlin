@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
@@ -44,7 +44,7 @@ class ObjectSetViewModelFactory(
     private val params: ObjectSetViewModel.Params,
     private val permissions: UserPermissionProvider,
     private val openObjectSet: OpenObjectSet,
-    private val closeBlock: CloseBlock,
+    private val closeObject: CloseObject,
     private val setObjectDetails: UpdateDetail,
     private val createDataViewObject: CreateDataViewObject,
     private val downloadUnsplashImage: DownloadUnsplashImage,
@@ -87,7 +87,7 @@ class ObjectSetViewModelFactory(
             vmParams = params,
             permissions = permissions,
             openObjectSet = openObjectSet,
-            closeBlock = closeBlock,
+            closeObject = closeObject,
             setObjectDetails = setObjectDetails,
             createDataViewObject = createDataViewObject,
             setDocCoverImage = setDocCoverImage,

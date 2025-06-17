@@ -111,8 +111,8 @@ class BlockDataRepository(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
-    override suspend fun closePage(id: String, space: Space) {
-        remote.closePage(id = id, space = space)
+    override suspend fun closeObject(id: String, space: Space) {
+        remote.closeObject(id = id, space = space)
     }
 
     override suspend fun updateDocumentTitle(

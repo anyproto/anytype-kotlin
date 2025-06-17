@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -61,7 +60,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
         viewModel = ObjectSetViewModel(
             openObjectSet = openObjectSet,
-            closeBlock = closeBlock,
+            closeObject = closeObject,
             updateText = updateText,
             interceptEvents = interceptEvents,
             createDataViewObject = CreateDataViewObject(

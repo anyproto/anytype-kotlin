@@ -64,7 +64,7 @@ import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
@@ -157,7 +157,7 @@ class HomeScreenViewModelTest {
     lateinit var openObject: OpenObject
 
     @Mock
-    lateinit var closeObject: CloseBlock
+    lateinit var closeObject: CloseObject
 
     @Mock
     lateinit var setObjectDetails: SetObjectDetails
@@ -1682,7 +1682,7 @@ class HomeScreenViewModelTest {
         }
 
         verify(closeObject, times(1)).async(
-            params = CloseBlock.Params(
+            params = CloseObject.Params(
                 WIDGET_OBJECT_ID,
                 SpaceId(defaultSpaceConfig.space)
             )
@@ -1861,7 +1861,7 @@ class HomeScreenViewModelTest {
         }
 
         verify(closeObject, times(1)).async(
-            params = CloseBlock.Params(
+            params = CloseObject.Params(
                 WIDGET_OBJECT_ID,
                 SpaceId(defaultSpaceConfig.space)
             )
@@ -2641,7 +2641,7 @@ class HomeScreenViewModelTest {
         closeObject.stub {
             onBlocking {
                 stream(
-                    params = CloseBlock.Params(
+                    params = CloseObject.Params(
                         WIDGET_OBJECT_ID,
                         SpaceId(defaultSpaceConfig.space)
                     )
@@ -2651,7 +2651,7 @@ class HomeScreenViewModelTest {
         closeObject.stub {
             onBlocking {
                 async(
-                    params = CloseBlock.Params(
+                    params = CloseObject.Params(
                         WIDGET_OBJECT_ID,
                         SpaceId(defaultSpaceConfig.space)
                     )

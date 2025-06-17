@@ -123,7 +123,7 @@ interface BlockRepository {
     @Deprecated("To be deleted")
     suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload>
 
-    suspend fun closePage(id: String, space: Space)
+    suspend fun closeObject(id: String, space: Space)
 
     /**
      * Upload media or file block by path or url.

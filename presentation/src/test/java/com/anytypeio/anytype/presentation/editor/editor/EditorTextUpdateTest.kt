@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -122,7 +122,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                     target = block.id
                 )
             )
-            inOrder.verify(closePage, times(1)).async(CloseBlock.Params(root, SpaceId(defaultSpace)))
+            inOrder.verify(closePage, times(1)).async(CloseObject.Params(root, SpaceId(defaultSpace)))
         }
 
         // RELEASING PENDING COROUTINES
@@ -197,7 +197,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onHomeButtonClicked()
 
         verifyBlocking(closePage, times(1)) {
-            async(CloseBlock.Params(root, SpaceId(defaultSpace)))
+            async(CloseObject.Params(root, SpaceId(defaultSpace)))
         }
 
         verifyNoMoreInteractions(updateText)
@@ -268,7 +268,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
                 )
             )
             inOrder.verify(closePage, times(1)).async(
-               CloseBlock.Params(root, SpaceId(defaultSpace))
+               CloseObject.Params(root, SpaceId(defaultSpace))
             )
         }
 
@@ -344,7 +344,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
         vm.onSystemBackPressed(false)
 
         verifyBlocking(closePage, times(1)) {
-            async(CloseBlock.Params(root, SpaceId(defaultSpace)))
+            async(CloseObject.Params(root, SpaceId(defaultSpace)))
         }
 
         verifyNoMoreInteractions(updateText)

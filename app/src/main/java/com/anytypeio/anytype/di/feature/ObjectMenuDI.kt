@@ -21,7 +21,7 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
@@ -92,9 +92,9 @@ object ObjectMenuModuleBase {
     fun provideAddBackLinkToObject(
         openPage: OpenPage,
         createBlock: CreateBlock,
-        closeBlock: CloseBlock,
+        closeObject: CloseObject,
         dispatchers: AppCoroutineDispatchers
-    ): AddBackLinkToObject = AddBackLinkToObject(openPage, createBlock, closeBlock, dispatchers)
+    ): AddBackLinkToObject = AddBackLinkToObject(openPage, createBlock, closeObject, dispatchers)
 }
 
 @Module

@@ -643,7 +643,6 @@ fun VaultScreenToolbarScrolledPreview() {
 //    )
 //}
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
@@ -760,6 +759,9 @@ fun VaultScreenWithUnreadSection(
                                         .clickable {
                                             onSpaceClicked(item)
                                         },
+                                    onSpaceIconClicked = {
+                                        onSpaceClicked(item)
+                                    },
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
                                     previewText = item.previewText,
@@ -783,7 +785,7 @@ fun VaultScreenWithUnreadSection(
                                     onCardClicked = {
                                         onSpaceClicked(item)
                                     },
-                                    icon = item.icon
+                                    icon = item.icon,
                                 )
                             }
                         }
@@ -840,7 +842,10 @@ fun VaultScreenWithUnreadSection(
                                         chatPreview = item.chatPreview,
                                         unreadMessageCount = item.unreadMessageCount,
                                         unreadMentionCount = item.unreadMentionCount,
-                                        attachmentPreviews = item.attachmentPreviews
+                                        attachmentPreviews = item.attachmentPreviews,
+                                        onSpaceIconClicked = {
+                                            onSpaceClicked(item)
+                                        }
                                     )
                                 }
                                 is VaultSpaceView.Loading -> {

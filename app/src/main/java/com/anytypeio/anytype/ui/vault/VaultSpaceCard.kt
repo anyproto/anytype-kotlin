@@ -125,6 +125,7 @@ fun VaultChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    onSpaceIconClicked: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -132,7 +133,7 @@ fun VaultChatCard(
         SpaceIconView(
             icon = icon,
             mainSize = 56.dp,
-            onSpaceIconClick = {},
+            onSpaceIconClick = onSpaceIconClicked,
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )

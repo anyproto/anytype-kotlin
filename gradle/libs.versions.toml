@@ -36,7 +36,7 @@ androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.2.1'
 recyclerviewVersion = '1.4.0'
 emojiCompatVersion = '1.1.0'
-lifecycleVersion = '2.8.7'
+lifecycleVersion = '2.9.1'
 lifecycleRuntimeComposeVersion = '2.9.1'
 navigationVersion = '2.8.9'
 navigationComposeVersion = '2.8.9'
@@ -116,6 +116,7 @@ lifecycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", ve
 lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
 lifecycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleVersion" }
 lifecycleCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeComposeVersion" }
+lifecycleProcess = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycleVersion" }
 activityCompose = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }

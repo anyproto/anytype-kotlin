@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -1127,6 +1128,10 @@ class BlockDataRepository(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         remote.setDeviceNetworkState(type)
+    }
+
+    override suspend fun setAppState(state: AppState) {
+        remote.setAppState(state)
     }
 
     override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {

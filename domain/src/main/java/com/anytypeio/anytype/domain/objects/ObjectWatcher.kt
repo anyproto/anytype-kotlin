@@ -46,7 +46,7 @@ class ObjectWatcher @Inject constructor(
      */
     suspend fun unwatch(target: Id, space: SpaceId) {
         try {
-            repo.closePage(id = target, space = space)
+            repo.closeObject(id = target, space = space)
         } catch (e: Exception) {
             throw RuntimeException("Failed to unwatch object with id=$target in space=$space", e)
         }

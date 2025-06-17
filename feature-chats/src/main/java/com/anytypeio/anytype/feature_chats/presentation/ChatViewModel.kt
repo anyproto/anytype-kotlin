@@ -191,7 +191,9 @@ class ChatViewModel @Inject constructor(
                         && ui.messages.isEmpty()
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
-                inviteModalState.value = InviteModalState.ShowGenerateCard
+                if (shouldShow) {
+                    inviteModalState.value = InviteModalState.ShowGenerateCard
+                }
             }
         }
 

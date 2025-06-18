@@ -21,6 +21,7 @@ import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.serialization.json.Json
 
 @Singleton
 @Component(
@@ -61,9 +62,11 @@ object PushContentModule {
     fun provideDecryptionPushContentService(
         pushKeyProvider: PushKeyProvider,
         cryptoService: CryptoService,
+        json: Json
     ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
         pushKeyProvider = pushKeyProvider,
         cryptoService = cryptoService,
+        json = json
     )
 }
 
@@ -75,4 +78,5 @@ interface PushContentDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun provider(): StringResourceProvider
     fun notificationBuilder(): NotificationBuilder
+    fun json(): Json
 }

@@ -29,6 +29,7 @@ import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
 import com.anytypeio.anytype.domain.chats.PushKeySpaceViewChannel
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import kotlinx.serialization.json.Json
 
 @Module
 object NotificationsModule {
@@ -81,13 +82,13 @@ object NotificationsModule {
         dispatchers: AppCoroutineDispatchers,
         @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         channel: PushKeyChannel,
-        gson: Gson
+        json: Json
     ): PushKeyProvider = PushKeyProviderImpl(
         sharedPreferences = sharedPreferences,
         dispatchers = dispatchers,
         scope = scope,
         channel = channel,
-        gson = gson
+        json = json
     )
 
     @JvmStatic

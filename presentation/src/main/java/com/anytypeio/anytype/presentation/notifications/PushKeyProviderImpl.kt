@@ -4,8 +4,8 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -15,7 +15,7 @@ import timber.log.Timber
 class PushKeyProviderImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val channel: PushKeyChannel,
-    private val gson: Gson,
+    private val json: Json,
     private val dispatchers: AppCoroutineDispatchers,
     private val scope: CoroutineScope
 ) : PushKeyProvider {
@@ -52,19 +52,29 @@ class PushKeyProviderImpl @Inject constructor(
         }
 
         sharedPreferences.edit().apply {
-            putString(PREF_PUSH_KEYS, gson.toJson(storedKeys))
+            putString(PREF_PUSH_KEYS, json.encodeToString(storedKeys))
             apply()
         }
     }
 
     override fun getPushKey(): Map<String, PushKey> {
         val storedKeysJson = sharedPreferences.getString(PREF_PUSH_KEYS, "{}") ?: "{}"
-        return gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
+        return try {
+            json.decodeFromString<Map<String, PushKey>>(storedKeysJson)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to decode push keys")
+            emptyMap()
+        }
     }
 
     private fun getStoredPushKeys(): Map<String, PushKey> {
         val storedKeysJson = sharedPreferences.getString(PREF_PUSH_KEYS, "{}") ?: "{}"
-        return gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
+        return try {
+            json.decodeFromString<Map<String, PushKey>>(storedKeysJson)
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to decode push keys")
+            emptyMap()
+        }
     }
 
     companion object {

@@ -803,7 +803,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        SideEffectHandler()
+        sideEffectHandler()
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
@@ -819,9 +819,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     }
 
-    private fun SideEffectHandler() {
-        if (sideEffect !is OpenObjectNavigation.SideEffect.None) {
-            binding.editorDatePicker.apply {
+    private fun sideEffectHandler() {
+        if (sideEffect is OpenObjectNavigation.SideEffect.AttachToChat) {
+            binding.attachToChatPanel.apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
                     AttachToChatToolbar(
@@ -834,8 +834,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                                     FragmentResultContract.ATTACH_TO_CHAT_TARGET_ID_KEY to ctx
                                 )
 
-                                val imm =
-                                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                // Closing keyboard before exit
+                                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                                 val focus = requireActivity().currentFocus ?: View(requireContext())
                                 imm.hideSoftInputFromWindow(focus.windowToken, 0)
 
@@ -845,9 +845,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
                                 parentFragmentManager.popBackStack()
                             }
+                        },
+                        onCancelClicked = {
+                            binding.attachToChatPanel.gone()
                         }
                     )
                 }
+                visible()
             }
         }
     }

@@ -1882,6 +1882,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_file">Upload file</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
+    <string name="chat_attach">Attach</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
 

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -31,14 +32,14 @@ fun AttachToChatToolbar(
     ){
         ButtonPrimary(
             modifier = Modifier.weight(1f),
-            text = "Cancel",
+            text = stringResource(R.string.cancel),
             onClick = onCancelClicked,
             size = ButtonSize.Large
         )
         Spacer(modifier = Modifier.width(8.dp))
         ButtonPrimary(
             modifier = Modifier.weight(1f),
-            text = "Attach",
+            text = stringResource(R.string.chat_attach),
             onClick = onAttachClicked,
             size = ButtonSize.Large
         )

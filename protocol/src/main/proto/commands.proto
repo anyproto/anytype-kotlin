@@ -7968,6 +7968,71 @@ message Rpc {
                 }
             }
         }
+
+        message CodeGetInfo {
+            message Request {
+                string code = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                // which tier current code can unlock
+                uint32 requestedTier = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+
+                        CODE_NOT_FOUND = 5;
+                        CODE_ALREADY_USED = 6;
+                    }
+                }
+            }
+        }
+
+        message CodeRedeem {
+            message Request {
+                string code = 1;
+
+                string nsName = 2;
+
+                anytype.model.NameserviceNameType nsNameType = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                // which tier does the current code unlock
+                uint32 requestedTier = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+
+                        CODE_NOT_FOUND = 5;
+                        CODE_ALREADY_USED = 6;
+                        BAD_ANYNAME = 7;
+                    }
+                }
+            }
+        }
     }
 
     message NameService {

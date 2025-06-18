@@ -1506,6 +1506,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onCreateAndAttachObject() {
+        Timber.d("DROID-2966 onCreateAndAttachObject")
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
@@ -1521,7 +1522,7 @@ class ChatViewModel @Inject constructor(
                     )
                 )
             }.onFailure {
-
+                Timber.d(it, "DROID-2966 Error while creating attach-to-chat object")
             }
         }
     }

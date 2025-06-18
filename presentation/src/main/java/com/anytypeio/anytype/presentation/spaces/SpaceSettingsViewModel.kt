@@ -311,7 +311,8 @@ class SpaceSettingsViewModel(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true,
-                    notificationState = notificationState
+                    notificationState = notificationState,
+                    spaceViewId = spaceView.id
                 )
 
             }.collect { update ->
@@ -447,11 +448,11 @@ class SpaceSettingsViewModel(
 
             is UiEvent.OnNotificationsSetting -> {
                 setNotificationState(
-                    space = vmParams.space.id,
+                    space = uiEvent.spaceViewId,
                     newState = when (uiEvent) {
-                        UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
-                        UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
-                        UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
+                        is UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
+                        is UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
+                        is UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
                     }
                 )
             }

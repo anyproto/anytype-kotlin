@@ -13,7 +13,8 @@ sealed class UiSpaceSettingsState {
         val spaceTechInfo: SpaceTechInfo,
         val items: List<UiSpaceSettingsItem>,
         val isEditEnabled: Boolean,
-        val notificationState: NotificationState
+        val notificationState: NotificationState,
+        val spaceViewId: Id
     ) : UiSpaceSettingsState() {
         val name: String = items.filterIsInstance<UiSpaceSettingsItem.Name>()
             .firstOrNull()?.name ?: EMPTY_STRING_VALUE

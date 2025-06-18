@@ -34,8 +34,9 @@ sealed class UiEvent {
     }
 
     sealed class OnNotificationsSetting : UiEvent() {
-        data object All : OnNotificationsSetting()
-        data object Mentions : OnNotificationsSetting()
-        data object None : OnNotificationsSetting()
+        abstract val spaceViewId: Id
+        data class All(override val spaceViewId: Id) : OnNotificationsSetting()
+        data class Mentions(override val spaceViewId: Id) : OnNotificationsSetting()
+        data class None(override val spaceViewId: Id) : OnNotificationsSetting()
     }
 }

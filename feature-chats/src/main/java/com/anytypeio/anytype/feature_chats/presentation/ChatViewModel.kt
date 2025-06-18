@@ -44,6 +44,7 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -110,7 +111,8 @@ class ChatViewModel @Inject constructor(
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val openObject: OpenObject,
     private val closeObject: CloseObject,
-    private val createObject: CreateObject
+    private val createObject: CreateObject,
+    private val getObject: GetObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -916,6 +918,40 @@ class ChatViewModel @Inject constructor(
                 wrapper = obj
             )
         )
+    }
+
+    fun onAttachObject(target: Id) {
+        Timber.d("DROID-2966 onAttachObject: $target")
+        viewModelScope.launch {
+            getObject.async(
+                GetObject.Params(
+                    target = target,
+                    space = vmParams.space
+                )
+            ).onSuccess { view ->
+                val wrapper = ObjectWrapper.Basic(view.details[target].orEmpty())
+                Timber.e("DROID-2966 Fetched attach-to-chat target: $wrapper")
+                if (wrapper.isValid) {
+                    chatBoxAttachments.value += listOf(
+                        ChatView.Message.ChatBoxAttachment.Link(
+                            target = target,
+                            wrapper = GlobalSearchItemView(
+                                id = target,
+                                obj = wrapper,
+                                title = wrapper.name.orEmpty(),
+                                icon = ObjectIcon.None,
+                                layout = wrapper.layout ?: ObjectType.Layout.BASIC,
+                                space = vmParams.space,
+                                type = wrapper.type.firstOrNull().orEmpty(),
+                                meta = GlobalSearchItemView.Meta.None
+                            )
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "DROID-2966 Error while getting attach-to-chat target")
+            }
+        }
     }
 
     fun onClearAttachmentClicked(attachment: ChatView.Message.ChatBoxAttachment) {

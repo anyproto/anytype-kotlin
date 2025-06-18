@@ -7,12 +7,13 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import javax.inject.Inject
 
 /**
  * Use-case for opening an object as preview — without subscribing to its subsequent changes.
  * If you want to receive payload events, you should use [OpenObject] instead.
  */
-class GetObject(
+class GetObject @Inject constructor(
     private val repo: BlockRepository,
     private val settings: UserSettingsRepository,
     dispatchers: AppCoroutineDispatchers

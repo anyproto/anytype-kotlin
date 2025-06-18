@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
+import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.net.Uri
@@ -17,6 +18,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -127,6 +129,7 @@ import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
+import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -800,24 +803,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        if (sideEffect !is OpenObjectNavigation.SideEffect.None) {
-            binding.editorDatePicker.apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    AttachToChatToolbar(
-                        onAttachClicked = {
-                            val effect = sideEffect
-                            if (effect is OpenObjectNavigation.SideEffect.AttachToChat) {
-                                vm.onAttachToChatClicked(
-                                    chat = effect.chat,
-                                    space = effect.space
-                                )
-                            }
-                        }
-                    )
-                }
-            }
-        }
+        SideEffectHandler()
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
@@ -831,6 +817,39 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
 
+    }
+
+    private fun SideEffectHandler() {
+        if (sideEffect !is OpenObjectNavigation.SideEffect.None) {
+            binding.editorDatePicker.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    AttachToChatToolbar(
+                        onAttachClicked = {
+                            val effect = sideEffect
+                            if (effect is OpenObjectNavigation.SideEffect.AttachToChat) {
+                                val bundle = bundleOf(
+                                    FragmentResultContract.ATTACH_TO_CHAT_CHAT_ID_KEY to effect.chat,
+                                    FragmentResultContract.ATTACH_TO_CHAT_SPACE_ID_KEY to effect.space,
+                                    FragmentResultContract.ATTACH_TO_CHAT_TARGET_ID_KEY to ctx
+                                )
+
+                                val imm =
+                                    requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                val focus = requireActivity().currentFocus ?: View(requireContext())
+                                imm.hideSoftInputFromWindow(focus.windowToken, 0)
+
+                                parentFragmentManager.setFragmentResult(
+                                    FragmentResultContract.ATTACH_TO_CHAT_CONTRACT_KEY, bundle
+                                )
+
+                                parentFragmentManager.popBackStack()
+                            }
+                        }
+                    )
+                }
+            }
+        }
     }
 
     open fun setupWindowInsetAnimation() {

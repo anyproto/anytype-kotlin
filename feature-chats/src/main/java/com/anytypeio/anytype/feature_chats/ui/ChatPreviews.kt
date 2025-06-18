@@ -213,7 +213,8 @@ fun ChatScreenPreview() {
         onGoToMentionClicked = {},
         onShareInviteClicked = {},
         onImageCaptured = {},
-        onVideoCaptured = {}
+        onVideoCaptured = {},
+        onCreateAndAttachObject = {}
     )
 }
 

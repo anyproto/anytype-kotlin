@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -108,7 +109,8 @@ class ChatViewModel @Inject constructor(
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val openObject: OpenObject,
-    private val closeObject: CloseObject
+    private val closeObject: CloseObject,
+    private val createObject: CreateObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -1463,6 +1465,20 @@ class ChatViewModel @Inject constructor(
                 }
             }.onFailure {
                 Timber.e(it, "Failed to get link preview")
+            }
+        }
+    }
+
+    fun onCreateAndAttachObject() {
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    space = vmParams.space
+                )
+            ).onSuccess { result ->
+                navigation.emit(result.obj.navigation())
+            }.onFailure {
+
             }
         }
     }

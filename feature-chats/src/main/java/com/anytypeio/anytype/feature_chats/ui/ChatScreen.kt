@@ -1,28 +1,22 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,7 +33,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -53,15 +46,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -72,9 +60,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
@@ -91,7 +76,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -103,9 +87,6 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.roundToInt
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
@@ -290,7 +271,8 @@ fun ChatScreenWrapper(
                     )
                 )
             },
-            onRequestVideoPlayer = onRequestVideoPlayer
+            onRequestVideoPlayer = onRequestVideoPlayer,
+            onCreateAndAttachObject = vm::onCreateAndAttachObject
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -426,7 +408,8 @@ fun ChatScreen(
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    onCreateAndAttachObject: () -> Unit
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -908,7 +891,8 @@ fun ChatScreen(
                 spans = spans,
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
-                onVideoCaptured = onVideoCaptured
+                onVideoCaptured = onVideoCaptured,
+                onCreateAndAttachObject = onCreateAndAttachObject
             )
         }
     }

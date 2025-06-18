@@ -1020,22 +1020,6 @@ fun ChatBoxEditPanel(
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.chat_attachment_create_object),
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    },
-                    onClick = {
-                        showDropdownMenu = false
-                        onCreateAndAttachObject()
-                    }
-                )
-                Divider(
-                    paddingStart = 0.dp,
-                    paddingEnd = 0.dp
-                )
                 DropdownMenu(
                     offset = DpOffset(8.dp, 40.dp),
                     expanded = showDropdownMenu,
@@ -1049,6 +1033,22 @@ fun ChatBoxEditPanel(
                         ),
                     properties = PopupProperties(focusable = false)
                 ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_create_object),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCreateAndAttachObject()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
                     DropdownMenuItem(
                         text = {
                             Text(

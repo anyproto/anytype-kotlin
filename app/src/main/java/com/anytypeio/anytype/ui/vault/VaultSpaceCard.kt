@@ -87,7 +87,7 @@ fun VaultSpaceCard(
 }
 
 @Composable
-private fun BoxScope.ContentSpace(
+private fun ContentSpace(
     title: String,
     subtitle: String,
 ) {

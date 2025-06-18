@@ -105,6 +105,7 @@ fun ChatBox(
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
     onAttachObjectClicked: () -> Unit,
+    onCreateAndAttachObject: () -> Unit,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
@@ -317,6 +318,22 @@ fun ChatBox(
                                     ),
                                 properties = PopupProperties(focusable = false)
                             ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = stringResource(R.string.chat_attachment_create_object),
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    },
+                                    onClick = {
+                                        showDropdownMenu = false
+                                        onCreateAndAttachObject()
+                                    }
+                                )
+                                Divider(
+                                    paddingStart = 0.dp,
+                                    paddingEnd = 0.dp
+                                )
                                 DropdownMenuItem(
                                     text = {
                                         Text(
@@ -611,7 +628,8 @@ fun ChatBox(
                         },
                         onRecordVideoClicked = {
                             recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
+                        },
+                        onCreateAndAttachObject = onCreateAndAttachObject
                     )
                 }
             }
@@ -967,7 +985,8 @@ fun ChatBoxEditPanel(
     onUploadMediaClicked: () -> Unit,
     onUploadFileClicked: () -> Unit,
     onTakePhotoClicked: () -> Unit,
-    onRecordVideoClicked: () -> Unit
+    onRecordVideoClicked: () -> Unit,
+    onCreateAndAttachObject: () -> Unit,
 ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -1014,6 +1033,22 @@ fun ChatBoxEditPanel(
                         ),
                     properties = PopupProperties(focusable = false)
                 ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.chat_attachment_create_object),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCreateAndAttachObject()
+                        }
+                    )
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp
+                    )
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -1182,6 +1217,7 @@ fun ChatBoxEditPanelPreview() {
         onUploadFileClicked = {},
         onUploadMediaClicked = {},
         onTakePhotoClicked = {},
-        onRecordVideoClicked = {}
+        onRecordVideoClicked = {},
+        onCreateAndAttachObject = {}
     )
 }

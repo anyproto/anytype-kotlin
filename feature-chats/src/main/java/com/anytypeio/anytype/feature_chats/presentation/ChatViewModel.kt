@@ -44,11 +44,13 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -108,7 +110,9 @@ class ChatViewModel @Inject constructor(
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val openObject: OpenObject,
-    private val closeObject: CloseObject
+    private val closeObject: CloseObject,
+    private val createObject: CreateObject,
+    private val getObject: GetObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -916,6 +920,40 @@ class ChatViewModel @Inject constructor(
         )
     }
 
+    fun onAttachObject(target: Id) {
+        Timber.d("DROID-2966 onAttachObject: $target")
+        viewModelScope.launch {
+            getObject.async(
+                GetObject.Params(
+                    target = target,
+                    space = vmParams.space
+                )
+            ).onSuccess { view ->
+                val wrapper = ObjectWrapper.Basic(view.details[target].orEmpty())
+                Timber.e("DROID-2966 Fetched attach-to-chat target: $wrapper")
+                if (wrapper.isValid) {
+                    chatBoxAttachments.value += listOf(
+                        ChatView.Message.ChatBoxAttachment.Link(
+                            target = target,
+                            wrapper = GlobalSearchItemView(
+                                id = target,
+                                obj = wrapper,
+                                title = wrapper.name.orEmpty(),
+                                icon = ObjectIcon.None,
+                                layout = wrapper.layout ?: ObjectType.Layout.BASIC,
+                                space = vmParams.space,
+                                type = wrapper.type.firstOrNull().orEmpty(),
+                                meta = GlobalSearchItemView.Meta.None
+                            )
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "DROID-2966 Error while getting attach-to-chat target")
+            }
+        }
+    }
+
     fun onClearAttachmentClicked(attachment: ChatView.Message.ChatBoxAttachment) {
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
@@ -1463,6 +1501,28 @@ class ChatViewModel @Inject constructor(
                 }
             }.onFailure {
                 Timber.e(it, "Failed to get link preview")
+            }
+        }
+    }
+
+    fun onCreateAndAttachObject() {
+        Timber.d("DROID-2966 onCreateAndAttachObject")
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    space = vmParams.space
+                )
+            ).onSuccess { result ->
+                navigation.emit(
+                    result.obj.navigation(
+                        effect = OpenObjectNavigation.SideEffect.AttachToChat(
+                            chat = vmParams.ctx,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }.onFailure {
+                Timber.d(it, "DROID-2966 Error while creating attach-to-chat object")
             }
         }
     }

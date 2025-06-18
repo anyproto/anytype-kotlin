@@ -1607,9 +1607,11 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="date_layout_alert_date_out_of_range">De geselecteerde datum valt buiten het geldige bereik (jaren %1$d tot %2$d). Selecteer alsjeblieft een datum binnen dit bereik.</string>
     <string name="date_layout_item_created_by">door</string>
     <string name="chat_attachment_object">Selecteer bestaand object</string>
+    <string name="chat_attachment_create_object">Maak object</string>
     <string name="chat_attachment_file">Upload bestand</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
+    <string name="chat_attach">Voeg bij</string>
     <string name="chats_reply">Antwoord</string>
     <string name="chats_add_reaction">Voeg reactie toe</string>
     <string name="chat_send_message_rate_limit_title">Wacht even! Turbo typen gedetecteerd!</string>

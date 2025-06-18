@@ -1607,9 +1607,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="date_layout_alert_date_out_of_range">Seçilen tarih geçerli tarih aralığının dışında (%1$d ile %2$d yılları arasında). Lütfen bu aralıkta bir tarih seçin.</string>
     <string name="date_layout_item_created_by">tarafından</string>
     <string name="chat_attachment_object">Mevcut nesneyi seç</string>
+    <string name="chat_attachment_create_object">Nesne oluştur</string>
     <string name="chat_attachment_file">Dosya yükle</string>
     <string name="chat_attachment_media">Ortam yükle</string>
     <string name="chat_attachment_upload">Yükle</string>
+    <string name="chat_attach">Ekle</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="chats_add_reaction">Tepki Ekle</string>
     <string name="chat_send_message_rate_limit_title">Durun! Turbo yazım algılandı!</string>

@@ -1633,9 +1633,11 @@
     <string name="date_layout_alert_date_out_of_range">The selected date is out of the valid range (years %1$d to %2$d). Please select a date within this range.</string>
     <string name="date_layout_item_created_by">ад</string>
     <string name="chat_attachment_object">Select existing object</string>
+    <string name="chat_attachment_create_object">Стварыць аб\'ект</string>
     <string name="chat_attachment_file">Запампаваць файл</string>
     <string name="chat_attachment_media">Запампаваць медыя</string>
     <string name="chat_attachment_upload">Запампаваць</string>
+    <string name="chat_attach">Attach</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Дадаць рэакцыю</string>
     <string name="chat_send_message_rate_limit_title">Hold up! Turbo typing detected!</string>

@@ -1607,9 +1607,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="date_layout_alert_date_out_of_range">Das ausgewählte Datum liegt außerhalb des gültigen Bereichs (Jahre %1$d bis %2$d). Bitte wähle ein Datum innerhalb dieses Bereichs aus.</string>
     <string name="date_layout_item_created_by">von</string>
     <string name="chat_attachment_object">Bestehendes Objekt auswählen</string>
+    <string name="chat_attachment_create_object">Objekt erstellen</string>
     <string name="chat_attachment_file">Datei hochladen</string>
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
+    <string name="chat_attach">Anhängen</string>
     <string name="chats_reply">Antworten</string>
     <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="chat_send_message_rate_limit_title">Moment mal! Turbotippen erkannt!</string>

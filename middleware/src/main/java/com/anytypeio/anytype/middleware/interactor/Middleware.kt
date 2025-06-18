@@ -3067,7 +3067,7 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun setSpaceMode(spaceViewId: Id, mode: NotificationState): Rpc.PushNotification.SetSpaceMode.Response {
         val request = Rpc.PushNotification.SetSpaceMode.Request(
-            spaceViewId = spaceViewId,
+            spaceId = spaceViewId,
             mode = mode.toMiddlewareModel()
         )
         logRequestIfDebug(request)

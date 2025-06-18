@@ -1636,9 +1636,11 @@
     <string name="date_layout_alert_date_out_of_range">Выбранная дата вне допустимого диапазона (лет %1$d %2$d). Пожалуйста, выберите дату в этом диапазоне.</string>
     <string name="date_layout_item_created_by">от</string>
     <string name="chat_attachment_object">Выберите существующий объект</string>
+    <string name="chat_attachment_create_object">Создать объект</string>
     <string name="chat_attachment_file">Загрузить файл</string>
     <string name="chat_attachment_media">Загрузить медиафайл</string>
     <string name="chat_attachment_upload">Загрузить</string>
+    <string name="chat_attach">Прикрепить</string>
     <string name="chats_reply">Ответить</string>
     <string name="chats_add_reaction">Добавить реакцию</string>
     <string name="chat_send_message_rate_limit_title">Удерживаем! Обнаружен Turbo typing!</string>

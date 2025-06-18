@@ -7,6 +7,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,6 +39,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -49,9 +55,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -63,6 +74,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
@@ -91,7 +103,12 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
+import kotlin.math.abs
+import kotlin.math.atan2
+import kotlin.math.roundToInt
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -414,15 +431,53 @@ fun ChatScreen(
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
 
+    val scope = rememberCoroutineScope()
+
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
 
+    var highlightedMessageId by remember { mutableStateOf<Id?>(null) }
+
+    val triggerHighlight: (Id) -> Unit = { id ->
+        highlightedMessageId = id
+        scope.launch {
+            delay(1000)
+            highlightedMessageId = null
+        }
+    }
+
+    // Floating date header tracking
+
+    val isFloatingDateVisible = remember { mutableStateOf(false) }
+    val floatingDateState = rememberFloatingDateHeaderState(lazyListState, messages)
+    var scrollDebounceJob by remember { mutableStateOf<Job?>(null) }
+
+    LaunchedEffect(lazyListState) {
+        snapshotFlow { lazyListState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (isScrolling) {
+                    // Show header immediately on scroll start
+                    isFloatingDateVisible.value = true
+
+                    // Cancel existing debounce job if still running
+                    scrollDebounceJob?.cancel()
+                } else {
+                    // Start debounce to hide after 1000ms of no scroll
+                    scrollDebounceJob = scope.launch {
+                        delay(FLOATING_DATE_DELAY)
+                        isFloatingDateVisible.value = false
+                    }
+                }
+            }
+    }
+
     var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
-    val chatBoxFocusRequester = FocusRequester()
+    val chatBoxFocusRequester = remember { FocusRequester() }
 
-    val scope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
 
@@ -430,6 +485,7 @@ fun ChatScreen(
 
     // Applying view model intents
     LaunchedEffect(intent) {
+        Timber.d("DROID-2966 New intent: $intent")
         when (intent) {
             is ChatContainer.Intent.ScrollToMessage -> {
                 isPerformingScrollIntent.value = true
@@ -449,6 +505,12 @@ fun ChatScreen(
                         }
                     }
                     awaitFrame()
+
+                    if (intent.highlight) {
+                        highlightedMessageId = intent.id
+                        delay(500)
+                        highlightedMessageId = null
+                    }
                 } else {
                     Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
@@ -463,9 +525,6 @@ fun ChatScreen(
                 isPerformingScrollIntent.value = false
                 onClearIntent()
             }
-            is ChatContainer.Intent.Highlight -> {
-                // maybe flash background, etc.
-            }
             ChatContainer.Intent.None -> Unit
         }
     }
@@ -474,7 +533,6 @@ fun ChatScreen(
     LaunchedEffect(lazyListState, messages) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
-                // TODO optimise by only sending event when scrolling towards bottom
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -487,7 +545,6 @@ fun ChatScreen(
                     .filterIsInstance<ChatView.Message>()
 
                 if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
-                    // TODO could be optimised by passing order ID
                     visibleMessages.first().id to visibleMessages.last().id
                 } else null
             }
@@ -579,12 +636,22 @@ fun ChatScreen(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
-                        chatBoxFocusRequester.requestFocus()
+                        scope.launch {
+                            delay(100) // optionally delay to let layout settle
+                            chatBoxFocusRequester.requestFocus()
+                            delay(50) // small buffer
+                            keyboardController?.show()
+                        }
                     }
                 },
                 onReplyMessage = {
                     onReplyMessage(it)
-                    chatBoxFocusRequester.requestFocus()
+                    scope.launch {
+                        delay(100) // optionally delay to let layout settle
+                        chatBoxFocusRequester.requestFocus()
+                        delay(50) // small buffer
+                        keyboardController?.show()
+                    }
                 },
                 onMarkupLinkClicked = onMarkupLinkClicked,
                 onAddReactionClicked = onAddReactionClicked,
@@ -595,7 +662,9 @@ fun ChatScreen(
                 isReadOnly = isReadOnly,
                 onShareInviteClicked = onShareInviteClicked,
                 canCreateInviteLink = canCreateInviteLink,
-                onRequestVideoPlayer = onRequestVideoPlayer
+                onRequestVideoPlayer = onRequestVideoPlayer,
+                highlightedMessageId = highlightedMessageId,
+                onHighlightMessage = triggerHighlight
             )
 
             GoToMentionButton(
@@ -775,6 +844,15 @@ fun ChatScreen(
                     }
                 }
             }
+
+            if (isFloatingDateVisible.value && floatingDateState.value != null) {
+                FloatingDateHeader(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 8.dp),
+                    text = floatingDateState.value.orEmpty()
+                )
+            }
         }
 
         if (isReadOnly) {
@@ -853,12 +931,14 @@ fun Messages(
     onMemberIconClicked: (Id?) -> Unit,
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
+    onHighlightMessage: (Id) -> Unit,
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
+    highlightedMessageId: Id?
 ) {
-//    Timber.d("DROID-2966 Messages composition: ${messages.map { if (it is ChatView.Message) it.content.msg else it }}")
+    Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
     LazyColumn(
@@ -876,13 +956,20 @@ fun Messages(
             }
         ) { idx, msg ->
             if (msg is ChatView.Message) {
+
+                val isHighlighted = msg.id == highlightedMessageId
+
                 if (idx == 0)
                     Spacer(modifier = Modifier.height(36.dp))
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .animateItem(),
+                        .animateItem()
+                        .horizontalSwipeToReply(
+                            swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() },
+                            onReplyTriggered = { onReplyMessage(msg) }
+                        ),
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End
                     else
@@ -935,6 +1022,7 @@ fun Messages(
                             scope.launch {
                                 if (targetIndex != -1 && targetIndex < scrollState.layoutInfo.totalItemsCount) {
                                     scrollState.animateScrollToItem(index = targetIndex)
+                                    onHighlightMessage(reply.msg)
                                 } else {
                                     // Defer to VM: message likely not yet in the list (e.g. paged)
                                     onScrollToReplyClicked(reply.msg)
@@ -949,7 +1037,8 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer
+                        onRequestVideoPlayer = onRequestVideoPlayer,
+                        isHighlighted = isHighlighted
                     )
                 }
                 if (idx == messages.lastIndex) {
@@ -1037,50 +1126,27 @@ fun Messages(
 }
 
 @Composable
-fun TopDiscussionToolbar(
-    title: String? = null,
-    isHeaderVisible: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .align(Alignment.Center)
-                    .background(color = Color.Green, shape = CircleShape)
-            )
-        }
-        Text(
-            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
-            style = PreviewTitle2Regular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
-                contentDescription = "Three dots menu",
-                modifier = Modifier.align(Alignment.Center)
-            )
+fun rememberFloatingDateHeaderState(
+    lazyListState: LazyListState,
+    messages: List<ChatView>
+): State<String?> {
+    val topDate = remember { mutableStateOf<String?>(null) }
+
+    val topVisibleIndex by remember {
+        derivedStateOf {
+            lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
         }
     }
+
+    LaunchedEffect(topVisibleIndex, messages) {
+        val msg = messages.getOrNull(topVisibleIndex ?: return@LaunchedEffect) as? ChatView.Message
+        val newDate = msg?.formattedDate
+        if (newDate != null && newDate != topDate.value) {
+            topDate.value = newDate
+        }
+    }
+
+    return topDate
 }
 
 suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
@@ -1098,13 +1164,7 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-@Composable
-fun TopDiscussionToolbarPreview() {
-    TopDiscussionToolbar()
-}
-
 private const val DATE_KEY_PREFIX = "date-"
-private const val HEADER_KEY = "key.discussions.item.header"
 private val JumpToBottomThreshold = 200.dp
+private const val FLOATING_DATE_DELAY = 1000L
+private const val MIN_DRAG_DURATION_MS = 200L

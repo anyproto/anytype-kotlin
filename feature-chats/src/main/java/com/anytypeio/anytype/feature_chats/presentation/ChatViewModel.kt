@@ -44,9 +44,11 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -72,6 +74,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -103,7 +106,9 @@ class ChatViewModel @Inject constructor(
     private val makeSpaceShareable: MakeSpaceShareable,
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
-    private val clearChatsTempFolder: ClearChatsTempFolder
+    private val clearChatsTempFolder: ClearChatsTempFolder,
+    private val openObject: OpenObject,
+    private val closeObject: CloseObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -173,18 +178,21 @@ class ChatViewModel @Inject constructor(
 
         // Check if we should show invite modal for newly created Chat spaces
         viewModelScope.launch {
+
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.space)
+                .onFailure { Timber.e(it, "Error while getting space invite link") }
+                .getOrNull()
+
             combine(
                 spaceViews.observe(vmParams.space),
                 canCreateInviteLink,
                 uiState
-            ) { spaceView, canCreateInvite, chatState ->
-                // Show invite modal if:
-                // 1. It's a Chat space (spaceUxType == SpaceUxType.CHAT)
-                // 2. User can create invite links (is owner)
-                // 3. Chat is empty (no messages) - indicates it's newly created
-                spaceView.spaceUxType == SpaceUxType.CHAT &&
-                canCreateInvite &&
-                chatState.messages.isEmpty()
+            ) { spaceView, canCreateInvite, ui ->
+                spaceView.spaceUxType == SpaceUxType.CHAT
+                        && canCreateInvite
+                        && inviteLink == null
+                        && ui.messages.isEmpty()
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
                 if (shouldShow) {
@@ -208,8 +216,21 @@ class ChatViewModel @Inject constructor(
                     account = acc.id
                 }
                 .onFailure {
-                    Timber.e("Failed to find account for space-level chat")
+                    Timber.e(it,"Failed to find account for space-level chat")
                 }
+
+            openObject.async(
+                params = OpenObject.Params(
+                    obj = vmParams.ctx,
+                    spaceId = vmParams.space,
+                    saveAsLastOpened = false
+                )
+            ).onSuccess {
+                Timber.d("DROID-2966 Succesfully opened chat-object session")
+            }.onFailure {
+                Timber.e(it, "Failed to open chat-object session")
+            }
+
             proceedWithObservingChatMessages(
                 account = account,
                 chat = vmParams.ctx
@@ -245,6 +266,8 @@ class ChatViewModel @Inject constructor(
                 var prevDateInterval: Long = 0
 
                 result.messages.forEach { msg ->
+
+                    val formattedMsgDate = dateFormatter.format(msg.createdAt * 1000)
 
                     val isPrevTimeIntervalBig = if (prevDateInterval > 0) {
                         (msg.createdAt - prevDateInterval) > ChatConfig.GROUPING_DATE_INTERVAL_IN_SECONDS
@@ -425,10 +448,11 @@ class ChatViewModel @Inject constructor(
                         } else {
                             ChatView.Message.Avatar.Initials(member?.name.orEmpty())
                         },
-                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id
+                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id,
+                        formattedDate = formattedMsgDate
                     )
                     val currDate = ChatView.DateSection(
-                        formattedDate = dateFormatter.format(msg.createdAt * 1000),
+                        formattedDate = formattedMsgDate,
                         timeInMillis = msg.createdAt * 1000L
                     )
                     if (currDate.formattedDate != previousDate?.formattedDate) {
@@ -1064,6 +1088,16 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
+            }
+            closeObject.async(
+                params = CloseObject.Params(
+                    space = vmParams.space,
+                    target = vmParams.ctx
+                )
+            ).onFailure {
+                Timber.e(it, "Error while closing chat object: ${vmParams.ctx}")
+            }.onSuccess {
+                Timber.d("Successfully close chat object: ${vmParams.ctx}")
             }
             if (isSpaceRoot) {
                 Timber.d("Root space screen. Releasing resources...")

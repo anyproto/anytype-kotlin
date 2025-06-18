@@ -442,7 +442,7 @@ private fun LazyColumnContent(
                             onItemLongClicked = {
 
                             },
-                            modifier = Modifier.animateItemPlacement(),
+                            modifier = Modifier.animateItem(),
                             isSelected = view.isDefault
                         )
                     }
@@ -453,7 +453,6 @@ private fun LazyColumnContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ObjectTypeItem(
     modifier: Modifier,

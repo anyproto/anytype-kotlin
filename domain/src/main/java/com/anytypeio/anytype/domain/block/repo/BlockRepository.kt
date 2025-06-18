@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -46,7 +47,6 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
-import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 
@@ -124,7 +124,7 @@ interface BlockRepository {
     @Deprecated("To be deleted")
     suspend fun openObjectSet(id: String, space: SpaceId): Result<Payload>
 
-    suspend fun closePage(id: String, space: Space)
+    suspend fun closeObject(id: String, space: Space)
 
     /**
      * Upload media or file block by path or url.
@@ -523,6 +523,8 @@ interface BlockRepository {
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+
+    suspend fun setAppState(state: AppState)
 
     suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
 

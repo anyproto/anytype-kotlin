@@ -33,7 +33,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -103,7 +103,7 @@ object HomeScreenModule {
     fun closeObject(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): CloseBlock = CloseBlock(
+    ): CloseObject = CloseObject(
         repo = repo,
         dispatchers = dispatchers
     )

@@ -6,7 +6,7 @@ kspVersion = "2.0.21-1.0.25"
 androidxCoreVersion = "1.16.0"
 customTabsVersion = "1.8.0"
 
-androidxComposeVersion = '1.7.8'
+androidxComposeVersion = '1.8.2'
 composeMaterial3Version = '1.3.2'
 composeMaterialVersion = '1.7.8'
 composeConstraintLayoutVersion = '1.1.1'
@@ -19,8 +19,6 @@ accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
 fragmentVersion = "1.8.6"
 exoplayerVersion = "2.19.1"
-exoplayerMedia3Version = "1.7.1"
-media3UiVersion = "1.7.1"
 wireVersion = "4.9.8"
 glideVersion = "4.16.0"
 glideComposeVersion = "1.0.0-beta01"
@@ -38,8 +36,8 @@ androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.2.1'
 recyclerviewVersion = '1.4.0'
 emojiCompatVersion = '1.1.0'
-lifecycleVersion = '2.8.7'
-lifecycleRuntimeComposeVersion = '2.8.7'
+lifecycleVersion = '2.9.1'
+lifecycleRuntimeComposeVersion = '2.9.1'
 navigationVersion = '2.8.9'
 navigationComposeVersion = '2.8.9'
 shimmerLayoutVersion = '0.5.0'
@@ -118,6 +116,7 @@ lifecycleViewModel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", ve
 lifecycleRuntime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycleVersion" }
 lifecycleLiveData = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "lifecycleVersion" }
 lifecycleCompose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycleRuntimeComposeVersion" }
+lifecycleProcess = { module = "androidx.lifecycle:lifecycle-process", version.ref = "lifecycleVersion" }
 activityCompose = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }

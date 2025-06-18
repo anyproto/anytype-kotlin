@@ -1241,7 +1241,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Hak aksesmu di ruang %1$s telah diganti menjadi pembaca.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Hak aksesmu di ruang %1$s telah diganti menjadi penyunting.</string>
     <string name="multiplayer_notification_member_join_request_declined">Permintaanmu bergabung ke ruang %1$s telah ditolak.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">Kamu bergabung ke %1$s.</string>
     <string name="multiplayer_notification_request_declined">Permintaan ditolak</string>
     <string name="multiplayer_notification_view_request">Tampilan</string>
     <string name="multiplayer_notification_go_to_space">Kunjungi ruang</string>
@@ -1650,7 +1650,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="image">Gambar</string>
     <string name="images">Gambar</string>
     <string name="attachment">Lampiran</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments">Lampiran</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Buat ruang pertamamu untuk memulai</string>
     <string name="space_list_empty_state_it_is_empty_here">Di sini kosong.</string>
     <string name="emoji_category_smileys_and_people">Smiley &amp; Orang</string>
@@ -1789,7 +1789,14 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="chat_new_messages_section_text">Pesan baru</string>
     <string name="chat_box_camera">Kamera</string>
-    <string name="chat_box_take_photo">Take Photo</string>
-    <string name="chat_box_record_video">Record Video</string>
+    <string name="chat_box_take_photo">Ambil Gambar</string>
+    <string name="chat_box_record_video">Rekam Video</string>
     <string name="chat_camera_permission_denied">Izin kamera ditolak</string>
+    <string name="notifications_title">Pemberitahuan</string>
+    <string name="notifications_all">Semua aktivitas</string>
+    <string name="notifications_mentions">Hanya sebutan</string>
+    <string name="notifications_disable">Nonaktifkan notifikasi</string>
+    <string name="notifications_all_short">Semua</string>
+    <string name="notifications_mentions_short">Sebutan</string>
+    <string name="notifications_disable_short">Nonaktifkan</string>
 </resources>

@@ -88,7 +88,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
@@ -313,7 +313,7 @@ class EditorViewModel(
     private val vmParams: Params,
     private val permissions: UserPermissionProvider,
     private val openPage: OpenPage,
-    private val closePage: CloseBlock,
+    private val closePage: CloseObject,
     private val createBlockLinkWithObject: CreateBlockLinkWithObject,
     private val createObjectAsMentionOrLink: CreateObjectAsMentionOrLink,
     private val interceptEvents: InterceptEvents,
@@ -1262,7 +1262,7 @@ class EditorViewModel(
             Session.OPEN -> {
                 viewModelScope.launch {
                     closePage.async(
-                        CloseBlock.Params(
+                        CloseObject.Params(
                             vmParams.ctx,
                             vmParams.space
                         )
@@ -1286,7 +1286,7 @@ class EditorViewModel(
         viewModelScope.launch {
             clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
             closePage.async(
-                CloseBlock.Params(
+                CloseObject.Params(
                     vmParams.ctx,
                     vmParams.space
                 )
@@ -4498,7 +4498,7 @@ class EditorViewModel(
     fun proceedWithOpeningObject(target: Id) {
         viewModelScope.launch {
             closePage.async(
-                CloseBlock.Params(
+                CloseObject.Params(
                     vmParams.ctx,
                     vmParams.space
                 )
@@ -4521,7 +4521,7 @@ class EditorViewModel(
     private fun proceedWithCloseCurrentAndOpenObject(obj: ObjectWrapper.Basic) {
         jobs += viewModelScope.launch {
             closePage.async(
-                CloseBlock.Params(
+                CloseObject.Params(
                     vmParams.ctx,
                     vmParams.space
                 )
@@ -4609,7 +4609,7 @@ class EditorViewModel(
     ) {
         viewModelScope.launch {
             closePage.async(
-                CloseBlock.Params(
+                CloseObject.Params(
                     vmParams.ctx,
                     vmParams.space
                 )

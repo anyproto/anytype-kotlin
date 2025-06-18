@@ -45,7 +45,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
@@ -191,7 +191,7 @@ object ObjectSetModule {
     fun provideObjectSetViewModelFactory(
         params: ObjectSetViewModel.Params,
         openObjectSet: OpenObjectSet,
-        closeBlock: CloseBlock,
+        closeObject: CloseObject,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
         interceptEvents: InterceptEvents,
@@ -231,7 +231,7 @@ object ObjectSetModule {
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
-        closeBlock = closeBlock,
+        closeObject = closeObject,
         setObjectDetails = setObjectDetails,
         createDataViewObject = createDataViewObject,
         updateText = updateText,
@@ -349,7 +349,7 @@ object ObjectSetModule {
     fun provideClosePageUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): CloseBlock = CloseBlock(repo, dispatchers)
+    ): CloseObject = CloseObject(repo, dispatchers)
 
     @JvmStatic
     @Provides

@@ -9,8 +9,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.page.CloseBlock
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -98,8 +97,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     prefilled = emptyMap()
                 )
             )
-            doReturn(Resultat.success(Unit)).`when`(closeBlock).async(
-                CloseBlock.Params(mockObjectSet.root, SpaceId(defaultSpace))
+            doReturn(Resultat.success(Unit)).`when`(closeObject).async(
+                CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace))
             )
 
             // TESTING
@@ -122,8 +121,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             }
 
-            verifyBlocking(closeBlock, times(1)) {
-                async(CloseBlock.Params(mockObjectSet.root, SpaceId(defaultSpace)))
+            verifyBlocking(closeObject, times(1)) {
+                async(CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace)))
             }
         }
 
@@ -172,8 +171,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         prefilled = emptyMap()
                     )
                 )
-                doReturn(Resultat.success(Unit)).`when`(closeBlock).async(
-                    CloseBlock.Params(mockObjectSet.root, SpaceId(defaultSpace))
+                doReturn(Resultat.success(Unit)).`when`(closeObject).async(
+                    CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace))
                 )
 
                 // TESTING
@@ -267,8 +266,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     prefilled = emptyMap()
                 )
             )
-            doReturn(Resultat.success(Unit)).`when`(closeBlock).async(
-                CloseBlock.Params(mockObjectSet.root, SpaceId(defaultSpace))
+            doReturn(Resultat.success(Unit)).`when`(closeObject).async(
+                CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace))
             )
 
             // TESTING
@@ -291,7 +290,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             }
 
-            verifyNoInteractions(closeBlock)
+            verifyNoInteractions(closeObject)
         }
 
     @Test
@@ -352,8 +351,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     prefilled = emptyMap()
                 )
             )
-            doReturn(Resultat.success(Unit)).`when`(closeBlock).async(
-                CloseBlock.Params(objectCollection.root, SpaceId(defaultSpace))
+            doReturn(Resultat.success(Unit)).`when`(closeObject).async(
+                CloseObject.Params(objectCollection.root, SpaceId(defaultSpace))
             )
 
             // TESTING
@@ -376,7 +375,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             }
 
-            verifyNoInteractions(closeBlock)
+            verifyNoInteractions(closeObject)
         }
 
     private fun proceedWithStartingViewModel() {

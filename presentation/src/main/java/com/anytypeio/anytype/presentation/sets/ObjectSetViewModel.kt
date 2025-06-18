@@ -52,7 +52,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.page.CloseBlock
+import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.DataViewState
@@ -145,7 +145,7 @@ class ObjectSetViewModel(
     private val permissions: UserPermissionProvider,
     private val database: ObjectSetDatabase,
     private val openObjectSet: OpenObjectSet,
-    private val closeBlock: CloseBlock,
+    private val closeObject: CloseObject,
     private val setObjectDetails: UpdateDetail,
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
@@ -889,8 +889,8 @@ class ObjectSetViewModel(
     fun onCloseObject() {
         Timber.d("onCloseObject, id:[${vmParams.ctx}]")
         viewModelScope.launch {
-            closeBlock.async(
-                CloseBlock.Params(
+            closeObject.async(
+                CloseObject.Params(
                     target = vmParams.ctx,
                     space = vmParams.space
                 )
@@ -923,8 +923,8 @@ class ObjectSetViewModel(
 
     private fun proceedWithClosingAndExit() {
         viewModelScope.launch {
-            closeBlock.async(
-                CloseBlock.Params(
+            closeObject.async(
+                CloseObject.Params(
                     target = vmParams.ctx,
                     space = vmParams.space
                 )
@@ -1564,8 +1564,8 @@ class ObjectSetViewModel(
             target = target,
             space = space
         )
-        closeBlock.async(
-            CloseBlock.Params(
+        closeObject.async(
+            CloseObject.Params(
                 target = vmParams.ctx,
                 space = vmParams.space
             )
@@ -1600,8 +1600,8 @@ class ObjectSetViewModel(
         }
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
-            closeBlock.async(
-                CloseBlock.Params(
+            closeObject.async(
+                CloseObject.Params(
                     target = vmParams.ctx,
                     space = vmParams.space
                 )
@@ -1675,8 +1675,8 @@ class ObjectSetViewModel(
                 space = space
             )
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                closeBlock.async(
-                    CloseBlock.Params(
+                closeObject.async(
+                    CloseObject.Params(
                         target = vmParams.ctx,
                         space = vmParams.space
                     )

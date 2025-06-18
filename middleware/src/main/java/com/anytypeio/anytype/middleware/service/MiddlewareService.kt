@@ -15,6 +15,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun versionGet(request: Rpc.App.GetVersion.Request): Rpc.App.GetVersion.Response
 
+    @Throws(Exception::class)
+    fun setDeviceState(request: Rpc.App.SetDeviceState.Request): Rpc.App.SetDeviceState.Response
+
     //endregion
 
     //region WALLET commands

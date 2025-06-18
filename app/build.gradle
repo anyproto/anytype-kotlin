@@ -207,6 +207,7 @@ dependencies {
     implementation libs.emojiCompat
     implementation libs.navigationCompose
     implementation libs.playBilling
+    implementation libs.lifecycleProcess
 
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime

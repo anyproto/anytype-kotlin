@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -35,8 +36,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -52,6 +55,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -73,8 +77,9 @@ import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
+import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Bubble(
     modifier: Modifier = Modifier,
@@ -100,11 +105,14 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    isHighlighted: Boolean
 ) {
+
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
+
     if (showDeleteMessageWarning) {
         ModalBottomSheet(
             onDismissRequest = {
@@ -166,6 +174,7 @@ fun Bubble(
         Column(
             modifier = Modifier
                 .wrapContentWidth()
+                .then(if (isHighlighted) Modifier.alpha(0.5f) else Modifier.alpha(1f))
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)
@@ -516,3 +525,5 @@ fun ChatUserAvatar(
         }
     }
 }
+
+val SWIPE_THRESHOLD_DP = 40.dp

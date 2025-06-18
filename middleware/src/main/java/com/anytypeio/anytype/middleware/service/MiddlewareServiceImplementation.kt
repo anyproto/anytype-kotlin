@@ -1195,6 +1195,22 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun setDeviceState(request: Rpc.App.SetDeviceState.Request): Rpc.App.SetDeviceState.Response {
+        val encoded = Service.appSetDeviceState(Rpc.App.SetDeviceState.Request.ADAPTER.encode(request))
+        val response = Rpc.App.SetDeviceState.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.App.SetDeviceState.Response.Error.Code.NULL) {
+            when (error.code) {
+                Rpc.App.SetDeviceState.Response.Error.Code.BAD_INPUT -> {
+                    throw IllegalArgumentException(error.description)
+                }
+                else -> throw Exception(error.description)
+            }
+        } else {
+            return response
+        }
+    }
+
     override fun setInitialParams(request: Rpc.Initial.SetParameters.Request): Rpc.Initial.SetParameters.Response {
         val encoded =
             Service.initialSetParameters(Rpc.Initial.SetParameters.Request.ADAPTER.encode(request))

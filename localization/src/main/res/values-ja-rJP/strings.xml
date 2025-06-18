@@ -1793,4 +1793,11 @@
     <string name="chat_box_take_photo">写真を撮る</string>
     <string name="chat_box_record_video">動画を撮る</string>
     <string name="chat_camera_permission_denied">カメラへのアクセスが拒否されました</string>
+    <string name="notifications_title">通知</string>
+    <string name="notifications_all">すべての通知</string>
+    <string name="notifications_mentions">メンションのみ</string>
+    <string name="notifications_disable">通知が無効</string>
+    <string name="notifications_all_short">すべて</string>
+    <string name="notifications_mentions_short">メンション</string>
+    <string name="notifications_disable_short">無効</string>
 </resources>

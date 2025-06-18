@@ -10,13 +10,13 @@ import javax.inject.Inject
 /**
  * Use-case for closing a smart block by id.
  */
-open class CloseBlock @Inject constructor(
+open class CloseObject @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<CloseBlock.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<CloseObject.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        repo.closePage(
+        repo.closeObject(
             id = params.target,
             space = params.space
         )

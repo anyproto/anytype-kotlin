@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -77,7 +78,7 @@ interface BlockRemote {
     suspend fun openProfile(id: String, space: SpaceId): Payload
     suspend fun openObjectSet(id: String, space: SpaceId): Payload
     suspend fun openObjectPreview(id: Id, space: SpaceId): Payload
-    suspend fun closePage(id: String, space: Space)
+    suspend fun closeObject(id: String, space: Space)
     suspend fun setDocumentEmojiIcon(command: Command.SetDocumentEmojiIcon): Payload
     suspend fun setDocumentImageIcon(command: Command.SetDocumentImageIcon): Payload
     suspend fun setDocumentCoverColor(ctx: String, color: String): Payload
@@ -478,6 +479,7 @@ interface BlockRemote {
     suspend fun debugAccountSelectTrace(dir: String): String
 
     suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+    suspend fun setAppState(state: AppState)
 
     suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>
 

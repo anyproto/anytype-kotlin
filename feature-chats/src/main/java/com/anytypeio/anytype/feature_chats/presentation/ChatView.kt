@@ -25,6 +25,7 @@ sealed interface ChatView {
         val author: String,
         val creator: Id?,
         val timestamp: Long,
+        val formattedDate: String? = null,
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,

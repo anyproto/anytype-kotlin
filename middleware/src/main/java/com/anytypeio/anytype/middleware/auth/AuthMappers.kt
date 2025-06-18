@@ -47,7 +47,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             network = info.networkId,
             techSpace = info.techSpaceId,
             workspaceObjectId = info.workspaceObjectId,
-            ethereumAddress = info.ethereumAddress
+            ethereumAddress = info.ethereumAddress,
+            spaceChatId = info.spaceChatId.ifEmpty { null }
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )

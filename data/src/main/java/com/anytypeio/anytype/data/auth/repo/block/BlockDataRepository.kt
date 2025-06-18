@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -111,8 +112,8 @@ class BlockDataRepository(
         command: Command.CreateBlockLinkWithObject
     ): CreateBlockLinkWithObjectResult = remote.createBlockLinkWithObject(command)
 
-    override suspend fun closePage(id: String, space: Space) {
-        remote.closePage(id = id, space = space)
+    override suspend fun closeObject(id: String, space: Space) {
+        remote.closeObject(id = id, space = space)
     }
 
     override suspend fun updateDocumentTitle(
@@ -1128,6 +1129,10 @@ class BlockDataRepository(
 
     override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
         remote.setDeviceNetworkState(type)
+    }
+
+    override suspend fun setAppState(state: AppState) {
+        remote.setAppState(state)
     }
 
     override suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {

@@ -102,7 +102,7 @@ val ContentMiscChat = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 20.sp,
-    letterSpacing = (-0.024).em
+    letterSpacing = (-0.0241).em
 )
 
 //Content/Body/Italic

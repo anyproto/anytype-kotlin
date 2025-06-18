@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import android.content.res.Configuration
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,17 +24,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
@@ -254,4 +259,87 @@ fun GoToMentionButtonPreview() {
         modifier = Modifier,
         onClick = {}
     )
+}
+
+@Composable
+fun FloatingDateHeader(
+    modifier: Modifier,
+    text: String
+) {
+    Box(
+        modifier = modifier
+            .background(
+                color = colorResource(R.color.transparent_active),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = text,
+            style = Caption1Medium,
+            color = colorResource(R.color.glyph_white),
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun FloatingDateHeaderPreview() {
+    FloatingDateHeader(
+        modifier = Modifier,
+        text = "Today"
+    )
+}
+
+@Composable
+fun TopDiscussionToolbar(
+    title: String? = null,
+    isHeaderVisible: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(48.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(10.dp)
+                    .align(Alignment.Center)
+                    .background(color = Color.Green, shape = CircleShape)
+            )
+        }
+        Text(
+            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
+            style = PreviewTitle2Regular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(48.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
+                contentDescription = "Three dots menu",
+                modifier = Modifier.align(Alignment.Center)
+            )
+        }
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun TopDiscussionToolbarPreview() {
+    TopDiscussionToolbar()
 }

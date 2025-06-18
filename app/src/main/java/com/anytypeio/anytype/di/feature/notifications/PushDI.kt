@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
-import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import dagger.Component
 import dagger.Module
 import dagger.Provides

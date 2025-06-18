@@ -3,37 +3,29 @@ package com.anytypeio.anytype.presentation.notifications
 import android.content.SharedPreferences
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
-interface PushKeyProvider {
-    fun getPushKey(): Map<String, PushKey>
-}
-
-data class PushKey(
-    val id: String,
-    val value: String
-) {
-    companion object {
-        val EMPTY = PushKey(value = "", id = "")
-    }
-}
 
 class PushKeyProviderImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences,
     private val channel: PushKeyChannel,
     private val gson: Gson,
-    dispatchers: AppCoroutineDispatchers,
-    scope: CoroutineScope
+    private val dispatchers: AppCoroutineDispatchers,
+    private val scope: CoroutineScope
 ) : PushKeyProvider {
 
-    init {
-        Timber.d("PushKeyProvider initialized")
-        scope.launch(dispatchers.io) {
+    private var job: Job? = null
+
+    override fun start() {
+        Timber.d("PushKeyProvider start called")
+        job?.cancel()
+        job = scope.launch(dispatchers.io) {
             channel
                 .observe()
                 .collect { event ->
@@ -44,6 +36,12 @@ class PushKeyProviderImpl @Inject constructor(
                     )
                 }
         }
+    }
+
+    override fun stop() {
+        job?.cancel()
+        job = null
+        Timber.d("PushKeyProvider stop called")
     }
 
     private fun savePushKey(id: String?, value: String?) {

@@ -10,13 +10,6 @@ import java.util.Base64
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-internal fun String.computePushKeyId(): String {
-    val decodedKey = Base64.getDecoder().decode(this)
-    val digest = MessageDigest.getInstance("SHA-256")
-    val hash = digest.digest(decodedKey)
-    return hash.joinToString("") { "%02x".format(it) }
-}
-
 class PushKeySpaceViewChannel @Inject constructor(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : PushKeyChannel {
@@ -33,4 +26,12 @@ class PushKeySpaceViewChannel @Inject constructor(
                 }
             }
         }
-} 
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+internal fun String.computePushKeyId(): String {
+    val decodedKey = Base64.getDecoder().decode(this)
+    val digest = MessageDigest.getInstance("SHA-256")
+    val hash = digest.digest(decodedKey)
+    return hash.toHexString()
+}

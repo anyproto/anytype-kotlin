@@ -19,7 +19,7 @@ import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChanne
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
-import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
 import com.google.gson.Gson
 import dagger.Module

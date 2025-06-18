@@ -40,7 +40,8 @@ class DecryptionPushContentServiceImplTest {
         cryptoService = CryptoServiceImpl()
         decryptionService = DecryptionPushContentServiceImpl(
             pushKeyProvider = pushKeyProvider,
-            cryptoService = cryptoService
+            cryptoService = cryptoService,
+            json = Json { ignoreUnknownKeys = true }
         )
     }
 

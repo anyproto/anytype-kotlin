@@ -2653,16 +2653,15 @@ class MiddlewareServiceImplementation @Inject constructor(
     }
 
     override fun setSpaceMode(request: Rpc.PushNotification.SetSpaceMode.Request): Rpc.PushNotification.SetSpaceMode.Response {
-        throw RuntimeException("Not implemented in middleware service")
-//        val encoded = Service.pushNotificationSetSpaceMode(
-//            Rpc.PushNotification.SetSpaceMode.Request.ADAPTER.encode(request)
-//        )
-//        val response = Rpc.PushNotification.SetSpaceMode.Response.ADAPTER.decode(encoded)
-//        val error = response.error
-//        if (error != null && error.code != Rpc.PushNotification.SetSpaceMode.Response.Error.Code.NULL) {
-//            throw Exception(error.description)
-//        } else {
-//            return response
-//        }
+        val encoded = Service.pushNotificationSetSpaceMode(
+            Rpc.PushNotification.SetSpaceMode.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.SetSpaceMode.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.SetSpaceMode.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
     }
 }

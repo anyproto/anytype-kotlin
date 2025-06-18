@@ -111,7 +111,8 @@ object Relations {
 
     const val AUTO_WIDGET_DISABLED = "autoWidgetDisabled"
 
-    const val PUSH_NOTIFICATIONS_KEY = "pushNotificationEncriptionKey"
+    const val SPACE_PUSH_NOTIFICATIONS_KEY = "spacePushNotificationEncryptionKey"
+    const val SPACE_PUSH_NOTIFICATIONS_TOPIC = "spacePushNotificationsTopics"
 
     val systemRelationKeys = listOf(
         "id",

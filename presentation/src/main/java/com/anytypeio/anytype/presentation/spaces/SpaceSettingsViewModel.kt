@@ -746,9 +746,18 @@ class SpaceSettingsViewModel(
             // Check if notifications are enabled system-wide
             if (!notificationPermissionManager.shouldShowPermissionDialog()) {
                 // Permissions are granted, get space-specific notification state
-                // TODO: Call backend to get current topic for this space
-                // Map topic to NotificationState and update notificationState.value
-                Timber.d("Notifications enabled, fetching space-specific state")
+//                getSpaceNotificationMode.async(
+//                    GetSpaceNotificationMode.Params(spaceViewId = vmParams.space.id)
+//                ).fold(
+//                    onSuccess = { state ->
+//                        _notificationState.value = state
+//                        Timber.d("Fetched notification state: $state for space: ${vmParams.space}")
+//                    },
+//                    onFailure = { error ->
+//                        Timber.e("Failed to fetch notification state: $error")
+//                        _notificationState.value = NotificationState.ALL // Default fallback
+//                    }
+//                )
             } else {
                 // Permissions not granted, show disabled state
                 _notificationState.value = NotificationState.DISABLE

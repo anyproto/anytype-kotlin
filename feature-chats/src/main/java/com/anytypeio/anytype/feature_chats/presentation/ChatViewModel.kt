@@ -1476,7 +1476,14 @@ class ChatViewModel @Inject constructor(
                     space = vmParams.space
                 )
             ).onSuccess { result ->
-                navigation.emit(result.obj.navigation())
+                navigation.emit(
+                    result.obj.navigation(
+                        effect = OpenObjectNavigation.SideEffect.AttachToChat(
+                            chat = vmParams.ctx,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
             }.onFailure {
 
             }

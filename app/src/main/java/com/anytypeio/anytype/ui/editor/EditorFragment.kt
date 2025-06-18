@@ -97,6 +97,7 @@ import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_PROFILE_IMAG
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.clipboard
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
@@ -141,6 +142,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
@@ -208,6 +210,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     protected val ctx get() = arg<Id>(CTX_KEY)
     protected val space get() = arg<Id>(SPACE_ID_KEY)
+
+    private val sideEffect: OpenObjectNavigation.SideEffect
+        get() {
+            val attachedChatId = argOrNull<Id>(ATTACH_TO_CHAT_ID_KEY)
+            val attachedSpaceId = argOrNull<Id>(ATTACH_TO_CHAT_SPACE_KEY)
+            return if (attachedChatId != null && attachedSpaceId != null) {
+                OpenObjectNavigation.SideEffect.AttachToChat(
+                    chat = attachedChatId,
+                    space = attachedSpaceId
+                )
+            } else {
+                OpenObjectNavigation.SideEffect.None
+            }
+        }
 
     private val screen: Point by lazy { screen() }
 
@@ -2289,7 +2305,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     //region Media Picker
-    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
@@ -2303,7 +2319,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
@@ -2323,10 +2339,31 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     companion object {
 
-        fun args(ctx: Id, space: Id) = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
+        fun args(
+            ctx: Id,
+            space: Id,
+            effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None
+        ) : Bundle {
+            return when(effect) {
+                is OpenObjectNavigation.SideEffect.AttachToChat -> {
+                    bundleOf(
+                        CTX_KEY to ctx,
+                        SPACE_ID_KEY to space,
+                        ATTACH_TO_CHAT_ID_KEY to effect.chat,
+                        ATTACH_TO_CHAT_SPACE_KEY to effect.space
+                    )
+                }
+                OpenObjectNavigation.SideEffect.None -> {
+                    bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
+                }
+            }
+        }
 
         const val CTX_KEY = "args.editor.ctx-id"
         const val SPACE_ID_KEY = "args.editor.space-id"
+
+        private const val ATTACH_TO_CHAT_ID_KEY = "args.editor.attach-to-chat.id"
+        private const val ATTACH_TO_CHAT_SPACE_KEY = "args.editor.attach-to-chat.space"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

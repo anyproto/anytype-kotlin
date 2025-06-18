@@ -273,7 +273,8 @@ class ChatFragment : BaseComposeFragment() {
                                         R.id.objectNavigation,
                                         EditorFragment.args(
                                             ctx = nav.target,
-                                            space = nav.space
+                                            space = nav.space,
+                                            effect =
                                         )
                                     )
                                 }.onFailure {

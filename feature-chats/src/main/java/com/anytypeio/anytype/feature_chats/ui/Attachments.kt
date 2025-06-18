@@ -258,7 +258,7 @@ fun AttachedObject(
                 )
                 .align(alignment = Alignment.CenterStart),
             onTaskIconClicked = {
-                // Do nothing
+                onAttachmentClicked()
             }
         )
         Text(
@@ -296,7 +296,6 @@ fun AttachedObject(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Bookmark(
     url: String,

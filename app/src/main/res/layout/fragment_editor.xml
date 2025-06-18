@@ -322,4 +322,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal" />
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/attachToChatPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:layout_gravity="bottom|center_horizontal" />
+
 </FrameLayout>

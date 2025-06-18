@@ -274,7 +274,7 @@ class ChatFragment : BaseComposeFragment() {
                                         EditorFragment.args(
                                             ctx = nav.target,
                                             space = nav.space,
-                                            effect =
+                                            effect = nav.effect
                                         )
                                     )
                                 }.onFailure {

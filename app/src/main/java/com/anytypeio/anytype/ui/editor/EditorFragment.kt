@@ -69,6 +69,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
+import com.anytypeio.anytype.core_ui.features.editor.AttachToChatToolbar
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
@@ -796,6 +797,25 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     uiState = vm.mentionDatePicker.collectAsStateWithLifecycle().value,
                     onEvent = vm::onEditorDatePickerEvent
                 )
+            }
+        }
+
+        if (sideEffect !is OpenObjectNavigation.SideEffect.None) {
+            binding.editorDatePicker.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    AttachToChatToolbar(
+                        onAttachClicked = {
+                            val effect = sideEffect
+                            if (effect is OpenObjectNavigation.SideEffect.AttachToChat) {
+                                vm.onAttachToChatClicked(
+                                    chat = effect.chat,
+                                    space = effect.space
+                                )
+                            }
+                        }
+                    )
+                }
             }
         }
 

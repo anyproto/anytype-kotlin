@@ -4853,6 +4853,13 @@ class EditorViewModel(
         )
     }
 
+    fun onAttachToChatClicked(
+        chat: Id,
+        space: Id
+    ) {
+
+    }
+
     companion object {
         const val NO_SEARCH_RESULT_POSITION = -1
         const val NO_SCROLL_POSITION = -1

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 
 @Composable
@@ -30,7 +31,7 @@ fun AttachToChatToolbar(
             )
             .padding(horizontal = 16.dp, vertical = 16.dp)
     ){
-        ButtonPrimary(
+        ButtonSecondary(
             modifier = Modifier.weight(1f),
             text = stringResource(R.string.cancel),
             onClick = onCancelClicked,

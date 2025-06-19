@@ -341,6 +341,7 @@ class ChatContainer @Inject constructor(
                     is Transformation.Commands.UpdateVisibleRange -> {
                         val unread = state.state
                         val readFrom = state.messages.find { it.id == transform.from }
+                        // Reading messages
                         if (
                             unread.hasUnReadMessages &&
                             !unread.oldestMessageOrderId.isNullOrEmpty() &&
@@ -361,6 +362,7 @@ class ChatContainer @Inject constructor(
                                 logger.logInfo("DROID-2966 Read messages with success")
                             }
                         }
+                        // Reading mentions
                         if (
                             unread.hasUnReadMentions &&
                             !unread.oldestMentionMessageOrderId.isNullOrEmpty() &&

@@ -122,7 +122,7 @@ class ChatViewModel @Inject constructor(
     )
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
-    val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
+    val uiState = MutableStateFlow(ChatViewState(isLoading = true))
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
@@ -476,7 +476,8 @@ class ChatViewModel @Inject constructor(
                 counter = ChatViewState.Counter(
                     messages = result.state.unreadMessages?.counter ?: 0,
                     mentions = result.state.unreadMentions?.counter ?: 0
-                )
+                ),
+                isLoading = false
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it

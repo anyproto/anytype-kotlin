@@ -37,6 +37,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -360,6 +361,11 @@ fun NewSpaceSettingsScreen(
 
                         is UiSpaceSettingsItem.Notifications -> {
                             item {
+                                val (icon, supportText) = when (uiState.notificationState) {
+                                    NotificationState.ALL -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_all_short)
+                                    NotificationState.MENTIONS -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_mentions_short)
+                                    NotificationState.DISABLE -> R.drawable.ic_bell_cross_24 to stringResource(id = R.string.notifications_disable_short)
+                                }
                                 NotificationsItem(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -368,7 +374,8 @@ fun NewSpaceSettingsScreen(
                                         .clickable {
                                             showNotificationsSettings = true
                                         },
-                                    item = item
+                                    icon = icon,
+                                    supportText = supportText
                                 )
                             }
                         }

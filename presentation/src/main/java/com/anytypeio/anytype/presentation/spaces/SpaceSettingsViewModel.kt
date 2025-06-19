@@ -192,17 +192,19 @@ class SpaceSettingsViewModel(
             combine(
                 restrictions,
                 otherFlows,
-                _notificationState
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), notificationState ->
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
+
+                val targetSpaceId = spaceView.targetSpaceId
 
                 val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
                 } else {
                     null
                 }
-                val createdByNameOrId = spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
+                val createdByNameOrId =
+                    spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.toView(
@@ -276,8 +278,11 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Notifications(state = notificationState))
+                    if (!targetSpaceId.isNullOrEmpty()) {
+                        // Target space is set, show change Notification mode option
+                        add(Spacer(height = 8))
+                        add(Notifications)
+                    }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
@@ -311,8 +316,8 @@ class SpaceSettingsViewModel(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true,
-                    notificationState = notificationState,
-                    spaceViewId = spaceView.id
+                    notificationState = spaceView.spacePushNotificationMode,
+                    targetSpaceId = targetSpaceId
                 )
 
             }.collect { update ->
@@ -448,7 +453,7 @@ class SpaceSettingsViewModel(
 
             is UiEvent.OnNotificationsSetting -> {
                 setNotificationState(
-                    space = uiEvent.spaceViewId,
+                    targetSpaceId = uiEvent.targetSpaceId,
                     newState = when (uiEvent) {
                         is UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
                         is UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
@@ -767,7 +772,11 @@ class SpaceSettingsViewModel(
         }
     }
 
-    fun setNotificationState(space: Id, newState: NotificationState) {
+    fun setNotificationState(targetSpaceId: Id?, newState: NotificationState) {
+        if (targetSpaceId == null) {
+            Timber.e("Cannot set notification state: space ID is null")
+            return
+        }
         viewModelScope.launch {
             // Check if trying to enable notifications without system permission
             if (newState != NotificationState.DISABLE && notificationPermissionManager.shouldShowPermissionDialog()) {
@@ -779,13 +788,13 @@ class SpaceSettingsViewModel(
             // Call backend to set notification state
             setSpaceNotificationMode.async(
                 SetSpaceNotificationMode.Params(
-                    spaceViewId = space,
+                    spaceViewId = targetSpaceId,
                     mode = newState
                 )
             ).fold(
                 onSuccess = {
                     _notificationState.value = newState
-                    Timber.d("Successfully set notification state to: $newState for space: $space")
+                    Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
                 },
                 onFailure = { error ->
                     Timber.e("Failed to set notification state: $error")

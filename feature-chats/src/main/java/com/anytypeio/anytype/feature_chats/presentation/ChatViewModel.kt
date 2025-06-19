@@ -76,7 +76,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -302,11 +301,11 @@ class ChatViewModel @Inject constructor(
                         val replyMessage = replies[replyToId]
                         if (replyMessage != null) {
                             ChatView.Message.Reply(
-                                msg = msg.id,
-                                text = msg.content?.text.orEmpty().ifEmpty {
+                                msg = replyMessage.id,
+                                text = replyMessage.content?.text.orEmpty().ifEmpty {
                                     // Fallback to attachment name if empty
-                                    if (msg.attachments.isNotEmpty()) {
-                                        val attachment = msg.attachments.last()
+                                    if (replyMessage.attachments.isNotEmpty()) {
+                                        val attachment = replyMessage.attachments.last()
                                         val dependency = dependencies[attachment.target]
                                         val name = dependency?.name.orEmpty()
                                         val ext = dependency?.fileExt
@@ -322,7 +321,7 @@ class ChatViewModel @Inject constructor(
                                 author = allMembers.let { type ->
                                     when (type) {
                                         is Store.Data -> type.members.find { member ->
-                                            member.identity == msg.creator
+                                            member.identity == replyMessage.creator
                                         }?.name.orEmpty()
                                         is Store.Empty -> ""
                                     }

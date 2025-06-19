@@ -361,6 +361,27 @@ class ChatContainer @Inject constructor(
                                 logger.logInfo("DROID-2966 Read messages with success")
                             }
                         }
+                        if (
+                            unread.hasUnReadMentions &&
+                            !unread.oldestMentionMessageOrderId.isNullOrEmpty() &&
+                            readFrom != null
+                            && readFrom.order >= unread.oldestMentionMessageOrderId!!
+                        ) {
+                            runCatching {
+                                repo.readChatMessages(
+                                    command = Command.ChatCommand.ReadMessages(
+                                        chat = chat,
+                                        beforeOrderId = readFrom.order,
+                                        lastStateId = unread.lastStateId.orEmpty(),
+                                        isMention = true
+                                    )
+                                )
+                            }.onFailure {
+                                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
+                            }.onSuccess {
+                                logger.logInfo("DROID-2966 Read mentions with success")
+                            }
+                        }
                         state
                     }
                     is Transformation.Events.Payload -> {

@@ -299,8 +299,8 @@ class ChatViewModel @Inject constructor(
                     val reply = if (replyToId.isNullOrEmpty()) {
                         null
                     } else {
-                        val msg = replies[replyToId]
-                        if (msg != null) {
+                        val replyMessage = replies[replyToId]
+                        if (replyMessage != null) {
                             ChatView.Message.Reply(
                                 msg = msg.id,
                                 text = msg.content?.text.orEmpty().ifEmpty {
@@ -423,7 +423,8 @@ class ChatViewModel @Inject constructor(
                                                 typeName = if (type != null)
                                                     storeOfObjectTypes.get(type)?.name.orEmpty()
                                                 else
-                                                    ""
+                                                    "",
+                                                isDeleted = wrapper?.isDeleted == true
                                             )
                                         }
                                     }
@@ -1074,7 +1075,7 @@ class ChatViewModel @Inject constructor(
                 }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
-                    if (wrapper != null) {
+                    if (wrapper != null && !attachment.isDeleted) {
                         if (wrapper.layout == ObjectType.Layout.BOOKMARK) {
                             val bookmark = ObjectWrapper.Bookmark(wrapper.map)
                             val url = bookmark.source

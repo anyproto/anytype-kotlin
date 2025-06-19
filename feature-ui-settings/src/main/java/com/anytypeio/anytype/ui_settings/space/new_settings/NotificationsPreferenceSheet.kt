@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotificationsPreferenceSheet(
+    targetSpaceId: String?,
     currentState: NotificationState,
     uiEvent: (UiEvent) -> Unit,
     onDismiss: () -> Unit
@@ -74,7 +75,7 @@ fun NotificationsPreferenceSheet(
             NotificationOption(
                 title = stringResource(R.string.notifications_all),
                 checked = currentState == NotificationState.ALL,
-                onClick = { uiEvent(UiEvent.OnNotificationsSetting.All) }
+                onClick = { uiEvent(UiEvent.OnNotificationsSetting.All(targetSpaceId)) }
             )
             Divider(
                 paddingStart = 16.dp,
@@ -83,7 +84,7 @@ fun NotificationsPreferenceSheet(
             NotificationOption(
                 title = stringResource(R.string.notifications_mentions),
                 checked = currentState == NotificationState.MENTIONS,
-                onClick = { uiEvent(UiEvent.OnNotificationsSetting.Mentions) }
+                onClick = { uiEvent(UiEvent.OnNotificationsSetting.Mentions(targetSpaceId)) }
             )
             Divider(
                 paddingStart = 16.dp,
@@ -92,7 +93,7 @@ fun NotificationsPreferenceSheet(
             NotificationOption(
                 title = stringResource(R.string.notifications_disable),
                 checked = currentState == NotificationState.DISABLE,
-                onClick = { uiEvent(UiEvent.OnNotificationsSetting.None) }
+                onClick = { uiEvent(UiEvent.OnNotificationsSetting.None(targetSpaceId)) }
             )
         }
     }
@@ -129,6 +130,7 @@ fun NotificationOption(
 @Composable
 fun NotificationsPreferenceSheetPreview() {
     NotificationsPreferenceSheet(
+        targetSpaceId = "space_view_id",
         currentState = NotificationState.ALL,
         uiEvent = {},
         onDismiss = {}

@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1154,4 +1155,8 @@ class BlockDataRepository(
 
     override suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic = 
         remote.createObjectFromUrl(space = space, url = url)
+
+    override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState) {
+        remote.setSpaceNotificationMode(spaceViewId = spaceViewId, mode = mode)
+    }
 }

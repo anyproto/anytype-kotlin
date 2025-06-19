@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1336,7 +1337,11 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchSubscribe(request) }
-        logResponseIfDebug(response, time)
+        if (BuildConfig.DEBUG) {
+            if (subscription != "object-type-store-subscription" && subscription != "relation-store-subscription") {
+                logger.logResponse(response, time)
+            }
+        }
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())
@@ -2963,9 +2968,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Device.NetworkState.Set.Request(
             deviceNetworkType = type.mw()
         )
-        logRequestIfDebug(request)
+        //logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
-        logResponseIfDebug(response, time)
+        //logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -3057,6 +3062,18 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }
         logResponseIfDebug(response, time)
         return ObjectWrapper.Basic(response.details.orEmpty())
+    }
+
+    @Throws(Exception::class)
+    fun setSpaceMode(spaceViewId: Id, mode: NotificationState): Rpc.PushNotification.SetSpaceMode.Response {
+        val request = Rpc.PushNotification.SetSpaceMode.Request(
+            spaceId = spaceViewId,
+            mode = mode.toMiddlewareModel()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setSpaceMode(request) }
+        logResponseIfDebug(response, time)
+        return response
     }
 
     private fun logRequestIfDebug(request: Any) {

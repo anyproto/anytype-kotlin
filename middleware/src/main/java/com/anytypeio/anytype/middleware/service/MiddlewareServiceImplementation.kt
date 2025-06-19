@@ -2667,4 +2667,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun setSpaceMode(request: Rpc.PushNotification.SetSpaceMode.Request): Rpc.PushNotification.SetSpaceMode.Response {
+        val encoded = Service.pushNotificationSetSpaceMode(
+            Rpc.PushNotification.SetSpaceMode.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.SetSpaceMode.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.SetSpaceMode.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

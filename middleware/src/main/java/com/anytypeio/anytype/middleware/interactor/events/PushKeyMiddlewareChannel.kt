@@ -35,13 +35,13 @@ class PushKeyMiddlewareChannel(
                 }
                 .collect { emission ->
                     emission.messages.forEach { message ->
-                        message.pushEncryptionKeyUpdate?.let {
-                            val pushKeyUpdate = PushKeyUpdate(
-                                encryptionKeyId = it.encryptionKeyId,
-                                encryptionKey = it.encryptionKey
-                            )
-                            _pushKeyStatus.value = pushKeyUpdate
-                        }
+//                        message.pushEncryptionKeyUpdate?.let {
+//                            val pushKeyUpdate = PushKeyUpdate(
+//                                encryptionKeyId = it.encryptionKeyId,
+//                                encryptionKey = it.encryptionKey
+//                            )
+//                            _pushKeyStatus.value = pushKeyUpdate
+//                        }
                     }
                 }
         }

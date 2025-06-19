@@ -50,6 +50,7 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -91,7 +92,8 @@ class SpaceSettingsViewModel(
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
     private val getAccount: GetAccount,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -190,17 +192,19 @@ class SpaceSettingsViewModel(
             combine(
                 restrictions,
                 otherFlows,
-                _notificationState
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), notificationState ->
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
+
+                val targetSpaceId = spaceView.targetSpaceId
 
                 val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
                 } else {
                     null
                 }
-                val createdByNameOrId = spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
+                val createdByNameOrId =
+                    spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.toView(
@@ -274,8 +278,11 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Notifications(state = notificationState))
+                    if (!targetSpaceId.isNullOrEmpty()) {
+                        // Target space is set, show change Notification mode option
+                        add(Spacer(height = 8))
+                        add(Notifications)
+                    }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
@@ -309,7 +316,8 @@ class SpaceSettingsViewModel(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
                     isEditEnabled = permission?.isOwnerOrEditor() == true,
-                    notificationState = notificationState
+                    notificationState = spaceView.spacePushNotificationMode,
+                    targetSpaceId = targetSpaceId
                 )
 
             }.collect { update ->
@@ -445,11 +453,11 @@ class SpaceSettingsViewModel(
 
             is UiEvent.OnNotificationsSetting -> {
                 setNotificationState(
-                    space = vmParams.space.id,
+                    targetSpaceId = uiEvent.targetSpaceId,
                     newState = when (uiEvent) {
-                        UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
-                        UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
-                        UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
+                        is UiEvent.OnNotificationsSetting.All -> NotificationState.ALL
+                        is UiEvent.OnNotificationsSetting.Mentions -> NotificationState.MENTIONS
+                        is UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
                     }
                 )
             }
@@ -744,9 +752,18 @@ class SpaceSettingsViewModel(
             // Check if notifications are enabled system-wide
             if (!notificationPermissionManager.shouldShowPermissionDialog()) {
                 // Permissions are granted, get space-specific notification state
-                // TODO: Call backend to get current topic for this space
-                // Map topic to NotificationState and update notificationState.value
-                Timber.d("Notifications enabled, fetching space-specific state")
+//                getSpaceNotificationMode.async(
+//                    GetSpaceNotificationMode.Params(spaceViewId = vmParams.space.id)
+//                ).fold(
+//                    onSuccess = { state ->
+//                        _notificationState.value = state
+//                        Timber.d("Fetched notification state: $state for space: ${vmParams.space}")
+//                    },
+//                    onFailure = { error ->
+//                        Timber.e("Failed to fetch notification state: $error")
+//                        _notificationState.value = NotificationState.ALL // Default fallback
+//                    }
+//                )
             } else {
                 // Permissions not granted, show disabled state
                 _notificationState.value = NotificationState.DISABLE
@@ -755,7 +772,11 @@ class SpaceSettingsViewModel(
         }
     }
 
-    fun setNotificationState(space: Id, newState: NotificationState) {
+    fun setNotificationState(targetSpaceId: Id?, newState: NotificationState) {
+        if (targetSpaceId == null) {
+            Timber.e("Cannot set notification state: space ID is null")
+            return
+        }
         viewModelScope.launch {
             // Check if trying to enable notifications without system permission
             if (newState != NotificationState.DISABLE && notificationPermissionManager.shouldShowPermissionDialog()) {
@@ -764,11 +785,23 @@ class SpaceSettingsViewModel(
                 return@launch
             }
             
-            // TODO: Call backend with PushNotificationsSet.Request
-            // On success: notificationState.value = newState
-            // On failure: revert and show error
-            _notificationState.value = newState // Optimistic update
-            Timber.d("Setting notification state to: $newState for space: $space")
+            // Call backend to set notification state
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = targetSpaceId,
+                    mode = newState
+                )
+            ).fold(
+                onSuccess = {
+                    _notificationState.value = newState
+                    Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
+                },
+                onFailure = { error ->
+                    Timber.e("Failed to set notification state: $error")
+                    sendToast("Failed to update notification settings")
+                    // Don't update the state on failure to show the user the actual current state
+                }
+            )
         }
     }
 
@@ -870,7 +903,8 @@ class SpaceSettingsViewModel(
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
         private val getAccount: GetAccount,
-        private val notificationPermissionManager: NotificationPermissionManager
+        private val notificationPermissionManager: NotificationPermissionManager,
+        private val setSpaceNotificationMode: SetSpaceNotificationMode
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -900,13 +934,10 @@ class SpaceSettingsViewModel(
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,
             getAccount = getAccount,
-            notificationPermissionManager = notificationPermissionManager
+            notificationPermissionManager = notificationPermissionManager,
+            setSpaceNotificationMode = setSpaceNotificationMode
         ) as T
     }
 
     data class VmParams(val space: SpaceId)
-
-    companion object {
-        const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
-    }
 }

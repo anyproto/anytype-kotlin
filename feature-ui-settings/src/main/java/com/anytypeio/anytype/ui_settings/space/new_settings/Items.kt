@@ -89,13 +89,9 @@ fun MembersItem(
 @Composable
 fun NotificationsItem(
     modifier: Modifier = Modifier,
-    item: UiSpaceSettingsItem.Notifications
+    icon: Int,
+    supportText: String
 ) {
-    val (icon, supportText) = when (item.state) {
-        NotificationState.ALL -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_all_short)
-        NotificationState.MENTIONS -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_mentions_short)
-        NotificationState.DISABLE -> R.drawable.ic_bell_cross_24 to stringResource(id = R.string.notifications_disable_short)
-    }
     BaseButton(
         modifier = modifier,
         title = stringResource(id = R.string.notifications_title),

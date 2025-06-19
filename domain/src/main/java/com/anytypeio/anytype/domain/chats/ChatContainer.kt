@@ -339,12 +339,12 @@ class ChatContainer @Inject constructor(
                         )
                     }
                     is Transformation.Commands.UpdateVisibleRange -> {
-                        val unread = state.state
-                        val readFrom = state.messages.find { it.id == transform.from }
-                        // Reading messages
-                        readMessagesWithinVisibleRange(unread, readFrom, chat)
-                        // Reading mentions
-                        readMentionsWithinVisibleRange(unread, readFrom, chat)
+                        val counterState = state.state
+                        val bottomVisibleMessage = state.messages.find { it.id == transform.from }
+                        // Reading messages older than bottomVisibleMessage
+                        readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                        // Reading mentions older than bottomVisibleMessage
+                        readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
                         state
                     }
                     is Transformation.Events.Payload -> {
@@ -392,22 +392,22 @@ class ChatContainer @Inject constructor(
     }
 
     private suspend fun readMessagesWithinVisibleRange(
-        unread: Chat.State,
+        countersState: Chat.State,
         readFrom: Chat.Message?,
         chat: Id
     ) {
         if (
-            unread.hasUnReadMessages &&
-            !unread.oldestMessageOrderId.isNullOrEmpty() &&
+            countersState.hasUnReadMessages &&
+            !countersState.oldestMessageOrderId.isNullOrEmpty() &&
             readFrom != null
-            && readFrom.order >= unread.oldestMessageOrderId!!
+            && readFrom.order >= countersState.oldestMessageOrderId!!
         ) {
             runCatching {
                 repo.readChatMessages(
                     command = Command.ChatCommand.ReadMessages(
                         chat = chat,
                         beforeOrderId = readFrom.order,
-                        lastStateId = unread.lastStateId.orEmpty()
+                        lastStateId = countersState.lastStateId.orEmpty()
                     )
                 )
             }.onFailure {

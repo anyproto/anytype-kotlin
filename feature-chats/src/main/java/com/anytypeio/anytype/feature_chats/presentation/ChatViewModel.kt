@@ -299,8 +299,8 @@ class ChatViewModel @Inject constructor(
                     val reply = if (replyToId.isNullOrEmpty()) {
                         null
                     } else {
-                        val msg = replies[replyToId]
-                        if (msg != null) {
+                        val replyMessage = replies[replyToId]
+                        if (replyMessage != null) {
                             ChatView.Message.Reply(
                                 msg = msg.id,
                                 text = msg.content?.text.orEmpty().ifEmpty {
@@ -423,7 +423,8 @@ class ChatViewModel @Inject constructor(
                                                 typeName = if (type != null)
                                                     storeOfObjectTypes.get(type)?.name.orEmpty()
                                                 else
-                                                    ""
+                                                    "",
+                                                isDeleted = wrapper?.isDeleted == true
                                             )
                                         }
                                     }

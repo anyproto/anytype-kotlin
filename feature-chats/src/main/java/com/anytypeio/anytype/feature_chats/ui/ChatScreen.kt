@@ -76,6 +76,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -1076,7 +1077,10 @@ fun Messages(
                                 .align(Alignment.Center)
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            text = stringResource(R.string.loading_wait)
+                            text = stringResource(R.string.loading_wait),
+                            textAlign = TextAlign.Center,
+                            style = Caption2Medium,
+                            color = colorResource(R.color.text_secondary)
                         )
                     }
                 }

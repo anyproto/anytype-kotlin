@@ -14,7 +14,7 @@ sealed class UiSpaceSettingsState {
         val items: List<UiSpaceSettingsItem>,
         val isEditEnabled: Boolean,
         val notificationState: NotificationState,
-        val spaceViewId: Id
+        val targetSpaceId: Id?
     ) : UiSpaceSettingsState() {
         val name: String = items.filterIsInstance<UiSpaceSettingsItem.Name>()
             .firstOrNull()?.name ?: EMPTY_STRING_VALUE

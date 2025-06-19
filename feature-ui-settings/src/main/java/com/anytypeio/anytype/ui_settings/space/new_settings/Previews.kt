@@ -55,7 +55,7 @@ fun NewSpaceSettingsScreenPreview() {
                 networkId = "random network id"
             ),
             notificationState = NotificationState.ALL,
-            spaceViewId = "space-view-id"
+            targetSpaceId = "space-view-id"
         ),
         uiEvent = {},
     )

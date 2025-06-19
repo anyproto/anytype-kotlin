@@ -449,7 +449,7 @@ fun NewSpaceSettingsScreen(
 
     if (showNotificationsSettings) {
         NotificationsPreferenceSheet(
-            spaceViewId = uiState.spaceViewId,
+            targetSpaceId = uiState.targetSpaceId,
             currentState = uiState.notificationState,
             uiEvent = {
                 showNotificationsSettings = false

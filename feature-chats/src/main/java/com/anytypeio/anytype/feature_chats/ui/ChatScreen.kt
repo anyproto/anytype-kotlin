@@ -45,6 +45,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -948,12 +949,21 @@ fun Messages(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .then(
+                            if (isHighlighted)
+                                Modifier.background(
+                                    color = colorResource(R.color.transparent_active).copy(alpha = 0.1f)
+                                )
+                            else
+                                Modifier
+                        )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                         .animateItem()
                         .horizontalSwipeToReply(
                             swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() },
                             onReplyTriggered = { onReplyMessage(msg) }
-                        ),
+                        )
+                    ,
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End
                     else

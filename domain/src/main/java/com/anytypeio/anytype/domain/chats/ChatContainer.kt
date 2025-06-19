@@ -126,8 +126,6 @@ class ChatContainer @Inject constructor(
             cacheLastMessages(result.messages)
         }
 
-        kotlinx.coroutines.delay(3000)
-
         val initialState = response.chatState ?: Chat.State()
 
         var intent: Intent = Intent.None

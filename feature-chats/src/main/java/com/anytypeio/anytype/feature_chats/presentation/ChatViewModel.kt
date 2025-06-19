@@ -1074,7 +1074,7 @@ class ChatViewModel @Inject constructor(
                 }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
-                    if (wrapper != null) {
+                    if (wrapper != null && !attachment.isDeleted) {
                         if (wrapper.layout == ObjectType.Layout.BOOKMARK) {
                             val bookmark = ObjectWrapper.Bookmark(wrapper.map)
                             val url = bookmark.source

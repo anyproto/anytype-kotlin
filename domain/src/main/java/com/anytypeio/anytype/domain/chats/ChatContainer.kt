@@ -339,27 +339,13 @@ class ChatContainer @Inject constructor(
                         )
                     }
                     is Transformation.Commands.UpdateVisibleRange -> {
-                        val unread = state.state
-                        val readFrom = state.messages.find { it.id == transform.from }
-                        if (
-                            unread.hasUnReadMessages &&
-                            !unread.oldestMessageOrderId.isNullOrEmpty() &&
-                            readFrom != null
-                            && readFrom.order >= unread.oldestMessageOrderId!!
-                        ) {
-                            runCatching {
-                                repo.readChatMessages(
-                                    command = Command.ChatCommand.ReadMessages(
-                                        chat = chat,
-                                        beforeOrderId = readFrom.order,
-                                        lastStateId = unread.lastStateId.orEmpty()
-                                    )
-                                )
-                            }.onFailure {
-                                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
-                            }.onSuccess {
-                                logger.logInfo("DROID-2966 Read messages with success")
-                            }
+                        val counterState = state.state
+                        val bottomVisibleMessage = state.messages.find { it.id == transform.from }
+                        if (bottomVisibleMessage != null) {
+                            // Reading messages older than bottomVisibleMessage
+                            readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                            // Reading mentions older than bottomVisibleMessage
+                            readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
                         }
                         state
                     }
@@ -376,6 +362,87 @@ class ChatContainer @Inject constructor(
             value = ChatStreamState(emptyList())
         ).also {
             logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
+        }
+    }
+
+    /**
+     * Marks unread mention messages as read if they fall within the currently visible message range.
+     *
+     * This function checks whether there are any unread mention messages in the current chat state,
+     * and if the bottom-most visible message has an order ID greater than or equal to the order ID
+     * of the oldest unread mention. If so, it sends a command to mark those mentions as read.
+     *
+     * @param countersState The current state of the chat, including unread mention metadata.
+     * @param bottomVisibleMessage The lowest visible message in the current viewport.
+     * @param chat The ID of the chat where the messages are being read.
+     */
+    private suspend fun readMentionsWithinVisibleRange(
+        countersState: Chat.State,
+        bottomVisibleMessage: Chat.Message,
+        chat: Id
+    ) {
+        val oldestMentionOrderId = countersState.oldestMentionMessageOrderId
+        val bottomOrder = bottomVisibleMessage.order
+
+        if (
+            countersState.hasUnReadMentions &&
+            !oldestMentionOrderId.isNullOrEmpty() &&
+            bottomOrder >= oldestMentionOrderId
+        ) {
+            runCatching {
+                repo.readChatMessages(
+                    command = Command.ChatCommand.ReadMessages(
+                        chat = chat,
+                        beforeOrderId = bottomOrder,
+                        lastStateId = countersState.lastStateId.orEmpty(),
+                        isMention = true
+                    )
+                )
+            }.onFailure {
+                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
+            }.onSuccess {
+                logger.logInfo("DROID-2966 Read mentions with success")
+            }
+        }
+    }
+
+    /**
+     * Marks unread messages as read if they fall within the currently visible message range.
+     *
+     * This function checks whether there are any unread messages in the current chat state,
+     * and if the bottom-most visible message has an order ID greater than or equal to the order ID
+     * of the oldest unread message. If so, it sends a command to mark those messages as read.
+     *
+     * @param countersState The current state of the chat, including unread message metadata.
+     * @param bottomVisibleMessage The lowest visible message in the current viewport.
+     * @param chat The ID of the chat where the messages are being read.
+     */
+    private suspend fun readMessagesWithinVisibleRange(
+        countersState: Chat.State,
+        bottomVisibleMessage: Chat.Message,
+        chat: Id
+    ) {
+        val oldestMessageOrderId = countersState.oldestMessageOrderId
+        val bottomOrder = bottomVisibleMessage.order
+
+        if (
+            countersState.hasUnReadMessages &&
+            !oldestMessageOrderId.isNullOrEmpty() &&
+            bottomOrder >= oldestMessageOrderId
+        ) {
+            runCatching {
+                repo.readChatMessages(
+                    command = Command.ChatCommand.ReadMessages(
+                        chat = chat,
+                        beforeOrderId = bottomOrder,
+                        lastStateId = countersState.lastStateId.orEmpty()
+                    )
+                )
+            }.onFailure {
+                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
+            }.onSuccess {
+                logger.logInfo("DROID-2966 Read messages with success")
+            }
         }
     }
 

@@ -342,48 +342,9 @@ class ChatContainer @Inject constructor(
                         val unread = state.state
                         val readFrom = state.messages.find { it.id == transform.from }
                         // Reading messages
-                        if (
-                            unread.hasUnReadMessages &&
-                            !unread.oldestMessageOrderId.isNullOrEmpty() &&
-                            readFrom != null
-                            && readFrom.order >= unread.oldestMessageOrderId!!
-                        ) {
-                            runCatching {
-                                repo.readChatMessages(
-                                    command = Command.ChatCommand.ReadMessages(
-                                        chat = chat,
-                                        beforeOrderId = readFrom.order,
-                                        lastStateId = unread.lastStateId.orEmpty()
-                                    )
-                                )
-                            }.onFailure {
-                                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
-                            }.onSuccess {
-                                logger.logInfo("DROID-2966 Read messages with success")
-                            }
-                        }
+                        readMessagesWithinVisibleRange(unread, readFrom, chat)
                         // Reading mentions
-                        if (
-                            unread.hasUnReadMentions &&
-                            !unread.oldestMentionMessageOrderId.isNullOrEmpty() &&
-                            readFrom != null
-                            && readFrom.order >= unread.oldestMentionMessageOrderId!!
-                        ) {
-                            runCatching {
-                                repo.readChatMessages(
-                                    command = Command.ChatCommand.ReadMessages(
-                                        chat = chat,
-                                        beforeOrderId = readFrom.order,
-                                        lastStateId = unread.lastStateId.orEmpty(),
-                                        isMention = true
-                                    )
-                                )
-                            }.onFailure {
-                                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
-                            }.onSuccess {
-                                logger.logInfo("DROID-2966 Read mentions with success")
-                            }
-                        }
+                        readMentionsWithinVisibleRange(unread, readFrom, chat)
                         state
                     }
                     is Transformation.Events.Payload -> {
@@ -399,6 +360,61 @@ class ChatContainer @Inject constructor(
             value = ChatStreamState(emptyList())
         ).also {
             logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
+        }
+    }
+
+    private suspend fun readMentionsWithinVisibleRange(
+        unread: Chat.State,
+        readFrom: Chat.Message?,
+        chat: Id
+    ) {
+        if (
+            unread.hasUnReadMentions &&
+            !unread.oldestMentionMessageOrderId.isNullOrEmpty() &&
+            readFrom != null
+            && readFrom.order >= unread.oldestMentionMessageOrderId!!
+        ) {
+            runCatching {
+                repo.readChatMessages(
+                    command = Command.ChatCommand.ReadMessages(
+                        chat = chat,
+                        beforeOrderId = readFrom.order,
+                        lastStateId = unread.lastStateId.orEmpty(),
+                        isMention = true
+                    )
+                )
+            }.onFailure {
+                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
+            }.onSuccess {
+                logger.logInfo("DROID-2966 Read mentions with success")
+            }
+        }
+    }
+
+    private suspend fun readMessagesWithinVisibleRange(
+        unread: Chat.State,
+        readFrom: Chat.Message?,
+        chat: Id
+    ) {
+        if (
+            unread.hasUnReadMessages &&
+            !unread.oldestMessageOrderId.isNullOrEmpty() &&
+            readFrom != null
+            && readFrom.order >= unread.oldestMessageOrderId!!
+        ) {
+            runCatching {
+                repo.readChatMessages(
+                    command = Command.ChatCommand.ReadMessages(
+                        chat = chat,
+                        beforeOrderId = readFrom.order,
+                        lastStateId = unread.lastStateId.orEmpty()
+                    )
+                )
+            }.onFailure {
+                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
+            }.onSuccess {
+                logger.logInfo("DROID-2966 Read messages with success")
+            }
         }
     }
 

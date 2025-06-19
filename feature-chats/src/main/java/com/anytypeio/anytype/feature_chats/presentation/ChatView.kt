@@ -103,7 +103,8 @@ sealed interface ChatView {
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,
                 val icon: ObjectIcon = ObjectIcon.None,
-                val typeName: String
+                val typeName: String,
+                val isDeleted: Boolean = false
             ): Attachment()
 
             data class Bookmark(

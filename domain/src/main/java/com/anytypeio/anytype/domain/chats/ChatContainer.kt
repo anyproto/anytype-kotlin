@@ -324,7 +324,7 @@ class ChatContainer @Inject constructor(
                             ChatStreamState(
                                 messages = messages,
                                 intent = if (target != null)
-                                    Intent.ScrollToMessage(target.id)
+                                    Intent.ScrollToMessage(target.id, highlight = true)
                                 else
                                     Intent.None,
                                 state = state.state

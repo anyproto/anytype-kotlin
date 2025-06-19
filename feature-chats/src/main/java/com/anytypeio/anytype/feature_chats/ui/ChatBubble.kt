@@ -106,8 +106,7 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    isHighlighted: Boolean
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
 
     val haptic = LocalHapticFeedback.current
@@ -184,7 +183,6 @@ fun Bubble(
                             .wrapContentWidth()
                     }
                 )
-                .then(if (isHighlighted) Modifier.alpha(0.5f) else Modifier.alpha(1f))
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)

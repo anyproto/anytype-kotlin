@@ -184,7 +184,8 @@ sealed interface ChatView {
 data class ChatViewState(
     val messages: List<ChatView> = emptyList(),
     val intent: ChatContainer.Intent = ChatContainer.Intent.None,
-    val counter: Counter = Counter()
+    val counter: Counter = Counter(),
+    val isLoading: Boolean = false,
 ) {
     data class Counter(
         val messages: Int = 0,

@@ -135,6 +135,7 @@ fun ChatScreenWrapper(
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
         ChatScreen(
+            isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
             chatBoxMode = vm.chatBoxMode.collectAsState().value,
             messages = messages,
             counter = counter,
@@ -369,6 +370,7 @@ private fun LazyListState.OnBottomReachedSafely(
  */
 @Composable
 fun ChatScreen(
+    isLoading: Boolean = false,
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
@@ -607,6 +609,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f)) {
             Messages(
                 modifier = Modifier.fillMaxSize(),
+                isLoading = isLoading,
                 messages = messages,
                 scrollState = lazyListState,
                 onReacted = onReacted,
@@ -902,6 +905,7 @@ fun ChatScreen(
 fun Messages(
     modifier: Modifier = Modifier,
     messages: List<ChatView>,
+    isLoading: Boolean = false,
     scrollState: LazyListState,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
@@ -1060,47 +1064,65 @@ fun Messages(
             }
         }
         if (messages.isEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                ) {
-                    Column(
+            if (isLoading) {
+                item {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillParentMaxSize(),
+
                     ) {
-                        Image(
-                            modifier = Modifier.size(56.dp),
-                            painter = painterResource(id = R.drawable.ic_vault_create_space),
-                            contentDescription = "Empty state icon",
-                            colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
-                        )
                         Text(
-                            text = stringResource(R.string.chat_empty_state_title),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            textAlign = TextAlign.Center,
                             modifier = Modifier
+                                .align(Alignment.Center)
                                 .fillMaxWidth()
-                                .padding(top = 10.dp)
+                                .padding(16.dp),
+                            text = stringResource(R.string.loading_wait)
                         )
-                        Text(
-                            text = stringResource(R.string.chat_empty_state_subtitle),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_secondary),
-                            textAlign = TextAlign.Center,
+                    }
+                }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize()
+                    ) {
+                        Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                        if (canCreateInviteLink) {
-                            ButtonSecondary(
-                                text = stringResource(R.string.chat_empty_state_share_invite_button),
-                                onClick = { onShareInviteClicked() },
-                                size = ButtonSize.SmallSecondary,
-                                modifier = Modifier.padding(top = 10.dp)
+                                .align(Alignment.CenterStart)
+                                .padding(horizontal = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                modifier = Modifier.size(56.dp),
+                                painter = painterResource(id = R.drawable.ic_vault_create_space),
+                                contentDescription = "Empty state icon",
+                                colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
                             )
+                            Text(
+                                text = stringResource(R.string.chat_empty_state_title),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.chat_empty_state_subtitle),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_secondary),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            if (canCreateInviteLink) {
+                                ButtonSecondary(
+                                    text = stringResource(R.string.chat_empty_state_share_invite_button),
+                                    onClick = { onShareInviteClicked() },
+                                    size = ButtonSize.SmallSecondary,
+                                    modifier = Modifier.padding(top = 10.dp)
+                                )
+                            }
                         }
                     }
                 }

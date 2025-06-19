@@ -1031,8 +1031,7 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer,
-                        isHighlighted = isHighlighted
+                        onRequestVideoPlayer = onRequestVideoPlayer
                     )
                 }
                 if (idx == messages.lastIndex) {

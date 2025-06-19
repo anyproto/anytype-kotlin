@@ -341,10 +341,12 @@ class ChatContainer @Inject constructor(
                     is Transformation.Commands.UpdateVisibleRange -> {
                         val counterState = state.state
                         val bottomVisibleMessage = state.messages.find { it.id == transform.from }
-                        // Reading messages older than bottomVisibleMessage
-                        readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
-                        // Reading mentions older than bottomVisibleMessage
-                        readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                        if (bottomVisibleMessage != null) {
+                            // Reading messages older than bottomVisibleMessage
+                            readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                            // Reading mentions older than bottomVisibleMessage
+                            readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                        }
                         state
                     }
                     is Transformation.Events.Payload -> {
@@ -364,22 +366,24 @@ class ChatContainer @Inject constructor(
     }
 
     private suspend fun readMentionsWithinVisibleRange(
-        unread: Chat.State,
-        readFrom: Chat.Message?,
+        countersState: Chat.State,
+        bottomVisibleMessage: Chat.Message,
         chat: Id
     ) {
+        val oldestMentionOrderId = countersState.oldestMentionMessageOrderId
+        val bottomOrder = bottomVisibleMessage.order
+
         if (
-            unread.hasUnReadMentions &&
-            !unread.oldestMentionMessageOrderId.isNullOrEmpty() &&
-            readFrom != null
-            && readFrom.order >= unread.oldestMentionMessageOrderId!!
+            countersState.hasUnReadMentions &&
+            !oldestMentionOrderId.isNullOrEmpty() &&
+            bottomOrder >= oldestMentionOrderId
         ) {
             runCatching {
                 repo.readChatMessages(
                     command = Command.ChatCommand.ReadMessages(
                         chat = chat,
-                        beforeOrderId = readFrom.order,
-                        lastStateId = unread.lastStateId.orEmpty(),
+                        beforeOrderId = bottomOrder,
+                        lastStateId = countersState.lastStateId.orEmpty(),
                         isMention = true
                     )
                 )
@@ -393,20 +397,22 @@ class ChatContainer @Inject constructor(
 
     private suspend fun readMessagesWithinVisibleRange(
         countersState: Chat.State,
-        readFrom: Chat.Message?,
+        bottomVisibleMessage: Chat.Message,
         chat: Id
     ) {
+        val oldestMessageOrderId = countersState.oldestMessageOrderId
+        val bottomOrder = bottomVisibleMessage.order
+
         if (
             countersState.hasUnReadMessages &&
-            !countersState.oldestMessageOrderId.isNullOrEmpty() &&
-            readFrom != null
-            && readFrom.order >= countersState.oldestMessageOrderId!!
+            !oldestMessageOrderId.isNullOrEmpty() &&
+            bottomOrder >= oldestMessageOrderId
         ) {
             runCatching {
                 repo.readChatMessages(
                     command = Command.ChatCommand.ReadMessages(
                         chat = chat,
-                        beforeOrderId = readFrom.order,
+                        beforeOrderId = bottomOrder,
                         lastStateId = countersState.lastStateId.orEmpty()
                     )
                 )

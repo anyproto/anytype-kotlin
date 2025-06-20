@@ -517,7 +517,7 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState, messages) {
+    LaunchedEffect(lazyListState, messages, isPerformingScrollIntent.value) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
                 val viewportHeight = layoutInfo.viewportSize.height

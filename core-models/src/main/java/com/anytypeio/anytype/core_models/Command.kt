@@ -670,11 +670,18 @@ sealed class Command {
             val chat: Id,
             val limit: Int
         ) : ChatCommand() {
+
+            val subscription: Id get() = "$SUB_ID_PREFIX$chat"
+
             data class Response(
                 val messages: List<Chat.Message>,
                 val messageCountBefore: Int,
                 val chatState: Chat.State? = null
             )
+
+            companion object {
+                const val SUB_ID_PREFIX = "subscription.chat."
+            }
         }
 
         data class ToggleMessageReaction(

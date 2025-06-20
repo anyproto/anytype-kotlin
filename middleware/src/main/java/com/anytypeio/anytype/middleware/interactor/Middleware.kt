@@ -2873,7 +2873,8 @@ class Middleware @Inject constructor(
     ): Command.ChatCommand.SubscribeLastMessages.Response {
         val request = Rpc.Chat.SubscribeLastMessages.Request(
             chatObjectId = command.chat,
-            limit = command.limit
+            limit = command.limit,
+            subId = command.subscription
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatSubscribeLastMessages(request) }

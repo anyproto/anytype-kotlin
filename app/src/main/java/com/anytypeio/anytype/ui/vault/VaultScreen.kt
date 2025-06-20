@@ -342,33 +342,6 @@ fun AllSectionHeader() {
     }
 }
 
-// Original VaultScreen function for backward compatibility
-@Composable
-fun VaultScreen(
-    profile: AccountProfile,
-    spaces: List<VaultSpaceView>,
-    onSpaceClicked: (VaultSpaceView) -> Unit,
-    onCreateSpaceClicked: () -> Unit,
-    onSettingsClicked: () -> Unit,
-    onOrderChanged: (List<Id>) -> Unit
-) {
-    // Convert to VaultSectionView for compatibility
-    val sections = VaultSectionView(
-        unreadSpaces = emptyList(),
-        mainSpaces = spaces
-    )
-
-    // Call the new VaultScreen function
-    VaultScreen(
-        profile = profile,
-        sections = sections,
-        onSpaceClicked = onSpaceClicked,
-        onCreateSpaceClicked = onCreateSpaceClicked,
-        onSettingsClicked = onSettingsClicked,
-        onOrderChanged = onOrderChanged
-    )
-}
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun VaultScreenToolbar(

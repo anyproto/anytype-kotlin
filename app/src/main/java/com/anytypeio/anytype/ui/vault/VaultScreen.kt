@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,7 +23,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
@@ -52,20 +50,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.foundation.util.DraggableItem
-import com.anytypeio.anytype.core_ui.foundation.util.dragContainer
-import com.anytypeio.anytype.core_ui.foundation.util.rememberDragDropState
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -76,7 +64,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.ui.settings.typography
@@ -230,33 +217,6 @@ fun VaultScreenToolbar(
 }
 
 @Composable
-fun VaultSpaceAddCard(
-    onCreateSpaceClicked: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                color = colorResource(id = R.color.shape_tertiary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clickable {
-                onCreateSpaceClicked()
-            }
-    ) {
-        Image(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(vertical = 32.dp),
-            painter = painterResource(id = R.drawable.ic_vault_create_space_card_button_plus),
-            contentDescription = "Plus icon"
-        )
-    }
-}
-
-@Composable
 fun LoadingSpaceCard() {
     Box(
         modifier = Modifier
@@ -369,32 +329,6 @@ fun VaultScreenToolbarScrolledPreview() {
         isScrolled = true
     )
 }
-
-//@Composable
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Light Mode")
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Dark Mode")
-//fun VaultScreenPreview() {
-//    VaultScreen(
-//        spaces = buildList {
-//            add(
-//                VaultSpaceView(
-//                    space = ObjectWrapper.SpaceView(
-//                        mapOf(
-//                            Relations.NAME to "B&O Museum",
-//                            Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble()
-//                        )
-//                    ),
-//                    icon = SpaceIconView.Placeholder()
-//                )
-//            )
-//        },
-//        onSpaceClicked = {},
-//        onCreateSpaceClicked = {},
-//        onSettingsClicked = {},
-//        onOrderChanged = {},
-//        profile = AccountProfile.Idle
-//    )
-//}
 
 @Composable
 fun VaultScreenWithUnreadSection(

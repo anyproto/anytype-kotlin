@@ -134,22 +134,34 @@ class ChatContainer @Inject constructor(
 
         val initial = buildList {
             if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
-                // Starting from the unread-messages window.
-                val aroundUnread = loadAroundMessageOrder(
-                    chat = chat,
-                    order = initialState.oldestMessageOrderId.orEmpty()
-                ).also { messages ->
-                    val target = messages.find { it.order == initialState.oldestMessageOrderId }
-                    if (target != null) {
-                        intent = Intent.ScrollToMessage(
-                            id = target.id,
-                            smooth = false,
-                            startOfUnreadMessageSection = true
-                        )
-                        initialUnreadSectionMessageId = target.id
+                val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
+                if (lastUnreadMessage != null) {
+                    // Last unread message is within the subscription results (the chat tail).
+                    intent = Intent.ScrollToMessage(
+                        id = lastUnreadMessage.id,
+                        smooth = false,
+                        startOfUnreadMessageSection = true
+                    )
+                    initialUnreadSectionMessageId = lastUnreadMessage.id
+                    addAll(response.messages)
+                } else {
+                    // Fetching the unread-messages window — un-read message section is not within the chat tail.
+                    val aroundUnread = loadAroundMessageOrder(
+                        chat = chat,
+                        order = initialState.oldestMessageOrderId.orEmpty()
+                    ).also { messages ->
+                        val target = messages.find { it.order == initialState.oldestMessageOrderId }
+                        if (target != null) {
+                            intent = Intent.ScrollToMessage(
+                                id = target.id,
+                                smooth = false,
+                                startOfUnreadMessageSection = true
+                            )
+                            initialUnreadSectionMessageId = target.id
+                        }
                     }
+                    addAll(aroundUnread)
                 }
-                addAll(aroundUnread)
             } else {
                 // Starting with the latest messages.
                 addAll(response.messages)
@@ -464,7 +476,7 @@ class ChatContainer @Inject constructor(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     beforeOrderId = replyMessage.order,
-                    limit = DEFAULT_CHAT_PAGING_SIZE
+                    limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
             ).messages
 
@@ -472,7 +484,7 @@ class ChatContainer @Inject constructor(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     afterOrderId = replyMessage.order,
-                    limit = DEFAULT_CHAT_PAGING_SIZE
+                    limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
             ).messages
 
@@ -495,15 +507,14 @@ class ChatContainer @Inject constructor(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 beforeOrderId = order,
-                limit = DEFAULT_CHAT_PAGING_SIZE
+                limit = DEFAULT_CHAT_PAGING_SIZE / 2
             )
         ).messages
-
         val loadedMessagesAfter = repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 afterOrderId = order,
-                limit = DEFAULT_CHAT_PAGING_SIZE,
+                limit = DEFAULT_CHAT_PAGING_SIZE / 2,
                 includeBoundary = true
             )
         ).messages

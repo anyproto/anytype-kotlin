@@ -27,6 +27,8 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
+import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -120,6 +122,14 @@ fun ListWidgetObjectIcon(
         ObjectIcon.None -> {
             //do nothing
         }
+
+        is ObjectIcon.FileDefault -> {
+            DefaultFileObjectImageIcon(
+                mime = icon.mime,
+                modifier = modifier,
+                iconSize = iconSize,
+            )
+        }
     }
 }
 
@@ -156,6 +166,47 @@ fun DefaultFileObjectImageIcon(
     extension: String?,
 ) {
     val mimeIcon = mime.getMimeIcon(extension)
+    Box(
+        modifier = modifier
+            .size(iconSize)
+            .clip(RoundedCornerShape(cornerRadius(iconSize))),
+        contentAlignment = Alignment.Center
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(iconSize - 4.dp)
+                .height(iconSize)
+                .background(
+                    color = colorResource(R.color.shape_transparent_secondary),
+                    shape = RoundedCornerShape(cornerRadius(iconSize))
+                )
+        )
+        Image(
+            painter = painterResource(id = mimeIcon),
+            contentDescription = "File icon",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(iconSize)
+        )
+    }
+}
+
+@Composable
+fun DefaultFileObjectImageIcon(
+    modifier: Modifier,
+    iconSize: Dp,
+    mime: MimeTypes.Category
+) {
+    val mimeIcon = when (mime) {
+        MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
+        MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
+        MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
+        MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
+        MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
+        MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
+        MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
+        MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
+        MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+    }
     Box(
         modifier = modifier
             .size(iconSize)

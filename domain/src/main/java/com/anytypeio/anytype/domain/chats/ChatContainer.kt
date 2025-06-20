@@ -476,7 +476,7 @@ class ChatContainer @Inject constructor(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     beforeOrderId = replyMessage.order,
-                    limit = DEFAULT_CHAT_PAGING_SIZE
+                    limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
             ).messages
 
@@ -484,7 +484,7 @@ class ChatContainer @Inject constructor(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     afterOrderId = replyMessage.order,
-                    limit = DEFAULT_CHAT_PAGING_SIZE
+                    limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
             ).messages
 
@@ -503,20 +503,18 @@ class ChatContainer @Inject constructor(
         chat: Id,
         order: Id
     ): List<Chat.Message> {
-        // TODO Consider fetching only DEFAULT_CHAT_PAGING_SIZE / 2
         val loadedMessagesBefore = repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 beforeOrderId = order,
-                limit = DEFAULT_CHAT_PAGING_SIZE
+                limit = DEFAULT_CHAT_PAGING_SIZE / 2
             )
         ).messages
-        // TODO Consider fetching only DEFAULT_CHAT_PAGING_SIZE / 2
         val loadedMessagesAfter = repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
                 afterOrderId = order,
-                limit = DEFAULT_CHAT_PAGING_SIZE,
+                limit = DEFAULT_CHAT_PAGING_SIZE / 2,
                 includeBoundary = true
             )
         ).messages

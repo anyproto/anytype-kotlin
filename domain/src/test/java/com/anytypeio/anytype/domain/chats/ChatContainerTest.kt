@@ -621,7 +621,7 @@ class ChatContainerTest {
                     Command.ChatCommand.GetMessages(
                         chat = givenChatID,
                         beforeOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
                         afterOrderId = null,
                         includeBoundary = false
                     )
@@ -635,12 +635,12 @@ class ChatContainerTest {
                     Command.ChatCommand.GetMessages(
                         chat = givenChatID,
                         afterOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
                         includeBoundary = true
                     )
                 )
             } doReturn Command.ChatCommand.GetMessages.Response(
-                messages = allMessages.slice(50..149)
+                messages = allMessages.slice(50..99)
             )
         }
 
@@ -653,7 +653,7 @@ class ChatContainerTest {
             val initial = awaitItem()
 
             assertEquals(
-                expected = allMessages.slice(0..149),
+                expected = allMessages.slice(0..99),
                 actual = initial.messages,
             )
 

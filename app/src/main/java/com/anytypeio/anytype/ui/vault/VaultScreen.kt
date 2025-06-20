@@ -160,7 +160,7 @@ fun VaultScreenToolbar(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_plus_18),
-                        contentDescription = "Plus button",
+                        contentDescription = stringResource(R.string.content_description_plus_button),
                         modifier = Modifier.size(28.dp),
                         contentScale = ContentScale.Fit
                     )

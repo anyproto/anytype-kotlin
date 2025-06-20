@@ -520,6 +520,8 @@ fun ChatScreen(
     LaunchedEffect(lazyListState, messages, isPerformingScrollIntent.value) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
+                if (layoutInfo.totalItemsCount == 0) return@mapNotNull null
+
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->

@@ -208,66 +208,64 @@ class VaultViewModel(
 
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
-        dependency: ObjectWrapper.Basic?
+        dependency: ObjectWrapper.Basic
     ): VaultSpaceView.AttachmentPreview? {
-        if (dependency?.isValid != true) {
-            Timber.w("Object for attachment ${attachment.target} not valid")
-            return when (attachment.type) {
-                Chat.Message.Attachment.Type.Image -> AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.IMAGE,
-                    objectIcon = FileDefault(
-                        mime = MimeTypes.Category.IMAGE
-                    )
-                )
+        // 1️⃣ Determine if we have a valid object to render a "real" icon
+        val isValid = dependency.isValid == true
 
-                Chat.Message.Attachment.Type.File -> AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.FILE,
-                    objectIcon = FileDefault(
-                        mime = MimeTypes.Category.OTHER
-                    )
-                )
-
-                Chat.Message.Attachment.Type.Link -> AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.LINK,
-                    objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT
-                )
-            }
+        // 2️⃣ Helper to pick the preview‐type enum
+        val previewType = when (attachment.type) {
+            Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
+            Chat.Message.Attachment.Type.File -> VaultSpaceView.AttachmentType.FILE
+            Chat.Message.Attachment.Type.Link -> VaultSpaceView.AttachmentType.LINK
         }
 
-        return when (attachment.type) {
-            Chat.Message.Attachment.Type.Image -> {
-                VaultSpaceView.AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.IMAGE,
-                    objectIcon = dependency.objectIcon(
-                        builder = urlBuilder,
-                        objType = storeOfObjectTypes.getTypeOfObject(dependency)
-                    ),
+        // 3️⃣ Helper to produce the "default" fallback icon when dependency is missing or invalid
+        fun defaultIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
+            Chat.Message.Attachment.Type.Image ->
+                FileDefault(mime = MimeTypes.Category.IMAGE)
+
+            Chat.Message.Attachment.Type.File ->
+                FileDefault(mime = MimeTypes.Category.OTHER)
+
+            Chat.Message.Attachment.Type.Link ->
+                ObjectIcon.TypeIcon.Default.DEFAULT
+        }
+
+        // 4️⃣ Helper to produce the "real" icon when we have a valid object
+        suspend fun realIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
+            Chat.Message.Attachment.Type.Image,
+            Chat.Message.Attachment.Type.Link ->
+                dependency.objectIcon(
+                    builder = urlBuilder,
+                    objType = storeOfObjectTypes.getTypeOfObject(dependency)
                 )
-            }
 
             Chat.Message.Attachment.Type.File -> {
-                val mimeType = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
-                val fileExt = dependency.getSingleValue<String>(Relations.FILE_EXT)
-                VaultSpaceView.AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.FILE,
-                    objectIcon = ObjectIcon.File(
-                        mime = mimeType,
-                        extensions = fileExt
-                    )
-                )
-            }
-
-            Chat.Message.Attachment.Type.Link -> {
-                VaultSpaceView.AttachmentPreview(
-                    type = VaultSpaceView.AttachmentType.LINK,
-                    objectIcon = dependency.objectIcon(
-                        builder = urlBuilder,
-                        objType = storeOfObjectTypes.getTypeOfObject(dependency)
-                    ),
-                    title = fieldParser.getObjectName(objectWrapper = dependency)
-                )
+                val mime = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+                val ext = dependency.getSingleValue<String>(Relations.FILE_EXT)
+                ObjectIcon.File(mime = mime, extensions = ext)
             }
         }
+
+        // 5️⃣ Build the preview, choosing between default vs. real icon
+        val icon = if (isValid) {
+            realIconFor(type = attachment.type)
+        } else {
+            Timber.w("Object for attachment ${attachment.target} not valid")
+            defaultIconFor(type = attachment.type)
+        }
+
+        // 6️⃣ Only link‐types get a title
+        val title = if (isValid && attachment.type == Chat.Message.Attachment.Type.Link) {
+            fieldParser.getObjectName(objectWrapper = dependency)
+        } else null
+
+        return VaultSpaceView.AttachmentPreview(
+            type = previewType,
+            objectIcon = icon,
+            title = title
+        )
     }
 
     private suspend fun createChatView(
@@ -303,10 +301,15 @@ class VaultViewModel(
         // Build attachment previews with proper URLs
         val attachmentPreviews = chatPreview.message?.attachments?.mapNotNull { attachment ->
             val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            mapToAttachmentPreview(
-                attachment = attachment,
-                dependency = dependency
-            )
+            if (dependency != null) {
+                mapToAttachmentPreview(
+                    attachment = attachment,
+                    dependency = dependency
+                )
+            } else {
+                null
+            }
+
         } ?: emptyList()
 
         return VaultSpaceView.Chat(

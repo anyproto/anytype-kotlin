@@ -1,27 +1,15 @@
 package com.anytypeio.anytype.ui.vault
 
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SystemColor
-import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.profile.AccountProfile
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
-import com.anytypeio.anytype.ui.settings.typography
 
 @Composable
 @DefaultPreviews

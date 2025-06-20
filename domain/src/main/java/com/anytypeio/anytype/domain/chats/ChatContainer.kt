@@ -136,7 +136,7 @@ class ChatContainer @Inject constructor(
             if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                 val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
                 if (lastUnreadMessage != null) {
-                    // Last unread message is within the subscription results
+                    // Last unread message is within the subscription results (the chat tail).
                     intent = Intent.ScrollToMessage(
                         id = lastUnreadMessage.id,
                         smooth = false,
@@ -145,7 +145,7 @@ class ChatContainer @Inject constructor(
                     initialUnreadSectionMessageId = lastUnreadMessage.id
                     addAll(response.messages)
                 } else {
-                    // Fetching the unread-messages window.
+                    // Fetching the unread-messages window — un-read message section is not within the chat tail.
                     val aroundUnread = loadAroundMessageOrder(
                         chat = chat,
                         order = initialState.oldestMessageOrderId.orEmpty()

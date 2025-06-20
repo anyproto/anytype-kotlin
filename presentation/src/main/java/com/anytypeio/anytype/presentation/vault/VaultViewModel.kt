@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
+import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -50,6 +51,8 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView.AttachmentPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -203,6 +206,70 @@ class VaultViewModel(
         }
     }
 
+    private suspend fun mapToAttachmentPreview(
+        attachment: Chat.Message.Attachment,
+        dependency: ObjectWrapper.Basic?
+    ): VaultSpaceView.AttachmentPreview? {
+        if (dependency?.isValid != true) {
+            Timber.w("Object for attachment ${attachment.target} not valid")
+            return when (attachment.type) {
+                Chat.Message.Attachment.Type.Image -> AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.IMAGE,
+                    objectIcon = FileDefault(
+                        mime = MimeTypes.Category.IMAGE
+                    )
+                )
+
+                Chat.Message.Attachment.Type.File -> AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.FILE,
+                    objectIcon = FileDefault(
+                        mime = MimeTypes.Category.OTHER
+                    )
+                )
+
+                Chat.Message.Attachment.Type.Link -> AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.LINK,
+                    objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT
+                )
+            }
+        }
+
+        return when (attachment.type) {
+            Chat.Message.Attachment.Type.Image -> {
+                VaultSpaceView.AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.IMAGE,
+                    objectIcon = dependency.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                    ),
+                )
+            }
+
+            Chat.Message.Attachment.Type.File -> {
+                val mimeType = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+                val fileExt = dependency.getSingleValue<String>(Relations.FILE_EXT)
+                VaultSpaceView.AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.FILE,
+                    objectIcon = ObjectIcon.File(
+                        mime = mimeType,
+                        extensions = fileExt
+                    )
+                )
+            }
+
+            Chat.Message.Attachment.Type.Link -> {
+                VaultSpaceView.AttachmentPreview(
+                    type = VaultSpaceView.AttachmentType.LINK,
+                    objectIcon = dependency.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                    ),
+                    title = fieldParser.getObjectName(objectWrapper = dependency)
+                )
+            }
+        }
+    }
+
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview
@@ -236,43 +303,10 @@ class VaultViewModel(
         // Build attachment previews with proper URLs
         val attachmentPreviews = chatPreview.message?.attachments?.mapNotNull { attachment ->
             val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            if (dependency?.isValid != true) {
-                Timber.w("Object for attachment ${attachment.target} not valid")
-                return@mapNotNull null
-            } else {
-                when (attachment.type) {
-                    Chat.Message.Attachment.Type.Image -> {
-                        VaultSpaceView.AttachmentPreview(
-                            type = VaultSpaceView.AttachmentType.IMAGE,
-                            objectIcon = dependency.objectIcon(
-                                builder = urlBuilder,
-                                objType = storeOfObjectTypes.getTypeOfObject(dependency)
-                            ),
-                        )
-                    }
-                    Chat.Message.Attachment.Type.File -> {
-                        val mimeType = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
-                        val fileExt = dependency.getSingleValue<String>(Relations.FILE_EXT)
-                        VaultSpaceView.AttachmentPreview(
-                            type = VaultSpaceView.AttachmentType.FILE,
-                            objectIcon = ObjectIcon.File(
-                                mime = mimeType,
-                                extensions = fileExt
-                            )
-                        )
-                    }
-                    Chat.Message.Attachment.Type.Link -> {
-                        VaultSpaceView.AttachmentPreview(
-                            type = VaultSpaceView.AttachmentType.LINK,
-                            objectIcon = dependency.objectIcon(
-                                builder = urlBuilder,
-                                objType = storeOfObjectTypes.getTypeOfObject(dependency)
-                            ),
-                            title = fieldParser.getObjectName(objectWrapper = dependency)
-                        )
-                    }
-                }
-            }
+            mapToAttachmentPreview(
+                attachment = attachment,
+                dependency = dependency
+            )
         } ?: emptyList()
 
         return VaultSpaceView.Chat(

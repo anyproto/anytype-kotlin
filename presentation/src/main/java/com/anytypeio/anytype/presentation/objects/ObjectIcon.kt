@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_ICON_PREFIX
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
@@ -37,8 +39,11 @@ sealed class ObjectIcon {
 
     data class File(
         val mime: String?,
-        val fileName: String?,
         val extensions: String? = null
+    ) : ObjectIcon()
+
+    data class FileDefault(
+        val mime: MimeTypes.Category
     ) : ObjectIcon()
 
     data object Deleted : ObjectIcon()

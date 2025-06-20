@@ -252,7 +252,6 @@ internal fun ChatBoxAttachments(
                                 type = stringResource(R.string.file),
                                 icon = ObjectIcon.File(
                                     mime = null,
-                                    fileName = null
                                 ),
                                 onAttachmentClicked = {
                                     // Do nothing

@@ -20,12 +20,14 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget.Companion.DRAWABLE_DIR
+import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -167,6 +169,9 @@ class ObjectIconWidget @JvmOverloads constructor(
                 emoji = icon.unicode,
                 fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
             )
+            is ObjectIcon.FileDefault -> {
+                setFileImage(mime = icon.mime)
+            }
         }
     }
 
@@ -228,6 +233,19 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setFileImage(mime: String?, extension: String?) {
         val icon = mime.getMimeIcon(extension)
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivImage.setImageResource(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+        }
+    }
+
+    private fun setFileImage(mime: MimeTypes.Category) {
+        val icon = mime.getMimeIcon()
         with(binding) {
             ivImage.visible()
             ivImage.scaleType = ImageView.ScaleType.CENTER_CROP

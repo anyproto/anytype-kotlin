@@ -145,7 +145,6 @@ fun VaultChatCard(
             messageTime = messageTime,
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
-            chatPreview = chatPreview,
             attachmentPreviews = attachmentPreviews
         )
     }
@@ -160,7 +159,6 @@ private fun BoxScope.ContentChat(
     messageTime: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    chatPreview: Chat.Preview? = null,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
 ) {
 

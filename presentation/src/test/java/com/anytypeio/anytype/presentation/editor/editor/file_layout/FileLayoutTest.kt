@@ -123,7 +123,6 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                     text = "${fileObject.name}.$fileExt",
                     icon = ObjectIcon.File(
                         mime = fileObject.fileMimeType,
-                        fileName = fileObject.name,
                         extensions = fileExt
                     )
                 ),

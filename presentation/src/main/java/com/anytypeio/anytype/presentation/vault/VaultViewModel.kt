@@ -145,9 +145,8 @@ class VaultViewModel(
 
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
         if (loadingSpaceIndex != -1) {
-            val loadingSpace = allSpaces[loadingSpaceIndex]
             loadingState.value = true
-            Timber.d("Found loading space ID: ${loadingSpace.space.id}, space name: ${loadingSpace.space.name}")
+            Timber.d("Found loading space ID: ${allSpaces[loadingSpaceIndex].space.id}, space name: ${allSpaces[loadingSpaceIndex].space.name}")
         } else {
             loadingState.value = false
             Timber.d("No loading space found")

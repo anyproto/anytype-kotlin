@@ -4,6 +4,7 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -23,10 +24,12 @@ interface GlobalSubscriptionManager {
         private val profile: ProfileSubscriptionManager,
         private val networkConnectionStatus: NetworkConnectionStatus,
         private val deviceTokenStoringService: DeviceTokenStoringService,
-        private val chatPreviewContainer: ChatPreviewContainer
+        private val chatPreviewContainer: ChatPreviewContainer,
+        private val pushKeyProvider: PushKeyProvider
     ) : GlobalSubscriptionManager {
 
         override fun onStart() {
+            pushKeyProvider.start()
             types.onStart()
             relations.onStart()
             permissions.start()
@@ -38,6 +41,7 @@ interface GlobalSubscriptionManager {
         }
 
         override fun onStop() {
+            pushKeyProvider.stop()
             types.onStop()
             relations.onStop()
             permissions.stop()

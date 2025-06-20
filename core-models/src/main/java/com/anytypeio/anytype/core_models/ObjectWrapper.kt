@@ -343,6 +343,8 @@ sealed class ObjectWrapper {
         val writersLimit: Double? by default
         val readersLimit: Double? by default
 
+        val spacePushNotificationEncryptionKey: String? by default
+
         val sharedSpaceLimit: Int
             get() {
                 val value = getValue<Double?>(Relations.SHARED_SPACES_LIMIT)

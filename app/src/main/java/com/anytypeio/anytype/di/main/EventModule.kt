@@ -8,7 +8,6 @@ import com.anytypeio.anytype.data.auth.event.EventDataChannel
 import com.anytypeio.anytype.data.auth.event.EventRemoteChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsDataChannel
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
-import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionDataChannel
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
@@ -129,14 +128,12 @@ object EventModule {
         logger: MiddlewareProtobufLogger,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         channel: EventHandlerChannel,
-        syncP2PStore: SyncAndP2PStatusEventsStore,
-        pushKeyRemoteChannel: PushKeyRemoteChannel
+        syncP2PStore: SyncAndP2PStatusEventsStore
     ): EventProxy = EventHandler(
         scope = scope,
         logger = logger,
         channel = channel,
-        syncP2PStore = syncP2PStore,
-        pushKeyRemoteChannel = pushKeyRemoteChannel
+        syncP2PStore = syncP2PStore
     )
 
     @JvmStatic

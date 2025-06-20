@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.notifications
 
 import android.util.Base64
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromStream
@@ -14,7 +15,8 @@ interface DecryptionPushContentService {
 
 class DecryptionPushContentServiceImpl @Inject constructor(
     private val pushKeyProvider: PushKeyProvider,
-    private val cryptoService: CryptoService
+    private val cryptoService: CryptoService,
+    private val json: Json
 ) : DecryptionPushContentService {
 
     init {
@@ -49,7 +51,7 @@ class DecryptionPushContentServiceImpl @Inject constructor(
 
             // Parse the decrypted JSON
             try {
-                Json { ignoreUnknownKeys = true }.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
+                json.decodeFromStream<DecryptedPushContent>(decryptedData.inputStream())
             } catch (e: Exception) {
                 Timber.e(e, "Failed to parse decrypted data for keyId: $keyId")
                 null

@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -233,7 +234,8 @@ object SubscriptionsModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
-        chatPreviewContainer: ChatPreviewContainer
+        chatPreviewContainer: ChatPreviewContainer,
+        pushKeyProvider: PushKeyProvider
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -242,7 +244,8 @@ object SubscriptionsModule {
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
-        chatPreviewContainer = chatPreviewContainer
+        chatPreviewContainer = chatPreviewContainer,
+        pushKeyProvider = pushKeyProvider
     )
 
     @JvmStatic

@@ -7,14 +7,13 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.chats.PushKeyUpdate
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.PushKeyChannel
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.json.Json
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -36,7 +35,9 @@ class PushKeyProviderImplTest {
     @Mock
     private lateinit var mockChannel: PushKeyChannel
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+    }
 
     private lateinit var sharedPreferences: SharedPreferences
     private val dispatcher = StandardTestDispatcher(name = "Default test dispatcher")
@@ -91,10 +92,7 @@ class PushKeyProviderImplTest {
             // Verify the stored values in SharedPreferences
             val storedKeysJson =
                 sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
-            val storedKeys: Map<String, PushKey> = gson.fromJson(
-                storedKeysJson,
-                object : TypeToken<Map<String, PushKey>>() {}.type
-            )
+            val storedKeys: Map<String, PushKey> = json.decodeFromString(storedKeysJson)
 
             assertTrue(storedKeys.containsKey(pushKeyId))
             assertEquals(pushKeyId, storedKeys[pushKeyId]?.id)
@@ -131,7 +129,7 @@ class PushKeyProviderImplTest {
             val storedKeysJson =
                 sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
             val storedKeys: Map<String, PushKey> =
-                gson.fromJson(storedKeysJson, object : TypeToken<Map<String, PushKey>>() {}.type)
+                json.decodeFromString(storedKeysJson)
             assertTrue(storedKeys.containsKey(initialKeyId))
             assertEquals(initialKeyId, storedKeys[initialKeyId]?.id)
             assertEquals(initialKey, storedKeys[initialKeyId]?.value)
@@ -148,10 +146,7 @@ class PushKeyProviderImplTest {
             // Verify updated storage
             val updatedStoredKeysJson =
                 sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
-            val updatedStoredKeys: Map<String, PushKey> = gson.fromJson(
-                updatedStoredKeysJson,
-                object : TypeToken<Map<String, PushKey>>() {}.type
-            )
+            val updatedStoredKeys: Map<String, PushKey> = json.decodeFromString(updatedStoredKeysJson)
             assertTrue(updatedStoredKeys.containsKey(updatedKeyId))
             assertEquals(updatedKeyId, updatedStoredKeys[updatedKeyId]?.id)
             assertEquals(updatedKey, updatedStoredKeys[updatedKeyId]?.value)
@@ -180,10 +175,7 @@ class PushKeyProviderImplTest {
         // Verify first event: (key1 to value1) has been saved in SharedPreferences
         val storedKeysJson1 =
             sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
-        val storedKeys1: Map<String, PushKey> = Gson().fromJson(
-            storedKeysJson1,
-            object : TypeToken<Map<String, PushKey>>() {}.type
-        )
+        val storedKeys1: Map<String, PushKey> = json.decodeFromString(storedKeysJson1)
 
         assertTrue(storedKeys1.containsKey(key1))
         assertEquals(key1, storedKeys1[key1]?.id)
@@ -198,10 +190,7 @@ class PushKeyProviderImplTest {
         // Verify second event: (key1 to value2) has updated the value for the same key in SharedPreferences
         val storedKeysJson2 =
             sharedPreferences.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
-        val storedKeys2: Map<String, PushKey> = Gson().fromJson(
-            storedKeysJson2,
-            object : TypeToken<Map<String, PushKey>>() {}.type
-        )
+        val storedKeys2: Map<String, PushKey> = json.decodeFromString(storedKeysJson2)
 
         // Ensure the value for key1 has been updated to value2
         assertTrue(storedKeys2.containsKey(key1))
@@ -222,7 +211,7 @@ class PushKeyProviderImplTest {
                 computation = dispatcher
             ),
             scope = testScope,
-            gson = gson
+            json = json
         )
     }
 

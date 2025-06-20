@@ -24,11 +24,6 @@ sealed class VaultSpaceView {
             else -> null
         }
 
-    data class Loading(
-        override val space: ObjectWrapper.SpaceView,
-        override val icon: SpaceIconView
-    ) : VaultSpaceView()
-
     data class Space(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,

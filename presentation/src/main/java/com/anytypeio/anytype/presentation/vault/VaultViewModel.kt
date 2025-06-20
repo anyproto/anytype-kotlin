@@ -86,6 +86,7 @@ class VaultViewModel(
 
     val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
+    val loadingState = MutableStateFlow(false)
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -142,6 +143,16 @@ class VaultViewModel(
                 mapToVaultSpaceViewItem(space, chatPreview)
             }
 
+        val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
+        if (loadingSpaceIndex != -1) {
+            val loadingSpace = allSpaces[loadingSpaceIndex]
+            loadingState.value = true
+            Timber.d("Found loading space space ID: ${loadingSpace.space.id}, space name: ${loadingSpace.space.name}")
+        } else {
+            loadingState.value = false
+            Timber.d("No loading space found")
+        }
+
         // Create a map for quick lookup
         val spaceViewMap = allSpaces.associateBy { it.space.id }
 
@@ -181,16 +192,7 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?
     ): VaultSpaceView {
-        // Debug logging to diagnose the missing spaces issue
-        if (BuildConfig.DEBUG) {
-            Timber.d("Space ${space.id}: Space name: ${space.name}, isLoading=${space.isLoading}, isActive=${space.isActive}, chatPreview=${chatPreview != null}, spaceLocalStatus=${space.spaceLocalStatus}, spaceAccountStatus=${space.spaceAccountStatus}")
-        }
-        
         return when {
-            space.isLoading -> {
-                Timber.d("Creating loading view for space ${space.id}")
-                createLoadingView(space)
-            }
             chatPreview != null -> {
                 Timber.d("Creating chat view for space ${space.id}")
                 createChatView(space, chatPreview)
@@ -200,19 +202,6 @@ class VaultViewModel(
                 createStandardSpaceView(space)
             }
         }
-    }
-
-    private fun createLoadingView(
-        space: ObjectWrapper.SpaceView
-    ): VaultSpaceView.Loading {
-        Timber.d("Space ${space.id} is loading")
-        return VaultSpaceView.Loading(
-            space = space,
-            icon = space.spaceIcon(
-                builder = urlBuilder,
-                spaceGradientProvider = SpaceGradientProvider.Default
-            )
-        )
     }
 
     private suspend fun createChatView(

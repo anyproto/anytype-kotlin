@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,14 +24,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,8 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -51,8 +48,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -114,58 +111,71 @@ fun VaultScreenToolbar(
     profile: AccountProfile,
     spaceCountLimitReached: Boolean = false,
     onPlusClicked: () -> Unit,
-    onSettingsClicked: () -> Unit
+    onSettingsClicked: () -> Unit,
+    isLoading: Boolean
 ) {
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(44.dp)
-    ) {
+    Column {
         Box(
             modifier = Modifier
-                .width(64.dp)
-                .fillMaxHeight()
-                .noRippleThrottledClickable {
-                    onSettingsClicked()
-                },
-            contentAlignment = Alignment.Center
-
+                .fillMaxWidth()
+                .height(52.dp)
         ) {
-            ProfileIcon(
-                modifier = Modifier.size(28.dp),
-                profile = profile
-            )
-        }
-
-        Text(
-            modifier = Modifier.align(Alignment.Center),
-            style = Title1,
-            text = stringResource(R.string.vault_my_spaces),
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-
-        if (!spaceCountLimitReached) {
             Box(
                 modifier = Modifier
-                    .align(Alignment.CenterEnd)
                     .width(64.dp)
                     .fillMaxHeight()
                     .noRippleThrottledClickable {
-                        onPlusClicked()
+                        onSettingsClicked()
                     },
                 contentAlignment = Alignment.Center
 
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_plus_18),
-                    contentDescription = "Plus button",
+                ProfileIcon(
                     modifier = Modifier.size(28.dp),
-                    contentScale = ContentScale.Fit
+                    profile = profile
                 )
             }
+
+            Text(
+                modifier = Modifier.align(Alignment.Center),
+                style = Title1,
+                text = stringResource(R.string.vault_my_spaces),
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            if (!spaceCountLimitReached) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .width(64.dp)
+                        .fillMaxHeight()
+                        .noRippleThrottledClickable {
+                            onPlusClicked()
+                        },
+                    contentAlignment = Alignment.Center
+
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_plus_18),
+                        contentDescription = "Plus button",
+                        modifier = Modifier.size(28.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            }
+        }
+
+        if (isLoading) {
+            ShimmerEffect(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp),
+            )
+        } else {
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -215,74 +225,6 @@ private fun ProfileIcon(
 }
 
 @Composable
-fun LoadingSpaceCard() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(96.dp)
-            .padding(horizontal = 8.dp)
-            .background(
-                color = colorResource(R.color.shape_tertiary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .clip(RoundedCornerShape(20.dp))
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 16.dp)
-                .size(64.dp)
-                .align(Alignment.CenterStart)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            colorResource(R.color.shape_primary),
-                            Color.Transparent,
-                        )
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(start = 96.dp, top = 30.dp)
-                .height(12.dp)
-                .width(160.dp)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            colorResource(R.color.shape_primary),
-                            Color.Transparent,
-                        )
-                    )
-                )
-        )
-
-        Box(
-            modifier = Modifier
-                .padding(start = 96.dp, bottom = 30.dp)
-                .height(8.dp)
-                .width(96.dp)
-                .align(Alignment.BottomStart)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            colorResource(R.color.shape_primary),
-                            Color.Transparent,
-                        )
-                    )
-                )
-        )
-    }
-}
-
-@DefaultPreviews
-@Composable
-fun LoadingSpaceCardPreview() {
-    LoadingSpaceCard()
-}
-
-@Composable
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
@@ -301,6 +243,7 @@ fun VaultScreenToolbarNotScrolledPreview() {
             name = "John Doe",
             icon = ProfileIconView.Placeholder(name = "Jd")
         ),
+        isLoading = false,
     )
 }
 
@@ -322,7 +265,8 @@ fun VaultScreenToolbarScrolledPreview() {
         profile = AccountProfile.Data(
             name = "John Doe",
             icon = ProfileIconView.Placeholder(name = "Jd")
-        )
+        ),
+        isLoading = false,
     )
 }
 
@@ -334,7 +278,8 @@ fun VaultScreenWithUnreadSection(
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     onOrderChanged: (String, String) -> Unit,
-    onDragEnd: () -> Unit = { /* No-op */ }
+    onDragEnd: () -> Unit = { /* No-op */ },
+    isLoading: Boolean
 ) {
 
     var mainSpaceList by remember {
@@ -383,12 +328,15 @@ fun VaultScreenWithUnreadSection(
             ),
         backgroundColor = colorResource(id = R.color.background_primary),
         topBar = {
-            VaultScreenToolbar(
-                profile = profile,
-                onPlusClicked = onCreateSpaceClicked,
-                onSettingsClicked = onSettingsClicked,
-                spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
-            )
+            Column {
+                VaultScreenToolbar(
+                    profile = profile,
+                    onPlusClicked = onCreateSpaceClicked,
+                    onSettingsClicked = onSettingsClicked,
+                    spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                    isLoading = isLoading
+                )
+            }
         }
     ) { paddings ->
         if (sections.allSpaces.isEmpty()) {
@@ -419,7 +367,6 @@ fun VaultScreenWithUnreadSection(
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
                                 is VaultSpaceView.Space -> TYPE_SPACE
-                                is VaultSpaceView.Loading -> TYPE_LOADING
                             }
                         }
                     ) { _, item ->
@@ -449,10 +396,6 @@ fun VaultScreenWithUnreadSection(
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews
                                 )
-                            }
-
-                            is VaultSpaceView.Loading -> {
-                                LoadingSpaceCard()
                             }
 
                             is VaultSpaceView.Space -> {
@@ -485,7 +428,6 @@ fun VaultScreenWithUnreadSection(
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
                                 is VaultSpaceView.Space -> TYPE_SPACE
-                                is VaultSpaceView.Loading -> TYPE_LOADING
                             }
                         }
                     ) { idx, item ->
@@ -531,26 +473,6 @@ fun VaultScreenWithUnreadSection(
                                     )
                                 }
 
-                                is VaultSpaceView.Loading -> {
-                                    Box(
-                                        modifier = Modifier
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.START
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.END
-                                                    )
-                                                }
-                                            )
-                                    ) {
-                                        LoadingSpaceCard()
-                                    }
-                                }
-
                                 is VaultSpaceView.Space -> {
                                     Box(
                                         modifier = Modifier
@@ -589,7 +511,6 @@ fun VaultScreenWithUnreadSection(
 
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
-const val TYPE_LOADING = "loading"
 
 private const val MAIN_SECTION_KEY_PREFIX = "main_"
 

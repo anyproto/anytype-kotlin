@@ -37,7 +37,6 @@ sealed class ObjectIcon {
 
     data class File(
         val mime: String?,
-        val fileName: String?,
         val extensions: String? = null
     ) : ObjectIcon()
 

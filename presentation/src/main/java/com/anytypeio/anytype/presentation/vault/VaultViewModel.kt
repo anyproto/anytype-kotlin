@@ -257,8 +257,7 @@ class VaultViewModel(
                             type = VaultSpaceView.AttachmentType.FILE,
                             objectIcon = ObjectIcon.File(
                                 mime = mimeType,
-                                extensions = fileExt,
-                                fileName = ""
+                                extensions = fileExt
                             )
                         )
                     }

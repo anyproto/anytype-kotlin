@@ -196,17 +196,7 @@ fun DefaultFileObjectImageIcon(
     iconSize: Dp,
     mime: MimeTypes.Category
 ) {
-    val mimeIcon = when (mime) {
-        MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
-        MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
-        MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
-        MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
-        MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
-        MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
-        MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
-        MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
-        MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
-    }
+    val mimeIcon = mime.getMimeIcon()
     Box(
         modifier = modifier
             .size(iconSize)

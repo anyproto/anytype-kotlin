@@ -1,14 +1,20 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -21,6 +27,8 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
+import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -84,7 +92,6 @@ fun ListWidgetObjectIcon(
 
         is ObjectIcon.File -> {
             DefaultFileObjectImageIcon(
-                fileName = icon.fileName.orEmpty(),
                 mime = icon.mime.orEmpty(),
                 modifier = modifier,
                 iconSize = iconSize,
@@ -114,6 +121,14 @@ fun ListWidgetObjectIcon(
 
         ObjectIcon.None -> {
             //do nothing
+        }
+
+        is ObjectIcon.FileDefault -> {
+            DefaultFileObjectImageIcon(
+                mime = icon.mime,
+                modifier = modifier,
+                iconSize = iconSize,
+            )
         }
     }
 }
@@ -145,21 +160,65 @@ fun DefaultTaskObjectIcon(
 
 @Composable
 fun DefaultFileObjectImageIcon(
-    fileName: String,
     mime: String,
     modifier: Modifier,
     iconSize: Dp,
     extension: String?,
 ) {
     val mimeIcon = mime.getMimeIcon(extension)
-    Image(
-        painter = painterResource(id = mimeIcon),
-        contentDescription = "File icon",
-        contentScale = ContentScale.Crop,
+    Box(
         modifier = modifier
             .size(iconSize)
-            .clip(RoundedCornerShape(2.dp))
-    )
+            .clip(RoundedCornerShape(cornerRadius(iconSize))),
+        contentAlignment = Alignment.Center
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(iconSize - 4.dp)
+                .height(iconSize)
+                .background(
+                    color = colorResource(R.color.shape_transparent_secondary),
+                    shape = RoundedCornerShape(cornerRadius(iconSize))
+                )
+        )
+        Image(
+            painter = painterResource(id = mimeIcon),
+            contentDescription = "File icon",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(iconSize)
+        )
+    }
+}
+
+@Composable
+fun DefaultFileObjectImageIcon(
+    modifier: Modifier,
+    iconSize: Dp,
+    mime: MimeTypes.Category
+) {
+    val mimeIcon = mime.getMimeIcon()
+    Box(
+        modifier = modifier
+            .size(iconSize)
+            .clip(RoundedCornerShape(cornerRadius(iconSize))),
+        contentAlignment = Alignment.Center
+    ) {
+        Spacer(
+            modifier = Modifier
+                .width(iconSize - 4.dp)
+                .height(iconSize)
+                .background(
+                    color = colorResource(R.color.shape_transparent_secondary),
+                    shape = RoundedCornerShape(cornerRadius(iconSize))
+                )
+        )
+        Image(
+            painter = painterResource(id = mimeIcon),
+            contentDescription = "File icon",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(iconSize)
+        )
+    }
 }
 
 fun cornerRadius(size: Dp): Dp {

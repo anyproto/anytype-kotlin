@@ -218,18 +218,6 @@ fun BubbleAttachments(
     }
 }
 
-private fun requestPlayingVideoByExternalApps(
-    attachment: ChatView.Message.Attachment.Video,
-    context: Context
-) {
-    val intent = Intent(Intent.ACTION_VIEW).apply {
-        setDataAndType(Uri.parse(attachment.url), "video/*")
-        flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK
-    }
-    context.startActivity(intent)
-}
-
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AttachedObject(
     modifier: Modifier,
@@ -328,14 +316,24 @@ fun Bookmark(
         shape = RoundedCornerShape(12.dp),
     ) {
         if (!imageUrl.isNullOrEmpty()) {
-            Image(
-                painter = rememberAsyncImagePainter(imageUrl),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1.91f),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
+            Box {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(alignment = Alignment.Center)
+                        .size(48.dp),
+                    color = colorResource(R.color.glyph_active),
+                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                    strokeWidth = 4.dp
+                )
+                Image(
+                    painter = rememberAsyncImagePainter(imageUrl),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.91f),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

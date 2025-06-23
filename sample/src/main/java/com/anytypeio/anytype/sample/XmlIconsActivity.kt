@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_CUSTOM_ICON
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.sample.databinding.ActivityXmlIconsBinding
 
@@ -29,7 +30,7 @@ class XmlIconsActivity : AppCompatActivity() {
 
         // Basic.Image
         val basicImageIcon = ObjectIcon.Basic.Image(
-            "android.resource://${packageName}/${R.drawable.ic_plus_18}",
+            "https://samplelib.com/lib/preview/png/sample-red-400x300.png",
             ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
         binding.iconBasicImage20.setIcon(basicImageIcon)
@@ -46,7 +47,7 @@ class XmlIconsActivity : AppCompatActivity() {
 
         // Profile.Image
         val profileImageIcon = ObjectIcon.Profile.Image(
-            "android.resource://${packageName}/${R.drawable.ic_plus_18}",
+            "https://samplelib.com/lib/preview/png/sample-red-400x300.png",
             "John Doe"
         )
         binding.iconProfileImage20.setIcon(profileImageIcon)
@@ -80,7 +81,7 @@ class XmlIconsActivity : AppCompatActivity() {
 
         // Bookmark
         val bookmarkIcon = ObjectIcon.Bookmark(
-            "android.resource://${packageName}/${R.drawable.ic_plus_18}",
+            "https://samplelib.com/lib/preview/png/sample-red-400x300.png",
             ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
         binding.iconBookmark20.setIcon(bookmarkIcon)
@@ -110,21 +111,21 @@ class XmlIconsActivity : AppCompatActivity() {
         binding.iconDeleted40.setIcon(deletedIcon)
 
         // TypeIcon.Default
-        val typeDefaultIcon = ObjectIcon.TypeIcon.Default("human", CustomIconColor.Green)
+        val typeDefaultIcon = ObjectIcon.TypeIcon.Default.DEFAULT
         binding.iconTypeDefault20.setIcon(typeDefaultIcon)
         binding.iconTypeDefault30.setIcon(typeDefaultIcon)
         binding.iconTypeDefault32.setIcon(typeDefaultIcon)
         binding.iconTypeDefault40.setIcon(typeDefaultIcon)
 
         // TypeIcon.Fallback
-        val typeFallbackIcon = ObjectIcon.TypeIcon.Fallback("page")
+        val typeFallbackIcon = ObjectIcon.TypeIcon.Fallback("hammer")
         binding.iconTypeFallback20.setIcon(typeFallbackIcon)
         binding.iconTypeFallback30.setIcon(typeFallbackIcon)
         binding.iconTypeFallback32.setIcon(typeFallbackIcon)
         binding.iconTypeFallback40.setIcon(typeFallbackIcon)
 
         // TypeIcon.Emoji
-        val typeEmojiIcon = ObjectIcon.TypeIcon.Emoji("😎", "human", CustomIconColor.DEFAULT)
+        val typeEmojiIcon = ObjectIcon.TypeIcon.Emoji("😀", DEFAULT_CUSTOM_ICON, CustomIconColor.DEFAULT)
         binding.iconTypeEmoji20.setIcon(typeEmojiIcon)
         binding.iconTypeEmoji30.setIcon(typeEmojiIcon)
         binding.iconTypeEmoji32.setIcon(typeEmojiIcon)

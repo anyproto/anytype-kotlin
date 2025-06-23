@@ -113,10 +113,9 @@
                 android:id="@+id/icon_basic_image_20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageCornerRadius="4dp"
-                app:isImageWithCorners="true" />
+                app:imageSize="20dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -128,10 +127,10 @@
                 android:id="@+id/icon_basic_image_30"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageCornerRadius="4dp"
-                app:isImageWithCorners="true" />
+                app:imageSize="30dp"
+                 />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -143,8 +142,8 @@
                 android:id="@+id/icon_basic_image_32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageCornerRadius="6dp"
-                app:isImageWithCorners="true" />
+                app:imageSize="32dp"
+                />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -158,10 +157,10 @@
                 android:id="@+id/icon_basic_image_40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageCornerRadius="4dp"
-                app:isImageWithCorners="true" />
+                app:imageSize="40dp"
+                 />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="40dp" />
@@ -187,7 +186,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -201,7 +200,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -256,7 +255,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -270,7 +269,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -324,7 +323,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="20dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -338,7 +337,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="30dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -384,7 +383,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="20dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -398,7 +397,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="30dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -452,7 +451,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="20dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -466,7 +465,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="30dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -512,7 +511,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="20dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -526,7 +525,7 @@
                 android:layout_height="wrap_content"
                 app:checkboxSize="30dp"/>
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -580,7 +579,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -594,7 +593,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -648,7 +647,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -662,7 +661,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -716,7 +715,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -730,7 +729,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -784,7 +783,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -798,7 +797,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -852,7 +851,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -866,7 +865,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -920,7 +919,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -934,7 +933,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -989,7 +988,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -1003,7 +1002,7 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -1056,9 +1055,9 @@
                 android:id="@+id/icon_type_deleted_20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:emojiSize="20dp" />
+                app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -1070,9 +1069,9 @@
                 android:id="@+id/icon_type_deleted_30"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:emojiSize="30dp" />
+                app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />
@@ -1084,7 +1083,7 @@
                 android:id="@+id/icon_type_deleted_32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:emojiSize="32dp" />
+                app:imageSize="32dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -1098,7 +1097,7 @@
                 android:id="@+id/icon_type_deleted_40"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:emojiSize="40dp" />
+                app:imageSize="40dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -1126,7 +1125,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
@@ -1140,7 +1139,7 @@
                 android:layout_height="wrap_content"
                 app:imageSize="30dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="30dp" />

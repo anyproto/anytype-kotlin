@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
+import kotlin.math.roundToInt
 
 class ObjectIconWidget @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -161,15 +163,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             }
             is ObjectIcon.FileDefault -> {
                 val iconRes = icon.mime.getMimeIcon()
-                with(binding) {
-                    ivImage.visible()
-                    ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
-                    ivImage.setImageResource(iconRes)
-                    ivCheckbox.invisible()
-                    initialContainer.invisible()
-                    ivBookmark.invisible()
-                    emojiContainer.invisible()
-                }
+                setFileIconWithBackground(iconRes)
             }
         }
     }
@@ -232,15 +226,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setFileImage(mime: String?, extension: String?) {
         val icon = mime.getMimeIcon(extension)
-        with(binding) {
-            ivImage.visible()
-            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            ivImage.setImageResource(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivBookmark.invisible()
-            emojiContainer.invisible()
-        }
+        setFileIconWithBackground(icon)
     }
 
     private fun setCircularImage(image: Url?) {
@@ -389,6 +375,35 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
+    private fun setFileIconWithBackground(iconRes: Int) {
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.FIT_XY
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+
+            ivImage.post {
+                val iconDrawable = context.drawable(iconRes) ?: return@post
+
+                val backgroundDrawable = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setColor(context.color(R.color.shape_transparent_secondary))
+                    cornerRadius = getCornerRadiusInPx(ivImage.width)
+                }
+
+                val layers = arrayOf(backgroundDrawable, iconDrawable)
+                val layerDrawable = LayerDrawable(layers)
+
+                val horizontalMargin = (2 * density).toInt()
+                layerDrawable.setLayerInset(0, horizontalMargin, 0, horizontalMargin, 0)
+
+                ivImage.setImageDrawable(layerDrawable)
+            }
+        }
+    }
+
     private fun createRoundedBackground(sizePx: Int): Drawable {
         val radius = getCornerRadiusInPx(sizePx)
         return GradientDrawable().apply {
@@ -410,6 +425,22 @@ class ObjectIconWidget @JvmOverloads constructor(
             else -> 6f
         }
         return radiusInDp * density
+    }
+
+    private fun getContentSizeForBackgroundPx(backgroundSizeInPx: Int): Int {
+        val dp = backgroundSizeInPx / density
+        val contentDp = when (dp.roundToInt()) {
+            in 0..31 -> dp.roundToInt()
+            32 -> 20
+            40 -> 24
+            48 -> 28
+            64 -> 40
+            80 -> 50
+            96 -> 56
+            120 -> 75
+            else -> dp.roundToInt()
+        }
+        return (contentDp * density).toInt()
     }
 }
 

@@ -73,6 +73,24 @@ class ComposeIconsActivity : ComponentActivity() {
                             item {
                                 OutlinedButton(
                                     onClick = {
+                                        val context = this@ComposeIconsActivity
+                                        context.startActivity(
+                                            android.content.Intent(context, XmlIconsActivity::class.java)
+                                        )
+                                    },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(
+                                            text = "XML Icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                )
+                            }
+
+                            item {
+                                OutlinedButton(
+                                    onClick = {
                                         navController.navigate("AllStatesScreen")
                                     },
                                     modifier = Modifier,

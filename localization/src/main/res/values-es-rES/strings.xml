@@ -1607,9 +1607,11 @@ En concreto,
     <string name="date_layout_alert_date_out_of_range">La fecha seleccionada no está en un intervalo válido (entre los años %1$d y %2$d). Selecciona una fecha comprendida en ese intervalo.</string>
     <string name="date_layout_item_created_by">por</string>
     <string name="chat_attachment_object">Seleccionar objeto existente</string>
+    <string name="chat_attachment_create_object">Crear objeto</string>
     <string name="chat_attachment_file">Subir archivo</string>
     <string name="chat_attachment_media">Subir medios</string>
     <string name="chat_attachment_upload">Cargar</string>
+    <string name="chat_attach">Adjuntar</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
     <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>

@@ -260,6 +260,20 @@ fun String?.getMimeIcon(extension: String?): Int {
     }
 }
 
+fun MimeTypes.Category.getMimeIcon(): Int {
+    return when (this) {
+        MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
+        MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
+        MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
+        MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
+        MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
+        MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
+        MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
+        MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
+        MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+    }
+}
+
 @StringRes
 fun RelationFormat.getPrettyName(): Int = when (this) {
     RelationFormat.LONG_TEXT, RelationFormat.SHORT_TEXT -> R.string.relation_format_long_text

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -105,8 +106,7 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    isHighlighted: Boolean
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
 
     val haptic = LocalHapticFeedback.current
@@ -170,11 +170,19 @@ fun Bubble(
             )
             Spacer(modifier = Modifier.height(4.dp))
         }
+
         // Rendering text with attachments
         Column(
             modifier = Modifier
-                .wrapContentWidth()
-                .then(if (isHighlighted) Modifier.alpha(0.5f) else Modifier.alpha(1f))
+                .then(
+                    if (attachments.isNotEmpty()) {
+                        Modifier
+                            .fillMaxWidth()
+                    } else {
+                        Modifier
+                            .wrapContentWidth()
+                    }
+                )
                 .background(
                     color = if (!isUserAuthor)
                         colorResource(R.color.background_primary)
@@ -210,6 +218,8 @@ fun Bubble(
                         start = 12.dp,
                         end = 12.dp,
                         bottom = 4.dp
+                    ).then(
+                        if (attachments.isNotEmpty()) Modifier.fillMaxWidth() else Modifier
                     )
                 ) {
                     // Rendering text body message

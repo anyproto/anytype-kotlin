@@ -71,7 +71,6 @@ fun ObjectWrapper.Basic.objectIcon(
         ObjectType.Layout.PDF -> {
             ObjectIcon.File(
                 mime = obj.fileMimeType,
-                fileName = objName,
                 extensions = obj.fileExt
             )
         }

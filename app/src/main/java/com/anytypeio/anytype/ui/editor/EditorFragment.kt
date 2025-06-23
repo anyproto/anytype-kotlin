@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipData
+import android.content.Context
 import android.content.Intent
 import android.graphics.Point
 import android.net.Uri
@@ -17,6 +18,7 @@ import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
+import android.view.inputmethod.InputMethodManager
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -69,6 +71,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
+import com.anytypeio.anytype.core_ui.features.editor.AttachToChatToolbar
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
@@ -97,6 +100,7 @@ import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_PROFILE_IMAG
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.clipboard
 import com.anytypeio.anytype.core_utils.ext.containsItemDecoration
@@ -125,6 +129,7 @@ import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
+import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.extractMarks
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
@@ -141,6 +146,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
@@ -208,6 +214,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     protected val ctx get() = arg<Id>(CTX_KEY)
     protected val space get() = arg<Id>(SPACE_ID_KEY)
+
+    private val sideEffect: OpenObjectNavigation.SideEffect
+        get() {
+            val attachedChatId = argOrNull<Id>(ATTACH_TO_CHAT_ID_KEY)
+            val attachedSpaceId = argOrNull<Id>(ATTACH_TO_CHAT_SPACE_KEY)
+            return if (attachedChatId != null && attachedSpaceId != null) {
+                OpenObjectNavigation.SideEffect.AttachToChat(
+                    chat = attachedChatId,
+                    space = attachedSpaceId
+                )
+            } else {
+                OpenObjectNavigation.SideEffect.None
+            }
+        }
 
     private val screen: Point by lazy { screen() }
 
@@ -783,6 +803,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
+        sideEffectHandler()
+
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarColors).state =
@@ -795,6 +817,43 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
 
+    }
+
+    private fun sideEffectHandler() {
+        if (sideEffect is OpenObjectNavigation.SideEffect.AttachToChat) {
+            binding.attachToChatPanel.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    AttachToChatToolbar(
+                        onAttachClicked = {
+                            val effect = sideEffect
+                            if (effect is OpenObjectNavigation.SideEffect.AttachToChat) {
+                                val bundle = bundleOf(
+                                    FragmentResultContract.ATTACH_TO_CHAT_CHAT_ID_KEY to effect.chat,
+                                    FragmentResultContract.ATTACH_TO_CHAT_SPACE_ID_KEY to effect.space,
+                                    FragmentResultContract.ATTACH_TO_CHAT_TARGET_ID_KEY to ctx
+                                )
+
+                                // Closing keyboard before exit
+                                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                val focus = requireActivity().currentFocus ?: View(requireContext())
+                                imm.hideSoftInputFromWindow(focus.windowToken, 0)
+
+                                parentFragmentManager.setFragmentResult(
+                                    FragmentResultContract.ATTACH_TO_CHAT_CONTRACT_KEY, bundle
+                                )
+
+                                parentFragmentManager.popBackStack()
+                            }
+                        },
+                        onCancelClicked = {
+                            binding.attachToChatPanel.gone()
+                        }
+                    )
+                }
+                visible()
+            }
+        }
     }
 
     open fun setupWindowInsetAnimation() {
@@ -2289,7 +2348,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     //region Media Picker
-    val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
@@ -2303,7 +2362,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
+    private val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
@@ -2323,10 +2382,31 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     companion object {
 
-        fun args(ctx: Id, space: Id) = bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
+        fun args(
+            ctx: Id,
+            space: Id,
+            effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None
+        ) : Bundle {
+            return when(effect) {
+                is OpenObjectNavigation.SideEffect.AttachToChat -> {
+                    bundleOf(
+                        CTX_KEY to ctx,
+                        SPACE_ID_KEY to space,
+                        ATTACH_TO_CHAT_ID_KEY to effect.chat,
+                        ATTACH_TO_CHAT_SPACE_KEY to effect.space
+                    )
+                }
+                OpenObjectNavigation.SideEffect.None -> {
+                    bundleOf(CTX_KEY to ctx, SPACE_ID_KEY to space)
+                }
+            }
+        }
 
         const val CTX_KEY = "args.editor.ctx-id"
         const val SPACE_ID_KEY = "args.editor.space-id"
+
+        private const val ATTACH_TO_CHAT_ID_KEY = "args.editor.attach-to-chat.id"
+        private const val ATTACH_TO_CHAT_SPACE_KEY = "args.editor.attach-to-chat.space"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

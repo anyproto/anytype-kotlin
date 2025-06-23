@@ -1364,7 +1364,7 @@ class BlockViewDiffUtilTest {
             name = MockDataFactory.randomString(),
             mime = MockDataFactory.randomString(),
             ext = MockDataFactory.randomString(),
-            icon = ObjectIcon.File(null, null, null)
+            icon = ObjectIcon.File(null, null)
         )
 
         val newFile = oldFile.copy(

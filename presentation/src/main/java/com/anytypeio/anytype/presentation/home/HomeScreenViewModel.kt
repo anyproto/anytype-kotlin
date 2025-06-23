@@ -2905,8 +2905,8 @@ typealias Widgets = List<Widget>?
 typealias Containers = List<WidgetContainer>?
 
 sealed class OpenObjectNavigation {
-    data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
-    data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
+    data class OpenEditor(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
     data object NonValidObject: OpenObjectNavigation()
     data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
@@ -2914,9 +2914,17 @@ sealed class OpenObjectNavigation {
     data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
     data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenBookmarkUrl(val url: String) : OpenObjectNavigation() // For opening bookmark URLs
+
+    sealed class SideEffect {
+        data object None: SideEffect()
+        data class AttachToChat(val chat: Id, val space: Id): SideEffect()
+    }
 }
 
-fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+/**
+ * @param [attachmentTarget] optional target, to which the object will be attached
+ */
+fun ObjectWrapper.Basic.navigation(effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None) : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BOOKMARK -> {
@@ -2924,7 +2932,8 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             if (url.isNullOrEmpty()) {
                 OpenObjectNavigation.OpenEditor(
                     target = id,
-                    space = requireNotNull(spaceId)
+                    space = requireNotNull(spaceId),
+                    effect = effect
                 )
             } else {
                 OpenObjectNavigation.OpenBookmarkUrl(url)
@@ -2935,13 +2944,15 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.TODO -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
-                space = requireNotNull(spaceId)
+                space = requireNotNull(spaceId),
+                effect = effect
             )
         }
         in SupportedLayouts.fileLayouts -> {
             OpenObjectNavigation.OpenEditor(
                 target = id,
-                space = requireNotNull(spaceId)
+                space = requireNotNull(spaceId),
+                effect = effect
             )
         }
         ObjectType.Layout.PROFILE -> {
@@ -2949,12 +2960,14 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
             if (identityLink.isNullOrEmpty()) {
                 OpenObjectNavigation.OpenEditor(
                     target = id,
-                    space = requireNotNull(spaceId)
+                    space = requireNotNull(spaceId),
+                    effect = effect
                 )
             } else {
                 OpenObjectNavigation.OpenEditor(
                     target = identityLink,
-                    space = requireNotNull(spaceId)
+                    space = requireNotNull(spaceId),
+                    effect = effect
                 )
             }
         }
@@ -2962,7 +2975,8 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
                 target = id,
-                space = requireNotNull(spaceId)
+                space = requireNotNull(spaceId),
+                effect = effect
             )
         }
         ObjectType.Layout.CHAT_DERIVED -> {

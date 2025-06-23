@@ -103,7 +103,8 @@ sealed interface ChatView {
                 val target: Id,
                 val wrapper: ObjectWrapper.Basic?,
                 val icon: ObjectIcon = ObjectIcon.None,
-                val typeName: String
+                val typeName: String,
+                val isDeleted: Boolean = false
             ): Attachment()
 
             data class Bookmark(
@@ -184,7 +185,8 @@ sealed interface ChatView {
 data class ChatViewState(
     val messages: List<ChatView> = emptyList(),
     val intent: ChatContainer.Intent = ChatContainer.Intent.None,
-    val counter: Counter = Counter()
+    val counter: Counter = Counter(),
+    val isLoading: Boolean = false,
 ) {
     data class Counter(
         val messages: Int = 0,

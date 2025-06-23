@@ -1590,9 +1590,11 @@
     <string name="date_layout_alert_date_out_of_range">被选中的日期超过了有效范围（年 %1$d 到 %2$d）。请选择一个在此范围内的日期。</string>
     <string name="date_layout_item_created_by">由</string>
     <string name="chat_attachment_object">选择现有对象</string>
+    <string name="chat_attachment_create_object">创建对象</string>
     <string name="chat_attachment_file">上传文件</string>
     <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
+    <string name="chat_attach">附加</string>
     <string name="chats_reply">回复</string>
     <string name="chats_add_reaction">添加回应</string>
     <string name="chat_send_message_rate_limit_title">等等！输入得太快了！</string>

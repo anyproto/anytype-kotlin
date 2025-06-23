@@ -1,28 +1,22 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.res.Configuration
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitTouchSlopOrCancellation
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,7 +33,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -52,16 +45,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -72,9 +61,6 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
@@ -91,7 +77,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -103,9 +89,6 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMod
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.MentionPanelState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.UXCommand
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewState
-import kotlin.math.abs
-import kotlin.math.atan2
-import kotlin.math.roundToInt
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
@@ -154,6 +137,7 @@ fun ChatScreenWrapper(
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
         ChatScreen(
+            isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
             chatBoxMode = vm.chatBoxMode.collectAsState().value,
             messages = messages,
             counter = counter,
@@ -290,7 +274,8 @@ fun ChatScreenWrapper(
                     )
                 )
             },
-            onRequestVideoPlayer = onRequestVideoPlayer
+            onRequestVideoPlayer = onRequestVideoPlayer,
+            onCreateAndAttachObject = vm::onCreateAndAttachObject
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -387,6 +372,7 @@ private fun LazyListState.OnBottomReachedSafely(
  */
 @Composable
 fun ChatScreen(
+    isLoading: Boolean = false,
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
@@ -426,7 +412,8 @@ fun ChatScreen(
     onShareInviteClicked: () -> Unit,
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    onCreateAndAttachObject: () -> Unit
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -530,9 +517,11 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState, messages) {
+    LaunchedEffect(lazyListState, messages, isPerformingScrollIntent.value) {
         snapshotFlow { lazyListState.layoutInfo }
             .mapNotNull { layoutInfo ->
+                if (layoutInfo.totalItemsCount == 0) return@mapNotNull null
+
                 val viewportHeight = layoutInfo.viewportSize.height
                 val visibleMessages = layoutInfo.visibleItemsInfo
                     .filter { item ->
@@ -624,6 +613,7 @@ fun ChatScreen(
         Box(modifier = Modifier.weight(1f)) {
             Messages(
                 modifier = Modifier.fillMaxSize(),
+                isLoading = isLoading,
                 messages = messages,
                 scrollState = lazyListState,
                 onReacted = onReacted,
@@ -908,7 +898,8 @@ fun ChatScreen(
                 spans = spans,
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
-                onVideoCaptured = onVideoCaptured
+                onVideoCaptured = onVideoCaptured,
+                onCreateAndAttachObject = onCreateAndAttachObject
             )
         }
     }
@@ -918,6 +909,7 @@ fun ChatScreen(
 fun Messages(
     modifier: Modifier = Modifier,
     messages: List<ChatView>,
+    isLoading: Boolean = false,
     scrollState: LazyListState,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
@@ -964,12 +956,21 @@ fun Messages(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .then(
+                            if (isHighlighted)
+                                Modifier.background(
+                                    color = colorResource(R.color.transparent_active).copy(alpha = 0.1f)
+                                )
+                            else
+                                Modifier
+                        )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                         .animateItem()
                         .horizontalSwipeToReply(
                             swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() },
                             onReplyTriggered = { onReplyMessage(msg) }
-                        ),
+                        )
+                    ,
                     horizontalArrangement = if (msg.isUserAuthor)
                         Arrangement.End
                     else
@@ -1037,8 +1038,7 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer,
-                        isHighlighted = isHighlighted
+                        onRequestVideoPlayer = onRequestVideoPlayer
                     )
                 }
                 if (idx == messages.lastIndex) {
@@ -1076,47 +1076,68 @@ fun Messages(
             }
         }
         if (messages.isEmpty()) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                ) {
-                    Column(
+            if (isLoading) {
+                item {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .padding(horizontal = 20.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                            .fillParentMaxSize(),
+
                     ) {
-                        Image(
-                            modifier = Modifier.size(56.dp),
-                            painter = painterResource(id = R.drawable.ic_vault_create_space),
-                            contentDescription = "Empty state icon",
-                            colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
-                        )
                         Text(
-                            text = stringResource(R.string.chat_empty_state_title),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            textAlign = TextAlign.Center,
                             modifier = Modifier
+                                .align(Alignment.Center)
                                 .fillMaxWidth()
-                                .padding(top = 10.dp)
-                        )
-                        Text(
-                            text = stringResource(R.string.chat_empty_state_subtitle),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_secondary),
+                                .padding(16.dp),
+                            text = stringResource(R.string.loading_wait),
                             textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
+                            style = Caption2Medium,
+                            color = colorResource(R.color.text_secondary)
                         )
-                        if (canCreateInviteLink) {
-                            ButtonSecondary(
-                                text = stringResource(R.string.chat_empty_state_share_invite_button),
-                                onClick = { onShareInviteClicked() },
-                                size = ButtonSize.SmallSecondary,
-                                modifier = Modifier.padding(top = 10.dp)
+                    }
+                }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillParentMaxSize()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(horizontal = 20.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                modifier = Modifier.size(56.dp),
+                                painter = painterResource(id = R.drawable.ic_vault_create_space),
+                                contentDescription = "Empty state icon",
+                                colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
                             )
+                            Text(
+                                text = stringResource(R.string.chat_empty_state_title),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 10.dp)
+                            )
+                            Text(
+                                text = stringResource(R.string.chat_empty_state_subtitle),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_secondary),
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+                            if (canCreateInviteLink) {
+                                ButtonSecondary(
+                                    text = stringResource(R.string.chat_empty_state_share_invite_button),
+                                    onClick = { onShareInviteClicked() },
+                                    size = ButtonSize.SmallSecondary,
+                                    modifier = Modifier.padding(top = 10.dp)
+                                )
+                            }
                         }
                     }
                 }

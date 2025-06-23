@@ -1594,9 +1594,11 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="date_layout_alert_date_out_of_range">Tanggal terpilih di luar rentang valid (tahun %1$d hingga %2$d). Silakan pilih tanggal dalam rentang ini.</string>
     <string name="date_layout_item_created_by">oleh</string>
     <string name="chat_attachment_object">Pilih objek yang sudah ada</string>
+    <string name="chat_attachment_create_object">Buat objek</string>
     <string name="chat_attachment_file">Unggah berkas</string>
     <string name="chat_attachment_media">Unggah media</string>
     <string name="chat_attachment_upload">Unggah</string>
+    <string name="chat_attach">Lampirkan</string>
     <string name="chats_reply">Balas</string>
     <string name="chats_add_reaction">Tambahkan Reaksi</string>
     <string name="chat_send_message_rate_limit_title">Bentar-bentar, banter banget!</string>

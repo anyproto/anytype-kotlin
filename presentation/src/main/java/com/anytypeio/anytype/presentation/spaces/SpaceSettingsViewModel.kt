@@ -113,7 +113,6 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
-        fetchNotificationState()
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -747,26 +746,15 @@ class SpaceSettingsViewModel(
         }
     }
 
-    fun fetchNotificationState() {
+    fun updateNotificationState() {
         viewModelScope.launch {
             // Check if notifications are enabled system-wide
             if (!notificationPermissionManager.shouldShowPermissionDialog()) {
-                // Permissions are granted, get space-specific notification state
-//                getSpaceNotificationMode.async(
-//                    GetSpaceNotificationMode.Params(spaceViewId = vmParams.space.id)
-//                ).fold(
-//                    onSuccess = { state ->
-//                        _notificationState.value = state
-//                        Timber.d("Fetched notification state: $state for space: ${vmParams.space}")
-//                    },
-//                    onFailure = { error ->
-//                        Timber.e("Failed to fetch notification state: $error")
-//                        _notificationState.value = NotificationState.ALL // Default fallback
-//                    }
-//                )
+                // Permissions are granted
+                //todo update UI accordingly
             } else {
                 // Permissions not granted, show disabled state
-                _notificationState.value = NotificationState.DISABLE
+                //todo update UI accordingly
                 Timber.d("Notification permissions not granted")
             }
         }
@@ -809,7 +797,7 @@ class SpaceSettingsViewModel(
     fun onNotificationPermissionGranted() {
         viewModelScope.launch {
             notificationPermissionManager.onPermissionGranted()
-            fetchNotificationState() // Refresh notification state
+            updateNotificationState() // Refresh notification state
             Timber.d("Notification permission granted")
         }
     }

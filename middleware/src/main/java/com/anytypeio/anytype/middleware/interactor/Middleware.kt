@@ -1335,11 +1335,7 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchSubscribe(request) }
-        if (BuildConfig.DEBUG) {
-            if (subscription != "object-type-store-subscription" && subscription != "relation-store-subscription") {
-                logger.logResponse(response, time)
-            }
-        }
+        logResponseIfDebug(response, time)
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())
@@ -2967,9 +2963,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Device.NetworkState.Set.Request(
             deviceNetworkType = type.mw()
         )
-        //logRequestIfDebug(request)
+        logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
-        //logResponseIfDebug(response, time)
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

@@ -138,8 +138,6 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
-    private var capturedImageUri: String? = null
-
     private var account: Id = ""
 
     init {
@@ -153,7 +151,7 @@ class ChatViewModel @Inject constructor(
                         if (chatBoxMode.value is ChatBoxMode.ReadOnly) {
                             chatBoxMode.value = ChatBoxMode.Default()
                         }
-                    } else {
+                    } else if (permission == SpaceMemberPermissions.READER || permission == SpaceMemberPermissions.NO_PERMISSIONS) {
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
                     // Update invite link creation permission (only owners can create invite links)

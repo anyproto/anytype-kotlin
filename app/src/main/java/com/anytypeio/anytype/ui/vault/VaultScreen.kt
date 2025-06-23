@@ -105,7 +105,6 @@ fun AllSectionHeader() {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun VaultScreenToolbar(
     profile: AccountProfile,
@@ -378,10 +377,11 @@ fun VaultScreenWithUnreadSection(
                                         .animateItem()
                                         .fillMaxWidth()
                                         .height(80.dp)
-                                        .padding(horizontal = 16.dp)
                                         .clickable {
                                             onSpaceClicked(item)
-                                        },
+                                        }
+                                        .padding(horizontal = 16.dp)
+                                    ,
                                     onSpaceIconClicked = {
                                         onSpaceClicked(item)
                                     },

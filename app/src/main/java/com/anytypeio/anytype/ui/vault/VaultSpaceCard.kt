@@ -66,10 +66,10 @@ fun VaultSpaceCard(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .padding(horizontal = 16.dp)
             .clickable {
                 onCardClicked()
             }
+            .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,

@@ -138,8 +138,6 @@ class ChatViewModel @Inject constructor(
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
-    private var capturedImageUri: String? = null
-
     private var account: Id = ""
 
     init {

@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
@@ -26,11 +27,9 @@ fun ShimmerEffect(
     widthOfShadowBrush: Int = 500,
     angleOfAxisY: Float = 270f,
     durationMillis: Int = 1000,
+    colorStart: Color = colorResource(id = R.color.background_secondary),
+    colorEnd: Color = colorResource(id = R.color.shape_secondary)
 ) {
-
-    val colorStart = colorResource(id = R.color.background_secondary)
-    val colorEnd = colorResource(id = R.color.shape_secondary)
-
     // Compose-safe gradient color list
     val shimmerColors = remember(colorStart, colorEnd) {
         listOf(colorStart, colorEnd, colorStart)

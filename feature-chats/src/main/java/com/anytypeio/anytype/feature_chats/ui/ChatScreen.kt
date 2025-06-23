@@ -66,6 +66,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -841,6 +842,16 @@ fun ChatScreen(
                         .align(Alignment.TopCenter)
                         .padding(top = 8.dp),
                     text = floatingDateState.value.orEmpty()
+                )
+            }
+
+            if (isLoading) {
+                ShimmerEffect(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp),
+                    colorStart = colorResource(R.color.glyph_active).copy(0.1f),
+                    colorEnd = colorResource(R.color.glyph_active).copy(0.3f)
                 )
             }
         }

@@ -831,7 +831,6 @@ class Middleware @Inject constructor(
             localPath = command.path,
             type = type,
             spaceId = command.space.id,
-            createTypeWidgetIfMissing = command.createTypeWidgetIfMissing
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
@@ -896,7 +895,6 @@ class Middleware @Inject constructor(
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
             objectTypeUniqueKey = command.typeKey.key,
-            createTypeWidgetIfMissing = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreate(request) }

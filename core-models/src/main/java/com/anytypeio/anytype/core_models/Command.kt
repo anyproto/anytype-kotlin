@@ -35,8 +35,7 @@ sealed class Command {
     class UploadFile(
         val space: SpaceId,
         val path: String,
-        val type: Block.Content.File.Type?,
-        val createTypeWidgetIfMissing: Boolean = true
+        val type: Block.Content.File.Type?
     )
 
     class FileDrop(

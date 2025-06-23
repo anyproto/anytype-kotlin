@@ -1455,3 +1455,17 @@ message ChatMessage {
         }
     }
 }
+
+enum SyncStatus {
+    SyncStatusSynced  = 0;
+    SyncStatusSyncing = 1;
+    SyncStatusError   = 2;
+    SyncStatusQueued  = 3;
+}
+
+enum SyncError {
+    SyncErrorNull                = 0;
+    SyncErrorIncompatibleVersion = 2;
+    SyncErrorNetworkError        = 3;
+    SyncErrorOversized           = 4;
+}

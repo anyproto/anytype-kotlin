@@ -6,8 +6,6 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
-import com.anytypeio.anytype.data.auth.event.PushKeyDataChannel
-import com.anytypeio.anytype.data.auth.event.PushKeyRemoteChannel
 import com.anytypeio.anytype.device.NotificationBuilderImpl
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -17,17 +15,11 @@ import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
-import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
 import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChannel
-import com.anytypeio.anytype.middleware.interactor.events.PushKeyMiddlewareChannel
-import com.anytypeio.anytype.presentation.notifications.CryptoService
-import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
-import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
-import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
-import com.anytypeio.anytype.presentation.notifications.PushKeyProvider
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
 import com.google.gson.Gson
 import dagger.Module
@@ -35,6 +27,9 @@ import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
+import com.anytypeio.anytype.domain.chats.PushKeySpaceViewChannel
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import kotlinx.serialization.json.Json
 
 @Module
 object NotificationsModule {
@@ -87,38 +82,21 @@ object NotificationsModule {
         dispatchers: AppCoroutineDispatchers,
         @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         channel: PushKeyChannel,
-        gson: Gson
-    ): PushKeyProvider {
-        return PushKeyProviderImpl(
-            sharedPreferences = sharedPreferences,
-            dispatchers = dispatchers,
-            scope = scope,
-            channel = channel,
-            gson = gson
-        )
-    }
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun providePushKeyRemoteChannel(
-        channel: EventHandlerChannel,
-        @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        dispatchers: AppCoroutineDispatchers
-    ): PushKeyRemoteChannel = PushKeyMiddlewareChannel(
-        channel = channel,
+        json: Json
+    ): PushKeyProvider = PushKeyProviderImpl(
+        sharedPreferences = sharedPreferences,
+        dispatchers = dispatchers,
         scope = scope,
-        dispatcher = dispatchers.io
+        channel = channel,
+        json = json
     )
 
     @JvmStatic
     @Provides
     @Singleton
     fun providePushKeyChannel(
-        channel: PushKeyRemoteChannel
-    ): PushKeyChannel = PushKeyDataChannel(
-        channel = channel
-    )
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+    ): PushKeyChannel = PushKeySpaceViewChannel(spaceViewSubscriptionContainer)
 
     @Provides
     @Singleton

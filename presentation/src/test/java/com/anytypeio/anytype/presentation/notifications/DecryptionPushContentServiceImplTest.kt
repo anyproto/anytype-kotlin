@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.notifications
 import android.os.Build
 import android.util.Base64
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -39,7 +40,8 @@ class DecryptionPushContentServiceImplTest {
         cryptoService = CryptoServiceImpl()
         decryptionService = DecryptionPushContentServiceImpl(
             pushKeyProvider = pushKeyProvider,
-            cryptoService = cryptoService
+            cryptoService = cryptoService,
+            json = Json { ignoreUnknownKeys = true }
         )
     }
 

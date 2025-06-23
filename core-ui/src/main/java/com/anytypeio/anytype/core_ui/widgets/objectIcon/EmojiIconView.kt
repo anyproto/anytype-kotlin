@@ -25,18 +25,15 @@ fun EmojiIconView(
     imageMultiplier: Float,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
-    val (containerModifier, iconModifier) = if (backgroundSize > iconWithoutBackgroundMaxSize) {
+    val (containerModifier, iconModifier) = if (backgroundSize <= iconWithoutBackgroundMaxSize) {
+        modifier.size(backgroundSize) to Modifier.size(backgroundSize)
+    } else {
         modifier
             .size(backgroundSize)
             .background(
                 color = colorResource(backgroundColor),
                 shape = RoundedCornerShape(size = cornerRadius(backgroundSize))
             ) to Modifier.size(
-            width = backgroundSize * imageMultiplier,
-            height = backgroundSize * imageMultiplier
-        )
-    } else {
-        modifier.size(backgroundSize) to Modifier.size(
             width = backgroundSize * imageMultiplier,
             height = backgroundSize * imageMultiplier
         )

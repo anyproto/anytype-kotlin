@@ -27,6 +27,9 @@ private val SIZES = listOf(
     48.dp,
     40.dp,
     32.dp,
+    30.dp,
+    26.dp,
+    22.dp,
     20.dp,
     18.dp,
     16.dp
@@ -35,10 +38,7 @@ private val SIZES = listOf(
 @Composable
 fun BasicIconsScreen() {
     val items = listOf(
-        ObjectIcon.Basic.Emoji(
-            unicode = "\uD83D\uDE03",
-            fallback = ObjectIcon.TypeIcon.Fallback(rawValue = "emoji")
-        ) to "Basic.Emoji",
+        ObjectIcon.Basic.Emoji("😀",) to "Basic.Emoji",
         ObjectIcon.Basic.Image(
             hash = "https://samplelib.com/lib/preview/png/sample-red-400x300.png"
         ) to "Basic.Image",

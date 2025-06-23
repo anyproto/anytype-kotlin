@@ -6,7 +6,6 @@ import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
 import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
-import android.util.Log
 import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
@@ -23,19 +22,16 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget.Companion.DRAWABLE_DIR
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
-import kotlin.math.roundToInt
 
 class ObjectIconWidget @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
@@ -138,23 +134,14 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
             is ObjectIcon.TypeIcon.Fallback -> {
                 setTypeIcon(icon)
-                if (binding.ivImage.width > ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP * density) {
-                    binding.ivImage.background = createRoundedBackground(binding.ivImage.width)
-                }
             }
 
             is ObjectIcon.TypeIcon.Default -> {
                 setTypeIcon(icon)
-                if (binding.ivImage.width >= TYPE_ICON_BACKGROUND_MIN_SIZE_DP * density) {
-                    binding.ivImage.background = createRoundedBackground(binding.ivImage.width)
-                }
             }
 
             ObjectIcon.TypeIcon.Deleted -> {
-                setTypeIcon(ObjectIcon.TypeIcon.Deleted)
-                if (binding.ivImage.width >= TYPE_ICON_BACKGROUND_MIN_SIZE_DP * density) {
-                    binding.ivImage.background = createRoundedBackground(binding.ivImage.width)
-                }
+                setDeletedIcon()
             }
 
             is ObjectIcon.TypeIcon.Emoji -> {
@@ -162,10 +149,6 @@ class ObjectIconWidget @JvmOverloads constructor(
                     emoji = icon.unicode,
                     fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
                 )
-                if (binding.emojiContainer.width > ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP * density) {
-                    binding.emojiContainer.background =
-                        createRoundedBackground(binding.emojiContainer.width)
-                }
             }
 
             is ObjectIcon.FileDefault -> {
@@ -414,18 +397,18 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.invisible()
 
             ivImage.post {
-                val iconDrawable = context.drawable(iconRes) ?: return@post
+                val iconDrawable = context.drawable(iconRes)
 
                 val backgroundDrawable = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(context.color(R.color.shape_transparent_secondary))
-                    cornerRadius = getCornerRadiusInPx(ivImage.width)
+                    cornerRadius = getCornerRadiusInPx()
                 }
 
                 val layers = arrayOf(backgroundDrawable, iconDrawable)
                 val layerDrawable = LayerDrawable(layers)
 
-                val horizontalMargin = (2 * density).toInt()
+                val horizontalMargin = (4 * density).toInt()
                 layerDrawable.setLayerInset(0, horizontalMargin, 0, horizontalMargin, 0)
 
                 ivImage.setImageDrawable(layerDrawable)
@@ -433,43 +416,9 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    private fun createRoundedBackground(sizePx: Int): Drawable {
-        val radius = getCornerRadiusInPx(sizePx)
-        return GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = radius
-            setColor(context.color(R.color.palette_system_red))
-        }
-    }
-
-    private fun getCornerRadiusInPx(sizeInPx: Int): Float {
-        val sizeInDp = sizeInPx / density
-        val radiusInDp = when {
-            sizeInDp >= 96 -> 24f
-            sizeInDp >= 80 -> 20f
-            sizeInDp >= 64 -> 16f
-            sizeInDp >= 48 -> 12f
-            sizeInDp >= 40 -> 10f
-            sizeInDp >= 32 -> 8f
-            else -> 6f
-        }
+    private fun getCornerRadiusInPx(): Float {
+        val radiusInDp = 2f
         return radiusInDp * density
-    }
-
-    private fun getContentSizeForBackgroundPx(backgroundSizeInPx: Int): Int {
-        val dp = backgroundSizeInPx / density
-        val contentDp = when (dp.roundToInt()) {
-            in 0..31 -> dp.roundToInt()
-            32 -> 20
-            40 -> 24
-            48 -> 28
-            64 -> 40
-            80 -> 50
-            96 -> 56
-            120 -> 75
-            else -> dp.roundToInt()
-        }
-        return (contentDp * density).toInt()
     }
 }
 

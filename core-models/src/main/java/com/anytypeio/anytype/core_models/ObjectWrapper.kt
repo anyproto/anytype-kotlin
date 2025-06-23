@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -371,6 +372,12 @@ sealed class ObjectWrapper {
                 return spaceLocalStatus == SpaceStatus.UNKNOWN
                         && spaceAccountStatus == SpaceStatus.UNKNOWN
             }
+
+        val spacePushNotificationMode
+            get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
+                ?.let { code ->
+                    NotificationState.entries.firstOrNull { it.code == code.toInt() }
+                } ?: NotificationState.ALL
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

@@ -123,7 +123,9 @@ interface SpaceViewSubscriptionContainer {
                         Relations.CREATOR,
                         Relations.ICON_IMAGE,
                         Relations.ICON_OPTION,
-                        Relations.SPACE_PUSH_NOTIFICATIONS_KEY
+                        Relations.SPACE_PUSH_NOTIFICATIONS_KEY,
+                        Relations.SPACE_PUSH_NOTIFICATIONS_TOPIC,
+                        Relations.SPACE_PUSH_NOTIFICATION_MODE
                     ),
                     filters = listOf(
                         DVFilter(

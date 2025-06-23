@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -3056,6 +3057,18 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }
         logResponseIfDebug(response, time)
         return ObjectWrapper.Basic(response.details.orEmpty())
+    }
+
+    @Throws(Exception::class)
+    fun setSpaceMode(spaceViewId: Id, mode: NotificationState): Rpc.PushNotification.SetSpaceMode.Response {
+        val request = Rpc.PushNotification.SetSpaceMode.Request(
+            spaceId = spaceViewId,
+            mode = mode.toMiddlewareModel()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setSpaceMode(request) }
+        logResponseIfDebug(response, time)
+        return response
     }
 
     private fun logRequestIfDebug(request: Any) {

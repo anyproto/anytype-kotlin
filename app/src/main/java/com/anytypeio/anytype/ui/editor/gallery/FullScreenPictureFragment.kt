@@ -35,7 +35,7 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
         ) : Bundle = bundleOf(ARG_URL_KEY to url, ARG_IGNORE_INSETS_KEY to ignoreRootWindowInsets)
 
         const val ARG_URL_KEY = "arg.full_screen_picture.url"
-        const val ARG_TARGET_KEY = "arg.full_screen_picture.target"
+        private const val ARG_TARGET_KEY = "arg.full_screen_picture.target"
         private const val ARG_IGNORE_INSETS_KEY = "arg.full_screen_picture.ignore-insets"
     }
 

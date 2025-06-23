@@ -82,7 +82,8 @@ class PushKeyProviderImplTest {
                 on { observe() } doReturn channelFlow
             }
 
-            createPushKeyProvider() // This will start observing the channel
+            val provider = createPushKeyProvider() // This will start observing the channel
+            provider.start()
             dispatcher.scheduler.advanceUntilIdle() // Allow the observation coroutine to run
 
             // Emit the event
@@ -113,7 +114,8 @@ class PushKeyProviderImplTest {
                 on { observe() } doReturn channelFlow
             }
 
-            createPushKeyProvider() // Start observing
+            val provider = createPushKeyProvider() // Start observing
+            provider.start()
             dispatcher.scheduler.advanceUntilIdle() // Ensure observation is set up
 
             // Emit initial event
@@ -165,7 +167,8 @@ class PushKeyProviderImplTest {
         }
 
         // Start observing the channel (create provider)
-        createPushKeyProvider() // This will start observing the channel
+        val provider = createPushKeyProvider()
+        provider.start() // <-- Start the observation coroutine
         dispatcher.scheduler.advanceUntilIdle() // Allow the observation coroutine to run
 
         // Emit first event: (key1 to value1)

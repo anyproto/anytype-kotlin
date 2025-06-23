@@ -47,10 +47,28 @@
                 android:layout_height="wrap_content"
                 app:emojiSize="20dp" />
             <TextView
-                android:layout_width="60dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_emoji_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_emoji_32"
                 android:layout_width="wrap_content"
@@ -61,6 +79,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_emoji_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Basic.Image -->
@@ -88,6 +120,25 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_basic_image_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageCornerRadius="4dp"
+                app:isImageWithCorners="true" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_basic_image_32"
                 android:layout_width="wrap_content"
@@ -99,6 +150,21 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_basic_image_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageCornerRadius="4dp"
+                app:isImageWithCorners="true" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Profile.Avatar -->
@@ -125,6 +191,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="28dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_avatar_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_avatar_32"
                 android:layout_width="wrap_content"
@@ -135,6 +219,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_avatar_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
 
@@ -162,6 +260,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_profile_image_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_profile_image_32"
                 android:layout_width="wrap_content"
@@ -172,6 +288,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_profile_image_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Task -->
@@ -198,6 +328,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_task_checked_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="30dp"/>
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_task_checked_32"
                 android:layout_width="wrap_content"
@@ -208,6 +356,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_task_checked_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="40dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -226,6 +388,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_task_unchecked_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="30dp"/>
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_task_unchecked_32"
                 android:layout_width="wrap_content"
@@ -236,6 +416,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_task_unchecked_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="40dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Checkbox -->
@@ -262,6 +456,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_checkbox_checked_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="30dp"/>
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_checkbox_checked_32"
                 android:layout_width="wrap_content"
@@ -272,6 +484,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_checkbox_checked_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="40dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
@@ -290,6 +516,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_checkbox_unchecked_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="30dp"/>
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_checkbox_unchecked_32"
                 android:layout_width="wrap_content"
@@ -300,6 +544,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_checkbox_unchecked_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:checkboxSize="40dp"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Bookmark -->
@@ -326,6 +584,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_bookmark_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_bookmark_32"
                 android:layout_width="wrap_content"
@@ -336,6 +612,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_bookmark_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- File -->
@@ -362,6 +652,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_file_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_file_32"
                 android:layout_width="wrap_content"
@@ -372,6 +680,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_file_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- FileDefault -->
@@ -398,6 +720,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_file_default_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_file_default_32"
                 android:layout_width="wrap_content"
@@ -408,6 +748,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_file_default_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- Deleted -->
@@ -434,6 +788,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_deleted_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_deleted_32"
                 android:layout_width="wrap_content"
@@ -444,6 +816,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_deleted_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- TypeIcon.Default -->
@@ -464,22 +850,54 @@
                 android:id="@+id/icon_type_default_20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="20dp" />
+                app:emojiSize="20dp" />
             <TextView
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_default_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_type_default_32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="32dp" />
+                app:emojiSize="32dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_default_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- TypeIcon.Fallback -->
@@ -500,22 +918,54 @@
                 android:id="@+id/icon_type_fallback_20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="20dp" />
+                app:emojiSize="20dp" />
             <TextView
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_fallback_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_type_fallback_32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="32dp" />
+                app:emojiSize="32dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_fallback_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
 
@@ -543,6 +993,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_emoji_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_type_emoji_32"
                 android:layout_width="wrap_content"
@@ -553,6 +1021,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_emoji_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
 
@@ -574,22 +1056,54 @@
                 android:id="@+id/icon_type_deleted_20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="20dp" />
+                app:emojiSize="20dp" />
             <TextView
                 android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_deleted_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_type_deleted_32"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:imageSize="32dp" />
+                app:emojiSize="32dp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_type_deleted_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:emojiSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
         <!-- None -->
@@ -616,6 +1130,24 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="20dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_none_30"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="30dp" />
+            <TextView
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="30dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/icon_none_32"
                 android:layout_width="wrap_content"
@@ -626,6 +1158,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="32dp" />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="0dp"
+                />
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/icon_none_40"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:imageSize="40dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="40dp" />
         </LinearLayout>
 
     </LinearLayout>

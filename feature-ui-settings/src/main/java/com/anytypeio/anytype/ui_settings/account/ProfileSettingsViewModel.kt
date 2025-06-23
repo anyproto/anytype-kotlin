@@ -133,8 +133,7 @@ class ProfileSettingsViewModel(
                     SetImageIcon.Params(
                         target = config.profile,
                         path = path,
-                        spaceId = SpaceId(config.techSpace),
-                        createTypeWidgetIfMissing = false
+                        spaceId = SpaceId(config.techSpace)
                     )
                 ).process(
                     failure = {

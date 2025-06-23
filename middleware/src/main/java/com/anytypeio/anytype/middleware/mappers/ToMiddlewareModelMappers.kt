@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
+import com.anytypeio.anytype.core_models.chats.NotificationState
 
 
 // ---------------------- BLOCKS ------------------------
@@ -660,3 +661,8 @@ fun SpaceCreationUseCase.toMiddlewareModel(): Rpc.Object.ImportUseCase.Request.U
     SpaceCreationUseCase.EMPTY_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
 }
 
+fun NotificationState.toMiddlewareModel(): Rpc.PushNotification.SetSpaceMode.Mode = when (this) {
+    NotificationState.ALL -> Rpc.PushNotification.SetSpaceMode.Mode.All
+    NotificationState.MENTIONS -> Rpc.PushNotification.SetSpaceMode.Mode.Mentions
+    NotificationState.DISABLE -> Rpc.PushNotification.SetSpaceMode.Mode.Nothing
+}

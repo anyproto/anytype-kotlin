@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
@@ -105,7 +106,7 @@ private fun ContentSpace(
         )
         Text(
             text = subtitle,
-            style = Title2,
+            style = Title3,
             color = colorResource(id = R.color.text_secondary),
             modifier = Modifier
         )

@@ -22,20 +22,38 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.sample.R
 
+private val SIZES = listOf(
+    120.dp,
+    96.dp,
+    80.dp,
+    64.dp,
+    48.dp,
+    40.dp,
+    32.dp,
+    30.dp,
+    26.dp,
+    22.dp,
+    20.dp,
+    18.dp,
+    16.dp
+)
+
 @Composable
 fun TypeIconsScreen() {
-
     val items = listOf(
-        Pair(120.dp, "Type icon default, size 120"),
-        Pair(96.dp, "Type icon default, size 96"),
-        Pair(80.dp, "Type icon default, size 80"),
-        Pair(64.dp, "Type icon default, size 64"),
-        Pair(48.dp, "Type icon default, size 48"),
-        Pair(40.dp, "Type icon default, size 40"),
-        Pair(32.dp, "Type icon default, size 32"),
-        Pair(20.dp, "Type icon default, size 20"),
-        Pair(18.dp, "Type icon default, size 18"),
-        Pair(16.dp, "Type icon default, size 16")
+        ObjectIcon.TypeIcon.Default(
+            "book",
+            CustomIconColor.Gray
+        ) to "TypeIcon.Default",
+        ObjectIcon.TypeIcon.Deleted to "TypeIcon.Deleted",
+        ObjectIcon.TypeIcon.Emoji(
+            unicode = "😀",
+            rawValue = "archive",
+            color = CustomIconColor.Red
+        ) to "TypeIcon.Emoji",
+        ObjectIcon.TypeIcon.Fallback(
+            "fallback"
+        ) to "TypeIcon.Fallback"
     )
 
     val basicModifier = Modifier
@@ -49,44 +67,37 @@ fun TypeIconsScreen() {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(top = 32.dp, bottom = 32.dp)
     ) {
-        // Header
         item {
             Text(
-                text = "Type Default Icons, all sizes",
+                text = "Type Icons, all sizes",
                 style = Title1,
                 modifier = Modifier.padding(bottom = 32.dp)
             )
         }
-
-        // List items
-        items(
-            count = items.size,
-            key = { index -> items[index].second }
-        ) { index ->
-            val (containerSize, label) = items[index]
-            Row(
-                modifier = basicModifier,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ListWidgetObjectIcon(
-                    icon = ObjectIcon.TypeIcon.Default(
-                        rawValue = "file-tray-full",
-                        color = CustomIconColor.Teal
-                    ),
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    iconSize = containerSize
-                )
-
-                Text(
-                    modifier = Modifier.padding(start = 12.dp),
-                    text = label,
-                    style = Title2,
-                    color = colorResource(id = R.color.text_primary),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+        items(count = items.size) { index ->
+            val (icon, label) = items[index]
+            Text(
+                text = label,
+                modifier = Modifier.padding(16.dp)
+            )
+            SIZES.forEach { size ->
+                Row(
+                    modifier = basicModifier,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    ListWidgetObjectIcon(
+                        icon = icon,
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        iconSize = size
+                    )
+                    Text(
+                        modifier = Modifier.padding(start = 12.dp),
+                        text = "size = $size",
+                        style = Title2
+                    )
+                }
+                Divider()
             }
-            Divider()
         }
     }
 }

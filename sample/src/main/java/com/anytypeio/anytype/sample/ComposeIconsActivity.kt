@@ -154,6 +154,17 @@ class ComposeIconsActivity : ComponentActivity() {
                                     }
                                 )
                             }
+
+                            item {
+                                OutlinedButton(
+                                    onClick = { navController.navigate("TypeIconsScreen") },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(text = "Type icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary))
+                                    }
+                                )
+                            }
                         }
                     },
                     content = { paddingValues ->
@@ -162,7 +173,7 @@ class ComposeIconsActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(paddingValues),
                             navController = navController,
-                            startDestination = "EmojiIconsScreen"
+                            startDestination = "TypeIconsScreen"
                         ) {
                             composable("ObjectIconAvatarScreen") {
                                 ObjectIconAvatarScreen()

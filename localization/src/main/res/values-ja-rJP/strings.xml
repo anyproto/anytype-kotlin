@@ -1595,9 +1595,11 @@
     <string name="date_layout_alert_date_out_of_range">選択した日付は期間外です。（年 %1$d から %2$d）。この期間内で日付を選択してください。</string>
     <string name="date_layout_item_created_by">作成者</string>
     <string name="chat_attachment_object">既存のオブジェクトを選択</string>
+    <string name="chat_attachment_create_object">オブジェクトを作成</string>
     <string name="chat_attachment_file">ファイルをアップロード</string>
     <string name="chat_attachment_media">メディアをアップロード</string>
     <string name="chat_attachment_upload">アップロード</string>
+    <string name="chat_attach">添付</string>
     <string name="chats_reply">返信</string>
     <string name="chats_add_reaction">リアクションを追加</string>
     <string name="chat_send_message_rate_limit_title">お待ちください！ 異常なタイピングが検出されました！</string>

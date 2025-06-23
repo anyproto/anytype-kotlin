@@ -20,10 +20,12 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -57,7 +59,9 @@ class ChatViewModelFactory @Inject constructor(
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val closeObject: CloseObject,
-    private val openObject: OpenObject
+    private val openObject: OpenObject,
+    private val createObject: CreateObject,
+    private val getObject: GetObject
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -87,6 +91,8 @@ class ChatViewModelFactory @Inject constructor(
         revokeSpaceInviteLink = revokeSpaceInviteLink,
         clearChatsTempFolder = clearChatsTempFolder,
         closeObject = closeObject,
-        openObject = openObject
+        openObject = openObject,
+        createObject = createObject,
+        getObject = getObject
     ) as T
 }

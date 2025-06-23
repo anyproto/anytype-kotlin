@@ -1608,9 +1608,11 @@ Please provide specific details of your needs here.</string>
     <string name="date_layout_alert_date_out_of_range">La data selezionata non rientra nell\'intervallo valido (anni da %1$d a %2$d). Selezionare una data compresa in questo intervallo.</string>
     <string name="date_layout_item_created_by">da</string>
     <string name="chat_attachment_object">Selezionare l\'oggetto esistente</string>
+    <string name="chat_attachment_create_object">Crea oggetto</string>
     <string name="chat_attachment_file">Carica file</string>
     <string name="chat_attachment_media">Carica i media</string>
     <string name="chat_attachment_upload">Carica</string>
+    <string name="chat_attach">Allega</string>
     <string name="chats_reply">Rispondi</string>
     <string name="chats_add_reaction">Aggiungi una Reazione</string>
     <string name="chat_send_message_rate_limit_title">Aspettate! Rilevata digitazione turbo!</string>

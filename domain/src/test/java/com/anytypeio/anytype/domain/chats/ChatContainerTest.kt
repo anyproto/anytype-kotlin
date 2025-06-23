@@ -25,8 +25,12 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 
 class ChatContainerTest {
 
@@ -478,7 +482,7 @@ class ChatContainerTest {
             val initial = awaitItem()
 
             assertEquals(
-                expected = messages.slice(80..89) + messages.slice(90..99),
+                expected = messages.takeLast(10),
                 actual = initial.messages,
             )
 
@@ -505,8 +509,169 @@ class ChatContainerTest {
         }
     }
 
-    // TODO move to test-utils
-    fun StubChatMessage(
+    @Test
+    fun `should scroll to unread message section from subscription results after opening chat`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val messages = buildList {
+            repeat(10) {
+                add(
+                    StubChatMessage(
+                        id = it.toString(),
+                        order = it.toString()
+                    )
+                )
+            }
+        }
+
+        val state = Chat.State.UnreadState(
+            counter = 1,
+            olderOrderId = "1"
+        )
+
+        val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
+            chat = givenChatID,
+            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+        )
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(subscriptionCommand)
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = messages,
+                messageCountBefore = 0,
+                chatState = Chat.State(unreadMessages = state)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+
+            val initial = awaitItem()
+
+            assertEquals(
+                expected = messages,
+                actual = initial.messages,
+            )
+
+            assertEquals(
+                expected = ChatContainer.Intent.ScrollToMessage(
+                    id = "1",
+                    startOfUnreadMessageSection = true,
+                    smooth = false
+                ),
+                actual = initial.intent,
+            )
+
+            verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
+            verify(repo, never()).getChatMessages(any())
+        }
+    }
+
+    @Test
+    fun `should scroll to unread message section from unread-message section after opening chat`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val allMessages = buildList {
+            repeat(200) {
+                add(
+                    StubChatMessage(
+                        id = it.toString(),
+                        order = it.toString()
+                    )
+                )
+            }
+        }
+
+        val state = Chat.State.UnreadState(
+            counter = 150,
+            olderOrderId = "50"
+        )
+
+        val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
+            chat = givenChatID,
+            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+        )
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(subscriptionCommand)
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = allMessages.takeLast(ChatContainer.DEFAULT_CHAT_PAGING_SIZE),
+                messageCountBefore = 0,
+                chatState = Chat.State(unreadMessages = state)
+            )
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = state.olderOrderId,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
+                        afterOrderId = null,
+                        includeBoundary = false
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = allMessages.slice(0..49)
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = state.olderOrderId,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
+                        includeBoundary = true
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = allMessages.slice(50..99)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+
+            val initial = awaitItem()
+
+            assertEquals(
+                expected = allMessages.slice(0..99),
+                actual = initial.messages,
+            )
+
+            assertEquals(
+                expected = ChatContainer.Intent.ScrollToMessage(
+                    id = "50",
+                    startOfUnreadMessageSection = true,
+                    smooth = false
+                ),
+                actual = initial.intent,
+            )
+
+            verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
+            verify(repo, times(2)).getChatMessages(any())
+        }
+    }
+
+    private fun StubChatMessage(
         id: Id = MockDataFactory.randomUuid(),
         order: Id = MockDataFactory.randomUuid(),
         creator: Id = MockDataFactory.randomUuid(),

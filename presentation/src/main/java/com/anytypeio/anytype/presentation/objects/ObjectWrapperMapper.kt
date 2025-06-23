@@ -179,7 +179,6 @@ private fun ObjectWrapper.Basic.getFileObjectIcon(fieldParser: FieldParser): Obj
         ObjectType.Layout.PDF ->
             ObjectIcon.File(
                 mime = fileMimeType,
-                fileName = fieldParser.getObjectName(this),
                 extensions = fileExt
             )
 

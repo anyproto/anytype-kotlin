@@ -61,8 +61,7 @@ val StubVerticalItems = listOf(
         createdBy = "by John Doe",
         layout = ObjectType.Layout.FILE,
         icon = ObjectIcon.File(
-            mime = "image/png",
-            fileName = "test_image.png"
+            mime = "image/png"
         )
     )
 )

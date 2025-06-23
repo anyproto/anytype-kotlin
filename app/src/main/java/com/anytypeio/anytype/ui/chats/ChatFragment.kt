@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
@@ -273,7 +274,8 @@ class ChatFragment : BaseComposeFragment() {
                                         R.id.objectNavigation,
                                         EditorFragment.args(
                                             ctx = nav.target,
-                                            space = nav.space
+                                            space = nav.space,
+                                            effect = nav.effect
                                         )
                                     )
                                 }.onFailure {
@@ -432,6 +434,24 @@ class ChatFragment : BaseComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.checkNotificationPermissionDialogState()
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        parentFragmentManager.setFragmentResultListener(FragmentResultContract.ATTACH_TO_CHAT_CONTRACT_KEY, viewLifecycleOwner) { key, bundle ->
+            val target = bundle.getString(FragmentResultContract.ATTACH_TO_CHAT_TARGET_ID_KEY)
+            val space = bundle.getString(FragmentResultContract.ATTACH_TO_CHAT_SPACE_ID_KEY)
+            val chat = bundle.getString(FragmentResultContract.ATTACH_TO_CHAT_CHAT_ID_KEY)
+            if (target != null && space != null && chat != null) {
+                if (this.space == space && this.ctx == chat) {
+                    vm.onAttachObject(target)
+                } else {
+                    Timber.w("DROID-2966 Skipping attach to chat command")
+                }
+            } else {
+                Timber.w("DROID-2966 Attach-to-chat-data is not complete")
             }
         }
     }

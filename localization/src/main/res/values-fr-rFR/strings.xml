@@ -1604,9 +1604,11 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="date_layout_alert_date_out_of_range">La date sélectionnée est en dehors de la plage valide (années %1$d à %2$d). Veuillez sélectionner une date dans cette plage.</string>
     <string name="date_layout_item_created_by"> par</string>
     <string name="chat_attachment_object">Sélectionner l\'objet existant</string>
+    <string name="chat_attachment_create_object">Créer un objet</string>
     <string name="chat_attachment_file">Télécharger un fichier</string>
     <string name="chat_attachment_media">Télécharger des médias</string>
     <string name="chat_attachment_upload">Mettre en ligne</string>
+    <string name="chat_attach">Attacher</string>
     <string name="chats_reply">Répondre</string>
     <string name="chats_add_reaction">Ajouter une Réaction</string>
     <string name="chat_send_message_rate_limit_title">Attendez ! Frappe turbo détectée !</string>

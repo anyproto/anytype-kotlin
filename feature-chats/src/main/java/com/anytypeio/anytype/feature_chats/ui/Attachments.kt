@@ -172,6 +172,13 @@ fun BubbleAttachments(
                 }
             }
             is ChatView.Message.Attachment.Link -> {
+                val title = if (attachment.isDeleted) {
+                    stringResource(R.string.non_existent_object)
+                } else {
+                    attachment.wrapper?.name.orEmpty().ifEmpty {
+                        stringResource(R.string.untitled)
+                    }
+                }
                 AttachedObject(
                     modifier = Modifier
                         .padding(
@@ -182,7 +189,7 @@ fun BubbleAttachments(
                         )
                         .fillMaxWidth()
                     ,
-                    title = attachment.wrapper?.name.orEmpty(),
+                    title = title,
                     type = attachment.typeName,
                     icon = attachment.icon,
                     onAttachmentClicked = {
@@ -258,7 +265,7 @@ fun AttachedObject(
                 )
                 .align(alignment = Alignment.CenterStart),
             onTaskIconClicked = {
-                // Do nothing
+                onAttachmentClicked()
             }
         )
         Text(
@@ -296,7 +303,6 @@ fun AttachedObject(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Bookmark(
     url: String,

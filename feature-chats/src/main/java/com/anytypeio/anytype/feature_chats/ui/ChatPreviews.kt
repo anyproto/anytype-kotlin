@@ -213,7 +213,8 @@ fun ChatScreenPreview() {
         onGoToMentionClicked = {},
         onShareInviteClicked = {},
         onImageCaptured = {},
-        onVideoCaptured = {}
+        onVideoCaptured = {},
+        onCreateAndAttachObject = {}
     )
 }
 
@@ -242,8 +243,7 @@ fun BubblePreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {},
-        isHighlighted = false
+        onMentionClicked = {}
     )
 }
 
@@ -274,7 +274,6 @@ fun BubbleEditedPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = {},
         onMentionClicked = {},
-        isHighlighted = false
     )
 }
 
@@ -311,7 +310,6 @@ fun BubbleWithAttachmentPreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {},
-        isHighlighted = false
+        onMentionClicked = {}
     )
 }

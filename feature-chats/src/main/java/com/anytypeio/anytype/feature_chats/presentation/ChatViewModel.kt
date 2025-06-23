@@ -44,11 +44,13 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -74,7 +76,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -108,7 +109,9 @@ class ChatViewModel @Inject constructor(
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val openObject: OpenObject,
-    private val closeObject: CloseObject
+    private val closeObject: CloseObject,
+    private val createObject: CreateObject,
+    private val getObject: GetObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -118,7 +121,7 @@ class ChatViewModel @Inject constructor(
     )
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
-    val uiState = MutableStateFlow<ChatViewState>(ChatViewState())
+    val uiState = MutableStateFlow(ChatViewState(isLoading = true))
     val chatBoxAttachments = MutableStateFlow<List<ChatView.Message.ChatBoxAttachment>>(emptyList())
     val commands = MutableSharedFlow<ViewModelCommand>()
     val uXCommands = MutableSharedFlow<UXCommand>()
@@ -295,14 +298,14 @@ class ChatViewModel @Inject constructor(
                     val reply = if (replyToId.isNullOrEmpty()) {
                         null
                     } else {
-                        val msg = replies[replyToId]
-                        if (msg != null) {
+                        val replyMessage = replies[replyToId]
+                        if (replyMessage != null) {
                             ChatView.Message.Reply(
-                                msg = msg.id,
-                                text = msg.content?.text.orEmpty().ifEmpty {
+                                msg = replyMessage.id,
+                                text = replyMessage.content?.text.orEmpty().ifEmpty {
                                     // Fallback to attachment name if empty
-                                    if (msg.attachments.isNotEmpty()) {
-                                        val attachment = msg.attachments.last()
+                                    if (replyMessage.attachments.isNotEmpty()) {
+                                        val attachment = replyMessage.attachments.last()
                                         val dependency = dependencies[attachment.target]
                                         val name = dependency?.name.orEmpty()
                                         val ext = dependency?.fileExt
@@ -318,7 +321,7 @@ class ChatViewModel @Inject constructor(
                                 author = allMembers.let { type ->
                                     when (type) {
                                         is Store.Data -> type.members.find { member ->
-                                            member.identity == msg.creator
+                                            member.identity == replyMessage.creator
                                         }?.name.orEmpty()
                                         is Store.Empty -> ""
                                     }
@@ -419,7 +422,8 @@ class ChatViewModel @Inject constructor(
                                                 typeName = if (type != null)
                                                     storeOfObjectTypes.get(type)?.name.orEmpty()
                                                 else
-                                                    ""
+                                                    "",
+                                                isDeleted = wrapper?.isDeleted == true
                                             )
                                         }
                                     }
@@ -471,7 +475,8 @@ class ChatViewModel @Inject constructor(
                 counter = ChatViewState.Counter(
                     messages = result.state.unreadMessages?.counter ?: 0,
                     mentions = result.state.unreadMentions?.counter ?: 0
-                )
+                ),
+                isLoading = false
             )
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it
@@ -916,6 +921,40 @@ class ChatViewModel @Inject constructor(
         )
     }
 
+    fun onAttachObject(target: Id) {
+        Timber.d("DROID-2966 onAttachObject: $target")
+        viewModelScope.launch {
+            getObject.async(
+                GetObject.Params(
+                    target = target,
+                    space = vmParams.space
+                )
+            ).onSuccess { view ->
+                val wrapper = ObjectWrapper.Basic(view.details[target].orEmpty())
+                Timber.e("DROID-2966 Fetched attach-to-chat target: $wrapper")
+                if (wrapper.isValid) {
+                    chatBoxAttachments.value += listOf(
+                        ChatView.Message.ChatBoxAttachment.Link(
+                            target = target,
+                            wrapper = GlobalSearchItemView(
+                                id = target,
+                                obj = wrapper,
+                                title = wrapper.name.orEmpty(),
+                                icon = ObjectIcon.None,
+                                layout = wrapper.layout ?: ObjectType.Layout.BASIC,
+                                space = vmParams.space,
+                                type = wrapper.type.firstOrNull().orEmpty(),
+                                meta = GlobalSearchItemView.Meta.None
+                            )
+                        )
+                    )
+                }
+            }.onFailure {
+                Timber.e(it, "DROID-2966 Error while getting attach-to-chat target")
+            }
+        }
+    }
+
     fun onClearAttachmentClicked(attachment: ChatView.Message.ChatBoxAttachment) {
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
@@ -1035,7 +1074,7 @@ class ChatViewModel @Inject constructor(
                 }
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
-                    if (wrapper != null) {
+                    if (wrapper != null && !attachment.isDeleted) {
                         if (wrapper.layout == ObjectType.Layout.BOOKMARK) {
                             val bookmark = ObjectWrapper.Bookmark(wrapper.map)
                             val url = bookmark.source
@@ -1463,6 +1502,28 @@ class ChatViewModel @Inject constructor(
                 }
             }.onFailure {
                 Timber.e(it, "Failed to get link preview")
+            }
+        }
+    }
+
+    fun onCreateAndAttachObject() {
+        Timber.d("DROID-2966 onCreateAndAttachObject")
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    space = vmParams.space
+                )
+            ).onSuccess { result ->
+                navigation.emit(
+                    result.obj.navigation(
+                        effect = OpenObjectNavigation.SideEffect.AttachToChat(
+                            chat = vmParams.ctx,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }.onFailure {
+                Timber.d(it, "DROID-2966 Error while creating attach-to-chat object")
             }
         }
     }

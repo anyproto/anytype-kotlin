@@ -118,16 +118,12 @@ class ObjectIconWidget @JvmOverloads constructor(
         when (icon) {
             is ObjectIcon.Basic.Emoji -> {
                 setEmoji(emoji = icon.unicode, fallback = icon.fallback)
-                binding.emojiContainer.post {
-                    val width = binding.emojiContainer.width
-                    if (width > ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP * density) {
-                        binding.emojiContainer.background = createRoundedBackground(width)
-                    } else {
-                        binding.emojiContainer.background = null
-                    }
-                }
             }
-            is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
+            is ObjectIcon.Basic.Image -> {
+                if (isImageWithCorners)
+                    setRectangularImage(icon.hash)
+                else setCircularImage(icon.hash)
+            }
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setTask(icon.isChecked)
@@ -194,9 +190,30 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            initial.setTextColor(context.color(R.color.glyph_active))
             initial.setHintTextColor(context.color(R.color.glyph_active))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+
+            // Set font size according to Compose mapping, based on icon size (width in dp)
+            initial.post {
+                val widthPx = initialContainer.width
+                val density = context.resources.displayMetrics.density
+                val sizeDp = widthPx / density
+                val fontSizeSp = when {
+                    sizeDp <= 17 -> 10
+                    sizeDp <= 19 -> 11
+                    sizeDp <= 21 -> 13
+                    sizeDp <= 25 -> 14
+                    sizeDp <= 29 -> 16
+                    sizeDp <= 31 -> 20
+                    sizeDp <= 39 -> 20
+                    sizeDp <= 47 -> 24
+                    sizeDp <= 63 -> 28
+                    sizeDp <= 95 -> 40
+                    sizeDp <= 127 -> 64
+                    else -> 72
+                }
+                initial.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSizeSp.toFloat())
+            }
         }
     }
 
@@ -204,9 +221,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         emoji: String?,
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
-        //if (binding.emojiContainer.width > ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP * density) {
-        binding.emojiContainer.background = createRoundedBackground(binding.emojiContainer.width)
-        //}
+        binding.emojiContainer.background = null
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -253,11 +268,11 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 ivImage.setCircularShape()
-                if (isImageWithCorners) {
-                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
-                    ivImage.strokeColor =
-                        this.root.context.getColorStateList(R.color.background_primary)
-                }
+//                if (isImageWithCorners) {
+//                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
+//                    ivImage.strokeColor =
+//                        this.root.context.getColorStateList(R.color.background_primary)
+//                }
             }
             Glide
                 .with(this)

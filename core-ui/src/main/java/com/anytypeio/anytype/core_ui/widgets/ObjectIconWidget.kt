@@ -251,11 +251,11 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 ivImage.setCircularShape()
-//                if (isImageWithCorners) {
-//                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
-//                    ivImage.strokeColor =
-//                        this.root.context.getColorStateList(R.color.background_primary)
-//                }
+                if (isImageWithCorners) {
+                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
+                    ivImage.strokeColor =
+                        this.root.context.getColorStateList(R.color.background_primary)
+                }
             }
             Glide
                 .with(this)

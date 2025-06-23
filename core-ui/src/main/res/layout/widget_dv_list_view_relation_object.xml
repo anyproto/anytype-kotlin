@@ -11,7 +11,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
-        app:hasInitialRoundedCornerBackground="true"
         app:checkboxSize="15dp"
         app:emojiSize="15dp"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"

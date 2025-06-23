@@ -80,7 +80,6 @@
                 android:layout_marginTop="16dp"
                 app:checkboxSize="30dp"
                 app:emojiSize="30dp"
-                app:hasInitialRoundedCornerBackground="true"
                 app:imageCornerRadius="@dimen/dp_2"
                 app:imageSize="48dp"
                 app:initialTextSize="28sp"

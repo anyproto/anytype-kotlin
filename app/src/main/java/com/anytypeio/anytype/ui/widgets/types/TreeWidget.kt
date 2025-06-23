@@ -225,7 +225,6 @@ private fun TreeWidgetTreeItems(
                 ListWidgetObjectIcon(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
-                    imageMultiplier = 1.0f,
                     iconWithoutBackgroundMaxSize = 200.dp,
                     modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->

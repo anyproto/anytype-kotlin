@@ -12,6 +12,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.widgets.contentSizeForBackground
 import com.anytypeio.anytype.core_ui.widgets.cornerRadius
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -22,7 +23,6 @@ fun EmojiIconView(
     icon: ObjectIcon.Basic.Emoji,
     backgroundSize: Dp,
     iconWithoutBackgroundMaxSize: Dp,
-    imageMultiplier: Float,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
     val (containerModifier, iconModifier) = if (backgroundSize <= iconWithoutBackgroundMaxSize) {
@@ -34,8 +34,7 @@ fun EmojiIconView(
                 color = colorResource(backgroundColor),
                 shape = RoundedCornerShape(size = cornerRadius(backgroundSize))
             ) to Modifier.size(
-            width = backgroundSize * imageMultiplier,
-            height = backgroundSize * imageMultiplier
+            contentSizeForBackground(backgroundSize)
         )
     }
 
@@ -57,7 +56,6 @@ fun EmojiIconView(
             modifier = modifier,
             icon = icon.fallback,
             backgroundSize = backgroundSize,
-            imageMultiplier = imageMultiplier,
             iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
         )
     }

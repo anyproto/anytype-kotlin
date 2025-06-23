@@ -135,15 +135,17 @@ fun ProfileImageView(
 
 private fun getAvatarIconParams(size: Dp): Pair<Int, Int> {
     return when (size) {
-        in 0.dp..16.dp -> 2 to 11
-        in 17.dp..18.dp -> 2 to 12
-        in 19.dp..24.dp -> 2 to 13
-        in 25.dp..32.dp -> 4 to 20
-        in 33.dp..40.dp -> 5 to 24
-        in 41.dp..48.dp -> 6 to 28
-        in 49.dp..64.dp -> 8 to 40
-        in 65.dp..80.dp -> 12 to 44
-        in 81.dp..96.dp -> 12 to 64
-        else -> 12 to 64
+        in 0.dp..17.dp -> 2 to 10
+        in 18.dp..19.dp -> 2 to 11
+        in 20.dp..21.dp -> 2 to 13
+        in 22.dp..25.dp -> 3 to 14
+        in 26.dp..29.dp -> 3 to 16
+        in 30.dp..31.dp -> 4 to 20
+        in 32.dp..39.dp -> 4 to 20
+        in 40.dp..47.dp -> 5 to 24
+        in 48.dp..63.dp -> 6 to 28
+        in 64.dp..95.dp -> 8 to 40
+        in 96.dp..127.dp -> 12 to 64
+        else -> 12 to 72
     }
 }

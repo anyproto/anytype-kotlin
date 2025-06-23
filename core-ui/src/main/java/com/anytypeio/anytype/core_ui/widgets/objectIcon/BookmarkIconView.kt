@@ -19,7 +19,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 fun BookmarkIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.Bookmark,
-    imageMultiplier: Float,
     backgroundSize: Dp,
     iconWithoutBackgroundMaxSize: Dp
 ) {
@@ -41,7 +40,6 @@ fun BookmarkIconView(
                 modifier = modifier,
                 icon = icon.fallback,
                 backgroundSize = backgroundSize,
-                imageMultiplier = imageMultiplier,
                 iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }

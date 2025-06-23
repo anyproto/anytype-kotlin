@@ -11,8 +11,6 @@
         android:layout_width="52dp"
         android:layout_height="52dp"
         app:emojiSize="24dp"
-        app:hasEmojiRounded12Background="true"
-        app:hasInitialRounded8Background="true"
         app:initialTextSize="22sp"
         android:layout_gravity="center_horizontal"
         tools:background="@drawable/ic_search" />

@@ -14,8 +14,6 @@
         android:layout_marginBottom="@dimen/list_item_object_half_icon_margin_bottom"
         android:contentDescription="@string/content_desc_object_icon"
         app:checkboxSize="@dimen/list_item_object_half_checkbox_size"
-        app:hasEmojiRounded8Background="true"
-        app:hasInitialRounded8Background="true"
         app:emojiSize="@dimen/list_item_object_half_emoji_size"
         app:imageSize="@dimen/list_item_object_half_icon_height"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"

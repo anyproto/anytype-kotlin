@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.sample.icons.type.AllStatesScreen
+import com.anytypeio.anytype.sample.icons.type.BasicIconsScreen
 import com.anytypeio.anytype.sample.icons.type.FileIconsAllMimeTypesScreen
 import com.anytypeio.anytype.sample.icons.type.FileIconsScreen
 import com.anytypeio.anytype.sample.icons.type.TypeIconsDeletedScreen
@@ -161,7 +162,7 @@ class ComposeIconsActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(paddingValues),
                             navController = navController,
-                            startDestination = "FileIconsScreen"
+                            startDestination = "EmojiIconsScreen"
                         ) {
                             composable("ObjectIconAvatarScreen") {
                                 ObjectIconAvatarScreen()
@@ -173,7 +174,7 @@ class ComposeIconsActivity : ComponentActivity() {
                                 LoadingRoundedIconsScreen()
                             }
                             composable("EmojiIconsScreen") {
-                                EmojiIconsScreen()
+                                BasicIconsScreen()
                             }
                             composable("TypeIconsScreen") {
                                 TypeIconsScreen()

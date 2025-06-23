@@ -37,7 +37,7 @@ fun ListWidgetObjectIcon(
     modifier: Modifier,
     iconSize: Dp = 48.dp,
     imageMultiplier: Float = 0.625f,
-    iconWithoutBackgroundMaxSize: Dp = 20.dp,
+    iconWithoutBackgroundMaxSize: Dp = 31.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
     backgroundColor: Int = R.color.shape_tertiary
 ) {
@@ -224,10 +224,11 @@ fun DefaultFileObjectImageIcon(
 fun cornerRadius(size: Dp): Dp {
     return when (size) {
         in 0.dp..20.dp -> 2.dp
-        in 21.dp..39.dp -> 4.dp
+        in 21.dp..29.dp -> 3.dp
+        in 30.dp..39.dp -> 4.dp
         in 40.dp..47.dp -> 5.dp
         in 48.dp..63.dp -> 6.dp
-        in 64.dp..79.dp -> 8.dp
+        in 64.dp..95.dp -> 8.dp
         else -> 12.dp
     }
 }

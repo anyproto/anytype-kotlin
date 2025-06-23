@@ -15,8 +15,7 @@ class SetTextBlockImage(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE,
-                space = params.spaceId,
-                createTypeWidgetIfMissing = params.createTypeWidgetIfMissing
+                space = params.spaceId
             )
         )
         val payload = repo.setTextIcon(

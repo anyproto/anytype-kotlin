@@ -42,6 +42,7 @@ import dagger.Module
 import dagger.Provides
 import java.time.ZoneId
 import javax.inject.Singleton
+import kotlinx.serialization.json.Json
 
 @Module(includes = [UtilModule.Bindings::class])
 object UtilModule {
@@ -112,6 +113,13 @@ object UtilModule {
     @Provides
     @Singleton
     fun provideGson(): Gson = Gson()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideJson(): Json = Json {
+        ignoreUnknownKeys = true
+    }
 
     @Module
     interface Bindings {

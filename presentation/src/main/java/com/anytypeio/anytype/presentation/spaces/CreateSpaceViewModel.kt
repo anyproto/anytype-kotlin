@@ -121,8 +121,7 @@ class CreateSpaceViewModel(
             UploadFile.Params(
                 path = url,
                 space = Space(spaceId),
-                type = Block.Content.File.Type.IMAGE,
-                createTypeWidgetIfMissing = false
+                type = Block.Content.File.Type.IMAGE
             )
         ).fold(
             onSuccess = { file ->

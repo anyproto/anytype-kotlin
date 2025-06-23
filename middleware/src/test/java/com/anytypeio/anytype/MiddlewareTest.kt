@@ -534,8 +534,7 @@ class MiddlewareTest {
         val request = Rpc.File.Upload.Request(
             localPath = path,
             type = Block.Content.File.Type.Image,
-            spaceId = command.space.id,
-            createTypeWidgetIfMissing = true
+            spaceId = command.space.id
         )
 
         service.stub {
@@ -566,8 +565,7 @@ class MiddlewareTest {
         val request = Rpc.File.Upload.Request(
             localPath = path,
             type = Block.Content.File.Type.File,
-            spaceId = command.space.id,
-            createTypeWidgetIfMissing = true
+            spaceId = command.space.id
         )
 
         service.stub {
@@ -598,8 +596,7 @@ class MiddlewareTest {
         val request = Rpc.File.Upload.Request(
             localPath = path,
             type = Block.Content.File.Type.Video,
-            spaceId = command.space.id,
-            createTypeWidgetIfMissing = true
+            spaceId = command.space.id
         )
 
         service.stub {

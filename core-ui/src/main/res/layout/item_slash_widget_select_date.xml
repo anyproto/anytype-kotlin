@@ -14,8 +14,6 @@
         app:checkboxSize="@dimen/list_item_object_half_checkbox_size"
         app:emojiSize="@dimen/list_item_object_half_emoji_size"
         android:layout_gravity="center_vertical"
-        app:hasEmojiRounded8Background="true"
-        app:hasInitialRounded8Background="true"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"
         app:imageSize="24dp"
         app:initialTextSize="@dimen/list_item_object_half_initials_size" />

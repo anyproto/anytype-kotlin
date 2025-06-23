@@ -178,8 +178,7 @@ fun CompactListWidgetList(
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.obj.id, isChecked)
                     },
-                    iconWithoutBackgroundMaxSize = 200.dp,
-                    imageMultiplier = 1.0f
+                    iconWithoutBackgroundMaxSize = 200.dp
                 )
                 Text(
                     text = element.getPrettyName(),

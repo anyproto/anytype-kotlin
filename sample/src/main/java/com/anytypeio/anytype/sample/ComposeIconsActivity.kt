@@ -41,6 +41,9 @@ import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.sample.icons.type.AllStatesScreen
+import com.anytypeio.anytype.sample.icons.type.BasicIconsScreen
+import com.anytypeio.anytype.sample.icons.type.FileIconsAllMimeTypesScreen
+import com.anytypeio.anytype.sample.icons.type.FileIconsScreen
 import com.anytypeio.anytype.sample.icons.type.TypeIconsDeletedScreen
 import com.anytypeio.anytype.sample.icons.type.TypeIconsEmojiScreen
 import com.anytypeio.anytype.sample.icons.type.TypeIconsFallbackScreen
@@ -67,6 +70,24 @@ class ComposeIconsActivity : ComponentActivity() {
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
+                            item {
+                                OutlinedButton(
+                                    onClick = {
+                                        val context = this@ComposeIconsActivity
+                                        context.startActivity(
+                                            android.content.Intent(context, XmlIconsActivity::class.java)
+                                        )
+                                    },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(
+                                            text = "XML Icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                )
+                            }
+
                             item {
                                 OutlinedButton(
                                     onClick = {
@@ -129,6 +150,39 @@ class ComposeIconsActivity : ComponentActivity() {
                                     }
                                 )
                             }
+
+                            item {
+                                OutlinedButton(
+                                    onClick = { navController.navigate("FileIconsScreen") },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(text = "File icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary))
+                                    }
+                                )
+                            }
+
+                            item {
+                                OutlinedButton(
+                                    onClick = { navController.navigate("FileIconsAllMimeTypesScreen") },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(text = "All Mime-Type File icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary))
+                                    }
+                                )
+                            }
+
+                            item {
+                                OutlinedButton(
+                                    onClick = { navController.navigate("TypeIconsScreen") },
+                                    modifier = Modifier,
+                                    content = {
+                                        Text(text = "Type icons", style = Title3,
+                                            color = colorResource(id = R.color.text_primary))
+                                    }
+                                )
+                            }
                         }
                     },
                     content = { paddingValues ->
@@ -137,7 +191,7 @@ class ComposeIconsActivity : ComponentActivity() {
                                 .fillMaxSize()
                                 .padding(paddingValues),
                             navController = navController,
-                            startDestination = "AllStatesScreen"
+                            startDestination = "TypeIconsScreen"
                         ) {
                             composable("ObjectIconAvatarScreen") {
                                 ObjectIconAvatarScreen()
@@ -149,7 +203,7 @@ class ComposeIconsActivity : ComponentActivity() {
                                 LoadingRoundedIconsScreen()
                             }
                             composable("EmojiIconsScreen") {
-                                EmojiIconsScreen()
+                                BasicIconsScreen()
                             }
                             composable("TypeIconsScreen") {
                                 TypeIconsScreen()
@@ -165,6 +219,12 @@ class ComposeIconsActivity : ComponentActivity() {
                             }
                             composable("AllStatesScreen") {
                                 AllStatesScreen()
+                            }
+                            composable("FileIconsScreen") {
+                                FileIconsScreen()
+                            }
+                            composable("FileIconsAllMimeTypesScreen") {
+                                FileIconsAllMimeTypesScreen()
                             }
                         }
                     }

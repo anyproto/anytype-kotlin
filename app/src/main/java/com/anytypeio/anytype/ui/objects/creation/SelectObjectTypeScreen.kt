@@ -493,7 +493,6 @@ fun ObjectTypeItem(
             icon = icon,
             iconSize = 18.dp,
             modifier = Modifier,
-            imageMultiplier = 1.0f,
             iconWithoutBackgroundMaxSize = 200.dp
         )
         Spacer(modifier = Modifier.width(8.dp))

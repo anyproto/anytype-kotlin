@@ -3,6 +3,8 @@ package com.anytypeio.anytype.core_ui.widgets
 import android.content.Context
 import android.content.res.ColorStateList
 import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.LayoutInflater
@@ -20,14 +22,12 @@ import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget.Companion.DRAWABLE_DIR
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -40,6 +40,8 @@ class ObjectIconWidget @JvmOverloads constructor(
     companion object {
         const val DEFAULT_SIZE = 28
         const val DRAWABLE_DIR = "drawable"
+        private const val ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP = 31
+        private const val TYPE_ICON_BACKGROUND_MIN_SIZE_DP = 80
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -48,6 +50,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private var imageCornerRadius: Float = 0F
     private var isImageWithCorners: Boolean = false
+    private val density = context.resources.displayMetrics.density
 
     init {
         setupAttributeValues(attrs)
@@ -66,19 +69,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageSize, DEFAULT_SIZE)
         val checkboxSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_checkboxSize, DEFAULT_SIZE)
-
-        val hasEmojiCircleBackground =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiCircleBackground, false)
-        val hasEmojiRounded12Background =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded12Background, false)
-        val hasEmojiRounded8Background =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded8Background, false)
-        val hasInitialRounded8Background =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRounded8Background, false)
-        val hasEmojiRounded10Background =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiRounded10Background, false)
-        val hasInitialRoundedCornerBackground =
-            attrs.getBoolean(R.styleable.ObjectIconWidget_hasInitialRoundedCornerBackground, false)
 
         ivEmoji.updateLayoutParams<LayoutParams> {
             this.height = emojiSize
@@ -100,36 +90,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             this.width = checkboxSize
         }
 
-        if (hasEmojiCircleBackground) {
-            emojiContainer.setBackgroundResource(R.drawable.circle_object_icon_emoji_background)
-        }
-
-        if (hasEmojiRounded12Background) {
-            emojiContainer.setBackgroundResource(R.drawable.rectangle_object_in_list_emoji_icon)
-        }
-
-        if (hasEmojiRounded8Background) {
-            emojiContainer.setBackgroundResource(R.drawable.rectangle_object_icon_emoji_background_8)
-        }
-
-        if (!hasEmojiCircleBackground && !hasEmojiRounded12Background && !hasEmojiRounded8Background
-            && !hasEmojiRounded10Background
-        ) {
-            emojiContainer.background = null
-        }
-
-        if (hasInitialRounded8Background) {
-            initialContainer.setBackgroundResource(R.drawable.rectangle_avatar_initial_background_8)
-        }
-
-        if (hasEmojiRounded10Background) {
-            emojiContainer.setBackgroundResource(R.drawable.bg_rect_10_radius)
-        }
-
-        if (hasInitialRoundedCornerBackground) {
-            initialContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
-        }
-
         val initialTextSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_initialTextSize, 0)
         if (initialTextSize > 0) initial.setTextSize(
@@ -147,9 +107,19 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 
     fun setIcon(icon: ObjectIcon) {
+        // Reset backgrounds
+        binding.emojiContainer.background = null
+        binding.ivImage.background = null
+
         when (icon) {
-            is ObjectIcon.Basic.Emoji -> setEmoji(emoji = icon.unicode, fallback = icon.fallback)
-            is ObjectIcon.Basic.Image -> setRectangularImage(icon.hash)
+            is ObjectIcon.Basic.Emoji -> {
+                setEmoji(emoji = icon.unicode, fallback = icon.fallback)
+            }
+            is ObjectIcon.Basic.Image -> {
+                if (isImageWithCorners)
+                    setRectangularImage(icon.hash)
+                else setCircularImage(icon.hash)
+            }
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
             is ObjectIcon.Task -> setTask(icon.isChecked)
@@ -162,15 +132,28 @@ class ObjectIconWidget @JvmOverloads constructor(
 
             ObjectIcon.Deleted -> setDeletedIcon()
             is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
-            is ObjectIcon.TypeIcon.Fallback -> setTypeIcon(icon)
-            is ObjectIcon.TypeIcon.Default -> setTypeIcon(icon)
-            ObjectIcon.TypeIcon.Deleted -> setTypeIcon(TypeIcon.Fallback.DEFAULT)
-            is ObjectIcon.TypeIcon.Emoji -> setEmoji(
-                emoji = icon.unicode,
-                fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
-            )
+            is ObjectIcon.TypeIcon.Fallback -> {
+                setTypeIcon(icon)
+            }
+
+            is ObjectIcon.TypeIcon.Default -> {
+                setTypeIcon(icon)
+            }
+
+            ObjectIcon.TypeIcon.Deleted -> {
+                setDeletedIcon()
+            }
+
+            is ObjectIcon.TypeIcon.Emoji -> {
+                setEmoji(
+                    emoji = icon.unicode,
+                    fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
+                )
+            }
+
             is ObjectIcon.FileDefault -> {
-                setFileImage(mime = icon.mime)
+                val iconRes = icon.mime.getMimeIcon()
+                setFileIconWithBackground(iconRes)
             }
         }
     }
@@ -190,9 +173,15 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            initial.setTextColor(context.color(R.color.text_white))
-            initial.setHintTextColor(context.color(R.color.text_white))
+            initial.setHintTextColor(context.color(R.color.glyph_active))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
+
+            // Set font size according to Compose mapping, based on icon size (width in dp)
+            initial.post {
+                val widthPx = initialContainer.width
+                val sizeDp = widthPx / density
+                initial.setTextSize(TypedValue.COMPLEX_UNIT_SP, getAvatarFontSizeSp(sizeDp).toFloat())
+            }
         }
     }
 
@@ -200,6 +189,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         emoji: String?,
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
+        binding.emojiContainer.background = null
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -233,28 +223,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setFileImage(mime: String?, extension: String?) {
         val icon = mime.getMimeIcon(extension)
-        with(binding) {
-            ivImage.visible()
-            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            ivImage.setImageResource(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivBookmark.invisible()
-            emojiContainer.invisible()
-        }
-    }
-
-    private fun setFileImage(mime: MimeTypes.Category) {
-        val icon = mime.getMimeIcon()
-        with(binding) {
-            ivImage.visible()
-            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
-            ivImage.setImageResource(icon)
-            ivCheckbox.invisible()
-            initialContainer.invisible()
-            ivBookmark.invisible()
-            emojiContainer.invisible()
-        }
+        setFileIconWithBackground(icon)
     }
 
     private fun setCircularImage(image: Url?) {
@@ -290,22 +259,18 @@ class ObjectIconWidget @JvmOverloads constructor(
                 initialContainer.invisible()
                 emojiContainer.invisible()
                 ivBookmark.gone()
-                ivBookmark.setImageDrawable(null)
                 ivImage.visible()
-                ivImage.setCorneredShape(imageCornerRadius)
+
                 if (isImageWithCorners) {
-                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
-                    ivImage.strokeColor =
-                        this.root.context.getColorStateList(R.color.background_primary)
+                    ivImage.setCorneredShape(imageCornerRadius)
                 }
             }
+
             Glide
                 .with(this)
                 .load(image)
                 .centerCrop()
                 .into(binding.ivImage)
-        } else {
-            binding.ivImage.setImageDrawable(null)
         }
     }
 
@@ -404,6 +369,57 @@ class ObjectIconWidget @JvmOverloads constructor(
             binding.tvEmojiFallback.imageTintList = ColorStateList.valueOf(tint)
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting object type icon for")
+        }
+    }
+
+    private fun setFileIconWithBackground(iconRes: Int) {
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.FIT_XY
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+
+            ivImage.post {
+                val iconDrawable = context.drawable(iconRes)
+
+                val backgroundDrawable = GradientDrawable().apply {
+                    shape = GradientDrawable.RECTANGLE
+                    setColor(context.color(R.color.shape_transparent_secondary))
+                    cornerRadius = getCornerRadiusInPx()
+                }
+
+                val layers = arrayOf(backgroundDrawable, iconDrawable)
+                val layerDrawable = LayerDrawable(layers)
+
+                val horizontalMargin = (4 * density).toInt()
+                layerDrawable.setLayerInset(0, horizontalMargin, 0, horizontalMargin, 0)
+
+                ivImage.setImageDrawable(layerDrawable)
+            }
+        }
+    }
+
+    private fun getCornerRadiusInPx(): Float {
+        val radiusInDp = 2f
+        return radiusInDp * density
+    }
+
+    private fun getAvatarFontSizeSp(sizeDp: Float): Int {
+        return when {
+            sizeDp <= 17 -> 10
+            sizeDp <= 19 -> 11
+            sizeDp <= 21 -> 13
+            sizeDp <= 25 -> 14
+            sizeDp <= 29 -> 16
+            sizeDp <= 31 -> 20
+            sizeDp <= 39 -> 20
+            sizeDp <= 47 -> 24
+            sizeDp <= 63 -> 28
+            sizeDp <= 95 -> 40
+            sizeDp <= 127 -> 64
+            else -> 72
         }
     }
 }

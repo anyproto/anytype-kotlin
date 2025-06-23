@@ -30,7 +30,6 @@ fun TypeIconView(
     icon: ObjectIcon.TypeIcon,
     backgroundSize: Dp,
     iconWithoutBackgroundMaxSize: Dp,
-    imageMultiplier: Float,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
     when (icon) {
@@ -40,7 +39,7 @@ fun TypeIconView(
                 modifier = modifier,
                 backgroundSize = backgroundSize,
                 backgroundColor = backgroundColor,
-                condition = backgroundSize >= 80.dp
+                condition = backgroundSize > iconWithoutBackgroundMaxSize
             )
             IconBoxView(
                 boxModifier = boxModifier,
@@ -56,7 +55,7 @@ fun TypeIconView(
                 modifier = modifier,
                 backgroundSize = backgroundSize,
                 backgroundColor = backgroundColor,
-                condition = backgroundSize >= 80.dp
+                condition = backgroundSize > iconWithoutBackgroundMaxSize
             )
             DeletedTypeIconView(
                 boxModifier = boxModifier,
@@ -71,8 +70,7 @@ fun TypeIconView(
                     modifier = modifier,
                     icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode),
                     backgroundSize = backgroundSize,
-                    iconWithoutBackgroundMaxSize = 120.dp,
-                    imageMultiplier = imageMultiplier
+                    iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
                 )
             } else {
                 val (imageVector, tint) = getDefaultIconAndTint(icon)
@@ -80,7 +78,7 @@ fun TypeIconView(
                     modifier = modifier,
                     backgroundSize = backgroundSize,
                     backgroundColor = backgroundColor,
-                    condition = backgroundSize >= 80.dp
+                    condition = backgroundSize > iconWithoutBackgroundMaxSize
                 )
                 IconBoxView(
                     boxModifier = boxModifier,
@@ -100,7 +98,6 @@ fun TypeIconView(
                 modifier = modifier,
                 backgroundSize = backgroundSize,
                 backgroundColor = backgroundColor,
-                // For fallback the condition uses the iconWithoutBackgroundMaxSize threshold
                 condition = backgroundSize > iconWithoutBackgroundMaxSize
             )
             IconBoxView(
@@ -141,7 +138,7 @@ private fun IconBoxView(
 /**
  * Creates a pair of modifiers:
  * - [boxModifier] applies a background if [condition] is true,
- * - [imageModifier] sets the icon’s size based on [backgroundSize].
+ * - [imageModifier] sets the icon's size based on [backgroundSize].
  */
 @Composable
 private fun createIconModifiers(
@@ -159,7 +156,12 @@ private fun createIconModifiers(
     } else {
         baseModifier
     }
-    return boxModifier to Modifier.size(getTypeIconDefaultParams(backgroundSize).dp)
+
+    return boxModifier to if (condition) {
+        Modifier.size(getTypeIconDefaultParams(backgroundSize).dp)
+    } else {
+        Modifier.size(backgroundSize)
+    }
 }
 
 /**

@@ -11,19 +11,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.widgets.contentSizeForBackground
 
 @Composable
 fun DeletedIconView(
     modifier: Modifier = Modifier,
     backgroundSize: Dp,
-    iconWithoutBackgroundMaxSize: Dp = 20.dp,
-    imageMultiplier: Float = 0.625f
+    iconWithoutBackgroundMaxSize: Dp = 20.dp
 ) {
     val (containerModifier, iconModifier) = if (backgroundSize > iconWithoutBackgroundMaxSize) {
         modifier
             .size(backgroundSize) to Modifier.size(
-            width = backgroundSize * imageMultiplier,
-            height = backgroundSize * imageMultiplier
+            contentSizeForBackground(backgroundSize)
         )
     } else {
         modifier.size(backgroundSize) to Modifier

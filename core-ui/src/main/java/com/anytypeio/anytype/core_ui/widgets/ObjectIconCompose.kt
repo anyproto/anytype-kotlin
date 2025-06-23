@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
 import com.anytypeio.anytype.core_utils.const.MimeTypes
-import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
@@ -36,8 +34,7 @@ fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
     iconSize: Dp = 48.dp,
-    imageMultiplier: Float = 0.625f,
-    iconWithoutBackgroundMaxSize: Dp = 20.dp,
+    iconWithoutBackgroundMaxSize: Dp = 31.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
     backgroundColor: Int = R.color.shape_tertiary
 ) {
@@ -56,7 +53,6 @@ fun ListWidgetObjectIcon(
                 backgroundSize = iconSize,
                 modifier = modifier,
                 backgroundColor = backgroundColor,
-                imageMultiplier = imageMultiplier,
                 iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
@@ -66,7 +62,6 @@ fun ListWidgetObjectIcon(
                 icon = icon,
                 backgroundSize = iconSize,
                 modifier = modifier,
-                imageMultiplier = imageMultiplier,
                 iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
@@ -76,7 +71,6 @@ fun ListWidgetObjectIcon(
                 modifier = modifier,
                 icon = icon,
                 backgroundSize = iconSize,
-                imageMultiplier = imageMultiplier,
                 iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
         }
@@ -111,7 +105,6 @@ fun ListWidgetObjectIcon(
                 backgroundSize = iconSize,
                 modifier = modifier,
                 backgroundColor = backgroundColor,
-                imageMultiplier = imageMultiplier,
                 iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
             )
 
@@ -153,7 +146,7 @@ fun DefaultTaskObjectIcon(
             contentDescription = "Task icon",
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(24.dp)
+                .size(contentSizeForBackground(iconSize))
         )
     }
 }
@@ -221,13 +214,28 @@ fun DefaultFileObjectImageIcon(
     }
 }
 
+fun contentSizeForBackground(backgroundSize: Dp): Dp {
+    return when (backgroundSize) {
+        in 0.dp..31.dp -> backgroundSize
+        32.dp -> 20.dp
+        40.dp -> 24.dp
+        48.dp -> 28.dp
+        64.dp -> 40.dp
+        80.dp -> 50.dp
+        96.dp -> 56.dp
+        120.dp -> 75.dp
+        else -> backgroundSize
+    }
+}
+
 fun cornerRadius(size: Dp): Dp {
     return when (size) {
         in 0.dp..20.dp -> 2.dp
-        in 21.dp..39.dp -> 4.dp
+        in 21.dp..29.dp -> 3.dp
+        in 30.dp..39.dp -> 4.dp
         in 40.dp..47.dp -> 5.dp
         in 48.dp..63.dp -> 6.dp
-        in 64.dp..79.dp -> 8.dp
+        in 64.dp..95.dp -> 8.dp
         else -> 12.dp
     }
 }

@@ -114,7 +114,7 @@
     <style name="TextView.ContentStyle.Initials" parent="BaseTextView">
         <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:fontWeight">600</item>
-        <item name="android:textColor">@color/text_white</item>
+        <item name="android:textColor">@color/glyph_active</item>
     </style>
 
     <!-- MOBILE DESIGN SYSTEM, UX Styles -->

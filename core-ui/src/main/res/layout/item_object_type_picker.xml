@@ -12,7 +12,6 @@
         android:layout_marginStart="16dp"
         app:checkboxSize="24dp"
         app:emojiSize="28dp"
-        app:hasEmojiRounded12Background="true"
         app:imageSize="@dimen/dp_48"
         app:initialTextSize="28sp"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius"

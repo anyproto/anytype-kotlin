@@ -582,11 +582,6 @@
         <item name="checkboxSize">16dp</item>
         <item name="initialTextSize">11sp</item>
         <item name="imageCornerRadius">@dimen/list_item_object_image_corner_radius_small</item>
-        <item name="hasEmojiCircleBackground">false</item>
-        <item name="hasEmojiRounded8Background">false</item>
-        <item name="hasEmojiRounded12Background">false</item>
-        <item name="hasInitialRounded8Background">false</item>
-        <item name="hasEmojiRounded10Background">false</item>
     </style>
 
     <style name="ShapeAppearance.MaterialComponents.Circle">

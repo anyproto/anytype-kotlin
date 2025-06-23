@@ -49,7 +49,6 @@
         android:layout_height="20dp"
         app:checkboxSize="20dp"
         app:emojiSize="20dp"
-        app:hasEmojiRounded8Background="false"
         app:imageSize="20dp"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
         app:layout_constraintStart_toStartOf="parent"

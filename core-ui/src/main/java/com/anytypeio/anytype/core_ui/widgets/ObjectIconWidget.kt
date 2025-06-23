@@ -179,23 +179,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             // Set font size according to Compose mapping, based on icon size (width in dp)
             initial.post {
                 val widthPx = initialContainer.width
-                val density = context.resources.displayMetrics.density
                 val sizeDp = widthPx / density
-                val fontSizeSp = when {
-                    sizeDp <= 17 -> 10
-                    sizeDp <= 19 -> 11
-                    sizeDp <= 21 -> 13
-                    sizeDp <= 25 -> 14
-                    sizeDp <= 29 -> 16
-                    sizeDp <= 31 -> 20
-                    sizeDp <= 39 -> 20
-                    sizeDp <= 47 -> 24
-                    sizeDp <= 63 -> 28
-                    sizeDp <= 95 -> 40
-                    sizeDp <= 127 -> 64
-                    else -> 72
-                }
-                initial.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSizeSp.toFloat())
+                initial.setTextSize(TypedValue.COMPLEX_UNIT_SP, getAvatarFontSizeSp(sizeDp).toFloat())
             }
         }
     }
@@ -419,6 +404,23 @@ class ObjectIconWidget @JvmOverloads constructor(
     private fun getCornerRadiusInPx(): Float {
         val radiusInDp = 2f
         return radiusInDp * density
+    }
+
+    private fun getAvatarFontSizeSp(sizeDp: Float): Int {
+        return when {
+            sizeDp <= 17 -> 10
+            sizeDp <= 19 -> 11
+            sizeDp <= 21 -> 13
+            sizeDp <= 25 -> 14
+            sizeDp <= 29 -> 16
+            sizeDp <= 31 -> 20
+            sizeDp <= 39 -> 20
+            sizeDp <= 47 -> 24
+            sizeDp <= 63 -> 28
+            sizeDp <= 95 -> 40
+            sizeDp <= 127 -> 64
+            else -> 72
+        }
     }
 }
 

@@ -1616,6 +1616,7 @@ message Rpc {
                         NO_SUCH_OBJECT = 101;
                         NO_SUCH_SPACE = 102;
                         LIMIT_EXCEEDED = 103;
+                        URL_ALREADY_TAKEN = 409;
                     }
                 }
             }
@@ -1706,6 +1707,30 @@ message Rpc {
     }
 
     message Object {
+        message Refresh {
+            message Request {
+                string objectId = 1;
+                string spaceId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        OBJECT_DELETED = 4;
+                    }
+                }
+            }
+        }
+
         message Open {
             message Request {
                 string contextId = 1; // id of the context blo1k
@@ -1802,7 +1827,6 @@ message Rpc {
                 string spaceId = 4;
                 string objectTypeUniqueKey = 5;
                 bool withChat = 6;
-                bool createTypeWidgetIfMissing = 7; // experimental flag to auto-create type widget if missing
             }
 
             message Response {
@@ -3911,7 +3935,6 @@ message Rpc {
                 google.protobuf.Struct details = 7; // additional details for file object
                 anytype.model.ObjectOrigin origin = 8;
                 anytype.model.ImageKind imageKind = 9;
-                bool createTypeWidgetIfMissing = 10; // experimental flag to auto-create type widget if missing
             }
 
             message Response {
@@ -8610,6 +8633,33 @@ message Rpc {
             }
             message Response {
                 Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message SetSpaceMode {
+            message Request {
+                string spaceId = 1;
+                Mode mode = 2;
+            }
+
+            enum Mode {
+                All = 0;
+                Mentions = 1;
+                Nothing = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
                 message Error {
                     Code code = 1;
                     string description = 2;

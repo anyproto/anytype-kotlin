@@ -486,14 +486,19 @@ fun ObjectTypeItem(
             ),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        Spacer(
+            modifier = Modifier.width(14.dp)
+        )
         ListWidgetObjectIcon(
             icon = icon,
-            modifier = Modifier.padding(end = 8.dp),
-            iconSize = 32.dp,
+            iconSize = 18.dp,
+            modifier = Modifier,
             iconWithoutBackgroundMaxSize = 200.dp
         )
-        BodyRegular(
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
             text = name,
+            style = Title2,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

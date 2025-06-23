@@ -316,17 +316,21 @@ fun Bookmark(
         shape = RoundedCornerShape(12.dp),
     ) {
         if (!imageUrl.isNullOrEmpty()) {
+            val painter = rememberAsyncImagePainter(imageUrl)
+            val painterState = painter.state
             Box {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .align(alignment = Alignment.Center)
-                        .size(48.dp),
-                    color = colorResource(R.color.glyph_active),
-                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                    strokeWidth = 4.dp
-                )
+                if (painterState is AsyncImagePainter.State.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                            .size(48.dp),
+                        color = colorResource(R.color.glyph_active),
+                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
+                    )
+                }
                 Image(
-                    painter = rememberAsyncImagePainter(imageUrl),
+                    painter = painter,
                     modifier = Modifier
                         .fillMaxWidth()
                         .aspectRatio(1.91f),

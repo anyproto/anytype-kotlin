@@ -658,7 +658,6 @@ class VaultViewModel(
 
     fun setSpaceNotificationState(spaceId: Id, newState: NotificationState) {
         Timber.d("Setting notification state for space: $spaceId to $newState")
-        return
         viewModelScope.launch {
             setSpaceNotificationMode.async(
                 SetSpaceNotificationMode.Params(spaceViewId = spaceId, mode = newState)

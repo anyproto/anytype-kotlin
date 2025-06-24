@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -30,10 +31,12 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -83,7 +86,9 @@ class VaultViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
     private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode,
+    private val deleteSpace: DeleteSpace
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -635,6 +640,44 @@ class VaultViewModel(
         viewModelScope.launch {
             Timber.d("Proceeding with navigation: $nav")
             navigations.emit(nav)
+        }
+    }
+
+    fun setSpaceNotificationState(spaceId: Id, newState: NotificationState) {
+        viewModelScope.launch {
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(spaceViewId = spaceId, mode = newState)
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully set notification state to: $newState for space: $spaceId")
+                    // TODO: Update local state/UI if needed
+                },
+                onFailure = { error ->
+                    Timber.e("Failed to set notification state: $error")
+                    // TODO: Show error to user
+                }
+            )
+        }
+    }
+
+    fun deleteSpace(spaceId: Id) {
+        viewModelScope.launch {
+            deleteSpace.async(SpaceId(spaceId)).fold(
+                onSuccess = {
+                    Timber.d("Space deleted successfully: $spaceId")
+                    // TODO: Update UI, remove space from list
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting space")
+                    // TODO: Show error to user
+                }
+            )
+        }
+    }
+
+    fun leaveSpace(spaceId: Id) {
+        viewModelScope.launch {
+
         }
     }
 

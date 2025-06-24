@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -70,6 +71,14 @@ object VaultModule {
     @PerScreen
     @Provides
     fun provideSpaceInviteResolver() : SpaceInviteResolver = DefaultSpaceInviteResolver
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetSpaceNotificationModeUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
 }
 
 interface VaultComponentDependencies : ComponentDependencies {

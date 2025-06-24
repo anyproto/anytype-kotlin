@@ -59,31 +59,45 @@ class VaultFragment : BaseComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    VaultScreenWithUnreadSection(
-                        sections = vm.sections.collectAsStateWithLifecycle().value,
-                        onSpaceClicked = vm::onSpaceClicked,
-                        onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
-                        onSettingsClicked = vm::onSettingsClicked,
-                        onOrderChanged = vm::onOrderChanged,
-                        onDragEnd = vm::onDragEnd,
-                        profile = vm.profileView.collectAsStateWithLifecycle().value,
-                        isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
-                    )
+                val onMuteSpace: (String) -> Unit = { spaceId ->
+                    vm.setSpaceNotificationState(spaceId, com.anytypeio.anytype.core_models.chats.NotificationState.DISABLE)
+                }
+                val onUnmuteSpace: (String) -> Unit = { spaceId ->
+                    vm.setSpaceNotificationState(spaceId, com.anytypeio.anytype.core_models.chats.NotificationState.ALL)
+                }
+                val onDeleteSpace: (String) -> Unit = { spaceId ->
+                    vm.deleteSpace(spaceId)
+                }
+                val onLeaveSpace: (String) -> Unit = { spaceId ->
+                    vm.leaveSpace(spaceId)
+                }
+                VaultScreenWithUnreadSection(
+                    sections = vm.sections.collectAsStateWithLifecycle().value,
+                    onSpaceClicked = vm::onSpaceClicked,
+                    onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
+                    onSettingsClicked = vm::onSettingsClicked,
+                    onOrderChanged = vm::onOrderChanged,
+                    onDragEnd = vm::onDragEnd,
+                    profile = vm.profileView.collectAsStateWithLifecycle().value,
+                    isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
+                    onMuteSpace = onMuteSpace,
+                    onUnmuteSpace = onUnmuteSpace,
+                    onDeleteSpace = onDeleteSpace,
+                    onLeaveSpace = onLeaveSpace
+                )
 
-                    if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
-                        ChooseSpaceTypeScreen(
-                            onCreateChatClicked = {
-                                vm.onCreateChatClicked()
-                            },
-                            onCreateSpaceClicked = {
-                                vm.onCreateSpaceClicked()
-                            },
-                            onDismiss = {
-                                vm.onChooseSpaceTypeDismissed()
-                            }
-                        )
-                    }
+                if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
+                    ChooseSpaceTypeScreen(
+                        onCreateChatClicked = {
+                            vm.onCreateChatClicked()
+                        },
+                        onCreateSpaceClicked = {
+                            vm.onCreateSpaceClicked()
+                        },
+                        onDismiss = {
+                            vm.onChooseSpaceTypeDismissed()
+                        }
+                    )
                 }
             }
             LaunchedEffect(Unit) {

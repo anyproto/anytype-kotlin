@@ -385,7 +385,11 @@ fun VaultScreenWithUnreadSection(
     onSettingsClicked: () -> Unit,
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
-    isLoading: Boolean
+    isLoading: Boolean,
+    onMuteSpace: (String) -> Unit,
+    onUnmuteSpace: (String) -> Unit,
+    onDeleteSpace: (String) -> Unit,
+    onLeaveSpace: (String) -> Unit
 ) {
 
     var mainSpaceList by remember {
@@ -521,10 +525,22 @@ fun VaultScreenWithUnreadSection(
                                     SpaceActionsDropdownMenu(
                                         expanded = expandedSpaceId == item.space.id,
                                         onDismiss = { expandedSpaceId = null },
-                                        isMuted = false, // TODO: Replace with real notification state check
-                                        isOwner = true, // TODO: Replace with real permission check
-                                        onMuteToggle = { /* TODO: Implement mute/unmute logic */ },
-                                        onDeleteOrLeave = { /* TODO: Implement delete/leave logic */ }
+                                        isMuted = item.isMuted,
+                                        isOwner = item.isOwner,
+                                        onMuteToggle = {
+                                            if (item.isMuted) {
+                                                onUnmuteSpace(item.space.id)
+                                            } else {
+                                                onMuteSpace(item.space.id)
+                                            }
+                                        },
+                                        onDeleteOrLeave = {
+                                            if (item.isOwner) {
+                                                onDeleteSpace(item.space.id)
+                                            } else {
+                                                onLeaveSpace(item.space.id)
+                                            }
+                                        }
                                     )
                                 }
                             }
@@ -620,10 +636,22 @@ fun VaultScreenWithUnreadSection(
                                         SpaceActionsDropdownMenu(
                                             expanded = expandedSpaceId == item.space.id,
                                             onDismiss = { expandedSpaceId = null },
-                                            isMuted = false, // TODO: Replace with real notification state check
-                                            isOwner = true, // TODO: Replace with real permission check
-                                            onMuteToggle = { /* TODO: Implement mute/unmute logic */ },
-                                            onDeleteOrLeave = { /* TODO: Implement delete/leave logic */ }
+                                            isMuted = item.isMuted,
+                                            isOwner = item.isOwner,
+                                            onMuteToggle = {
+                                                if (item.isMuted) {
+                                                    onUnmuteSpace(item.space.id)
+                                                } else {
+                                                    onMuteSpace(item.space.id)
+                                                }
+                                            },
+                                            onDeleteOrLeave = {
+                                                if (item.isOwner) {
+                                                    onDeleteSpace(item.space.id)
+                                                } else {
+                                                    onLeaveSpace(item.space.id)
+                                                }
+                                            }
                                         )
                                     }
                                 }

@@ -27,7 +27,9 @@ sealed class VaultSpaceView {
     data class Space(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
-        val accessType: String
+        val accessType: String,
+        val isOwner: Boolean,
+        val isMuted: Boolean
     ) : VaultSpaceView()
 
     data class Chat(
@@ -41,7 +43,9 @@ sealed class VaultSpaceView {
         val creatorName: String? = null,
         val messageText: String? = null,
         val messageTime: String? = null,
-        val attachmentPreviews: List<AttachmentPreview> = emptyList()
+        val attachmentPreviews: List<AttachmentPreview> = emptyList(),
+        val isOwner: Boolean,
+        val isMuted: Boolean
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

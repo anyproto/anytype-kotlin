@@ -320,6 +320,10 @@ class VaultViewModel(
 
         } ?: emptyList()
 
+        val permissions = getPermissionsForSpace(space.id)
+        val isOwner = permissions == SpaceMemberPermissions.OWNER
+        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+
         return VaultSpaceView.Chat(
             space = space,
             icon = space.spaceIcon(
@@ -333,7 +337,9 @@ class VaultViewModel(
             messageTime = messageTime,
             unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
             unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
-            attachmentPreviews = attachmentPreviews
+            attachmentPreviews = attachmentPreviews,
+            isOwner = isOwner,
+            isMuted = isMuted
         )
     }
 
@@ -689,7 +695,7 @@ class VaultViewModel(
     }
 
     fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
-        return userPermissionProvider.getOrDefault(spaceId, SpaceMemberPermissions.NO_PERMISSIONS)
+        return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
     }
 
     companion object {

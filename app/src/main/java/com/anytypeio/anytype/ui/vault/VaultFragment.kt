@@ -6,11 +6,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -34,12 +31,14 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
+import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -67,10 +66,10 @@ class VaultFragment : BaseComposeFragment() {
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
                 val onDeleteSpace: (String) -> Unit = { spaceId ->
-                    vm.deleteSpace(spaceId)
+                    vm.onDeleteSpaceMenuClicked(spaceId)
                 }
                 val onLeaveSpace: (String) -> Unit = { spaceId ->
-                    vm.leaveSpace(spaceId)
+                    vm.onLeaveSpaceMenuClicked(spaceId)
                 }
                 VaultScreenWithUnreadSection(
                     sections = vm.sections.collectAsStateWithLifecycle().value,
@@ -202,6 +201,35 @@ class VaultFragment : BaseComposeFragment() {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
+            }
+
+            is VaultCommand.ShowDeleteSpaceWarning -> {
+                val fragment = DeleteSpaceWarning().apply {
+                    arguments = DeleteSpaceWarning.args(command.space)
+                }
+                fragment.onDeletionAccepted = {
+                    fragment.dismiss()
+                    vm.onDeleteSpaceAcceptedClicked(it)
+                }
+                fragment.onDeletionCancelled = {
+                    fragment.dismiss()
+                    vm.onDeleteSpaceWarningCancelled()
+                }
+                fragment.show(childFragmentManager, null)
+            }
+            is VaultCommand.ShowLeaveSpaceWarning -> {
+                val fragment = LeaveSpaceWarning().apply {
+                    arguments = LeaveSpaceWarning.args(command.space)
+                }
+                fragment.onLeaveSpaceAccepted = {
+                    fragment.dismiss()
+                    vm.onLeaveSpaceAcceptedClicked(it)
+                }
+                fragment.onLeaveSpaceCancelled = {
+                    fragment.dismiss()
+                    vm.onDeleteSpaceWarningCancelled()
+                }
+                fragment.show(childFragmentManager, null)
             }
         }
     }

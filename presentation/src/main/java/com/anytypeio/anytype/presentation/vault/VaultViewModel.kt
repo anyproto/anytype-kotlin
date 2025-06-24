@@ -69,6 +69,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -673,26 +674,69 @@ class VaultViewModel(
         }
     }
 
-    fun deleteSpace(spaceId: Id) {
-        Timber.d("Deleting space: $spaceId")
+    fun onDeleteSpaceMenuClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with deletion")
+            return
+        }
         viewModelScope.launch {
-            deleteSpace.async(SpaceId(spaceId)).fold(
-                onSuccess = {
-                    Timber.d("Space deleted successfully: $spaceId")
-                    // TODO: Update UI, remove space from list
-                },
-                onFailure = { e ->
-                    Timber.e(e, "Error while deleting space")
-                    // TODO: Show error to user
-                }
+            commands.emit(VaultCommand.ShowDeleteSpaceWarning(spaceId))
+        }
+    }
+
+    fun onLeaveSpaceMenuClicked(spaceId: Id) {
+        viewModelScope.launch {
+            commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
+        }
+    }
+
+    fun onDeleteSpaceWarningCancelled() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Cancel"))
             )
         }
     }
 
-    fun leaveSpace(spaceId: Id) {
-        Timber.d("Leaving space: $spaceId")
+    fun onDeleteSpaceAcceptedClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with delete space")
+            return
+        }
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Delete"))
+            )
+        }
+        proceedWithSpaceDeletion(spaceId)
+    }
 
+    fun onLeaveSpaceAcceptedClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with leaving space")
+            return
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.leaveSpace)
+        }
+        proceedWithSpaceDeletion(spaceId)
+    }
+
+    private fun proceedWithSpaceDeletion(spaceId: Id) {
+        viewModelScope.launch {
+            deleteSpace.async(params = SpaceId(spaceId)).fold(
+                onSuccess = {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.deleteSpace,
+                        props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting space")
+                }
+            )
         }
     }
 

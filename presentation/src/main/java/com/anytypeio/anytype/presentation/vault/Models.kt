@@ -97,6 +97,8 @@ sealed class VaultCommand {
     data object CreateNewSpace : VaultCommand()
     data object CreateChat : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
+    data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
+    data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()

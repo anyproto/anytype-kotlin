@@ -4,28 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,20 +28,18 @@ import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.Header
-import com.anytypeio.anytype.core_ui.foundation.Warning
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
-import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
 
 class LeaveSpaceWarning : BaseBottomSheetComposeFragment() {
 
-    private val name: String get() = arg(ARG_NAME)
+    private val spaceId: String? get() = argOrNull<String>(ARG_SPACE_ID)
 
-    var onLeaveSpaceAccepted: () -> Unit = {}
+    var onLeaveSpaceAccepted: (String?) -> Unit = {}
     var onLeaveSpaceCancelled: () -> Unit = {}
 
     override fun onCreateView(
@@ -64,7 +53,7 @@ class LeaveSpaceWarning : BaseBottomSheetComposeFragment() {
                 MaterialTheme(typography = typography) {
                     LeaveSpaceWarningScreen(
                         onLeaveClicked = {
-                            onLeaveSpaceAccepted()
+                            onLeaveSpaceAccepted(spaceId)
                         }
                     )
                 }
@@ -81,10 +70,11 @@ class LeaveSpaceWarning : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val ARG_NAME = "arg.leave-space-warning.name"
-        fun new() : LeaveSpaceWarning = LeaveSpaceWarning().apply {
+        const val ARG_SPACE_ID = "arg.leave-space-warning.space-id"
+        fun new(): LeaveSpaceWarning = LeaveSpaceWarning().apply {
             arguments = bundleOf()
         }
+        fun args(spaceId: String?) = bundleOf(ARG_SPACE_ID to spaceId)
     }
 }
 

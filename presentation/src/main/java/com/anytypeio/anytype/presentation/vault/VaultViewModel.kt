@@ -69,7 +69,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
+import com.anytypeio.anytype.domain.multiplayer.Permissions
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -129,9 +129,10 @@ class VaultViewModel(
                         )
                     },
                 observeVaultSettings.flow(),
-                chatPreviewContainer.observePreviews()
-            ) { spacesFromFlow, settings, chatPreviews ->
-                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews)
+                chatPreviewContainer.observePreviews(),
+                userPermissionProvider.all()
+            ) { spacesFromFlow, settings, chatPreviews, permissions ->
+                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
                 spaces.value = resultingSections.allSpaces // For backward compatibility
@@ -142,7 +143,8 @@ class VaultViewModel(
     private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         settings: VaultSettings,
-        chatPreviews: List<Chat.Preview>
+        chatPreviews: List<Chat.Preview>,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSectionView {
         // Map all active spaces to VaultSpaceView objects
         val allSpaces = spacesFromFlow
@@ -151,7 +153,7 @@ class VaultViewModel(
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
                     chatPreviews.find { it.space.id == spaceId }
                 }
-                mapToVaultSpaceViewItem(space, chatPreview)
+                mapToVaultSpaceViewItem(space, chatPreview, permissions)
             }
 
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
@@ -200,16 +202,17 @@ class VaultViewModel(
 
     private suspend fun mapToVaultSpaceViewItem(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview?
+        chatPreview: Chat.Preview?,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView {
         return when {
             chatPreview != null -> {
                 Timber.d("Creating chat view for space ${space.id}")
-                createChatView(space, chatPreview)
+                createChatView(space, chatPreview, permissions)
             }
             else -> {
                 Timber.d("Creating standard space view for space ${space.id}")
-                createStandardSpaceView(space)
+                createStandardSpaceView(space, permissions)
             }
         }
     }
@@ -278,7 +281,8 @@ class VaultViewModel(
 
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview
+        chatPreview: Chat.Preview,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Chat {
         val creator = chatPreview.message?.creator ?: ""
         val messageText = chatPreview.message?.content?.text
@@ -344,10 +348,11 @@ class VaultViewModel(
     }
 
     private fun createStandardSpaceView(
-        space: ObjectWrapper.SpaceView
+        space: ObjectWrapper.SpaceView,
+        permissions: Map<String, SpaceMemberPermissions>
     ): VaultSpaceView.Space {
-        val permissions = getPermissionsForSpace(space.id)
-        val isOwner = permissions == SpaceMemberPermissions.OWNER
+        //todo dont send null to map, fix
+        val isOwner = permissions[space.targetSpaceId]?.isOwner() == true
         val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
         return VaultSpaceView.Space(
             space = space,

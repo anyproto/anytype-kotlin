@@ -657,6 +657,8 @@ class VaultViewModel(
     }
 
     fun setSpaceNotificationState(spaceId: Id, newState: NotificationState) {
+        Timber.d("Setting notification state for space: $spaceId to $newState")
+        return
         viewModelScope.launch {
             setSpaceNotificationMode.async(
                 SetSpaceNotificationMode.Params(spaceViewId = spaceId, mode = newState)
@@ -674,6 +676,7 @@ class VaultViewModel(
     }
 
     fun deleteSpace(spaceId: Id) {
+        Timber.d("Deleting space: $spaceId")
         viewModelScope.launch {
             deleteSpace.async(SpaceId(spaceId)).fold(
                 onSuccess = {
@@ -689,6 +692,7 @@ class VaultViewModel(
     }
 
     fun leaveSpace(spaceId: Id) {
+        Timber.d("Leaving space: $spaceId")
         viewModelScope.launch {
 
         }

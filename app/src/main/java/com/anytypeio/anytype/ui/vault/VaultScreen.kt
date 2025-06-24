@@ -4,12 +4,12 @@ import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -25,9 +25,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -52,7 +56,9 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -67,20 +73,6 @@ import com.anytypeio.anytype.ui.settings.typography
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntOffset
-import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 
 @Composable
@@ -494,7 +486,6 @@ fun VaultScreenWithUnreadSection(
                                         .fillMaxWidth()
                                         .height(80.dp)
                                         .combinedClickable(
-                                            enabled = true,
                                             onClick = { onSpaceClicked(item) },
                                             onLongClick = { expandedSpaceId = item.space.id }
                                         )
@@ -537,14 +528,14 @@ fun VaultScreenWithUnreadSection(
                             is VaultSpaceView.Space -> {
                                 Box {
                                     VaultSpaceCard(
-                                        modifier = Modifier.animateItem(),
+                                        modifier = Modifier.animateItem()
+                                            .combinedClickable(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ),
                                         title = item.space.name.orEmpty(),
                                         subtitle = item.accessType,
-                                        onCardClicked = {
-                                            onSpaceClicked(item)
-                                        },
-                                        icon = item.icon,
-                                        onLongPress = { expandedSpaceId = item.space.id }
+                                        icon = item.icon
                                     )
                                     SpaceActionsDropdownMenu(
                                         expanded = expandedSpaceId == item.space.id,
@@ -614,7 +605,6 @@ fun VaultScreenWithUnreadSection(
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
                                             .combinedClickable(
-                                                enabled = true,
                                                 onClick = { onSpaceClicked(item) },
                                                 onLongClick = { expandedSpaceId = item.space.id }
                                             ),
@@ -669,14 +659,15 @@ fun VaultScreenWithUnreadSection(
                                                         )
                                                     }
                                                 )
+                                                .combinedClickable(
+                                                    enabled = true,
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = { expandedSpaceId = item.space.id }
+                                                )
                                                 .animateItem(),
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,
-                                            onCardClicked = {
-                                                onSpaceClicked(item)
-                                            },
-                                            icon = item.icon,
-                                            onLongPress = { expandedSpaceId = item.space.id }
+                                            icon = item.icon
                                         )
                                         SpaceActionsDropdownMenu(
                                             expanded = expandedSpaceId == item.space.id,

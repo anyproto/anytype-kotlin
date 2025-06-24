@@ -5,6 +5,7 @@ import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,8 +77,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 
 @Composable
@@ -490,13 +493,12 @@ fun VaultScreenWithUnreadSection(
                                         .animateItem()
                                         .fillMaxWidth()
                                         .height(80.dp)
-                                        .clickable {
-                                            onSpaceClicked(item)
-                                        }
+                                        .combinedClickable(
+                                            enabled = true,
+                                            onClick = { onSpaceClicked(item) },
+                                            onLongClick = { expandedSpaceId = item.space.id }
+                                        )
                                         .padding(horizontal = 16.dp),
-                                    onSpaceIconClicked = {
-                                        onSpaceClicked(item)
-                                    },
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
                                     previewText = item.previewText,
@@ -506,8 +508,30 @@ fun VaultScreenWithUnreadSection(
                                     chatPreview = item.chatPreview,
                                     unreadMessageCount = item.unreadMessageCount,
                                     unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews
+                                    attachmentPreviews = item.attachmentPreviews,
                                 )
+                                if (expandedSpaceId == item.space.id) {
+                                    SpaceActionsDropdownMenu(
+                                        expanded = true,
+                                        onDismiss = { expandedSpaceId = null },
+                                        isMuted = item.isMuted,
+                                        isOwner = item.isOwner,
+                                        onMuteToggle = {
+                                            if (item.isMuted) {
+                                                onUnmuteSpace(item.space.id)
+                                            } else {
+                                                onMuteSpace(item.space.id)
+                                            }
+                                        },
+                                        onDeleteOrLeave = {
+                                            if (item.isOwner) {
+                                                onDeleteSpace(item.space.id)
+                                            } else {
+                                                onLeaveSpace(item.space.id)
+                                            }
+                                        }
+                                    )
+                                }
                             }
 
                             is VaultSpaceView.Space -> {
@@ -589,9 +613,11 @@ fun VaultScreenWithUnreadSection(
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
-                                            .clickable {
-                                                onSpaceClicked(item)
-                                            },
+                                            .combinedClickable(
+                                                enabled = true,
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ),
                                         title = item.space.name.orEmpty(),
                                         icon = item.icon,
                                         previewText = item.previewText,
@@ -601,11 +627,30 @@ fun VaultScreenWithUnreadSection(
                                         chatPreview = item.chatPreview,
                                         unreadMessageCount = item.unreadMessageCount,
                                         unreadMentionCount = item.unreadMentionCount,
-                                        attachmentPreviews = item.attachmentPreviews,
-                                        onSpaceIconClicked = {
-                                            onSpaceClicked(item)
-                                        }
+                                        attachmentPreviews = item.attachmentPreviews
                                     )
+                                    if (expandedSpaceId == item.space.id) {
+                                        SpaceActionsDropdownMenu(
+                                            expanded = true,
+                                            onDismiss = { expandedSpaceId = null },
+                                            isMuted = item.isMuted,
+                                            isOwner = item.isOwner,
+                                            onMuteToggle = {
+                                                if (item.isMuted) {
+                                                    onUnmuteSpace(item.space.id)
+                                                } else {
+                                                    onMuteSpace(item.space.id)
+                                                }
+                                            },
+                                            onDeleteOrLeave = {
+                                                if (item.isOwner) {
+                                                    onDeleteSpace(item.space.id)
+                                                } else {
+                                                    onLeaveSpace(item.space.id)
+                                                }
+                                            }
+                                        )
+                                    }
                                 }
 
                                 is VaultSpaceView.Space -> {

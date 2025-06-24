@@ -67,13 +67,17 @@ import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 
 
 @Composable
@@ -286,8 +290,12 @@ fun SpaceActionsDropdownMenu(
     onDeleteOrLeave: () -> Unit
 ) {
     DropdownMenu(
+        modifier = Modifier.width(254.dp),
         expanded = expanded,
         onDismissRequest = onDismiss,
+        containerColor = colorResource(R.color.background_primary),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 8.dp,
     ) {
         DropdownMenuItem(
             onClick = {
@@ -295,32 +303,41 @@ fun SpaceActionsDropdownMenu(
                 onDismiss()
             },
             text = {
+                val (stringRes, iconRes) = if (isMuted) {
+                    R.string.space_notify_unmute to R.drawable.ic_notifications
+                } else {
+                    R.string.space_notify_mute to R.drawable.ic_notifications_off
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_bell_24),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = stringRes),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = if (isMuted) "Unmute" else "Mute")
+                    Image(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(24.dp)
+                    )
                 }
             }
         )
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         DropdownMenuItem(
             onClick = {
                 onDeleteOrLeave()
                 onDismiss()
             },
             text = {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_block_action_delete),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(text = if (isOwner) "Delete Space" else "Leave Space")
-                }
+                Text(
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.palette_dark_red),
+                    text = if (isOwner) stringResource(R.string.delete_space)
+                    else stringResource(R.string.multiplayer_leave_space)
+                )
             }
         )
     }

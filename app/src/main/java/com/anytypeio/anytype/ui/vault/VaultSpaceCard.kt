@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
+import androidx.compose.foundation.combinedClickable
 
 @Composable
 fun VaultSpaceCard(
@@ -61,14 +62,16 @@ fun VaultSpaceCard(
     subtitle: String,
     onCardClicked: () -> Unit,
     icon: SpaceIconView,
+    onLongPress: (() -> Unit)? = null
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .clickable {
-                onCardClicked()
-            }
+            .combinedClickable(
+                onClick = { onCardClicked() },
+                onLongClick = { onLongPress?.invoke() }
+            )
             .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(

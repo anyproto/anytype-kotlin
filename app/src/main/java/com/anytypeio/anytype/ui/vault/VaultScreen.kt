@@ -63,10 +63,17 @@ import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.ui.settings.typography
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
 
 
 @Composable
@@ -269,6 +276,7 @@ fun VaultScreenToolbarScrolledPreview() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
@@ -301,6 +309,9 @@ fun VaultScreenWithUnreadSection(
     }
 
     var isDragging by remember { mutableStateOf(false) }
+    var longPressedSpace by remember { mutableStateOf<VaultSpaceView?>(null) }
+    var menuOffset by remember { mutableStateOf(Offset.Zero) }
+    val density = LocalDensity.current
 
     LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
         if (reorderableLazyState.isAnyItemDragging) {
@@ -380,8 +391,7 @@ fun VaultScreenWithUnreadSection(
                                         .clickable {
                                             onSpaceClicked(item)
                                         }
-                                        .padding(horizontal = 16.dp)
-                                    ,
+                                        .padding(horizontal = 16.dp),
                                     onSpaceIconClicked = {
                                         onSpaceClicked(item)
                                     },
@@ -400,13 +410,22 @@ fun VaultScreenWithUnreadSection(
 
                             is VaultSpaceView.Space -> {
                                 VaultSpaceCard(
-                                    modifier = Modifier.animateItem(),
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .then(
+                                            if (longPressedSpace == item) Modifier.onGloballyPositioned { coordinates ->
+                                                val position =
+                                                    coordinates.localToWindow(Offset.Zero)
+                                                menuOffset = position
+                                            } else Modifier
+                                        ),
                                     title = item.space.name.orEmpty(),
                                     subtitle = item.accessType,
                                     onCardClicked = {
                                         onSpaceClicked(item)
                                     },
                                     icon = item.icon,
+                                    onLongPress = { longPressedSpace = item }
                                 )
                             }
                         }
@@ -496,7 +515,8 @@ fun VaultScreenWithUnreadSection(
                                             onCardClicked = {
                                                 onSpaceClicked(item)
                                             },
-                                            icon = item.icon
+                                            icon = item.icon,
+                                            onLongPress = { longPressedSpace = item }
                                         )
                                     }
                                 }
@@ -505,6 +525,46 @@ fun VaultScreenWithUnreadSection(
                     }
                 }
             }
+        }
+
+        // DropdownMenu anchored under the selected item
+        DropdownMenu(
+            expanded = longPressedSpace != null,
+            onDismissRequest = { longPressedSpace = null },
+            offset = DpOffset(
+                x = with(density) { menuOffset.x.toDp() },
+                y = with(density) { menuOffset.y.toDp() + 80.dp }
+            ),
+        ) {
+            val isMuted = false // TODO: Replace with real notification state check
+            val isOwner = true // TODO: Replace with real permission check
+            DropdownMenuItem(
+                onClick = { longPressedSpace = null },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_bell_24),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(text = if (isMuted) "Unmute" else "Mute")
+                    }
+                }
+            )
+            DropdownMenuItem(
+                onClick = { longPressedSpace = null },
+                text = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_block_action_delete),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Text(text = if (isOwner) "Delete Space" else "Leave Space")
+                    }
+                })
         }
     }
 }

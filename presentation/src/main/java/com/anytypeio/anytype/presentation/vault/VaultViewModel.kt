@@ -55,7 +55,6 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView.AttachmentPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -656,14 +655,14 @@ class VaultViewModel(
         }
     }
 
-    fun setSpaceNotificationState(spaceId: Id, newState: NotificationState) {
-        Timber.d("Setting notification state for space: $spaceId to $newState")
+    fun setSpaceNotificationState(spaceTargetId: Id, newState: NotificationState) {
+        Timber.d("Setting notification state for spaceTargetId: $spaceTargetId to $newState")
         viewModelScope.launch {
             setSpaceNotificationMode.async(
-                SetSpaceNotificationMode.Params(spaceViewId = spaceId, mode = newState)
+                SetSpaceNotificationMode.Params(spaceViewId = spaceTargetId, mode = newState)
             ).fold(
                 onSuccess = {
-                    Timber.d("Successfully set notification state to: $newState for space: $spaceId")
+                    Timber.d("Successfully set notification state to: $newState for space: $spaceTargetId")
                     // TODO: Update local state/UI if needed
                 },
                 onFailure = { error ->

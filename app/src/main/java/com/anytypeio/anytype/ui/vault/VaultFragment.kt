@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -59,11 +60,11 @@ class VaultFragment : BaseComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                val onMuteSpace: (String) -> Unit = { spaceId ->
-                    vm.setSpaceNotificationState(spaceId, com.anytypeio.anytype.core_models.chats.NotificationState.DISABLE)
+                val onMuteSpace: (String) -> Unit = { spaceTargetId ->
+                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.DISABLE)
                 }
-                val onUnmuteSpace: (String) -> Unit = { spaceId ->
-                    vm.setSpaceNotificationState(spaceId, com.anytypeio.anytype.core_models.chats.NotificationState.ALL)
+                val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
+                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
                 val onDeleteSpace: (String) -> Unit = { spaceId ->
                     vm.deleteSpace(spaceId)

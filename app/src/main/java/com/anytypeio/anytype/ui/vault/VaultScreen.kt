@@ -53,6 +53,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
@@ -207,7 +208,7 @@ private fun ProfileIcon(
 
                     else -> {
                         val nameFirstChar = if (profile.name.isEmpty()) {
-                            stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                            stringResource(id = R.string.account_default_name)
                         } else {
                             profile.name.first().uppercaseChar().toString()
                         }
@@ -381,8 +382,8 @@ fun VaultScreenWithUnreadSection(
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
     isLoading: Boolean,
-    onMuteSpace: (String) -> Unit,
-    onUnmuteSpace: (String) -> Unit,
+    onMuteSpace: (Id) -> Unit,
+    onUnmuteSpace: (Id) -> Unit,
     onDeleteSpace: (String) -> Unit,
     onLeaveSpace: (String) -> Unit
 ) {
@@ -508,10 +509,12 @@ fun VaultScreenWithUnreadSection(
                                         isMuted = item.isMuted,
                                         isOwner = item.isOwner,
                                         onMuteToggle = {
-                                            if (item.isMuted) {
-                                                onUnmuteSpace(item.space.id)
-                                            } else {
-                                                onMuteSpace(item.space.id)
+                                            item.space.targetSpaceId?.let {
+                                                if (item.isMuted) {
+                                                    onUnmuteSpace(it)
+                                                } else {
+                                                    onMuteSpace(it)
+                                                }
                                             }
                                         },
                                         onDeleteOrLeave = {
@@ -528,7 +531,8 @@ fun VaultScreenWithUnreadSection(
                             is VaultSpaceView.Space -> {
                                 Box {
                                     VaultSpaceCard(
-                                        modifier = Modifier.animateItem()
+                                        modifier = Modifier
+                                            .animateItem()
                                             .combinedClickable(
                                                 onClick = { onSpaceClicked(item) },
                                                 onLongClick = { expandedSpaceId = item.space.id }
@@ -543,10 +547,12 @@ fun VaultScreenWithUnreadSection(
                                         isMuted = item.isMuted,
                                         isOwner = item.isOwner,
                                         onMuteToggle = {
-                                            if (item.isMuted) {
-                                                onUnmuteSpace(item.space.id)
-                                            } else {
-                                                onMuteSpace(item.space.id)
+                                            item.space.targetSpaceId?.let {
+                                                if (item.isMuted) {
+                                                    onUnmuteSpace(it)
+                                                } else {
+                                                    onMuteSpace(it)
+                                                }
                                             }
                                         },
                                         onDeleteOrLeave = {
@@ -626,10 +632,12 @@ fun VaultScreenWithUnreadSection(
                                             isMuted = item.isMuted,
                                             isOwner = item.isOwner,
                                             onMuteToggle = {
-                                                if (item.isMuted) {
-                                                    onUnmuteSpace(item.space.id)
-                                                } else {
-                                                    onMuteSpace(item.space.id)
+                                                item.space.targetSpaceId?.let {
+                                                    if (item.isMuted) {
+                                                        onUnmuteSpace(it)
+                                                    } else {
+                                                        onMuteSpace(it)
+                                                    }
                                                 }
                                             },
                                             onDeleteOrLeave = {
@@ -662,7 +670,9 @@ fun VaultScreenWithUnreadSection(
                                                 .combinedClickable(
                                                     enabled = true,
                                                     onClick = { onSpaceClicked(item) },
-                                                    onLongClick = { expandedSpaceId = item.space.id }
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
                                                 )
                                                 .animateItem(),
                                             title = item.space.name.orEmpty(),
@@ -675,10 +685,12 @@ fun VaultScreenWithUnreadSection(
                                             isMuted = item.isMuted,
                                             isOwner = item.isOwner,
                                             onMuteToggle = {
-                                                if (item.isMuted) {
-                                                    onUnmuteSpace(item.space.id)
-                                                } else {
-                                                    onMuteSpace(item.space.id)
+                                                item.space.targetSpaceId?.let {
+                                                    if (item.isMuted) {
+                                                        onUnmuteSpace(it)
+                                                    } else {
+                                                        onMuteSpace(it)
+                                                    }
                                                 }
                                             },
                                             onDeleteOrLeave = {

@@ -276,6 +276,88 @@ fun VaultScreenToolbarScrolledPreview() {
     )
 }
 
+@Composable
+fun SpaceActionsDropdownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    isMuted: Boolean,
+    isOwner: Boolean,
+    onMuteToggle: () -> Unit,
+    onDeleteOrLeave: () -> Unit
+) {
+    DropdownMenu(
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onMuteToggle()
+                onDismiss()
+            },
+            text = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_bell_24),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = if (isMuted) "Unmute" else "Mute")
+                }
+            }
+        )
+        DropdownMenuItem(
+            onClick = {
+                onDeleteOrLeave()
+                onDismiss()
+            },
+            text = {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_block_action_delete),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = if (isOwner) "Delete Space" else "Leave Space")
+                }
+            }
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Muted Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = true,
+            isOwner = true,
+            onMuteToggle = {},
+            onDeleteOrLeave = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Unmuted Not Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = false,
+            isOwner = false,
+            onMuteToggle = {},
+            onDeleteOrLeave = {}
+        )
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VaultScreenWithUnreadSection(
@@ -309,8 +391,7 @@ fun VaultScreenWithUnreadSection(
     }
 
     var isDragging by remember { mutableStateOf(false) }
-    var longPressedSpace by remember { mutableStateOf<VaultSpaceView?>(null) }
-    var menuOffset by remember { mutableStateOf(Offset.Zero) }
+    var expandedSpaceId by remember { mutableStateOf<String?>(null) }
     val density = LocalDensity.current
 
     LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
@@ -409,24 +490,26 @@ fun VaultScreenWithUnreadSection(
                             }
 
                             is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .then(
-                                            if (longPressedSpace == item) Modifier.onGloballyPositioned { coordinates ->
-                                                val position =
-                                                    coordinates.localToWindow(Offset.Zero)
-                                                menuOffset = position
-                                            } else Modifier
-                                        ),
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    onCardClicked = {
-                                        onSpaceClicked(item)
-                                    },
-                                    icon = item.icon,
-                                    onLongPress = { longPressedSpace = item }
-                                )
+                                Box {
+                                    VaultSpaceCard(
+                                        modifier = Modifier.animateItem(),
+                                        title = item.space.name.orEmpty(),
+                                        subtitle = item.accessType,
+                                        onCardClicked = {
+                                            onSpaceClicked(item)
+                                        },
+                                        icon = item.icon,
+                                        onLongPress = { expandedSpaceId = item.space.id }
+                                    )
+                                    SpaceActionsDropdownMenu(
+                                        expanded = expandedSpaceId == item.space.id,
+                                        onDismiss = { expandedSpaceId = null },
+                                        isMuted = false, // TODO: Replace with real notification state check
+                                        isOwner = true, // TODO: Replace with real permission check
+                                        onMuteToggle = { /* TODO: Implement mute/unmute logic */ },
+                                        onDeleteOrLeave = { /* TODO: Implement delete/leave logic */ }
+                                    )
+                                }
                             }
                         }
                     }
@@ -493,30 +576,37 @@ fun VaultScreenWithUnreadSection(
                                 }
 
                                 is VaultSpaceView.Space -> {
-                                    Box(
-                                        modifier = Modifier
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.START
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.END
-                                                    )
-                                                }
-                                            )
-                                    ) {
+                                    Box {
                                         VaultSpaceCard(
-                                            modifier = Modifier.animateItem(),
+                                            modifier = Modifier
+                                                .longPressDraggableHandle(
+                                                    onDragStarted = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            ReorderHapticFeedbackType.START
+                                                        )
+                                                    },
+                                                    onDragStopped = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            ReorderHapticFeedbackType.END
+                                                        )
+                                                    }
+                                                )
+                                                .animateItem(),
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,
                                             onCardClicked = {
                                                 onSpaceClicked(item)
                                             },
                                             icon = item.icon,
-                                            onLongPress = { longPressedSpace = item }
+                                            onLongPress = { expandedSpaceId = item.space.id }
+                                        )
+                                        SpaceActionsDropdownMenu(
+                                            expanded = expandedSpaceId == item.space.id,
+                                            onDismiss = { expandedSpaceId = null },
+                                            isMuted = false, // TODO: Replace with real notification state check
+                                            isOwner = true, // TODO: Replace with real permission check
+                                            onMuteToggle = { /* TODO: Implement mute/unmute logic */ },
+                                            onDeleteOrLeave = { /* TODO: Implement delete/leave logic */ }
                                         )
                                     }
                                 }
@@ -525,46 +615,6 @@ fun VaultScreenWithUnreadSection(
                     }
                 }
             }
-        }
-
-        // DropdownMenu anchored under the selected item
-        DropdownMenu(
-            expanded = longPressedSpace != null,
-            onDismissRequest = { longPressedSpace = null },
-            offset = DpOffset(
-                x = with(density) { menuOffset.x.toDp() },
-                y = with(density) { menuOffset.y.toDp() + 80.dp }
-            ),
-        ) {
-            val isMuted = false // TODO: Replace with real notification state check
-            val isOwner = true // TODO: Replace with real permission check
-            DropdownMenuItem(
-                onClick = { longPressedSpace = null },
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_bell_24),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(text = if (isMuted) "Unmute" else "Mute")
-                    }
-                }
-            )
-            DropdownMenuItem(
-                onClick = { longPressedSpace = null },
-                text = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_block_action_delete),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(text = if (isOwner) "Delete Space" else "Leave Space")
-                    }
-                })
         }
     }
 }

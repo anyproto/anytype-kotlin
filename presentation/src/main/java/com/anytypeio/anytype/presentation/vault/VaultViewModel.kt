@@ -68,6 +68,8 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -88,7 +90,8 @@ class VaultViewModel(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val deleteSpace: DeleteSpace
+    private val deleteSpace: DeleteSpace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -337,14 +340,18 @@ class VaultViewModel(
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView
     ): VaultSpaceView.Space {
+        val permissions = getPermissionsForSpace(space.id)
+        val isOwner = permissions == SpaceMemberPermissions.OWNER
+        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
         return VaultSpaceView.Space(
             space = space,
             icon = space.spaceIcon(
                 builder = urlBuilder,
                 spaceGradientProvider = SpaceGradientProvider.Default
             ),
-            accessType = stringResourceProvider
-                .getSpaceAccessTypeName(accessType = space.spaceAccessType)
+            accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType),
+            isOwner = isOwner,
+            isMuted = isMuted
         )
     }
 
@@ -679,6 +686,10 @@ class VaultViewModel(
         viewModelScope.launch {
 
         }
+    }
+
+    fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
+        return userPermissionProvider.getOrDefault(spaceId, SpaceMemberPermissions.NO_PERMISSIONS)
     }
 
     companion object {

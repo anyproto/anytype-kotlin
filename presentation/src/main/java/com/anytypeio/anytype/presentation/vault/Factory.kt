@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -42,7 +43,8 @@ class VaultViewModelFactory @Inject constructor(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val deleteSpace: DeleteSpace
+    private val deleteSpace: DeleteSpace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -66,6 +68,7 @@ class VaultViewModelFactory @Inject constructor(
         fieldParser = fieldParser,
         storeOfObjectTypes = storeOfObjectTypes,
         setSpaceNotificationMode = setSpaceNotificationMode,
-        deleteSpace = deleteSpace
+        deleteSpace = deleteSpace,
+        userPermissionProvider = userPermissionProvider
     ) as T
 }

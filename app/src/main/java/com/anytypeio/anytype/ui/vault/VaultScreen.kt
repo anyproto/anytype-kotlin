@@ -376,6 +376,34 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
     }
 }
 
+@Composable
+fun SpaceActionsDropdownMenuHost(
+    spaceView: VaultSpaceView,
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onMuteSpace: (Id) -> Unit,
+    onUnmuteSpace: (Id) -> Unit,
+    onDeleteSpace: (String) -> Unit,
+    onLeaveSpace: (String) -> Unit
+) {
+    SpaceActionsDropdownMenu(
+        expanded = expanded,
+        onDismiss = onDismiss,
+        isMuted = spaceView.isMuted,
+        isOwner = spaceView.isOwner,
+        onMuteToggle = {
+            spaceView.space.targetSpaceId?.let {
+                if (spaceView.isMuted) onUnmuteSpace(it) else onMuteSpace(it)
+            }
+        },
+        onDeleteOrLeave = {
+            spaceView.space.targetSpaceId?.let {
+                if (spaceView.isOwner) onDeleteSpace(it) else onLeaveSpace(it)
+            }
+        }
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VaultScreenWithUnreadSection(
@@ -507,32 +535,15 @@ fun VaultScreenWithUnreadSection(
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
                                 )
-                                if (expandedSpaceId == item.space.id) {
-                                    SpaceActionsDropdownMenu(
-                                        expanded = true,
-                                        onDismiss = { expandedSpaceId = null },
-                                        isMuted = item.isMuted,
-                                        isOwner = item.isOwner,
-                                        onMuteToggle = {
-                                            item.space.targetSpaceId?.let {
-                                                if (item.isMuted) {
-                                                    onUnmuteSpace(it)
-                                                } else {
-                                                    onMuteSpace(it)
-                                                }
-                                            }
-                                        },
-                                        onDeleteOrLeave = {
-                                            item.space.targetSpaceId?.let {
-                                                if (item.isOwner) {
-                                                    onDeleteSpace(it)
-                                                } else {
-                                                    onLeaveSpace(it)
-                                                }
-                                            }
-                                        }
-                                    )
-                                }
+                                SpaceActionsDropdownMenuHost(
+                                    spaceView = item,
+                                    expanded = expandedSpaceId == item.space.id,
+                                    onDismiss = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace
+                                )
                             }
 
                             is VaultSpaceView.Space -> {
@@ -548,29 +559,14 @@ fun VaultScreenWithUnreadSection(
                                         subtitle = item.accessType,
                                         icon = item.icon
                                     )
-                                    SpaceActionsDropdownMenu(
+                                    SpaceActionsDropdownMenuHost(
+                                        spaceView = item,
                                         expanded = expandedSpaceId == item.space.id,
                                         onDismiss = { expandedSpaceId = null },
-                                        isMuted = item.isMuted,
-                                        isOwner = item.isOwner,
-                                        onMuteToggle = {
-                                            item.space.targetSpaceId?.let {
-                                                if (item.isMuted) {
-                                                    onUnmuteSpace(it)
-                                                } else {
-                                                    onMuteSpace(it)
-                                                }
-                                            }
-                                        },
-                                        onDeleteOrLeave = {
-                                            item.space.targetSpaceId?.let {
-                                                if (item.isOwner) {
-                                                    onDeleteSpace(it)
-                                                } else {
-                                                    onLeaveSpace(it)
-                                                }
-                                            }
-                                        }
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace
                                     )
                                 }
                             }
@@ -634,32 +630,15 @@ fun VaultScreenWithUnreadSection(
                                         unreadMentionCount = item.unreadMentionCount,
                                         attachmentPreviews = item.attachmentPreviews
                                     )
-                                    if (expandedSpaceId == item.space.id) {
-                                        SpaceActionsDropdownMenu(
-                                            expanded = true,
-                                            onDismiss = { expandedSpaceId = null },
-                                            isMuted = item.isMuted,
-                                            isOwner = item.isOwner,
-                                            onMuteToggle = {
-                                                item.space.targetSpaceId?.let {
-                                                    if (item.isMuted) {
-                                                        onUnmuteSpace(it)
-                                                    } else {
-                                                        onMuteSpace(it)
-                                                    }
-                                                }
-                                            },
-                                            onDeleteOrLeave = {
-                                                item.space.targetSpaceId?.let {
-                                                    if (item.isOwner) {
-                                                        onDeleteSpace(it)
-                                                    } else {
-                                                        onLeaveSpace(it)
-                                                    }
-                                                }
-                                            }
-                                        )
-                                    }
+                                    SpaceActionsDropdownMenuHost(
+                                        spaceView = item,
+                                        expanded = expandedSpaceId == item.space.id,
+                                        onDismiss = { expandedSpaceId = null },
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace
+                                    )
                                 }
 
                                 is VaultSpaceView.Space -> {
@@ -690,29 +669,14 @@ fun VaultScreenWithUnreadSection(
                                             subtitle = item.accessType,
                                             icon = item.icon
                                         )
-                                        SpaceActionsDropdownMenu(
+                                        SpaceActionsDropdownMenuHost(
+                                            spaceView = item,
                                             expanded = expandedSpaceId == item.space.id,
                                             onDismiss = { expandedSpaceId = null },
-                                            isMuted = item.isMuted,
-                                            isOwner = item.isOwner,
-                                            onMuteToggle = {
-                                                item.space.targetSpaceId?.let {
-                                                    if (item.isMuted) {
-                                                        onUnmuteSpace(it)
-                                                    } else {
-                                                        onMuteSpace(it)
-                                                    }
-                                                }
-                                            },
-                                            onDeleteOrLeave = {
-                                                item.space.targetSpaceId?.let {
-                                                    if (item.isOwner) {
-                                                        onDeleteSpace(it)
-                                                    } else {
-                                                        onLeaveSpace(it)
-                                                    }
-                                                }
-                                            }
+                                            onMuteSpace = onMuteSpace,
+                                            onUnmuteSpace = onUnmuteSpace,
+                                            onDeleteSpace = onDeleteSpace,
+                                            onLeaveSpace = onLeaveSpace
                                         )
                                     }
                                 }

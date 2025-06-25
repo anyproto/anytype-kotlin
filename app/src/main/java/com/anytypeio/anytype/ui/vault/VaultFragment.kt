@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -17,6 +18,7 @@ import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -51,6 +53,7 @@ class VaultFragment : BaseComposeFragment() {
 
     private val vm by viewModels<VaultViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,6 +88,15 @@ class VaultFragment : BaseComposeFragment() {
                     onDeleteSpace = onDeleteSpace,
                     onLeaveSpace = onLeaveSpace
                 )
+                val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
+                if (notificationError != null) {
+                    BaseAlertDialog(
+                        dialogText = notificationError,
+                        buttonText = getString(R.string.button_ok),
+                        onButtonClick = { vm.clearNotificationError() },
+                        onDismissRequest = { vm.clearNotificationError() }
+                    )
+                }
 
                 if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
                     ChooseSpaceTypeScreen(
@@ -217,6 +229,7 @@ class VaultFragment : BaseComposeFragment() {
                 }
                 fragment.show(childFragmentManager, null)
             }
+
             is VaultCommand.ShowLeaveSpaceWarning -> {
                 val fragment = LeaveSpaceWarning().apply {
                     arguments = LeaveSpaceWarning.args(command.space)

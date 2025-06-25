@@ -101,6 +101,7 @@ class VaultViewModel(
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
+    val notificationError = MutableStateFlow<String?>(null)
 
     // Local state for tracking order changes during drag operations
     private var pendingMainSpacesOrder: List<Id>? = null
@@ -673,14 +674,17 @@ class VaultViewModel(
             ).fold(
                 onSuccess = {
                     Timber.d("Successfully set notification state to: $newState for space: $spaceTargetId")
-                    // TODO: Update local state/UI if needed
                 },
                 onFailure = { error ->
                     Timber.e("Failed to set notification state: $error")
-                    // TODO: Show error to user
+                    notificationError.value = error.message ?: "Unknown error"
                 }
             )
         }
+    }
+
+    fun clearNotificationError() {
+        notificationError.value = null
     }
 
     fun onDeleteSpaceMenuClicked(spaceId: Id?) {
@@ -744,8 +748,9 @@ class VaultViewModel(
                             props = Props(mapOf(EventsPropertiesKey.type to "Private"))
                         )
                     },
-                    onFailure = {
-                        Timber.e(it, "Error while deleting space")
+                    onFailure = { error ->
+                        Timber.e(error, "Error while deleting or leaving space")
+                        notificationError.value = error.message ?: "Unknown error"
                     }
                 )
         }

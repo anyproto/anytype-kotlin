@@ -1840,4 +1840,6 @@
     <string name="notifications_all_short">Усе</string>
     <string name="notifications_mentions_short">Згадванні</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="space_notify_unmute">Unmute</string>
+    <string name="space_notify_mute">Mute</string>
 </resources>

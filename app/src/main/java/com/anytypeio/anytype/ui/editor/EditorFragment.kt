@@ -965,6 +965,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onDestroyView() {
+        // Clear focus and text selection to prevent MultiSelectPopupWindow crashes
+        binding.recycler.clearFocus()
+        binding.recycler.findFocus()?.clearFocus()
+        
+        // Clear any active text selection from TextViews/EditTexts
+        val focusedView = binding.recycler.findFocus()
+        if (focusedView is android.widget.TextView) {
+            focusedView.clearFocus()
+            if (focusedView is android.widget.EditText) {
+                focusedView.clearComposingText()
+            }
+        }
+        
         pickerDelegate.clearPickit()
         super.onDestroyView()
     }

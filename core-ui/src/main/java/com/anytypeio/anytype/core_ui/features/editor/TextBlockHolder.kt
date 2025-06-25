@@ -358,9 +358,12 @@ interface TextBlockHolder : TextHolder {
         }
 
         try {
-            if (payload.isCursorChanged) {
-                item.cursor?.let {
-                    content.setSelection(it)
+            if (payload.isCursorChanged && content.isAttachedToWindow) {
+                item.cursor?.let { cursor ->
+                    val textLength = content.text?.length ?: 0
+                    if (content.layout != null && cursor <= textLength) {
+                        content.setSelection(cursor)
+                    }
                 }
             }
         } catch (e: Throwable) {

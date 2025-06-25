@@ -63,7 +63,7 @@ class VaultFragment : BaseComposeFragment() {
         setContent {
             MaterialTheme(typography = typography) {
                 val onMuteSpace: (String) -> Unit = { spaceTargetId ->
-                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.DISABLE)
+                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
                 }
                 val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)

@@ -332,6 +332,7 @@ class VaultViewModel(
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
         val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+                || space.spacePushNotificationMode == NotificationState.MENTIONS
 
         return VaultSpaceView.Chat(
             space = space,
@@ -360,6 +361,7 @@ class VaultViewModel(
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
         val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+                || space.spacePushNotificationMode == NotificationState.MENTIONS
         return VaultSpaceView.Space(
             space = space,
             icon = space.spaceIcon(

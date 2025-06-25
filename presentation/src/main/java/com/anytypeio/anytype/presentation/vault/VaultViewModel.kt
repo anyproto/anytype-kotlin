@@ -714,6 +714,15 @@ class VaultViewModel(
         }
     }
 
+    fun onLeaveSpaceWarningCancelled() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Cancel"))
+            )
+        }
+    }
+
     fun onDeleteSpaceAcceptedClicked(spaceId: Id?) {
         if (spaceId == null) {
             Timber.e("Space ID is null, cannot proceed with delete space")

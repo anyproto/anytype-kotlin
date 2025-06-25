@@ -240,7 +240,7 @@ class VaultFragment : BaseComposeFragment() {
                 }
                 fragment.onLeaveSpaceCancelled = {
                     fragment.dismiss()
-                    vm.onDeleteSpaceWarningCancelled()
+                    vm.onLeaveSpaceWarningCancelled()
                 }
                 fragment.show(childFragmentManager, null)
             }

@@ -6,11 +6,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -19,6 +17,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -33,12 +33,14 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
+import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -51,6 +53,7 @@ class VaultFragment : BaseComposeFragment() {
 
     private val vm by viewModels<VaultViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,31 +62,54 @@ class VaultFragment : BaseComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    VaultScreenWithUnreadSection(
-                        sections = vm.sections.collectAsStateWithLifecycle().value,
-                        onSpaceClicked = vm::onSpaceClicked,
-                        onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
-                        onSettingsClicked = vm::onSettingsClicked,
-                        onOrderChanged = vm::onOrderChanged,
-                        onDragEnd = vm::onDragEnd,
-                        profile = vm.profileView.collectAsStateWithLifecycle().value,
-                        isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
+                val onMuteSpace: (String) -> Unit = { spaceTargetId ->
+                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
+                }
+                val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
+                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
+                }
+                val onDeleteSpace: (String) -> Unit = { spaceId ->
+                    vm.onDeleteSpaceMenuClicked(spaceId)
+                }
+                val onLeaveSpace: (String) -> Unit = { spaceId ->
+                    vm.onLeaveSpaceMenuClicked(spaceId)
+                }
+                VaultScreenWithUnreadSection(
+                    sections = vm.sections.collectAsStateWithLifecycle().value,
+                    onSpaceClicked = vm::onSpaceClicked,
+                    onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
+                    onSettingsClicked = vm::onSettingsClicked,
+                    onOrderChanged = vm::onOrderChanged,
+                    onDragEnd = vm::onDragEnd,
+                    profile = vm.profileView.collectAsStateWithLifecycle().value,
+                    isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
+                    onMuteSpace = onMuteSpace,
+                    onUnmuteSpace = onUnmuteSpace,
+                    onDeleteSpace = onDeleteSpace,
+                    onLeaveSpace = onLeaveSpace
+                )
+                val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
+                if (notificationError != null) {
+                    BaseAlertDialog(
+                        dialogText = notificationError,
+                        buttonText = getString(R.string.button_ok),
+                        onButtonClick = { vm.clearNotificationError() },
+                        onDismissRequest = { vm.clearNotificationError() }
                     )
+                }
 
-                    if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
-                        ChooseSpaceTypeScreen(
-                            onCreateChatClicked = {
-                                vm.onCreateChatClicked()
-                            },
-                            onCreateSpaceClicked = {
-                                vm.onCreateSpaceClicked()
-                            },
-                            onDismiss = {
-                                vm.onChooseSpaceTypeDismissed()
-                            }
-                        )
-                    }
+                if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
+                    ChooseSpaceTypeScreen(
+                        onCreateChatClicked = {
+                            vm.onCreateChatClicked()
+                        },
+                        onCreateSpaceClicked = {
+                            vm.onCreateSpaceClicked()
+                        },
+                        onDismiss = {
+                            vm.onChooseSpaceTypeDismissed()
+                        }
+                    )
                 }
             }
             LaunchedEffect(Unit) {
@@ -187,6 +213,36 @@ class VaultFragment : BaseComposeFragment() {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
+            }
+
+            is VaultCommand.ShowDeleteSpaceWarning -> {
+                val fragment = DeleteSpaceWarning().apply {
+                    arguments = DeleteSpaceWarning.args(command.space)
+                }
+                fragment.onDeletionAccepted = {
+                    fragment.dismiss()
+                    vm.onDeleteSpaceAcceptedClicked(it)
+                }
+                fragment.onDeletionCancelled = {
+                    fragment.dismiss()
+                    vm.onDeleteSpaceWarningCancelled()
+                }
+                fragment.show(childFragmentManager, null)
+            }
+
+            is VaultCommand.ShowLeaveSpaceWarning -> {
+                val fragment = LeaveSpaceWarning().apply {
+                    arguments = LeaveSpaceWarning.args(command.space)
+                }
+                fragment.onLeaveSpaceAccepted = {
+                    fragment.dismiss()
+                    vm.onLeaveSpaceAcceptedClicked(it)
+                }
+                fragment.onLeaveSpaceCancelled = {
+                    fragment.dismiss()
+                    vm.onLeaveSpaceWarningCancelled()
+                }
+                fragment.show(childFragmentManager, null)
             }
         }
     }

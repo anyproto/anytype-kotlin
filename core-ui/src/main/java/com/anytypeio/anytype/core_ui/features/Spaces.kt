@@ -4,16 +4,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -25,7 +22,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
@@ -33,11 +30,16 @@ fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
     icon: SpaceIconView,
-    onSpaceIconClick: () -> Unit,
+    onSpaceIconClick: (() -> Unit)? = null
 ) {
-    val radius = when(mainSize) {
+    val clickableModifier = if (onSpaceIconClick != null) {
+        modifier.noRippleThrottledClickable { onSpaceIconClick() }
+    } else {
+        modifier
+    }
+    val radius = when (mainSize) {
         20.dp -> 2.dp
-        28.dp, 32. dp -> 4.dp
+        28.dp, 32.dp -> 4.dp
         40.dp -> 5.dp
         48.dp -> 6.dp
         64.dp -> 8.dp
@@ -45,7 +47,7 @@ fun SpaceIconView(
         else -> 6.dp
     }
 
-    val fontSize = when(mainSize) {
+    val fontSize = when (mainSize) {
         20.dp -> 13.sp
         28.dp, 32.dp -> 20.sp
         40.dp -> 24.sp
@@ -61,14 +63,12 @@ fun SpaceIconView(
                 painter = rememberAsyncImagePainter(model = icon.url),
                 contentDescription = "Custom image space icon",
                 contentScale = ContentScale.Crop,
-                modifier = modifier
+                modifier = clickableModifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(radius))
-                    .noRippleClickable {
-                        onSpaceIconClick.invoke()
-                    }
             )
         }
+
         is SpaceIconView.Placeholder -> {
             val color = when (icon.color) {
                 SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
@@ -82,7 +82,7 @@ fun SpaceIconView(
                 SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
             }
             Box(
-                modifier = modifier
+                modifier = clickableModifier
                     .size(mainSize)
                     .background(
                         Brush.verticalGradient(
@@ -94,7 +94,6 @@ fun SpaceIconView(
                         shape = RoundedCornerShape(radius)
                     )
                     .clip(RoundedCornerShape(radius))
-                    .noRippleClickable { onSpaceIconClick.invoke() }
             ) {
                 Text(
                     modifier = Modifier.align(
@@ -113,6 +112,7 @@ fun SpaceIconView(
                 )
             }
         }
+
         else -> {
             // Draw nothing
         }

@@ -10,10 +10,13 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
@@ -38,7 +41,10 @@ class VaultViewModelFactory @Inject constructor(
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
     private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode,
+    private val deleteSpace: DeleteSpace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -60,6 +66,9 @@ class VaultViewModelFactory @Inject constructor(
         stringResourceProvider = stringResourceProvider,
         dateProvider = dateProvider,
         fieldParser = fieldParser,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        setSpaceNotificationMode = setSpaceNotificationMode,
+        deleteSpace = deleteSpace,
+        userPermissionProvider = userPermissionProvider
     ) as T
 }

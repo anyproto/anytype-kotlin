@@ -68,6 +68,7 @@ fun NotificationsPreferenceSheet(
             Text(
                 text = stringResource(R.string.notifications_title),
                 style = Title1,
+                color = colorResource(id = R.color.text_primary),
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 24.dp, vertical = 8.dp)
@@ -115,7 +116,8 @@ fun NotificationOption(
         Text(
             text = title,
             style = BodyRegular,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            color = colorResource(id = R.color.text_primary)
         )
         if (checked) {
             Image(

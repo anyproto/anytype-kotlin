@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -30,10 +31,12 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -52,7 +55,6 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView.AttachmentPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -65,6 +67,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.domain.multiplayer.Permissions
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -83,7 +88,10 @@ class VaultViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
     private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode,
+    private val deleteSpace: DeleteSpace,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -93,7 +101,8 @@ class VaultViewModel(
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
-    
+    val notificationError = MutableStateFlow<String?>(null)
+
     // Local state for tracking order changes during drag operations
     private var pendingMainSpacesOrder: List<Id>? = null
 
@@ -121,9 +130,10 @@ class VaultViewModel(
                         )
                     },
                 observeVaultSettings.flow(),
-                chatPreviewContainer.observePreviews()
-            ) { spacesFromFlow, settings, chatPreviews ->
-                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews)
+                chatPreviewContainer.observePreviews(),
+                userPermissionProvider.all()
+            ) { spacesFromFlow, settings, chatPreviews, permissions ->
+                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
                 spaces.value = resultingSections.allSpaces // For backward compatibility
@@ -134,16 +144,19 @@ class VaultViewModel(
     private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         settings: VaultSettings,
-        chatPreviews: List<Chat.Preview>
+        chatPreviews: List<Chat.Preview>,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSectionView {
+        // Index chatPreviews by space.id for O(1) lookup
+        val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
         val allSpaces = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
             .map { space ->
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
-                    chatPreviews.find { it.space.id == spaceId }
+                    chatPreviewMap[spaceId]
                 }
-                mapToVaultSpaceViewItem(space, chatPreview)
+                mapToVaultSpaceViewItem(space, chatPreview, permissions)
             }
 
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
@@ -192,16 +205,18 @@ class VaultViewModel(
 
     private suspend fun mapToVaultSpaceViewItem(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview?
+        chatPreview: Chat.Preview?,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView {
         return when {
             chatPreview != null -> {
                 Timber.d("Creating chat view for space ${space.id}")
-                createChatView(space, chatPreview)
+                createChatView(space, chatPreview, permissions)
             }
+
             else -> {
                 Timber.d("Creating standard space view for space ${space.id}")
-                createStandardSpaceView(space)
+                createStandardSpaceView(space, permissions)
             }
         }
     }
@@ -270,7 +285,8 @@ class VaultViewModel(
 
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview
+        chatPreview: Chat.Preview,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Chat {
         val creator = chatPreview.message?.creator ?: ""
         val messageText = chatPreview.message?.content?.text
@@ -312,6 +328,12 @@ class VaultViewModel(
 
         } ?: emptyList()
 
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
+        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+                || space.spacePushNotificationMode == NotificationState.MENTIONS
+
         return VaultSpaceView.Chat(
             space = space,
             icon = space.spaceIcon(
@@ -325,21 +347,30 @@ class VaultViewModel(
             messageTime = messageTime,
             unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
             unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
-            attachmentPreviews = attachmentPreviews
+            attachmentPreviews = attachmentPreviews,
+            isOwner = isOwner,
+            isMuted = isMuted
         )
     }
 
     private fun createStandardSpaceView(
-        space: ObjectWrapper.SpaceView
+        space: ObjectWrapper.SpaceView,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Space {
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
+        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+                || space.spacePushNotificationMode == NotificationState.MENTIONS
         return VaultSpaceView.Space(
             space = space,
             icon = space.spaceIcon(
                 builder = urlBuilder,
                 spaceGradientProvider = SpaceGradientProvider.Default
             ),
-            accessType = stringResourceProvider
-                .getSpaceAccessTypeName(accessType = space.spaceAccessType)
+            accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType),
+            isOwner = isOwner,
+            isMuted = isMuted
         )
     }
 
@@ -375,42 +406,42 @@ class VaultViewModel(
 
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
         Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
-        
+
         // Get current settings to work with the existing order
         val currentSections = sections.value
         val currentMainSpaces = currentSections.mainSpaces
-        
+
         // Find indices in the current main spaces list
         val fromIndex = currentMainSpaces.indexOfFirst { it.space.id == fromSpaceId }
         val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
-        
+
         if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
             // Create new ordered list by moving the item (only update local state)
             val newMainSpacesList = currentMainSpaces.toMutableList()
             val movedItem = newMainSpacesList.removeAt(fromIndex)
             newMainSpacesList.add(toIndex, movedItem)
-            
+
             // Store the new order for later persistence in onDragEnd
             val newMainOrder = newMainSpacesList.map { it.space.id }
             val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
-            
+
             // Store pending order to be saved in onDragEnd
             // Merge unreadSpaceIds with newMainOrder to ensure that unread spaces are included in the order.
             // Use distinct() to remove duplicates and maintain a unique list of space IDs.
             pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
-            
+
             // Update local sections state immediately for UI responsiveness
             val updatedSections = currentSections.copy(mainSpaces = newMainSpacesList)
             sections.value = updatedSections
             spaces.value = updatedSections.allSpaces // For backward compatibility
         }
     }
-    
+
     fun onDragEnd() {
         Timber.d("onDragEnd called")
         // Persist the order changes made during the drag operation
         pendingMainSpacesOrder?.let { newOrder ->
-            viewModelScope.launch { 
+            viewModelScope.launch {
                 analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
                 setVaultSpaceOrder.async(params = newOrder)
                 // Clear pending order after persistence
@@ -628,6 +659,7 @@ class VaultViewModel(
                     space = navigation.space
                 )
             }
+
             is OpenObjectNavigation.OpenBookmarkUrl -> {
                 VaultNavigation.OpenUrl(url = navigation.url)
             }
@@ -636,6 +668,109 @@ class VaultViewModel(
             Timber.d("Proceeding with navigation: $nav")
             navigations.emit(nav)
         }
+    }
+
+    fun setSpaceNotificationState(spaceTargetId: Id, newState: NotificationState) {
+        Timber.d("Setting notification state for spaceTargetId: $spaceTargetId to $newState")
+        viewModelScope.launch {
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(spaceViewId = spaceTargetId, mode = newState)
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully set notification state to: $newState for space: $spaceTargetId")
+                },
+                onFailure = { error ->
+                    Timber.e("Failed to set notification state: $error")
+                    notificationError.value = error.message ?: "Unknown error"
+                }
+            )
+        }
+    }
+
+    fun clearNotificationError() {
+        notificationError.value = null
+    }
+
+    fun onDeleteSpaceMenuClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with deletion")
+            return
+        }
+        viewModelScope.launch {
+            commands.emit(VaultCommand.ShowDeleteSpaceWarning(spaceId))
+        }
+    }
+
+    fun onLeaveSpaceMenuClicked(spaceId: Id) {
+        viewModelScope.launch {
+            commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
+        }
+    }
+
+    fun onDeleteSpaceWarningCancelled() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Cancel"))
+            )
+        }
+    }
+
+    fun onLeaveSpaceWarningCancelled() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Cancel"))
+            )
+        }
+    }
+
+    fun onDeleteSpaceAcceptedClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with delete space")
+            return
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(mapOf(EventsPropertiesKey.type to "Delete"))
+            )
+        }
+        proceedWithSpaceDeletion(spaceId)
+    }
+
+    fun onLeaveSpaceAcceptedClicked(spaceId: Id?) {
+        if (spaceId == null) {
+            Timber.e("Space ID is null, cannot proceed with leaving space")
+            return
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.leaveSpace)
+        }
+        proceedWithSpaceDeletion(spaceId)
+    }
+
+    private fun proceedWithSpaceDeletion(spaceId: Id) {
+        viewModelScope.launch {
+            deleteSpace
+                .async(SpaceId(spaceId))
+                .fold(
+                    onSuccess = {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.deleteSpace,
+                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                        )
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error while deleting or leaving space")
+                        notificationError.value = error.message ?: "Unknown error"
+                    }
+                )
+        }
+    }
+
+    fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
+        return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
     }
 
     companion object {

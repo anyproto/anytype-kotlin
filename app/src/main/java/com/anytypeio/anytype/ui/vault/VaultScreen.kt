@@ -519,10 +519,11 @@ fun VaultScreenWithUnreadSection(
                                         .animateItem()
                                         .fillMaxWidth()
                                         .height(80.dp)
-                                        .combinedClickable(
-                                            onClick = { onSpaceClicked(item) },
-                                            onLongClick = { expandedSpaceId = item.space.id }
-                                        )
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ))
                                         .padding(horizontal = 16.dp),
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
@@ -551,10 +552,13 @@ fun VaultScreenWithUnreadSection(
                                     VaultSpaceCard(
                                         modifier = Modifier
                                             .animateItem()
-                                            .combinedClickable(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = { expandedSpaceId = item.space.id }
-                                            ),
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
+                                                )),
                                         title = item.space.name.orEmpty(),
                                         subtitle = item.accessType,
                                         icon = item.icon
@@ -615,10 +619,13 @@ fun VaultScreenWithUnreadSection(
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
-                                            .combinedClickable(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = { expandedSpaceId = item.space.id }
-                                            ),
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
+                                                )),
                                         title = item.space.name.orEmpty(),
                                         icon = item.icon,
                                         previewText = item.previewText,
@@ -657,14 +664,14 @@ fun VaultScreenWithUnreadSection(
                                                         )
                                                     }
                                                 )
-                                                .combinedClickable(
-                                                    enabled = true,
-                                                    onClick = { onSpaceClicked(item) },
-                                                    onLongClick = {
-                                                        expandedSpaceId = item.space.id
-                                                    }
-                                                )
-                                                .animateItem(),
+                                                .animateItem()
+                                                .then(
+                                                    createCombinedClickableModifier(
+                                                        onClick = { onSpaceClicked(item) },
+                                                        onLongClick = {
+                                                            expandedSpaceId = item.space.id
+                                                        }
+                                                    )),
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,
                                             icon = item.icon
@@ -712,3 +719,11 @@ fun UnreadSectionHeaderPreview() {
         }
     }
 }
+
+fun createCombinedClickableModifier(
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+): Modifier = Modifier.combinedClickable(
+    onClick = onClick,
+    onLongClick = onLongClick
+)

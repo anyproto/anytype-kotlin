@@ -147,12 +147,14 @@ class VaultViewModel(
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSectionView {
+        // Index chatPreviews by space.id for O(1) lookup
+        val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
         val allSpaces = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
             .map { space ->
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
-                    chatPreviews.find { it.space.id == spaceId }
+                    chatPreviewMap[spaceId]
                 }
                 mapToVaultSpaceViewItem(space, chatPreview, permissions)
             }

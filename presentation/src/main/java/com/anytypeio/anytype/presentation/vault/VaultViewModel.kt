@@ -349,10 +349,11 @@ class VaultViewModel(
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<String, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Space {
-        //todo dont send null to map, fix
-        val isOwner = permissions[space.targetSpaceId]?.isOwner() == true
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
         val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
         return VaultSpaceView.Space(
             space = space,

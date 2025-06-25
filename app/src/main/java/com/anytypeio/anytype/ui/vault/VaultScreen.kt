@@ -50,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
@@ -289,9 +290,13 @@ fun SpaceActionsDropdownMenu(
         modifier = Modifier.width(254.dp),
         expanded = expanded,
         onDismissRequest = onDismiss,
-        containerColor = colorResource(R.color.background_primary),
+        containerColor = colorResource(R.color.background_secondary),
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = 16.dp,
+            y = 8.dp
+        )
     ) {
         DropdownMenuItem(
             onClick = {
@@ -330,7 +335,7 @@ fun SpaceActionsDropdownMenu(
             text = {
                 Text(
                     style = BodyRegular,
-                    color = colorResource(id = R.color.palette_dark_red),
+                    color = colorResource(id = R.color.palette_system_red),
                     text = if (isOwner) stringResource(R.string.delete_space)
                     else stringResource(R.string.multiplayer_leave_space)
                 )

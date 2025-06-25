@@ -1801,4 +1801,6 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_all_short">全部</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="space_notify_unmute">Unmute</string>
+    <string name="space_notify_mute">Mute</string>
 </resources>

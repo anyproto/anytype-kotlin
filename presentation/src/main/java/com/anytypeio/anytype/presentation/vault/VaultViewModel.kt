@@ -101,7 +101,7 @@ class VaultViewModel(
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
-    
+
     // Local state for tracking order changes during drag operations
     private var pendingMainSpacesOrder: List<Id>? = null
 
@@ -210,6 +210,7 @@ class VaultViewModel(
                 Timber.d("Creating chat view for space ${space.id}")
                 createChatView(space, chatPreview, permissions)
             }
+
             else -> {
                 Timber.d("Creating standard space view for space ${space.id}")
                 createStandardSpaceView(space, permissions)
@@ -324,8 +325,9 @@ class VaultViewModel(
 
         } ?: emptyList()
 
-        val permissions = getPermissionsForSpace(space.id)
-        val isOwner = permissions == SpaceMemberPermissions.OWNER
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
         val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
 
         return VaultSpaceView.Chat(
@@ -399,42 +401,42 @@ class VaultViewModel(
 
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
         Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
-        
+
         // Get current settings to work with the existing order
         val currentSections = sections.value
         val currentMainSpaces = currentSections.mainSpaces
-        
+
         // Find indices in the current main spaces list
         val fromIndex = currentMainSpaces.indexOfFirst { it.space.id == fromSpaceId }
         val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
-        
+
         if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
             // Create new ordered list by moving the item (only update local state)
             val newMainSpacesList = currentMainSpaces.toMutableList()
             val movedItem = newMainSpacesList.removeAt(fromIndex)
             newMainSpacesList.add(toIndex, movedItem)
-            
+
             // Store the new order for later persistence in onDragEnd
             val newMainOrder = newMainSpacesList.map { it.space.id }
             val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
-            
+
             // Store pending order to be saved in onDragEnd
             // Merge unreadSpaceIds with newMainOrder to ensure that unread spaces are included in the order.
             // Use distinct() to remove duplicates and maintain a unique list of space IDs.
             pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
-            
+
             // Update local sections state immediately for UI responsiveness
             val updatedSections = currentSections.copy(mainSpaces = newMainSpacesList)
             sections.value = updatedSections
             spaces.value = updatedSections.allSpaces // For backward compatibility
         }
     }
-    
+
     fun onDragEnd() {
         Timber.d("onDragEnd called")
         // Persist the order changes made during the drag operation
         pendingMainSpacesOrder?.let { newOrder ->
-            viewModelScope.launch { 
+            viewModelScope.launch {
                 analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
                 setVaultSpaceOrder.async(params = newOrder)
                 // Clear pending order after persistence
@@ -652,6 +654,7 @@ class VaultViewModel(
                     space = navigation.space
                 )
             }
+
             is OpenObjectNavigation.OpenBookmarkUrl -> {
                 VaultNavigation.OpenUrl(url = navigation.url)
             }
@@ -732,17 +735,19 @@ class VaultViewModel(
 
     private fun proceedWithSpaceDeletion(spaceId: Id) {
         viewModelScope.launch {
-            deleteSpace.async(params = SpaceId(spaceId)).fold(
-                onSuccess = {
-                    analytics.sendEvent(
-                        eventName = EventsDictionary.deleteSpace,
-                        props = Props(mapOf(EventsPropertiesKey.type to "Private"))
-                    )
-                },
-                onFailure = {
-                    Timber.e(it, "Error while deleting space")
-                }
-            )
+            deleteSpace
+                .async(SpaceId(spaceId))
+                .fold(
+                    onSuccess = {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.deleteSpace,
+                            props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while deleting space")
+                    }
+                )
         }
     }
 

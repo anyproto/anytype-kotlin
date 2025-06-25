@@ -518,10 +518,12 @@ fun VaultScreenWithUnreadSection(
                                             }
                                         },
                                         onDeleteOrLeave = {
-                                            if (item.isOwner) {
-                                                onDeleteSpace(item.space.id)
-                                            } else {
-                                                onLeaveSpace(item.space.id)
+                                            item.space.targetSpaceId?.let {
+                                                if (item.isOwner) {
+                                                    onDeleteSpace(it)
+                                                } else {
+                                                    onLeaveSpace(it)
+                                                }
                                             }
                                         }
                                     )
@@ -556,10 +558,12 @@ fun VaultScreenWithUnreadSection(
                                             }
                                         },
                                         onDeleteOrLeave = {
-                                            if (item.isOwner) {
-                                                onDeleteSpace(item.space.id)
-                                            } else {
-                                                onLeaveSpace(item.space.id)
+                                            item.space.targetSpaceId?.let {
+                                                if (item.isOwner) {
+                                                    onDeleteSpace(it)
+                                                } else {
+                                                    onLeaveSpace(it)
+                                                }
                                             }
                                         }
                                     )
@@ -641,10 +645,12 @@ fun VaultScreenWithUnreadSection(
                                                 }
                                             },
                                             onDeleteOrLeave = {
-                                                if (item.isOwner) {
-                                                    onDeleteSpace(item.space.id)
-                                                } else {
-                                                    onLeaveSpace(item.space.id)
+                                                item.space.targetSpaceId?.let {
+                                                    if (item.isOwner) {
+                                                        onDeleteSpace(it)
+                                                    } else {
+                                                        onLeaveSpace(it)
+                                                    }
                                                 }
                                             }
                                         )
@@ -694,10 +700,12 @@ fun VaultScreenWithUnreadSection(
                                                 }
                                             },
                                             onDeleteOrLeave = {
-                                                if (item.isOwner) {
-                                                    onDeleteSpace(item.space.id)
-                                                } else {
-                                                    onLeaveSpace(item.space.id)
+                                                item.space.targetSpaceId?.let {
+                                                    if (item.isOwner) {
+                                                        onDeleteSpace(it)
+                                                    } else {
+                                                        onLeaveSpace(it)
+                                                    }
                                                 }
                                             }
                                         )

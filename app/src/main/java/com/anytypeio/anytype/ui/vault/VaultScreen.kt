@@ -4,11 +4,12 @@ import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -24,9 +25,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,19 +43,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -63,7 +72,6 @@ import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.ui.settings.typography
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -201,7 +209,7 @@ private fun ProfileIcon(
 
                     else -> {
                         val nameFirstChar = if (profile.name.isEmpty()) {
-                            stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                            stringResource(id = R.string.account_default_name)
                         } else {
                             profile.name.first().uppercaseChar().toString()
                         }
@@ -270,6 +278,134 @@ fun VaultScreenToolbarScrolledPreview() {
 }
 
 @Composable
+fun SpaceActionsDropdownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    isMuted: Boolean,
+    isOwner: Boolean,
+    onMuteToggle: () -> Unit,
+    onDeleteOrLeave: () -> Unit
+) {
+    DropdownMenu(
+        modifier = Modifier.width(254.dp),
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        containerColor = colorResource(R.color.background_secondary),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = 16.dp,
+            y = 8.dp
+        )
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onMuteToggle()
+                onDismiss()
+            },
+            text = {
+                val (stringRes, iconRes) = if (isMuted) {
+                    R.string.space_notify_unmute to R.drawable.ic_notifications
+                } else {
+                    R.string.space_notify_mute to R.drawable.ic_notifications_off
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = stringRes),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                    Image(
+                        painter = painterResource(id = iconRes),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        )
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        DropdownMenuItem(
+            onClick = {
+                onDeleteOrLeave()
+                onDismiss()
+            },
+            text = {
+                Text(
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.palette_system_red),
+                    text = if (isOwner) stringResource(R.string.delete_space)
+                    else stringResource(R.string.multiplayer_leave_space)
+                )
+            }
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Muted Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = true,
+            isOwner = true,
+            onMuteToggle = {},
+            onDeleteOrLeave = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Unmuted Not Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = false,
+            isOwner = false,
+            onMuteToggle = {},
+            onDeleteOrLeave = {}
+        )
+    }
+}
+
+@Composable
+fun SpaceActionsDropdownMenuHost(
+    spaceView: VaultSpaceView,
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onMuteSpace: (Id) -> Unit,
+    onUnmuteSpace: (Id) -> Unit,
+    onDeleteSpace: (String) -> Unit,
+    onLeaveSpace: (String) -> Unit
+) {
+    SpaceActionsDropdownMenu(
+        expanded = expanded,
+        onDismiss = onDismiss,
+        isMuted = spaceView.isMuted,
+        isOwner = spaceView.isOwner,
+        onMuteToggle = {
+            spaceView.space.targetSpaceId?.let {
+                if (spaceView.isMuted) onUnmuteSpace(it) else onMuteSpace(it)
+            }
+        },
+        onDeleteOrLeave = {
+            spaceView.space.targetSpaceId?.let {
+                if (spaceView.isOwner) onDeleteSpace(it) else onLeaveSpace(it)
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
     sections: VaultSectionView,
@@ -278,7 +414,11 @@ fun VaultScreenWithUnreadSection(
     onSettingsClicked: () -> Unit,
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
-    isLoading: Boolean
+    isLoading: Boolean,
+    onMuteSpace: (Id) -> Unit,
+    onUnmuteSpace: (Id) -> Unit,
+    onDeleteSpace: (String) -> Unit,
+    onLeaveSpace: (String) -> Unit
 ) {
 
     var mainSpaceList by remember {
@@ -301,6 +441,8 @@ fun VaultScreenWithUnreadSection(
     }
 
     var isDragging by remember { mutableStateOf(false) }
+    var expandedSpaceId by remember { mutableStateOf<String?>(null) }
+    val density = LocalDensity.current
 
     LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
         if (reorderableLazyState.isAnyItemDragging) {
@@ -377,14 +519,12 @@ fun VaultScreenWithUnreadSection(
                                         .animateItem()
                                         .fillMaxWidth()
                                         .height(80.dp)
-                                        .clickable {
-                                            onSpaceClicked(item)
-                                        }
-                                        .padding(horizontal = 16.dp)
-                                    ,
-                                    onSpaceIconClicked = {
-                                        onSpaceClicked(item)
-                                    },
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ))
+                                        .padding(horizontal = 16.dp),
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
                                     previewText = item.previewText,
@@ -394,20 +534,45 @@ fun VaultScreenWithUnreadSection(
                                     chatPreview = item.chatPreview,
                                     unreadMessageCount = item.unreadMessageCount,
                                     unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews
+                                    attachmentPreviews = item.attachmentPreviews,
+                                )
+                                SpaceActionsDropdownMenuHost(
+                                    spaceView = item,
+                                    expanded = expandedSpaceId == item.space.id,
+                                    onDismiss = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace
                                 )
                             }
 
                             is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
-                                    modifier = Modifier.animateItem(),
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    onCardClicked = {
-                                        onSpaceClicked(item)
-                                    },
-                                    icon = item.icon,
-                                )
+                                Box {
+                                    VaultSpaceCard(
+                                        modifier = Modifier
+                                            .animateItem()
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
+                                                )),
+                                        title = item.space.name.orEmpty(),
+                                        subtitle = item.accessType,
+                                        icon = item.icon
+                                    )
+                                    SpaceActionsDropdownMenuHost(
+                                        spaceView = item,
+                                        expanded = expandedSpaceId == item.space.id,
+                                        onDismiss = { expandedSpaceId = null },
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace
+                                    )
+                                }
                             }
                         }
                     }
@@ -454,9 +619,13 @@ fun VaultScreenWithUnreadSection(
                                             .fillMaxWidth()
                                             .height(80.dp)
                                             .padding(horizontal = 16.dp)
-                                            .clickable {
-                                                onSpaceClicked(item)
-                                            },
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
+                                                )),
                                         title = item.space.name.orEmpty(),
                                         icon = item.icon,
                                         previewText = item.previewText,
@@ -466,37 +635,55 @@ fun VaultScreenWithUnreadSection(
                                         chatPreview = item.chatPreview,
                                         unreadMessageCount = item.unreadMessageCount,
                                         unreadMentionCount = item.unreadMentionCount,
-                                        attachmentPreviews = item.attachmentPreviews,
-                                        onSpaceIconClicked = {
-                                            onSpaceClicked(item)
-                                        }
+                                        attachmentPreviews = item.attachmentPreviews
+                                    )
+                                    SpaceActionsDropdownMenuHost(
+                                        spaceView = item,
+                                        expanded = expandedSpaceId == item.space.id,
+                                        onDismiss = { expandedSpaceId = null },
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace
                                     )
                                 }
 
                                 is VaultSpaceView.Space -> {
-                                    Box(
-                                        modifier = Modifier
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.START
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.END
-                                                    )
-                                                }
-                                            )
-                                    ) {
+                                    Box {
                                         VaultSpaceCard(
-                                            modifier = Modifier.animateItem(),
+                                            modifier = Modifier
+                                                .longPressDraggableHandle(
+                                                    onDragStarted = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            ReorderHapticFeedbackType.START
+                                                        )
+                                                    },
+                                                    onDragStopped = {
+                                                        hapticFeedback.performHapticFeedback(
+                                                            ReorderHapticFeedbackType.END
+                                                        )
+                                                    }
+                                                )
+                                                .animateItem()
+                                                .then(
+                                                    createCombinedClickableModifier(
+                                                        onClick = { onSpaceClicked(item) },
+                                                        onLongClick = {
+                                                            expandedSpaceId = item.space.id
+                                                        }
+                                                    )),
                                             title = item.space.name.orEmpty(),
                                             subtitle = item.accessType,
-                                            onCardClicked = {
-                                                onSpaceClicked(item)
-                                            },
                                             icon = item.icon
+                                        )
+                                        SpaceActionsDropdownMenuHost(
+                                            spaceView = item,
+                                            expanded = expandedSpaceId == item.space.id,
+                                            onDismiss = { expandedSpaceId = null },
+                                            onMuteSpace = onMuteSpace,
+                                            onUnmuteSpace = onUnmuteSpace,
+                                            onDeleteSpace = onDeleteSpace,
+                                            onLeaveSpace = onLeaveSpace
                                         )
                                     }
                                 }
@@ -532,3 +719,11 @@ fun UnreadSectionHeaderPreview() {
         }
     }
 }
+
+fun createCombinedClickableModifier(
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+): Modifier = Modifier.combinedClickable(
+    onClick = onClick,
+    onLongClick = onLongClick
+)

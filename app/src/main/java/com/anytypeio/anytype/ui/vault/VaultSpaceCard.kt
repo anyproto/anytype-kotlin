@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -48,7 +47,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -59,23 +57,16 @@ fun VaultSpaceCard(
     modifier: Modifier,
     title: String,
     subtitle: String,
-    onCardClicked: () -> Unit,
-    icon: SpaceIconView,
+    icon: SpaceIconView
 ) {
     Box(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .clickable {
-                onCardClicked()
-            }
             .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,
-            onSpaceIconClick = {
-                onCardClicked()
-            },
             mainSize = 56.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -126,7 +117,6 @@ fun VaultChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    onSpaceIconClicked: () -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -134,7 +124,6 @@ fun VaultChatCard(
         SpaceIconView(
             icon = icon,
             mainSize = 56.dp,
-            onSpaceIconClick = onSpaceIconClicked,
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )
@@ -446,7 +435,6 @@ fun VaultSpaceCardPreview() {
         modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
-        onCardClicked = {},
         icon = SpaceIconView.Placeholder()
     )
 }

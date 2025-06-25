@@ -10,6 +10,8 @@ sealed class VaultSpaceView {
 
     abstract val space: ObjectWrapper.SpaceView
     abstract val icon: SpaceIconView
+    abstract val isOwner: Boolean
+    abstract val isMuted: Boolean
 
     // Helper properties to determine unread status and last message date
     val hasUnreadMessages: Boolean
@@ -27,7 +29,9 @@ sealed class VaultSpaceView {
     data class Space(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
-        val accessType: String
+        val accessType: String,
+        override val isOwner: Boolean,
+        override val isMuted: Boolean
     ) : VaultSpaceView()
 
     data class Chat(
@@ -41,7 +45,9 @@ sealed class VaultSpaceView {
         val creatorName: String? = null,
         val messageText: String? = null,
         val messageTime: String? = null,
-        val attachmentPreviews: List<AttachmentPreview> = emptyList()
+        val attachmentPreviews: List<AttachmentPreview> = emptyList(),
+        override val isOwner: Boolean,
+        override val isMuted: Boolean
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -93,6 +99,8 @@ sealed class VaultCommand {
     data object CreateNewSpace : VaultCommand()
     data object CreateChat : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
+    data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
+    data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()

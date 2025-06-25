@@ -37,20 +37,19 @@ import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.Header
-import com.anytypeio.anytype.core_ui.foundation.Warning
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
-import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
 
 class DeleteSpaceWarning : BaseBottomSheetComposeFragment() {
 
-    private val name: String get() = arg(ARG_NAME)
+    private val spaceId: String? get() = argOrNull<String>(ARG_SPACE_ID)
 
-    var onDeletionAccepted: () -> Unit = {}
+    var onDeletionAccepted: (String?) -> Unit = {}
     var onDeletionCancelled: () -> Unit = {}
 
     override fun onCreateView(
@@ -64,7 +63,7 @@ class DeleteSpaceWarning : BaseBottomSheetComposeFragment() {
                 MaterialTheme(typography = typography) {
                     DeleteSpaceWarningScreen(
                         onDeleteClick = {
-                            onDeletionAccepted()
+                            onDeletionAccepted(spaceId)
                         }
                     )
                 }
@@ -81,10 +80,12 @@ class DeleteSpaceWarning : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val ARG_NAME = "arg.space-delete-warning.name"
+        const val ARG_SPACE_ID = "arg.space-delete-warning.space-id"
         fun new() : DeleteSpaceWarning = DeleteSpaceWarning().apply {
             arguments = bundleOf()
         }
+
+        fun args(spaceId: String?) = bundleOf(ARG_SPACE_ID to spaceId)
     }
 }
 

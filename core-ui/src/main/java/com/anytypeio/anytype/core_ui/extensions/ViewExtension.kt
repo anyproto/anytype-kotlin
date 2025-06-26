@@ -54,7 +54,8 @@ fun LinearLayout.addVerticalDivider(
 )
 
 fun EditText.cursorYBottomCoordinate(): Int {
-    with(this.layout) {
+    val layout = this.layout ?: return 0
+    with(layout) {
         val pos = selectionStart
         val line = getLineForOffset(pos)
         val baseLine = getLineBaseline(line)
@@ -64,7 +65,13 @@ fun EditText.cursorYBottomCoordinate(): Int {
     }
 }
 
-fun TextView.range(): IntRange = selectionStart..selectionEnd
+fun TextView.range(): IntRange {
+    return if (isAttachedToWindow && layout != null) {
+        selectionStart..selectionEnd
+    } else {
+        0..0
+    }
+}
 
 fun View.dimensions(): BlockDimensions {
     val rect = calculateRectInWindow(this)

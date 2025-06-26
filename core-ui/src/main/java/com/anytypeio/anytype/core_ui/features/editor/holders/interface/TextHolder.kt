@@ -32,10 +32,13 @@ interface TextHolder {
 
     fun setCursor(item: BlockView.Cursor) {
         Timber.d("Setting cursor: $item")
-        item.cursor?.let {
+        item.cursor?.let { cursor ->
             val length = content.text?.length ?: 0
-            if (it in 0..length) {
-                content.setSelection(it)
+            val validCursor = cursor.coerceIn(0, length)
+            if (length > 0 && validCursor <= length) {
+                content.setSelection(validCursor)
+            } else {
+                Timber.w("Invalid cursor position: cursor=$cursor, textLength=$length")
             }
         }
     }

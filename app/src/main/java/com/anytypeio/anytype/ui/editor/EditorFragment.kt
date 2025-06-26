@@ -965,6 +965,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onDestroyView() {
+        // Clear all text selections to prevent MultiSelectPopupWindow crashes
+        clearActiveTextSelections()
+        
         pickerDelegate.clearPickit()
         super.onDestroyView()
     }
@@ -973,6 +976,40 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         pickerDelegate.deleteTemporaryFile()
         pickerDelegate.clearOnCopyFile()
         super.onDestroy()
+    }
+
+    private fun clearActiveTextSelections() {
+        // Clear all active text selections and action modes to prevent MultiSelectPopupWindow crashes
+        try {
+            // Clear focus from the main recycler
+            binding.recycler.clearFocus()
+            binding.recycler.findFocus()?.clearFocus()
+            
+            // Find and clear all TextViews in the recycler
+            fun clearTextViewsRecursively(view: View) {
+                if (view is android.widget.TextView) {
+                    view.clearFocus()
+                    if (view.hasSelection()) {
+                        // Clear selection range safely for EditText only
+                        if (view is android.widget.EditText && view.text?.isNotEmpty() == true) {
+                            view.setSelection(0, 0)
+                        }
+                    }
+                    // Clear any active action mode callbacks
+                    view.customSelectionActionModeCallback = null
+                    view.customInsertionActionModeCallback = null
+                } else if (view is ViewGroup) {
+                    for (i in 0 until view.childCount) {
+                        clearTextViewsRecursively(view.getChildAt(i))
+                    }
+                }
+            }
+            
+            clearTextViewsRecursively(binding.recycler)
+            
+        } catch (e: Exception) {
+            Timber.w(e, "Error while clearing text selections")
+        }
     }
 
     override fun onSetRelationKeyClicked(blockId: Id, key: Id) {
@@ -2036,6 +2073,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun exitScrollAndMove() {
+        // Clear active text selections to prevent MultiSelectPopupWindow crashes
+        clearActiveTextSelections()
+        
         binding.recycler.apply {
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)

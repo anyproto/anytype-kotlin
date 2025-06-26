@@ -1386,7 +1386,7 @@ message Rpc {
             message Request {
                 google.protobuf.Struct details = 1; // object details
                 anytype.Rpc.Object.ImportUseCase.Request.UseCase useCase = 2; // use case
-                bool withChat = 3; // deprecated
+                bool withChat = 3; // deprecated, use spaceUxType
             }
 
             message Response {
@@ -1411,7 +1411,7 @@ message Rpc {
         message Open {
             message Request {
                 string spaceId = 1;
-                bool withChat = 2; // create space-level chat if not exists; temporary solution, should be removed after chats released for all users
+                bool withChat = 2; // deprecated, chat will be created automatically if space is shared
             }
 
             message Response {

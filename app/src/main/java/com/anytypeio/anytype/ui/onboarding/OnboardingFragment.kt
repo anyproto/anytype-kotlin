@@ -814,10 +814,6 @@ class OnboardingFragment : Fragment() {
         val component = componentManager().onboardingSoulCreationComponent
         val vm = daggerViewModel { component.get().getViewModel() }
 
-        val focusManager = LocalFocusManager.current
-        val keyboardInsets = WindowInsets.ime
-        val density = LocalDensity.current
-
         SetEmailWrapper(
             viewModel = vm,
             startingObject = startingObject,

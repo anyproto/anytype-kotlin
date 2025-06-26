@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
@@ -115,7 +116,7 @@ fun ProfileSettingsScreen(
             Divider()
         }
         item {
-            Section(stringResource(R.string.settings))
+            Section(stringResource(R.string.app_preferences))
         }
         item {
             Option(
@@ -128,27 +129,17 @@ fun ProfileSettingsScreen(
             Divider(paddingStart = 60.dp)
         }
         item {
-            Option(
-                image = R.drawable.ic_file_storage,
-                text = stringResource(R.string.data_management),
-                onClick = onDataManagementClicked
+            OptionWithBadge(
+                image = R.drawable.ic_notifications_28,
+                text = stringResource(R.string.notifications_title),
+                onClick = {},
             )
-        }
-        if (showMembership?.isShowing == true) {
-            item {
-                Divider(paddingStart = 60.dp)
-            }
-            item {
-                OptionMembership(
-                    image = R.drawable.ic_membership,
-                    text = stringResource(R.string.settings_membership),
-                    onClick = onMembershipClicked,
-                    membershipStatus = membershipStatus
-                )
-            }
         }
         item {
             Divider(paddingStart = 60.dp)
+        }
+        item {
+            Section(stringResource(R.string.vault_key))
         }
         item {
             Option(
@@ -159,6 +150,40 @@ fun ProfileSettingsScreen(
         }
         item {
             Divider(paddingStart = 60.dp)
+        }
+
+        item {
+            Option(
+                image = R.drawable.ic_file_storage,
+                text = stringResource(R.string.data_management),
+                onClick = onDataManagementClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(
+                image = R.drawable.ic_keychain_phrase,
+                text = stringResource(R.string.login_key),
+                onClick = onKeychainPhraseClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        if (showMembership?.isShowing == true) {
+            item {
+                OptionMembership(
+                    image = R.drawable.ic_membership,
+                    text = stringResource(R.string.settings_membership),
+                    onClick = onMembershipClicked,
+                    membershipStatus = membershipStatus
+                )
+            }
+            item {
+                Divider(paddingStart = 60.dp)
+            }
         }
         item {
             Option(
@@ -178,19 +203,6 @@ fun ProfileSettingsScreen(
                     onClick = onDebugClicked
                 )
             }
-        }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            Section(stringResource(R.string.access))
-        }
-        item {
-            Option(
-                image = R.drawable.ic_keychain_phrase,
-                text = stringResource(R.string.key),
-                onClick = onKeychainPhraseClicked
-            )
         }
         item {
             Divider(paddingStart = 60.dp)
@@ -410,7 +422,7 @@ fun ProfileTitleBlock(
     onClick: () -> Unit
 ) {
     Text(
-        text = stringResource(R.string.profile),
+        text = stringResource(R.string.settings),
         style = Title1,
         color = colorResource(id = R.color.text_primary),
         modifier = Modifier.noRippleClickable {

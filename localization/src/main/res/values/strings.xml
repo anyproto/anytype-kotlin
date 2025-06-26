@@ -13,6 +13,7 @@
     <string name="appearance">Appearance</string>
     <string name="file_storage">Files storage</string>
     <string name="key">Key</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -35,6 +36,8 @@
     <string name="account_default_name" translatable="false">U</string>
 
     <string name="settings">Settings</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
 
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
     <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>

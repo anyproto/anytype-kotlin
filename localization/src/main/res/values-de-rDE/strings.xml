@@ -1814,4 +1814,6 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="space_notify_unmute">Unmute</string>
+    <string name="space_notify_mute">Mute</string>
 </resources>

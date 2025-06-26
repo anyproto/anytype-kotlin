@@ -54,7 +54,10 @@ data class ObjectType(
         @Deprecated("Will be deprecated")
         CHAT(21),
         CHAT_DERIVED(22),
-        TAG(23);
+        TAG(23),
+        NOTIFICATION(24),
+        MISSING_OBJECT(25),
+        DEVICES(26);
 
         fun isProfileOrParticipant() = this == PROFILE || this == PARTICIPANT
     }

@@ -358,11 +358,14 @@ interface TextBlockHolder : TextHolder {
         }
 
         try {
-            if (payload.isCursorChanged && content.isAttachedToWindow) {
+            if (payload.isCursorChanged) {
                 item.cursor?.let { cursor ->
                     val textLength = content.text?.length ?: 0
-                    if (content.layout != null && cursor <= textLength) {
-                        content.setSelection(cursor)
+                    val validCursor = cursor.coerceIn(0, textLength)
+                    if (textLength > 0 && validCursor <= textLength) {
+                        content.setSelection(validCursor)
+                    } else {
+                        Timber.w("Invalid cursor position: cursor=$cursor, textLength=$textLength")
                     }
                 }
             }

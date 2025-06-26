@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -341,6 +342,50 @@ fun Announcement(
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Composable
+fun OptionWithBadge(
+    @DrawableRes image: Int,
+    text: String,
+    showBadge: Boolean = false,
+    onClick: () -> Unit = {}
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .height(52.dp)
+            .clickable(onClick = onClick)
+    ) {
+        Image(
+            painterResource(image),
+            contentDescription = "Option icon",
+            modifier = Modifier.padding(start = 20.dp)
+        )
+        Text(
+            text = text,
+            color = colorResource(R.color.text_primary),
+            modifier = Modifier.padding(start = 12.dp),
+            style = BodyRegular
+        )
+        if (showBadge) {
+            Box(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(10.dp)
+                    .background(
+                        color = Color.Red,
+                        shape = CircleShape
+                    )
+            )
+        }
+        Box(
+            modifier = Modifier.weight(1.0f, true),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Arrow()
+        }
     }
 }
 

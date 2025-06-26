@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui_settings.account
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +29,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -51,8 +52,8 @@ fun NotificationSettingsScreen(
     )
     ModalBottomSheet(
         modifier = Modifier
-            .fillMaxSize()
-            .windowInsetsPadding(WindowInsets.systemBars),
+            .windowInsetsPadding(WindowInsets.systemBars)
+            .fillMaxSize(),
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         containerColor = colorResource(id = R.color.background_secondary),
@@ -106,7 +107,7 @@ fun NotificationSettingsScreen(
                 Spacer(modifier = Modifier.height(12.dp))
                 ButtonPrimary(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    onClick = {},
+                    onClick = onOpenSettings,
                     text = stringResource(R.string.notification_settings_button_open),
                     size = ButtonSize.Small
                 )
@@ -123,17 +124,18 @@ fun NotificationSettingsScreen(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
                 .height(52.dp)
-                .clickable(onClick = {})
-
+                .noRippleThrottledClickable(onClick = onOpenSettings)
         ) {
             Text(
                 text = stringResource(R.string.notification_settings_state_title),
                 color = colorResource(R.color.text_primary),
-                modifier = Modifier.fillMaxWidth().align(Alignment.CenterStart),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.CenterStart),
                 style = PreviewTitle1Regular
             )
             Row(
-                modifier= Modifier
+                modifier = Modifier
                     .fillMaxHeight()
                     .align(Alignment.CenterEnd),
                 verticalAlignment = Alignment.CenterVertically
@@ -166,6 +168,7 @@ fun NotificationSettingsScreen(
                 }
             }
         }
+        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
     }
 }
 

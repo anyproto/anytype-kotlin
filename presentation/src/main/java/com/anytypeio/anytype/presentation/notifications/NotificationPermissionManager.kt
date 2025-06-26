@@ -6,6 +6,7 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl.PermissionState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,6 +17,8 @@ interface NotificationPermissionManager {
     fun onPermissionGranted()
     fun onPermissionDenied()
     fun onPermissionDismissed()
+    fun permissionState(): StateFlow<PermissionState>
+    fun refreshPermissionState()
 }
 
 class NotificationPermissionManagerImpl @Inject constructor(
@@ -24,6 +27,10 @@ class NotificationPermissionManagerImpl @Inject constructor(
 ) : NotificationPermissionManager {
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.NotRequested)
     val permissionState: StateFlow<PermissionState> = _permissionState
+
+    override fun permissionState(): StateFlow<PermissionState> {
+        return _permissionState
+    }
 
     override fun shouldShowPermissionDialog(): Boolean {
 
@@ -95,6 +102,20 @@ class NotificationPermissionManagerImpl @Inject constructor(
         }
 
         return true
+    }
+
+    override fun refreshPermissionState() {
+        _permissionState.value = when {
+            areNotificationsEnabled() -> PermissionState.Granted
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                    PermissionState.Granted
+                } else {
+                    PermissionState.Denied // Or NotRequested, depending on your logic
+                }
+            }
+            else -> PermissionState.Denied
+        }
     }
 
     sealed class PermissionState {

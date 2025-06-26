@@ -66,7 +66,8 @@ fun NotificationSettingsScreen(
         Text(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             text = stringResource(R.string.notification_settings_title),
-            style = Title1
+            style = Title1,
+            color = colorResource(id = R.color.text_primary)
         )
         Spacer(modifier = Modifier.height(12.dp))
         if (isDisabled) {

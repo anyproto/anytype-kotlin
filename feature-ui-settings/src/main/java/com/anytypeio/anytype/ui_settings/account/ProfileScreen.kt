@@ -88,7 +88,9 @@ fun ProfileSettingsScreen(
     showMembership: ShowMembership?,
     clearProfileImage: () -> Unit,
     onDebugClicked: () -> Unit,
-    onHeaderTitleClicked: () -> Unit
+    onHeaderTitleClicked: () -> Unit,
+    notificationsDisabled: Boolean,
+    onOpenNotificationSettings: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -132,7 +134,8 @@ fun ProfileSettingsScreen(
             OptionWithBadge(
                 image = R.drawable.ic_notifications_28,
                 text = stringResource(R.string.notifications_title),
-                onClick = {},
+                showBadge = notificationsDisabled,
+                onClick = onOpenNotificationSettings
             )
         }
         item {
@@ -556,7 +559,9 @@ private fun ProfileSettingPreview() {
         clearProfileImage = {},
         onDebugClicked = {},
         isDebugEnabled = true,
-        onHeaderTitleClicked = {}
+        onHeaderTitleClicked = {},
+        notificationsDisabled = true,
+        onOpenNotificationSettings = {}
     )
 }
 

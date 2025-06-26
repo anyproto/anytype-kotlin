@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorFilter.Companion.tint
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -178,6 +182,7 @@ fun OptionMembership(
                     Arrow()
                 }
             }
+
             else -> {
                 Box(
                     modifier = Modifier.weight(1.0f, true),
@@ -352,38 +357,43 @@ fun OptionWithBadge(
     showBadge: Boolean = false,
     onClick: () -> Unit = {}
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Box(
         modifier = Modifier
+            .fillMaxWidth()
             .height(52.dp)
             .clickable(onClick = onClick)
     ) {
-        Image(
-            painterResource(image),
-            contentDescription = "Option icon",
-            modifier = Modifier.padding(start = 20.dp)
-        )
-        Text(
-            text = text,
-            color = colorResource(R.color.text_primary),
-            modifier = Modifier.padding(start = 12.dp),
-            style = BodyRegular
-        )
-        if (showBadge) {
-            Box(
+        Row(
+            modifier = Modifier.fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = "Option icon",
                 modifier = Modifier
-                    .padding(start = 8.dp)
-                    .size(10.dp)
-                    .background(
-                        color = Color.Red,
-                        shape = CircleShape
-                    )
+                    .padding(start = 20.dp)
+                    .size(28.dp)
+            )
+            Text(
+                text = text,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.padding(start = 12.dp),
+                style = BodyRegular
             )
         }
-        Box(
-            modifier = Modifier.weight(1.0f, true),
-            contentAlignment = Alignment.CenterEnd
+        Row(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            if (showBadge) {
+                Image(
+                    painter = painterResource(R.drawable.ic_attention_red_18),
+                    contentDescription = "Badge",
+                    modifier = Modifier
+                        .padding(end = 12.dp)
+                        .size(18.dp)
+                )
+            }
             Arrow()
         }
     }

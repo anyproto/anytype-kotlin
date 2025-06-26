@@ -2115,4 +2115,12 @@ Please provide specific details of your needs here.</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
 
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+
 </resources>

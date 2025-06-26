@@ -1814,4 +1814,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_all_short">Hepsi</string>
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
+    <string name="space_notify_unmute">Susturmayı kaldır</string>
+    <string name="space_notify_mute">Sustur</string>
 </resources>

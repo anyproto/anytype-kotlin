@@ -710,6 +710,9 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.chat -> ObjectType.Layout.CHAT
     MOTypeLayout.chatDerived -> ObjectType.Layout.CHAT_DERIVED
     MOTypeLayout.tag -> ObjectType.Layout.TAG
+    MOTypeLayout.notification -> ObjectType.Layout.NOTIFICATION
+    MOTypeLayout.missingObject -> ObjectType.Layout.MISSING_OBJECT
+    MOTypeLayout.devices -> ObjectType.Layout.DEVICES
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

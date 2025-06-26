@@ -990,7 +990,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 if (view is android.widget.TextView) {
                     view.clearFocus()
                     if (view.hasSelection()) {
-                        view.clearComposingText()
                         // Clear selection range safely for EditText only
                         if (view is android.widget.EditText && view.text?.isNotEmpty() == true) {
                             view.setSelection(0, 0)

@@ -137,7 +137,7 @@ class ChatViewModel @Inject constructor(
     val canCreateInviteLink = MutableStateFlow(false)
     val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
     val isGeneratingInviteLink = MutableStateFlow(false)
-    val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
+    private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)

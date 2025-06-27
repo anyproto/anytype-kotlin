@@ -10,6 +10,7 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -19,6 +20,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -979,37 +981,50 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun clearActiveTextSelections() {
-        // Clear all active text selections and action modes to prevent MultiSelectPopupWindow crashes
+        // Record start time
+        val startMs = SystemClock.elapsedRealtime()
         try {
-            // Clear focus from the main recycler
+            // Lose focus on any currently focused child
             binding.recycler.clearFocus()
             binding.recycler.findFocus()?.clearFocus()
-            
-            // Find and clear all TextViews in the recycler
-            fun clearTextViewsRecursively(view: View) {
-                if (view is android.widget.TextView) {
-                    view.clearFocus()
-                    if (view.hasSelection()) {
-                        // Clear selection range safely for EditText only
-                        if (view is android.widget.EditText && view.text?.isNotEmpty() == true) {
-                            view.setSelection(0, 0)
-                        }
-                    }
-                    // Clear any active action mode callbacks
-                    view.customSelectionActionModeCallback = null
-                    view.customInsertionActionModeCallback = null
-                } else if (view is ViewGroup) {
-                    for (i in 0 until view.childCount) {
-                        clearTextViewsRecursively(view.getChildAt(i))
-                    }
+            // Walk the tree
+            clearTextViewsRecursively(binding.recycler)
+        } catch (e: Exception) {
+            // Catch only expected exceptions
+            Timber.w(e, "Error clearing text selections")
+        } finally {
+            val durationMs = SystemClock.elapsedRealtime() - startMs
+            Timber.d("clearActiveTextSelections took %d ms", durationMs)
+        }
+    }
+
+    private fun clearTextViewsRecursively(view: View) {
+        when (view) {
+            is EditText -> {
+                // Remove focus and any selection
+                view.clearFocus()
+                if (view.hasSelection() && view.text.isNotEmpty()) {
+                    view.setSelection(0, 0)
+                }
+                clearActionModeCallbacks(view)
+            }
+            is TextView -> {
+                // Other TextViews: just clear any lingering callbacks
+                view.clearFocus()
+                clearActionModeCallbacks(view)
+            }
+            is ViewGroup -> {
+                for (i in 0 until view.childCount) {
+                    clearTextViewsRecursively(view.getChildAt(i))
                 }
             }
-            
-            clearTextViewsRecursively(binding.recycler)
-            
-        } catch (e: Exception) {
-            Timber.w(e, "Error while clearing text selections")
+            else -> Unit
         }
+    }
+
+    private fun clearActionModeCallbacks(view: TextView) {
+        view.customSelectionActionModeCallback = null
+        view.customInsertionActionModeCallback = null
     }
 
     override fun onSetRelationKeyClicked(blockId: Id, key: Id) {

@@ -68,6 +68,7 @@ firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
+mockkVersion = "1.14.4"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -161,6 +162,7 @@ fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", vers
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockkVersion" }
 
 [bundles]
 

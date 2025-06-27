@@ -130,22 +130,36 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     object SignalHandler {
+        @Volatile
         private var isLibraryLoaded = false
+        private val loadLock = Any()
         
         fun initSignalHandler() {
-            try {
-                if (!isLibraryLoaded) {
-                    Timber.d("Loading native signal handler library: $SIGNAL_HANDLER_LIB_NAME")
-                    System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
-                    isLibraryLoaded = true
-                    Timber.i("Successfully loaded signal handler library")
+            // Double-checked locking pattern for thread-safe library loading
+            if (!isLibraryLoaded) {
+                synchronized(loadLock) {
+                    if (!isLibraryLoaded) {
+                        try {
+                            Timber.d("Loading native signal handler library: $SIGNAL_HANDLER_LIB_NAME")
+                            System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
+                            isLibraryLoaded = true
+                            Timber.i("Successfully loaded signal handler library")
+                        } catch (e: UnsatisfiedLinkError) {
+                            Timber.w(e, "Failed to load signal handler library: ${e.message}")
+                            return // Exit early if library loading fails
+                        }
+                    }
                 }
-                initSignalHandlerNative()
-                Timber.d("Signal handler initialized successfully")
-            } catch (e: UnsatisfiedLinkError) {
-                Timber.w(e, "Failed to load signal handler library: ${e.message}")
-            } catch (e: Exception) {
-                Timber.w(e, "Failed to initialize signal handler: ${e.message}")
+            }
+            
+            // Only call native method if library was loaded successfully
+            if (isLibraryLoaded) {
+                try {
+                    initSignalHandlerNative()
+                    Timber.d("Signal handler initialized successfully")
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to initialize signal handler: ${e.message}")
+                }
             }
         }
         

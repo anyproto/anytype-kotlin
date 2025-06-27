@@ -2088,9 +2088,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun exitScrollAndMove() {
-        // Clear active text selections to prevent MultiSelectPopupWindow crashes
-        clearActiveTextSelections()
-        
         binding.recycler.apply {
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)

@@ -131,12 +131,7 @@ interface PickerDelegate : PickiTCallbacks {
 
         fun onStop() {
             pickiT.cancelTask()
-            pickitAlertDialog?.dismiss()
-            pickitAlertDialog = null
-            pickitProgressDialog?.dismiss()
-            pickitProgressDialog = null
-            snackbar?.dismiss()
-            snackbar = null
+            cleanupDialogsAndResources()
         }
 
         override fun deleteTemporaryFile() {

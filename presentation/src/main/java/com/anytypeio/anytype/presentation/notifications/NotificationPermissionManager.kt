@@ -108,12 +108,15 @@ class NotificationPermissionManagerImpl @Inject constructor(
         _permissionState.value = when {
             areNotificationsEnabled() -> PermissionState.Granted
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                    == PackageManager.PERMISSION_GRANTED
+                ) {
                     PermissionState.Granted
                 } else {
                     PermissionState.Denied // Or NotRequested, depending on your logic
                 }
             }
+
             else -> PermissionState.Denied
         }
     }

@@ -139,6 +139,7 @@ fun ChatScreenWrapper(
 
         ChatScreen(
             isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
+            isSyncing = vm.isSyncing.collectAsStateWithLifecycle().value,
             chatBoxMode = vm.chatBoxMode.collectAsState().value,
             messages = messages,
             counter = counter,
@@ -374,6 +375,7 @@ private fun LazyListState.OnBottomReachedSafely(
 @Composable
 fun ChatScreen(
     isLoading: Boolean = false,
+    isSyncing: Boolean = false,
     mentionPanelState: MentionPanelState,
     chatBoxMode: ChatBoxMode,
     lazyListState: LazyListState,
@@ -845,7 +847,7 @@ fun ChatScreen(
                 )
             }
 
-            if (isLoading) {
+            if (isLoading || isSyncing) {
                 ShimmerEffect(
                     modifier = Modifier
                         .fillMaxWidth()

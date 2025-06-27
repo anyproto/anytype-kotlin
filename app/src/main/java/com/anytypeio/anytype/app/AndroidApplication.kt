@@ -61,11 +61,11 @@ class AndroidApplication : Application(), HasComponentDependencies {
             enableStrictMode()
         }
         super.onCreate()
+        setupTimber()
         setupSignalHandler()
         main.inject(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(appState)
         setupAnalytics()
-        setupTimber()
         setupCrashReporter()
         setupLocalNetworkAddressHandler()
         setupNotificationChannel()
@@ -130,10 +130,40 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     object SignalHandler {
-        init {
-            System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
+        @Volatile
+        private var isLibraryLoaded = false
+        private val loadLock = Any()
+        
+        fun initSignalHandler() {
+            // Double-checked locking pattern for thread-safe library loading
+            if (!isLibraryLoaded) {
+                synchronized(loadLock) {
+                    if (!isLibraryLoaded) {
+                        try {
+                            Timber.d("Loading native signal handler library: $SIGNAL_HANDLER_LIB_NAME")
+                            System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
+                            isLibraryLoaded = true
+                            Timber.i("Successfully loaded signal handler library")
+                        } catch (e: UnsatisfiedLinkError) {
+                            Timber.w(e, "Failed to load signal handler library: ${e.message}")
+                            return // Exit early if library loading fails
+                        }
+                    }
+                }
+            }
+            
+            // Only call native method if library was loaded successfully
+            if (isLibraryLoaded) {
+                try {
+                    initSignalHandlerNative()
+                    Timber.d("Signal handler initialized successfully")
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to initialize signal handler: ${e.message}")
+                }
+            }
         }
-        external fun initSignalHandler()
+        
+        private external fun initSignalHandlerNative()
         const val SIGNAL_HANDLER_LIB_NAME = "signal_handler"
     }
 }

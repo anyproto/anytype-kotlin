@@ -1043,9 +1043,10 @@ enum SpaceAccessType {
 }
 
 enum SpaceUxType {
-    Chat = 0; // chat-first UX
+    None = 0; // old value for chat, deprecated
     Data = 1; // objects-first UX
     Stream = 2; // stream UX (chat with limited amount of owners)
+    Chat = 3; // chat UX
 }
 
 message Metadata {
@@ -1182,6 +1183,7 @@ message Import {
         Html = 4;
         Txt = 5;
         Csv = 6;
+        Obsidian = 7; // Markdown with obsidian improvements
     }
 
     enum ErrorCode {

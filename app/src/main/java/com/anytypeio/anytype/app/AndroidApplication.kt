@@ -130,10 +130,21 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     object SignalHandler {
-        init {
-            System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
+        private var isLibraryLoaded = false
+        
+        fun initSignalHandler() {
+            try {
+                if (!isLibraryLoaded) {
+                    System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
+                    isLibraryLoaded = true
+                }
+                initSignalHandlerNative()
+            } catch (e: UnsatisfiedLinkError) {
+                Timber.w(e, "Failed to load signal handler library")
+            }
         }
-        external fun initSignalHandler()
+        
+        private external fun initSignalHandlerNative()
         const val SIGNAL_HANDLER_LIB_NAME = "signal_handler"
     }
 }

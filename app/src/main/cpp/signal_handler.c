@@ -25,6 +25,6 @@ void setup_sigsys_handler() {
 
 // Correctly named JNI function
 JNIEXPORT void JNICALL
-Java_com_anytypeio_anytype_app_AndroidApplication_00024SignalHandler_initSignalHandler(JNIEnv *env, jobject thiz) {
+Java_com_anytypeio_anytype_app_AndroidApplication_00024SignalHandler_initSignalHandlerNative(JNIEnv *env, jobject thiz) {
     setup_sigsys_handler();
 }

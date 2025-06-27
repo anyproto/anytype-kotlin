@@ -38,14 +38,31 @@ class SignalHandlerTest {
 
     @Test
     fun `SignalHandler should have isLibraryLoaded field for state tracking`() {
-        // This test verifies the state tracking field exists
+        // This test verifies the state tracking field exists and is volatile
         try {
             val field = SignalHandler::class.java.getDeclaredField("isLibraryLoaded")
             assert(field.type == Boolean::class.java) { 
                 "isLibraryLoaded should be a Boolean field" 
             }
+            // Check if field is marked as volatile for thread safety
+            val modifiers = field.modifiers
+            val isVolatile = java.lang.reflect.Modifier.isVolatile(modifiers)
+            assert(isVolatile) { "isLibraryLoaded should be volatile for thread safety" }
         } catch (e: NoSuchFieldException) {
             assert(false) { "SignalHandler should have isLibraryLoaded field for state tracking" }
+        }
+    }
+
+    @Test
+    fun `SignalHandler should have loadLock for synchronization`() {
+        // This test verifies the synchronization lock exists
+        try {
+            val field = SignalHandler::class.java.getDeclaredField("loadLock")
+            assert(field.type == Any::class.java) { 
+                "loadLock should be of type Any" 
+            }
+        } catch (e: NoSuchFieldException) {
+            assert(false) { "SignalHandler should have loadLock field for thread synchronization" }
         }
     }
 

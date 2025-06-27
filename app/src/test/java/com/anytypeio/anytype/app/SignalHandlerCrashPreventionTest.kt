@@ -87,6 +87,38 @@ class SignalHandlerCrashPreventionTest {
     }
 
     @Test
+    fun `SignalHandler should be thread-safe with concurrent calls`() {
+        // Test concurrent access to ensure no race conditions
+        val exceptions = mutableListOf<Exception>()
+        val threads = mutableListOf<Thread>()
+        
+        // Create multiple threads calling initSignalHandler simultaneously
+        repeat(5) { threadIndex ->
+            val thread = Thread {
+                try {
+                    SignalHandler.initSignalHandler()
+                } catch (e: Exception) {
+                    synchronized(exceptions) {
+                        exceptions.add(e)
+                    }
+                }
+            }
+            threads.add(thread)
+        }
+        
+        // Start all threads
+        threads.forEach { it.start() }
+        
+        // Wait for all threads to complete
+        threads.forEach { it.join(1000) } // 1 second timeout per thread
+        
+        // Verify no exceptions occurred due to race conditions
+        assert(exceptions.isEmpty()) {
+            "Concurrent calls should not cause race condition exceptions. Got: ${exceptions.map { it.message }}"
+        }
+    }
+
+    @Test
     fun `original crash scenario should be resolved`() {
         // This test specifically validates that the original error scenario is handled
         // The original error was: "java.lang.UnsatisfiedLinkError: dlopen failed: library "libsignal_handler.so" not found"

@@ -505,16 +505,20 @@ class VersionHistoryViewModel(
                 if (payload != null) {
                     val event = payload.events
                         .filterIsInstance<Event.Command.ShowObject>()
-                        .first()
-                    val obj = ObjectWrapper.Basic(event.details[vmParams.objectId].orEmpty())
-                    val currentState = _previewViewState.value
-                    if (currentState !is VersionHistoryPreviewScreen.Hidden) {
-                        parseObject(
-                            payload = payload,
-                            event = event,
-                            item = item,
-                            obj = obj
-                        )
+                        .firstOrNull()
+                    if (event != null) {
+                        val obj = ObjectWrapper.Basic(event.details[vmParams.objectId].orEmpty())
+                        val currentState = _previewViewState.value
+                        if (currentState !is VersionHistoryPreviewScreen.Hidden) {
+                            parseObject(
+                                payload = payload,
+                                event = event,
+                                item = item,
+                                obj = obj
+                            )
+                        }
+                    } else {
+                        Timber.w("No ShowObject event found in payload for version ${item.id}")
                     }
                 }
             }
@@ -530,7 +534,11 @@ class VersionHistoryViewModel(
     ) {
         if (obj.layout.isDataView()) {
             defaultPayloadConsumer(payload)
-            val root = event.blocks.first { it.id == vmParams.objectId }
+            val root = event.blocks.find { it.id == vmParams.objectId }
+            if (root == null) {
+                Timber.w("Root block with id ${vmParams.objectId} not found in event blocks")
+                return
+            }
             val blocks = event.blocks.asMap().render(
                 context = obj.id,
                 mode = Mode.Read,
@@ -567,7 +575,11 @@ class VersionHistoryViewModel(
                 }
             }
         } else {
-            val root = event.blocks.first { it.id == vmParams.objectId }
+            val root = event.blocks.find { it.id == vmParams.objectId }
+            if (root == null) {
+                Timber.w("Root block with id ${vmParams.objectId} not found in event blocks")
+                return
+            }
             val blocks = event.blocks.asMap().render(
                 context = obj.id,
                 mode = Mode.Read,

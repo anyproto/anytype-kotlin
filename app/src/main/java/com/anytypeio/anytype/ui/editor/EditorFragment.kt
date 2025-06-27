@@ -10,7 +10,6 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -981,8 +980,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun clearActiveTextSelections() {
-        // Record start time
-        val startMs = SystemClock.elapsedRealtime()
         try {
             // Lose focus on any currently focused child
             binding.recycler.clearFocus()
@@ -992,9 +989,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         } catch (e: Exception) {
             // Catch only expected exceptions
             Timber.w(e, "Error clearing text selections")
-        } finally {
-            val durationMs = SystemClock.elapsedRealtime() - startMs
-            Timber.d("clearActiveTextSelections took %d ms", durationMs)
         }
     }
 

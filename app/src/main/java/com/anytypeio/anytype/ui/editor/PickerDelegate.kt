@@ -132,8 +132,11 @@ interface PickerDelegate : PickiTCallbacks {
         fun onStop() {
             pickiT.cancelTask()
             pickitAlertDialog?.dismiss()
+            pickitAlertDialog = null
             pickitProgressDialog?.dismiss()
+            pickitProgressDialog = null
             snackbar?.dismiss()
+            snackbar = null
         }
 
         override fun deleteTemporaryFile() {
@@ -190,6 +193,7 @@ interface PickerDelegate : PickiTCallbacks {
             Timber.d("PickiTonStartListener")
             if (pickitProgressDialog?.isShowing == true) {
                 pickitProgressDialog?.cancel()
+                pickitProgressDialog = null
             }
             if (canShowDialog()) {
                 pickitAlertDialog =
@@ -202,6 +206,7 @@ interface PickerDelegate : PickiTCallbacks {
                             pickiT.cancelTask()
                             if (pickitAlertDialog?.isShowing == true) {
                                 pickitAlertDialog?.cancel()
+                                pickitAlertDialog = null
                             }
                         }
                         pickitProgressBar = view.findViewById(R.id.mProgressBar)
@@ -228,9 +233,11 @@ interface PickerDelegate : PickiTCallbacks {
             Timber.d("PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
             if (pickitAlertDialog?.isShowing == true) {
                 pickitAlertDialog?.cancel()
+                pickitAlertDialog = null
             }
             if (pickitProgressDialog?.isShowing == true) {
                 pickitProgressDialog?.dismiss()
+                pickitProgressDialog = null
             }
             if (BuildConfig.DEBUG) {
                 when {

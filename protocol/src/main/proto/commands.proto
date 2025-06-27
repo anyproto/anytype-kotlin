@@ -3006,6 +3006,7 @@ message Rpc {
                 StateFilters linksStateFilters = 12;
                 bool includeBacklinks = 13;
                 bool includeSpace = 14;
+                bool includeJsonSchema = 15;
             }
             message StateFilters {
                 repeated RelationsWhiteList relationsWhiteList = 1;
@@ -3092,6 +3093,8 @@ message Rpc {
 
                 message MarkdownParams {
                     repeated string path = 1;
+                    bool createDirectoryPages = 2;
+                    bool includePropertiesAsBlock = 3;
                 }
 
                 message BookmarksParams {

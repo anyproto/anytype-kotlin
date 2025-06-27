@@ -135,12 +135,17 @@ class AndroidApplication : Application(), HasComponentDependencies {
         fun initSignalHandler() {
             try {
                 if (!isLibraryLoaded) {
+                    Timber.d("Loading native signal handler library: $SIGNAL_HANDLER_LIB_NAME")
                     System.loadLibrary(SIGNAL_HANDLER_LIB_NAME)
                     isLibraryLoaded = true
+                    Timber.i("Successfully loaded signal handler library")
                 }
                 initSignalHandlerNative()
+                Timber.d("Signal handler initialized successfully")
             } catch (e: UnsatisfiedLinkError) {
-                Timber.w(e, "Failed to load signal handler library")
+                Timber.w(e, "Failed to load signal handler library: ${e.message}")
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to initialize signal handler: ${e.message}")
             }
         }
         

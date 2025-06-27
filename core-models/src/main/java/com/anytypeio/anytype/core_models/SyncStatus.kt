@@ -21,3 +21,11 @@ enum class SyncError(val code: Int) {
         fun fromCode(code: Int): SyncError? = entries.find { it.code == code }
     }
 }
+
+fun ObjectView.syncStatus(target: Id): SyncStatus? {
+    val wrapper = ObjectWrapper.Basic(details[target].orEmpty())
+    if (!wrapper.isValid) return null
+
+    val code = wrapper.getSingleValue<Double>(Relations.SYNC_STATUS)
+    return code?.toInt()?.let(SyncStatus::fromCode)
+}

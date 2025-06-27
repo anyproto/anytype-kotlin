@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.tools.DEFAULT_URL_REGEX
@@ -47,6 +49,7 @@ import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
@@ -74,10 +77,13 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -108,8 +114,7 @@ class ChatViewModel @Inject constructor(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
-    private val openObject: OpenObject,
-    private val closeObject: CloseObject,
+    private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
@@ -135,8 +140,17 @@ class ChatViewModel @Inject constructor(
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
+    private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
+
+    val isSyncing = syncStatus.map { status ->
+        (status == SyncStatus.Syncing)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = false
+    )
 
     private var account: Id = ""
 
@@ -220,26 +234,19 @@ class ChatViewModel @Inject constructor(
                     Timber.e(it,"Failed to find account for space-level chat")
                 }
 
-            openObject.async(
-                params = OpenObject.Params(
-                    obj = vmParams.ctx,
-                    spaceId = vmParams.space,
-                    saveAsLastOpened = false
-                )
-            ).onSuccess {
-                Timber.d("DROID-2966 Succesfully opened chat-object session")
-            }.onFailure {
-                Timber.e(it, "Failed to open chat-object session")
-            }
-
             proceedWithObservingChatMessages(
                 account = account,
                 chat = vmParams.ctx
             )
         }
 
+        viewModelScope.launch {
+            proceedWithObservingSyncStatus()
+        }
+
         proceedWithSpaceSubscription()
     }
+
 
     fun onResume() {
         notificationBuilder.clearNotificationChannel(
@@ -479,6 +486,26 @@ class ChatViewModel @Inject constructor(
         }.flowOn(dispatchers.io).distinctUntilChanged().collect {
             uiState.value = it
         }
+    }
+
+    private suspend fun proceedWithObservingSyncStatus() {
+        objectWatcher
+            .watch(
+                target = vmParams.ctx,
+                space = vmParams.space
+            ).map { objectView ->
+                objectView.syncStatus(vmParams.ctx)
+            }
+            .distinctUntilChanged()
+            .onEach {
+                Timber.d("DROID-2966 Sync status updated: $it")
+            }
+            .flowOn(
+                dispatchers.io
+            )
+            .collect { status ->
+                syncStatus.value = status
+            }
     }
     
     fun onChatBoxInputChanged(
@@ -1126,15 +1153,14 @@ class ChatViewModel @Inject constructor(
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
             }
-            closeObject.async(
-                params = CloseObject.Params(
-                    space = vmParams.space,
-                    target = vmParams.ctx
-                )
-            ).onFailure {
-                Timber.e(it, "Error while closing chat object: ${vmParams.ctx}")
-            }.onSuccess {
-                Timber.d("Successfully close chat object: ${vmParams.ctx}")
+            withContext(dispatchers.io) {
+                runCatching {
+                    objectWatcher.unwatch(target = vmParams.ctx, space = vmParams.space)
+                }.onFailure {
+                    Timber.e(it, "DROID-2966 Failed to unsubscribe object watcher")
+                }.onSuccess {
+                    Timber.d("DROID-2966 ObjectWatcher unwatched")
+                }
             }
             if (isSpaceRoot) {
                 Timber.d("Root space screen. Releasing resources...")

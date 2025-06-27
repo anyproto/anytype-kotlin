@@ -61,11 +61,11 @@ class AndroidApplication : Application(), HasComponentDependencies {
             enableStrictMode()
         }
         super.onCreate()
+        setupTimber()
         setupSignalHandler()
         main.inject(this)
         ProcessLifecycleOwner.get().lifecycle.addObserver(appState)
         setupAnalytics()
-        setupTimber()
         setupCrashReporter()
         setupLocalNetworkAddressHandler()
         setupNotificationChannel()

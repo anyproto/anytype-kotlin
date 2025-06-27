@@ -256,7 +256,6 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
-    testImplementation libs.mockk
     testImplementation project(':test:utils')
 
     //Acceptance tests dependencies

@@ -31,10 +31,18 @@ import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
+import com.anytypeio.anytype.ui_settings.account.NotificationSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
 import javax.inject.Inject
 import timber.log.Timber
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -84,6 +92,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
+                    var showNotificationSettingsModal by remember { mutableStateOf(false) }
+                    val notificationsDisabled = vm.notificationsDisabled.collectAsStateWithLifecycle().value
                     ProfileSettingsScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
                         onLogoutClicked = onLogoutClicked,
@@ -127,8 +137,29 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
-                        onHeaderTitleClicked = vm::onHeaderTitleClicked
+                        onHeaderTitleClicked = vm::onHeaderTitleClicked,
+                        notificationsDisabled = notificationsDisabled,
+                        onOpenNotificationSettings = { showNotificationSettingsModal = true }
                     )
+                    if (showNotificationSettingsModal) {
+                        NotificationSettingsScreen(
+                            isDisabled = notificationsDisabled,
+                            onDismiss = { showNotificationSettingsModal = false },
+                            onOpenSettings = {
+                                val context = requireContext()
+                                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+                                    }
+                                } else {
+                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        data = Uri.parse("package:" + context.packageName)
+                                    }
+                                }
+                                context.startActivity(intent)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -144,6 +175,11 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         subscribe(vm.toasts) {
             toast(it)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.refreshPermissionState()
     }
 
     private fun proceedWithIconClick() {

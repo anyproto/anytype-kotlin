@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
@@ -56,7 +57,8 @@ object ProfileModule {
         membershipProvider: MembershipProvider,
         getNetworkMode: GetNetworkMode,
         profileSubscriptionManager: ProfileSubscriptionManager,
-        removeObjectIcon: RemoveObjectIcon
+        removeObjectIcon: RemoveObjectIcon,
+        notificationPermissionManager: NotificationPermissionManager
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         analytics = analytics,
         container = storelessSubscriptionContainer,
@@ -67,7 +69,8 @@ object ProfileModule {
         membershipProvider = membershipProvider,
         getNetworkMode = getNetworkMode,
         profileSubscriptionManager = profileSubscriptionManager,
-        removeObjectIcon = removeObjectIcon
+        removeObjectIcon = removeObjectIcon,
+        notificationPermissionManager = notificationPermissionManager
     )
 
     @Provides

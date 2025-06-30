@@ -78,6 +78,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -499,6 +500,9 @@ class ChatViewModel @Inject constructor(
             .distinctUntilChanged()
             .onEach {
                 Timber.d("DROID-2966 Sync status updated: $it")
+            }
+            .catch { e ->
+                Timber.e(e, "DROID-2966 Error observing sync status for object: ${vmParams.ctx}")
             }
             .flowOn(
                 dispatchers.io

@@ -10,6 +10,7 @@
     <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
+    <string name="login_key">Schlüssel</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -1816,4 +1819,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Benachrichtigungen</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Deaktiviert</string>
+    <string name="notification_settings_state_enabled">Aktiviert</string>
 </resources>

@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -140,7 +141,7 @@ fun VaultScreenToolbar(
 
             ) {
                 ProfileIconWithBadge(
-                    modifier = Modifier.size(28.dp),
+                    modifier = Modifier.size(34.dp),
                     profile = profile,
                     showBadge = showNotificationBadge
                 )
@@ -239,22 +240,36 @@ private fun ProfileIconWithBadge(
     profile: AccountProfile,
     showBadge: Boolean = false
 ) {
-    Box(modifier) {
+    Box(
+        modifier = modifier
+    ) {
         // Main profile icon
         ProfileIcon(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.size(28.dp).align(Alignment.Center),
             profile = profile
         )
-        
+
         // Badge positioned in top-right corner
         if (showBadge) {
-            Image(
-                painter = painterResource(R.drawable.ic_attention_red_18),
-                contentDescription = "Notification disabled badge",
+            Box(
                 modifier = Modifier
-                    .size(18.dp)
                     .align(Alignment.TopEnd)
-            )
+                    .size(12.dp)
+                    .background(
+                        color = colorResource(id = R.color.background_primary),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center,
+            ) {
+                Spacer(
+                    modifier = Modifier
+                        .size(8.dp)
+                        .background(
+                            color = colorResource(id = R.color.palette_system_red),
+                            shape = CircleShape
+                        )
+                )
+            }
         }
     }
 }

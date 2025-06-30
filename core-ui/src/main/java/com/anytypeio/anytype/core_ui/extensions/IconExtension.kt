@@ -2,18 +2,18 @@ package com.anytypeio.anytype.core_ui.extensions
 
 import android.widget.ImageView
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil3.load
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import timber.log.Timber
 
 fun ImageView.setEmojiOrNull(unicode: String?) {
     if (unicode != null)
         try {
-            Glide
-                .with(this)
-                .load(Emojifier.uri(unicode))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(this)
+            load(Emojifier.uri(unicode)) {
+                memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
+                diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+            }
         } catch (e: Throwable) {
             Timber.w(e, "Error while setting emoji icon for: $unicode")
         }
@@ -23,12 +23,9 @@ fun ImageView.setEmojiOrNull(unicode: String?) {
 
 fun ImageView.setImageOrNull(image: String?) {
     if (image != null) {
-        Glide
-            .with(this)
-            .load(image)
-            .centerInside()
-            .circleCrop()
-            .into(this)
+        load(image) {
+            transformations(CircleCropTransformation())
+        }
     } else {
         setImageDrawable(null)
     }

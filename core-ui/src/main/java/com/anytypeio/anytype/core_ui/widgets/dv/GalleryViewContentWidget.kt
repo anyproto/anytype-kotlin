@@ -24,7 +24,9 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import com.bumptech.glide.Glide
+import coil3.load
+import coil3.size.Scale
+import coil3.transform.CircleCropTransformation
 import timber.log.Timber
 
 class GalleryViewContentWidget @JvmOverloads constructor(
@@ -234,10 +236,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                             }
                                             marginEnd = marginAfterIcon
                                         }
-                                        Glide
-                                            .with(this)
-                                            .load(Emojifier.uri(icon.unicode))
-                                            .into(image)
+                                        image.load(Emojifier.uri(icon.unicode))
                                     } catch (e: Throwable) {
                                         Timber.w(
                                             e,
@@ -259,11 +258,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                         }
                                         marginEnd = marginAfterIcon
                                     }
-                                    Glide
-                                        .with(this)
-                                        .load(icon.hash)
-                                        .centerCrop()
-                                        .into(image)
+                                    image.load(icon.hash) {
+                                        scale(Scale.FILL)
+                                    }
                                 }
                                 is ObjectIcon.Profile.Avatar -> {
                                     val avatar = TextView(themeWrapper).apply {
@@ -308,11 +305,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                         }
                                         marginEnd = marginAfterIcon
                                     }
-                                    Glide
-                                        .with(this)
-                                        .load(icon.hash)
-                                        .circleCrop()
-                                        .into(image)
+                                    image.load(icon.hash) {
+                                        transformations(CircleCropTransformation())
+                                    }
                                 }
                                 is ObjectIcon.Task -> {
                                     val image = ImageView(context).apply {

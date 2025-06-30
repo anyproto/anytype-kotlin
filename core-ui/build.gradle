@@ -38,9 +38,6 @@ dependencies {
     implementation libs.design
     implementation libs.recyclerView
     implementation libs.constraintLayout
-    implementation libs.glide
-    annotationProcessor libs.glideCompiler
-    implementation libs.glideCompose
     implementation libs.shimmerLayout
     implementation libs.timber
     implementation libs.betterLinkMovement

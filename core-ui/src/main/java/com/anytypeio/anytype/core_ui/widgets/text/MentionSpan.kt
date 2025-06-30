@@ -9,13 +9,17 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.text.TextPaint
 import android.text.style.DynamicDrawableSpan
+import coil3.Image
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.bumptech.glide.Glide
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.transition.Transition
+import coil3.ImageLoader
+import coil3.asDrawable
+import coil3.request.ImageRequest
+import coil3.request.transformations
+import coil3.target.Target
+import coil3.transform.CircleCropTransformation
 import java.lang.ref.WeakReference
 import timber.log.Timber
 
@@ -35,18 +39,13 @@ class MentionSpan constructor(
     private val isArchived: Boolean
 ) : DynamicDrawableSpan(), Span {
 
-    val target: CustomTarget<Drawable> = object : CustomTarget<Drawable>() {
-        override fun onResourceReady(
-            resource: Drawable,
-            transition: Transition<in Drawable>?
-        ) {
-            icon = resource
+    val target: Target = object : Target {
+        override fun onSuccess(result: Image) {
+            icon = result.asDrawable(context.resources)
             icon?.setBounds(imageSize)
             iconRef = WeakReference(icon)
             if (param != null) onImageResourceReady(param)
         }
-
-        override fun onLoadCleared(placeholder: Drawable?) = Unit
     }
 
     private val endPaddingPx = 4
@@ -57,16 +56,34 @@ class MentionSpan constructor(
 
     init {
         placeholder?.setBounds(imageSize)
+        val imageLoader = ImageLoader(context)
 
         if (!emoji.isNullOrBlank()) try {
-            Glide.with(context).load(Emojifier.safeUri(emoji)).into(target)
+            val request = ImageRequest.Builder(context)
+                .data(Emojifier.safeUri(emoji))
+                .target(target)
+                .build()
+            imageLoader.enqueue(request)
         } catch (e: Throwable) {
             Timber.e(e, "Error while loading emoji: $emoji for mention span")
         }
 
-        if (!image.isNullOrBlank()) Glide.with(context).load(image).centerCrop().into(target)
+        if (!image.isNullOrBlank()) {
+            val request = ImageRequest.Builder(context)
+                .data(image)
+                .target(target)
+                .build()
+            imageLoader.enqueue(request)
+        }
 
-        if (!profile.isNullOrBlank()) Glide.with(context).load(profile).circleCrop().into(target)
+        if (!profile.isNullOrBlank()) {
+            val request = ImageRequest.Builder(context)
+                .data(profile)
+                .transformations(CircleCropTransformation())
+                .target(target)
+                .build()
+            imageLoader.enqueue(request)
+        }
     }
 
     override fun getDrawable(): Drawable? = icon ?: placeholder

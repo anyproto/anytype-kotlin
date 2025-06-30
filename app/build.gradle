@@ -181,7 +181,6 @@ dependencies {
 
     //Compile time dependencies
     ksp libs.daggerCompiler
-    ksp libs.glideCompiler
     compileOnly libs.javaxAnnotation
     compileOnly libs.javaxInject
 
@@ -196,8 +195,6 @@ dependencies {
     implementation libs.recyclerView
     implementation libs.constraintLayout
     implementation libs.composeConstraintLayout
-    implementation libs.glide
-    implementation libs.glideCompose
     implementation libs.coilCompose
     implementation libs.coilNetwork
     implementation libs.dagger

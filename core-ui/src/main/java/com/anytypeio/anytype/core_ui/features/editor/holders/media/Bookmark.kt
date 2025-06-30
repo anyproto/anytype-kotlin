@@ -20,11 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_DESCRIPTION_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil3.load
 import kotlin.text.get
 import timber.log.Timber
 
@@ -53,29 +49,6 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
-    private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
-
-        override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
-        ): Boolean {
-            error.visible()
-            return false
-        }
-
-        override fun onResourceReady(
-            resource: Drawable,
-            model: Any,
-            target: Target<Drawable>?,
-            dataSource: DataSource,
-            isFirstResource: Boolean
-        ): Boolean {
-            error.gone()
-            return false
-        }
-    }
 
     fun bind(item: BlockView.Media.Bookmark, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
@@ -84,11 +57,13 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         url.setText(item.url, TextView.BufferType.EDITABLE)
         if (item.imageUrl != null) {
             image.visible()
-            Glide.with(image)
-                .load(item.imageUrl)
-                .centerCrop()
-                .listener(listener)
-                .into(image)
+            image.load(item.imageUrl) {
+                crossfade(true)
+                listener(
+                    onError = { _, _ -> error.visible() },
+                    onSuccess = { _, _ -> error.gone() }
+                )
+            }
         } else {
             with(image) {
                 gone()
@@ -97,7 +72,9 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         }
         if (item.faviconUrl != null) {
             logo.visible()
-            Glide.with(logo).load(item.faviconUrl).into(logo)
+            logo.load(item.faviconUrl) {
+                crossfade(true)
+            }
         } else {
             with(logo) {
                 setImageDrawable(null)

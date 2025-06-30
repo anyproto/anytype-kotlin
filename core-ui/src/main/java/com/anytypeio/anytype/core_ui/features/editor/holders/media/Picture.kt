@@ -13,11 +13,11 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
+import coil3.imageLoader
+import coil3.load
+import coil3.request.ErrorResult
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
 import timber.log.Timber
 
 class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), DecoratableCardViewHolder {
@@ -36,42 +36,29 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
-    private val listener: RequestListener<Drawable> = object : RequestListener<Drawable> {
-
-        override fun onLoadFailed(
-            e: GlideException?,
-            model: Any?,
-            target: Target<Drawable>,
-            isFirstResource: Boolean
-        ): Boolean {
-            loading.gone()
-            error.visible()
-            Timber.w(e, "Error while loading picture with url: $model")
-            return false
-        }
-
-        override fun onResourceReady(
-            resource: Drawable,
-            model: Any,
-            target: Target<Drawable>?,
-            dataSource: DataSource,
-            isFirstResource: Boolean
-        ): Boolean {
-            loading.gone()
-            error.invisible()
-            return false
-        }
+    private fun createImageRequest(url: String): ImageRequest {
+        return ImageRequest.Builder(image.context)
+            .data(url)
+            .target(image)
+            .listener(
+                onStart = { loading.visible() },
+                onSuccess = { _, _ ->
+                    loading.gone()
+                    error.invisible()
+                },
+                onError = { _, result ->
+                    loading.gone()
+                    error.visible()
+                    Timber.w(result.throwable, "Error while loading picture with url: $url")
+                }
+            )
+            .build()
     }
 
     fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
-        loading.visible()
-        Glide
-            .with(image)
-            .load(item.url)
-            .listener(listener)
-            .timeout(LOADING_TIMEOUT_IN_MILLIS)
-            .into(image)
+        val request = createImageRequest(item.url)
+        image.context.imageLoader.enqueue(request)
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

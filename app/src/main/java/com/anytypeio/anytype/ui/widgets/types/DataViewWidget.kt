@@ -57,8 +57,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 
 @Composable
 fun DataViewListWidgetCard(
@@ -462,7 +461,6 @@ fun ListWidgetElement(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
@@ -517,7 +515,7 @@ private fun GalleryWidgetItemCard(
                 }
 
                 is CoverView.Image -> {
-                    GlideImage(
+                    AsyncImage(
                         model = cover.url,
                         contentDescription = "Cover image",
                         modifier = Modifier

@@ -11,8 +11,8 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import coil3.load
+import coil3.size.Scale
 
 class GalleryCoverWidget @JvmOverloads constructor(
     context: Context,
@@ -48,19 +48,13 @@ class GalleryCoverWidget @JvmOverloads constructor(
                 setBackgroundColor(0)
                 setBackgroundResource(0)
                 if (item.fitImage) {
-                    Glide
-                        .with(this)
-                        .load(cover.url)
-                        .fitCenter()
-                        .into(this)
+                    load(cover.url) {
+                        scale(Scale.FIT)
+                    }
                 } else {
-                    Glide
-                        .with(this)
-                        .load(cover.url)
-                        .transform(
-                            CenterCrop(),
-                        )
-                        .into(this)
+                    load(cover.url) {
+                        scale(Scale.FILL)
+                    }
                 }
             }
             null -> {

@@ -31,10 +31,8 @@ import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel.ReactionPickerView
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
+import coil.compose.AsyncImage
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SelectChatReactionScreen(
     views: List<ReactionPickerView> = emptyList(),
@@ -86,7 +84,7 @@ fun SelectChatReactionScreen(
                 when (item) {
                     is ReactionPickerView.Emoji -> {
                         if (item.emojified.isNotEmpty()) {
-                            GlideImage(
+                            AsyncImage(
                                 model = item.emojified,
                                 contentDescription = "",
                                 modifier = Modifier

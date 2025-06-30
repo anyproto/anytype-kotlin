@@ -39,7 +39,7 @@ import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.Glide
+import coil3.load
 
 abstract class LinkToObjectCard(
     view: View
@@ -212,11 +212,9 @@ abstract class LinkToObjectCard(
                 coverView.apply {
                     visible()
                     setBackgroundColor(0)
-                    Glide
-                        .with(itemView)
-                        .load(cover.url)
-                        .centerCrop()
-                        .into(this)
+                    load(cover.url) {
+                        crossfade(true)
+                    }
                 }
             }
             is BlockView.LinkToObject.Default.Card.Cover.Gradient -> {

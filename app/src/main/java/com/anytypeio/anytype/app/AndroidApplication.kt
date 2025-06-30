@@ -3,10 +3,14 @@ package com.anytypeio.anytype.app
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import androidx.lifecycle.ProcessLifecycleOwner
+import coil3.ImageLoader
+import coil3.SingletonImageLoader
+import coil3.request.crossfade
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
 import com.anytypeio.anytype.BuildConfig
@@ -24,7 +28,7 @@ import com.anytypeio.anytype.middleware.discovery.adresshandler.LocalNetworkAddr
 import javax.inject.Inject
 import timber.log.Timber
 
-class AndroidApplication : Application(), HasComponentDependencies {
+class AndroidApplication : Application(), HasComponentDependencies, SingletonImageLoader.Factory {
 
     @Inject
     lateinit var amplitudeTracker: AmplitudeTracker
@@ -121,6 +125,12 @@ class AndroidApplication : Application(), HasComponentDependencies {
 
     private fun setupSignalHandler() {
         SignalHandler.initSignalHandler()
+    }
+
+    override fun newImageLoader(context: Context): ImageLoader {
+        return ImageLoader.Builder(context)
+            .crossfade(true)
+            .build()
     }
 
     companion object {

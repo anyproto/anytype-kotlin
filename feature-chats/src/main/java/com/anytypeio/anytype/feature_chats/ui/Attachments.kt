@@ -49,13 +49,10 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil3.request.CachePolicy
 
 @Composable
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
@@ -147,8 +144,14 @@ fun BubbleAttachments(
                         trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
                         strokeWidth = 4.dp
                     )
-                    GlideImage(
-                        model = attachment.url,
+                    AsyncImage(
+                        model = coil3.request.ImageRequest.Builder(context)
+                            .data(attachment.url)
+                            .size(1024, 1024)
+                            .diskCachePolicy(CachePolicy.ENABLED)
+                            .memoryCachePolicy(CachePolicy.ENABLED)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = "Attachment image",
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
@@ -162,13 +165,7 @@ fun BubbleAttachments(
                                     onAttachmentLongClicked(attachment)
                                 }
                             )
-                    ) {
-                        it
-                            .override(1024, 1024)
-                            .centerCrop()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .format(DecodeFormat.PREFER_RGB_565)
-                    }
+                    )
                 }
             }
             is ChatView.Message.Attachment.Link -> {

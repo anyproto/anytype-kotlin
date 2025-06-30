@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -32,6 +34,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
+import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -86,6 +89,12 @@ object ChatModule {
         fun bindViewModelFactory(
             factory: ChatViewModelFactory
         ): ViewModelProvider.Factory
+
+        @PerScreen
+        @Binds
+        fun objectWatcherReducer(
+            default: DefaultObjectViewReducer
+        ): ObjectWatcher.Reducer
     }
 }
 
@@ -113,4 +122,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun makeSpaceShareable(): MakeSpaceShareable
     fun getSpaceInviteLink(): GetSpaceInviteLink
     fun revokeSpaceInviteLink(): RevokeSpaceInviteLink
+    fun eventChannel(): EventChannel
 }

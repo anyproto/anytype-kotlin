@@ -124,7 +124,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
                     ) {
                         PermissionState.Granted
                     } else {
-                        PermissionState.Denied // Or NotRequested, depending on your logic
+                        PermissionState.Denied
                     }
                 }
 
@@ -132,7 +132,6 @@ class NotificationPermissionManagerImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Timber.w(e, "Error refreshing notification permission state")
-            // If we can't refresh safely, set to denied state
             _permissionState.value = PermissionState.Denied
         }
     }

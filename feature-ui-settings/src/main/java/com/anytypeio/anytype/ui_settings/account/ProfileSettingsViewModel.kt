@@ -61,12 +61,13 @@ class ProfileSettingsViewModel(
 
     val isDebugEnabled = MutableStateFlow(false)
 
-    val notificationsDisabled: StateFlow<Boolean> = notificationPermissionManager.permissionState().map { state ->
-        when (state) {
-            is NotificationPermissionManagerImpl.PermissionState.Granted -> false
-            else -> true
-        }
-    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
+    val notificationsDisabled: StateFlow<Boolean> =
+        notificationPermissionManager.permissionState().map { state ->
+            when (state) {
+                is NotificationPermissionManagerImpl.PermissionState.Granted -> false
+                else -> true
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
 
     val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(

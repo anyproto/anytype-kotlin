@@ -127,9 +127,9 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 onDismissRequest = {
                                     if (isLoadingInvite) {
                                         vm.onCancelLoadingInviteClicked()
-                                        dismiss()
+                                        safeDismiss()
                                     } else {
-                                        dismiss()
+                                        safeDismiss()
                                     }
                                 },
                                 dragHandle = {},
@@ -140,7 +140,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                     JoiningLoadingState(
                                         onCancelLoadingInviteClicked = {
                                             vm.onCancelLoadingInviteClicked()
-                                            dismiss()
+                                            safeDismiss()
                                         }
                                     )
                                 } else if (!showModal) {
@@ -150,7 +150,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             onRequestJoinSpaceClicked = vm::onRequestToJoinClicked,
                                             onCancelClicked = {
                                                 vm.onCancelJoinSpaceRequestClicked()
-                                                dismiss()
+                                                safeDismiss()
                                             },
                                             spaceName = spaceName,
                                             createdByName = createdByName
@@ -163,7 +163,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             createdByName = createdByName,
                                             onCancelClicked = {
                                                 vm.onCancelJoinSpaceRequestClicked()
-                                                dismiss()
+                                                safeDismiss()
                                             }
                                         )
                                     }
@@ -197,7 +197,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         actionButtonText = stringResource(id = R.string.multiplayer_open_space),
                                         cancelButtonText = stringResource(id = R.string.cancel),
                                         onLeftClicked = {
-                                            dismiss()
+                                            safeDismiss()
                                         },
                                         onRightClicked = {
                                             vm.onOpenSpaceClicked(err.space)
@@ -217,7 +217,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             )
                                         ),
                                         onFirstButtonClicked = {
-                                            dismiss()
+                                            safeDismiss()
                                         }
                                     )
                                 }
@@ -234,7 +234,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             )
                                         ),
                                         onFirstButtonClicked = {
-                                            dismiss()
+                                            safeDismiss()
                                         }
                                     )
                                 }
@@ -251,7 +251,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             )
                                         ),
                                         onFirstButtonClicked = {
-                                            dismiss()
+                                            safeDismiss()
                                         }
                                     )
                                 }
@@ -268,7 +268,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             )
                                         ),
                                         onFirstButtonClicked = {
-                                            dismiss()
+                                            safeDismiss()
                                         }
                                     )
                                 }
@@ -291,7 +291,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
     private fun proceedWithCommand(command: RequestJoinSpaceViewModel.Command) {
         when (command) {
             is RequestJoinSpaceViewModel.Command.Dismiss -> {
-                dismiss()
+                safeDismiss()
             }
             is RequestJoinSpaceViewModel.Command.Toast.RequestSent -> {
                 toast(getString(R.string.multiplayer_request_sent_toast))
@@ -341,6 +341,23 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().requestToJoinSpaceComponent.release()
+    }
+
+    /**
+     * Safe dismiss method that prevents IllegalStateException when fragment
+     * is not in proper state for dismissal (e.g., after onSaveInstanceState)
+     */
+    private fun safeDismiss() {
+        try {
+            // Check if fragment is still attached and can safely perform transactions
+            if (isAdded && !isStateSaved && !isRemoving) {
+                dismiss()
+            } else {
+                Timber.d("Skipping dismiss - fragment not in valid state for dismissal")
+            }
+        } catch (e: IllegalStateException) {
+            Timber.w(e, "Failed to dismiss fragment safely")
+        }
     }
 
     companion object {

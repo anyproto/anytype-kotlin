@@ -19,6 +19,7 @@ import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
 import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
@@ -965,6 +966,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onDestroyView() {
+        // Clear all text selections to prevent MultiSelectPopupWindow crashes
+        clearActiveTextSelections()
+        
         pickerDelegate.clearPickit()
         super.onDestroyView()
     }
@@ -973,6 +977,48 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         pickerDelegate.deleteTemporaryFile()
         pickerDelegate.clearOnCopyFile()
         super.onDestroy()
+    }
+
+    private fun clearActiveTextSelections() {
+        try {
+            // Lose focus on any currently focused child
+            binding.recycler.clearFocus()
+            binding.recycler.findFocus()?.clearFocus()
+            // Walk the tree
+            clearTextViewsRecursively(binding.recycler)
+        } catch (e: Exception) {
+            // Catch only expected exceptions
+            Timber.w(e, "Error clearing text selections")
+        }
+    }
+
+    private fun clearTextViewsRecursively(view: View) {
+        when (view) {
+            is EditText -> {
+                // Remove focus and any selection
+                view.clearFocus()
+                if (view.hasSelection() && view.text.isNotEmpty()) {
+                    view.setSelection(0, 0)
+                }
+                clearActionModeCallbacks(view)
+            }
+            is TextView -> {
+                // Other TextViews: just clear any lingering callbacks
+                view.clearFocus()
+                clearActionModeCallbacks(view)
+            }
+            is ViewGroup -> {
+                for (i in 0 until view.childCount) {
+                    clearTextViewsRecursively(view.getChildAt(i))
+                }
+            }
+            else -> Unit
+        }
+    }
+
+    private fun clearActionModeCallbacks(view: TextView) {
+        view.customSelectionActionModeCallback = null
+        view.customInsertionActionModeCallback = null
     }
 
     override fun onSetRelationKeyClicked(blockId: Id, key: Id) {

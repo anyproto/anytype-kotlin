@@ -506,6 +506,9 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.CHAT -> MOTypeLayout.chat
     ObjectType.Layout.CHAT_DERIVED -> MOTypeLayout.chatDerived
     ObjectType.Layout.TAG -> MOTypeLayout.tag
+    ObjectType.Layout.NOTIFICATION -> MOTypeLayout.notification
+    ObjectType.Layout.MISSING_OBJECT -> MOTypeLayout.missingObject
+    ObjectType.Layout.DEVICES -> MOTypeLayout.devices
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

@@ -1172,7 +1172,7 @@
     <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
     <string name="multiplayer_request_to_join_sent_title">Anfrage gesendet</string>
     <string name="multiplayer_request_to_join_sent_description">Sie erhalten eine Benachrichtigung, wenn der Spacebesitzer Ihre Anfrage angenommen hat.</string>
-    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Spaces verwalten</string>
     <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
     <string name="multiplayer_space_request_to_join">Beitrittsanfrage stellen</string>
     <string name="multiplayer_space_request_to_join_msg">Sie wurden eingeladen, dem Space %1$s, erstellt von %2$s beizutreten. Senden Sie eine Anfrage, damit der Spacebesitzer Sie einladen kann.</string>
@@ -1537,7 +1537,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_version">Fehler beim Abrufen des Versionsverlaufs</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">Meine Spaces</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
@@ -1565,7 +1565,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="allContent_group_yesterday">Gestern</string>
     <string name="allContent_group_prev_7">Letzte 7 Tage</string>
     <string name="allContent_group_prev_14">Letzte 14 Tage</string>
-    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_1">Der Tresor ist das neue Zuhause aller deiner Spaces. Erstelle Spaces, trete ihnen bei oder teile sie - alles wird hier sicher gespeichert.</string>
     <string name="introduce_vault_text_2">Spaces können nun einfach per Drag-and-Drop neu angeordnet werden und einfacher navigieren.</string>
     <string name="introduce_vault_text_3">Standardmäßig wir das Icon deines Spaces verschwommen dargestellt um es als Hintergrundbild zu nutzen. Wenn notwendig, kann das in den Space Einstellungen geändert werden.</string>
     <string name="introduce_vault_welcome_to_the_vault">Willkommen im Tresor</string>
@@ -1814,4 +1814,6 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="space_notify_unmute">Unmute</string>
+    <string name="space_notify_mute">Mute</string>
 </resources>

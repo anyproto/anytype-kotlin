@@ -201,7 +201,7 @@ sealed class ObjectWrapper {
                 }
             }
 
-        val defaultTemplateId: Id? by default
+        val defaultTemplateId: Id? get() = getSingleValue(Relations.DEFAULT_TEMPLATE_ID)
 
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {

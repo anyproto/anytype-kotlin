@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.ui.dashboard
 
 import android.content.ClipData
+import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.DecelerateInterpolator
@@ -116,6 +118,11 @@ abstract class BaseMnemonicFragment<T : ViewBinding> : BaseBottomSheetFragment<T
                 DashboardMnemonicReminderDialog.MNEMONIC_LABEL,
                 keychainPhrase
             )
+            clip.apply {
+                description.extras = PersistableBundle().apply {
+                    putBoolean(ClipDescription.EXTRA_IS_SENSITIVE, true)
+                }
+            }
             clipboard.setPrimaryClip(clip)
             toast(getString(R.string.recovery_phrase_copied))
         } catch (e: Exception) {

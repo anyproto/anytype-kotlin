@@ -1349,7 +1349,19 @@ class BlockAdapter(
                 if (block.id == command.target) {
                     if (holder is TextHolder) {
                         holder.content.post {
-                            holder.content.setSelection(command.range.first, command.range.last)
+                            val textLength = holder.content.text?.length ?: 0
+                            val start = command.range.first.coerceIn(0, textLength)
+                            val end = command.range.last.coerceIn(0, textLength)
+                            
+                            // Ensure start <= end to prevent StringIndexOutOfBoundsException
+                            if (start <= end && textLength > 0) {
+                                holder.content.setSelection(start, end)
+                            } else if (start > end) {
+                                // Log error and fix invalid range by setting cursor to the smaller valid position
+                                timber.log.Timber.e("Invalid selection range: start=$start > end=$end, textLength=$textLength, fixing to cursor position")
+                                val cursorPos = minOf(start, end).coerceIn(0, textLength)
+                                holder.content.setSelection(cursorPos)
+                            }
                         }
                     }
                 }

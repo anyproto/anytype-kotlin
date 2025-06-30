@@ -141,6 +141,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 showNotificationSettingsModal = false
                             },
                             onOpenSettings = {
+                                showNotificationSettingsModal = false
                                 requireContext().openNotificationSettings()
                             }
                         )

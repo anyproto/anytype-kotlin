@@ -10,6 +10,7 @@
     <string name="appearance">外观</string>
     <string name="file_storage">文件存储</string>
     <string name="key">密钥</string>
+    <string name="login_key">密钥</string>
     <string name="clear_file_cache">清除文件缓存</string>
     <string name="debug_sync_report">调试同步报告</string>
     <string name="debug">调试</string>
@@ -28,6 +29,8 @@
     <string name="dark">暗色</string>
     <string name="system">跟随系统</string>
     <string name="settings">设置</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">您是否备份了密钥？</string>
     <string name="you_will_need_to_sign_in">您将需要恢复短语才能进入您的文库。将其保存在安全的地方。如果您丢失了它，您将无法再进入您的文库。</string>
     <string name="about_help_and_community">帮助与社区</string>
@@ -1799,4 +1802,11 @@
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
 </resources>

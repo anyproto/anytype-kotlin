@@ -10,6 +10,7 @@
     <string name="appearance">外觀</string>
     <string name="file_storage">檔案儲存空間</string>
     <string name="key">密鑰</string>
+    <string name="login_key">密鑰</string>
     <string name="clear_file_cache">清除檔案緩存</string>
     <string name="debug_sync_report">除錯同步報告</string>
     <string name="debug">除錯模式</string>
@@ -28,6 +29,8 @@
     <string name="dark">深色</string>
     <string name="system">跟隨系統</string>
     <string name="settings">設置</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">您備份好您的密鑰了嗎？</string>
     <string name="you_will_need_to_sign_in">您將需要使用它來登入您的帳號。請將其保存在安全的地方。 若遺失了，您將無法再登入您的帳號。</string>
     <string name="about_help_and_community">幫助 &amp; 社群</string>
@@ -1803,4 +1806,11 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
 </resources>

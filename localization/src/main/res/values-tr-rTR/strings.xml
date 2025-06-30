@@ -29,8 +29,8 @@
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
-    <string name="app_preferences">App Preferences</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="app_preferences">Uygulama Tercihleri</string>
+    <string name="vault_key">Kasa &amp; Anahtar</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
     <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
     <string name="about_help_and_community">Yardım &amp; Topluluk</string>

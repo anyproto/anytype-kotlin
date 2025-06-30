@@ -43,6 +43,7 @@ import androidx.compose.runtime.setValue
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import com.anytypeio.anytype.core_utils.ext.cancel
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -80,11 +81,6 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
-            if (uri != null) {
-                shareFile(uri)
-            }
-        }
         return ComposeDialogView(
             context = requireContext(),
             dialog = requireDialog()
@@ -167,7 +163,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        skipCollapsed()
+        expand()
     }
 
     override fun onStart() {
@@ -175,6 +172,16 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         subscribe(vm.toasts) {
             toast(it)
         }
+        jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
+            if (uri != null) {
+                shareFile(uri)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        jobs.cancel()
     }
 
     override fun onResume() {

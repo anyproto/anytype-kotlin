@@ -37,7 +37,6 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
-import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -407,15 +406,7 @@ class SplashViewModel(
                 if (view.isActive || view.isLoading) {
                     val chat = view.chatId
                     when {
-                        chat.isNullOrEmpty() || !ChatConfig.isChatAllowed(space.id) -> {
-                            commands.emit(
-                                Command.NavigateToWidgets(
-                                    space = space.id,
-                                    deeplink = deeplink
-                                )
-                            )
-                        }
-                        view.spaceUxType == SpaceUxType.CHAT -> {
+                        view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
                             commands.emit(
                                 Command.NavigateToSpaceLevelChat(
                                     space = space.id,

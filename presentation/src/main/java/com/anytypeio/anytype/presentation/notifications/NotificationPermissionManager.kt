@@ -33,21 +33,20 @@ class NotificationPermissionManagerImpl @Inject constructor(
     }
 
     override fun shouldShowPermissionDialog(): Boolean {
-
         // If notifications are already enabled at the system level, no dialog needed
         if (areNotificationsEnabled()) {
             return false
         }
 
-        val lastRequestTime = sharedPreferences.getLong(KEY_LAST_REQUEST_TIME, 0)
-        val requestCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
-        val currentTime = System.currentTimeMillis()
+        // Check if user has ever been shown the dialog before
+        val hasBeenShown = sharedPreferences.getBoolean(KEY_DIALOG_SHOWN, false)
+        
+        // Check if user has dismissed the dialog before
+        val hasBeenDismissed = sharedPreferences.getBoolean(KEY_DIALOG_DISMISSED, false)
 
         return when {
-            // First time request
-            lastRequestTime == 0L -> true
-            // User clicked "Not now" - show again after 24 hours, max 3 times
-            requestCount < MAX_REQUEST_COUNT && (currentTime - lastRequestTime) >= HOURS_24 -> true
+            // Show only if never shown before and never dismissed
+            !hasBeenShown && !hasBeenDismissed -> true
             // User rejected in system dialog - show banner in settings
             _permissionState.value == PermissionState.Denied -> false
             else -> false
@@ -55,10 +54,8 @@ class NotificationPermissionManagerImpl @Inject constructor(
     }
 
     override fun onPermissionRequested() {
-        val currentCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
         sharedPreferences.edit().apply {
-            putLong(KEY_LAST_REQUEST_TIME, System.currentTimeMillis())
-            putInt(KEY_REQUEST_COUNT, currentCount + 1)
+            putBoolean(KEY_DIALOG_SHOWN, true)
             apply()
         }
     }
@@ -81,6 +78,10 @@ class NotificationPermissionManagerImpl @Inject constructor(
 
     override fun onPermissionDismissed() {
         _permissionState.value = PermissionState.Dismissed
+        sharedPreferences.edit().apply {
+            putBoolean(KEY_DIALOG_DISMISSED, true)
+            apply()
+        }
     }
 
     /**
@@ -129,10 +130,8 @@ class NotificationPermissionManagerImpl @Inject constructor(
     }
 
     companion object {
-        private const val KEY_LAST_REQUEST_TIME = "notification_permission_last_request_time"
-        private const val KEY_REQUEST_COUNT = "notification_permission_request_count"
+        private const val KEY_DIALOG_SHOWN = "notification_permission_dialog_shown"
+        private const val KEY_DIALOG_DISMISSED = "notification_permission_dialog_dismissed"
         private const val KEY_PERMISSION_GRANTED = "notification_permission_granted"
-        const val MAX_REQUEST_COUNT = 3
-        private const val HOURS_24 = 24 * 60 * 60 * 1000L
     }
 } 

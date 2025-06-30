@@ -70,6 +70,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.Permissions
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -91,7 +92,8 @@ class VaultViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -102,6 +104,9 @@ class VaultViewModel(
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
+    
+    // Track notification permission status for profile icon badge
+    val isNotificationDisabled = MutableStateFlow(false)
 
     // Local state for tracking order changes during drag operations
     private var pendingMainSpacesOrder: List<Id>? = null
@@ -139,6 +144,23 @@ class VaultViewModel(
                 spaces.value = resultingSections.allSpaces // For backward compatibility
             }
         }
+        
+        // Track notification permission status for profile icon badge
+        viewModelScope.launch {
+            // Check notification permission status on app launch
+            updateNotificationBadgeState()
+            
+            // Observe permission state changes
+            notificationPermissionManager.permissionState().collect { permissionState ->
+                updateNotificationBadgeState()
+            }
+        }
+    }
+    
+    private fun updateNotificationBadgeState() {
+        val isDisabled = !notificationPermissionManager.areNotificationsEnabled()
+        isNotificationDisabled.value = isDisabled
+        Timber.d("Notification badge state updated: isDisabled = $isDisabled")
     }
 
     private suspend fun transformToVaultSpaceViews(

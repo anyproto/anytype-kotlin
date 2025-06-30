@@ -19,6 +19,7 @@ interface NotificationPermissionManager {
     fun onPermissionDismissed()
     fun permissionState(): StateFlow<PermissionState>
     fun refreshPermissionState()
+    fun areNotificationsEnabled(): Boolean
 }
 
 class NotificationPermissionManagerImpl @Inject constructor(
@@ -89,7 +90,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
      *  - on API<33, checks whether the user has globally disabled notifications for your app
      *  - on API>=33, also checks the new POST_NOTIFICATIONS runtime permission
      */
-    private fun areNotificationsEnabled(): Boolean {
+    override fun areNotificationsEnabled(): Boolean {
         // 1) global switch
         val managerCompat = NotificationManagerCompat.from(context)
         if (!managerCompat.areNotificationsEnabled()) {

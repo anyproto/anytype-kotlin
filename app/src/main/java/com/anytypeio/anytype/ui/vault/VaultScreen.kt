@@ -117,6 +117,7 @@ fun AllSectionHeader() {
 fun VaultScreenToolbar(
     profile: AccountProfile,
     spaceCountLimitReached: Boolean = false,
+    showNotificationBadge: Boolean = false,
     onPlusClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     isLoading: Boolean
@@ -138,9 +139,10 @@ fun VaultScreenToolbar(
                 contentAlignment = Alignment.Center
 
             ) {
-                ProfileIcon(
+                ProfileIconWithBadge(
                     modifier = Modifier.size(28.dp),
-                    profile = profile
+                    profile = profile,
+                    showBadge = showNotificationBadge
                 )
             }
 
@@ -232,6 +234,32 @@ private fun ProfileIcon(
 }
 
 @Composable
+private fun ProfileIconWithBadge(
+    modifier: Modifier,
+    profile: AccountProfile,
+    showBadge: Boolean = false
+) {
+    Box(modifier) {
+        // Main profile icon
+        ProfileIcon(
+            modifier = Modifier.fillMaxSize(),
+            profile = profile
+        )
+        
+        // Badge positioned in top-right corner
+        if (showBadge) {
+            Image(
+                painter = painterResource(R.drawable.ic_attention_red_18),
+                contentDescription = "Notification disabled badge",
+                modifier = Modifier
+                    .size(18.dp)
+                    .align(Alignment.TopEnd)
+            )
+        }
+    }
+}
+
+@Composable
 @Preview(
     showBackground = true,
     uiMode = Configuration.UI_MODE_NIGHT_YES,
@@ -274,6 +302,7 @@ fun VaultScreenToolbarScrolledPreview() {
             icon = ProfileIconView.Placeholder(name = "Jd")
         ),
         isLoading = false,
+        showNotificationBadge = true
     )
 }
 
@@ -409,6 +438,7 @@ fun SpaceActionsDropdownMenuHost(
 fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
     sections: VaultSectionView,
+    showNotificationBadge: Boolean = false,
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
@@ -472,6 +502,7 @@ fun VaultScreenWithUnreadSection(
             Column {
                 VaultScreenToolbar(
                     profile = profile,
+                    showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
                     spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,

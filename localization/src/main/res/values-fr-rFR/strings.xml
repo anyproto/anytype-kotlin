@@ -10,6 +10,7 @@
     <string name="appearance">Apparence</string>
     <string name="file_storage">Stockage de fichiers</string>
     <string name="key">Clé</string>
+    <string name="login_key">Clé</string>
     <string name="clear_file_cache">Vider le cache des fichiers</string>
     <string name="debug_sync_report">Rapport de débogage de synchronisation</string>
     <string name="debug">Débogage</string>
@@ -28,6 +29,8 @@
     <string name="dark">Sombre</string>
     <string name="system">Système</string>
     <string name="settings">Paramètres</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Avez-vous sauvegardé votre Clé ?</string>
     <string name="you_will_need_to_sign_in">Vous en aurez besoin pour accéder à votre coffre. Conservez-la dans un lieu sûr. Si vous la perdez, vous ne pourrez plus accéder à votre coffre.</string>
     <string name="about_help_and_community">Aide &amp; Communauté</string>
@@ -1813,4 +1816,11 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notifications_disable_short">Désactiver</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Les notifications sont désactivées</string>
+    <string name="notification_settings_disabled_subtitle">Recevez des notifications sur les nouveaux messages en les activant dans les paramètres de votre appareil.</string>
+    <string name="notification_settings_button_open">Ouvrir les paramètres</string>
+    <string name="notification_settings_state_title">Notifications de message</string>
+    <string name="notification_settings_state_disabled">Désactivé</string>
+    <string name="notification_settings_state_enabled">Activé</string>
 </resources>

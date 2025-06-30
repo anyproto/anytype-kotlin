@@ -10,6 +10,7 @@
     <string name="appearance">Görünüm</string>
     <string name="file_storage">Dosya depolama alanı</string>
     <string name="key">Kurtarma anahtarı</string>
+    <string name="login_key">Kurtarma anahtarı</string>
     <string name="clear_file_cache">Dosya önbelleğini temizle</string>
     <string name="debug_sync_report">Hata Ayıklama Senkronizasyon Raporu</string>
     <string name="debug">Hata ayıklama</string>
@@ -28,6 +29,8 @@
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
     <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
     <string name="about_help_and_community">Yardım &amp; Topluluk</string>
@@ -1816,4 +1819,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_disable_short">Devre dışı bırak</string>
     <string name="space_notify_unmute">Susturmayı kaldır</string>
     <string name="space_notify_mute">Sustur</string>
+    <string name="notification_settings_title">Bildirimler</string>
+    <string name="notification_settings_disabled">Bildirimler devre dışı</string>
+    <string name="notification_settings_disabled_subtitle">Cihaz ayarlarınızda etkinleştirerek yeni mesajlarla ilgili bildirimler alın.</string>
+    <string name="notification_settings_button_open">Ayarlar\'ı Aç</string>
+    <string name="notification_settings_state_title">Mesaj Bildirimleri</string>
+    <string name="notification_settings_state_disabled">Devre dışı</string>
+    <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
 </resources>

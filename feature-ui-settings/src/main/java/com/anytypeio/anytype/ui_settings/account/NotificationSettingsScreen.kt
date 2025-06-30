@@ -51,7 +51,8 @@ fun NotificationSettingsScreen(
     ModalBottomSheet(
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
+            .systemBarsPadding()
+            .padding(top = 16.dp),
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         containerColor = colorResource(id = R.color.background_secondary),
@@ -175,7 +176,7 @@ fun NotificationSettingsScreen(
 @Composable
 fun NotificationSettingsScreenPreview() {
     NotificationSettingsScreen(
-        isDisabled = false,
+        isDisabled = true,
         onDismiss = {},
         onOpenSettings = {}
     )

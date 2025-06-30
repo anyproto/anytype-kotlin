@@ -10,6 +10,7 @@
     <string name="appearance">Знешні выгляд</string>
     <string name="file_storage">Сховішча файлаў</string>
     <string name="key">Ключ</string>
+    <string name="login_key">Ключ</string>
     <string name="clear_file_cache">Ачысціць файлавы кэш</string>
     <string name="debug_sync_report">Адладкавая справаздача сінхранізацыі</string>
     <string name="debug">Адладка</string>
@@ -28,6 +29,8 @@
     <string name="dark">Цёмны</string>
     <string name="system">Сістэма</string>
     <string name="settings">Налады</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы стварылі рэзервовую копію свайго ключа?</string>
     <string name="you_will_need_to_sign_in">Ён спатрэбіцца вам для ўваходу ў сховішча. Захоўвайце яго ў надзейным месцы. Калі вы страціце яго, вы больш не зможаце ўвайсці ў сховішча.</string>
     <string name="about_help_and_community">Дапамога &amp; Супольнасць</string>
@@ -1842,4 +1845,11 @@
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
 </resources>

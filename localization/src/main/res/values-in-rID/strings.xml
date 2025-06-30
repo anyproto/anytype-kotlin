@@ -10,6 +10,7 @@
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="key">Kunci</string>
+    <string name="login_key">Kunci</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">Anda membutuhkannya untuk masuk. Simplanlah dalam tempat yang aman. Jika hilang, kamu tidak akan bisa mengakses brankasmu.</string>
     <string name="about_help_and_community">Bantuan &amp; Komunitas</string>
@@ -1803,4 +1806,11 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
+    <string name="notification_settings_title">Pemberitahuan</string>
+    <string name="notification_settings_disabled">Pemberitahuan dinonaktifkan</string>
+    <string name="notification_settings_disabled_subtitle">Terima pemberitahuan pesan baru dengan mengaktifkannya di setelan perangkatmu.</string>
+    <string name="notification_settings_button_open">Buka Setelan</string>
+    <string name="notification_settings_state_title">Pemberitahuan Pesan</string>
+    <string name="notification_settings_state_disabled">Nonaktif</string>
+    <string name="notification_settings_state_enabled">Aktif</string>
 </resources>

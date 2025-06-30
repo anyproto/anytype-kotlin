@@ -120,20 +120,22 @@ interface PickerDelegate : PickiTCallbacks {
 
         override fun clearPickit() {
             pickiT.cancelTask()
-            pickitAlertDialog?.dismiss()
-            pickitProgressDialog?.dismiss()
-            pickitAlertDialog = null
-            pickitProgressBar = null
-            pickitProgressDialog = null
-            snackbar?.dismiss()
-            snackbar = null
+            cleanupDialogsAndResources()
         }
 
         fun onStop() {
             pickiT.cancelTask()
+            cleanupDialogsAndResources()
+        }
+
+        fun cleanupDialogsAndResources() {
             pickitAlertDialog?.dismiss()
+            pickitAlertDialog = null
             pickitProgressDialog?.dismiss()
+            pickitProgressDialog = null
+            pickitProgressBar = null
             snackbar?.dismiss()
+            snackbar = null
         }
 
         override fun deleteTemporaryFile() {
@@ -174,11 +176,15 @@ interface PickerDelegate : PickiTCallbacks {
         override fun PickiTonUriReturned() {
             Timber.d("PickiTonUriReturned")
             if (pickitProgressDialog == null || pickitProgressDialog?.isShowing == false) {
-                pickitProgressDialog = ProgressDialog(fragment.requireContext()).apply {
-                    setMessage(fragment.getString(R.string.pickit_waiting))
-                    setCancelable(false)
+                if (canShowDialog()) {
+                    pickitProgressDialog = ProgressDialog(fragment.requireContext()).apply {
+                        setMessage(fragment.getString(R.string.pickit_waiting))
+                        setCancelable(false)
+                    }
+                    pickitProgressDialog?.show()
+                } else {
+                    Timber.w("Cannot show PickiT progress dialog - fragment/activity not in valid state")
                 }
-                pickitProgressDialog?.show()
             }
         }
 
@@ -186,22 +192,28 @@ interface PickerDelegate : PickiTCallbacks {
             Timber.d("PickiTonStartListener")
             if (pickitProgressDialog?.isShowing == true) {
                 pickitProgressDialog?.cancel()
+                pickitProgressDialog = null
             }
-            pickitAlertDialog =
-                AlertDialog.Builder(fragment.requireContext(), R.style.SyncFromCloudDialog).apply {
-                    val view =
-                        LayoutInflater.from(fragment.requireContext())
-                            .inflate(R.layout.dialog_layout, null)
-                    setView(view)
-                    view.findViewById<View>(R.id.btnCancel).setOnClickListener {
-                        pickiT.cancelTask()
-                        if (pickitAlertDialog?.isShowing == true) {
-                            pickitAlertDialog?.cancel()
+            if (canShowDialog()) {
+                pickitAlertDialog =
+                    AlertDialog.Builder(fragment.requireContext(), R.style.SyncFromCloudDialog).apply {
+                        val view =
+                            LayoutInflater.from(fragment.requireContext())
+                                .inflate(R.layout.dialog_layout, null)
+                        setView(view)
+                        view.findViewById<View>(R.id.btnCancel).setOnClickListener {
+                            pickiT.cancelTask()
+                            if (pickitAlertDialog?.isShowing == true) {
+                                pickitAlertDialog?.cancel()
+                                pickitAlertDialog = null
+                            }
                         }
-                    }
-                    pickitProgressBar = view.findViewById(R.id.mProgressBar)
-                }.create()
-            pickitAlertDialog?.show()
+                        pickitProgressBar = view.findViewById(R.id.mProgressBar)
+                    }.create()
+                pickitAlertDialog?.show()
+            } else {
+                Timber.w("Cannot show PickiT alert dialog - fragment/activity not in valid state")
+            }
             Timber.d("PickiTonStartListener")
         }
 
@@ -220,9 +232,11 @@ interface PickerDelegate : PickiTCallbacks {
             Timber.d("PickiTonCompleteListener path:$path, wasDriveFile:$wasDriveFile, wasUnknownProvider:$wasUnknownProvider, wasSuccessful:$wasSuccessful, reason:$Reason")
             if (pickitAlertDialog?.isShowing == true) {
                 pickitAlertDialog?.cancel()
+                pickitAlertDialog = null
             }
             if (pickitProgressDialog?.isShowing == true) {
                 pickitProgressDialog?.dismiss()
+                pickitProgressDialog = null
             }
             if (BuildConfig.DEBUG) {
                 when {
@@ -254,6 +268,25 @@ interface PickerDelegate : PickiTCallbacks {
                 }
             } else {
                 Timber.e("onFilePathReady, filePath is null")
+            }
+        }
+
+        /**
+         * Check if it's safe to show dialogs by validating fragment and activity state
+         */
+        private fun canShowDialog(): Boolean {
+            return try {
+                val activity = fragment.activity
+                fragment.isAdded && 
+                !fragment.isDetached && 
+                !fragment.isRemoving && 
+                !fragment.isStateSaved &&
+                activity != null && 
+                !activity.isFinishing && 
+                !activity.isDestroyed
+            } catch (e: Exception) {
+                Timber.w(e, "Error checking fragment/activity state for dialog showing")
+                false
             }
         }
     }

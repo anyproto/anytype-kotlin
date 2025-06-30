@@ -17,6 +17,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.Parcelable
 import android.provider.MediaStore
+import android.provider.Settings
 import android.text.Editable
 import android.text.InputType
 import android.text.Spannable
@@ -445,4 +446,23 @@ fun Context.isAppInForeground(): Boolean {
     ActivityManager.getMyMemoryState(appProcessInfo)
     return appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
             appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
+}
+
+// 1) Define in a util file
+fun Context.openNotificationSettings() {
+    val intent = try {
+        // Android 8.0+ — opens your app’s notifications settings
+        Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, packageName)
+            // if you have channels:
+            // putExtra(Settings.EXTRA_CHANNEL_ID, yourChannelId)
+        }.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    } catch (e: ActivityNotFoundException) {
+        // Ultimate fallback
+        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+            data = Uri.fromParts("package", packageName, null)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+    }
+    startActivity(intent)
 }

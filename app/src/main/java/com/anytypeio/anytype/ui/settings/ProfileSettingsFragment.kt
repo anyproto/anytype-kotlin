@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -40,10 +39,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import android.content.Intent
-import android.os.Build
-import android.provider.Settings
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.openNotificationSettings
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -140,19 +137,11 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                     if (showNotificationSettingsModal) {
                         NotificationSettingsScreen(
                             isDisabled = notificationsDisabled,
-                            onDismiss = { showNotificationSettingsModal = false },
+                            onDismiss = {
+                                showNotificationSettingsModal = false
+                            },
                             onOpenSettings = {
-                                val context = requireContext()
-                                val intent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
-                                        putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
-                                    }
-                                } else {
-                                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                        data = Uri.parse("package:" + context.packageName)
-                                    }
-                                }
-                                context.startActivity(intent)
+                                requireContext().openNotificationSettings()
                             }
                         )
                     }

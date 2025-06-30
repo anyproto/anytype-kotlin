@@ -147,20 +147,34 @@ class VaultViewModel(
         
         // Track notification permission status for profile icon badge
         viewModelScope.launch {
-            // Check notification permission status on app launch
-            updateNotificationBadgeState()
-            
-            // Observe permission state changes
-            notificationPermissionManager.permissionState().collect { permissionState ->
+            try {
+                // Check notification permission status on app launch
                 updateNotificationBadgeState()
+                
+                // Observe permission state changes
+                notificationPermissionManager.permissionState().collect { permissionState ->
+                    try {
+                        updateNotificationBadgeState()
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error updating notification badge state")
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error initializing notification permission monitoring")
             }
         }
     }
     
     private fun updateNotificationBadgeState() {
-        val isDisabled = !notificationPermissionManager.areNotificationsEnabled()
-        isNotificationDisabled.value = isDisabled
-        Timber.d("Notification badge state updated: isDisabled = $isDisabled")
+        try {
+            val isDisabled = !notificationPermissionManager.areNotificationsEnabled()
+            isNotificationDisabled.value = isDisabled
+            Timber.d("Notification badge state updated: isDisabled = $isDisabled")
+        } catch (e: Exception) {
+            Timber.e(e, "Error checking notification permission state")
+            // Set a safe default state if we can't determine the actual state
+            isNotificationDisabled.value = true
+        }
     }
 
     private suspend fun transformToVaultSpaceViews(

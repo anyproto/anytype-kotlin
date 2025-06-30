@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 interface NotificationPermissionManager {
     fun shouldShowPermissionDialog(): Boolean
@@ -91,35 +92,48 @@ class NotificationPermissionManagerImpl @Inject constructor(
      *  - on API>=33, also checks the new POST_NOTIFICATIONS runtime permission
      */
     override fun areNotificationsEnabled(): Boolean {
-        // 1) global switch
-        val managerCompat = NotificationManagerCompat.from(context)
-        if (!managerCompat.areNotificationsEnabled()) {
-            return false
-        }
+        return try {
+            // 1) global switch
+            val managerCompat = NotificationManagerCompat.from(context)
+            if (!managerCompat.areNotificationsEnabled()) {
+                return false
+            }
 
-        // 2) on Tiramisu+, must also hold POST_NOTIFICATIONS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED
-        }
+            // 2) on Tiramisu+, must also hold POST_NOTIFICATIONS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                        PackageManager.PERMISSION_GRANTED
+            }
 
-        return true
+            true
+        } catch (e: Exception) {
+            Timber.w(e, "Error checking notification permissions")
+            // If we can't determine the state safely, assume notifications are disabled
+            // This prevents crashes when the app is in an unstable state
+            false
+        }
     }
 
     override fun refreshPermissionState() {
-        _permissionState.value = when {
-            areNotificationsEnabled() -> PermissionState.Granted
-            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
-                if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
-                    == PackageManager.PERMISSION_GRANTED
-                ) {
-                    PermissionState.Granted
-                } else {
-                    PermissionState.Denied // Or NotRequested, depending on your logic
+        try {
+            _permissionState.value = when {
+                areNotificationsEnabled() -> PermissionState.Granted
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        PermissionState.Granted
+                    } else {
+                        PermissionState.Denied // Or NotRequested, depending on your logic
+                    }
                 }
-            }
 
-            else -> PermissionState.Denied
+                else -> PermissionState.Denied
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Error refreshing notification permission state")
+            // If we can't refresh safely, set to denied state
+            _permissionState.value = PermissionState.Denied
         }
     }
 

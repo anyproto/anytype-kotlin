@@ -10,6 +10,7 @@
     <string name="appearance">Weergave</string>
     <string name="file_storage">Bestandsopslag</string>
     <string name="key">Herstelsleutel</string>
+    <string name="login_key">Herstelsleutel</string>
     <string name="clear_file_cache">Wis bestandscache</string>
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
     <string name="settings">Instellingen</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Heb je je sleutel geback-upt?</string>
     <string name="you_will_need_to_sign_in">Je hebt het nodig om toegang te krijgen tot je kluis. Bewaar het op een veilige plek. Als je het verliest, kun je je kluis niet meer openen.</string>
     <string name="about_help_and_community">Help &amp; Community</string>
@@ -1816,4 +1819,11 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
 </resources>

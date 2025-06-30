@@ -448,7 +448,6 @@ fun Context.isAppInForeground(): Boolean {
             appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
 }
 
-// 1) Define in a util file
 fun Context.openNotificationSettings() {
     val intent = try {
         // Android 8.0+ — opens your app’s notifications settings

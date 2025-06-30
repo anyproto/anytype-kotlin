@@ -2,15 +2,11 @@ package com.anytypeio.anytype.ui.editor
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import kotlin.test.assertNotNull
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
-import org.mockito.Mockito.`when`
 import org.mockito.junit.MockitoJUnitRunner
-import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.spy
-import org.mockito.kotlin.verify
 
 /**
  * Test for the safe dialog showing fix to prevent WindowManager$BadTokenException
@@ -29,9 +25,7 @@ class PickerDelegateSafeDialogTest {
     fun `PickerDelegate should exist and be accessible`() {
         // Basic test to ensure the PickerDelegate class is accessible
         val pickerDelegateClass = PickerDelegate::class.java
-        assert(pickerDelegateClass != null) { 
-            "PickerDelegate class should be accessible" 
-        }
+        assertNotNull(pickerDelegateClass)
     }
 
     @Test
@@ -80,8 +74,11 @@ class PickerDelegateSafeDialogTest {
         // 3. Proper try-catch blocks are in place for safety
         
         val implClass = PickerDelegate.Impl::class.java
-        assert(implClass.isAssignableFrom(PickerDelegate.Impl::class.java)) {
-            "PickerDelegate.Impl should be properly structured for safe operation"
+        val methods = implClass.declaredMethods
+        val canShowDialogMethod = methods.find { it.name == "canShowDialog" }
+
+        assert(canShowDialogMethod != null) {
+            "PickerDelegate.Impl should have canShowDialog method for safe operation"
         }
     }
 

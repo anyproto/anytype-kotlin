@@ -10,6 +10,7 @@
     <string name="appearance">外観</string>
     <string name="file_storage">ファイルストレージ</string>
     <string name="key">鍵</string>
+    <string name="login_key">鍵</string>
     <string name="clear_file_cache">ファイルキャッシュを消去</string>
     <string name="debug_sync_report">デバッグ同期レポート</string>
     <string name="debug">デバッグ</string>
@@ -28,6 +29,8 @@
     <string name="dark">ダーク</string>
     <string name="system">標準</string>
     <string name="settings">設定</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
     <string name="about_help_and_community">ヘルプとコミュニティ</string>
@@ -1804,4 +1807,11 @@
     <string name="notifications_disable_short">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
+    <string name="notification_settings_title">通知</string>
+    <string name="notification_settings_disabled">通知が無効です</string>
+    <string name="notification_settings_disabled_subtitle">メッセージ通知を受け取るには、デバイスの設定から通知を有効にしてください。</string>
+    <string name="notification_settings_button_open">設定を開く</string>
+    <string name="notification_settings_state_title">メッセージ通知</string>
+    <string name="notification_settings_state_disabled">無効</string>
+    <string name="notification_settings_state_enabled">有効</string>
 </resources>

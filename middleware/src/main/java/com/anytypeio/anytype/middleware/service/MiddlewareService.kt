@@ -462,6 +462,11 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun debugStackGoroutines(request: Rpc.Debug.StackGoroutines.Request): Rpc.Debug.StackGoroutines.Response
 
+    @Throws(Exception::class)
+    fun debugStats(request: Rpc.Debug.Stat.Request): Rpc.Debug.Stat.Response
+
+    @Throws(Exception::class)
+    fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
     //endregion
 
     //region WIDGETS commands
@@ -626,9 +631,6 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun deviceNetworkStateSet(request: Rpc.Device.NetworkState.Set.Request): Rpc.Device.NetworkState.Set.Response
-
-    @Throws(Exception::class)
-    fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
 
     @Throws(Exception::class)
     fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request) : Rpc.ObjectType.ListConflictingRelations.Response

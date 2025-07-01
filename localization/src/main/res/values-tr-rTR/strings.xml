@@ -1115,7 +1115,7 @@
     <string name="date_type_older">Daha eski</string>
     <string name="dates_days_ago">%1$s gün önce</string>
     <string name="dates_days_from">Şu andan itibaren %1$s gün</string>
-    <string name="settings_use_yamux">Use QUIC</string>
+    <string name="settings_use_yamux">QUIC kullan</string>
     <string name="settings_share_local_logs">Yerel günlükleri paylaş</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>

@@ -1123,7 +1123,7 @@
     <string name="date_type_older">Раней</string>
     <string name="dates_days_ago">%1$s дзён таму</string>
     <string name="dates_days_from">%1$s дзён праз</string>
-    <string name="settings_use_yamux">Выкарыстоўвайце рэзервовую бібліятэку multiplex</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Выгляд канбан пакуль недаступны на мабільных прыладах.\nЗмяніце тып выгляду (Налады -&gt; Выгляд) або стварыце новы, каб атрымаць доступ да сваіх даных.</string>

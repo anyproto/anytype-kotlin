@@ -1111,7 +1111,7 @@
     <string name="date_type_older">較舊的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天後</string>
-    <string name="settings_use_yamux">使用預訂的多工資料庫</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">行動裝置目前尚未支持看板檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>

@@ -207,7 +207,7 @@ private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Uni
             if (!config.useReserveMultiplexLib) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_network_settings_checked),
-                    contentDescription = "Check icon"
+                    contentDescription = "enabled or disabled QUIC"
                 )
             } else {
                 Spacer(modifier = Modifier.size(24.dp))

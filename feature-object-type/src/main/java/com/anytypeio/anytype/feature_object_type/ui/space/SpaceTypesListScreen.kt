@@ -113,7 +113,7 @@ fun SpaceTypesListScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp)
-                                    .padding(start = 12.dp, end = 20.dp),
+                                    .padding(start = 20.dp, end = 12.dp),
                                 item = item,
                                 onTypeClicked = onTypeClicked,
                                 onMoveToBin = onMoveToBin
@@ -181,19 +181,27 @@ private fun Type(
         ListWidgetObjectIcon(
             icon = item.icon,
             modifier = Modifier,
-            iconSize = 40.dp
+            iconSize = 24.dp
         )
         val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
 
         Text(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 2.dp),
+                .weight(1.0f)
+                .padding(start = 10.dp),
             text = name,
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_disclosure_8_24),
+            contentDescription = "open type icon",
+            modifier = Modifier
+                .size(24.dp)
+                .padding(start = 0.dp)
         )
 
         if (item.isPossibleMoveToBin) {

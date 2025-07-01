@@ -1115,7 +1115,7 @@
     <string name="date_type_older">Meno recenti</string>
     <string name="dates_days_ago">%1$s giorni fa</string>
     <string name="dates_days_from">%1$s giorni da adesso</string>
-    <string name="settings_use_yamux">Usa una libreria multiplex di riserva</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Condividi i log locali</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista Kanban non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.</string>

@@ -1111,7 +1111,7 @@
     <string name="date_type_older">さらに古い</string>
     <string name="dates_days_ago">%1$s日前</string>
     <string name="dates_days_from">%1$s日後</string>
-    <string name="settings_use_yamux">Use QUIC</string>
+    <string name="settings_use_yamux">QUICを使用</string>
     <string name="settings_share_local_logs">ローカルログを共有</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">モバイル版では、まだボードビューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>

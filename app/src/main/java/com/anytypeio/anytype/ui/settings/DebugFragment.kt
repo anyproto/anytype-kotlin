@@ -39,7 +39,8 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
     ): View  = content {
         DebugScreen(
             onExportAllClicked = vm::onExportWorkingDirectory,
-            onReadAllChats = vm::onReadAllChats
+            onReadAllChats = vm::onReadAllChats,
+            onDebugStackGoroutines = vm::onDiagnosticsGoroutinesClicked
         )
         LaunchedEffect(Unit) {
             vm.commands.collect { cmd ->

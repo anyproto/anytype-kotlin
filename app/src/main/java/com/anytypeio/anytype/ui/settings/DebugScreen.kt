@@ -26,7 +26,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 @Composable
 fun DebugScreen(
     onExportAllClicked: () -> Unit,
-    onReadAllChats: () -> Unit
+    onReadAllChats: () -> Unit,
+    onDebugStackGoroutines: () -> Unit = { /* Default no-op */ }
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -50,6 +51,11 @@ fun DebugScreen(
         ActionItem(
             title = "Read all (chats)",
             onClick = onReadAllChats
+        )
+
+        ActionItem(
+            title = "Debug stack Goroutines",
+            onClick = onDebugStackGoroutines
         )
 
         Divider()

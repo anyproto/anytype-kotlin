@@ -34,6 +34,8 @@ import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
 import com.anytypeio.anytype.presentation.util.StringResourceProviderImpl
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProviderImpl
 import com.google.gson.Gson
@@ -113,6 +115,21 @@ object UtilModule {
     @Provides
     @Singleton
     fun provideGson(): Gson = Gson()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun debugGoRoutines(
+        repo: BlockRepository,
+        context: Context,
+        fileProvider: UriFileProvider,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugGoroutinesShareDownloader = DebugGoroutinesShareDownloader(
+        repo = repo,
+        context = context,
+        uriFileProvider = fileProvider,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides

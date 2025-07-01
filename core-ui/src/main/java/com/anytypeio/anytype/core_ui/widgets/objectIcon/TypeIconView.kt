@@ -35,15 +35,9 @@ fun TypeIconView(
     when (icon) {
         is ObjectIcon.TypeIcon.Default -> {
             val (imageVector, tint) = getDefaultIconAndTint(icon)
-            val (boxModifier, imageModifier) = createIconModifiers(
-                modifier = modifier,
-                backgroundSize = backgroundSize,
-                backgroundColor = backgroundColor,
-                condition = backgroundSize > iconWithoutBackgroundMaxSize
-            )
             IconBoxView(
-                boxModifier = boxModifier,
-                imageModifier = imageModifier,
+                boxModifier = modifier.size(backgroundSize),
+                imageModifier = Modifier.size(backgroundSize),
                 imageVector = imageVector,
                 contentDescription = "Type icon",
                 tint = tint
@@ -58,8 +52,8 @@ fun TypeIconView(
                 condition = backgroundSize > iconWithoutBackgroundMaxSize
             )
             DeletedTypeIconView(
-                boxModifier = boxModifier,
-                imageModifier = imageModifier,
+                boxModifier = modifier.size(backgroundSize),
+                imageModifier = Modifier.size(backgroundSize),
             )
         }
 

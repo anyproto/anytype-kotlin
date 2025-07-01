@@ -158,6 +158,19 @@ class PreferencesViewModel(
         copyFileToCache.cancel()
     }
 
+    fun onChangeQuickLibraryState() {
+        val newValue = !networkModeState.value.useReserveMultiplexLib
+        Timber.d("onChangeQuickLibraryState: $newValue")
+        viewModelScope.launch {
+            val mode = networkModeState.value.copy(useReserveMultiplexLib = newValue)
+            val params = SetNetworkMode.Params(mode)
+            setNetworkMode.async(params).fold(
+                onSuccess = { networkModeState.value = mode },
+                onFailure = { Timber.e(it, "Failed to update network mode ") }
+            )
+        }
+    }
+
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {}
     override fun onProceedWithFilePath(filePath: String?) {}
 

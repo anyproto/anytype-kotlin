@@ -1123,7 +1123,7 @@
     <string name="date_type_older">Раньше</string>
     <string name="dates_days_ago">%1$s дней назад</string>
     <string name="dates_days_from">%1$s дней спустя</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Поделиться локальными журналами</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>

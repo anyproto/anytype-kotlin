@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.R
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -34,11 +36,16 @@ fun StatusBadge(
 ) {
     when (status) {
         is SpaceSyncAndP2PStatusState.Error -> {
-            Image(
-                painter = painterResource(R.drawable.ic_sync_error_10),
-                contentDescription = null,
-                modifier = modifier
-            )
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_sync_error_10),
+                    contentDescription = "Sync Error",
+                    modifier = Modifier.size(8.dp)
+                )
+            }
         }
 
         SpaceSyncAndP2PStatusState.Init -> {}

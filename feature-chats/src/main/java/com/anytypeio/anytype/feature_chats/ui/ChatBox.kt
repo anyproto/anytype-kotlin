@@ -706,7 +706,10 @@ private fun ChatBoxUserInput(
                 val urlMatcher = Patterns.WEB_URL.matcher(inserted)
                 if (urlMatcher.find()) {
                     val url = urlMatcher.group()
-                    onUrlInserted(url)
+                    // Exclude email addresses from URL processing
+                    if (!isEmailAddress(url)) {
+                        onUrlInserted(url)
+                    }
                 }
             }
 
@@ -1179,6 +1182,14 @@ fun ReaderChatBox(modifier: Modifier = Modifier) {
             color = colorResource(R.color.text_primary)
         )
     }
+}
+
+/**
+ * Checks if the given string is an email address.
+ * This is used to exclude email addresses from URL processing in chat messages.
+ */
+private fun isEmailAddress(text: String): Boolean {
+    return Patterns.EMAIL_ADDRESS.matcher(text).matches()
 }
 
 @DefaultPreviews

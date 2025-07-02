@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.downloader.DebugStats
 import com.anytypeio.anytype.presentation.util.downloader.DebugSpace
-import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job

@@ -14,8 +14,8 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.emojifier.Emojifier
-import coil3.ImageLoader
 import coil3.asDrawable
+import coil3.imageLoader
 import coil3.request.ImageRequest
 import coil3.request.transformations
 import coil3.target.Target
@@ -56,7 +56,7 @@ class MentionSpan constructor(
 
     init {
         placeholder?.setBounds(imageSize)
-        val imageLoader = ImageLoader(context)
+        val imageLoader = context.imageLoader
 
         if (!emoji.isNullOrBlank()) try {
             val request = ImageRequest.Builder(context)

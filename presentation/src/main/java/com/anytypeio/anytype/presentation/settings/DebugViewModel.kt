@@ -101,9 +101,9 @@ class DebugViewModel @Inject constructor(
     fun onDiagnosticsStatClicked() {
         jobs += viewModelScope.launch {
             debugStat.async(Unit).fold(
-                onSuccess = { jsonString ->
-                    Timber.d("Debug stat success, json: ${jsonString}")
-                    //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugStat(success.path))
+                onSuccess = { path ->
+                    Timber.d("Debug stat success: $path")
+                    commands.emit(Command.ShareDebugStat(path, uriFileProvider))
                 },
                 onFailure = {
                     Timber.e(it, "Error while collecting stat diagnostics")
@@ -205,6 +205,9 @@ class DebugViewModel @Inject constructor(
         ) : Command()
 
         data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) :
+            Command()
+        
+        data class ShareDebugStat(val path: String, val uriFileProvider: UriFileProvider) :
             Command()
     }
 

@@ -85,6 +85,18 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                             vm.onShowMessage(msg = "Failed to share debug goroutines: ${error.message}")
                         }
                     }
+                    
+                    is DebugViewModel.Command.ShareDebugStat -> {
+                        runCatching {
+                            shareFirstFileFromPath(
+                                path = cmd.path,
+                                uriFileProvider = cmd.uriFileProvider
+                            )
+                        }.onFailure { error ->
+                            Timber.e(error, "Failed to share debug stat")
+                            vm.onShowMessage(msg = "Failed to share debug stat: ${error.message}")
+                        }
+                    }
                 }
             }
         }

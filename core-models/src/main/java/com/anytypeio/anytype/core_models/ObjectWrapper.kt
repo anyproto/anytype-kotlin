@@ -27,13 +27,13 @@ sealed class ObjectWrapper {
         val lastModifiedDate: Any? by default
         val lastOpenedDate: Any? by default
 
-        val name: String? by default
-        val pluralName: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
+        val pluralName: String? get() = getSingleValue(Relations.PLURAL_NAME)
 
-        val iconEmoji: String? by default
+        val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
-        val iconName: String? by default
+        val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
 
         val coverId: String? = getSingleValue(Relations.COVER_ID)
 
@@ -67,25 +67,25 @@ sealed class ObjectWrapper {
 
         val id: Id by default
 
-        val uniqueKey: String? by default
+        val uniqueKey: String? get() = getSingleValue(Relations.UNIQUE_KEY)
 
         val done: Boolean? by default
 
-        val snippet: String? by default
+        val snippet: String? get() = getSingleValue(Relations.SNIPPET)
 
-        val fileExt: String? by default
+        val fileExt: String? get() = getSingleValue(Relations.FILE_EXT)
 
-        val fileMimeType: String? by default
+        val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
 
         val description: String? = getSingleValue(Relations.DESCRIPTION)
 
-        val url: String? by default
+        val url: String? get() = getSingleValue(Relations.URL)
 
         val featuredRelations: List<Key> get() = getValues(Relations.FEATURED_RELATIONS)
 
         fun isEmpty(): Boolean = map.isEmpty()
 
-        val relationKey: String by default
+        val relationKey: String get() = getSingleValue(Relations.RELATION_KEY) ?: ""
         val isFavorite: Boolean? by default
         val isHidden: Boolean? by default
 
@@ -108,7 +108,7 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
 
-        val relationOptionColor: String? by default
+        val relationOptionColor: String? get() = getSingleValue(Relations.RELATION_OPTION_COLOR)
         val relationReadonlyValue: Boolean? by default
 
         val sizeInBytes: Double? by default
@@ -153,12 +153,12 @@ sealed class ObjectWrapper {
      */
     data class Bookmark(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
-        val source: String? by default
-        val iconEmoji: String? by default
+        val source: String? get() = getSingleValue(Relations.SOURCE)
+        val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
-        val picture: String? by default
+        val picture: String? get() = getSingleValue(Relations.PICTURE)
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
     }
@@ -169,13 +169,13 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: String by default
-        val name: String? by default
-        val pluralName: String? by default
+        val uniqueKey: String get() = getSingleValue(Relations.UNIQUE_KEY) ?: ""
+        val name: String? get() = getSingleValue(Relations.NAME)
+        val pluralName: String? get() = getSingleValue(Relations.PLURAL_NAME)
         val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val isArchived: Boolean? by default
-        val iconEmoji: String? by default
+        val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
         val recommendedFeaturedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_FEATURED_RELATIONS)
@@ -216,7 +216,7 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
 
-        val iconName: String? by default
+        val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
         val iconOption: Double? by default
 
         val allRecommendedRelations: List<Id>
@@ -230,7 +230,7 @@ sealed class ObjectWrapper {
 
         private val default = map.withDefault { null }
 
-        private val relationKey : Key by default
+        private val relationKey : Key get() = getSingleValue(Relations.RELATION_KEY) ?: ""
 
         val relationFormat: RelationFormat
             get() {
@@ -247,12 +247,12 @@ sealed class ObjectWrapper {
         private val relationReadonlyValue: Boolean? by default
 
         val id: Id by default
-        val uniqueKey: String? by default
+        val uniqueKey: String? get() = getSingleValue(Relations.UNIQUE_KEY)
         val key: Key get() = relationKey
         val spaceId: Id? by default
-        val sourceObject: Id? by default
+        val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
         val format: RelationFormat get() = relationFormat
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val isHidden: Boolean? by default
         val isReadOnly: Boolean? by default
         val isArchived: Boolean? by default
@@ -283,10 +283,10 @@ sealed class ObjectWrapper {
 
     data class Option(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
-        private val relationOptionColor : String? by default
+        private val relationOptionColor : String? get() = getSingleValue(Relations.RELATION_OPTION_COLOR)
 
         val id: Id by default
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val color: String = relationOptionColor.orEmpty()
         val isDeleted: Boolean? by default
     }
@@ -295,13 +295,13 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
 
         val id: Id by default
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
 
         // N.B. Only used for space view objects
-        val targetSpaceId: String? by default
+        val targetSpaceId: String? get() = getSingleValue(Relations.TARGET_SPACE_ID)
 
         val chatId: Id? by default
 
@@ -416,12 +416,12 @@ sealed class ObjectWrapper {
     data class File(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
-        val fileExt: String? by default
-        val fileMimeType: String? by default
+        val fileExt: String? get() = getSingleValue(Relations.FILE_EXT)
+        val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
         val sizeInBytes: Double? by default
-        val url: String? by default
+        val url: String? get() = getSingleValue(Relations.URL)
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
     }
@@ -433,8 +433,8 @@ sealed class ObjectWrapper {
         val spaceId: Id? by default
         val identity: Id by default
 
-        val name: String? by default
-        val iconImage: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
+        val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
 
         val status
             get() = getSingleValue<Double>(Relations.PARTICIPANT_STATUS)
@@ -454,7 +454,7 @@ sealed class ObjectWrapper {
     data class Date(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val name: String? by default
+        val name: String? get() = getSingleValue(Relations.NAME)
         val timestamp: Double?
             get() = when (val value = map[Relations.TIMESTAMP]) {
                 is Double -> value

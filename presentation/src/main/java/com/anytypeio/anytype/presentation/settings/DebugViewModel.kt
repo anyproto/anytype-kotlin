@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -119,17 +120,17 @@ class DebugViewModel @Inject constructor(
             return
         }
         jobs += viewModelScope.launch {
-            debugSpace.stream(spaceId).collect { result ->
-                result.fold(
-                    onSuccess = { filePath ->
-                        commands.emit(Command.ShareDebugSpaceSummary(filePath, uriFileProvider))
-                    },
-                    onFailure = {
-                        sendToast("Error while collecting space summary diagnostics :${it.message}")
-                        Timber.e(it, "Error while collecting space summary diagnostics")
-                    }
-                )
-            }
+            val params = DebugSpace.Params(spaceId = SpaceId(spaceId))
+            debugSpace.async(params).fold(
+                onSuccess = { path ->
+                    Timber.d("Debug space success: $path")
+                    commands.emit(Command.ShareDebugSpaceSummary(path, uriFileProvider))
+                },
+                onFailure = {
+                    sendToast("Error while collecting space summary diagnostics :${it.message}")
+                    Timber.e(it, "Error while collecting space summary diagnostics")
+                }
+            )
         }
     }
 

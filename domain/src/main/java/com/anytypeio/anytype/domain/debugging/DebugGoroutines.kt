@@ -3,11 +3,12 @@ package com.anytypeio.anytype.domain.debugging
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.device.PathProvider
 import java.io.File
 import javax.inject.Inject
 
 class DebugGoroutines @Inject constructor(
-    private val cacheDir: String,
+    private val pathProvider: PathProvider,
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<DebugGoroutines.Params, String>(dispatchers.io) {
@@ -18,7 +19,7 @@ class DebugGoroutines @Inject constructor(
 
         if (params.path == null) {
             // Construct the path using the current time to ensure uniqueness
-            path = "${cacheDir}/debug/goroutines/${System.currentTimeMillis()}/"
+            path = "${pathProvider.cachePath()}/debug/goroutines/${System.currentTimeMillis()}/"
             // Middleware put the log in a subdirectory called logs
             resultFilePath = "$path/logs/"
 

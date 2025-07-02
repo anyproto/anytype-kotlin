@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.settings.DebugViewModel
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.settings.DebugFragment
 import dagger.Binds
 import dagger.Component
@@ -48,4 +49,5 @@ interface DebugDependencies : ComponentDependencies {
     fun auth(): AuthRepository
     fun repo(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
+    fun uriFileProvider(): UriFileProvider
 }

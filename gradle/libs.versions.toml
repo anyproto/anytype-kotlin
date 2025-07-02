@@ -20,8 +20,6 @@ appcompatVersion = '1.7.0'
 fragmentVersion = "1.8.6"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.9.8"
-glideVersion = "4.16.0"
-glideComposeVersion = "1.0.0-beta01"
 mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.2.1"
@@ -61,7 +59,7 @@ timberVersion = '5.0.1'
 roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
-coilComposeVersion = '3.1.0'
+coilComposeVersion = '3.2.0'
 coilVideoVersion = '3.2.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
@@ -96,9 +94,7 @@ exoPlayerCore = { module = "com.google.android.exoplayer:exoplayer-core", versio
 exoPlayerUi = { module = "com.google.android.exoplayer:exoplayer-ui", version.ref = "exoplayerVersion" }
 wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVersion" }
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
-glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
-glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
-glideCompose = { module = "com.github.bumptech.glide:compose", version.ref = "glideComposeVersion" }
+coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilComposeVersion"  }
 coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion"  }
 coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVersion"  }
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }

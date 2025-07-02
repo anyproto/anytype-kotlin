@@ -16,9 +16,6 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 import com.anytypeio.anytype.core_ui.widgets.cornerRadius
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ImageIconView(
     modifier: Modifier = Modifier,

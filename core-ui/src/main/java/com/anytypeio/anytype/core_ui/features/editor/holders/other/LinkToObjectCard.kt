@@ -9,13 +9,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
+import coil3.load
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconCoverBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -23,23 +25,16 @@ import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
-import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIconCoverBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
-import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.Glide
 
 abstract class LinkToObjectCard(
     view: View
@@ -212,11 +207,7 @@ abstract class LinkToObjectCard(
                 coverView.apply {
                     visible()
                     setBackgroundColor(0)
-                    Glide
-                        .with(itemView)
-                        .load(cover.url)
-                        .centerCrop()
-                        .into(this)
+                    load(cover.url)
                 }
             }
             is BlockView.LinkToObject.Default.Card.Cover.Gradient -> {

@@ -2969,6 +2969,15 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun debugStats(): String {
+        val request = Rpc.Debug.Stat.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugStats(request) }
+        logResponseIfDebug(response, time)
+        return response.jsonStat
+    }
+
+    @Throws(Exception::class)
     fun debugExportLogs(dir: String): String {
         val request = Rpc.Debug.ExportLog.Request(dir = dir)
         logRequestIfDebug(request)

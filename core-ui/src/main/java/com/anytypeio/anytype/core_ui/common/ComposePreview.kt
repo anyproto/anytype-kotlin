@@ -10,7 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO,
     name = "Light Mode",
-    apiLevel = 34,
+    apiLevel = 36,
     showSystemUi = true
 )
 @Preview(
@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES,
     name = "Dark Mode",
-    apiLevel = 34,
+    apiLevel = 36,
     showSystemUi = true
 )
 annotation class DefaultPreviews
@@ -28,7 +28,6 @@ annotation class DefaultPreviews
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO,
     name = "Light Mode",
-    apiLevel = 28,
     showSystemUi = true,
     device = Devices.NEXUS_5
 )

@@ -361,9 +361,11 @@ fun Fragment.shareFirstFileFromPath(path: String, uriFileProvider: UriFileProvid
                 val uri = uriFileProvider.getUriForFile(firstFile)
                 shareFile(uri)
             } else {
+                Timber.w("No valid files to share in the directory: $path")
                 toast("No valid files to share in the directory.")
             }
         } else {
+            Timber.w("Directory does not exist or is not a directory: $path")
             toast("Directory does not exist or is not a directory.")
         }
     } catch (e: Exception) {

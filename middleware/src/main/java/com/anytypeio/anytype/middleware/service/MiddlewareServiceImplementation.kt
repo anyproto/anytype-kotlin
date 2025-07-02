@@ -2680,4 +2680,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun debugStats(request: Rpc.Debug.Stat.Request): Rpc.Debug.Stat.Response {
+        val encoded = Service.debugStat(
+            Rpc.Debug.Stat.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.Stat.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.Stat.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

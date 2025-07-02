@@ -9,7 +9,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentFullScreenPictureBinding
-import com.bumptech.glide.Glide
+import coil3.load
 
 class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>(R.layout.fragment_full_screen_picture) {
 
@@ -41,7 +41,7 @@ class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Glide.with(binding.picture).load(url).into(binding.picture)
+        binding.picture.load(url)
         binding.picture.setOnClickListener { parentFragmentManager.popBackStack() }
     }
 

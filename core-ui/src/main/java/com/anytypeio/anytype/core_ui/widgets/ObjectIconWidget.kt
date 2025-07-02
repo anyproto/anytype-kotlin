@@ -29,8 +29,9 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil3.load
+import coil3.request.CachePolicy
+import coil3.size.Scale
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -205,11 +206,10 @@ class ObjectIconWidget @JvmOverloads constructor(
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
                     binding.ivEmoji.visible()
-                    Glide
-                        .with(this)
-                        .load(adapted)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.ivEmoji)
+                    binding.ivEmoji.load(adapted) {
+                        diskCachePolicy(CachePolicy.ENABLED)
+                        memoryCachePolicy(CachePolicy.ENABLED)
+                    }
                 } else {
                     setTypeIcon(fallback)
                 }
@@ -242,11 +242,9 @@ class ObjectIconWidget @JvmOverloads constructor(
                         this.root.context.getColorStateList(R.color.background_primary)
                 }
             }
-            Glide
-                .with(this)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivImage)
+            binding.ivImage.load(image) {
+                scale(Scale.FILL)
+            }
         } else {
             binding.ivImage.setImageDrawable(null)
         }
@@ -266,11 +264,9 @@ class ObjectIconWidget @JvmOverloads constructor(
                 }
             }
 
-            Glide
-                .with(this)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivImage)
+            binding.ivImage.load(image) {
+                scale(Scale.FILL)
+            }
         }
     }
 
@@ -320,11 +316,9 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.invisible()
             ivImage.invisible()
             ivBookmark.visible()
-            Glide
-                .with(binding.ivBookmark)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivBookmark)
+            binding.ivBookmark.load(image) {
+                scale(Scale.FILL)
+            }
         }
     }
 

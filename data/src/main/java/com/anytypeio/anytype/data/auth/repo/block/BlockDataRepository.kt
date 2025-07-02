@@ -1159,4 +1159,8 @@ class BlockDataRepository(
     override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState) {
         remote.setSpaceNotificationMode(spaceViewId = spaceViewId, mode = mode)
     }
+
+    override suspend fun debugStats(): String {
+        return remote.debugStats()
+    }
 }

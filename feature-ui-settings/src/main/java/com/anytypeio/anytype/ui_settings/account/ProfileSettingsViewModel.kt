@@ -25,6 +25,9 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
+import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,6 +35,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import kotlinx.coroutines.flow.StateFlow
 
 class ProfileSettingsViewModel(
     private val analytics: Analytics,
@@ -43,7 +47,8 @@ class ProfileSettingsViewModel(
     private val membershipProvider: MembershipProvider,
     private val getNetworkMode: GetNetworkMode,
     private val profileContainer: ProfileSubscriptionManager,
-    private val removeObjectIcon: RemoveObjectIcon
+    private val removeObjectIcon: RemoveObjectIcon,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -55,7 +60,15 @@ class ProfileSettingsViewModel(
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
-    val isDebugEnabled = MutableStateFlow(false)
+    val isDebugEnabled = MutableStateFlow(BuildConfig.DEBUG)
+
+    val notificationsDisabled: StateFlow<Boolean> =
+        notificationPermissionManager.permissionState().map { state ->
+            when (state) {
+                is NotificationPermissionManagerImpl.PermissionState.Granted -> false
+                else -> true
+            }
+        }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
 
     val profileData = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -177,6 +190,10 @@ class ProfileSettingsViewModel(
         }
     }
 
+    fun refreshPermissionState() {
+        notificationPermissionManager.refreshPermissionState()
+    }
+
     class Factory(
         private val analytics: Analytics,
         private val container: StorelessSubscriptionContainer,
@@ -187,7 +204,8 @@ class ProfileSettingsViewModel(
         private val membershipProvider: MembershipProvider,
         private val getNetworkMode: GetNetworkMode,
         private val profileSubscriptionManager: ProfileSubscriptionManager,
-        private val removeObjectIcon: RemoveObjectIcon
+        private val removeObjectIcon: RemoveObjectIcon,
+        private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -201,7 +219,8 @@ class ProfileSettingsViewModel(
                 membershipProvider = membershipProvider,
                 getNetworkMode = getNetworkMode,
                 profileContainer = profileSubscriptionManager,
-                removeObjectIcon = removeObjectIcon
+                removeObjectIcon = removeObjectIcon,
+                notificationPermissionManager = notificationPermissionManager
             ) as T
         }
     }

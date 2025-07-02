@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,10 +28,22 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 @Composable
 fun DebugScreen(
     onExportAllClicked: () -> Unit,
-    onReadAllChats: () -> Unit
+    onReadAllChats: () -> Unit,
+    onDebugStackGoroutines: () -> Unit = { /* Default no-op */ },
+    onDebugStat: () -> Unit = { /* Default no-op */ },
+    onDebugSpaceSummary: () -> Unit = { /* Default no-op */ },
+    onDebugExportLog: () -> Unit = { /* Default no-op */ }
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
+            .background(
+                color = colorResource(R.color.background_secondary),
+                shape = RoundedCornerShape(
+                    topStart = 16.dp,
+                    topEnd = 16.dp
+                )
+            )
+
     ) {
         Dragger(
             modifier = Modifier
@@ -47,9 +61,39 @@ fun DebugScreen(
             onClick = onExportAllClicked
         )
 
+        Divider()
+
         ActionItem(
             title = "Read all (chats)",
             onClick = onReadAllChats
+        )
+
+        Divider()
+
+        ActionItem(
+            title = "Debug stack Goroutines",
+            onClick = onDebugStackGoroutines
+        )
+
+        Divider()
+
+        ActionItem(
+            title = "Debug Stat",
+            onClick = onDebugStat
+        )
+
+        Divider()
+
+        ActionItem(
+            title = "Debug Space Summary",
+            onClick = onDebugSpaceSummary
+        )
+
+        Divider()
+
+        ActionItem(
+            title = "Debug Export Log",
+            onClick = onDebugExportLog
         )
 
         Divider()

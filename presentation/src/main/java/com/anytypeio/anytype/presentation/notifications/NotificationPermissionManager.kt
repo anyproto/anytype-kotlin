@@ -6,9 +6,11 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl.PermissionState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import timber.log.Timber
 
 interface NotificationPermissionManager {
     fun shouldShowPermissionDialog(): Boolean
@@ -16,6 +18,9 @@ interface NotificationPermissionManager {
     fun onPermissionGranted()
     fun onPermissionDenied()
     fun onPermissionDismissed()
+    fun permissionState(): StateFlow<PermissionState>
+    fun refreshPermissionState()
+    fun areNotificationsEnabled(): Boolean
 }
 
 class NotificationPermissionManagerImpl @Inject constructor(
@@ -25,22 +30,25 @@ class NotificationPermissionManagerImpl @Inject constructor(
     private val _permissionState = MutableStateFlow<PermissionState>(PermissionState.NotRequested)
     val permissionState: StateFlow<PermissionState> = _permissionState
 
-    override fun shouldShowPermissionDialog(): Boolean {
+    override fun permissionState(): StateFlow<PermissionState> {
+        return _permissionState
+    }
 
+    override fun shouldShowPermissionDialog(): Boolean {
         // If notifications are already enabled at the system level, no dialog needed
         if (areNotificationsEnabled()) {
             return false
         }
 
-        val lastRequestTime = sharedPreferences.getLong(KEY_LAST_REQUEST_TIME, 0)
-        val requestCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
-        val currentTime = System.currentTimeMillis()
+        // Check if user has ever been shown the dialog before
+        val hasBeenShown = sharedPreferences.getBoolean(KEY_DIALOG_SHOWN, false)
+        
+        // Check if user has dismissed the dialog before
+        val hasBeenDismissed = sharedPreferences.getBoolean(KEY_DIALOG_DISMISSED, false)
 
         return when {
-            // First time request
-            lastRequestTime == 0L -> true
-            // User clicked "Not now" - show again after 24 hours, max 3 times
-            requestCount < MAX_REQUEST_COUNT && (currentTime - lastRequestTime) >= HOURS_24 -> true
+            // Show only if never shown before and never dismissed
+            !hasBeenShown && !hasBeenDismissed -> true
             // User rejected in system dialog - show banner in settings
             _permissionState.value == PermissionState.Denied -> false
             else -> false
@@ -48,10 +56,8 @@ class NotificationPermissionManagerImpl @Inject constructor(
     }
 
     override fun onPermissionRequested() {
-        val currentCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
         sharedPreferences.edit().apply {
-            putLong(KEY_LAST_REQUEST_TIME, System.currentTimeMillis())
-            putInt(KEY_REQUEST_COUNT, currentCount + 1)
+            putBoolean(KEY_DIALOG_SHOWN, true)
             apply()
         }
     }
@@ -74,6 +80,10 @@ class NotificationPermissionManagerImpl @Inject constructor(
 
     override fun onPermissionDismissed() {
         _permissionState.value = PermissionState.Dismissed
+        sharedPreferences.edit().apply {
+            putBoolean(KEY_DIALOG_DISMISSED, true)
+            apply()
+        }
     }
 
     /**
@@ -81,20 +91,49 @@ class NotificationPermissionManagerImpl @Inject constructor(
      *  - on API<33, checks whether the user has globally disabled notifications for your app
      *  - on API>=33, also checks the new POST_NOTIFICATIONS runtime permission
      */
-    private fun areNotificationsEnabled(): Boolean {
-        // 1) global switch
-        val managerCompat = NotificationManagerCompat.from(context)
-        if (!managerCompat.areNotificationsEnabled()) {
-            return false
-        }
+    override fun areNotificationsEnabled(): Boolean {
+        return try {
+            // 1) global switch
+            val managerCompat = NotificationManagerCompat.from(context)
+            if (!managerCompat.areNotificationsEnabled()) {
+                return false
+            }
 
-        // 2) on Tiramisu+, must also hold POST_NOTIFICATIONS
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
-                    PackageManager.PERMISSION_GRANTED
-        }
+            // 2) on Tiramisu+, must also hold POST_NOTIFICATIONS
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                return context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) ==
+                        PackageManager.PERMISSION_GRANTED
+            }
 
-        return true
+            true
+        } catch (e: Exception) {
+            Timber.w(e, "Error checking notification permissions")
+            // If we can't determine the state safely, assume notifications are disabled
+            // This prevents crashes when the app is in an unstable state
+            false
+        }
+    }
+
+    override fun refreshPermissionState() {
+        try {
+            _permissionState.value = when {
+                areNotificationsEnabled() -> PermissionState.Granted
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                    if (context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                        == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        PermissionState.Granted
+                    } else {
+                        PermissionState.Denied
+                    }
+                }
+
+                else -> PermissionState.Denied
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Error refreshing notification permission state")
+            _permissionState.value = PermissionState.Denied
+        }
     }
 
     sealed class PermissionState {
@@ -105,10 +144,8 @@ class NotificationPermissionManagerImpl @Inject constructor(
     }
 
     companion object {
-        private const val KEY_LAST_REQUEST_TIME = "notification_permission_last_request_time"
-        private const val KEY_REQUEST_COUNT = "notification_permission_request_count"
+        private const val KEY_DIALOG_SHOWN = "notification_permission_dialog_shown"
+        private const val KEY_DIALOG_DISMISSED = "notification_permission_dialog_dismissed"
         private const val KEY_PERMISSION_GRANTED = "notification_permission_granted"
-        const val MAX_REQUEST_COUNT = 3
-        private const val HOURS_24 = 24 * 60 * 60 * 1000L
     }
 } 

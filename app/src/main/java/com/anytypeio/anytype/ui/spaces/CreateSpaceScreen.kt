@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.spaces
 
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +14,17 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -36,11 +38,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
@@ -122,50 +126,57 @@ fun CreateSpaceScreen(
                 color = colorResource(id = R.color.glyph_active)
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .wrapContentHeight()
+                    .border(
+                        width = 0.5.dp,
+                        color = colorResource(R.color.shape_primary),
+                        shape = RoundedCornerShape(size = 12.dp)
+                    )
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
             ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .focusRequester(focusRequester),
+                Text(
+                    text = stringResource(id = R.string.name),
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
+                BasicTextField(
                     value = innerValue,
                     onValueChange = {
                         innerValue = it
                     },
-                    placeholder = {
-                        Text(
-                            text = stringResource(id = R.string.untitled),
-                            style = BodySemiBold,
-                            color = colorResource(id = R.color.text_tertiary)
-                        )
-                    },
-                    label = {
-                        Text(
-                            text = stringResource(id = R.string.name),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary)
-                        )
-                    },
+                    textStyle = BodySemiBold.copy(
+                        color = colorResource(id = R.color.text_primary)
+                    ),
+                    singleLine = true,
+                    enabled = true,
+                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(start = 0.dp, top = 4.dp)
+                        .focusRequester(focusRequester),
+                    keyboardOptions = KeyboardOptions(
+                        imeAction = ImeAction.Done
+                    ),
                     keyboardActions = KeyboardActions(
                         onDone = {
                             focusManager.clearFocus()
                         }
                     ),
-                    textStyle = BodySemiBold.copy(
-                        color = colorResource(id = R.color.text_primary)
-                    ),
-                    shape = RoundedCornerShape(size = 12.dp),
-                    colors = TextFieldDefaults.colors(
-                        cursorColor = colorResource(id = R.color.text_primary),
-                        focusedContainerColor = colorResource(id = R.color.transparent),
-                        unfocusedContainerColor = colorResource(id = R.color.transparent),
-                        focusedIndicatorColor = colorResource(id = R.color.shape_primary),
-                        unfocusedIndicatorColor = colorResource(id = R.color.shape_tertiary),
-                    ),
-                    singleLine = true
+                    decorationBox = { innerTextField ->
+                        if (innerValue.text.isEmpty()) {
+                            Text(
+                                text = stringResource(id = R.string.untitled),
+                                style = BodySemiBold,
+                                color = colorResource(id = R.color.text_tertiary)
+                            )
+                        }
+                        innerTextField()
+                    }
                 )
             }
         }

@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -31,10 +30,17 @@ import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
+import com.anytypeio.anytype.ui_settings.account.NotificationSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
 import javax.inject.Inject
 import timber.log.Timber
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.openNotificationSettings
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -72,11 +78,6 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
-            if (uri != null) {
-                shareFile(uri)
-            }
-        }
         return ComposeDialogView(
             context = requireContext(),
             dialog = requireDialog()
@@ -84,6 +85,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
+                    var showNotificationSettingsModal by remember { mutableStateOf(false) }
+                    val notificationsDisabled = vm.notificationsDisabled.collectAsStateWithLifecycle().value
                     ProfileSettingsScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
                         onLogoutClicked = onLogoutClicked,
@@ -127,8 +130,22 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
-                        onHeaderTitleClicked = vm::onHeaderTitleClicked
+                        onHeaderTitleClicked = vm::onHeaderTitleClicked,
+                        notificationsDisabled = notificationsDisabled,
+                        onOpenNotificationSettings = { showNotificationSettingsModal = true }
                     )
+                    if (showNotificationSettingsModal) {
+                        NotificationSettingsScreen(
+                            isDisabled = notificationsDisabled,
+                            onDismiss = {
+                                showNotificationSettingsModal = false
+                            },
+                            onOpenSettings = {
+                                showNotificationSettingsModal = false
+                                requireContext().openNotificationSettings()
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -136,7 +153,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        skipCollapsed()
+        expand()
     }
 
     override fun onStart() {
@@ -144,6 +162,21 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         subscribe(vm.toasts) {
             toast(it)
         }
+        jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
+            if (uri != null) {
+                shareFile(uri)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        jobs.cancel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        vm.refreshPermissionState()
     }
 
     private fun proceedWithIconClick() {

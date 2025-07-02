@@ -81,38 +81,31 @@ class NotificationPermissionManagerImplTest {
     }
 
     @Test
-    fun `should not show dialog if max requests reached`() = runTest {
-        // Set up max requests
-        repeat(NotificationPermissionManagerImpl.MAX_REQUEST_COUNT) {
-            manager.onPermissionRequested()
-        }
+    fun `should not show dialog if already shown before`() = runTest {
+        // Simulate dialog was shown before
+        sharedPreferences.edit()
+            .putBoolean(KEY_DIALOG_SHOWN, true)
+            .apply()
 
         assertFalse(manager.shouldShowPermissionDialog())
     }
 
     @Test
-    fun `should show dialog after 24 hours if request count less than max`() = runTest {
-        // Set up initial request
-        manager.onPermissionRequested()
-
-        // Simulate time passing
-        val pastTime = System.currentTimeMillis() - HOURS_24 - 1000 // 24 hours + 1 second ago
+    fun `should not show dialog if dismissed before`() = runTest {
+        // Simulate dialog was dismissed before
         sharedPreferences.edit()
-            .putLong(KEY_LAST_REQUEST_TIME, pastTime)
+            .putBoolean(KEY_DIALOG_DISMISSED, true)
             .apply()
 
-        assertTrue(manager.shouldShowPermissionDialog())
+        assertFalse(manager.shouldShowPermissionDialog())
     }
 
     @Test
-    fun `should not show dialog before 24 hours have passed`() = runTest {
-        // Set up initial request
-        manager.onPermissionRequested()
-
-        // Simulate time passing
-        val recentTime = System.currentTimeMillis() - HOURS_24 + 1000 // 24 hours - 1 second ago
+    fun `should not show dialog if both shown and dismissed`() = runTest {
+        // Simulate dialog was both shown and dismissed
         sharedPreferences.edit()
-            .putLong(KEY_LAST_REQUEST_TIME, recentTime)
+            .putBoolean(KEY_DIALOG_SHOWN, true)
+            .putBoolean(KEY_DIALOG_DISMISSED, true)
             .apply()
 
         assertFalse(manager.shouldShowPermissionDialog())
@@ -130,13 +123,12 @@ class NotificationPermissionManagerImplTest {
     }
 
     @Test
-    fun `onPermissionRequested should increment request count and update timestamp`() = runTest {
-        val initialCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
+    fun `onPermissionRequested should set dialog shown flag`() = runTest {
+        assertFalse(sharedPreferences.getBoolean(KEY_DIALOG_SHOWN, false))
+        
         manager.onPermissionRequested()
 
-        val newCount = sharedPreferences.getInt(KEY_REQUEST_COUNT, 0)
-        assertEquals(initialCount + 1, newCount)
-        assertTrue(sharedPreferences.contains(KEY_LAST_REQUEST_TIME))
+        assertTrue(sharedPreferences.getBoolean(KEY_DIALOG_SHOWN, false))
     }
 
     @Test
@@ -156,16 +148,57 @@ class NotificationPermissionManagerImplTest {
     }
 
     @Test
-    fun `onPermissionDismissed should update state`() = runTest {
+    fun `onPermissionDismissed should update state and set dismissed flag`() = runTest {
+        assertFalse(sharedPreferences.getBoolean(KEY_DIALOG_DISMISSED, false))
+        
         manager.onPermissionDismissed()
 
         assertEquals(NotificationPermissionManagerImpl.PermissionState.Dismissed, manager.permissionState.first())
+        assertTrue(sharedPreferences.getBoolean(KEY_DIALOG_DISMISSED, false))
+    }
+
+    @Test
+    fun `should not show dialog after permission request followed by dismissal`() = runTest {
+        // First time - should show
+        assertTrue(manager.shouldShowPermissionDialog())
+        
+        // User sees dialog and dismisses
+        manager.onPermissionRequested()
+        manager.onPermissionDismissed()
+        
+        // Should not show again
+        assertFalse(manager.shouldShowPermissionDialog())
+    }
+
+    @Test
+    fun `should not show dialog after permission request followed by grant`() = runTest {
+        // First time - should show
+        assertTrue(manager.shouldShowPermissionDialog())
+        
+        // User sees dialog and grants permission
+        manager.onPermissionRequested()
+        manager.onPermissionGranted()
+        
+        // Should not show again
+        assertFalse(manager.shouldShowPermissionDialog())
+    }
+
+    @Test
+    fun `should not show dialog after permission request followed by denial`() = runTest {
+        // First time - should show
+        assertTrue(manager.shouldShowPermissionDialog())
+        
+        // User sees dialog and denies permission
+        manager.onPermissionRequested()
+        manager.onPermissionDenied()
+        
+        // Should not show again (since it was denied at system level)
+        assertFalse(manager.shouldShowPermissionDialog())
     }
 
     companion object {
-        private const val KEY_LAST_REQUEST_TIME = "notification_permission_last_request_time"
-        private const val KEY_REQUEST_COUNT = "notification_permission_request_count"
+        private const val KEY_DIALOG_SHOWN = "notification_permission_dialog_shown"
+        private const val KEY_DIALOG_DISMISSED = "notification_permission_dialog_dismissed"
         private const val KEY_PERMISSION_GRANTED = "notification_permission_granted"
-        private const val HOURS_24 = 24 * 60 * 60 * 1000L
     }
 } 

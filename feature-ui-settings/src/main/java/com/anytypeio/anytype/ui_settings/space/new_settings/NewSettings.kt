@@ -49,6 +49,7 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClic
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.ui_settings.R
+import com.anytypeio.anytype.ui_settings.BuildConfig
 
 @Composable
 fun SpaceSettingsContainer(
@@ -448,7 +449,15 @@ fun NewSpaceSettingsScreen(
             },
             content = {
                 SpaceInfoScreen(
-                    spaceTechInfo = uiState.spaceTechInfo
+                    spaceTechInfo = uiState.spaceTechInfo,
+                    isDebugBuild = BuildConfig.DEBUG,
+                    onTitleClick = {
+                        uiEvent(UiEvent.OnSpaceInfoTitleClicked)
+                    },
+                    onDebugClick = {
+                        showTechInfo = false
+                        uiEvent(UiEvent.OnDebugClicked)
+                    }
                 )
             }
         )

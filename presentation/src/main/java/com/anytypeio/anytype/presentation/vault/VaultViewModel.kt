@@ -38,7 +38,6 @@ import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
-import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -70,6 +69,7 @@ import timber.log.Timber
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.Permissions
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -91,7 +91,8 @@ class VaultViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -102,6 +103,9 @@ class VaultViewModel(
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
+    
+    // Track notification permission status for profile icon badge
+    val isNotificationDisabled = MutableStateFlow(false)
 
     // Local state for tracking order changes during drag operations
     private var pendingMainSpacesOrder: List<Id>? = null
@@ -138,6 +142,37 @@ class VaultViewModel(
                 sections.value = resultingSections
                 spaces.value = resultingSections.allSpaces // For backward compatibility
             }
+        }
+        
+        // Track notification permission status for profile icon badge
+        viewModelScope.launch {
+            try {
+                // Check notification permission status on app launch
+                updateNotificationBadgeState()
+                
+                // Observe permission state changes
+                notificationPermissionManager.permissionState().collect { permissionState ->
+                    try {
+                        updateNotificationBadgeState()
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error updating notification badge state")
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error initializing notification permission monitoring")
+            }
+        }
+    }
+    
+    private fun updateNotificationBadgeState() {
+        try {
+            val isDisabled = !notificationPermissionManager.areNotificationsEnabled()
+            isNotificationDisabled.value = isDisabled
+            Timber.d("Notification badge state updated: isDisabled = $isDisabled")
+        } catch (e: Exception) {
+            Timber.e(e, "Error checking notification permission state")
+            // Set a safe default state if we can't determine the actual state
+            isNotificationDisabled.value = true
         }
     }
 
@@ -581,10 +616,8 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                if (spaceUxType == SpaceUxType.CHAT && chat != null && ChatConfig.isChatAllowed(
-                        space = targetSpace
-                    )
-                ) {
+                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType, Chat ID: $chat")
+                if (spaceUxType == SpaceUxType.CHAT && chat != null) {
                     commands.emit(
                         VaultCommand.EnterSpaceLevelChat(
                             space = Space(targetSpace),

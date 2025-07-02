@@ -114,7 +114,8 @@ fun NetworkSetupScreen(
     onAnytypeNetworkClicked: () -> Unit,
     onSelfHostNetworkClicked: () -> Unit,
     onSetSelfHostConfigConfigClicked: () -> Unit,
-    onExportLogsClick: () -> Unit
+    onExportLogsClick: () -> Unit,
+    onUseYamuxToggled: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -150,6 +151,8 @@ fun NetworkSetupScreen(
         )
         ExportLogs(onExportLogsClick = onExportLogsClick)
         Spacer(modifier = Modifier.height(24.dp))
+        UseYamuxCard(config = config, onUseYamuxToggled = onUseYamuxToggled)
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
@@ -175,6 +178,40 @@ private fun ExportLogs(onExportLogsClick: () -> Unit) {
                 color = NetworkSettingTitleColor,
                 modifier = Modifier.weight(1.0f)
             )
+        }
+    }
+}
+
+@Composable
+private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth()
+            .background(color = NetworkSettingCardColor)
+            .noRippleClickable { onUseYamuxToggled() }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(
+                horizontal = 20.dp,
+                vertical = 20.dp
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.settings_use_yamux),
+                style = BodyCalloutRegular,
+                color = NetworkSettingTitleColor,
+                modifier = Modifier.weight(1.0f)
+            )
+            if (!config.useReserveMultiplexLib) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
+                    contentDescription = "enabled or disabled QUIC"
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
         }
     }
 }

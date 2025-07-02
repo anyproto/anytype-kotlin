@@ -76,6 +76,7 @@ class VaultFragment : BaseComposeFragment() {
                 }
                 VaultScreenWithUnreadSection(
                     sections = vm.sections.collectAsStateWithLifecycle().value,
+                    showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                     onSettingsClicked = vm::onSettingsClicked,

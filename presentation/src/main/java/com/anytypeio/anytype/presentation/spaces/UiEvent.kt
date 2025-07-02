@@ -23,6 +23,8 @@ sealed class UiEvent {
     data object OnPersonalizationClicked : UiEvent()
     data object OnInviteClicked : UiEvent()
     data object OnQrCodeClicked : UiEvent()
+    data object OnDebugClicked : UiEvent()
+    data object OnSpaceInfoTitleClicked : UiEvent()
 
     data class OnAutoCreateWidgetSwitchChanged(
         val widget: Id,

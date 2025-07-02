@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import javax.inject.Inject
 
 class VaultViewModelFactory @Inject constructor(
@@ -44,7 +45,8 @@ class VaultViewModelFactory @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -69,6 +71,7 @@ class VaultViewModelFactory @Inject constructor(
         storeOfObjectTypes = storeOfObjectTypes,
         setSpaceNotificationMode = setSpaceNotificationMode,
         deleteSpace = deleteSpace,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        notificationPermissionManager = notificationPermissionManager
     ) as T
 }

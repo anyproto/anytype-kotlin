@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
+import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -58,8 +59,7 @@ class ChatViewModelFactory @Inject constructor(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
-    private val closeObject: CloseObject,
-    private val openObject: OpenObject,
+    private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject
 ) : ViewModelProvider.Factory {
@@ -90,8 +90,7 @@ class ChatViewModelFactory @Inject constructor(
         getSpaceInviteLink = getSpaceInviteLink,
         revokeSpaceInviteLink = revokeSpaceInviteLink,
         clearChatsTempFolder = clearChatsTempFolder,
-        closeObject = closeObject,
-        openObject = openObject,
+        objectWatcher = objectWatcher,
         createObject = createObject,
         getObject = getObject
     ) as T

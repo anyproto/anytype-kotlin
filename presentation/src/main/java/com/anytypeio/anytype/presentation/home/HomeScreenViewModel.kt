@@ -2440,7 +2440,8 @@ class HomeScreenViewModel(
                             creationDateInMillis = targetSpaceView
                                 .getValue<Double?>(Relations.CREATED_DATE)
                                 ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                            createdBy = createdByScreenName
+                            createdBy = createdByScreenName,
+                            isDebugVisible = false
                         )
                     )
                 }

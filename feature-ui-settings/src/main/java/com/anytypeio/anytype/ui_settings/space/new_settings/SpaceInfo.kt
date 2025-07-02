@@ -14,6 +14,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Header
@@ -27,14 +28,18 @@ import com.anytypeio.anytype.ui_settings.R
 
 @Composable
 fun SpaceInfoScreen(
-    spaceTechInfo: SpaceTechInfo
+    spaceTechInfo: SpaceTechInfo,
+    isDebugBuild: Boolean = false,
+    onTitleClick: () -> Unit = {},
+    onDebugClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         Header(
-            text = stringResource(R.string.space_settings_space_info_button)
+            text = stringResource(R.string.space_settings_space_info_button),
+            modifier = Modifier.clickable { onTitleClick() }
         )
         SpaceInfoItem(
             name = stringResource(R.string.space_id),
@@ -82,6 +87,31 @@ fun SpaceInfoScreen(
                 // Do nothing.
             }
         )
+
+        // Device Token - shown if isDebugBuild or if title clicked 5+ times
+        val deviceToken = spaceTechInfo.deviceToken
+        if ((isDebugBuild || spaceTechInfo.isDebugVisible) && deviceToken != null) {
+            SpaceInfoItem(
+                name = "Device Token",
+                value = deviceToken,
+                onClick = {
+                    context.copyPlainTextToClipboard(
+                        plainText = deviceToken,
+                        label = "Device Token",
+                        successToast = "Device Token copied to clipboard"
+                    )
+                }
+            )
+        }
+        
+        // Debug button - shown if isDebugBuild or if title clicked 5+ times
+        if (isDebugBuild || spaceTechInfo.isDebugVisible) {
+            SpaceInfoItem(
+                name = "Debug",
+                value = "Open debug screen",
+                onClick = onDebugClick
+            )
+        }
     }
 }
 
@@ -124,7 +154,10 @@ fun SpaceInfoScreenPreview() {
             spaceId = SpaceId(LoremIpsum(words = 10).toString()),
             createdBy = "Walter",
             networkId = LoremIpsum(words = 10).toString(),
-            creationDateInMillis = 21313L
-        )
+            creationDateInMillis = 21313L,
+            isDebugVisible = true,
+            deviceToken = "FCM_TOKEN_1234567890ABCDEF_EXAMPLE_TOKEN"
+        ),
+        isDebugBuild = true
     )
 }

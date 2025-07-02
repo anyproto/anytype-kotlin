@@ -340,11 +340,6 @@
             app:popUpToInclusive="false" />
     </dialog>
 
-    <dialog
-        android:id="@+id/introduceVaultScreen"
-        android:name="com.anytypeio.anytype.ui.vault.IntroduceVaultFragment"
-        android:label="IntroduceVaultScreen"/>
-
     <fragment
         android:id="@+id/spaceSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment"

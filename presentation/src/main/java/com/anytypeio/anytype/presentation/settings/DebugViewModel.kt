@@ -115,7 +115,7 @@ class DebugViewModel @Inject constructor(
 
     fun onDiagnosticsSpaceSummaryClicked(spaceId: String?) {
         if (spaceId.isNullOrBlank()) {
-            sendToast("Space ID is null or blank")
+            messages.value = "No Space ID provided for diagnostics"
             return
         }
         jobs += viewModelScope.launch {

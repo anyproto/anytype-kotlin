@@ -29,7 +29,8 @@ data class SpaceTechInfo(
     val createdBy: String,
     val networkId: Id,
     val creationDateInMillis: Long?,
-    val isDebugVisible: Boolean = false
+    val isDebugVisible: Boolean = false,
+    val deviceToken: String? = null
 )
 
 sealed class UiSpaceSettingsItem {

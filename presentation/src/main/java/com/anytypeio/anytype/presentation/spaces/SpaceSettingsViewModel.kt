@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -90,7 +91,8 @@ class SpaceSettingsViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val getAccount: GetAccount,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val setSpaceNotificationMode: SetSpaceNotificationMode
+    private val setSpaceNotificationMode: SetSpaceNotificationMode,
+    private val deviceTokenStoringService: DeviceTokenStoringService
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -222,6 +224,16 @@ class SpaceSettingsViewModel(
                     0
                 }
 
+                val deviceToken = if (BuildConfig.DEBUG || clickCount >= 5) {
+                    try {
+                        deviceTokenStoringService.getToken()
+                    } catch (e: Exception) {
+                        null
+                    }
+                } else {
+                    null
+                }
+
                 val spaceTechInfo = SpaceTechInfo(
                     spaceId = vmParams.space,
                     createdBy = createdByNameOrId.orEmpty(),
@@ -230,7 +242,8 @@ class SpaceSettingsViewModel(
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
                     ,
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
-                    isDebugVisible = BuildConfig.DEBUG || clickCount >= 5
+                    isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
+                    deviceToken = deviceToken
                 )
 
                 // TODO In the next PR : show different settings for viewer
@@ -901,7 +914,8 @@ class SpaceSettingsViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val getAccount: GetAccount,
         private val notificationPermissionManager: NotificationPermissionManager,
-        private val setSpaceNotificationMode: SetSpaceNotificationMode
+        private val setSpaceNotificationMode: SetSpaceNotificationMode,
+        private val deviceTokenStoreService: DeviceTokenStoringService
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -930,7 +944,8 @@ class SpaceSettingsViewModel(
             setObjectDetails = setObjectDetails,
             getAccount = getAccount,
             notificationPermissionManager = notificationPermissionManager,
-            setSpaceNotificationMode = setSpaceNotificationMode
+            setSpaceNotificationMode = setSpaceNotificationMode,
+            deviceTokenStoringService = deviceTokenStoreService
         ) as T
     }
 

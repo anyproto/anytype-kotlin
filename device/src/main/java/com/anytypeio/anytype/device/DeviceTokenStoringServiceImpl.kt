@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessaging
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import timber.log.Timber
 
 class DeviceTokenStoringServiceImpl @Inject constructor(
@@ -54,5 +55,14 @@ class DeviceTokenStoringServiceImpl @Inject constructor(
 
     override fun stop() {
         // Nothing to do here
+    }
+    
+    override suspend fun getToken(): String? {
+        return try {
+            FirebaseMessaging.getInstance().token.await()
+        } catch (e: Exception) {
+            Timber.w("Failed to get Firebase token: ${e.message}")
+            null
+        }
     }
 } 

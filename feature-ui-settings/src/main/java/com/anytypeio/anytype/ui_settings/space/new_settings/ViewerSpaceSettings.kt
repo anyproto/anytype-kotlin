@@ -200,7 +200,8 @@ fun ViewerSpaceSettingsWithDescriptionPreview() {
             createdBy = "Thomas",
             creationDateInMillis = null,
             networkId = "random network id",
-            isDebugVisible = false
+            isDebugVisible = false,
+            deviceToken = null
         )
     )
 }
@@ -221,7 +222,8 @@ fun ViewerSpaceSettingsWithoutDescriptionPreview() {
             createdBy = "Thomas",
             creationDateInMillis = null,
             networkId = "random network id",
-            isDebugVisible = false
+            isDebugVisible = false,
+            deviceToken = null
         )
     )
 }

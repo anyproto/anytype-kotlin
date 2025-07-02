@@ -87,6 +87,22 @@ fun SpaceInfoScreen(
                 // Do nothing.
             }
         )
+
+        // Device Token - shown if isDebugBuild or if title clicked 5+ times
+        val deviceToken = spaceTechInfo.deviceToken
+        if ((isDebugBuild || spaceTechInfo.isDebugVisible) && deviceToken != null) {
+            SpaceInfoItem(
+                name = "Device Token",
+                value = deviceToken,
+                onClick = {
+                    context.copyPlainTextToClipboard(
+                        plainText = deviceToken,
+                        label = "Device Token",
+                        successToast = "Device Token copied to clipboard"
+                    )
+                }
+            )
+        }
         
         // Debug button - shown if isDebugBuild or if title clicked 5+ times
         if (isDebugBuild || spaceTechInfo.isDebugVisible) {
@@ -139,7 +155,8 @@ fun SpaceInfoScreenPreview() {
             createdBy = "Walter",
             networkId = LoremIpsum(words = 10).toString(),
             creationDateInMillis = 21313L,
-            isDebugVisible = true
+            isDebugVisible = true,
+            deviceToken = "FCM_TOKEN_1234567890ABCDEF_EXAMPLE_TOKEN"
         ),
         isDebugBuild = true
     )

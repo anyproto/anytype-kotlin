@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_ui.extensions.tint
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.DocCoverGalleryView
-import com.bumptech.glide.Glide
+import coil3.load
 
 class DocCoverGalleryAdapter(
     private val onSolidColorClicked: (CoverColor) -> Unit,
@@ -136,10 +136,7 @@ class DocCoverGalleryAdapter(
         class Image(val binding: ItemDocCoverGalleryImageBinding) : ViewHolder(binding.root) {
 
             fun bind(item: DocCoverGalleryView.Image) {
-                Glide.with(itemView)
-                    .load(item.url)
-                    .centerCrop()
-                    .into(binding.image)
+                binding.image.load(item.url)
             }
         }
     }

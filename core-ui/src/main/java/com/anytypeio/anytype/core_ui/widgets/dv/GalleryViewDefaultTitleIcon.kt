@@ -12,8 +12,11 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil3.load
+import coil3.request.CachePolicy
+import coil3.request.transformations
+import coil3.size.Scale
+import coil3.transform.CircleCropTransformation
 import timber.log.Timber
 
 class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
@@ -112,11 +115,10 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
     private fun setEmoji(emoji: String) = with(binding) {
         if (emoji.isNotBlank()) {
             try {
-                Glide
-                    .with(ivIconEmoji)
-                    .load(Emojifier.uri(emoji))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(ivIconEmoji)
+                ivIconEmoji.load(Emojifier.uri(emoji)) {
+                    diskCachePolicy(CachePolicy.ENABLED)
+                    memoryCachePolicy(CachePolicy.ENABLED)
+                }
             } catch (e: Throwable) {
                 Timber.w(e, "Error while setting emoji icon for: $emoji")
             }
@@ -128,11 +130,9 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
 
     private fun setImage(image: Url) = with(binding) {
         if (image.isNotBlank()) {
-            Glide
-                .with(ivIconImage)
-                .load(image)
-                .centerCrop()
-                .into(ivIconImage)
+            ivIconImage.load(image) {
+                scale(Scale.FILL)
+            }
         } else {
             ivIconImage.setImageDrawable(null)
         }
@@ -141,11 +141,9 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
 
     private fun setCircularImage(image: Url) = with(binding) {
         if (image.isNotBlank()) {
-            Glide
-                .with(ivIconEmoji)
-                .load(image)
-                .circleCrop()
-                .into(ivIconImage)
+            ivIconImage.load(image) {
+                transformations(CircleCropTransformation())
+            }
         } else {
             ivIconImage.setImageDrawable(null)
         }

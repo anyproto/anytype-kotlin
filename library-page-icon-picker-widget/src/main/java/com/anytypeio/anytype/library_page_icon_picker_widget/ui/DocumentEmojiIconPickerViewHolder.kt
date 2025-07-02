@@ -2,14 +2,13 @@ package com.anytypeio.anytype.library_page_icon_picker_widget.ui
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.library_page_icon_picker_widget.R
 import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiCategoryHeaderBinding
 import com.anytypeio.anytype.library_page_icon_picker_widget.databinding.ItemPageIconPickerEmojiItemBinding
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import timber.log.Timber
 
 sealed class DocumentEmojiIconPickerViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -41,12 +40,7 @@ sealed class DocumentEmojiIconPickerViewHolder(view: View) : RecyclerView.ViewHo
             item: EmojiPickerView.Emoji,
             onEmojiClicked: (String) -> Unit
         ) {
-            Glide
-                .with(image)
-                .load(Emojifier.uri(item.page, item.index))
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .into(image)
-
+            image.load(Emojifier.uri(item.page, item.index))
             itemView.setOnClickListener { onEmojiClicked(item.unicode) }
         }
     }

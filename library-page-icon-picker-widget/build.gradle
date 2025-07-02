@@ -22,12 +22,12 @@ dependencies {
     implementation libs.coroutinesAndroid
     implementation libs.androidxCore
     implementation libs.emojiCompat
+    implementation libs.coil
 
     implementation libs.design
     implementation libs.recyclerView
     implementation libs.constraintLayout
     implementation libs.timber
-    implementation libs.glide
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

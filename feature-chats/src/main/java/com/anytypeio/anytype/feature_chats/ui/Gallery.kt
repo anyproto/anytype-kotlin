@@ -22,12 +22,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.load.DecodeFormat
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import androidx.compose.ui.platform.LocalContext
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 
-@OptIn(ExperimentalGlideComposeApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BubbleGalleryRowLayout(
     images: List<ChatView.Message.Attachment.Image>,
@@ -59,8 +58,11 @@ fun BubbleGalleryRowLayout(
                     trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
                     strokeWidth = 8.dp
                 )
-                GlideImage(
-                    model = image.url,
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(image.url)
+                        .size(512, 512)
+                        .build(),
                     contentDescription = "Attachment image",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
@@ -74,13 +76,7 @@ fun BubbleGalleryRowLayout(
                                 onAttachmentLongClicked(image)
                             }
                         )
-                ) {
-                    it
-                        .override(512, 512)
-                        .centerCrop()
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .format(DecodeFormat.PREFER_RGB_565)
-                }
+                )
             }
         }
     }

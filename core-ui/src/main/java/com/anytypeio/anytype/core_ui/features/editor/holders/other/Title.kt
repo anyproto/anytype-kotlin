@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
@@ -16,6 +14,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import coil3.imageLoader
+import coil3.load
+import coil3.request.ImageRequest
+import coil3.request.transformations
+import coil3.target.Target
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -42,15 +45,10 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.target.CustomTarget
-import com.bumptech.glide.request.target.Target
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
-import com.bumptech.glide.request.transition.Transition
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
@@ -138,11 +136,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         cover?.apply {
             visible()
             setBackgroundColor(0)
-            Glide
-                .with(itemView)
-                .load(coverImage)
-                .centerCrop()
-                .into(this)
+            load(coverImage)
         }
     }
 
@@ -181,11 +175,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         Timber.d("Setting image for ${item.id}, image=${item.image}")
         item.image?.let { url ->
             image.visible()
-            Glide
-                .with(image)
-                .load(url)
-                .centerCrop()
-                .into(image)
+            image.load(url)
         } ?: apply { image.setImageDrawable(null) }
     }
 
@@ -382,11 +372,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         if (adapted != Emojifier.Config.EMPTY_URI) {
                             emojiFallback.text = ""
                             emojiFallback.gone()
-                            Glide
-                                .with(emoji)
-                                .load(adapted)
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                .into(emoji)
+                            emoji.load(adapted) {
+                                memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
+                                diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+                            }
                             emoji.visible()
                         } else {
                             emoji.setImageDrawable(null)
@@ -457,12 +446,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 gradientView.gone()
                 hasImage = true
                 image.visible()
-                Glide
-                    .with(image)
-                    .load(url)
-                    .centerInside()
-                    .circleCrop()
-                    .into(image)
+                image.load(url) {
+                    transformations(coil3.transform.CircleCropTransformation())
+                }
             } ?: apply {
                 hasImage = false
                 gradientView.gone()
@@ -656,32 +642,42 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             val displayMetrics = context.resources.displayMetrics
             val screenWidth = displayMetrics.widthPixels
 
-            Glide.with(context)
-                .asBitmap()
-                .load(url)
-                .override(Target.SIZE_ORIGINAL)
-                .into(object : CustomTarget<Bitmap>() {
-                    override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
-                        val aspectRatio = resource.width.toFloat() / resource.height.toFloat()
-                        val calculatedHeight = (screenWidth / aspectRatio).toInt()
+            val request = ImageRequest.Builder(context)
+                .data(url)
+                .target(object : Target {
+                    override fun onSuccess(result: coil3.Image) {
+                        if (result is android.graphics.drawable.BitmapDrawable) {
+                            val bitmap = result.bitmap
+                            val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+                            val calculatedHeight = (screenWidth / aspectRatio).toInt()
 
-                        val imageHeight = when {
-                            calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
-                            calculatedHeight > dpToPx(context, 443) -> dpToPx(context, 443)
-                            else -> calculatedHeight
-                        }
+                            val imageHeight = when {
+                                calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
+                                calculatedHeight > dpToPx(context, 443) -> dpToPx(context, 443)
+                                else -> calculatedHeight
+                            }
 
-                        imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                            width = screenWidth
-                            height = imageHeight
+                            imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                                width = screenWidth
+                                height = imageHeight
+                            }
+                            imageView.setImageDrawable(result)
+                        } else {
+                            imageView.load(url)
                         }
-                        imageView.setImageBitmap(resource)
                     }
 
-                    override fun onLoadCleared(placeholder: Drawable?) {
+                    override fun onError(result: coil3.Image?) {
                         imageView.setImageDrawable(null)
                     }
+
+                    override fun onStart(placeholder: coil3.Image?) {
+                        // Do nothing
+                    }
                 })
+                .build()
+
+            context.imageLoader.enqueue(request)
         }
 
         private fun dpToPx(context: Context, dp: Int): Int {

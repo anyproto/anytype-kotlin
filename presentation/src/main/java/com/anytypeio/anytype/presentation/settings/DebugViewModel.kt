@@ -123,7 +123,7 @@ class DebugViewModel @Inject constructor(
                     commands.emit(Command.ShareDebugSpaceSummary(path, uriFileProvider))
                 },
                 onFailure = {
-                    sendToast("Error while collecting space summary diagnostics :${it.message}")
+                    messages.value = "Error while collecting space summary diagnostics: ${it.message}"
                     Timber.e(it, "Error while collecting space summary diagnostics")
                 }
             )

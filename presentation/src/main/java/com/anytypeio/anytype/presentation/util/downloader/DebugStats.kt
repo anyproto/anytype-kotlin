@@ -14,7 +14,7 @@ class DebugStats @Inject constructor(
 ) : ResultInteractor<Unit, String>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): String {
-        // Construct the path using the current time to ensure uniqueness (similar to DebugGoroutines)
+
         val timestamp = System.currentTimeMillis()
         val path = "${pathProvider.cachePath()}/debug/stat/$timestamp/"
         val fileName = "debug_stat_$timestamp.json"
@@ -29,7 +29,7 @@ class DebugStats @Inject constructor(
         // Save the JSON to file
         File(filePath).writeText(jsonString)
 
-        // Return the directory path (like DebugGoroutines does)
+        // Return the directory path
         return path
     }
 }

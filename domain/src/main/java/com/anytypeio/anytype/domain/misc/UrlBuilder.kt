@@ -22,7 +22,7 @@ class UrlBuilder(val gateway: Gateway) {
     /**
      * Builds small image url for given [path]
      */
-    fun thumbnail(path: String): Url = gateway.provide() + IMAGE_PATH + path + THUMBNAIL_WIDTH_PARAM
+    fun thumbnail(path: String): Url = medium(path)
 
     /**
      * Builds medium image url for given [path]
@@ -42,8 +42,7 @@ class UrlBuilder(val gateway: Gateway) {
     companion object {
         const val IMAGE_PATH = "/image/"
         const val FILE_PATH = "/file/"
-        const val LARGE_WIDTH_PARAM = "?width=1080"
-        const val THUMBNAIL_WIDTH_PARAM = "?width=100"
-        const val MEDIUM_WIDTH_PARAM = "?width=300"
+        const val LARGE_WIDTH_PARAM = "?width=1920"
+        const val MEDIUM_WIDTH_PARAM = "?width=320"
     }
 }

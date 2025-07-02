@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
@@ -35,8 +36,7 @@ class DebugViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
-    protected val jobs = mutableListOf<Job>()
-    private var goroutinesJob: Job? = null
+    private val jobs = mutableListOf<Job>()
 
     val messages = MutableStateFlow<String?>(null)
 
@@ -80,11 +80,8 @@ class DebugViewModel @Inject constructor(
     }
 
     private fun proceedWithGoroutinesDebug() {
-        if (goroutinesJob?.isActive == true) {
-            return
-        }
         Timber.d("proceedWithGoroutinesDebug")
-        goroutinesJob = viewModelScope.launch {
+        jobs += viewModelScope.launch {
             debugGoroutines.async(DebugGoroutines.Params()).fold(
                 onSuccess = { path ->
                     Timber.d("Debug goroutines success: $path")
@@ -162,7 +159,7 @@ class DebugViewModel @Inject constructor(
 
     override fun onCleared() {
         super.onCleared()
-        goroutinesJob?.cancel()
+        jobs.cancel()
     }
 
     class Factory @Inject constructor(

@@ -1,24 +1,47 @@
 package com.anytypeio.anytype.presentation.settings
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ReadAllChatMessages
+import com.anytypeio.anytype.domain.debugging.DebugExportLogs
+import com.anytypeio.anytype.domain.debugging.DebugGoroutines
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DebugStatShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DebugSpaceSummaryShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class DebugViewModel @Inject constructor(
     private val getAccount: GetAccount,
-    private val readAllChatMessages: ReadAllChatMessages
+    private val readAllChatMessages: ReadAllChatMessages,
+    private val debugGoroutines: DebugGoroutines,
+    private val debugStatShareDownloader: DebugStatShareDownloader,
+    private val debugSpaceSummaryShareDownloader: DebugSpaceSummaryShareDownloader,
+    private val debugExportLogs: DebugExportLogs,
+    private val pathProvider: PathProvider,
+    private val uriFileProvider: UriFileProvider
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
+    protected val jobs = mutableListOf<Job>()
+    private var goroutinesJob : Job? = null
+
+    val messages = MutableStateFlow<String?>(null)
 
     fun onExportWorkingDirectory() {
         viewModelScope.launch {
@@ -31,6 +54,11 @@ class DebugViewModel @Inject constructor(
                             exportFileName = "anytype-${account.id}.zip"
                         )
                     )
+                }
+                .onFailure { error ->
+                    Timber.e(error, "Failed to get account for export working directory")
+                    messages.value =
+                        "Failed to get account for export working directory: ${error.message}"
                 }
         }
     }
@@ -45,30 +73,143 @@ class DebugViewModel @Inject constructor(
                 }
                 .onFailure {
                     Timber.e(it, "readAllMessages failure")
-                    commands.emit(Command.Toast("readAllMessages failure: ${it.message}"))
+                    messages.value = "readAllMessages failure: ${it.message}"
                 }
         }
     }
 
+    fun onDiagnosticsGoroutinesClicked() {
+        proceedWithGoroutinesDebug()
+    }
+
+    private fun proceedWithGoroutinesDebug() {
+        if (goroutinesJob?.isActive == true) {
+            return
+        }
+        Timber.d("proceedWithGoroutinesDebug")
+        goroutinesJob = viewModelScope.launch {
+            debugGoroutines.async(DebugGoroutines.Params()).fold(
+                onSuccess = { path ->
+                    Timber.d("Debug goroutines success: $path")
+                    commands.emit(Command.ShareDebugGoroutines(path, uriFileProvider))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting goroutines diagnostics")
+                    messages.value = "Error while collecting goroutines diagnostics: ${it.message}"
+                }
+            )
+        }
+    }
+
+    fun onDiagnosticsStatClicked() {
+        jobs += viewModelScope.launch {
+            debugStatShareDownloader.stream(
+                MiddlewareShareDownloader.Params(objectId = "debugStat", name = "stat")
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { success ->
+                        //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugStat(success.path))
+                    },
+                    onFailure = {
+                        sendToast("Error while collecting stat diagnostics :${it.message}")
+                        Timber.e(it, "Error while collecting stat diagnostics")
+                    }
+                )
+            }
+        }
+    }
+
+    fun onDiagnosticsSpaceSummaryClicked(spaceId: String?) {
+        if (spaceId.isNullOrBlank()) {
+            sendToast("Space ID is null or blank")
+            return
+        }
+        jobs += viewModelScope.launch {
+            debugSpaceSummaryShareDownloader.stream(
+                MiddlewareShareDownloader.Params(objectId = spaceId, name = "spaceSummary")
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { success ->
+                        //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugSpaceSummary(success.path))
+                    },
+                    onFailure = {
+                        sendToast("Error while collecting space summary diagnostics :${it.message}")
+                        Timber.e(it, "Error while collecting space summary diagnostics")
+                    }
+                )
+            }
+        }
+    }
+
+    fun onDiagnosticsExportLogClicked() {
+        Timber.d("onExportLogsClick: ")
+        jobs += viewModelScope.launch {
+            val dir = pathProvider.providePath()
+            val params = DebugExportLogs.Params(dir = dir)
+            debugExportLogs.async(params).fold(
+                onSuccess = { fileName ->
+                    Timber.d("On debug logs success")
+//                    sendCommand(
+//                        PreferencesViewModel.Command.ShareDebugLogs(
+//                            fileName,
+//                            uriFileProvider
+//                        )
+//                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting debug logs")
+                    //sendCommand(PreferencesViewModel.Command.ShowToast("Error while collecting debug logs: "))
+                }
+            )
+        }
+    }
+
+    fun onShowMessage(msg: String) {
+        Timber.d("onShowMessage: $msg")
+        messages.value = msg
+    }
+
+    fun clearMessages() {
+        messages.value = null
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        goroutinesJob?.cancel()
+    }
+
     class Factory @Inject constructor(
         private val getAccount: GetAccount,
-        private val readAllChatMessages: ReadAllChatMessages
+        private val readAllChatMessages: ReadAllChatMessages,
+        private val debugGoroutines: DebugGoroutines,
+        private val debugStatShareDownloader: DebugStatShareDownloader,
+        private val debugSpaceSummaryShareDownloader: DebugSpaceSummaryShareDownloader,
+        private val debugExportLogs: DebugExportLogs,
+        private val pathProvider: PathProvider,
+        private val uriFileProvider: UriFileProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return DebugViewModel(
                 getAccount = getAccount,
-                readAllChatMessages = readAllChatMessages
+                readAllChatMessages = readAllChatMessages,
+                debugGoroutines = debugGoroutines,
+                debugStatShareDownloader = debugStatShareDownloader,
+                debugSpaceSummaryShareDownloader = debugSpaceSummaryShareDownloader,
+                debugExportLogs = debugExportLogs,
+                pathProvider = pathProvider,
+                uriFileProvider = uriFileProvider
             ) as T
         }
     }
 
     sealed class Command {
-        data class Toast(val msg: String): Command()
+        data class Toast(val msg: String) : Command()
         data class ExportWorkingDirectory(
             val folderName: String,
             val exportFileName: String
-        ): Command()
+        ) : Command()
+        data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) : Command()
     }
 
     companion object {

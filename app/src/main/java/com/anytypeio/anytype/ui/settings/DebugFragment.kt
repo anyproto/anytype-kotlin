@@ -6,9 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_utils.ext.shareFile
+import com.anytypeio.anytype.core_utils.ext.shareFileWithContentChooser
+import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.ZIP_MIME_TYPE
 import com.anytypeio.anytype.core_utils.tools.zipDirectory
@@ -20,6 +27,7 @@ import java.io.FileInputStream
 import java.io.IOException
 import javax.inject.Inject
 import kotlin.getValue
+import timber.log.Timber
 
 class DebugFragment : BaseBottomSheetComposeFragment() {
 
@@ -32,6 +40,7 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<DebugViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,8 +49,20 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
         DebugScreen(
             onExportAllClicked = vm::onExportWorkingDirectory,
             onReadAllChats = vm::onReadAllChats,
-            onDebugStackGoroutines = vm::onDiagnosticsGoroutinesClicked
+            onDebugStackGoroutines = vm::onDiagnosticsGoroutinesClicked,
+            onDebugStat = vm::onDiagnosticsStatClicked,
+            onDebugSpaceSummary = { vm.onDiagnosticsSpaceSummaryClicked("current_space") },
+            onDebugExportLog = vm::onDiagnosticsExportLogClicked
         )
+        val messages = vm.messages.collectAsStateWithLifecycle().value
+        if (messages != null) {
+            BaseAlertDialog(
+                dialogText = messages,
+                buttonText = getString(R.string.button_ok),
+                onButtonClick = { vm.clearMessages() },
+                onDismissRequest = { vm.clearMessages() }
+            )
+        }
         LaunchedEffect(Unit) {
             vm.commands.collect { cmd ->
                 when(cmd) {
@@ -53,6 +74,18 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                     }
                     is DebugViewModel.Command.Toast -> {
                         toast(cmd.msg)
+                    }
+
+                    is DebugViewModel.Command.ShareDebugGoroutines -> {
+                        runCatching {
+                            shareFirstFileFromPath(
+                                path = cmd.path,
+                                uriFileProvider = cmd.uriFileProvider
+                            )
+                        }.onFailure { error ->
+                            Timber.e(error, "Failed to share debug goroutines")
+                            vm.onShowMessage(msg = "Failed to share debug goroutines: ${error.message}")
+                        }
                     }
                 }
             }

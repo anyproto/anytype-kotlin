@@ -32,7 +32,7 @@ sealed class ObjectWrapper {
 
         val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
         val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
-        val iconOption: Double? by default
+        val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
         val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
 
         val coverId: String? = getSingleValue(Relations.COVER_ID)
@@ -111,7 +111,7 @@ sealed class ObjectWrapper {
         val relationOptionColor: String? get() = getSingleValue(Relations.RELATION_OPTION_COLOR)
         val relationReadonlyValue: Boolean? get() = getSingleValue(Relations.RELATION_READ_ONLY_VALUE)
 
-        val sizeInBytes: Double? by default
+        val sizeInBytes: Double? get() = getSingleValue(Relations.SIZE_IN_BYTES)
 
         val internalFlags: List<InternalFlags>
             get() = when (val value = map[Relations.INTERNAL_FLAGS]) {
@@ -217,7 +217,7 @@ sealed class ObjectWrapper {
             }
 
         val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
-        val iconOption: Double? by default
+        val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
 
         val allRecommendedRelations: List<Id>
             get() = recommendedFeaturedRelations + recommendedRelations + recommendedFileRelations + recommendedHiddenRelations
@@ -298,7 +298,7 @@ sealed class ObjectWrapper {
         val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
-        val iconOption: Double? by default
+        val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
 
         // N.B. Only used for space view objects
         val targetSpaceId: String? get() = getSingleValue(Relations.TARGET_SPACE_ID)
@@ -341,8 +341,8 @@ sealed class ObjectWrapper {
                     .firstOrNull { it.code == code?.toInt() }
             }
 
-        val writersLimit: Double? by default
-        val readersLimit: Double? by default
+        val writersLimit: Double? get() = getSingleValue(Relations.WRITERS_LIMIT)
+        val readersLimit: Double? get() = getSingleValue(Relations.READERS_LIMIT)
 
         val spacePushNotificationEncryptionKey: String? get() = getSingleValue(Relations.SPACE_PUSH_NOTIFICATIONS_KEY)
 
@@ -420,7 +420,7 @@ sealed class ObjectWrapper {
         val description: String? = getSingleValue(Relations.DESCRIPTION)
         val fileExt: String? get() = getSingleValue(Relations.FILE_EXT)
         val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
-        val sizeInBytes: Double? by default
+        val sizeInBytes: Double? get() = getSingleValue(Relations.SIZE_IN_BYTES)
         val url: String? get() = getSingleValue(Relations.URL)
         val isArchived: Boolean? get() = getSingleValue(Relations.IS_ARCHIVED)
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)

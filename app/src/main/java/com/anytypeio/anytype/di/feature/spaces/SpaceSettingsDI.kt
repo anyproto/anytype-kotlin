@@ -68,32 +68,6 @@ object SpaceSettingsModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provide(
-        debugSpace: DebugSpace,
-        debugSpaceContentSaver: DebugSpaceContentSaver,
-        dispatchers: AppCoroutineDispatchers
-    ) : DebugSpaceShareDownloader = DebugSpaceShareDownloader(
-        debugSpace = debugSpace,
-        debugSpaceContentSaver = debugSpaceContentSaver,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideMembershipStatus(
-        debugSpace: DebugSpace,
-        debugSpaceContentSaver: DebugSpaceContentSaver,
-        dispatchers: AppCoroutineDispatchers,
-        repository: BlockRepository
-    ) : GetMembershipStatus = GetMembershipStatus(
-        dispatchers = dispatchers,
-        repo = repository
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideGetAccountUseCase(
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers

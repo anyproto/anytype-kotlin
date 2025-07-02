@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
-import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -42,7 +41,6 @@ import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
@@ -51,6 +49,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
@@ -75,12 +74,10 @@ class SpaceSettingsViewModel(
     private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
-    private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val userPermissionProvider: UserPermissionProvider,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
     private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-    private val getMembership: GetMembershipStatus,
     private val uploadFile: UploadFile,
     private val profileContainer: ProfileSubscriptionManager,
     private val getDefaultObjectType: GetDefaultObjectType,
@@ -104,6 +101,8 @@ class SpaceSettingsViewModel(
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     val _notificationState = MutableStateFlow(NotificationState.ALL)
+    
+    private val spaceInfoTitleClickCount = MutableStateFlow(0)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -191,7 +190,8 @@ class SpaceSettingsViewModel(
             combine(
                 restrictions,
                 otherFlows,
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper) ->
+                spaceInfoTitleClickCount
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -229,7 +229,8 @@ class SpaceSettingsViewModel(
                         .getValue<Double?>(Relations.CREATED_DATE)
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
                     ,
-                    networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty()
+                    networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
+                    isDebugVisible = BuildConfig.DEBUG || clickCount >= 5
                 )
 
                 // TODO In the next PR : show different settings for viewer
@@ -459,6 +460,15 @@ class SpaceSettingsViewModel(
                         is UiEvent.OnNotificationsSetting.None -> NotificationState.DISABLE
                     }
                 )
+            }
+            UiEvent.OnDebugClicked -> {
+                viewModelScope.launch {
+                    commands.emit(OpenDebugScreen(vmParams.space.id))
+                }
+            }
+            UiEvent.OnSpaceInfoTitleClicked -> {
+                val currentCount = spaceInfoTitleClickCount.value
+                spaceInfoTitleClickCount.value = currentCount + 1
             }
         }
     }
@@ -863,6 +873,7 @@ class SpaceSettingsViewModel(
         data object ManageRemoteStorage : Command()
         data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
+        data class OpenDebugScreen(val spaceId: String) : Command()
         data object RequestNotificationPermission : Command()
     }
 
@@ -875,11 +886,9 @@ class SpaceSettingsViewModel(
         private val gradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val deleteSpace: DeleteSpace,
-        private val debugFileShareDownloader: DebugSpaceShareDownloader,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val userPermissionProvider: UserPermissionProvider,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
-        private val getMembership: GetMembershipStatus,
         private val uploadFile: UploadFile,
         private val profileContainer: ProfileSubscriptionManager,
         private val getDefaultObjectType: GetDefaultObjectType,
@@ -905,12 +914,10 @@ class SpaceSettingsViewModel(
             gradientProvider = gradientProvider,
             analytics = analytics,
             deleteSpace = deleteSpace,
-            debugSpaceShareDownloader = debugFileShareDownloader,
             spaceGradientProvider = spaceGradientProvider,
             vmParams = params,
             userPermissionProvider = userPermissionProvider,
             activeSpaceMemberSubscriptionContainer = activeSpaceMemberSubscriptionContainer,
-            getMembership = getMembership,
             uploadFile = uploadFile,
             profileContainer = profileContainer,
             getDefaultObjectType = getDefaultObjectType,

@@ -12,8 +12,8 @@ import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.util.downloader.DebugStatShareDownloader
-import com.anytypeio.anytype.presentation.util.downloader.DebugSpaceSummaryShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DebugStats
+import com.anytypeio.anytype.presentation.util.downloader.DebugSpace
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import javax.inject.Inject
@@ -27,8 +27,8 @@ class DebugViewModel @Inject constructor(
     private val getAccount: GetAccount,
     private val readAllChatMessages: ReadAllChatMessages,
     private val debugGoroutines: DebugGoroutines,
-    private val debugStat: DebugStatShareDownloader,
-    private val debugSpaceSummaryShareDownloader: DebugSpaceSummaryShareDownloader,
+    private val debugStat: DebugStats,
+    private val debugSpace: DebugSpace,
     private val debugExportLogs: DebugExportLogs,
     private val pathProvider: PathProvider,
     private val uriFileProvider: UriFileProvider
@@ -119,12 +119,10 @@ class DebugViewModel @Inject constructor(
             return
         }
         jobs += viewModelScope.launch {
-            debugSpaceSummaryShareDownloader.stream(
-                MiddlewareShareDownloader.Params(objectId = spaceId, name = "spaceSummary")
-            ).collect { result ->
+            debugSpace.stream(spaceId).collect { result ->
                 result.fold(
-                    onSuccess = { success ->
-                        //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugSpaceSummary(success.path))
+                    onSuccess = { filePath ->
+                        commands.emit(Command.ShareDebugSpaceSummary(filePath, uriFileProvider))
                     },
                     onFailure = {
                         sendToast("Error while collecting space summary diagnostics :${it.message}")
@@ -171,8 +169,8 @@ class DebugViewModel @Inject constructor(
         private val getAccount: GetAccount,
         private val readAllChatMessages: ReadAllChatMessages,
         private val debugGoroutines: DebugGoroutines,
-        private val debugStatShareDownloader: DebugStatShareDownloader,
-        private val debugSpaceSummaryShareDownloader: DebugSpaceSummaryShareDownloader,
+        private val debugStats: DebugStats,
+        private val debugSpace: DebugSpace,
         private val debugExportLogs: DebugExportLogs,
         private val pathProvider: PathProvider,
         private val uriFileProvider: UriFileProvider
@@ -183,8 +181,8 @@ class DebugViewModel @Inject constructor(
                 getAccount = getAccount,
                 readAllChatMessages = readAllChatMessages,
                 debugGoroutines = debugGoroutines,
-                debugStat = debugStatShareDownloader,
-                debugSpaceSummaryShareDownloader = debugSpaceSummaryShareDownloader,
+                debugStat = debugStats,
+                debugSpace = debugSpace,
                 debugExportLogs = debugExportLogs,
                 pathProvider = pathProvider,
                 uriFileProvider = uriFileProvider
@@ -206,6 +204,9 @@ class DebugViewModel @Inject constructor(
             Command()
             
         data class ShareDebugLogs(val path: String, val uriFileProvider: UriFileProvider) :
+            Command()
+            
+        data class ShareDebugSpaceSummary(val path: String, val uriFileProvider: UriFileProvider) :
             Command()
     }
 

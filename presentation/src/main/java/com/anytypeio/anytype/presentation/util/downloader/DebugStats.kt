@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import java.io.File
 import javax.inject.Inject
 
-class DebugStatShareDownloader @Inject constructor(
+class DebugStats @Inject constructor(
     private val pathProvider: PathProvider,
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers

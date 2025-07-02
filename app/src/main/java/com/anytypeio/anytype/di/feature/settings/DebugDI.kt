@@ -10,8 +10,8 @@ import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.settings.DebugViewModel
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
-import com.anytypeio.anytype.presentation.util.downloader.DebugSpaceSummaryShareDownloader
-import com.anytypeio.anytype.presentation.util.downloader.DebugStatShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.DebugSpace
+import com.anytypeio.anytype.presentation.util.downloader.DebugStats
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.settings.DebugFragment
 import dagger.Binds
@@ -54,8 +54,8 @@ interface DebugDependencies : ComponentDependencies {
     fun repo(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun debugGoroutines(): DebugGoroutinesShareDownloader
-    fun debugStats(): DebugStatShareDownloader
-    fun debugSpaceSummary(): DebugSpaceSummaryShareDownloader
+    fun debugStats(): DebugStats
+    fun debugSpaceSummary(): DebugSpace
     fun debugExportLogs(): DebugExportLogs
     fun uriFileProvider(): UriFileProvider
 }

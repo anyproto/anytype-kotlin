@@ -31,11 +31,11 @@ sealed class ObjectWrapper {
         val pluralName: String? get() = getSingleValue(Relations.PLURAL_NAME)
 
         val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
-        val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
+        val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
         val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
 
-        val coverId: String? = getSingleValue(Relations.COVER_ID)
+        val coverId: String? get() = getSingleValue(Relations.COVER_ID)
 
         val coverType: CoverType
             get() = when (val value = map[Relations.COVER_TYPE]) {
@@ -55,11 +55,8 @@ sealed class ObjectWrapper {
         val layout: ObjectType.Layout?
             get() {
                 // Try legacy layout first, then fallback to resolved layout.
-                val layoutValue = when {
-                    map[Relations.LEGACY_LAYOUT] is Double -> map[Relations.LEGACY_LAYOUT] as Double
-                    map[Relations.LAYOUT] is Double -> map[Relations.LAYOUT] as Double
-                    else -> null
-                }
+                val layoutValue = getSingleValue<Double>(Relations.LEGACY_LAYOUT)
+                    ?: getSingleValue<Double>(Relations.LAYOUT)
                 return layoutValue?.let { value ->
                     ObjectType.Layout.entries.singleOrNull { it.code == value.toInt() }
                 }
@@ -77,7 +74,7 @@ sealed class ObjectWrapper {
 
         val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
 
-        val description: String? = getSingleValue(Relations.DESCRIPTION)
+        val description: String? get() = getSingleValue(Relations.DESCRIPTION)
 
         val url: String? get() = getSingleValue(Relations.URL)
 
@@ -91,7 +88,7 @@ sealed class ObjectWrapper {
 
         val relationFormat: RelationFormat?
             get() = when (val value = map[Relations.RELATION_FORMAT]) {
-                is Double -> RelationFormat.values().singleOrNull { format ->
+                is Double -> RelationFormat.entries.singleOrNull { format ->
                     format.code == value.toInt()
                 }
                 else -> null
@@ -154,10 +151,10 @@ sealed class ObjectWrapper {
     data class Bookmark(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val name: String? get() = getSingleValue(Relations.NAME)
-        val description: String? = getSingleValue(Relations.DESCRIPTION)
+        val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val source: String? get() = getSingleValue(Relations.SOURCE)
         val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
-        val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
+        val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val picture: String? get() = getSingleValue(Relations.PICTURE)
         val isArchived: Boolean? get() = getSingleValue(Relations.IS_ARCHIVED)
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)
@@ -173,7 +170,7 @@ sealed class ObjectWrapper {
         val name: String? get() = getSingleValue(Relations.NAME)
         val pluralName: String? get() = getSingleValue(Relations.PLURAL_NAME)
         val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
-        val description: String? = getSingleValue(Relations.DESCRIPTION)
+        val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val isArchived: Boolean? get() = getSingleValue(Relations.IS_ARCHIVED)
         val iconEmoji: String? get() = getSingleValue(Relations.ICON_EMOJI)
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)
@@ -191,11 +188,8 @@ sealed class ObjectWrapper {
         val layout: ObjectType.Layout?
             get() {
                 // Try legacy layout first, then fallback to resolved layout.
-                val layoutValue = when {
-                    map[Relations.LEGACY_LAYOUT] is Double -> map[Relations.LEGACY_LAYOUT] as Double
-                    map[Relations.LAYOUT] is Double -> map[Relations.LAYOUT] as Double
-                    else -> null
-                }
+                val layoutValue = getSingleValue<Double>(Relations.LEGACY_LAYOUT)
+                    ?: getSingleValue<Double>(Relations.LAYOUT)
                 return layoutValue?.let { value ->
                     ObjectType.Layout.entries.singleOrNull { it.code == value.toInt() }
                 }
@@ -296,7 +290,7 @@ sealed class ObjectWrapper {
 
         val id: Id by default
         val name: String? get() = getSingleValue(Relations.NAME)
-        val description: String? = getSingleValue(Relations.DESCRIPTION)
+        val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
 
@@ -417,7 +411,7 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
         val id: Id by default
         val name: String? get() = getSingleValue(Relations.NAME)
-        val description: String? = getSingleValue(Relations.DESCRIPTION)
+        val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val fileExt: String? get() = getSingleValue(Relations.FILE_EXT)
         val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
         val sizeInBytes: Double? get() = getSingleValue(Relations.SIZE_IN_BYTES)
@@ -445,7 +439,7 @@ sealed class ObjectWrapper {
         val permissions
             get() = getSingleValue<Double>(Relations.PARTICIPANT_PERMISSIONS)
                 .let { code ->
-                    SpaceMemberPermissions.values().firstOrNull { it.code == code?.toInt() }
+                    SpaceMemberPermissions.entries.firstOrNull { it.code == code?.toInt() }
                 }
 
         val globalName: String? get() = getSingleValue(Relations.GLOBAL_NAME)

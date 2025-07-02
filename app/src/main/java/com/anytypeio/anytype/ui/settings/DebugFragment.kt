@@ -13,8 +13,6 @@ import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
-import com.anytypeio.anytype.core_utils.ext.shareFile
-import com.anytypeio.anytype.core_utils.ext.shareFileWithContentChooser
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.ZIP_MIME_TYPE

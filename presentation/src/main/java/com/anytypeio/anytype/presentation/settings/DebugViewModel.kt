@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.settings
 
-import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,8 +12,6 @@ import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
-import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugStatShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugSpaceSummaryShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -30,7 +27,7 @@ class DebugViewModel @Inject constructor(
     private val getAccount: GetAccount,
     private val readAllChatMessages: ReadAllChatMessages,
     private val debugGoroutines: DebugGoroutines,
-    private val debugStatShareDownloader: DebugStatShareDownloader,
+    private val debugStat: DebugStatShareDownloader,
     private val debugSpaceSummaryShareDownloader: DebugSpaceSummaryShareDownloader,
     private val debugExportLogs: DebugExportLogs,
     private val pathProvider: PathProvider,
@@ -39,7 +36,7 @@ class DebugViewModel @Inject constructor(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     protected val jobs = mutableListOf<Job>()
-    private var goroutinesJob : Job? = null
+    private var goroutinesJob: Job? = null
 
     val messages = MutableStateFlow<String?>(null)
 
@@ -103,19 +100,16 @@ class DebugViewModel @Inject constructor(
 
     fun onDiagnosticsStatClicked() {
         jobs += viewModelScope.launch {
-            debugStatShareDownloader.stream(
-                MiddlewareShareDownloader.Params(objectId = "debugStat", name = "stat")
-            ).collect { result ->
-                result.fold(
-                    onSuccess = { success ->
-                        //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugStat(success.path))
-                    },
-                    onFailure = {
-                        sendToast("Error while collecting stat diagnostics :${it.message}")
-                        Timber.e(it, "Error while collecting stat diagnostics")
-                    }
-                )
-            }
+            debugStat.async(Unit).fold(
+                onSuccess = { jsonString ->
+                    Timber.d("Debug stat success, json: ${jsonString}")
+                    //commands.emit(ObjectMenuViewModelBase.Command.ShareDebugStat(success.path))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while collecting stat diagnostics")
+                    messages.value = "Error while collecting stat diagnostics: ${it.message}"
+                }
+            )
         }
     }
 
@@ -194,7 +188,7 @@ class DebugViewModel @Inject constructor(
                 getAccount = getAccount,
                 readAllChatMessages = readAllChatMessages,
                 debugGoroutines = debugGoroutines,
-                debugStatShareDownloader = debugStatShareDownloader,
+                debugStat = debugStatShareDownloader,
                 debugSpaceSummaryShareDownloader = debugSpaceSummaryShareDownloader,
                 debugExportLogs = debugExportLogs,
                 pathProvider = pathProvider,
@@ -209,7 +203,9 @@ class DebugViewModel @Inject constructor(
             val folderName: String,
             val exportFileName: String
         ) : Command()
-        data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) : Command()
+
+        data class ShareDebugGoroutines(val path: String, val uriFileProvider: UriFileProvider) :
+            Command()
     }
 
     companion object {

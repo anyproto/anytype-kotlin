@@ -1,19 +1,16 @@
 package com.anytypeio.anytype.presentation.util.downloader
 
-import android.content.Context
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
 class DebugStatShareDownloader @Inject constructor(
     private val repo: BlockRepository,
-    context: Context,
-    uriFileProvider: UriFileProvider,
     dispatchers: AppCoroutineDispatchers
-) : MiddlewareShareDownloader(context, uriFileProvider, dispatchers) {
+) : ResultInteractor<Unit, String>(dispatchers.io) {
 
-    override suspend fun downloadFile(hash: String, path: String): String {
-        repo.debugStats()
-        return path
+    override suspend fun doWork(params: Unit): String {
+        return repo.debugStats()
     }
 }

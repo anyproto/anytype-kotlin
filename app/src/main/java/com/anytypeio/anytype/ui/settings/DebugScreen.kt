@@ -27,7 +27,10 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 fun DebugScreen(
     onExportAllClicked: () -> Unit,
     onReadAllChats: () -> Unit,
-    onDebugStackGoroutines: () -> Unit = { /* Default no-op */ }
+    onDebugStackGoroutines: () -> Unit = { /* Default no-op */ },
+    onDebugStat: () -> Unit = { /* Default no-op */ },
+    onDebugSpaceSummary: () -> Unit = { /* Default no-op */ },
+    onDebugExportLog: () -> Unit = { /* Default no-op */ }
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -56,6 +59,21 @@ fun DebugScreen(
         ActionItem(
             title = "Debug stack Goroutines",
             onClick = onDebugStackGoroutines
+        )
+
+        ActionItem(
+            title = "Debug Stat",
+            onClick = onDebugStat
+        )
+
+        ActionItem(
+            title = "Debug Space Summary",
+            onClick = onDebugSpaceSummary
+        )
+
+        ActionItem(
+            title = "Debug Export Log",
+            onClick = onDebugExportLog
         )
 
         Divider()

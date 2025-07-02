@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class DebugGoroutinesShareDownloader @Inject constructor(
+class DebugStatShareDownloader @Inject constructor(
     private val repo: BlockRepository,
     context: Context,
     uriFileProvider: UriFileProvider,
@@ -13,7 +13,7 @@ class DebugGoroutinesShareDownloader @Inject constructor(
 ) : MiddlewareShareDownloader(context, uriFileProvider, dispatchers) {
 
     override suspend fun downloadFile(hash: String, path: String): String {
-        repo.debugStackGoroutines(path = path)
+        repo.debugStats()
         return path
     }
 }

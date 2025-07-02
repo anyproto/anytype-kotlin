@@ -197,6 +197,7 @@ dependencies {
     implementation libs.composeConstraintLayout
     implementation libs.coilCompose
     implementation libs.coilNetwork
+    implementation libs.coilVideo
     implementation libs.dagger
     implementation libs.timber
     implementation libs.gson

@@ -138,21 +138,16 @@ class DebugViewModel @Inject constructor(
     fun onDiagnosticsExportLogClicked() {
         Timber.d("onExportLogsClick: ")
         jobs += viewModelScope.launch {
-            val dir = pathProvider.providePath()
+            val dir = pathProvider.cachePath()
             val params = DebugExportLogs.Params(dir = dir)
             debugExportLogs.async(params).fold(
-                onSuccess = { fileName ->
-                    Timber.d("On debug logs success")
-//                    sendCommand(
-//                        PreferencesViewModel.Command.ShareDebugLogs(
-//                            fileName,
-//                            uriFileProvider
-//                        )
-//                    )
+                onSuccess = { zipFilePath ->
+                    Timber.d("Debug logs success: $zipFilePath")
+                    commands.emit(Command.ShareDebugLogs(zipFilePath, uriFileProvider))
                 },
                 onFailure = {
                     Timber.e(it, "Error while collecting debug logs")
-                    //sendCommand(PreferencesViewModel.Command.ShowToast("Error while collecting debug logs: "))
+                    messages.value = "Error while collecting debug logs: ${it.message}"
                 }
             )
         }
@@ -208,6 +203,9 @@ class DebugViewModel @Inject constructor(
             Command()
         
         data class ShareDebugStat(val path: String, val uriFileProvider: UriFileProvider) :
+            Command()
+            
+        data class ShareDebugLogs(val path: String, val uriFileProvider: UriFileProvider) :
             Command()
     }
 

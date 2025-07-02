@@ -14,6 +14,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
+import com.anytypeio.anytype.core_utils.ext.shareFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.ZIP_MIME_TYPE
 import com.anytypeio.anytype.core_utils.tools.zipDirectory
@@ -95,6 +96,18 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                         }.onFailure { error ->
                             Timber.e(error, "Failed to share debug stat")
                             vm.onShowMessage(msg = "Failed to share debug stat: ${error.message}")
+                        }
+                    }
+                    
+                    is DebugViewModel.Command.ShareDebugLogs -> {
+                        runCatching {
+                            shareFileFromPath(
+                                path = cmd.path,
+                                uriFileProvider = cmd.uriFileProvider
+                            )
+                        }.onFailure { error ->
+                            Timber.e(error, "Failed to share debug logs")
+                            vm.onShowMessage(msg = "Failed to share debug logs: ${error.message}")
                         }
                     }
                 }

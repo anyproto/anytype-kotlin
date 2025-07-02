@@ -22,10 +22,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
-import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
 import androidx.compose.ui.platform.LocalContext
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -63,8 +62,6 @@ fun BubbleGalleryRowLayout(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(image.url)
                         .size(512, 512)
-                        .diskCachePolicy(CachePolicy.ENABLED)
-                        .memoryCachePolicy(CachePolicy.ENABLED)
                         .build(),
                     contentDescription = "Attachment image",
                     contentScale = ContentScale.Crop,

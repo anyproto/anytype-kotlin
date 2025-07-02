@@ -57,7 +57,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 
 @Composable
 fun DataViewListWidgetCard(

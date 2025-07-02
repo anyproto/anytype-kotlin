@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import coil3.load
+import coil3.request.transformations
 import coil3.size.Scale
 import coil3.transform.CircleCropTransformation
 import timber.log.Timber

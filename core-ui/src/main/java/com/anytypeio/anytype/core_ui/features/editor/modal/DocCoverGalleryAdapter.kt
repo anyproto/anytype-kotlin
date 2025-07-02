@@ -136,9 +136,7 @@ class DocCoverGalleryAdapter(
         class Image(val binding: ItemDocCoverGalleryImageBinding) : ViewHolder(binding.root) {
 
             fun bind(item: DocCoverGalleryView.Image) {
-                binding.image.load(item.url) {
-                    crossfade(true)
-                }
+                binding.image.load(item.url)
             }
         }
     }

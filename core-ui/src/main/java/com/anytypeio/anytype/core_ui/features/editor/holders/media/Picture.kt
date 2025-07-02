@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
-import com.anytypeio.anytype.core_ui.R
+import coil3.load
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
@@ -13,11 +12,6 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import coil3.imageLoader
-import coil3.load
-import coil3.request.ErrorResult
-import coil3.request.ImageRequest
-import coil3.request.SuccessResult
 import timber.log.Timber
 
 class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), DecoratableCardViewHolder {
@@ -36,29 +30,22 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
-    private fun createImageRequest(url: String): ImageRequest {
-        return ImageRequest.Builder(image.context)
-            .data(url)
-            .target(image)
-            .listener(
-                onStart = { loading.visible() },
+    fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
+        super.bind(item, clicked)
+        loading.visible()
+        image.load(item.url) {
+            listener(
                 onSuccess = { _, _ ->
                     loading.gone()
                     error.invisible()
                 },
-                onError = { _, result ->
+                onError = { _, throwable ->
                     loading.gone()
                     error.visible()
-                    Timber.w(result.throwable, "Error while loading picture with url: $url")
+                    Timber.w("Error while loading picture with url: ${item.url}")
                 }
             )
-            .build()
-    }
-
-    fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
-        super.bind(item, clicked)
-        val request = createImageRequest(item.url)
-        image.context.imageLoader.enqueue(request)
+        }
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {

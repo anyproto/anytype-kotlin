@@ -14,6 +14,7 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import coil3.load
 import coil3.request.CachePolicy
+import coil3.request.transformations
 import coil3.size.Scale
 import coil3.transform.CircleCropTransformation
 import timber.log.Timber

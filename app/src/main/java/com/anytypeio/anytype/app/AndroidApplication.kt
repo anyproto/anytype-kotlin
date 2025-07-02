@@ -11,6 +11,7 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.request.crossfade
+import coil3.video.VideoFrameDecoder
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
 import com.anytypeio.anytype.BuildConfig
@@ -129,6 +130,9 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
 
     override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
+            .components {
+                add(VideoFrameDecoder.Factory())
+            }
             .crossfade(true)
             .build()
     }

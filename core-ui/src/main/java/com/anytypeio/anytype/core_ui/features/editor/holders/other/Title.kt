@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.other
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
@@ -16,6 +14,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import coil3.imageLoader
+import coil3.load
+import coil3.request.ImageRequest
+import coil3.request.transformations
+import coil3.target.Target
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -42,11 +45,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import coil3.imageLoader
-import coil3.load
-import coil3.request.ImageRequest
-import coil3.request.transformations
-import coil3.target.Target
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -647,7 +645,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             val request = ImageRequest.Builder(context)
                 .data(url)
                 .target(object : Target {
-                    override fun onSuccess(result: Drawable) {
+                    override fun onSuccess(result: coil3.Image) {
                         if (result is android.graphics.drawable.BitmapDrawable) {
                             val bitmap = result.bitmap
                             val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
@@ -665,17 +663,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                             }
                             imageView.setImageDrawable(result)
                         } else {
-                            imageView.load(url) {
-                                crossfade(true)
-                            }
+                            imageView.load(url)
                         }
                     }
 
-                    override fun onError(result: Drawable?) {
+                    override fun onError(result: coil3.Image?) {
                         imageView.setImageDrawable(null)
                     }
 
-                    override fun onStart(placeholder: Drawable?) {
+                    override fun onStart(placeholder: coil3.Image?) {
                         // Do nothing
                     }
                 })

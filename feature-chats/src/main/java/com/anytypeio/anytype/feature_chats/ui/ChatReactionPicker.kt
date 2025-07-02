@@ -31,7 +31,7 @@ import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel.ReactionPickerView
-import coil.compose.AsyncImage
+import coil3.compose.AsyncImage
 
 @Composable
 fun SelectChatReactionScreen(

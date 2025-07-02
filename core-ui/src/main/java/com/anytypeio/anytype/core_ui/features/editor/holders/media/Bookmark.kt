@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
-import android.graphics.drawable.Drawable
 import android.text.Spannable
 import android.view.View
 import android.view.ViewConfiguration
@@ -21,7 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bo
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_TITLE_KEY
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Media.Bookmark.Companion.SEARCH_FIELD_URL_KEY
 import coil3.load
-import kotlin.text.get
+import coil3.request.crossfade
 import timber.log.Timber
 
 class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), DecoratableCardViewHolder {
@@ -58,7 +57,6 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         if (item.imageUrl != null) {
             image.visible()
             image.load(item.imageUrl) {
-                crossfade(true)
                 listener(
                     onError = { _, _ -> error.visible() },
                     onSuccess = { _, _ -> error.gone() }
@@ -72,9 +70,7 @@ class Bookmark(val binding: ItemBlockBookmarkBinding) : Media(binding.root), Dec
         }
         if (item.faviconUrl != null) {
             logo.visible()
-            logo.load(item.faviconUrl) {
-                crossfade(true)
-            }
+            logo.load(item.faviconUrl)
         } else {
             with(logo) {
                 setImageDrawable(null)

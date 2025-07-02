@@ -29,8 +29,8 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
-    <string name="app_preferences">App Preferences</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="app_preferences">Setelan Aplikasi</string>
+    <string name="vault_key">Brankas &amp; Kunci</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">Anda membutuhkannya untuk masuk. Simplanlah dalam tempat yang aman. Jika hilang, kamu tidak akan bisa mengakses brankasmu.</string>
     <string name="about_help_and_community">Bantuan &amp; Komunitas</string>
@@ -1111,7 +1111,7 @@
     <string name="date_type_older">Lebih lama</string>
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
-    <string name="settings_use_yamux">Use QUIC</string>
+    <string name="settings_use_yamux">Gunakan QUIC</string>
     <string name="settings_share_local_logs">Bagikan log lokal</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>

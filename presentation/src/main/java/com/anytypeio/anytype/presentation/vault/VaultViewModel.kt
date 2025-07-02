@@ -190,6 +190,12 @@ class VaultViewModel(
             .map { space ->
                 val chatPreview = space.targetSpaceId?.let { spaceId ->
                     chatPreviewMap[spaceId]
+                }?.takeIf { preview ->
+                    // Only use chat preview if it matches the main space chat ID
+                    // This filters out previews from other chats in multi-chat spaces
+                    space.chatId?.let { spaceChatId ->
+                        preview.chat == spaceChatId
+                    } == true // If no chatId is set, don't show preview
                 }
                 mapToVaultSpaceViewItem(space, chatPreview, permissions)
             }

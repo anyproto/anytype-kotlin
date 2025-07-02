@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.settings.DebugViewModel
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugSpaceSummaryShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugStatShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.settings.DebugFragment
 import dagger.Binds
 import dagger.Component
@@ -56,4 +57,5 @@ interface DebugDependencies : ComponentDependencies {
     fun debugStats(): DebugStatShareDownloader
     fun debugSpaceSummary(): DebugSpaceSummaryShareDownloader
     fun debugExportLogs(): DebugExportLogs
+    fun uriFileProvider(): UriFileProvider
 }

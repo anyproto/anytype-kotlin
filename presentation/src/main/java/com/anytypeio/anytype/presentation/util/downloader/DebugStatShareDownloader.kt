@@ -15,9 +15,10 @@ class DebugStatShareDownloader @Inject constructor(
 
     override suspend fun doWork(params: Unit): String {
         // Construct the path using the current time to ensure uniqueness (similar to DebugGoroutines)
-        val path = "${pathProvider.cachePath()}/debug/stat/${System.currentTimeMillis()}/"
-        val fileName = "debug_stat.json"
-        val resultFilePath = "$path$fileName"
+        val timestamp = System.currentTimeMillis()
+        val path = "${pathProvider.cachePath()}/debug/stat/$timestamp/"
+        val fileName = "debug_stat_$timestamp.json"
+        val filePath = "$path$fileName"
 
         // Create the directories if they do not exist
         File(path).apply { mkdirs() }
@@ -26,9 +27,9 @@ class DebugStatShareDownloader @Inject constructor(
         val jsonString = repo.debugStats()
 
         // Save the JSON to file
-        File(resultFilePath).writeText(jsonString)
+        File(filePath).writeText(jsonString)
 
-        // Return the result file path
-        return resultFilePath
+        // Return the directory path (like DebugGoroutines does)
+        return path
     }
 }

@@ -25,11 +25,15 @@ class DebugSpace @Inject constructor(
         val fileName = "space_summary_$timestamp.json"
         val filePath = "$path$fileName"
 
+        // Create the directories if they do not exist
+        File(path).apply { mkdirs() }
+
         // Save the space summary data to file
         val file = File(filePath)
         file.writeText(spaceSummaryData)
 
-        return filePath
+        // Return the directory path (not file path) for sharing compatibility
+        return path
     }
 
     data class Params(

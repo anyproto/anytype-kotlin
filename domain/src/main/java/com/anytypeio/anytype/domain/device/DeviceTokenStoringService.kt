@@ -4,4 +4,5 @@ interface DeviceTokenStoringService {
     fun saveToken(token: String)
     fun start()
     fun stop()
+    suspend fun getToken(): String?
 }

@@ -1131,4 +1131,8 @@ class BlockMiddleware(
     override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState) {
         middleware.setSpaceMode(spaceViewId = spaceViewId, mode = mode)
     }
+
+    override suspend fun debugStats(): String {
+        return middleware.debugStats()
+    }
 }

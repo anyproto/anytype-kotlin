@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.feature
 
-import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
@@ -43,7 +42,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
@@ -210,21 +208,6 @@ object ObjectMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun debugGoRoutines(
-        repo: BlockRepository,
-        context: Context,
-        fileProvider: UriFileProvider,
-        dispatchers: AppCoroutineDispatchers
-    ): DebugGoroutinesShareDownloader = DebugGoroutinesShareDownloader(
-        repo = repo,
-        context = context.applicationContext,
-        uriFileProvider = fileProvider,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
     fun provideFavoriteUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -353,21 +336,6 @@ object ObjectSetMenuModule {
         dispatchers: AppCoroutineDispatchers
     ): CreateBlock = CreateBlock(
         repo = repo,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
-    fun debugGoRoutines(
-        repo: BlockRepository,
-        context: Context,
-        fileProvider: UriFileProvider,
-        dispatchers: AppCoroutineDispatchers
-    ): DebugGoroutinesShareDownloader = DebugGoroutinesShareDownloader(
-        repo = repo,
-        context = context.applicationContext,
-        uriFileProvider = fileProvider,
         dispatchers = dispatchers
     )
 

@@ -11,9 +11,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
-import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
+import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +21,6 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.payments.GetMembershipStatus
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -64,32 +62,6 @@ object SpaceSettingsModule {
     @Provides
     @PerScreen
     fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provide(
-        debugSpace: DebugSpace,
-        debugSpaceContentSaver: DebugSpaceContentSaver,
-        dispatchers: AppCoroutineDispatchers
-    ) : DebugSpaceShareDownloader = DebugSpaceShareDownloader(
-        debugSpace = debugSpace,
-        debugSpaceContentSaver = debugSpaceContentSaver,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideMembershipStatus(
-        debugSpace: DebugSpace,
-        debugSpaceContentSaver: DebugSpaceContentSaver,
-        dispatchers: AppCoroutineDispatchers,
-        repository: BlockRepository
-    ) : GetMembershipStatus = GetMembershipStatus(
-        dispatchers = dispatchers,
-        repo = repository
-    )
 
     @JvmStatic
     @Provides
@@ -140,4 +112,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun profileContainer(): ProfileSubscriptionManager
     fun uriFileProvider(): UriFileProvider
     fun notificationsPermissionManager(): NotificationPermissionManager
+    fun deviceTokenStoreService(): DeviceTokenStoringService
 }

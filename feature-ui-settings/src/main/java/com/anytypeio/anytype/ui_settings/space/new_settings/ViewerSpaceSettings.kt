@@ -199,7 +199,9 @@ fun ViewerSpaceSettingsWithDescriptionPreview() {
             spaceId = SpaceId("space-id"),
             createdBy = "Thomas",
             creationDateInMillis = null,
-            networkId = "random network id"
+            networkId = "random network id",
+            isDebugVisible = false,
+            deviceToken = null
         )
     )
 }
@@ -219,7 +221,9 @@ fun ViewerSpaceSettingsWithoutDescriptionPreview() {
             spaceId = SpaceId("space-id"),
             createdBy = "Thomas",
             creationDateInMillis = null,
-            networkId = "random network id"
+            networkId = "random network id",
+            isDebugVisible = false,
+            deviceToken = null
         )
     )
 }

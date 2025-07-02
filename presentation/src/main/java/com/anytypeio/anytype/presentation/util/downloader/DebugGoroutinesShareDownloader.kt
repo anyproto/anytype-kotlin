@@ -3,8 +3,9 @@ package com.anytypeio.anytype.presentation.util.downloader
 import android.content.Context
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
-class DebugGoroutinesShareDownloader(
+class DebugGoroutinesShareDownloader @Inject constructor(
     private val repo: BlockRepository,
     context: Context,
     uriFileProvider: UriFileProvider,

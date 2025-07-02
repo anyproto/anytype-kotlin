@@ -82,7 +82,6 @@ sealed class ObjectWrapper {
 
         fun isEmpty(): Boolean = map.isEmpty()
 
-        val relationKey: String get() = getSingleValue(Relations.RELATION_KEY) ?: ""
         val isFavorite: Boolean? get() = getSingleValue(Relations.IS_FAVORITE)
         val isHidden: Boolean? get() = getSingleValue(Relations.IS_HIDDEN)
 
@@ -149,7 +148,6 @@ sealed class ObjectWrapper {
      * Wrapper for bookmark objects
      */
     data class Bookmark(override val map: Struct) : ObjectWrapper() {
-        private val default = map.withDefault { null }
         val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val source: String? get() = getSingleValue(Relations.SOURCE)
@@ -166,7 +164,9 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: String get() = getSingleValue(Relations.UNIQUE_KEY) ?: ""
+        val uniqueKey: String get() = requireNotNull(getSingleValue(Relations.UNIQUE_KEY)) {
+            "uniqueKey is required but missing for object type: ${map[Relations.ID]}"
+        }
         val name: String? get() = getSingleValue(Relations.NAME)
         val pluralName: String? get() = getSingleValue(Relations.PLURAL_NAME)
         val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
@@ -224,7 +224,9 @@ sealed class ObjectWrapper {
 
         private val default = map.withDefault { null }
 
-        private val relationKey : Key get() = getSingleValue(Relations.RELATION_KEY) ?: ""
+        private val relationKey : Key get() = requireNotNull(getSingleValue(Relations.RELATION_KEY)) {
+            "relationKey is required but missing for relation object: ${map[Relations.ID]}"
+        }
 
         val relationFormat: RelationFormat
             get() {
@@ -414,7 +416,6 @@ sealed class ObjectWrapper {
         val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val fileExt: String? get() = getSingleValue(Relations.FILE_EXT)
         val fileMimeType: String? get() = getSingleValue(Relations.FILE_MIME_TYPE)
-        val sizeInBytes: Double? get() = getSingleValue(Relations.SIZE_IN_BYTES)
         val url: String? get() = getSingleValue(Relations.URL)
         val isArchived: Boolean? get() = getSingleValue(Relations.IS_ARCHIVED)
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)

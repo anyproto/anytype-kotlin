@@ -55,6 +55,7 @@ dependencies {
     implementation libs.gson
 
     implementation libs.kotlinxSerializationJson
+    implementation libs.anyCrypto
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest

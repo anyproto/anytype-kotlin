@@ -854,13 +854,13 @@
     <string name="create_object_section_lists">列表</string>
     <string name="create_object_section_objects">物件</string>
     <string name="edit">編輯</string>
-    <string name="unselect_all">取消全選</string>
+    <string name="unselect_all">取消選擇</string>
     <string name="sets">集合</string>
     <string name="favorites">我的最愛</string>
     <string name="recent">最近編輯</string>
     <string name="recently_opened">最近開啟</string>
     <string name="bin">垃圾桶</string>
-    <string name="synced_files">已同步的檔案</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">登入</string>
     <string name="create_object_section_library">Anytype 資料庫</string>
     <string name="bin_empty_title">Your bin is empty.</string>

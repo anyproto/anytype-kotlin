@@ -4,6 +4,10 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
+import coil3.load
+import coil3.request.CachePolicy
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -12,11 +16,6 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import coil3.load
-import coil3.request.CachePolicy
-import coil3.request.transformations
-import coil3.size.Scale
-import coil3.transform.CircleCropTransformation
 import timber.log.Timber
 
 class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
@@ -130,9 +129,7 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
 
     private fun setImage(image: Url) = with(binding) {
         if (image.isNotBlank()) {
-            ivIconImage.load(image) {
-                scale(Scale.FILL)
-            }
+            ivIconImage.load(image)
         } else {
             ivIconImage.setImageDrawable(null)
         }

@@ -26,7 +26,6 @@ import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationV
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import coil3.load
 import coil3.request.transformations
-import coil3.size.Scale
 import coil3.transform.CircleCropTransformation
 import timber.log.Timber
 
@@ -259,9 +258,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                         }
                                         marginEnd = marginAfterIcon
                                     }
-                                    image.load(icon.hash) {
-                                        scale(Scale.FILL)
-                                    }
+                                    image.load(icon.hash)
                                 }
                                 is ObjectIcon.Profile.Avatar -> {
                                     val avatar = TextView(themeWrapper).apply {

@@ -960,7 +960,7 @@
     <string name="recent">Recently edited</string>
     <string name="recently_opened">Recently opened</string>
     <string name="bin">Bin</string>
-    <string name="synced_files">Synced files</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Anytype Library</string>
 

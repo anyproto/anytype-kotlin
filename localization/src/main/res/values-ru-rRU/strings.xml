@@ -860,13 +860,13 @@
     <string name="create_object_section_lists">Списки</string>
     <string name="create_object_section_objects">Объекты</string>
     <string name="edit">Изменить</string>
-    <string name="unselect_all">Отменить выбор</string>
+    <string name="unselect_all">Снять выделение</string>
     <string name="sets">Наборы</string>
     <string name="favorites">Избранное</string>
     <string name="recent">Недавно обновлено</string>
     <string name="recently_opened">Недавно открытые</string>
     <string name="bin">Корзина</string>
-    <string name="synced_files">Синхронизированные файлы</string>
+    <string name="synced_files">Очистка файлов</string>
     <string name="log_in">Войти</string>
     <string name="create_object_section_library">Библиотека Anytype</string>
     <string name="bin_empty_title">Ваша корзина пуста.</string>

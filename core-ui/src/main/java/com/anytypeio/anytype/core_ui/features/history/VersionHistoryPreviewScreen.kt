@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -122,6 +124,12 @@ private fun EditorScreen(
     editorAdapter: BlockAdapter,
     state: VersionHistoryPreviewScreen.Success.Editor
 ) {
+    val density = LocalDensity.current
+    val navigationBarHeight = with(density) { 
+        WindowInsets.navigationBars.getBottom(density).toDp()
+    }
+    val bottomPadding = with(density) { (80.dp + navigationBarHeight).toPx().toInt() }
+    
     AndroidView(
         factory = { context ->
             RecyclerView(context).apply {
@@ -130,7 +138,7 @@ private fun EditorScreen(
                     RecyclerView.LayoutParams.MATCH_PARENT
                 )
                 layoutManager = LinearLayoutManager(context)
-                setPadding(0, 0, 0, 350)
+                setPadding(0, 0, 0, bottomPadding)
                 adapter = editorAdapter
             }
         },
@@ -207,6 +215,11 @@ private fun BoxScope.Buttons(
     onDismiss: () -> Unit,
     onRestore: () -> Unit
 ) {
+    val density = LocalDensity.current
+    val navigationBarHeight = with(density) { 
+        WindowInsets.navigationBars.getBottom(density).toDp()
+    }
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,7 +241,7 @@ private fun BoxScope.Buttons(
             onClick = onDismiss,
             size = ButtonSize.LargeSecondary,
             modifier = Modifier
-                .padding(top = 16.dp, bottom = 32.dp)
+                .padding(top = 16.dp, bottom = 32.dp + navigationBarHeight)
                 .weight(1.0f)
         )
         Spacer(modifier = Modifier.width(9.dp))
@@ -237,7 +250,7 @@ private fun BoxScope.Buttons(
             onClick = onRestore,
             size = ButtonSize.Large,
             modifier = Modifier
-                .padding(top = 16.dp, bottom = 32.dp)
+                .padding(top = 16.dp, bottom = 32.dp + navigationBarHeight)
                 .weight(1.0f)
         )
     }

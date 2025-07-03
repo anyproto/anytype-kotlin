@@ -856,13 +856,13 @@
     <string name="create_object_section_lists">Gruppen</string>
     <string name="create_object_section_objects">Objekte</string>
     <string name="edit">Bearbeiten</string>
-    <string name="unselect_all">Alle abwählen</string>
+    <string name="unselect_all">Abwählen</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favoriten</string>
     <string name="recent">Zuletzt bearbeitet</string>
     <string name="recently_opened">Zuletzt geöffnet</string>
     <string name="bin">Papierkorb</string>
-    <string name="synced_files">Synchronisierte Dateien</string>
+    <string name="synced_files">Dateien bereinigen</string>
     <string name="log_in">Anmelden</string>
     <string name="create_object_section_library">Anytype-Bibliothek</string>
     <string name="bin_empty_title">Dein Papierkorb ist leer.</string>

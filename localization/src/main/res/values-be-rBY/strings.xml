@@ -860,13 +860,13 @@
     <string name="create_object_section_lists">Спісы</string>
     <string name="create_object_section_objects">Аб\'екты</string>
     <string name="edit">Рэдагаваць</string>
-    <string name="unselect_all">Скасаваць выбар</string>
+    <string name="unselect_all">Зняць вылучэнне</string>
     <string name="sets">Наборы</string>
     <string name="favorites">Абранае</string>
     <string name="recent">Нядаўна адрэдагаваны</string>
     <string name="recently_opened">Нядаўна адкрытыя</string>
     <string name="bin">Сметніца</string>
-    <string name="synced_files">Сінхранізаваныя файлы</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Увайсці</string>
     <string name="create_object_section_library">Бібліятэка Anytype</string>
     <string name="bin_empty_title">Your bin is empty.</string>

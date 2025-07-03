@@ -856,13 +856,13 @@
     <string name="create_object_section_lists">Listeler</string>
     <string name="create_object_section_objects">Nesneler</string>
     <string name="edit">Düzenle</string>
-    <string name="unselect_all">Tüm seçimi kaldır</string>
+    <string name="unselect_all">Seçimi kaldır</string>
     <string name="sets">Setler</string>
     <string name="favorites">Favoriler</string>
     <string name="recent">Yakın zamanda düzenlendi</string>
     <string name="recently_opened">Yakın zamanda açıldı</string>
     <string name="bin">Çöp kutusu</string>
-    <string name="synced_files">Senkronize edilmiş dosyalar</string>
+    <string name="synced_files">Dosyaları temizle</string>
     <string name="log_in">Giriş yap</string>
     <string name="create_object_section_library">Anytype Kitaplığı</string>
     <string name="bin_empty_title">Çöp kutunuz boş.</string>

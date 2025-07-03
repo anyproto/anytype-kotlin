@@ -157,8 +157,16 @@ suspend fun ObjectWrapper.Basic.getTypeForObjectAndTargetTypeForTemplate(
 private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
     types.find { it.id == id }?.name.orEmpty()
 
-fun ObjectWrapper.Basic.mapFileObjectToView(fieldParser: FieldParser): CollectionView.ObjectView {
-    val fileIcon = getFileObjectIcon(fieldParser)
+suspend fun ObjectWrapper.Basic.mapFileObjectToView(
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    urlBuilder: UrlBuilder,
+): CollectionView.ObjectView {
+    val icon = objectIcon(
+        builder = urlBuilder,
+        objType = storeOfObjectTypes.getTypeOfObject(this)
+    )
+    val fileIcon = icon
     val defaultObjectView = DefaultObjectView(
         id = id,
         name = fieldParser.getObjectName(this),

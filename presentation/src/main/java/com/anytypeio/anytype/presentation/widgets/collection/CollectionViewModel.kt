@@ -1018,15 +1018,22 @@ class CollectionViewModel(
         }
     }
 
-    private fun filterAndMapObjects(
+    private suspend fun filterAndMapObjects(
         objects: List<ObjectWrapper.Basic>,
         query: String
     ): List<CollectionView> {
         return objects
             .filter {
                 val name = fieldParser.getObjectName(it)
-                name.contains(query, true) }
-            .map { it.mapFileObjectToView(fieldParser) }
+                name.contains(query, true)
+            }
+            .map {
+                it.mapFileObjectToView(
+                    fieldParser = fieldParser,
+                    urlBuilder = urlBuilder,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            }
             .tryAddSections()
     }
 

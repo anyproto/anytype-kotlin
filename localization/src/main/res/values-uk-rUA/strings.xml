@@ -860,13 +860,13 @@
     <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Об\'єкти</string>
     <string name="edit">Редагувати</string>
-    <string name="unselect_all">Скасувати вибір</string>
+    <string name="unselect_all">Deselect</string>
     <string name="sets">Набори</string>
     <string name="favorites">Обрані</string>
     <string name="recent">Нещодавно відредаговані</string>
     <string name="recently_opened">Нещодавно відкриті</string>
     <string name="bin">Кошик</string>
-    <string name="synced_files">Синхронізовані файли</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Бібліотека Anytype</string>
     <string name="bin_empty_title">Your bin is empty.</string>

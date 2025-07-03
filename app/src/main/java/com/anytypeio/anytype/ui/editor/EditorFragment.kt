@@ -1502,11 +1502,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (title != null) {
             when (title) {
                 is BlockView.Title.Basic -> {
-                    resetTopToolbarTitle(
-                        text = title.text,
-                        emoji = title.emoji,
-                        image = title.image,
-                    )
+//                    resetTopToolbarTitle(
+//                        text = title.text,
+//                        icon = title.icon,
+//                    )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()

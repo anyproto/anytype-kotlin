@@ -32,21 +32,13 @@ class EditorHeaderOverlayDetector(
                         val root = holder.binding.root
                         val title = holder.binding.title
                         val cover = holder.binding.cover
-                        val emojiIconContainer = holder.binding.docEmojiIconContainer
-                        val imageIconContainer = holder.binding.imageIcon
+                        val iconWidget = holder.binding.objectIconWidget
                         onHeaderOverlaid = when {
-                            emojiIconContainer.isVisible -> {
+                            iconWidget.isVisible -> {
                                 if (cover.isVisible) {
-                                    (emojiIconContainer.top + root.top >= threshold + thresholdPadding)
+                                    (iconWidget.top + root.top >= threshold + thresholdPadding)
                                 } else {
-                                    (emojiIconContainer.top + root.top >= (threshold / 2) + thresholdPadding)
-                                }
-                            }
-                            imageIconContainer.isVisible -> {
-                                if (cover.isVisible) {
-                                    (imageIconContainer.top + root.top >= threshold + thresholdPadding)
-                                } else {
-                                    (imageIconContainer.top + root.top >= (threshold / 2) + thresholdPadding)
+                                    (iconWidget.top + root.top >= (threshold / 2) + thresholdPadding)
                                 }
                             }
                             else -> {
@@ -66,7 +58,7 @@ class EditorHeaderOverlayDetector(
                     is Title.Profile -> {
                         val container = holder.itemView
                         val cover = holder.binding.cover
-                        val icon = holder.binding.docProfileIconContainer
+                        val icon = holder.binding.objectIconWidget
                         val title = holder.binding.title
                         onHeaderOverlaid = if (cover.isVisible) {
                             (container.top + icon.bottom >= threshold + thresholdPadding)

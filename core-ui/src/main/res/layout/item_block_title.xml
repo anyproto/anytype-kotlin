@@ -20,53 +20,18 @@
         tools:background="@color/orange"
         tools:visibility="gone" />
 
-    <FrameLayout
-        android:id="@+id/docEmojiIconContainer"
-        android:layout_width="88dp"
-        android:layout_height="88dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/background_layout_icon_basic"
-        android:transitionName="@string/logo_transition"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="gone">
-
-        <ImageView
-            android:id="@+id/emojiIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_gravity="center" />
-
-        <TextView
-            android:id="@+id/emojiIconFallback"
-            android:maxLines="1"
-            android:layout_width="wrap_content"
-            android:textSize="40sp"
-            android:visibility="gone"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
-
-    </FrameLayout>
-
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/imageIcon"
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIconWidget"
         android:layout_width="96dp"
         android:layout_height="96dp"
-        android:layout_gravity="bottom"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="51dp"
-        android:adjustViewBounds="true"
-        android:background="@color/shape_tertiary"
-        android:padding="4dp"
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:shapeAppearance="@style/TitleImageAppearanceOverlay"
-        app:strokeColor="@color/background_primary"
-        app:strokeWidth="4dp"
-        tools:visibility="gone" />
+        app:emojiSize="48dp"
+        app:imageSize="96dp"
+        app:imageCornerRadius="12dp" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -88,6 +53,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:barrierDirection="bottom"
-        app:constraint_referenced_ids="docEmojiIconContainer,imageIcon,cover,root" />
+        app:constraint_referenced_ids="objectIconWidget,cover,root" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

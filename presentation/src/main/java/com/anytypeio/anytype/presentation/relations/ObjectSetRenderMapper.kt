@@ -36,6 +36,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.isValueRequired
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.mapper.toCheckboxView
 import com.anytypeio.anytype.presentation.mapper.toDateView
 import com.anytypeio.anytype.presentation.mapper.toGridRecordRows
@@ -230,11 +232,11 @@ fun title(
     return BlockView.Title.Basic(
         id = title.id,
         text = wrapper?.name.orEmpty(),
-        emoji = wrapper?.iconEmoji.orNull(),
         image = wrapper?.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
         coverImage = coverContainer.coverImage,
         coverColor = coverContainer.coverColor,
-        coverGradient = coverContainer.coverGradient
+        coverGradient = coverContainer.coverGradient,
+        icon = wrapper?.objectIcon(builder = urlBuilder) ?: ObjectIcon.None
     )
 }
 

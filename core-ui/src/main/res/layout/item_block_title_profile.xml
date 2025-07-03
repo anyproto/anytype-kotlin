@@ -17,40 +17,19 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <FrameLayout
-        android:id="@+id/docProfileIconContainer"
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIconWidget"
         android:layout_width="112dp"
         android:layout_height="112dp"
-        android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="92dp"
-        android:background="@drawable/circle_profile_icon"
         android:transitionName="@string/logo_transition"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/imageIcon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="4dp" />
-
-        <androidx.compose.ui.platform.ComposeView
-            android:id="@+id/gradient"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="4dp" />
-
-        <TextView
-            android:id="@+id/imageText"
-            style="@style/TextView.ContentStyle.Initials"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:textSize="64sp"
-            tools:text="S" />
-    </FrameLayout>
+        app:layout_constraintTop_toTopOf="parent"
+        app:emojiSize="64dp"
+        app:imageSize="112dp"
+        app:initialTextSize="64sp"
+        tools:visibility="visible" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -66,7 +45,7 @@
         app:ignoreDragAndDrop="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/docProfileIconContainer"
+        app:layout_constraintTop_toBottomOf="@+id/objectIconWidget"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 

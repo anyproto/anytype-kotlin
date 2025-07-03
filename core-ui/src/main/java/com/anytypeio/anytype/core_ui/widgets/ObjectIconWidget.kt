@@ -205,10 +205,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
                     binding.ivEmoji.visible()
-                    binding.ivEmoji.load(adapted) {
-                        diskCachePolicy(CachePolicy.ENABLED)
-                        memoryCachePolicy(CachePolicy.ENABLED)
-                    }
+                    binding.ivEmoji.load(adapted)
                 } else {
                     setTypeIcon(fallback)
                 }

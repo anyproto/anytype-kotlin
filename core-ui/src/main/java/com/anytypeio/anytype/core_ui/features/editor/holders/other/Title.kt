@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.platform.ComposeView
+
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.Lifecycle
@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import coil3.imageLoader
 import coil3.load
 import coil3.request.ImageRequest
-import coil3.request.transformations
+
 import coil3.target.Target
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
@@ -39,12 +39,13 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.emojifier.Emojifier
+
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.google.android.exoplayer2.DefaultLoadControl
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -172,11 +173,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     open fun setImage(item: BlockView.Title) {
-        Timber.d("Setting image for ${item.id}, image=${item.image}")
-        item.image?.let { url ->
-            image.visible()
-            image.load(url)
-        } ?: apply { image.setImageDrawable(null) }
+        // Default no-op implementation
+        // Each subclass handles its own icon logic using ObjectIconWidget
     }
 
     open fun processPayloads(
@@ -258,10 +256,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Document(val binding: ItemBlockTitleBinding) : Title(binding.root) {
 
-        override val icon: View = binding.docEmojiIconContainer
-        override val image: ImageView = binding.imageIcon
-        private val emoji: ImageView = binding.emojiIcon
-        private val emojiFallback: TextView = binding.emojiIconFallback
+        override val icon: ObjectIconWidget = binding.objectIconWidget
+        override val image: ImageView = binding.objectIconWidget.binding.ivImage
         override val selectionView: View = itemView
 
         override val root: View = itemView
@@ -282,53 +278,33 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onCoverClicked = onCoverClicked,
                 click = click
             )
-            setEmoji(item)
+            setIcon(item)
             applySearchHighlights(item)
-
-            image.setOnClickListener {
-                click(
-                    ListenerType.Picture.TitleView(
-                        item = item
-                    )
-                )
-            }
 
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
-                image.setOnClickListener { onPageIconClicked() }
             }
             setupIconVisibility(item)
         }
 
+        private fun setIcon(item: BlockView.Title.Basic) {
+            icon.setIcon(item.icon)
+        }
+
         private fun setupIconVisibility(item: BlockView.Title.Basic) {
             when {
-                item.image != null -> {
-                    binding.imageIcon.visible()
-                    binding.docEmojiIconContainer.gone()
+                item.icon !is ObjectIcon.None -> {
+                    icon.visible()
                     binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_10)
                     }
-                    binding.imageIcon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
                         topMargin =
                             if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
                     }
                 }
-
-                item.emoji != null -> {
-                    binding.imageIcon.gone()
-                    binding.docEmojiIconContainer.visible()
-                    binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_12)
-                    }
-                    binding.docEmojiIconContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                        topMargin =
-                            if (!item.hasCover) dimen(R.dimen.dp_60) else dimen(R.dimen.dp_120)
-                    }
-                }
-
                 else -> {
-                    binding.imageIcon.gone()
-                    binding.docEmojiIconContainer.gone()
+                    icon.gone()
                     if (!item.hasCover) {
                         content.updateLayoutParams<ConstraintLayout.LayoutParams> {
                             topMargin = dimen(R.dimen.dp_80)
@@ -350,8 +326,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (item is BlockView.Title.Basic) {
                 payloads.forEach { payload ->
                     if (payload.isTitleIconChanged) {
-                        setEmoji(item)
-                        setImage(item)
+                        setIcon(item)
                         setupIconVisibility(item)
                     }
                     if (payload.isCoverChanged) {
@@ -361,36 +336,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         applySearchHighlights(item)
                     }
                 }
-            }
-        }
-
-        private fun setEmoji(item: BlockView.Title.Basic) {
-            try {
-                if (!item.emoji.isNullOrEmpty()) {
-                    try {
-                        val adapted = Emojifier.safeUri(item.emoji!!)
-                        if (adapted != Emojifier.Config.EMPTY_URI) {
-                            emojiFallback.text = ""
-                            emojiFallback.gone()
-                            emoji.load(adapted) {
-                                memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
-                                diskCachePolicy(coil3.request.CachePolicy.ENABLED)
-                            }
-                            emoji.visible()
-                        } else {
-                            emoji.setImageDrawable(null)
-                            emoji.gone()
-                            emojiFallback.text = item.emoji
-                            emojiFallback.visible()
-                        }
-                    } catch (e: Throwable) {
-                        Timber.w(e, "Error while setting emoji icon for: ${item.emoji}")
-                    }
-                } else {
-                    emoji.setImageDrawable(null)
-                }
-            } catch (e: Throwable) {
-                Timber.w(e, "Could not set emoji icon")
             }
         }
 
@@ -405,17 +350,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Profile(val binding: ItemBlockTitleProfileBinding) : Title(binding.root) {
 
-        override val icon: View = binding.docProfileIconContainer
-        override val image: ImageView = binding.imageIcon
+        override val icon: ObjectIconWidget = binding.objectIconWidget
+        override val image: ImageView = binding.objectIconWidget.binding.ivImage
         override val content: TextInputWidget = binding.title
         override val selectionView: View = itemView
 
-        private val gradientView: ComposeView
-            get() = binding
-                .docProfileIconContainer
-                .findViewById(R.id.gradient)
-
-        private val iconText = binding.imageText
         private var hasImage = false
 
         init {
@@ -433,6 +372,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onCoverClicked = onCoverClicked,
                 click = click
             )
+            setIcon(item)
             setupMargins(item)
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
@@ -440,34 +380,28 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             }
         }
 
-        override fun setImage(item: BlockView.Title) {
-            item.image?.let { url ->
-                iconText.text = ""
-                gradientView.gone()
-                hasImage = true
-                image.visible()
-                image.load(url) {
-                    transformations(coil3.transform.CircleCropTransformation())
+        private fun setIcon(item: BlockView.Title.Profile) {
+            when {
+                !item.image.isNullOrBlank() -> {
+                    hasImage = true
+                    icon.setIcon(ObjectIcon.Profile.Image(item.image!!, item.text.orEmpty()))
                 }
-            } ?: apply {
-                hasImage = false
-                gradientView.gone()
-                setIconText(item.text)
-                image.setImageDrawable(null)
+                else -> {
+                    hasImage = false
+                    icon.setIcon(ObjectIcon.Profile.Avatar(item.text.orEmpty()))
+                }
             }
         }
 
-        private fun setIconText(name: String?) {
-            if (name.isNullOrEmpty()) {
-                iconText.text = "U"
-            } else {
-                iconText.text = name.first().uppercaseChar().toString()
+        override fun setImage(item: BlockView.Title) {
+            if (item is BlockView.Title.Profile) {
+                setIcon(item)
             }
         }
 
         fun onTitleTextChanged(text: String) {
             if (!hasImage) {
-                setIconText(text)
+                icon.setIcon(ObjectIcon.Profile.Avatar(text))
             }
         }
 
@@ -479,7 +413,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (item is BlockView.Title.Profile) {
                 payloads.forEach { payload ->
                     if (payload.isTitleIconChanged) {
-                        setImage(item)
+                        setIcon(item)
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
@@ -500,7 +434,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         private fun setupMargins(item: BlockView.Title.Profile) {
-            binding.docProfileIconContainer.updateLayoutParams<ConstraintLayout.LayoutParams> {
+            icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 topMargin = if (!item.hasCover) dimen(R.dimen.dp_46) else dimen(R.dimen.dp_92)
             }
         }
@@ -508,11 +442,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
     class Todo(val binding: ItemBlockTitleTodoBinding) : Title(binding.root) {
 
-        override val icon: View = binding.todoTitleCheckbox
-        override val image: ImageView = binding.todoTitleCheckbox
+        override val icon: ObjectIconWidget = binding.objectIconWidget
+        override val image: ImageView = binding.objectIconWidget.binding.ivImage
         override val selectionView: View = itemView
 
-        val checkbox = binding.todoTitleCheckbox
+        val checkbox = binding.objectIconWidget.checkbox
         var isLocked: Boolean = false
 
         override val root: View = itemView
@@ -534,8 +468,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 click = click
             )
             setLocked(item.mode)
-            checkbox.isSelected = item.isChecked
+            setTaskIcon(item.isChecked)
             applySearchHighlights(item)
+        }
+
+        private fun setTaskIcon(isChecked: Boolean) {
+            icon.setIcon(ObjectIcon.Task(isChecked))
         }
 
         private fun setLocked(mode: BlockView.Mode) {
@@ -556,7 +494,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         applySearchHighlights(item)
                     }
                     if (payload.isTitleCheckboxChanged) {
-                        checkbox.isSelected = item.isChecked
+                        setTaskIcon(item.isChecked)
                     }
                 }
             }

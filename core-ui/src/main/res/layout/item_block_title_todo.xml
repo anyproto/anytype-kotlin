@@ -20,18 +20,18 @@
         tools:background="@color/orange"
         tools:visibility="gone" />
 
-    <ImageView
-        android:id="@+id/todoTitleCheckbox"
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/objectIconWidget"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/dp_32"
         android:paddingStart="@dimen/dp_20"
         android:paddingEnd="@dimen/dp_6"
         android:paddingTop="3dp"
-        android:src="@drawable/ic_todo_title_checkbox_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cover"
-        app:layout_goneMarginTop="@dimen/dp_80" />
+        app:layout_goneMarginTop="@dimen/dp_80"
+        app:checkboxSize="24dp" />
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
@@ -44,7 +44,7 @@
         android:paddingTop="0dp"
         app:ignoreDragAndDrop="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/todoTitleCheckbox"
+        app:layout_constraintStart_toEndOf="@+id/objectIconWidget"
         app:layout_constraintTop_toBottomOf="@+id/cover"
         app:onlyPasteAsPlaneText="true"
         app:layout_goneMarginTop="@dimen/dp_80"

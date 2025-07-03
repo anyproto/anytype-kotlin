@@ -73,6 +73,20 @@ class DefaultBlockViewRenderer @Inject constructor(
         onRenderFlag: (BlockViewRenderer.RenderFlag) -> Unit,
     ): List<BlockView> {
 
+        val obj = details.getObject(id = context)
+
+        if (obj?.isValid != true) {
+            Timber.w("Object with id $context is not valid, skipping rendering")
+            return emptyList()
+        }
+
+        val objType = storeOfObjectTypes.getTypeOfObject(obj)
+
+        if (objType?.isValid != true) {
+            Timber.w("Object type for object with id $context is not valid, skipping rendering")
+            return emptyList()
+        }
+
         val children = getValue(anchor)
 
         val result = mutableListOf<BlockView>()
@@ -86,8 +100,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     isPreviousBlockMedia = false
                     when (content.style) {
                         Content.Text.Style.TITLE -> {
-                            val obj = details.getObject(id = context)
-                            if (obj?.layout == ObjectType.Layout.NOTE) {
+                            if (obj.layout == ObjectType.Layout.NOTE) {
                                 // Workaround for skipping title block in objects with note layout
                                 Timber.d("Skipping title rendering for object with note layout or nullable object")
                             } else {
@@ -101,7 +114,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                                         root = root,
                                         restrictions = restrictions,
                                         currentObject = obj,
-                                        storeOfObjectTypes = storeOfObjectTypes,
+                                        objType = objType
                                     )
                                 )
                             }
@@ -1417,8 +1430,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         root: Block,
         focus: Focus,
         restrictions: List<ObjectRestriction>,
-        currentObject: ObjectWrapper.Basic?,
-        storeOfObjectTypes: StoreOfObjectTypes
+        currentObject: ObjectWrapper.Basic,
+        objType: ObjectWrapper.Type
     ): BlockView.Title {
 
         val focusTarget = focus.target
@@ -1448,22 +1461,20 @@ class DefaultBlockViewRenderer @Inject constructor(
             if (mode == EditorMode.Edit) Mode.EDIT else Mode.READ
         }
 
-        return when (currentObject?.layout) {
+        return when (currentObject.layout) {
             ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = currentObject.iconEmoji?.takeIf { it.isNotBlank() },
-                    image = currentObject.iconImage?.takeIf { it.isNotBlank() }
-                        ?.let { urlBuilder.medium(it) },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.TODO -> {
@@ -1504,7 +1515,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     text = fieldParser.getObjectName(currentObject),
                     videoUrl = currentObject.getFileUrl(urlBuilder),
-                    icon = currentObject.objectIcon(builder = urlBuilder),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1530,7 +1541,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
                     color = block.textColor(),
-                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.IMAGE -> {
@@ -1540,7 +1551,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     text = content.text,
                     image = if (!icon.isNullOrEmpty()) urlBuilder.large(icon) else null,
-                    icon = currentObject.objectIcon(builder = urlBuilder),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1556,19 +1567,16 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = currentObject?.iconEmoji?.takeIf { it.isNotBlank() },
-                    image = currentObject?.iconImage?.takeIf { it.isNotBlank() }?.let {
-                        urlBuilder.medium(it)
-                    },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
                 ).also {
-                    Timber.w("Unexpected layout for title: ${currentObject?.layout}")
+                    Timber.w("Unexpected layout for title: ${currentObject.layout}")
                 }
             }
         }

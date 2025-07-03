@@ -178,21 +178,6 @@ fun TopBar(
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .width(56.dp)
-                .fillMaxHeight()
-                .noRippleThrottledClickable {
-                    vm.onPrevClicked()
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Image(
-                modifier = Modifier.wrapContentSize(),
-                painter = painterResource(R.drawable.ic_default_top_back),
-                contentDescription = stringResource(R.string.content_desc_back_button)
-            )
-        }
         Text(
             modifier = Modifier
                 .align(Alignment.Center),
@@ -529,8 +514,8 @@ fun CollectionItem(
                 if (inEditMode) {
 
                     val icon =
-                        if (view.isSelected) R.drawable.checkbox_collections_checked else
-                            R.drawable.checkbox_collections_unchecked
+                        if (view.isSelected) R.drawable.ic_checkbox_checked else
+                            R.drawable.ic_checkbox_default
 
                     Box(
                         modifier = Modifier

@@ -31,7 +31,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import coil3.load
 import coil3.request.CachePolicy
-import coil3.size.Scale
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -242,9 +241,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                         this.root.context.getColorStateList(R.color.background_primary)
                 }
             }
-            binding.ivImage.load(image) {
-                scale(Scale.FILL)
-            }
+            binding.ivImage.load(image)
         } else {
             binding.ivImage.setImageDrawable(null)
         }
@@ -264,9 +261,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 }
             }
 
-            binding.ivImage.load(image) {
-                scale(Scale.FILL)
-            }
+            binding.ivImage.load(image)
         }
     }
 
@@ -316,9 +311,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.invisible()
             ivImage.invisible()
             ivBookmark.visible()
-            binding.ivBookmark.load(image) {
-                scale(Scale.FILL)
-            }
+            binding.ivBookmark.load(image)
         }
     }
 

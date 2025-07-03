@@ -22,9 +22,13 @@ class DefaultPushMessageProcessor(
         val keyId = messageData[KEY_ID_KEY] ?: return false
 
         val encrypted = Base64.decode(base64, Base64.DEFAULT)
-        
+
         // Use signature verification by default
-        val content = decryptionService.decryptAndVerifySignature(encrypted, keyId) ?: return false
+        val content = decryptionService.decryptAndVerifySignature(
+            encryptedData = encrypted,
+            keyId = keyId,
+            signature = messageData[SIGNATURE]
+        ) ?: return false
 
         notificationBuilder.buildAndNotify(
             message = content.newMessage,
@@ -37,5 +41,6 @@ class DefaultPushMessageProcessor(
     companion object {
         private const val PAYLOAD_KEY = "x-any-payload"
         private const val KEY_ID_KEY = "x-any-key-id"
+        private const val SIGNATURE = "x-any-signature"
     }
 }

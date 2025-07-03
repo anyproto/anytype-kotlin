@@ -7,9 +7,7 @@ data class DecryptedPushContent(
     val spaceId: String,
     val type: Int,
     val senderId: String,
-    val newMessage: Message,
-    val signature: String? = null,
-    val senderAccountAddress: String? = null
+    val newMessage: Message
 ) {
     @Serializable
     data class Message(

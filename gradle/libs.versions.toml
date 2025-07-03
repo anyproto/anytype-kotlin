@@ -159,6 +159,7 @@ fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", vers
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
+anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2" }
 
 [bundles]
 

@@ -12,7 +12,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import coil3.load
 import coil3.request.CachePolicy
 import coil3.request.transformations
-import coil3.size.Scale
 import coil3.transform.CircleCropTransformation
 import coil3.transform.RoundedCornersTransformation
 import timber.log.Timber
@@ -72,7 +71,6 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     width = LayoutParams.MATCH_PARENT
                 }
                 ivIcon.load(icon.hash) {
-                    scale(Scale.FIT)
                     transformations(CircleCropTransformation())
                 }
             }

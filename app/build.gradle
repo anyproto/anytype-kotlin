@@ -198,6 +198,7 @@ dependencies {
     implementation libs.coilCompose
     implementation libs.coilNetwork
     implementation libs.coilVideo
+    implementation libs.coilCache
     implementation libs.dagger
     implementation libs.timber
     implementation libs.gson

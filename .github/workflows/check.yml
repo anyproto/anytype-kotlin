@@ -37,6 +37,7 @@ jobs:
           python3 tools/generate.py --platform android
           cd ..
           sudo gem install license_finder
+          license_finder ignored_dependencies add skiko --why "Excluded due to native binary license concerns"
           license_finder inherited_decisions add open/decisions.yml
           license_finder --gradle-command="./gradlew \
           -Pcom.anytype.ci=true \

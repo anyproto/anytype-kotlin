@@ -854,13 +854,13 @@
     <string name="create_object_section_lists">分组</string>
     <string name="create_object_section_objects">对象</string>
     <string name="edit">编辑</string>
-    <string name="unselect_all">取消全选</string>
+    <string name="unselect_all">取消选择</string>
     <string name="sets">集合</string>
     <string name="favorites">收藏夹</string>
     <string name="recent">最近编辑的文档</string>
     <string name="recently_opened">最近打开的文档</string>
     <string name="bin">回收站</string>
-    <string name="synced_files">已同步的文件</string>
+    <string name="synced_files">清理文件</string>
     <string name="log_in">登录</string>
     <string name="create_object_section_library">Anytype 文库</string>
     <string name="bin_empty_title">您的回收站是空的。</string>

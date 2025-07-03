@@ -10,7 +10,12 @@ import android.os.StrictMode.VmPolicy
 import androidx.lifecycle.ProcessLifecycleOwner
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import coil3.annotation.ExperimentalCoilApi
+import coil3.network.cachecontrol.CacheControlCacheStrategy
+import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
+import coil3.util.DebugLogger
+import coil3.util.Logger
 import coil3.video.VideoFrameDecoder
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
@@ -128,10 +133,17 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
         SignalHandler.initSignalHandler()
     }
 
+    @OptIn(ExperimentalCoilApi::class)
     override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
+            //.logger(DebugLogger(Logger.Level.Verbose))  //only for debug builds!
             .components {
                 add(VideoFrameDecoder.Factory())
+                add(
+                    OkHttpNetworkFetcherFactory(
+                        cacheStrategy = { CacheControlCacheStrategy() }
+                    )
+                )
             }
             .crossfade(true)
             .build()

@@ -99,6 +99,7 @@ coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCom
 coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVersion"  }
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }
+coilCache = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coilComposeVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }

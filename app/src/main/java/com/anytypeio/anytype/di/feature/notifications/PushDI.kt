@@ -14,6 +14,8 @@ import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
+import com.anytypeio.anytype.presentation.notifications.SignatureVerificationService
+import com.anytypeio.anytype.presentation.notifications.SignatureVerificationServiceImpl
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import dagger.Component
 import dagger.Module
@@ -59,13 +61,20 @@ object PushContentModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideSignatureVerificationService(): SignatureVerificationService = SignatureVerificationServiceImpl()
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun provideDecryptionPushContentService(
         pushKeyProvider: PushKeyProvider,
         cryptoService: CryptoService,
+        signatureVerificationService: SignatureVerificationService,
         json: Json
     ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
         pushKeyProvider = pushKeyProvider,
         cryptoService = cryptoService,
+        signatureVerificationService = signatureVerificationService,
         json = json
     )
 }

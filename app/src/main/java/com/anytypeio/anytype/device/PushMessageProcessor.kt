@@ -22,7 +22,9 @@ class DefaultPushMessageProcessor(
         val keyId = messageData[KEY_ID_KEY] ?: return false
 
         val encrypted = Base64.decode(base64, Base64.DEFAULT)
-        val content = decryptionService.decrypt(encrypted, keyId) ?: return false
+        
+        // Use signature verification by default
+        val content = decryptionService.decryptAndVerifySignature(encrypted, keyId) ?: return false
 
         notificationBuilder.buildAndNotify(
             message = content.newMessage,

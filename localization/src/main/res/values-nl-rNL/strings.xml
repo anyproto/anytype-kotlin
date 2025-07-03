@@ -856,13 +856,13 @@
     <string name="create_object_section_lists">Lijsten</string>
     <string name="create_object_section_objects">Objecten</string>
     <string name="edit">Bewerk</string>
-    <string name="unselect_all">Deselecteer alle</string>
+    <string name="unselect_all">Deselecteer</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favorieten</string>
     <string name="recent">Onlangs bewerkt</string>
     <string name="recently_opened">Onlangs geopend</string>
     <string name="bin">Prullenmand</string>
-    <string name="synced_files">Gesynchroniseerde bestanden</string>
+    <string name="synced_files">Schoon bestanden op</string>
     <string name="log_in">Inloggen</string>
     <string name="create_object_section_library">Anytype bibliotheek</string>
     <string name="bin_empty_title">Jouw prullenmand is leeg.</string>

@@ -854,13 +854,13 @@
     <string name="create_object_section_lists">リスト</string>
     <string name="create_object_section_objects">オブジェクト</string>
     <string name="edit">編集</string>
-    <string name="unselect_all">すべて選択を解除</string>
+    <string name="unselect_all">選択解除</string>
     <string name="sets">クエリ</string>
     <string name="favorites">お気に入り</string>
     <string name="recent">最近編集された</string>
     <string name="recently_opened">最近開かれた</string>
     <string name="bin">ゴミ箱</string>
-    <string name="synced_files">同期済みファイル</string>
+    <string name="synced_files">ファイルを削除する</string>
     <string name="log_in">ログイン</string>
     <string name="create_object_section_library">Anytypeライブラリ</string>
     <string name="bin_empty_title">ごみ箱が空です。</string>

@@ -64,7 +64,17 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
-            stubStoreOfObjectTypes()
+            stubStoreOfObjectTypes(
+                id = setOfId,
+                map = mapOf(
+                    Relations.ID to setOfId,
+                    Relations.SPACE_ID to defaultSpace,
+                    Relations.UNIQUE_KEY to setOfKey,
+                    Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                    Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                    Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                )
+            )
             stubOpenObject(
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
                 details = mockObjectSet.details

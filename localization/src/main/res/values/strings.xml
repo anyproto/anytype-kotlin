@@ -954,13 +954,13 @@
     <string name="create_object_section_objects">Objects</string>
 
     <string name="edit">Edit</string>
-    <string name="unselect_all">Unselect all</string>
+    <string name="unselect_all">Deselect</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favorites</string>
     <string name="recent">Recently edited</string>
     <string name="recently_opened">Recently opened</string>
     <string name="bin">Bin</string>
-    <string name="synced_files">Synced files</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Anytype Library</string>
 

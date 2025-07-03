@@ -86,13 +86,16 @@ fun ContentDisplay(
         modifier = Modifier
             .fillMaxHeight()
             .nestedScroll(rememberNestedScrollInteropConnection())
-            .background(color = colorResource(id = R.color.background_primary)),
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            ),
         contentAlignment = Alignment.BottomStart
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Dragger(modifier = Modifier.padding(top = 6.dp))
+            Dragger(modifier = Modifier.padding(top = 6.dp, bottom = 6.dp))
             TopBar(vm, collectionUiState)
             SearchBar(vm, collectionUiState)
             ListView(

@@ -10,8 +10,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -157,8 +155,16 @@ suspend fun ObjectWrapper.Basic.getTypeForObjectAndTargetTypeForTemplate(
 private fun getProperTypeName(id: Id?, types: List<ObjectWrapper.Type>) =
     types.find { it.id == id }?.name.orEmpty()
 
-fun ObjectWrapper.Basic.mapFileObjectToView(fieldParser: FieldParser): CollectionView.ObjectView {
-    val fileIcon = getFileObjectIcon(fieldParser)
+suspend fun ObjectWrapper.Basic.mapFileObjectToView(
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    urlBuilder: UrlBuilder,
+): CollectionView.ObjectView {
+    val icon = objectIcon(
+        builder = urlBuilder,
+        objType = storeOfObjectTypes.getTypeOfObject(this)
+    )
+    val fileIcon = icon
     val defaultObjectView = DefaultObjectView(
         id = id,
         name = fieldParser.getObjectName(this),

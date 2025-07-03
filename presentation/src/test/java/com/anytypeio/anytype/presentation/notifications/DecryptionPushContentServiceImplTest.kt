@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -271,20 +272,20 @@ class DecryptionPushContentServiceImplTest {
         // Given
         val keyAsBytes = testKey.toByteArray()
         val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
-        val expectedContent = createTestContentWithSignature()
+        val expectedContent = createTestContent()
         val encryptedData = encryptTestData(expectedContent)
         
         whenever(pushKeyProvider.getPushKey()).thenReturn(
             mapOf(testKeyId to PushKey(id = testKeyId, value = value))
         )
         whenever(signatureVerificationService.verifyNotificationSignature(
-            accountAddress = "test-account-address",
+            accountAddress = eq(testSenderId),
             data = any(),
-            signature = "test-signature"
+            signature = eq("test-signature")
         )).thenReturn(true)
 
         // When
-        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId)
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
 
         // Then
         assertNotNull(result)
@@ -296,31 +297,31 @@ class DecryptionPushContentServiceImplTest {
         // Given
         val keyAsBytes = testKey.toByteArray()
         val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
-        val expectedContent = createTestContentWithSignature()
+        val expectedContent = createTestContent()
         val encryptedData = encryptTestData(expectedContent)
         
         whenever(pushKeyProvider.getPushKey()).thenReturn(
             mapOf(testKeyId to PushKey(id = testKeyId, value = value))
         )
         whenever(signatureVerificationService.verifyNotificationSignature(
-            accountAddress = "test-account-address",
+            accountAddress = eq(testSenderId),
             data = any(),
-            signature = "test-signature"
+            signature = eq("test-signature")
         )).thenReturn(false)
 
         // When
-        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId)
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
 
         // Then
         assertNull(result)
     }
 
     @Test
-    fun `decryptAndVerifySignature should return content when signature fields are missing`() {
+    fun `decryptAndVerifySignature should return content when signature is missing`() {
         // Given
         val keyAsBytes = testKey.toByteArray()
         val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
-        val expectedContent = createTestContent() // No signature fields
+        val expectedContent = createTestContent()
         val encryptedData = encryptTestData(expectedContent)
         
         whenever(pushKeyProvider.getPushKey()).thenReturn(
@@ -328,7 +329,7 @@ class DecryptionPushContentServiceImplTest {
         )
 
         // When
-        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId)
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, null)
 
         // Then
         assertNotNull(result)
@@ -342,27 +343,9 @@ class DecryptionPushContentServiceImplTest {
         whenever(pushKeyProvider.getPushKey()).thenReturn(emptyMap())
 
         // When
-        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId)
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
 
         // Then
         assertNull(result)
-    }
-
-    private fun createTestContentWithSignature(): DecryptedPushContent {
-        return DecryptedPushContent(
-            spaceId = testSpaceId,
-            type = 1,
-            senderId = testSenderId,
-            newMessage = DecryptedPushContent.Message(
-                chatId = testChatId,
-                msgId = testMsgId,
-                text = "Test message",
-                spaceName = "Test Space",
-                senderName = "Test Sender",
-                hasAttachments = false
-            ),
-            signature = "test-signature",
-            senderAccountAddress = "test-account-address"
-        )
     }
 } 

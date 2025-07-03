@@ -1,13 +1,16 @@
 package com.anytypeio.anytype.app
 
 import android.content.Context
+import android.content.ComponentName
 import android.content.Intent
+import android.service.quicksettings.TileService
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.ui.main.MainActivity
+import com.anytypeio.anytype.app.QuickCreateTileService
 import timber.log.Timber
 
 /**
@@ -44,6 +47,7 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
         val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(context).map { it.id }
         ShortcutManagerCompat.removeLongLivedShortcuts(context, shortcuts)
         ShortcutManagerCompat.removeAllDynamicShortcuts(context)
+        setupQuickCreateTile(null, null)
     }
 
     private fun setupCreateNewObjectAction(
@@ -66,10 +70,26 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
             )
             .build()
         ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+
+        if (action.isDefault) {
+            setupQuickCreateTile(action.type.key, label)
+        }
+    }
+
+    private fun setupQuickCreateTile(typeKey: String?, label: String?) {
+        val prefs = context.getSharedPreferences(QUICK_CREATE_TILE_PREFS, Context.MODE_PRIVATE)
+        val editor = prefs.edit()
+        editor.putString("typeKey", typeKey)
+        editor.putString("label", label)
+        editor.apply()
+
+        val componentName = ComponentName(context.applicationContext, QuickCreateTileService::class.java)
+        TileService.requestListeningState(context, componentName)
     }
 
     companion object {
         const val ACTION_CREATE_NEW_ID = "anytype.app-action.create-new.id"
         const val ACTION_CREATE_NEW_TYPE_KEY = "anytype.app-action.create-new.key"
+        const val QUICK_CREATE_TILE_PREFS = "anytype.quick-create-tile"
     }
 }

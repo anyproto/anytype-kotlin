@@ -854,13 +854,13 @@
     <string name="create_object_section_lists">Grup</string>
     <string name="create_object_section_objects">Objek</string>
     <string name="edit">Sunting</string>
-    <string name="unselect_all">Batal pilih semua</string>
+    <string name="unselect_all">Batal pilih</string>
     <string name="sets">Set</string>
     <string name="favorites">Favorit</string>
     <string name="recent">Baru disunting</string>
     <string name="recently_opened">Baru saja dibuka</string>
     <string name="bin">Bak Sampah</string>
-    <string name="synced_files">Berkas tersinkronkan</string>
+    <string name="synced_files">Bersihkan berkas</string>
     <string name="log_in">Masuk</string>
     <string name="create_object_section_library">Pustaka Anytype</string>
     <string name="bin_empty_title">Bak sampah kosong.</string>

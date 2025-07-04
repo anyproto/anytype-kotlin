@@ -24,6 +24,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -168,16 +169,27 @@ private fun BoxScope.ContentChat(
                 .height(24.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
-                text = title.ifEmpty { stringResource(id = R.string.untitled) },
-                style = BodySemiBold,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    modifier = Modifier.padding(end = if (isMuted) 4.dp else 8.dp),
+                    text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                    style = BodySemiBold,
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (isMuted) {
+                    Image(
+                        modifier = Modifier.padding(start = 8.dp).size(18.dp),
+                        painter = painterResource(id = R.drawable.ci_notifications_off),
+                        contentDescription = "Muted chat",
+                        colorFilter = ColorFilter.tint(colorResource(R.color.glyph_active))
+                    )
+                }
+            }
             if (messageTime != null) {
                 Text(
                     text = messageTime,

@@ -700,4 +700,254 @@ class ChatContainerTest {
         style = style,
         marks = marks
     )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should apply ChatState update with higher order`() = runTest {
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val initialState = Chat.State(order = 1L)
+        val newerState = Chat.State(order = 2L)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = emptyList(),
+                messageCountBefore = 0,
+                chatState = initialState
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn flow {
+                emit(
+                    listOf(
+                        Event.Command.Chats.UpdateState(
+                            context = givenChatID,
+                            state = newerState
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(1L, initial.state.order)
+
+            val updated = awaitItem()
+            assertEquals(2L, updated.state.order)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should reject ChatState update with lower order`() = runTest {
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val newerState = Chat.State(order = 5L)
+        val olderState = Chat.State(order = 3L)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = emptyList(),
+                messageCountBefore = 0,
+                chatState = newerState
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn flow {
+                emit(
+                    listOf(
+                        Event.Command.Chats.UpdateState(
+                            context = givenChatID,
+                            state = olderState
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(5L, initial.state.order)
+
+            // Should not emit a new state since the older state is rejected
+            expectNoEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should handle ChatState update with equal order`() = runTest {
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val currentState = Chat.State(order = 3L)
+        val sameOrderState = Chat.State(order = 3L)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = emptyList(),
+                messageCountBefore = 0,
+                chatState = currentState
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn flow {
+                emit(
+                    listOf(
+                        Event.Command.Chats.UpdateState(
+                            context = givenChatID,
+                            state = sameOrderState
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(3L, initial.state.order)
+
+            // Should not emit a new state since equal order is rejected
+            expectNoEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should apply first ChatState when no previous state exists`() = runTest {
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val firstState = Chat.State(order = 1L)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = emptyList(),
+                messageCountBefore = 0,
+                chatState = null
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn flow {
+                emit(
+                    listOf(
+                        Event.Command.Chats.UpdateState(
+                            context = givenChatID,
+                            state = firstState
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(-1L, initial.state.order) // Default empty state
+
+            val updated = awaitItem()
+            assertEquals(1L, updated.state.order)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should handle null ChatState update gracefully`() = runTest {
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val initialState = Chat.State(order = 1L)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = emptyList(),
+                messageCountBefore = 0,
+                chatState = initialState
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn flow {
+                emit(
+                    listOf(
+                        Event.Command.Chats.UpdateState(
+                            context = givenChatID,
+                            state = null
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(1L, initial.state.order)
+
+            // When null state is received and current state order is 1L, 
+            // the new default state (order = -1L) is not applied because -1L < 1L
+            // So we should not get a new emission
+            expectNoEvents()
+        }
+    }
 }

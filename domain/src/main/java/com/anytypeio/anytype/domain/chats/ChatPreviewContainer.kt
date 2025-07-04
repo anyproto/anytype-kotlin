@@ -77,7 +77,11 @@ interface ChatPreviewContainer {
                                     state.map { preview ->
                                         if (preview.chat == event.context) {
                                             val newState = event.state
-                                            if (newState != null && ChatStateUtils.shouldApplyNewChatState(newState.order, preview.state?.order)) {
+                                            if (newState != null && ChatStateUtils.shouldApplyNewChatState(
+                                                    newOrder = newState.order,
+                                                    currentOrder = preview.state?.order
+                                                )
+                                            ) {
                                                 preview.copy(state = newState)
                                             } else {
                                                 preview

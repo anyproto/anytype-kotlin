@@ -77,7 +77,7 @@ interface ChatPreviewContainer {
                                     state.map { preview ->
                                         if (preview.chat == event.context) {
                                             val newState = event.state
-                                            if (newState != null && shouldApplyNewChatState(newState.order, preview.state?.order)) {
+                                            if (newState != null && ChatStateUtils.shouldApplyNewChatState(newState.order, preview.state?.order)) {
                                                 preview.copy(state = newState)
                                             } else {
                                                 preview
@@ -139,17 +139,6 @@ interface ChatPreviewContainer {
             return previews
         }
 
-        /**
-         * Determines whether a new ChatState should be applied based on order comparison.
-         * Only applies new states if their order is higher than the current state order.
-         * 
-         * @param newOrder The order of the new ChatState
-         * @param currentOrder The order of the current ChatState (null defaults to -1)
-         * @return true if the new state should be applied, false otherwise
-         */
-        private fun shouldApplyNewChatState(newOrder: Long, currentOrder: Long?): Boolean {
-            return newOrder > (currentOrder ?: -1L)
-        }
 
         companion object {
             private const val SUBSCRIPTION_ID = "chat-previews-subscription"

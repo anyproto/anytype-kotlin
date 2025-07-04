@@ -665,8 +665,7 @@ class ChatContainer @Inject constructor(
                                 "new state: ${event.state?.lastStateId}"
                     )
                     val newState = event.state ?: Chat.State()
-                    // Apply new state only if its order is higher than the current state order
-                    if (newState.order > countersState.order) {
+                    if (shouldApplyNewChatState(newState.order, countersState.order)) {
                         countersState = newState
                     }
                 }
@@ -726,6 +725,18 @@ class ChatContainer @Inject constructor(
     suspend fun onClearIntent() {
         logger.logInfo("DROID-2966 onClearIntent called")
         commands.emit(Transformation.Commands.ClearIntent)
+    }
+
+    /**
+     * Determines whether a new ChatState should be applied based on order comparison.
+     * Only applies new states if their order is higher than the current state order.
+     * 
+     * @param newOrder The order of the new ChatState
+     * @param currentOrder The order of the current ChatState
+     * @return true if the new state should be applied, false otherwise
+     */
+    private fun shouldApplyNewChatState(newOrder: Long, currentOrder: Long): Boolean {
+        return newOrder > currentOrder
     }
 
     internal sealed class Transformation {

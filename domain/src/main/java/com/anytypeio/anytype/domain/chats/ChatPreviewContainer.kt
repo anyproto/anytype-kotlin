@@ -82,11 +82,14 @@ interface ChatPreviewContainer {
                                                     currentOrder = preview.state?.order
                                                 )
                                             ) {
+                                                logger.logInfo("DROID-3799 Applying new chat preview state with order: ${newState.order}")
                                                 preview.copy(state = newState)
                                             } else {
+                                                logger.logInfo("DROID-3799 Skipping chat preview state update due to order comparison")
                                                 preview
                                             }
                                         } else {
+                                            logger.logInfo("Skipping chat preview state update for non-matching chat: ${event.context}")
                                             preview
                                         }
                                     }

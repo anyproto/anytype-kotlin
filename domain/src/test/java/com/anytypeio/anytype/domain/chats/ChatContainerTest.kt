@@ -128,6 +128,7 @@ class ChatContainerTest {
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test()
     fun `should update existing message`() = runTest {
 
@@ -139,8 +140,16 @@ class ChatContainerTest {
         )
 
         val initialMsg = StubChatMessage(
+            id = "msg1",
             content = StubChatMessageContent(
                 text = "Hello, Walter"
+            )
+        )
+
+        val updatedMsg = StubChatMessage(
+            id = "msg1", // Same ID as initial message
+            content = StubChatMessageContent(
+                text = "Hello, Jesse" // Updated text
             )
         )
 
@@ -165,9 +174,10 @@ class ChatContainerTest {
                 delay(300)
                 emit(
                     listOf(
-                        Event.Command.Chats.Delete(
+                        Event.Command.Chats.Update(
                             context = givenChatID,
-                            message = initialMsg.id,
+                            message = updatedMsg,
+                            id = updatedMsg.id
                         )
                     )
                 )
@@ -185,14 +195,84 @@ class ChatContainerTest {
             advanceUntilIdle()
             val second = awaitItem()
             assertEquals(
+                expected = listOf(
+                    updatedMsg // Should have updated message with new text
+                ),
+                actual = second.messages
+            )
+            // Verify the text was actually updated
+            assertEquals("Hello, Jesse", second.messages.first().content?.text)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test()
+    fun `should delete existing message`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val messageToDelete = StubChatMessage(
+            id = "msg1",
+            content = StubChatMessageContent(
+                text = "This message will be deleted"
+            )
+        )
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(messageToDelete),
+                messageCountBefore = 0
+            )
+        }
+
+        channel.stub {
+            on {
+                observe(chat = givenChatID)
+            } doReturn flow {
+                delay(300)
+                emit(
+                    listOf(
+                        Event.Command.Chats.Delete(
+                            context = givenChatID,
+                            message = messageToDelete.id
+                        )
+                    )
+                )
+            }
+        }
+
+        container.watch(givenChatID).test {
+            val first = awaitItem()
+            assertEquals(
+                expected = listOf(
+                    messageToDelete
+                ),
+                actual = first.messages
+            )
+            advanceUntilIdle()
+            val second = awaitItem()
+            assertEquals(
                 expected = emptyList(),
                 actual = second.messages
             )
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test()
-    fun `should delete existing message`() = runTest {
+    fun `should load next page of messages`() = runTest {
 
         val container = ChatContainer(
             repo = repo,

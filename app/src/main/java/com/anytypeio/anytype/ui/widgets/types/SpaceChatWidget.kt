@@ -46,7 +46,8 @@ fun SpaceChatWidgetCard(
     onWidgetClicked: () -> Unit = {},
     onDropDownMenuAction: (DropDownMenuAction) -> Unit = {},
     unReadMessageCount: Int = 0,
-    unReadMentionCount: Int = 0
+    unReadMentionCount: Int = 0,
+    isMuted: Boolean = false
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -103,7 +104,7 @@ fun SpaceChatWidgetCard(
             Box(
                 modifier = Modifier
                     .background(
-                        color = colorResource(R.color.transparent_active),
+                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
                         shape = CircleShape
                     )
                     .size(20.dp),
@@ -128,7 +129,7 @@ fun SpaceChatWidgetCard(
                     .height(20.dp)
                     .defaultMinSize(minWidth = 20.dp)
                     .background(
-                        color = colorResource(R.color.transparent_active),
+                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -158,6 +159,19 @@ fun SpaceChatWidgetPreview() {
         onWidgetClicked = {},
         mode = InteractionMode.Default,
         unReadMessageCount = 1,
-        unReadMentionCount = 1
+        unReadMentionCount = 1,
+        isMuted = false
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun SpaceChatWidgetMutedPreview() {
+    SpaceChatWidgetCard(
+        onWidgetClicked = {},
+        mode = InteractionMode.Default,
+        unReadMessageCount = 1,
+        unReadMentionCount = 1,
+        isMuted = true
     )
 }

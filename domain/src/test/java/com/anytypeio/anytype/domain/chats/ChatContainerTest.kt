@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.domain.chats
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Block
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.TextStyle
+import com.anytypeio.anytype.core_models.StubChatMessage
+import com.anytypeio.anytype.core_models.StubChatMessageContent
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -281,17 +281,8 @@ class ChatContainerTest {
             subscription = storelessSubscriptionContainer
         )
 
-        val initialMsg = StubChatMessage(
-            content = StubChatMessageContent(
-                text = "Hello, "
-            )
-        )
-
-        val msgAfterUpdate = initialMsg.copy(
-            content = initialMsg.content?.copy(
-                text = "Hello, Walter"
-            )
-        )
+        val initialMessage = StubChatMessage(order = "A")
+        val newerMessage = StubChatMessage(order = "B")
 
         repo.stub {
             onBlocking {
@@ -302,49 +293,50 @@ class ChatContainerTest {
                     )
                 )
             } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
-                messages = listOf(initialMsg),
+                messages = listOf(initialMessage),
                 messageCountBefore = 0
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = initialMessage.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(newerMessage)
             )
         }
 
         channel.stub {
             on {
                 observe(chat = givenChatID)
-            } doReturn flow {
-                delay(300)
-                emit(
-                    listOf(
-                        Event.Command.Chats.Update(
-                            context = givenChatID,
-                            message = msgAfterUpdate,
-                            id = initialMsg.id,
-                        )
-                    )
-                )
-            }
+            } doReturn flow { }
         }
 
         container.watch(givenChatID).test {
-            val first = awaitItem()
+            val initial = awaitItem()
             assertEquals(
-                expected = listOf(
-                    initialMsg
-                ),
-                actual = first.messages
+                expected = listOf(initialMessage),
+                actual = initial.messages
             )
+
+            container.onLoadNext()
+
             advanceUntilIdle()
-            val second = awaitItem()
+
+            val updated = awaitItem()
             assertEquals(
-                expected = listOf(
-                    msgAfterUpdate
-                ),
-                actual = second.messages
+                expected = listOf(initialMessage, newerMessage),
+                actual = updated.messages
             )
         }
     }
 
     @Test()
-    fun `should insert new message before existing message according to alphabetic sorting`() = runTest {
+    fun `should insert new message before existing message according to order`() = runTest {
 
         val container = ChatContainer(
             repo = repo,
@@ -486,300 +478,274 @@ class ChatContainerTest {
     }
 
     @Test
-    fun `should scroll to bottom when scroll-to-bottom is clicked when subscribing chat`() = runTest {
-
-        val container = ChatContainer(
-            repo = repo,
-            channel = channel,
-            logger = logger,
-            subscription = storelessSubscriptionContainer
-        )
-
-        val messages = buildList {
-            repeat(100) {
-                add(
-                    StubChatMessage(
-                        id = it.toString(),
-                        order = it.toString()
-                    )
+    fun `should scroll to bottom when scroll-to-bottom is clicked when subscribing chat`() =
+        runTest {
+            turbineScope {
+                val container = ChatContainer(
+                    repo = repo,
+                    channel = channel,
+                    logger = logger,
+                    subscription = storelessSubscriptionContainer
                 )
+
+                val messages = buildList {
+                    repeat(100) {
+                        add(
+                            StubChatMessage(
+                                id = it.toString(),
+                                order = it.toString()
+                            )
+                        )
+                    }
+                }
+
+                val state = Chat.State.UnreadState(
+                    counter = 10,
+                    olderOrderId = "90"
+                )
+
+                repo.stub {
+                    onBlocking {
+                        subscribeLastChatMessages(
+                            Command.ChatCommand.SubscribeLastMessages(
+                                chat = givenChatID,
+                                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                            )
+                        )
+                    } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                        messages = messages.takeLast(10),
+                        messageCountBefore = 0,
+                        chatState = Chat.State(unreadMessages = state)
+                    )
+
+                    onBlocking {
+                        getChatMessages(
+                            Command.ChatCommand.GetMessages(
+                                chat = givenChatID,
+                                beforeOrderId = state.olderOrderId,
+                                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                                afterOrderId = null,
+                                includeBoundary = false
+                            )
+                        )
+                    } doReturn Command.ChatCommand.GetMessages.Response(
+                        messages = messages.slice(80..89)
+                    )
+
+                    onBlocking {
+                        getChatMessages(
+                            Command.ChatCommand.GetMessages(
+                                chat = givenChatID,
+                                afterOrderId = state.olderOrderId,
+                                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
+                                includeBoundary = true
+                            )
+                        )
+                    } doReturn Command.ChatCommand.GetMessages.Response(
+                        messages = messages.slice(90..99)
+                    )
+                }
+
+                channel.stub {
+                    on { observe(chat = givenChatID) } doReturn emptyFlow()
+                }
+
+                container.watch(givenChatID).test {
+
+                    val initial = awaitItem()
+
+                    assertEquals(
+                        expected = messages.takeLast(10),
+                        actual = initial.messages,
+                    )
+
+                    assertEquals(
+                        expected = ChatContainer.Intent.ScrollToMessage(
+                            id = "90",
+                            startOfUnreadMessageSection = true
+                        ),
+                        actual = initial.intent,
+                    )
+
+                    container.onLoadChatTail(
+                        msg = "80"
+                    )
+
+                    val next = awaitItem()
+
+                    assertEquals(
+                        expected = ChatContainer.Intent.ScrollToBottom,
+                        actual = next.intent,
+                    )
+
+                    // New state is not emitted, since it does not change.
+                }
             }
         }
-
-        val state = Chat.State.UnreadState(
-            counter = 10,
-            olderOrderId = "90"
-        )
-
-        repo.stub {
-            onBlocking {
-                subscribeLastChatMessages(
-                    Command.ChatCommand.SubscribeLastMessages(
-                        chat = givenChatID,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
-                    )
-                )
-            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
-                messages = messages.takeLast(10),
-                messageCountBefore = 0,
-                chatState = Chat.State(unreadMessages = state)
-            )
-
-            onBlocking {
-                getChatMessages(
-                    Command.ChatCommand.GetMessages(
-                        chat = givenChatID,
-                        beforeOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
-                        afterOrderId = null,
-                        includeBoundary = false
-                    )
-                )
-            } doReturn Command.ChatCommand.GetMessages.Response(
-                messages = messages.slice(80..89)
-            )
-
-            onBlocking {
-                getChatMessages(
-                    Command.ChatCommand.GetMessages(
-                        chat = givenChatID,
-                        afterOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE,
-                        includeBoundary = true
-                    )
-                )
-            } doReturn Command.ChatCommand.GetMessages.Response(
-                messages = messages.slice(90..99)
-            )
-        }
-
-        channel.stub {
-            on { observe(chat = givenChatID) } doReturn emptyFlow()
-        }
-
-        container.watch(givenChatID).test {
-
-            val initial = awaitItem()
-
-            assertEquals(
-                expected = messages.takeLast(10),
-                actual = initial.messages,
-            )
-
-            assertEquals(
-                expected = ChatContainer.Intent.ScrollToMessage(
-                    id = "90",
-                    startOfUnreadMessageSection = true
-                ),
-                actual = initial.intent,
-            )
-
-            container.onLoadChatTail(
-                msg = "80"
-            )
-
-            val next = awaitItem()
-
-            assertEquals(
-                expected = ChatContainer.Intent.ScrollToBottom,
-                actual = next.intent,
-            )
-
-            // New state is not emitted, since it does not change.
-        }
-    }
 
     @Test
-    fun `should scroll to unread message section from subscription results after opening chat`() = runTest {
+    fun `should scroll to unread message section from subscription results after opening chat`() =
+        runTest {
 
-        val container = ChatContainer(
-            repo = repo,
-            channel = channel,
-            logger = logger,
-            subscription = storelessSubscriptionContainer
-        )
+            val container = ChatContainer(
+                repo = repo,
+                channel = channel,
+                logger = logger,
+                subscription = storelessSubscriptionContainer
+            )
 
-        val messages = buildList {
-            repeat(10) {
-                add(
-                    StubChatMessage(
-                        id = it.toString(),
-                        order = it.toString()
+            val messages = buildList {
+                repeat(10) {
+                    add(
+                        StubChatMessage(
+                            id = it.toString(),
+                            order = it.toString()
+                        )
                     )
+                }
+            }
+
+            val state = Chat.State.UnreadState(
+                counter = 1,
+                olderOrderId = "9"
+            )
+
+            val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
+                chat = givenChatID,
+                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+            )
+
+            repo.stub {
+                onBlocking {
+                    subscribeLastChatMessages(subscriptionCommand)
+                } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                    messages = messages,
+                    messageCountBefore = 0,
+                    chatState = Chat.State(unreadMessages = state)
                 )
             }
+
+            channel.stub {
+                on { observe(chat = givenChatID) } doReturn emptyFlow()
+            }
+
+            container.watch(givenChatID).test {
+
+                val initial = awaitItem()
+
+                assertEquals(
+                    expected = messages,
+                    actual = initial.messages,
+                )
+
+                assertEquals(
+                    expected = ChatContainer.Intent.ScrollToMessage(
+                        id = "9",
+                        startOfUnreadMessageSection = true,
+                        smooth = false
+                    ),
+                    actual = initial.intent,
+                )
+
+                verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
+                verify(repo, never()).getChatMessages(any())
+            }
         }
-
-        val state = Chat.State.UnreadState(
-            counter = 1,
-            olderOrderId = "1"
-        )
-
-        val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
-            chat = givenChatID,
-            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
-        )
-
-        repo.stub {
-            onBlocking {
-                subscribeLastChatMessages(subscriptionCommand)
-            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
-                messages = messages,
-                messageCountBefore = 0,
-                chatState = Chat.State(unreadMessages = state)
-            )
-        }
-
-        channel.stub {
-            on { observe(chat = givenChatID) } doReturn emptyFlow()
-        }
-
-        container.watch(givenChatID).test {
-
-            val initial = awaitItem()
-
-            assertEquals(
-                expected = messages,
-                actual = initial.messages,
-            )
-
-            assertEquals(
-                expected = ChatContainer.Intent.ScrollToMessage(
-                    id = "1",
-                    startOfUnreadMessageSection = true,
-                    smooth = false
-                ),
-                actual = initial.intent,
-            )
-
-            verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
-            verify(repo, never()).getChatMessages(any())
-        }
-    }
 
     @Test
-    fun `should scroll to unread message section from unread-message section after opening chat`() = runTest {
+    fun `should scroll to unread message section from unread-message section after opening chat`() =
+        runTest {
 
-        val container = ChatContainer(
-            repo = repo,
-            channel = channel,
-            logger = logger,
-            subscription = storelessSubscriptionContainer
-        )
+            val container = ChatContainer(
+                repo = repo,
+                channel = channel,
+                logger = logger,
+                subscription = storelessSubscriptionContainer
+            )
 
-        val allMessages = buildList {
-            repeat(200) {
-                add(
-                    StubChatMessage(
-                        id = it.toString(),
-                        order = it.toString()
+            val allMessages = buildList {
+                repeat(200) {
+                    add(
+                        StubChatMessage(
+                            id = it.toString(),
+                            order = it.toString()
+                        )
                     )
+                }
+            }
+
+            val state = Chat.State.UnreadState(
+                counter = 150,
+                olderOrderId = "50"
+            )
+
+            val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
+                chat = givenChatID,
+                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+            )
+
+            repo.stub {
+                onBlocking {
+                    subscribeLastChatMessages(subscriptionCommand)
+                } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                    messages = allMessages.takeLast(ChatContainer.DEFAULT_CHAT_PAGING_SIZE),
+                    messageCountBefore = 0,
+                    chatState = Chat.State(unreadMessages = state)
+                )
+                onBlocking {
+                    getChatMessages(
+                        Command.ChatCommand.GetMessages(
+                            chat = givenChatID,
+                            beforeOrderId = state.olderOrderId,
+                            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
+                            afterOrderId = null,
+                            includeBoundary = false
+                        )
+                    )
+                } doReturn Command.ChatCommand.GetMessages.Response(
+                    messages = allMessages.slice(0..49)
+                )
+
+                onBlocking {
+                    getChatMessages(
+                        Command.ChatCommand.GetMessages(
+                            chat = givenChatID,
+                            afterOrderId = state.olderOrderId,
+                            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
+                            includeBoundary = true
+                        )
+                    )
+                } doReturn Command.ChatCommand.GetMessages.Response(
+                    messages = allMessages.slice(50..99)
                 )
             }
-        }
 
-        val state = Chat.State.UnreadState(
-            counter = 150,
-            olderOrderId = "50"
-        )
+            channel.stub {
+                on { observe(chat = givenChatID) } doReturn emptyFlow()
+            }
 
-        val subscriptionCommand = Command.ChatCommand.SubscribeLastMessages(
-            chat = givenChatID,
-            limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
-        )
+            container.watch(givenChatID).test {
 
-        repo.stub {
-            onBlocking {
-                subscribeLastChatMessages(subscriptionCommand)
-            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
-                messages = allMessages.takeLast(ChatContainer.DEFAULT_CHAT_PAGING_SIZE),
-                messageCountBefore = 0,
-                chatState = Chat.State(unreadMessages = state)
-            )
-            onBlocking {
-                getChatMessages(
-                    Command.ChatCommand.GetMessages(
-                        chat = givenChatID,
-                        beforeOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
-                        afterOrderId = null,
-                        includeBoundary = false
-                    )
+                val initial = awaitItem()
+
+                assertEquals(
+                    expected = allMessages.slice(0..99),
+                    actual = initial.messages,
                 )
-            } doReturn Command.ChatCommand.GetMessages.Response(
-                messages = allMessages.slice(0..49)
-            )
 
-            onBlocking {
-                getChatMessages(
-                    Command.ChatCommand.GetMessages(
-                        chat = givenChatID,
-                        afterOrderId = state.olderOrderId,
-                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2,
-                        includeBoundary = true
-                    )
+                assertEquals(
+                    expected = ChatContainer.Intent.ScrollToMessage(
+                        id = "50",
+                        startOfUnreadMessageSection = true,
+                        smooth = false
+                    ),
+                    actual = initial.intent,
                 )
-            } doReturn Command.ChatCommand.GetMessages.Response(
-                messages = allMessages.slice(50..99)
-            )
+
+                verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
+                verify(repo, times(2)).getChatMessages(any())
+            }
         }
-
-        channel.stub {
-            on { observe(chat = givenChatID) } doReturn emptyFlow()
-        }
-
-        container.watch(givenChatID).test {
-
-            val initial = awaitItem()
-
-            assertEquals(
-                expected = allMessages.slice(0..99),
-                actual = initial.messages,
-            )
-
-            assertEquals(
-                expected = ChatContainer.Intent.ScrollToMessage(
-                    id = "50",
-                    startOfUnreadMessageSection = true,
-                    smooth = false
-                ),
-                actual = initial.intent,
-            )
-
-            verify(repo, times(1)).subscribeLastChatMessages(subscriptionCommand)
-            verify(repo, times(2)).getChatMessages(any())
-        }
-    }
-
-    private fun StubChatMessage(
-        id: Id = MockDataFactory.randomUuid(),
-        order: Id = MockDataFactory.randomUuid(),
-        creator: Id = MockDataFactory.randomUuid(),
-        timestamp: Long = MockDataFactory.randomLong(),
-        modifiedAt: Long = MockDataFactory.randomLong(),
-        reactions: Map<String, List<Id>> = emptyMap(),
-        content: Chat.Message.Content? = null
-
-    ): Chat.Message = Chat.Message(
-        id = id,
-        order = order,
-        creator = creator,
-        createdAt = timestamp,
-        reactions = reactions,
-        content = content,
-        modifiedAt = modifiedAt
-    )
-
-    // TODO move to test-utils
-    fun StubChatMessageContent(
-        text: String,
-        style: TextStyle = TextStyle.P,
-        marks: List<Block.Content.Text.Mark> = emptyList()
-    ): Chat.Message.Content = Chat.Message.Content(
-        text = text,
-        style = style,
-        marks = marks
-    )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test

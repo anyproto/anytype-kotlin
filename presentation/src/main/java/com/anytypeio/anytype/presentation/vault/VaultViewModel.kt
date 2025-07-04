@@ -325,6 +325,14 @@ class VaultViewModel(
         )
     }
 
+    private fun calculateMutedState(space: ObjectWrapper.SpaceView): Boolean {
+        // Check both space-level notification settings AND app-level notification permission
+        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+                || space.spacePushNotificationMode == NotificationState.MENTIONS
+        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
+        return isSpaceMuted || isAppNotificationsDisabled
+    }
+
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
@@ -373,12 +381,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        
-        // Check both space-level notification settings AND app-level notification permission
-        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
-                || space.spacePushNotificationMode == NotificationState.MENTIONS
-        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
-        val isMuted = isSpaceMuted || isAppNotificationsDisabled
+        val isMuted = calculateMutedState(space)
 
         return VaultSpaceView.Chat(
             space = space,
@@ -406,12 +409,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        
-        // Check both space-level notification settings AND app-level notification permission
-        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
-                || space.spacePushNotificationMode == NotificationState.MENTIONS
-        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
-        val isMuted = isSpaceMuted || isAppNotificationsDisabled
+        val isMuted = calculateMutedState(space)
         
         return VaultSpaceView.Space(
             space = space,

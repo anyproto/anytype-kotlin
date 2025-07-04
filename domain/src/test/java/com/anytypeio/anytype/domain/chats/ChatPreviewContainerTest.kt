@@ -71,8 +71,7 @@ class ChatPreviewContainerTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should validate order comparison logic implementation`() = runTest {
-        // This test validates the order comparison logic that was extracted into shouldApplyNewChatState()
-        // The function is now implemented in ChatPreviewContainer.Default.shouldApplyNewChatState()
+        // This test validates the order comparison logic that is now consolidated in ChatStateUtils.shouldApplyNewChatState()
 
         // Given - test scenarios for order comparison
         val currentOrder = 3L
@@ -80,13 +79,13 @@ class ChatPreviewContainerTest {
         val lowerOrder = 1L
         val equalOrder = 3L
 
-        // When - applying the same logic as the private function in ChatPreviewContainer
+        // When - applying the shared logic from ChatStateUtils
         val shouldApplyHigher =
-            testShouldApplyNewChatState(newOrder = higherOrder, currentOrder = currentOrder)
+            ChatStateUtils.shouldApplyNewChatState(newOrder = higherOrder, currentOrder = currentOrder)
         val shouldApplyLower =
-            testShouldApplyNewChatState(newOrder = lowerOrder, currentOrder = currentOrder)
+            ChatStateUtils.shouldApplyNewChatState(newOrder = lowerOrder, currentOrder = currentOrder)
         val shouldApplyEqual =
-            testShouldApplyNewChatState(newOrder = equalOrder, currentOrder = currentOrder)
+            ChatStateUtils.shouldApplyNewChatState(newOrder = equalOrder, currentOrder = currentOrder)
 
         // Then - validate order comparison behavior
         assertEquals(true, shouldApplyHigher, "Higher order should be applied")
@@ -103,9 +102,9 @@ class ChatPreviewContainerTest {
         val validOrder = 5L
         val nullCurrentOrder: Long? = null
 
-        // When - applying the same logic as the private function in ChatPreviewContainer
+        // When - applying the shared logic from ChatStateUtils
         val shouldApply =
-            testShouldApplyNewChatState(newOrder = validOrder, currentOrder = nullCurrentOrder)
+            ChatStateUtils.shouldApplyNewChatState(newOrder = validOrder, currentOrder = nullCurrentOrder)
         val currentOrder = nullCurrentOrder ?: -1L
 
         // Then - validate null handling behavior
@@ -115,43 +114,37 @@ class ChatPreviewContainerTest {
 
     @Test
     fun `should test order comparison edge cases`() {
-        // Test edge cases for the order comparison function
-        // These test the same logic as ChatPreviewContainer.Default.shouldApplyNewChatState()
+        // Test edge cases for the order comparison function using ChatStateUtils
 
         // Edge case: zero orders
-        assertEquals(true, testShouldApplyNewChatState(newOrder = 1L, currentOrder = 0L))
-        assertEquals(false, testShouldApplyNewChatState(newOrder = 0L, currentOrder = 1L))
-        assertEquals(false, testShouldApplyNewChatState(newOrder = 0L, currentOrder = 0L))
+        assertEquals(true, ChatStateUtils.shouldApplyNewChatState(newOrder = 1L, currentOrder = 0L))
+        assertEquals(false, ChatStateUtils.shouldApplyNewChatState(newOrder = 0L, currentOrder = 1L))
+        assertEquals(false, ChatStateUtils.shouldApplyNewChatState(newOrder = 0L, currentOrder = 0L))
 
         // Edge case: negative orders
-        assertEquals(true, testShouldApplyNewChatState(newOrder = -1L, currentOrder = -2L))
-        assertEquals(false, testShouldApplyNewChatState(newOrder = -2L, currentOrder = -1L))
+        assertEquals(true, ChatStateUtils.shouldApplyNewChatState(newOrder = -1L, currentOrder = -2L))
+        assertEquals(false, ChatStateUtils.shouldApplyNewChatState(newOrder = -2L, currentOrder = -1L))
 
         // Edge case: large numbers
         assertEquals(
             true,
-            testShouldApplyNewChatState(
+            ChatStateUtils.shouldApplyNewChatState(
                 newOrder = Long.MAX_VALUE,
                 currentOrder = Long.MAX_VALUE - 1
             )
         )
         assertEquals(
             false,
-            testShouldApplyNewChatState(
+            ChatStateUtils.shouldApplyNewChatState(
                 newOrder = Long.MAX_VALUE - 1,
                 currentOrder = Long.MAX_VALUE
             )
         )
 
         // Edge case: null current order (should default to -1L)
-        assertEquals(true, testShouldApplyNewChatState(newOrder = 0L, currentOrder = null))
-        assertEquals(false, testShouldApplyNewChatState(newOrder = -2L, currentOrder = null))
-        assertEquals(false, testShouldApplyNewChatState(newOrder = -1L, currentOrder = null))
+        assertEquals(true, ChatStateUtils.shouldApplyNewChatState(newOrder = 0L, currentOrder = null))
+        assertEquals(false, ChatStateUtils.shouldApplyNewChatState(newOrder = -2L, currentOrder = null))
+        assertEquals(false, ChatStateUtils.shouldApplyNewChatState(newOrder = -1L, currentOrder = null))
     }
 
-    // Test helper function that mirrors the exact logic used in ChatPreviewContainer.Default.shouldApplyNewChatState()
-    private fun testShouldApplyNewChatState(newOrder: Long, currentOrder: Long?): Boolean {
-        // This mirrors the logic: newState.order > (preview.state?.order ?: -1L)
-        return newOrder > (currentOrder ?: -1L)
-    }
 }

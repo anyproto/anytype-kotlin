@@ -76,9 +76,13 @@ interface ChatPreviewContainer {
                                 is Event.Command.Chats.UpdateState -> {
                                     state.map { preview ->
                                         if (preview.chat == event.context) {
-                                            preview.copy(
-                                                state = event.state
-                                            )
+                                            val newState = event.state
+                                            // Apply new state only if its order is higher than the current state order
+                                            if (newState != null && newState.order > (preview.state?.order ?: -1L)) {
+                                                preview.copy(state = newState)
+                                            } else {
+                                                preview
+                                            }
                                         } else {
                                             preview
                                         }

@@ -664,7 +664,11 @@ class ChatContainer @Inject constructor(
                                 "last state: ${this.state.lastStateId}, " +
                                 "new state: ${event.state?.lastStateId}"
                     )
-                    countersState = event.state ?: Chat.State()
+                    val newState = event.state ?: Chat.State()
+                    // Apply new state only if its order is higher than the current state order
+                    if (newState.order > countersState.order) {
+                        countersState = newState
+                    }
                 }
             }
         }

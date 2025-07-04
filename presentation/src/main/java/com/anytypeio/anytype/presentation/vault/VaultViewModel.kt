@@ -135,8 +135,9 @@ class VaultViewModel(
                     },
                 observeVaultSettings.flow(),
                 chatPreviewContainer.observePreviews(),
-                userPermissionProvider.all()
-            ) { spacesFromFlow, settings, chatPreviews, permissions ->
+                userPermissionProvider.all(),
+                notificationPermissionManager.permissionState()
+            ) { spacesFromFlow, settings, chatPreviews, permissions, _ ->
                 transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
@@ -372,8 +373,12 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+        
+        // Check both space-level notification settings AND app-level notification permission
+        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
                 || space.spacePushNotificationMode == NotificationState.MENTIONS
+        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
+        val isMuted = isSpaceMuted || isAppNotificationsDisabled
 
         return VaultSpaceView.Chat(
             space = space,
@@ -401,8 +406,13 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = space.spacePushNotificationMode == NotificationState.DISABLE
+        
+        // Check both space-level notification settings AND app-level notification permission
+        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
                 || space.spacePushNotificationMode == NotificationState.MENTIONS
+        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
+        val isMuted = isSpaceMuted || isAppNotificationsDisabled
+        
         return VaultSpaceView.Space(
             space = space,
             icon = space.spaceIcon(
@@ -529,6 +539,10 @@ class VaultViewModel(
                 )
             )
         }
+        
+        // Refresh notification permission state to ensure UI reflects latest system settings
+        notificationPermissionManager.refreshPermissionState()
+        
         viewModelScope.launch {
             when (deeplink) {
                 is DeepLinkResolver.Action.Import.Experience -> {

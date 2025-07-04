@@ -70,6 +70,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -325,13 +326,7 @@ class VaultViewModel(
         )
     }
 
-    private fun calculateMutedState(space: ObjectWrapper.SpaceView): Boolean {
-        // Check both space-level notification settings AND app-level notification permission
-        val isSpaceMuted = space.spacePushNotificationMode == NotificationState.DISABLE
-                || space.spacePushNotificationMode == NotificationState.MENTIONS
-        val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()
-        return isSpaceMuted || isAppNotificationsDisabled
-    }
+
 
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
@@ -381,7 +376,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = calculateMutedState(space)
+        val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
 
         return VaultSpaceView.Chat(
             space = space,
@@ -409,7 +404,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = calculateMutedState(space)
+        val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
         
         return VaultSpaceView.Space(
             space = space,

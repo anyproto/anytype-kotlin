@@ -10,6 +10,7 @@
     <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
+    <string name="login_key">Schlüssel</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -853,13 +856,13 @@
     <string name="create_object_section_lists">Gruppen</string>
     <string name="create_object_section_objects">Objekte</string>
     <string name="edit">Bearbeiten</string>
-    <string name="unselect_all">Alle abwählen</string>
+    <string name="unselect_all">Abwählen</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favoriten</string>
     <string name="recent">Zuletzt bearbeitet</string>
     <string name="recently_opened">Zuletzt geöffnet</string>
     <string name="bin">Papierkorb</string>
-    <string name="synced_files">Synchronisierte Dateien</string>
+    <string name="synced_files">Dateien bereinigen</string>
     <string name="log_in">Anmelden</string>
     <string name="create_object_section_library">Anytype-Bibliothek</string>
     <string name="bin_empty_title">Dein Papierkorb ist leer.</string>
@@ -1112,7 +1115,7 @@
     <string name="date_type_older">Älter</string>
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
-    <string name="settings_use_yamux">Verwende eine reserve multiplex library</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Lokale Protokolle teilen</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
@@ -1816,4 +1819,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Benachrichtigungen</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Deaktiviert</string>
+    <string name="notification_settings_state_enabled">Aktiviert</string>
 </resources>

@@ -10,6 +10,7 @@
     <string name="appearance">Weergave</string>
     <string name="file_storage">Bestandsopslag</string>
     <string name="key">Herstelsleutel</string>
+    <string name="login_key">Herstelsleutel</string>
     <string name="clear_file_cache">Wis bestandscache</string>
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Donker</string>
     <string name="system">Systeem</string>
     <string name="settings">Instellingen</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Heb je je sleutel geback-upt?</string>
     <string name="you_will_need_to_sign_in">Je hebt het nodig om toegang te krijgen tot je kluis. Bewaar het op een veilige plek. Als je het verliest, kun je je kluis niet meer openen.</string>
     <string name="about_help_and_community">Help &amp; Community</string>
@@ -853,13 +856,13 @@
     <string name="create_object_section_lists">Lijsten</string>
     <string name="create_object_section_objects">Objecten</string>
     <string name="edit">Bewerk</string>
-    <string name="unselect_all">Deselecteer alle</string>
+    <string name="unselect_all">Deselecteer</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favorieten</string>
     <string name="recent">Onlangs bewerkt</string>
     <string name="recently_opened">Onlangs geopend</string>
     <string name="bin">Prullenmand</string>
-    <string name="synced_files">Gesynchroniseerde bestanden</string>
+    <string name="synced_files">Schoon bestanden op</string>
     <string name="log_in">Inloggen</string>
     <string name="create_object_section_library">Anytype bibliotheek</string>
     <string name="bin_empty_title">Jouw prullenmand is leeg.</string>
@@ -1112,7 +1115,7 @@
     <string name="date_type_older">Ouder</string>
     <string name="dates_days_ago">%1$s dagen geleden</string>
     <string name="dates_days_from">%1$s dagen vanaf nu</string>
-    <string name="settings_use_yamux">Gebruik een reserve multiplex bibliotheek</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Deel lokale logbestanden</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
@@ -1816,4 +1819,11 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
 </resources>

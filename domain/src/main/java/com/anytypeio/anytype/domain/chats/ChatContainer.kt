@@ -665,8 +665,15 @@ class ChatContainer @Inject constructor(
                                 "new state: ${event.state?.lastStateId}"
                     )
                     val newState = event.state ?: Chat.State()
-                    if (shouldApplyNewChatState(newState.order, countersState.order)) {
+                    if (shouldApplyNewChatState(
+                            newOrder = newState.order,
+                            currentOrder = countersState.order
+                        )
+                    ) {
+                        logger.logInfo("DROID-3799 Applying new chat state with order: ${newState.order}")
                         countersState = newState
+                    } else {
+                        logger.logInfo("DROID-3799 Skipping chat state update due to order comparison")
                     }
                 }
             }

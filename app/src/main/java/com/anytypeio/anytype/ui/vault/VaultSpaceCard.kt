@@ -117,6 +117,7 @@ fun VaultChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    isMuted: Boolean = false,
 ) {
     Box(
         modifier = modifier
@@ -135,7 +136,8 @@ fun VaultChatCard(
             messageTime = messageTime,
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews
+            attachmentPreviews = attachmentPreviews,
+            isMuted = isMuted
         )
     }
 }
@@ -150,6 +152,7 @@ private fun BoxScope.ContentChat(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    isMuted: Boolean = false,
 ) {
 
     Column(
@@ -213,7 +216,7 @@ private fun BoxScope.ContentChat(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = colorResource(R.color.glyph_active),
+                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
                                 shape = CircleShape
                             )
                             .size(18.dp),
@@ -237,7 +240,7 @@ private fun BoxScope.ContentChat(
                         modifier = Modifier
                             .height(18.dp)
                             .background(
-                                color = colorResource(R.color.glyph_active),
+                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
                                 shape = shape
                             )
                             .padding(horizontal = 5.dp),
@@ -451,6 +454,7 @@ fun ChatWithMentionAndMessage() {
         messageTime = "18:32",
         unreadMessageCount = 32,
         unreadMentionCount = 1,
+        isMuted = false,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -484,6 +488,7 @@ fun ChatWithMention() {
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
         unreadMentionCount = 1,
+        isMuted = true,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -516,6 +521,7 @@ fun ChatPreview() {
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
+        isMuted = false,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",

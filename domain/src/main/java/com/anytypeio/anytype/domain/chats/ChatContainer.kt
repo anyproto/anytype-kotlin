@@ -664,7 +664,17 @@ class ChatContainer @Inject constructor(
                                 "last state: ${this.state.lastStateId}, " +
                                 "new state: ${event.state?.lastStateId}"
                     )
-                    countersState = event.state ?: Chat.State()
+                    val newState = event.state ?: Chat.State()
+                    if (ChatStateUtils.shouldApplyNewChatState(
+                            newOrder = newState.order,
+                            currentOrder = countersState.order
+                        )
+                    ) {
+                        logger.logInfo("DROID-3799 Applying new chat state with order: ${newState.order}")
+                        countersState = newState
+                    } else {
+                        logger.logInfo("DROID-3799 Skipping chat state update due to order comparison")
+                    }
                 }
             }
         }
@@ -723,6 +733,7 @@ class ChatContainer @Inject constructor(
         logger.logInfo("DROID-2966 onClearIntent called")
         commands.emit(Transformation.Commands.ClearIntent)
     }
+
 
     internal sealed class Transformation {
         sealed class Events : Transformation() {

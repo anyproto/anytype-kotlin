@@ -274,7 +274,7 @@ fun TitleRow(
                 if (isMuted) {
                     Image(
                         painter = mutedIcon,
-                        contentDescription = "Muted",
+                        contentDescription = stringResource(R.string.content_desc_muted),
                         modifier = Modifier.size(18.dp),
                         colorFilter = ColorFilter.tint(colorResource(R.color.glyph_active))
                     )

@@ -580,6 +580,7 @@ fun VaultScreenWithUnreadSection(
                                     unreadMessageCount = item.unreadMessageCount,
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
+                                    isMuted = item.isMuted,
                                 )
                                 SpaceActionsDropdownMenuHost(
                                     spaceView = item,
@@ -680,7 +681,8 @@ fun VaultScreenWithUnreadSection(
                                         chatPreview = item.chatPreview,
                                         unreadMessageCount = item.unreadMessageCount,
                                         unreadMentionCount = item.unreadMentionCount,
-                                        attachmentPreviews = item.attachmentPreviews
+                                        attachmentPreviews = item.attachmentPreviews,
+                                        isMuted = item.isMuted,
                                     )
                                     SpaceActionsDropdownMenuHost(
                                         spaceView = item,

@@ -501,6 +501,7 @@ private fun WidgetList(
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
+                        isMuted = item.isMuted,
                         onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)

@@ -76,10 +76,20 @@ interface ChatPreviewContainer {
                                 is Event.Command.Chats.UpdateState -> {
                                     state.map { preview ->
                                         if (preview.chat == event.context) {
-                                            preview.copy(
-                                                state = event.state
-                                            )
+                                            val newState = event.state
+                                            if (newState != null && ChatStateUtils.shouldApplyNewChatState(
+                                                    newOrder = newState.order,
+                                                    currentOrder = preview.state?.order
+                                                )
+                                            ) {
+                                                logger.logInfo("DROID-3799 Applying new chat preview state with order: ${newState.order}")
+                                                preview.copy(state = newState)
+                                            } else {
+                                                logger.logInfo("DROID-3799 Skipping chat preview state update due to order comparison")
+                                                preview
+                                            }
                                         } else {
+                                            logger.logInfo("Skipping chat preview state update for non-matching chat: ${event.context}")
                                             preview
                                         }
                                     }
@@ -135,6 +145,7 @@ interface ChatPreviewContainer {
         override fun observePreviews(): Flow<List<Chat.Preview>> {
             return previews
         }
+
 
         companion object {
             private const val SUBSCRIPTION_ID = "chat-previews-subscription"

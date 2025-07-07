@@ -1176,7 +1176,8 @@ fun MChatState.core(): Chat.State = Chat.State(
             olderOrderId = unread.oldestOrderId
         )
     },
-    lastStateId = lastStateId
+    lastStateId = lastStateId,
+    order = order
 )
 
 fun Rpc.Chat.SubscribeToMessagePreviews.Response.ChatPreview.core(): Chat.Preview {

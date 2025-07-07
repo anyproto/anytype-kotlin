@@ -1827,4 +1827,5 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_title">Notifiche dei messaggi</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

@@ -1826,4 +1826,5 @@ En concreto,
     <string name="notification_settings_state_title">Notificaciones de mensajes</string>
     <string name="notification_settings_state_disabled">Deshabilitado</string>
     <string name="notification_settings_state_enabled">Activado</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

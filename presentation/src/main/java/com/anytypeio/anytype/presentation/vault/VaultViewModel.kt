@@ -208,9 +208,6 @@ class VaultViewModel(
             Timber.d("No loading space found")
         }
 
-        // Create a map for quick lookup
-        val spaceViewMap = allSpaces.associateBy { it.space.id }
-
         // New unified sorting logic
         // Primary sort: lastMessageDate (descending) - most recent message first
         // Secondary sort: creationDate (descending) - newest spaces first for those without messages
@@ -382,7 +379,11 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
+        val isMuted = if (space.chatId == null) {
+            null
+        } else {
+            NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
+        }
         
         return VaultSpaceView.Space(
             space = space,

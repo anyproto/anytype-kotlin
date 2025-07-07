@@ -280,7 +280,7 @@ fun VaultScreenToolbarScrolledPreview() {
 fun SpaceActionsDropdownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
-    isMuted: Boolean,
+    isMuted: Boolean?,
     isOwner: Boolean,
     onMuteToggle: () -> Unit,
     onDeleteOrLeave: () -> Unit
@@ -297,35 +297,37 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        DropdownMenuItem(
-            onClick = {
-                onMuteToggle()
-                onDismiss()
-            },
-            text = {
-                val (stringRes, iconRes) = if (isMuted) {
-                    R.string.space_notify_unmute to R.drawable.ic_notifications
-                } else {
-                    R.string.space_notify_mute to R.drawable.ic_notifications_off
+        if (isMuted != null) {
+            DropdownMenuItem(
+                onClick = {
+                    onMuteToggle()
+                    onDismiss()
+                },
+                text = {
+                    val (stringRes, iconRes) = if (isMuted) {
+                        R.string.space_notify_unmute to R.drawable.ic_notifications
+                    } else {
+                        R.string.space_notify_mute to R.drawable.ic_notifications_off
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(id = stringRes),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Image(
+                            painter = painterResource(id = iconRes),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .size(24.dp)
+                        )
+                    }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(id = stringRes),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = iconRes),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .size(24.dp)
-                    )
-                }
-            }
-        )
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        }
         DropdownMenuItem(
             onClick = {
                 onDeleteOrLeave()
@@ -392,7 +394,7 @@ fun SpaceActionsDropdownMenuHost(
         isOwner = spaceView.isOwner,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
-                if (spaceView.isMuted) onUnmuteSpace(it) else onMuteSpace(it)
+                if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
             }
         },
         onDeleteOrLeave = {

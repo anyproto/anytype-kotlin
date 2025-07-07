@@ -139,7 +139,7 @@ fun VaultChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean = false,
+    isMuted: Boolean? = null,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
@@ -194,7 +194,7 @@ private fun BoxScope.ContentChat(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean = false,
+    isMuted: Boolean? = null
 ) {
     Column(
         modifier = Modifier
@@ -240,7 +240,7 @@ private fun BoxScope.ContentChat(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                                color = if (isMuted == true) colorResource(R.color.glyph_active) else colorResource(
                                     R.color.color_accent
                                 ),
                                 shape = CircleShape
@@ -266,7 +266,7 @@ private fun BoxScope.ContentChat(
                         modifier = Modifier
                             .height(18.dp)
                             .background(
-                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                                color = if (isMuted == true) colorResource(R.color.glyph_active) else colorResource(
                                     R.color.color_accent
                                 ),
                                 shape = shape
@@ -292,7 +292,7 @@ fun TitleRow(
     message: String,
     messageTime: String?,
     mutedIcon: Painter,
-    isMuted: Boolean
+    isMuted: Boolean? = null
 ) {
     val density = LocalDensity.current
 
@@ -311,7 +311,7 @@ fun TitleRow(
                     color = colorResource(id = R.color.text_primary),
                 )
                 // 1: optional muted icon
-                if (isMuted) {
+                if (isMuted == true) {
                     Image(
                         painter = mutedIcon,
                         contentDescription = stringResource(R.string.content_desc_muted),
@@ -346,7 +346,7 @@ fun TitleRow(
             } else null
 
             // 2) Measure icon next (if muted)
-            val iconPlaceable = if (isMuted) {
+            val iconPlaceable = if (isMuted == true) {
                 // if time exists, icon is at index 1; if no time, still index 1
                 measurables.getOrNull(1)?.measure(
                     constraints.copy(minWidth = 0, minHeight = 0)

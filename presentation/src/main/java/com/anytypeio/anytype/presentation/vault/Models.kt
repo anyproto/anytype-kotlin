@@ -11,14 +11,7 @@ sealed class VaultSpaceView {
     abstract val space: ObjectWrapper.SpaceView
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
-    abstract val isMuted: Boolean
-
-    // Helper properties to determine unread status and last message date
-    val hasUnreadMessages: Boolean
-        get() = when (this) {
-            is Chat -> unreadMessageCount > 0
-            else -> false
-        }
+    abstract val isMuted: Boolean?
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -31,7 +24,7 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class Chat(
@@ -47,7 +40,7 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

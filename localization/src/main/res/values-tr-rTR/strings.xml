@@ -1826,4 +1826,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notification_settings_state_title">Mesaj Bildirimleri</string>
     <string name="notification_settings_state_disabled">Devre dışı</string>
     <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

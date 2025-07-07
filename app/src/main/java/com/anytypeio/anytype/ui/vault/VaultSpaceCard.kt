@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
@@ -24,6 +23,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,7 +34,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -117,6 +119,7 @@ fun VaultChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    isMuted: Boolean = false,
 ) {
     Box(
         modifier = modifier
@@ -135,7 +138,8 @@ fun VaultChatCard(
             messageTime = messageTime,
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews
+            attachmentPreviews = attachmentPreviews,
+            isMuted = isMuted
         )
     }
 }
@@ -150,8 +154,8 @@ private fun BoxScope.ContentChat(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    isMuted: Boolean = false,
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,32 +163,15 @@ private fun BoxScope.ContentChat(
             .padding(start = 68.dp, top = 8.dp),
         verticalArrangement = Arrangement.Top
     ) {
-        Row(
+        TitleRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(end = 8.dp),
-                text = title.ifEmpty { stringResource(id = R.string.untitled) },
-                style = BodySemiBold,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (messageTime != null) {
-                Text(
-                    text = messageTime,
-                    style = Relations2,
-                    color = colorResource(id = R.color.transparent_active),
-                    modifier = Modifier.wrapContentSize(),
-                    textAlign = TextAlign.Center,
-                )
-            }
-        }
+            message = title,
+            messageTime = messageTime,
+            mutedIcon = painterResource(R.drawable.ci_notifications_off),
+            isMuted = isMuted
+        )
         Row(
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -213,7 +200,9 @@ private fun BoxScope.ContentChat(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = colorResource(R.color.glyph_active),
+                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                                    R.color.color_accent
+                                ),
                                 shape = CircleShape
                             )
                             .size(18.dp),
@@ -237,7 +226,9 @@ private fun BoxScope.ContentChat(
                         modifier = Modifier
                             .height(18.dp)
                             .background(
-                                color = colorResource(R.color.glyph_active),
+                                color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                                    R.color.color_accent
+                                ),
                                 shape = shape
                             )
                             .padding(horizontal = 5.dp),
@@ -249,6 +240,122 @@ private fun BoxScope.ContentChat(
                             color = colorResource(id = R.color.text_white),
                         )
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TitleRow(
+    modifier: Modifier,
+    message: String,
+    messageTime: String?,
+    mutedIcon: Painter,
+    isMuted: Boolean
+) {
+    val density = LocalDensity.current
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Layout(
+            content = {
+                // 0: the message text
+                Text(
+                    text = message,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = BodySemiBold,
+                    color = colorResource(id = R.color.text_primary),
+                )
+                // 1: optional muted icon
+                if (isMuted) {
+                    Image(
+                        painter = mutedIcon,
+                        contentDescription = stringResource(R.string.content_desc_muted),
+                        modifier = Modifier.size(18.dp),
+                        colorFilter = ColorFilter.tint(colorResource(R.color.glyph_active))
+                    )
+                }
+                // 2: optional time (only if messageTime != null)
+                messageTime?.let {
+                    Text(
+                        text = it,
+                        style = Relations2,
+                        color = colorResource(id = R.color.transparent_active),
+                    )
+                }
+            }
+        ) { measurables, constraints ->
+            // spacing constants in px
+            val iconTextGap = with(density) { 8.dp.roundToPx() }
+            val textTimeGap = with(density) { 8.dp.roundToPx() }
+
+            // measurables indices:
+            // 0 = text
+            // 1 = icon if isMuted else (possibly) time
+            // last = time only if messageTime != null
+
+            // 1) Measure time first (if any)
+            val timePlaceable = if (messageTime != null) {
+                measurables.last().measure(
+                    constraints.copy(minWidth = 0, minHeight = 0)
+                )
+            } else null
+
+            // 2) Measure icon next (if muted)
+            val iconPlaceable = if (isMuted) {
+                // if time exists, icon is at index 1; if no time, still index 1
+                measurables.getOrNull(1)?.measure(
+                    constraints.copy(minWidth = 0, minHeight = 0)
+                )
+            } else null
+
+            // 3) Compute reserved width:
+            //    time width + gap before time (if time exists)
+            //  + icon width + gap before icon (if icon exists)
+            val reserved = listOfNotNull(
+                timePlaceable?.width,
+                iconPlaceable?.width
+            ).sum() +
+                    (if (iconPlaceable != null) iconTextGap else 0) +
+                    (if (timePlaceable != null) textTimeGap else 0)
+
+            // 4) Measure text with remaining width
+            val maxTextWidth = (constraints.maxWidth - reserved).coerceAtLeast(0)
+            val textPlaceable = measurables.getOrNull(0)?.measure(
+                constraints.copy(
+                    maxWidth = maxTextWidth,
+                    minWidth = 0, minHeight = 0
+                )
+            )
+
+            // 5) Determine row height
+            val rowHeight = listOfNotNull(
+                textPlaceable?.height,
+                iconPlaceable?.height,
+                timePlaceable?.height
+            ).maxOrNull() ?: 0
+
+            // 6) Layout & place children
+            layout(constraints.maxWidth, rowHeight) {
+                val textY = (rowHeight - (textPlaceable?.height ?: 0)) / 2
+                textPlaceable?.placeRelative(x = 0, y = textY)
+
+                iconPlaceable?.let {
+                    val iconY = (rowHeight - it.height) / 2
+                    it.placeRelative(
+                        x = (textPlaceable?.width ?: 0) + iconTextGap,
+                        y = iconY
+                    )
+                }
+
+                timePlaceable?.let {
+                    val timeY = (rowHeight - it.height) / 2
+                    val timeX = constraints.maxWidth - it.width
+                    it.placeRelative(x = timeX, y = timeY)
                 }
             }
         }
@@ -451,6 +558,7 @@ fun ChatWithMentionAndMessage() {
         messageTime = "18:32",
         unreadMessageCount = 32,
         unreadMentionCount = 1,
+        isMuted = false,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -484,6 +592,7 @@ fun ChatWithMention() {
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
         unreadMentionCount = 1,
+        isMuted = true,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -516,6 +625,7 @@ fun ChatPreview() {
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
+        isMuted = false,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",

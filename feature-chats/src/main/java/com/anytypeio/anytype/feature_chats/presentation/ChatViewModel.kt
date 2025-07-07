@@ -63,6 +63,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -179,13 +180,15 @@ class ChatViewModel @Inject constructor(
                 .observe(
                     vmParams.space
                 ).map { view ->
+                    val isMuted = NotificationStateCalculator.calculateMutedState(view, notificationPermissionManager)
                     HeaderView.Default(
                         title = view.name.orEmpty(),
                         icon = view.spaceIcon(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
                         ),
-                        showIcon = true
+                        showIcon = true,
+                        isMuted = isMuted
                     )
                 }.collect {
                     header.value = it
@@ -1680,7 +1683,8 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val showIcon: Boolean
+            val showIcon: Boolean,
+            val isMuted: Boolean = false
         ) : HeaderView()
     }
 

@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -287,6 +288,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var chacPreviewContainer: ChatPreviewContainer
+
+    @Mock
+    lateinit var notificationPermissionManager: NotificationPermissionManager
 
     lateinit var userPermissionProvider: UserPermissionProvider
 
@@ -2935,7 +2939,8 @@ class HomeScreenViewModelTest {
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         deleteSpace = deleteSpace,
         setAsFavourite = setObjectListIsFavorite,
-        chatPreviews = chacPreviewContainer
+        chatPreviews = chacPreviewContainer,
+        notificationPermissionManager = notificationPermissionManager
     )
 
     companion object {

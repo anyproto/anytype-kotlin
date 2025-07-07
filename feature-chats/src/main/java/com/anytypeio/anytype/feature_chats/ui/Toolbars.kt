@@ -95,7 +95,7 @@ fun ChatTopToolbar(
                 Image(
                     modifier = Modifier.size(18.dp),
                     painter = painterResource(id = R.drawable.ci_notifications_off),
-                    contentDescription = "Muted chat",
+                    contentDescription = stringResource(id = R.string.content_desc_muted),
                     colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
                 )
             }

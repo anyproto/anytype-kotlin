@@ -30,11 +30,14 @@ class SpaceChatWidgetContainer @Inject constructor(
             ) { preview, spaceViews, _ ->
                 val unreadMessageCount = preview?.state?.unreadMessages?.counter ?: 0
                 val unreadMentionCount = preview?.state?.unreadMentions?.counter ?: 0
-                
+
                 // Find the space view for this widget's space
                 val spaceView = spaceViews.find { it.targetSpaceId == widget.config.space }
-                val isMuted = NotificationStateCalculator.calculateMutedState(spaceView, notificationPermissionManager)
-                
+                val isMuted = NotificationStateCalculator.calculateMutedState(
+                    spaceView,
+                    notificationPermissionManager
+                )
+
                 WidgetView.SpaceChat(
                     id = widget.id,
                     source = widget.source,
@@ -43,17 +46,17 @@ class SpaceChatWidgetContainer @Inject constructor(
                     isMuted = isMuted
                 )
             }
-            .distinctUntilChanged()
-            .debounce(DEBOUNCE_DURATION)
-            .onStart {
-                emit(
-                    WidgetView.SpaceChat(
-                        id = widget.id,
-                        source = widget.source,
-                        isMuted = false // Default to unmuted while loading
+                .distinctUntilChanged()
+                .debounce(DEBOUNCE_DURATION)
+                .onStart {
+                    emit(
+                        WidgetView.SpaceChat(
+                            id = widget.id,
+                            source = widget.source,
+                            isMuted = false // Default to unmuted while loading
+                        )
                     )
-                )
-            }
+                }
         )
     }.catch {
         emit(
@@ -64,7 +67,6 @@ class SpaceChatWidgetContainer @Inject constructor(
             )
         )
     }
-
 
 
     companion object {

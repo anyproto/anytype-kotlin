@@ -156,10 +156,6 @@ private fun BoxScope.ContentChat(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean = false,
 ) {
-
-    // we’ll need to convert dp→px inside the layout
-    val density = LocalDensity.current
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,7 +167,7 @@ private fun BoxScope.ContentChat(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(24.dp),
-            message = messageText ?: stringResource(id = R.string.untitled),
+            message = title,
             messageTime = messageTime,
             mutedIcon = painterResource(R.drawable.ci_notifications_off),
             isMuted = isMuted
@@ -254,7 +250,7 @@ private fun BoxScope.ContentChat(
 fun TitleRow(
     modifier: Modifier,
     message: String,
-    messageTime: String?,          // now nullable
+    messageTime: String?,
     mutedIcon: Painter,
     isMuted: Boolean
 ) {

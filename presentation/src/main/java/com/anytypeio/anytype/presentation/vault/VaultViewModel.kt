@@ -427,8 +427,6 @@ class VaultViewModel(
         }
     }
 
-    // Note: onOrderChanged and onDragEnd removed - manual ordering disabled for automatic sorting
-
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = true

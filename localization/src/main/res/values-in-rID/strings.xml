@@ -1813,4 +1813,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notification_settings_state_title">Pemberitahuan Pesan</string>
     <string name="notification_settings_state_disabled">Nonaktif</string>
     <string name="notification_settings_state_enabled">Aktif</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

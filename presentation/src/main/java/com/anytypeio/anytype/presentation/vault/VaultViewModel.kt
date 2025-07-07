@@ -34,7 +34,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
+
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -78,7 +78,6 @@ class VaultViewModel(
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val observeVaultSettings: ObserveVaultSettings,
-    private val setVaultSpaceOrder: SetVaultSpaceOrder,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
@@ -108,8 +107,6 @@ class VaultViewModel(
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
 
-    // Local state for tracking order changes during drag operations
-    private var pendingMainSpacesOrder: List<Id>? = null
 
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
@@ -214,35 +211,17 @@ class VaultViewModel(
         // Create a map for quick lookup
         val spaceViewMap = allSpaces.associateBy { it.space.id }
 
-        // Extract unread set - IDs of spaces with unread messages
-        val unreadSet = allSpaces
-            .filter { it.hasUnreadMessages }
-            .map { it.space.id }
-            .toSet()
-
-        // Regular order - user-defined order from settings
-        // This is our single source of truth for the user's preferred order
-        val regularOrder = settings.orderOfSpaces.filter { spaceId ->
-            spaceViewMap.containsKey(spaceId)
-        }
-
-        // Add any spaces that aren't in the saved order (new spaces) at the end
-        val unmanagedSpaceIds = allSpaces.map { it.space.id } - regularOrder.toSet()
-        val fullRegularOrder = regularOrder + unmanagedSpaceIds
-
-        // Top section: unread spaces sorted by last message time (newest first)
-        val unreadSpaces = allSpaces
-            .filter { it.space.id in unreadSet }
-            .sortedByDescending { it.lastMessageDate ?: 0L }
-
-        // Main section: all other spaces in user-defined order
-        val mainSpaces = fullRegularOrder
-            .filter { spaceId -> spaceId !in unreadSet }
-            .mapNotNull { spaceId -> spaceViewMap[spaceId] }
+        // New unified sorting logic
+        // Primary sort: lastMessageDate (descending) - most recent message first
+        // Secondary sort: creationDate (descending) - newest spaces first for those without messages
+        val sortedSpaces = allSpaces.sortedWith(
+            compareByDescending<VaultSpaceView> { it.lastMessageDate ?: 0L }
+                .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
+        )
 
         return VaultSectionView(
-            unreadSpaces = unreadSpaces,
-            mainSpaces = mainSpaces
+            unreadSpaces = emptyList(), // No longer used - all spaces in mainSpaces
+            mainSpaces = sortedSpaces
         )
     }
 
@@ -448,51 +427,7 @@ class VaultViewModel(
         }
     }
 
-    fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
-        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
-
-        // Get current settings to work with the existing order
-        val currentSections = sections.value
-        val currentMainSpaces = currentSections.mainSpaces
-
-        // Find indices in the current main spaces list
-        val fromIndex = currentMainSpaces.indexOfFirst { it.space.id == fromSpaceId }
-        val toIndex = currentMainSpaces.indexOfFirst { it.space.id == toSpaceId }
-
-        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
-            // Create new ordered list by moving the item (only update local state)
-            val newMainSpacesList = currentMainSpaces.toMutableList()
-            val movedItem = newMainSpacesList.removeAt(fromIndex)
-            newMainSpacesList.add(toIndex, movedItem)
-
-            // Store the new order for later persistence in onDragEnd
-            val newMainOrder = newMainSpacesList.map { it.space.id }
-            val unreadSpaceIds = currentSections.unreadSpaces.map { it.space.id }
-
-            // Store pending order to be saved in onDragEnd
-            // Merge unreadSpaceIds with newMainOrder to ensure that unread spaces are included in the order.
-            // Use distinct() to remove duplicates and maintain a unique list of space IDs.
-            pendingMainSpacesOrder = (unreadSpaceIds + newMainOrder).distinct()
-
-            // Update local sections state immediately for UI responsiveness
-            val updatedSections = currentSections.copy(mainSpaces = newMainSpacesList)
-            sections.value = updatedSections
-            spaces.value = updatedSections.allSpaces // For backward compatibility
-        }
-    }
-
-    fun onDragEnd() {
-        Timber.d("onDragEnd called")
-        // Persist the order changes made during the drag operation
-        pendingMainSpacesOrder?.let { newOrder ->
-            viewModelScope.launch {
-                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
-                setVaultSpaceOrder.async(params = newOrder)
-                // Clear pending order after persistence
-                pendingMainSpacesOrder = null
-            }
-        }
-    }
+    // Note: onOrderChanged and onDragEnd removed - manual ordering disabled for automatic sorting
 
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {

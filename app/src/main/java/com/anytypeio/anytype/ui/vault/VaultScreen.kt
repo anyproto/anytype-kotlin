@@ -55,9 +55,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
-import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -73,45 +71,9 @@ import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.ui.settings.typography
 import kotlinx.coroutines.delay
-import sh.calvin.reorderable.ReorderableItem
-import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
-@Composable
-fun UnreadSectionHeader() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.vault_unread_section_title),
-            style = Caption1Regular,
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 8.dp)
-        )
-    }
-}
 
-@Composable
-fun AllSectionHeader() {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.vault_all_section_title),
-            style = Caption1Regular,
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 8.dp)
-        )
-    }
-}
 
 @Composable
 fun VaultScreenToolbar(
@@ -456,8 +418,6 @@ fun VaultScreenWithUnreadSection(
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
-    onOrderChanged: (String, String) -> Unit,
-    onDragEnd: () -> Unit = { /* No-op */ },
     isLoading: Boolean,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
@@ -471,34 +431,8 @@ fun VaultScreenWithUnreadSection(
 
     mainSpaceList = sections.mainSpaces
 
-    val hapticFeedback = rememberReorderHapticFeedback()
-
     val lazyListState = rememberLazyListState()
-
-    val reorderableLazyState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        // Extract space IDs from keys (remove prefix) before passing to ViewModel
-        val fromSpaceId = (from.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
-        val toSpaceId = (to.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
-
-        onOrderChanged(fromSpaceId, toSpaceId)
-        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
-    }
-
-    var isDragging by remember { mutableStateOf(false) }
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
-    val density = LocalDensity.current
-
-    LaunchedEffect(reorderableLazyState.isAnyItemDragging) {
-        if (reorderableLazyState.isAnyItemDragging) {
-            isDragging = true
-            // Optional: Add a small delay to avoid triggering on very short drags
-            delay(50)
-        } else if (isDragging) {
-            isDragging = false
-            onDragEnd()
-            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
-        }
-    }
 
     Scaffold(
         modifier = Modifier
@@ -540,11 +474,8 @@ fun VaultScreenWithUnreadSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(top = 4.dp)
             ) {
-                // Unread Section Header and Items (Non-draggable)
+                // Unread Section Items (Non-draggable)
                 if (sections.hasUnreadSpaces) {
-                    item(key = "unread_header") {
-                        UnreadSectionHeader()
-                    }
 
                     itemsIndexed(
                         items = sections.unreadSpaces,
@@ -623,14 +554,10 @@ fun VaultScreenWithUnreadSection(
                         }
                     }
 
-                    if (sections.mainSpaces.isNotEmpty()) {
-                        item(key = "all_section") {
-                            AllSectionHeader()
-                        }
-                    }
+
                 }
 
-                // Main Section Items (Draggable using ReorderableItem)
+                // Main Section Items (Non-draggable - automatic sorting)
                 if (sections.mainSpaces.isNotEmpty()) {
                     itemsIndexed(
                         items = mainSpaceList,
@@ -641,30 +568,49 @@ fun VaultScreenWithUnreadSection(
                                 is VaultSpaceView.Space -> TYPE_SPACE
                             }
                         }
-                    ) { idx, item ->
-                        ReorderableItem(
-                            state = reorderableLazyState,
-                            key = "$MAIN_SECTION_KEY_PREFIX${item.space.id}"
-                        ) { isDragging ->
-                            when (item) {
-                                is VaultSpaceView.Chat -> {
-                                    VaultChatCard(
+                    ) { _, item ->
+                        // All spaces are now non-draggable and automatically sorted
+                        when (item) {
+                            is VaultSpaceView.Chat -> {
+                                VaultChatCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .fillMaxWidth()
+                                        .height(80.dp)
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ))
+                                        .padding(horizontal = 16.dp),
+                                    title = item.space.name.orEmpty(),
+                                    icon = item.icon,
+                                    previewText = item.previewText,
+                                    creatorName = item.creatorName,
+                                    messageText = item.messageText,
+                                    messageTime = item.messageTime,
+                                    chatPreview = item.chatPreview,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews,
+                                    isMuted = item.isMuted,
+                                )
+                                SpaceActionsDropdownMenuHost(
+                                    spaceView = item,
+                                    expanded = expandedSpaceId == item.space.id,
+                                    onDismiss = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace
+                                )
+                            }
+
+                            is VaultSpaceView.Space -> {
+                                Box {
+                                    VaultSpaceCard(
                                         modifier = Modifier
-                                            .longPressDraggableHandle(
-                                                onDragStarted = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.START
-                                                    )
-                                                },
-                                                onDragStopped = {
-                                                    hapticFeedback.performHapticFeedback(
-                                                        ReorderHapticFeedbackType.END
-                                                    )
-                                                }
-                                            )
-                                            .fillMaxWidth()
-                                            .height(80.dp)
-                                            .padding(horizontal = 16.dp)
+                                            .animateItem()
                                             .then(
                                                 createCombinedClickableModifier(
                                                     onClick = { onSpaceClicked(item) },
@@ -673,16 +619,8 @@ fun VaultScreenWithUnreadSection(
                                                     }
                                                 )),
                                         title = item.space.name.orEmpty(),
-                                        icon = item.icon,
-                                        previewText = item.previewText,
-                                        creatorName = item.creatorName,
-                                        messageText = item.messageText,
-                                        messageTime = item.messageTime,
-                                        chatPreview = item.chatPreview,
-                                        unreadMessageCount = item.unreadMessageCount,
-                                        unreadMentionCount = item.unreadMentionCount,
-                                        attachmentPreviews = item.attachmentPreviews,
-                                        isMuted = item.isMuted,
+                                        subtitle = item.accessType,
+                                        icon = item.icon
                                     )
                                     SpaceActionsDropdownMenuHost(
                                         spaceView = item,
@@ -693,46 +631,6 @@ fun VaultScreenWithUnreadSection(
                                         onDeleteSpace = onDeleteSpace,
                                         onLeaveSpace = onLeaveSpace
                                     )
-                                }
-
-                                is VaultSpaceView.Space -> {
-                                    Box {
-                                        VaultSpaceCard(
-                                            modifier = Modifier
-                                                .longPressDraggableHandle(
-                                                    onDragStarted = {
-                                                        hapticFeedback.performHapticFeedback(
-                                                            ReorderHapticFeedbackType.START
-                                                        )
-                                                    },
-                                                    onDragStopped = {
-                                                        hapticFeedback.performHapticFeedback(
-                                                            ReorderHapticFeedbackType.END
-                                                        )
-                                                    }
-                                                )
-                                                .animateItem()
-                                                .then(
-                                                    createCombinedClickableModifier(
-                                                        onClick = { onSpaceClicked(item) },
-                                                        onLongClick = {
-                                                            expandedSpaceId = item.space.id
-                                                        }
-                                                    )),
-                                            title = item.space.name.orEmpty(),
-                                            subtitle = item.accessType,
-                                            icon = item.icon
-                                        )
-                                        SpaceActionsDropdownMenuHost(
-                                            spaceView = item,
-                                            expanded = expandedSpaceId == item.space.id,
-                                            onDismiss = { expandedSpaceId = null },
-                                            onMuteSpace = onMuteSpace,
-                                            onUnmuteSpace = onUnmuteSpace,
-                                            onDeleteSpace = onDeleteSpace,
-                                            onLeaveSpace = onLeaveSpace
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -748,24 +646,7 @@ const val TYPE_SPACE = "space"
 
 private const val MAIN_SECTION_KEY_PREFIX = "main_"
 
-@Preview(
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Light Mode - Unread Section Header Only"
-)
-@Composable
-fun UnreadSectionHeaderPreview() {
-    MaterialTheme(typography = typography) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(colorResource(id = R.color.background_primary))
-                .padding(vertical = 16.dp)
-        ) {
-            UnreadSectionHeader()
-        }
-    }
-}
+
 
 fun createCombinedClickableModifier(
     onClick: () -> Unit,

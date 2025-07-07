@@ -1239,13 +1239,28 @@ class ComponentManager(
     class ComponentWithParams<out T, in PARAMETER>(private val builder: (PARAMETER) -> T) {
 
         private var instance: T? = null
+        private var lastParams: PARAMETER? = null
 
-        fun get(params: PARAMETER) = instance ?: builder(params).also { instance = it }
+        fun get(params: PARAMETER): T {
+            // If parameters changed, release the old instance and create a new one
+            if (instance != null && lastParams != params) {
+                instance = null
+            }
+            
+            return instance ?: builder(params).also { 
+                instance = it
+                lastParams = params
+            }
+        }
 
-        fun new(params: PARAMETER) = builder(params).also { instance = it }
+        fun new(params: PARAMETER) = builder(params).also { 
+            instance = it
+            lastParams = params
+        }
 
         fun release() {
             instance = null
+            lastParams = null
         }
     }
 

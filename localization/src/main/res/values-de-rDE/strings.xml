@@ -1826,4 +1826,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_title">Message Notifications</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

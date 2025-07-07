@@ -139,7 +139,7 @@ class VaultViewModel(
                 transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
-                spaces.value = resultingSections.allSpaces // For backward compatibility
+                spaces.value = resultingSections.mainSpaces
             }
         }
         
@@ -220,7 +220,6 @@ class VaultViewModel(
         )
 
         return VaultSectionView(
-            unreadSpaces = emptyList(), // No longer used - all spaces in mainSpaces
             mainSpaces = sortedSpaces
         )
     }

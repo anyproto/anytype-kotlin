@@ -26,14 +26,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -59,7 +56,6 @@ import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -69,10 +65,6 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
-import com.anytypeio.anytype.ui.settings.typography
-import kotlinx.coroutines.delay
-
-
 
 
 @Composable
@@ -206,7 +198,9 @@ private fun ProfileIconWithBadge(
     ) {
         // Main profile icon
         ProfileIcon(
-            modifier = Modifier.size(28.dp).align(Alignment.Center),
+            modifier = Modifier
+                .size(28.dp)
+                .align(Alignment.Center),
             profile = profile
         )
 
@@ -453,19 +447,18 @@ fun VaultScreenWithUnreadSection(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = sections.allSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                    spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = isLoading
                 )
             }
         }
     ) { paddings ->
-        if (sections.allSpaces.isEmpty()) {
+        if (sections.mainSpaces.isEmpty()) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
         } else {
-            // Single LazyColumn with reorderable approach
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
@@ -474,153 +467,73 @@ fun VaultScreenWithUnreadSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(top = 4.dp)
             ) {
-                // Unread Section Items (Non-draggable)
-                if (sections.hasUnreadSpaces) {
-
-                    itemsIndexed(
-                        items = sections.unreadSpaces,
-                        key = { _, item -> "unread_${item.space.id}" },
-                        contentType = { _, item ->
-                            when (item) {
-                                is VaultSpaceView.Chat -> TYPE_CHAT
-                                is VaultSpaceView.Space -> TYPE_SPACE
-                            }
-                        }
-                    ) { _, item ->
-                        // Unread items are not draggable
+                itemsIndexed(
+                    items = mainSpaceList,
+                    key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
+                    contentType = { _, item ->
                         when (item) {
-                            is VaultSpaceView.Chat -> {
-                                VaultChatCard(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .fillMaxWidth()
-                                        .height(80.dp)
-                                        .then(
-                                            createCombinedClickableModifier(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = { expandedSpaceId = item.space.id }
-                                            ))
-                                        .padding(horizontal = 16.dp),
-                                    title = item.space.name.orEmpty(),
-                                    icon = item.icon,
-                                    previewText = item.previewText,
-                                    creatorName = item.creatorName,
-                                    messageText = item.messageText,
-                                    messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview,
-                                    unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews,
-                                    isMuted = item.isMuted,
-                                    spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
-                                    onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace
-                                )
-                            }
-
-                            is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .then(
-                                            createCombinedClickableModifier(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = {
-                                                    expandedSpaceId = item.space.id
-                                                }
-                                            )),
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    icon = item.icon,
-                                    spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
-                                    onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace
-                                )
-                            }
+                            is VaultSpaceView.Chat -> TYPE_CHAT
+                            is VaultSpaceView.Space -> TYPE_SPACE
                         }
                     }
-
-
-                }
-
-                // Main Section Items (Non-draggable - automatic sorting)
-                if (sections.mainSpaces.isNotEmpty()) {
-                    itemsIndexed(
-                        items = mainSpaceList,
-                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
-                        contentType = { _, item ->
-                            when (item) {
-                                is VaultSpaceView.Chat -> TYPE_CHAT
-                                is VaultSpaceView.Space -> TYPE_SPACE
-                            }
+                ) { _, item ->
+                    // All spaces are non-draggable and automatically sorted
+                    when (item) {
+                        is VaultSpaceView.Chat -> {
+                            VaultChatCard(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                                    .then(
+                                        createCombinedClickableModifier(
+                                            onClick = { onSpaceClicked(item) },
+                                            onLongClick = { expandedSpaceId = item.space.id }
+                                        ))
+                                    .padding(horizontal = 16.dp),
+                                title = item.space.name.orEmpty(),
+                                icon = item.icon,
+                                previewText = item.previewText,
+                                creatorName = item.creatorName,
+                                messageText = item.messageText,
+                                messageTime = item.messageTime,
+                                chatPreview = item.chatPreview,
+                                unreadMessageCount = item.unreadMessageCount,
+                                unreadMentionCount = item.unreadMentionCount,
+                                attachmentPreviews = item.attachmentPreviews,
+                                isMuted = item.isMuted,
+                                spaceView = item,
+                                expandedSpaceId = expandedSpaceId,
+                                onDismissMenu = { expandedSpaceId = null },
+                                onMuteSpace = onMuteSpace,
+                                onUnmuteSpace = onUnmuteSpace,
+                                onDeleteSpace = onDeleteSpace,
+                                onLeaveSpace = onLeaveSpace
+                            )
                         }
-                    ) { _, item ->
-                        // All spaces are now non-draggable and automatically sorted
-                        when (item) {
-                            is VaultSpaceView.Chat -> {
-                                VaultChatCard(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .fillMaxWidth()
-                                        .height(80.dp)
-                                        .then(
-                                            createCombinedClickableModifier(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = { expandedSpaceId = item.space.id }
-                                            ))
-                                        .padding(horizontal = 16.dp),
-                                    title = item.space.name.orEmpty(),
-                                    icon = item.icon,
-                                    previewText = item.previewText,
-                                    creatorName = item.creatorName,
-                                    messageText = item.messageText,
-                                    messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview,
-                                    unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews,
-                                    isMuted = item.isMuted,
-                                    spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
-                                    onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace
-                                )
-                            }
 
-                            is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
-                                    modifier = Modifier
-                                        .animateItem()
-                                        .then(
-                                            createCombinedClickableModifier(
-                                                onClick = { onSpaceClicked(item) },
-                                                onLongClick = {
-                                                    expandedSpaceId = item.space.id
-                                                }
-                                            )),
-                                    title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
-                                    icon = item.icon,
-                                    spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
-                                    onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace
-                                )
-                            }
+                        is VaultSpaceView.Space -> {
+                            VaultSpaceCard(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .then(
+                                        createCombinedClickableModifier(
+                                            onClick = { onSpaceClicked(item) },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )),
+                                title = item.space.name.orEmpty(),
+                                subtitle = item.accessType,
+                                icon = item.icon,
+                                spaceView = item,
+                                expandedSpaceId = expandedSpaceId,
+                                onDismissMenu = { expandedSpaceId = null },
+                                onMuteSpace = onMuteSpace,
+                                onUnmuteSpace = onUnmuteSpace,
+                                onDeleteSpace = onDeleteSpace,
+                                onLeaveSpace = onLeaveSpace
+                            )
                         }
                     }
                 }
@@ -633,7 +546,6 @@ const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 
 private const val MAIN_SECTION_KEY_PREFIX = "main_"
-
 
 
 fun createCombinedClickableModifier(

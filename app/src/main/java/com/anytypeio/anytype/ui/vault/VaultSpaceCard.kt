@@ -59,7 +59,14 @@ fun VaultSpaceCard(
     modifier: Modifier,
     title: String,
     subtitle: String,
-    icon: SpaceIconView
+    icon: SpaceIconView,
+    spaceView: VaultSpaceView? = null,
+    expandedSpaceId: String? = null,
+    onDismissMenu: () -> Unit = {},
+    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onDeleteSpace: (String) -> Unit = {},
+    onLeaveSpace: (String) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -77,6 +84,19 @@ fun VaultSpaceCard(
             title = title,
             subtitle = subtitle
         )
+        
+        // Include dropdown menu inside the card
+        spaceView?.let { space ->
+            SpaceActionsDropdownMenuHost(
+                spaceView = space,
+                expanded = expandedSpaceId == space.space.id,
+                onDismiss = onDismissMenu,
+                onMuteSpace = onMuteSpace,
+                onUnmuteSpace = onUnmuteSpace,
+                onDeleteSpace = onDeleteSpace,
+                onLeaveSpace = onLeaveSpace
+            )
+        }
     }
 }
 
@@ -120,6 +140,13 @@ fun VaultChatCard(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean = false,
+    spaceView: VaultSpaceView? = null,
+    expandedSpaceId: String? = null,
+    onDismissMenu: () -> Unit = {},
+    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onDeleteSpace: (String) -> Unit = {},
+    onLeaveSpace: (String) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -141,6 +168,19 @@ fun VaultChatCard(
             attachmentPreviews = attachmentPreviews,
             isMuted = isMuted
         )
+        
+        // Include dropdown menu inside the card
+        spaceView?.let { space ->
+            SpaceActionsDropdownMenuHost(
+                spaceView = space,
+                expanded = expandedSpaceId == space.space.id,
+                onDismiss = onDismissMenu,
+                onMuteSpace = onMuteSpace,
+                onUnmuteSpace = onUnmuteSpace,
+                onDeleteSpace = onDeleteSpace,
+                onLeaveSpace = onLeaveSpace
+            )
+        }
     }
 }
 

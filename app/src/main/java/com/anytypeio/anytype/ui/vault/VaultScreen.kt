@@ -512,11 +512,9 @@ fun VaultScreenWithUnreadSection(
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
                                     isMuted = item.isMuted,
-                                )
-                                SpaceActionsDropdownMenuHost(
                                     spaceView = item,
-                                    expanded = expandedSpaceId == item.space.id,
-                                    onDismiss = { expandedSpaceId = null },
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
                                     onDeleteSpace = onDeleteSpace,
@@ -525,31 +523,27 @@ fun VaultScreenWithUnreadSection(
                             }
 
                             is VaultSpaceView.Space -> {
-                                Box {
-                                    VaultSpaceCard(
-                                        modifier = Modifier
-                                            .animateItem()
-                                            .then(
-                                                createCombinedClickableModifier(
-                                                    onClick = { onSpaceClicked(item) },
-                                                    onLongClick = {
-                                                        expandedSpaceId = item.space.id
-                                                    }
-                                                )),
-                                        title = item.space.name.orEmpty(),
-                                        subtitle = item.accessType,
-                                        icon = item.icon
-                                    )
-                                    SpaceActionsDropdownMenuHost(
-                                        spaceView = item,
-                                        expanded = expandedSpaceId == item.space.id,
-                                        onDismiss = { expandedSpaceId = null },
-                                        onMuteSpace = onMuteSpace,
-                                        onUnmuteSpace = onUnmuteSpace,
-                                        onDeleteSpace = onDeleteSpace,
-                                        onLeaveSpace = onLeaveSpace
-                                    )
-                                }
+                                VaultSpaceCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = {
+                                                    expandedSpaceId = item.space.id
+                                                }
+                                            )),
+                                    title = item.space.name.orEmpty(),
+                                    subtitle = item.accessType,
+                                    icon = item.icon,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace
+                                )
                             }
                         }
                     }
@@ -594,11 +588,9 @@ fun VaultScreenWithUnreadSection(
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
                                     isMuted = item.isMuted,
-                                )
-                                SpaceActionsDropdownMenuHost(
                                     spaceView = item,
-                                    expanded = expandedSpaceId == item.space.id,
-                                    onDismiss = { expandedSpaceId = null },
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
                                     onDeleteSpace = onDeleteSpace,
@@ -607,31 +599,27 @@ fun VaultScreenWithUnreadSection(
                             }
 
                             is VaultSpaceView.Space -> {
-                                Box {
-                                    VaultSpaceCard(
-                                        modifier = Modifier
-                                            .animateItem()
-                                            .then(
-                                                createCombinedClickableModifier(
-                                                    onClick = { onSpaceClicked(item) },
-                                                    onLongClick = {
-                                                        expandedSpaceId = item.space.id
-                                                    }
-                                                )),
-                                        title = item.space.name.orEmpty(),
-                                        subtitle = item.accessType,
-                                        icon = item.icon
-                                    )
-                                    SpaceActionsDropdownMenuHost(
-                                        spaceView = item,
-                                        expanded = expandedSpaceId == item.space.id,
-                                        onDismiss = { expandedSpaceId = null },
-                                        onMuteSpace = onMuteSpace,
-                                        onUnmuteSpace = onUnmuteSpace,
-                                        onDeleteSpace = onDeleteSpace,
-                                        onLeaveSpace = onLeaveSpace
-                                    )
-                                }
+                                VaultSpaceCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = {
+                                                    expandedSpaceId = item.space.id
+                                                }
+                                            )),
+                                    title = item.space.name.orEmpty(),
+                                    subtitle = item.accessType,
+                                    icon = item.icon,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace
+                                )
                             }
                         }
                     }

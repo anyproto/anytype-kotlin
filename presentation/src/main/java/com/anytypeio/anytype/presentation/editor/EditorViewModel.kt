@@ -5463,12 +5463,53 @@ class EditorViewModel(
             }
             SlashItem.Media.File -> {
                 onAddFileBlockClicked(Content.File.Type.FILE)
+                // Auto-open file picker after creating the block
+                scheduleAutoFilePickerOpen(Content.File.Type.FILE)
             }
             SlashItem.Media.Picture -> {
                 onAddFileBlockClicked(Content.File.Type.IMAGE)
+                // Auto-open file picker after creating the block
+                scheduleAutoFilePickerOpen(Content.File.Type.IMAGE)
             }
             SlashItem.Media.Video -> {
                 onAddFileBlockClicked(Content.File.Type.VIDEO)
+                // Auto-open file picker after creating the block
+                scheduleAutoFilePickerOpen(Content.File.Type.VIDEO)
+            }
+        }
+    }
+
+    private fun scheduleAutoFilePickerOpen(type: Content.File.Type) {
+        // Schedule file picker to open after the block is created
+        viewModelScope.launch {
+            // Small delay to ensure block creation is complete
+            kotlinx.coroutines.delay(100)
+            
+            // Find the most recently created empty file block of the specified type
+            val emptyFileBlock = blocks.findLast { block ->
+                block.content is Content.File &&
+                block.content<Content.File>().type == type &&
+                block.content<Content.File>().state == Content.File.State.EMPTY
+            }
+            
+            if (emptyFileBlock != null) {
+                when (type) {
+                    Content.File.Type.FILE -> {
+                        onAddLocalFileClicked(emptyFileBlock.id)
+                    }
+                    Content.File.Type.IMAGE -> {
+                        onAddLocalPictureClicked(emptyFileBlock.id)
+                    }
+                    Content.File.Type.VIDEO -> {
+                        onAddLocalVideoClicked(emptyFileBlock.id)
+                    }
+                    Content.File.Type.NONE,
+                    Content.File.Type.AUDIO,
+                    Content.File.Type.PDF -> {
+                        // These types don't have specific slash commands but use generic file picker
+                        onAddLocalFileClicked(emptyFileBlock.id)
+                    }
+                }
             }
         }
     }

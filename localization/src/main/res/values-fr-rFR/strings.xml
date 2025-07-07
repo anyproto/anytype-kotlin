@@ -1823,5 +1823,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notification_settings_state_title">Notifications de message</string>
     <string name="notification_settings_state_disabled">Désactivé</string>
     <string name="notification_settings_state_enabled">Activé</string>
-    <string name="content_desc_muted">Muted</string>
+    <string name="content_desc_muted">En sourdine</string>
 </resources>

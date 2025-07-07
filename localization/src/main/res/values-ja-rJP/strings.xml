@@ -1814,4 +1814,5 @@
     <string name="notification_settings_state_title">メッセージ通知</string>
     <string name="notification_settings_state_disabled">無効</string>
     <string name="notification_settings_state_enabled">有効</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

@@ -1761,10 +1761,23 @@ class EditorViewModel(
                 text = content.text
             )
         } else {
-            proceedWithUpdateTextStyle(
-                style = Content.Text.Style.P,
-                targets = listOf(id)
-            )
+            val currentView = views.find { it.id == id }
+            if (currentView is BlockView.Indentable && currentView.indent > 0) {
+                // For indented empty list items, proceed with split to maintain list behavior
+                // The backend should handle reducing indentation when splitting empty indented blocks
+                proceedWithSplitEvent(
+                    target = id,
+                    range = content.text.length..content.text.length,
+                    marks = content.marks,
+                    text = content.text
+                )
+            } else {
+                // For non-indented empty list items, convert to paragraph
+                proceedWithUpdateTextStyle(
+                    style = Content.Text.Style.P,
+                    targets = listOf(id)
+                )
+            }
         }
     }
 

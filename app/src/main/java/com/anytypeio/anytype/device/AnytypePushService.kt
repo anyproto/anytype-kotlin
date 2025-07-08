@@ -61,7 +61,7 @@ class AnytypePushService : FirebaseMessagingService() {
     }
 
     private fun checkAuthorizationStatus(message: RemoteMessage) {
-        scope.launch((dispatchers.io)) {
+        scope.launch(dispatchers.io) {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->

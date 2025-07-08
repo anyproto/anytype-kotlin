@@ -277,20 +277,34 @@ class GalleryViewWidget @JvmOverloads constructor(
         }
 
         protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
-            if (!item.hideIcon && item.icon != ObjectIcon.None) {
+            // Handle name visibility first
+            if (item.hideName) {
+                title.gone()
+            } else {
+                title.visible()
+                if (!item.hideIcon && item.icon != ObjectIcon.None) {
+                    iconView.visible()
+                    iconView.setIcon(item.icon)
+                    val sb = SpannableString(item.name.ifEmpty { untitled })
+                    sb.setSpan(
+                        LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
+                    )
+                    title.text = sb
+                } else {
+                    iconView.gone()
+                    title.text = when {
+                        item.name.isEmpty() -> SpannableString(untitled)
+                        else -> SpannableString(item.name)
+                    }
+                }
+            }
+            
+            // Handle icon visibility when name is hidden
+            if (item.hideName && !item.hideIcon && item.icon != ObjectIcon.None) {
                 iconView.visible()
                 iconView.setIcon(item.icon)
-                val sb = SpannableString(item.name.ifEmpty { untitled })
-                sb.setSpan(
-                    LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
-                )
-                title.text = sb
-            } else {
+            } else if (item.hideName) {
                 iconView.gone()
-                title.text = when {
-                    item.name.isEmpty() -> SpannableString(untitled)
-                    else -> SpannableString(item.name)
-                }
             }
         }
     }

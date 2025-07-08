@@ -1220,6 +1220,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMemberIconClicked(member: Id?) {
+        Timber.d("onMemberIconClicked: $member")
         viewModelScope.launch {
             if (member != null) {
                 commands.emit(
@@ -1388,6 +1389,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMentionClicked(member: Id) {
+        Timber.d("onMentionClicked: $member")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.ViewMemberCard(

@@ -906,7 +906,7 @@
     <string name="slash_widget_media_file_subtitle">ファイルをそのまま保存</string>
     <string name="slash_widget_media_picture">画像</string>
     <string name="slash_widget_media_image">画像</string>
-    <string name="slash_widget_media_picture_subtitle">画像でページに彩を添えましょう</string>
+    <string name="slash_widget_media_picture_subtitle">画像でページを充実させましょう</string>
     <string name="slash_widget_media_video">動画</string>
     <string name="slash_widget_media_video_subtitle">再生可能な動画をアップロード</string>
     <string name="slash_widget_media_bookmark">ブックマーク</string>

@@ -70,15 +70,6 @@ object SplashModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideCheckAuthorizationStatusUseCase(
-        authRepository: AuthRepository
-    ): CheckAuthorizationStatus = CheckAuthorizationStatus(
-        repository = authRepository
-    )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,

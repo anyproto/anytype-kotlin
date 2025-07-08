@@ -1086,7 +1086,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onAttachmentClicked(attachment: ChatView.Message.Attachment) {
-        Timber.d("onAttachmentClicked, attachment: $attachment")
+        Timber.d("onAttachmentClicked")
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {

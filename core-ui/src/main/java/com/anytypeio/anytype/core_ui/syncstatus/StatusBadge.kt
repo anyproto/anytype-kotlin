@@ -41,7 +41,7 @@ fun StatusBadge(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_sync_error_10),
+                    painter = painterResource(R.drawable.ic_sync_error_8),
                     contentDescription = "Sync Error",
                     modifier = Modifier.size(8.dp)
                 )
@@ -59,7 +59,7 @@ fun StatusBadge(
                     ) {
                         if (spaceSyncUpdate.error != SpaceSyncError.NULL) {
                             Image(
-                                painter = painterResource(R.drawable.ic_sync_error_10),
+                                painter = painterResource(R.drawable.ic_sync_error_8),
                                 contentDescription = null,
                                 modifier = Modifier.size(8.dp)
                             )
@@ -67,7 +67,7 @@ fun StatusBadge(
                             when (spaceSyncUpdate.status) {
                                 SpaceSyncStatus.SYNCED -> {
                                     Image(
-                                        painter = painterResource(R.drawable.ic_synced_10),
+                                        painter = painterResource(R.drawable.ic_synced_8),
                                         contentDescription = "Synced",
                                         modifier = Modifier.size(8.dp),
                                         contentScale = ContentScale.Inside
@@ -83,7 +83,7 @@ fun StatusBadge(
 
                                 SpaceSyncStatus.ERROR -> {
                                     Image(
-                                        painter = painterResource(R.drawable.ic_sync_error_10),
+                                        painter = painterResource(R.drawable.ic_sync_error_8),
                                         contentDescription = "Sync Error",
                                         modifier = Modifier.size(8.dp)
                                     )
@@ -91,7 +91,7 @@ fun StatusBadge(
 
                                 SpaceSyncStatus.OFFLINE -> {
                                     Image(
-                                        painter = painterResource(R.drawable.ic_sync_grey_10),
+                                        painter = painterResource(R.drawable.ic_sync_grey_8),
                                         contentDescription = "Offline",
                                         modifier = Modifier.size(8.dp)
                                     )
@@ -99,7 +99,7 @@ fun StatusBadge(
 
                                 SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
                                     Image(
-                                        painter = painterResource(R.drawable.ic_sync_slow_10),
+                                        painter = painterResource(R.drawable.ic_sync_slow_8),
                                         contentDescription = "Network Update Needed",
                                         modifier = Modifier.size(8.dp)
                                     )

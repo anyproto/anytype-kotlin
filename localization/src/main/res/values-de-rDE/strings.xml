@@ -1541,7 +1541,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">Meine Spaces</string>
-    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_unread_section_title">Ungelesen</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
@@ -1812,7 +1812,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_camera_permission_denied">Kameraberechtigung verweigert</string>
     <string name="notifications_title">Benachrichtigungen</string>
     <string name="notifications_all">Alle Aktivitäten</string>
-    <string name="notifications_mentions">Mentions only</string>
+    <string name="notifications_mentions">Nur Erwähnungen</string>
     <string name="notifications_disable">Benachrichtigungen deaktivieren</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>

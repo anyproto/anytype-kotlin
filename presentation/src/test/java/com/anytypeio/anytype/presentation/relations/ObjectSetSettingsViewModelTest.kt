@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -30,7 +29,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 @ExperimentalCoroutinesApi
 class ObjectSetSettingsViewModelTest {
@@ -141,5 +139,208 @@ class ObjectSetSettingsViewModelTest {
             )
         )
         assertEquals(expected, viewModel.views.value)
+    }
+
+    @Test
+    fun `in case of Grid hidden Name should NOT be in the list`() = runTest {
+        val relationKey = Relations.NAME
+        val viewerId = "viewer-id"
+        val blockId = "block-id"
+        val relationName = "Name"
+        val relationFormat = RelationFormat.LONG_TEXT
+        val relationObjects = listOf(
+            StubRelationObject(
+                key = relationKey,
+                name = relationName,
+                format = relationFormat,
+                isHidden = true
+            )
+        )
+        storeOfRelations.merge(relationObjects)
+        advanceUntilIdle()
+
+        val viewerRelation = ViewerRelation(
+            key = relationKey,
+            isVisible = true
+        )
+        val viewer = Viewer(
+            id = viewerId,
+            name = "Test Viewer",
+            type = Viewer.Type.GRID,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(viewerRelation)
+        )
+        val relationLink = RelationLink(key = relationKey, format = relationFormat)
+        val dataView = DataView(
+            viewers = listOf(viewer),
+            relationLinks = listOf(relationLink)
+        )
+        val block = Block(
+            id = blockId,
+            children = emptyList(),
+            content = dataView,
+            fields = Block.Fields.empty()
+        )
+        val state = ObjectState.DataView.Set(
+            root = "root-id",
+            blocks = listOf(block)
+        )
+        objectState = MutableStateFlow(state)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Act
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        // Assert
+        assertEquals(emptyList(), viewModel.views.value)
+    }
+
+    @Test
+    fun `non-hidden custom relation should be in the list`() = runTest {
+        val relationKey = "custom-relation"
+        val viewerId = "viewer-id"
+        val blockId = "block-id"
+        val relationName = "Custom"
+        val relationFormat = RelationFormat.NUMBER
+        val relationObjects = listOf(
+            StubRelationObject(
+                key = relationKey,
+                name = relationName,
+                format = relationFormat,
+                isHidden = false
+            )
+        )
+        storeOfRelations.merge(relationObjects)
+        advanceUntilIdle()
+
+        val viewerRelation = ViewerRelation(
+            key = relationKey,
+            isVisible = true
+        )
+        val viewer = Viewer(
+            id = viewerId,
+            name = "Test Viewer",
+            type = Viewer.Type.GRID,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(viewerRelation)
+        )
+        val relationLink = RelationLink(key = relationKey, format = relationFormat)
+        val dataView = DataView(
+            viewers = listOf(viewer),
+            relationLinks = listOf(relationLink)
+        )
+        val block = Block(
+            id = blockId,
+            children = emptyList(),
+            content = dataView,
+            fields = Block.Fields.empty()
+        )
+        val state = ObjectState.DataView.Set(
+            root = "root-id",
+            blocks = listOf(block)
+        )
+        objectState = MutableStateFlow(state)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Act
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        // Assert
+        val expected = listOf(
+            ViewerRelationListView.Relation(
+                SimpleRelationView(
+                    key = relationKey,
+                    title = relationName,
+                    format = ColumnView.Format.NUMBER,
+                    isVisible = true,
+                    isHidden = false,
+                    isReadonly = false,
+                    isDefault = Relations.systemRelationKeys.contains(relationKey)
+                )
+            )
+        )
+        assertEquals(expected, viewModel.views.value)
+    }
+
+    @Test
+    fun `no viewer found should result in empty views`() = runTest {
+        val viewerId = "non-existent-viewer"
+        val blockId = "block-id"
+        val dataView = DataView(
+            viewers = emptyList(),
+            relationLinks = emptyList()
+        )
+        val block = Block(
+            id = blockId,
+            children = emptyList(),
+            content = dataView,
+            fields = Block.Fields.empty()
+        )
+        val state = ObjectState.DataView.Set(
+            root = "root-id",
+            blocks = listOf(block)
+        )
+        objectState = MutableStateFlow(state)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Act
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        // Assert
+        assertEquals(emptyList(), viewModel.views.value)
+    }
+
+    @Test
+    fun `non DataView state should result in empty views`() = runTest {
+        objectState = MutableStateFlow(ObjectState.Init)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Act
+        viewModel.onStart("any-viewer-id")
+        coroutineTestRule.advanceUntilIdle()
+
+        // Assert
+        assertEquals(emptyList(), viewModel.views.value)
     }
 } 

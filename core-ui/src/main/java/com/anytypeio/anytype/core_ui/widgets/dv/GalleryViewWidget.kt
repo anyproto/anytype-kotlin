@@ -276,34 +276,37 @@ class GalleryViewWidget @JvmOverloads constructor(
             contentContainer.setItems(item.relations)
         }
 
+        /**
+         * Refactored: Simplified name/icon visibility and styling logic
+         */
         protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
-            // Handle name visibility first
-            if (item.hideName) {
-                title.gone()
-            } else {
+            val name = item.name.ifEmpty { untitled }
+            val showName = !item.hideName
+            val showIconWithName = showName && !item.hideIcon && item.icon != ObjectIcon.None
+
+            // Title visibility and text
+            if (showName) {
                 title.visible()
-                if (!item.hideIcon && item.icon != ObjectIcon.None) {
-                    iconView.visible()
-                    iconView.setIcon(item.icon)
-                    val sb = SpannableString(item.name.ifEmpty { untitled })
-                    sb.setSpan(
-                        LeadingMarginSpan.Standard(firstLineMargin, 0), 0, sb.length, 0
-                    )
-                    title.text = sb
-                } else {
-                    iconView.gone()
-                    title.text = when {
-                        item.name.isEmpty() -> SpannableString(untitled)
-                        else -> SpannableString(item.name)
+                val titleText = if (showIconWithName) {
+                    SpannableString(name).apply {
+                        setSpan(
+                            LeadingMarginSpan.Standard(firstLineMargin, 0),
+                            0, length, 0
+                        )
                     }
+                } else {
+                    SpannableString(name)
                 }
+                title.text = titleText
+            } else {
+                title.gone()
             }
-            
-            // Handle icon visibility when name is hidden
-            if (item.hideName && !item.hideIcon && item.icon != ObjectIcon.None) {
+
+            // Icon visibility
+            if (showIconWithName) {
                 iconView.visible()
                 iconView.setIcon(item.icon)
-            } else if (item.hideName) {
+            } else {
                 iconView.gone()
             }
         }

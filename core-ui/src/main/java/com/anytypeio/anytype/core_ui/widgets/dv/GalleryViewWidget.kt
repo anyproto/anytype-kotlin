@@ -131,16 +131,15 @@ class GalleryViewWidget @JvmOverloads constructor(
         }
 
         override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
-            val item = getItem(position)
             when (holder) {
                 is GalleryViewHolder.OnlyCover -> {
-                    holder.bind(item as Viewer.GalleryView.Item.Cover)
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
                 is GalleryViewHolder.WithCover -> {
-                    holder.bind(item as Viewer.GalleryView.Item.Cover, largeCards)
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
                 is GalleryViewHolder.Default -> {
-                    holder.bind(item as Viewer.GalleryView.Item.Default, largeCards)
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Default)
                 }
             }
         }

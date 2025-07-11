@@ -32,6 +32,7 @@
             app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
             app:imageSize="16dp"
             app:initialTextSize="12sp"
+            app:isImageWithCorners="true"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/cover"/>
 

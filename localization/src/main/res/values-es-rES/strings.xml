@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Favicon de marcador</string>
     <string name="content_description_file_icon">Icono de archivo</string>
     <string name="content_description_modal_icon">Icono de modal</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Toca para escribir</string>
     <string name="modal_gallery">Galería</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Cancelar solicitud de acceso</string>
     <string name="multiplayer_cancel_join_request_msg">Tendrás que volver a solicitar el acceso.</string>
     <string name="multiplayer_do_not_cancel_join_request">No cancelar</string>
-    <string name="multiplayer_error_invite_not_found">No existe esa invitación. Asegúrate de que tus dispositivos están sincronizados.</string>
+    <string name="multiplayer_error_invite_not_found_title">Sin acceso a este espacio</string>
+    <string name="multiplayer_error_invalid_link_title">Sin acceso a este espacio</string>
+    <string name="multiplayer_error_invite_not_found">El enlace que estás usando no parece válido. Pide al propietario que te envíe un enlace nuevo.</string>
     <string name="multiplayer_error_invite_bad_content">El enlace de invitación no se puede analizar. Es posible que tenga errores de formato o datos inválidos.</string>
+    <string name="multiplayer_error_space_deleted_title">Sin acceso a este espacio</string>
     <string name="multiplayer_error_space_is_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="multiplayer_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>
     <string name="multiplayer_error_not_shareable">Parece que este espacio ya no está compartido. Asegúrate de que tus dispositivos están sincronizados.</string>

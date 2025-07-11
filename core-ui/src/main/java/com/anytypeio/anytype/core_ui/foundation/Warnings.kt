@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -122,7 +123,7 @@ fun GenericAlert(
     Column {
         Spacer(modifier = Modifier.height(24.dp))
         AlertIcon(icon)
-        Spacer(modifier = Modifier.height(15.dp))
+        Spacer(modifier = Modifier.height(16.dp))
         AlertTitle(config.title)
         if (config.withDescription) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -173,7 +174,7 @@ fun AlertIcon(icon: Int) {
         Image(
             modifier = Modifier.size(56.dp),
             painter = painterResource(id = icon),
-            contentDescription = "Alert icon"
+            contentDescription = stringResource(id = R.string.alert_icon_description)
         )
     }
 }

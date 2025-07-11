@@ -144,6 +144,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
 
     <string name="modal_tap_to_type">Tap to type</string>
     <string name="modal_gallery">Gallery</string>

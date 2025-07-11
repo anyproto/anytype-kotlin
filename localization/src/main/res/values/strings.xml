@@ -1483,8 +1483,10 @@
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
 
     <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
     <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>

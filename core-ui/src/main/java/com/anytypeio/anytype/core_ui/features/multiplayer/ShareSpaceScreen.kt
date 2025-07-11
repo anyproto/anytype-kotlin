@@ -104,7 +104,6 @@ fun ShareSpaceScreen(
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
-    onApproveLeaveRequestClicked: (ShareSpaceMemberView) -> Unit,
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
@@ -250,9 +249,7 @@ fun ShareSpaceScreen(
                                     onViewRequestClicked = {
                                         onViewRequestClicked(member)
                                     },
-                                    onApproveLeaveRequestClicked = {
-                                        onApproveLeaveRequestClicked(member)
-                                    },
+                                    onApproveLeaveRequestClicked = {},
                                     isUser = member.isUser
                                 )
                             }
@@ -828,7 +825,6 @@ fun ShareSpaceScreenPreview() {
                 )
             )
         },
-        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},

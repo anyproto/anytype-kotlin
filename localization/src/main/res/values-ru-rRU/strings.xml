@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Нажмите для ввода</string>
     <string name="modal_gallery">Галерея</string>
     <string name="modal_kanban">Канбан</string>
@@ -1289,8 +1290,11 @@
     <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Не отменять</string>
-    <string name="multiplayer_error_invite_not_found">Приглашение не существует. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Ссылку на приглашение не удалось разобрать. Она может содержать ошибки в формате или недопустимые данные.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Похоже, пространство было удалено. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
     <string name="multiplayer_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
     <string name="multiplayer_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>

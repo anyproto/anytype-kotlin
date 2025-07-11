@@ -249,7 +249,6 @@ fun ShareSpaceScreen(
                                     onViewRequestClicked = {
                                         onViewRequestClicked(member)
                                     },
-                                    onApproveLeaveRequestClicked = {},
                                     isUser = member.isUser
                                 )
                             }
@@ -596,8 +595,7 @@ private fun SpaceMemberRequest(
     isUser: Boolean,
     icon: SpaceMemberIconView,
     request: ShareSpaceMemberView.Config.Request,
-    onViewRequestClicked: () -> Unit,
-    onApproveLeaveRequestClicked: () -> Unit
+    onViewRequestClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -681,7 +679,7 @@ private fun SpaceMemberRequest(
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
                     onClick = throttledClick(
-                        onClick = { onApproveLeaveRequestClicked() }
+                        onClick = { }
                     ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -705,7 +703,6 @@ fun SpaceJoinRequestPreview() {
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Join,
-        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         isUser = false
     )
@@ -724,7 +721,6 @@ fun SpaceJoinLongTitleRequestPreview() {
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Join,
-        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         isUser = false
     )
@@ -743,7 +739,6 @@ fun SpaceLeaveRequestPreview() {
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Leave,
-        onApproveLeaveRequestClicked = {},
         onViewRequestClicked = {},
         isUser = true
     )

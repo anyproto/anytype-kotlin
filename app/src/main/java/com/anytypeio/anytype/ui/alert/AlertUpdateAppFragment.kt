@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_ui.extensions.toast
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_GREEN
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -49,10 +48,7 @@ class AlertUpdateAppFragment : BaseBottomSheetComposeFragment() {
                             secondButtonText = stringResource(R.string.update),
                             secondButtonType = BUTTON_PRIMARY,
                             firstButtonType = BUTTON_SECONDARY,
-                            icon = AlertConfig.Icon(
-                                icon = R.drawable.ic_alert_update,
-                                gradient = GRADIENT_TYPE_GREEN
-                            )
+                            icon = R.drawable.ic_popup_update_56
                         )
                     )
                 }

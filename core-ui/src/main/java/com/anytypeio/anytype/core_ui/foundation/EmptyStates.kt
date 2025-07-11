@@ -5,20 +5,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 
-@Preview
+@DefaultPreviews
 @Composable
 fun EmptyStatePreview() {
     EmptyState(
         title = "Nothing found",
         description = "Object type not found. Please try changing your request",
-        icon = AlertConfig.Icon(
-            GRADIENT_TYPE_RED,
-            icon = R.drawable.ic_alert_error
-        )
+        icon = R.drawable.ic_popup_duck_56
     )
 }
 
@@ -27,7 +24,7 @@ fun EmptyState(
     modifier: Modifier = Modifier,
     title: String,
     description: String,
-    icon: AlertConfig.Icon
+    icon: Int
 ) {
     Column(modifier = modifier) {
         AlertIcon(icon)

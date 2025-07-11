@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Appuyer pour saisir</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Annuler la demande d\'adhésion</string>
     <string name="multiplayer_cancel_join_request_msg">Vous devrez envoyer à nouveau la demande d\'accès</string>
     <string name="multiplayer_do_not_cancel_join_request">Ne pas annuler</string>
-    <string name="multiplayer_error_invite_not_found">L\'invitation n\'existe pas. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="multiplayer_error_invite_not_found_title">Pas d\'accès à cet espace</string>
+    <string name="multiplayer_error_invalid_link_title">Pas d\'accès à cet espace</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Le lien d\'invitation n\'a pas pu être analysé. Il peut contenir des erreurs dans le format ou des données non valides.</string>
+    <string name="multiplayer_error_space_deleted_title">Pas d\'accès à cet espace</string>
     <string name="multiplayer_error_space_is_deleted">Il semble que l\'espace ait été supprimé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
     <string name="multiplayer_error_limit_reached">Limite atteinte pour cet espace. Veuillez mettre à jour votre abonnement ou contacter le support pour obtenir de l\'aide.</string>
     <string name="multiplayer_error_not_shareable">Il semble que l\'espace n\'est plus partagé. Veuillez vous assurer que vos appareils sont synchronisés.</string>

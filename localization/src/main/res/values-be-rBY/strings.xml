@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Націсніце, каб увесці</string>
     <string name="modal_gallery">Галерэя </string>
     <string name="modal_kanban">Канбан</string>
@@ -1289,8 +1290,11 @@
     <string name="multiplayer_cancel_join_request">Адмяніць запыт на далучэнне</string>
     <string name="multiplayer_cancel_join_request_msg">Вам трэба будзе зноў адправіць запыт на далучэнне</string>
     <string name="multiplayer_do_not_cancel_join_request">Не адмяняць</string>
-    <string name="multiplayer_error_invite_not_found">Запрашэння не існуе. Пераканайцеся, што вашыя прылады сінхранізаваныя.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Не атрымалася разабраць запрашальную спасылку. Яна можа змяшчаць памылкі ў фармаце або недапушчальныя даныя.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Здаецца, Прастора была выдалена. Калі ласка, пераканайцеся, што вашы прылады сінхранізаваны.</string>
     <string name="multiplayer_error_limit_reached">Для гэтай прасторы дасягнуты ліміт. Калі ласка, абнавіце сваё членства або звярніцеся ў службу падтрымкі за дапамогай.</string>
     <string name="multiplayer_error_not_shareable">Падобна, што прастора больш не з\'яўляецца агульнай. Калі ласка, пераканайцеся, што вашыя прылады сінхранізаваныя.</string>

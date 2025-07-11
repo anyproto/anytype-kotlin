@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">書籤圖示</string>
     <string name="content_description_file_icon">檔案圖示</string>
     <string name="content_description_modal_icon">互動視窗圖示</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">點擊輸入文字</string>
     <string name="modal_gallery">畫廊</string>
     <string name="modal_kanban">看板</string>
@@ -1271,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">取消加入請求</string>
     <string name="multiplayer_cancel_join_request_msg">您將需要再次發送加入請求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
-    <string name="multiplayer_error_invite_not_found">邀請不存在。請確保您的裝置已同步。</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">無法辨認邀請連結。可能是格式錯誤或無效的資料。</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">此空間似乎已被刪除。請確保您的裝置已同步。</string>
     <string name="multiplayer_error_limit_reached">此空間容量已達上限。請升級您的會員資格或聯繫支援部門尋求協助。</string>
     <string name="multiplayer_error_not_shareable">此空間似乎已不再共享。請確保您的裝置已同步。</string>

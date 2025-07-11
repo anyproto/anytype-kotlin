@@ -98,25 +98,16 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GalleryViewHolder {
             val inflater = LayoutInflater.from(parent.context)
-            when (viewType) {
-                VIEW_TYPE_WITH_COVER -> {
-                    return GalleryViewHolder.WithCover(
-                        binding = ItemDvGalleryItemCoverBinding.inflate(
-                            inflater, parent, false
-                        )
-                    ).apply {
-                        setClicks()
-                    }
-                }
-                VIEW_TYPE_DEFAULT -> {
-                    return GalleryViewHolder.Default(
-                        binding = ItemDvGalleryViewDefaultBinding.inflate(
-                            inflater, parent, false
-                        )
-                    ).apply {
-                        setClicks()
-                    }
-                }
+            return when (viewType) {
+                VIEW_TYPE_ONLY_COVER -> GalleryViewHolder.OnlyCover(
+                    ItemDvGalleryOnlyCoverBinding.inflate(inflater, parent, false)
+                )
+                VIEW_TYPE_WITH_COVER -> GalleryViewHolder.WithCover(
+                    ItemDvGalleryItemCoverBinding.inflate(inflater, parent, false)
+                )
+                VIEW_TYPE_DEFAULT -> GalleryViewHolder.Default(
+                    ItemDvGalleryViewDefaultBinding.inflate(inflater, parent, false)
+                )
                 else -> throw RuntimeException("Unsupported view type")
             }
         }
@@ -141,18 +132,31 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         override fun onBindViewHolder(holder: GalleryViewHolder, position: Int) {
             when (holder) {
-                is GalleryViewHolder.Default -> {
-                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Default)
+                is GalleryViewHolder.OnlyCover -> {
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
                 is GalleryViewHolder.WithCover -> {
                     holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
+                is GalleryViewHolder.Default -> {
+                    holder.bind(getItem(position) as Viewer.GalleryView.Item.Default)
+                }
             }
         }
 
-        override fun getItemViewType(position: Int): Int = when (val item = getItem(position)) {
-            is Viewer.GalleryView.Item.Cover -> VIEW_TYPE_WITH_COVER
-            is Viewer.GalleryView.Item.Default -> VIEW_TYPE_DEFAULT
+        override fun getItemViewType(position: Int): Int {
+            val item = getItem(position)
+            return when (item) {
+                is Viewer.GalleryView.Item.Cover -> {
+                    val showName = !item.hideName
+                    if (!showName && item.relations.isEmpty()) {
+                        VIEW_TYPE_ONLY_COVER
+                    } else {
+                        VIEW_TYPE_WITH_COVER
+                    }
+                }
+                is Viewer.GalleryView.Item.Default -> VIEW_TYPE_DEFAULT
+            }
         }
     }
 
@@ -246,6 +250,18 @@ class GalleryViewWidget @JvmOverloads constructor(
                         )
                     }
                 }
+            }
+        }
+
+        class OnlyCover(val binding: ItemDvGalleryOnlyCoverBinding) : GalleryViewHolder(binding.root) {
+            val cover get() = binding.cover
+            override val title: TextView get() = throw UnsupportedOperationException()
+            override val iconView: ObjectIconWidget get() = throw UnsupportedOperationException()
+            override val contentContainer: GalleryViewContentWidget get() = throw UnsupportedOperationException()
+            override val checkboxView: View get() = throw UnsupportedOperationException()
+
+            fun bind(item: Viewer.GalleryView.Item.Cover) {
+                cover.bind(item)
             }
         }
 
@@ -383,6 +399,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         const val VIEW_TYPE_DEFAULT = 0
         const val VIEW_TYPE_WITH_COVER = 1
+        const val VIEW_TYPE_ONLY_COVER = 2
 
         const val TEXT_ICON_CHANGED = 0
         const val CONTENT_CHANGED = 1

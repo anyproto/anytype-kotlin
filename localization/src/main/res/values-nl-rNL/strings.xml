@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Tik om te typen</string>
     <string name="modal_gallery">Galerij</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Annuleer deelnameverzoek</string>
     <string name="multiplayer_cancel_join_request_msg">Je zult opnieuw een deelnameverzoek moeten sturen</string>
     <string name="multiplayer_do_not_cancel_join_request">Niet annuleren</string>
-    <string name="multiplayer_error_invite_not_found">De uitnodiging bestaat niet. Zorg ervoor dat je apparaten gesynchroniseerd zijn.</string>
+    <string name="multiplayer_error_invite_not_found_title">Geen toegang tot deze ruimte</string>
+    <string name="multiplayer_error_invalid_link_title">Geen toegang tot deze ruimte</string>
+    <string name="multiplayer_error_invite_not_found">De koppeling die je gebruikt lijkt niet te werken. Vraag alsjeblieft de eigenaar om een nieuwe met je te delen.</string>
     <string name="multiplayer_error_invite_bad_content">De uitnodigingslink kon niet worden gelezen. Deze kan fouten in het formaat of ongeldige gegevens bevatten.</string>
+    <string name="multiplayer_error_space_deleted_title">Geen toegang tot deze ruimte</string>
     <string name="multiplayer_error_space_is_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
     <string name="multiplayer_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft je lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
     <string name="multiplayer_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat je apparaten zijn gesynchroniseerd.</string>

@@ -130,10 +130,7 @@ fun Bubble(
                     secondButtonText = stringResource(R.string.delete),
                     secondButtonType = BUTTON_WARNING,
                     firstButtonType = BUTTON_SECONDARY,
-                    icon = AlertConfig.Icon(
-                        gradient = GRADIENT_TYPE_RED,
-                        icon = R.drawable.ic_alert_question_warning
-                    )
+                    icon = R.drawable.ic_popup_question_56
                 ),
                 onFirstButtonClicked = {
                     showDeleteMessageWarning = false

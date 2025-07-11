@@ -315,10 +315,7 @@ fun ChatScreenWrapper(
                     firstButtonText = stringResource(id = R.string.button_okay),
                     firstButtonType = BUTTON_SECONDARY,
                     description = stringResource(R.string.chat_send_message_rate_limit_desc),
-                    icon = AlertConfig.Icon(
-                        gradient = GRADIENT_TYPE_RED,
-                        icon = R.drawable.ic_alert_message
-                    )
+                    icon = R.drawable.ic_popup_alert_56
                 ),
                 onFirstButtonClicked = {
                     showSendRateLimitWarning = false

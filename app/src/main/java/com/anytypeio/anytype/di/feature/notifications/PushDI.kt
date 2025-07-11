@@ -6,6 +6,7 @@ import com.anytypeio.anytype.device.DefaultPushMessageProcessor
 import com.anytypeio.anytype.device.PushMessageProcessor
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -88,4 +89,5 @@ interface PushContentDependencies : ComponentDependencies {
     fun provider(): StringResourceProvider
     fun notificationBuilder(): NotificationBuilder
     fun json(): Json
+    fun authRepository(): AuthRepository
 }

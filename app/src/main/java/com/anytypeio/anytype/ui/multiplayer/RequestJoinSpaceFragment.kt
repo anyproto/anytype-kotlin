@@ -207,14 +207,11 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.InviteNotFound -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_error_invite_not_found),
+                                            title = stringResource(R.string.multiplayer_error_invite_not_found_title),
+                                            description = stringResource(R.string.multiplayer_error_invite_not_found),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
-                                            description = EMPTY_STRING_VALUE,
-                                            icon = AlertConfig.Icon(
-                                                gradient = GRADIENT_TYPE_BLUE,
-                                                icon = R.drawable.ic_alert_message
-                                            )
+                                            icon = R.drawable.ic_popup_lock_56
                                         ),
                                         onFirstButtonClicked = {
                                             safeDismiss()
@@ -224,14 +221,11 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.InvalidLink -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_error_invite_bad_content),
+                                            title = stringResource(R.string.multiplayer_error_invalid_link_title),
+                                            description = stringResource(R.string.multiplayer_error_invite_bad_content),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
-                                            description = EMPTY_STRING_VALUE,
-                                            icon = AlertConfig.Icon(
-                                                gradient = GRADIENT_TYPE_BLUE,
-                                                icon = R.drawable.ic_alert_message
-                                            )
+                                            icon = R.drawable.ic_popup_lock_56
                                         ),
                                         onFirstButtonClicked = {
                                             safeDismiss()
@@ -241,14 +235,11 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 is ErrorView.SpaceDeleted -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(
-                                            title = stringResource(R.string.multiplayer_error_space_is_deleted),
+                                            title = stringResource(R.string.multiplayer_error_space_deleted_title),
+                                            description = stringResource(R.string.multiplayer_error_space_is_deleted),
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
-                                            description = EMPTY_STRING_VALUE,
-                                            icon = AlertConfig.Icon(
-                                                gradient = GRADIENT_TYPE_BLUE,
-                                                icon = R.drawable.ic_alert_message
-                                            )
+                                            icon = R.drawable.ic_popup_lock_56
                                         ),
                                         onFirstButtonClicked = {
                                             safeDismiss()
@@ -262,10 +253,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                             firstButtonText = stringResource(id = R.string.button_okay),
                                             firstButtonType = BUTTON_SECONDARY,
                                             description = EMPTY_STRING_VALUE,
-                                            icon = AlertConfig.Icon(
-                                                gradient = GRADIENT_TYPE_BLUE,
-                                                icon = R.drawable.ic_alert_message
-                                            )
+                                            icon = R.drawable.ic_popup_feedback_56
                                         ),
                                         onFirstButtonClicked = {
                                             safeDismiss()

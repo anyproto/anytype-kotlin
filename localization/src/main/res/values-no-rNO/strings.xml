@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Trykk for å skrive</string>
     <string name="modal_gallery">Galleri</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Cancel join request</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
-    <string name="multiplayer_error_invite_not_found">Invitasjonen eksisterer ikke. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Invitasjonslenken kunne ikke behandles. Den kan inneholde feil i formatet eller ugyldige data.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Det ser ut som om rommet har blitt slettet. Vennligst sørg for at enhetene dine er synkronisert.</string>
     <string name="multiplayer_error_limit_reached">Grensen er nådd for dette rommet. Vennligst oppgrader medlemskapet ditt eller kontakt support for hjelp.</string>
     <string name="multiplayer_error_not_shareable">Det ser ut til at rommet ikke lenger er delt. Vennligst sørg for at enhetene dine er synkronisert.</string>

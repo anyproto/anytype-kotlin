@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Tippe zum Eingeben</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Beitrittsanfrage zurückziehen</string>
     <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
-    <string name="multiplayer_error_invite_not_found">Die Einladung existiert nicht. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Der Einladungslink konnte nicht geparst werden. Er kann Fehler im Format oder ungültige Daten enthalten.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
     <string name="multiplayer_error_limit_reached">Limit für diesen Bereich erreicht. Bitte erweitere deine Mitgliedschaft oder kontaktiere den Support für Hilfe.</string>
     <string name="multiplayer_error_not_shareable">Es sieht so aus, als ob der Space nicht mehr geteilt ist. Bitte stellen Sie sicher, dass Ihre Geräte synchronisiert sind.</string>

@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">书签图标</string>
     <string name="content_description_file_icon">文件图标</string>
     <string name="content_description_modal_icon">Modal图标</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">单击键入</string>
     <string name="modal_gallery">相册</string>
     <string name="modal_kanban">看板</string>
@@ -1271,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">取消加入请求</string>
     <string name="multiplayer_cancel_join_request_msg">您将需要再次发送加入请求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
-    <string name="multiplayer_error_invite_not_found">邀请不存在。请确保您的设备已同步。</string>
+    <string name="multiplayer_error_invite_not_found_title">没有访问此空间的权限</string>
+    <string name="multiplayer_error_invalid_link_title">没有访问此空间的权限</string>
+    <string name="multiplayer_error_invite_not_found">您使用的链接似乎不能用。请让所有者给您分享一个新链接。</string>
     <string name="multiplayer_error_invite_bad_content">无法解析邀请链接。它可能包含格式错误或无效数据。</string>
+    <string name="multiplayer_error_space_deleted_title">没有访问此空间的权限</string>
     <string name="multiplayer_error_space_is_deleted">看起来空间已被删除。请确保您的设备已同步。</string>
     <string name="multiplayer_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
     <string name="multiplayer_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>

@@ -101,13 +101,22 @@ class GalleryViewWidget @JvmOverloads constructor(
             return when (viewType) {
                 VIEW_TYPE_ONLY_COVER -> GalleryViewHolder.OnlyCover(
                     ItemDvGalleryOnlyCoverBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    setClicks()
+                }
+
                 VIEW_TYPE_WITH_COVER -> GalleryViewHolder.WithCover(
                     ItemDvGalleryItemCoverBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    setClicks()
+                }
+
                 VIEW_TYPE_DEFAULT -> GalleryViewHolder.Default(
                     ItemDvGalleryViewDefaultBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    setClicks()
+                }
+
                 else -> throw RuntimeException("Unsupported view type")
             }
         }
@@ -119,12 +128,32 @@ class GalleryViewWidget @JvmOverloads constructor(
                     onGalleryItemClicked(getItem(pos).objectId)
                 }
             }
-            checkboxView.setOnClickListener {
-                val pos = bindingAdapterPosition
-                if (pos != NO_POSITION) {
-                    val item = getItem(pos)
-                    if (item.icon is ObjectIcon.Task) {
-                        onTaskCheckboxClicked(item.objectId)
+            when (this) {
+                is GalleryViewHolder.OnlyCover -> {
+                    //do nothing, no checkbox in this view holder
+                }
+
+                is GalleryViewHolder.WithCover -> {
+                    checkboxView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item.icon is ObjectIcon.Task) {
+                                onTaskCheckboxClicked(item.objectId)
+                            }
+                        }
+                    }
+                }
+
+                is GalleryViewHolder.Default -> {
+                    checkboxView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item.icon is ObjectIcon.Task) {
+                                onTaskCheckboxClicked(item.objectId)
+                            }
+                        }
                     }
                 }
             }
@@ -135,9 +164,11 @@ class GalleryViewWidget @JvmOverloads constructor(
                 is GalleryViewHolder.OnlyCover -> {
                     holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
+
                 is GalleryViewHolder.WithCover -> {
                     holder.bind(getItem(position) as Viewer.GalleryView.Item.Cover)
                 }
+
                 is GalleryViewHolder.Default -> {
                     holder.bind(getItem(position) as Viewer.GalleryView.Item.Default)
                 }
@@ -155,6 +186,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                         VIEW_TYPE_WITH_COVER
                     }
                 }
+
                 is Viewer.GalleryView.Item.Default -> VIEW_TYPE_DEFAULT
             }
         }
@@ -165,32 +197,28 @@ class GalleryViewWidget @JvmOverloads constructor(
         private val untitled = itemView.resources.getString(R.string.untitled)
         private val firstLineMargin =
             itemView.resources.getDimensionPixelOffset(R.dimen.default_dv_gallery_first_line_margin_start)
-        abstract val iconView: ObjectIconWidget
-        abstract val title: TextView
-        abstract val contentContainer: GalleryViewContentWidget
-        abstract val checkboxView: View
 
         class Default(val binding: ItemDvGalleryViewDefaultBinding) :
             GalleryViewHolder(binding.root) {
 
-            override val title = binding.tvTitle
-            override val iconView = binding.cardIcon
-            override val contentContainer = binding.contentContainer
-            override val checkboxView = binding.cardIcon.checkbox
+            val title = binding.tvTitle
+            val iconView = binding.cardIcon
+            val contentContainer = binding.contentContainer
+            val checkboxView = binding.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Default) {
-                applyTextAndIcon(item)
-                applyContentItems(item)
+                applyTextAndIcon(item, title, iconView)
+                applyContentItems(item, contentContainer)
             }
 
             fun processChangePayload(
                 payload: List<Int>,
                 item: Viewer.GalleryView.Item.Default
             ) {
-                payload(payload, item)
+                payload(payload, item, title, iconView)
                 if (payload.contains(CONTENT_CHANGED)) {
                     setupHolderHeight(item = item)
-                    applyContentItems(item)
+                    applyContentItems(item, contentContainer)
                 }
             }
 
@@ -207,16 +235,16 @@ class GalleryViewWidget @JvmOverloads constructor(
         class WithCover(val binding: ItemDvGalleryItemCoverBinding) :
             GalleryViewHolder(binding.root) {
 
-            override val title = binding.tvTitle
-            override val iconView = binding.cardIcon
-            override val contentContainer = binding.contentContainer
+            val title = binding.tvTitle
+            val iconView = binding.cardIcon
+            val contentContainer = binding.contentContainer
             val cover get() = binding.cover
-            override val checkboxView = binding.cardIcon.checkbox
+            val checkboxView = binding.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
                 setupHolderHeight(item = item)
-                applyTextAndIcon(item)
-                applyContentItems(item)
+                applyTextAndIcon(item, title, iconView)
+                applyContentItems(item, contentContainer)
                 cover.bind(item = item)
             }
 
@@ -224,7 +252,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                 payload: List<Int>,
                 item: Viewer.GalleryView.Item.Cover
             ) {
-                payload(payload, item)
+                payload(payload, item, title, iconView)
                 if (
                     payload.contains(COVER_CHANGED) ||
                     payload.contains(FIT_IMAGE_CHANGED) ||
@@ -234,7 +262,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                 }
                 if (payload.contains(CONTENT_CHANGED)) {
                     setupHolderHeight(item = item)
-                    applyContentItems(item)
+                    applyContentItems(item, contentContainer)
                 }
             }
 
@@ -242,7 +270,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                 itemView.updateLayoutParams<GridLayoutManager.LayoutParams> {
                     if (item.isLargeSize) {
                         height = GridLayoutManager.LayoutParams.WRAP_CONTENT
-                        binding.rootConstraint.setPadding(0,0,0, dimen(R.dimen.dp_16))
+                        binding.rootConstraint.setPadding(0, 0, 0, dimen(R.dimen.dp_16))
                     } else {
                         height = calculateHolderHeight(
                             withCover = true,
@@ -253,15 +281,26 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
         }
 
-        class OnlyCover(val binding: ItemDvGalleryOnlyCoverBinding) : GalleryViewHolder(binding.root) {
+        class OnlyCover(val binding: ItemDvGalleryOnlyCoverBinding) :
+            GalleryViewHolder(binding.root) {
+                
             val cover get() = binding.cover
-            override val title: TextView get() = throw UnsupportedOperationException()
-            override val iconView: ObjectIconWidget get() = throw UnsupportedOperationException()
-            override val contentContainer: GalleryViewContentWidget get() = throw UnsupportedOperationException()
-            override val checkboxView: View get() = throw UnsupportedOperationException()
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
                 cover.bind(item)
+            }
+
+            fun processChangePayload(
+                payload: List<Int>,
+                item: Viewer.GalleryView.Item.Cover
+            ) {
+                if (
+                    payload.contains(COVER_CHANGED) ||
+                    payload.contains(FIT_IMAGE_CHANGED) ||
+                    payload.contains(LARGE_SIZE_CHANGED)
+                ) {
+                    cover.bind(item = item)
+                }
             }
         }
 
@@ -281,21 +320,30 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         protected fun payload(
             payload: List<Int>,
-            item: Viewer.GalleryView.Item
+            item: Viewer.GalleryView.Item,
+            title: TextView,
+            iconView: ObjectIconWidget
         ) {
             if (payload.contains(TEXT_ICON_CHANGED)) {
-                applyTextAndIcon(item)
+                applyTextAndIcon(item, title, iconView)
             }
         }
 
-        protected fun applyContentItems(item: Viewer.GalleryView.Item) {
+        protected fun applyContentItems(
+            item: Viewer.GalleryView.Item,
+            contentContainer: GalleryViewContentWidget
+        ) {
             contentContainer.setItems(item.relations)
         }
 
         /**
          * Refactored: Simplified name/icon visibility and styling logic
          */
-        protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
+        protected fun applyTextAndIcon(
+            item: Viewer.GalleryView.Item,
+            title: TextView,
+            iconView: ObjectIconWidget
+        ) {
             val name = item.name.ifEmpty { untitled }
             val showName = !item.hideName
             val showIcon = showName && !item.hideIcon && item.icon != ObjectIcon.None
@@ -329,12 +377,6 @@ class GalleryViewWidget @JvmOverloads constructor(
                 iconView.gone()
                 iconView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
                     bottomMargin = 0
-                }
-                // Remove cover bottom margin
-                if (this is GalleryViewHolder.WithCover) {
-                    cover.updateLayoutParams<ViewGroup.MarginLayoutParams> {
-                        bottomMargin = 0
-                    }
                 }
             }
         }

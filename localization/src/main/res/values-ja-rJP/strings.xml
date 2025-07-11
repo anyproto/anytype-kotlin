@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">ブックマークアイコン</string>
     <string name="content_description_file_icon">ファイルアイコン</string>
     <string name="content_description_modal_icon">モーダルアイコン</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">タップして入力</string>
     <string name="modal_gallery">ギャラリー</string>
     <string name="modal_kanban">ボード</string>
@@ -1271,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">参加リクエストをキャンセル</string>
     <string name="multiplayer_cancel_join_request_msg">もう一度参加リクエストを送信してください</string>
     <string name="multiplayer_do_not_cancel_join_request">キャンセルしない</string>
-    <string name="multiplayer_error_invite_not_found">招待が見つかりませんでした。デバイスの同期状況をご確認ください。</string>
+    <string name="multiplayer_error_invite_not_found_title">スペースにアクセスできません</string>
+    <string name="multiplayer_error_invalid_link_title">スペースにアクセスできません</string>
+    <string name="multiplayer_error_invite_not_found">申し訳ございませんが、このリンクは現在利用できません。お手数ですが、新しいリンクを所有者の方にお尋ねください。</string>
     <string name="multiplayer_error_invite_bad_content">無効な招待リンクです。URLに間違いがないかご確認ください。</string>
+    <string name="multiplayer_error_space_deleted_title">スペースにアクセスできません</string>
     <string name="multiplayer_error_space_is_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="multiplayer_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
     <string name="multiplayer_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>

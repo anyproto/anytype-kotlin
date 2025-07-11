@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Ketuk untuk mengetik</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -1271,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">Batalkan permintaan bergabung</string>
     <string name="multiplayer_cancel_join_request_msg">Kamu akan perlu mengirimkan permintaan bergabung lagi</string>
     <string name="multiplayer_do_not_cancel_join_request">Jangan batalkan</string>
-    <string name="multiplayer_error_invite_not_found">Undangan ini tidak ada. Pastikan perangkatmu tersinkronisasi.</string>
+    <string name="multiplayer_error_invite_not_found_title">Tidak ada akses ke ruang</string>
+    <string name="multiplayer_error_invalid_link_title">Tidak ada akses ke ruang</string>
+    <string name="multiplayer_error_invite_not_found">Tautan yang kamu gunakan tidak berfungsi. Silakan minta pemilik tautan untuk mengirimkan tautan baru kepadamu.</string>
     <string name="multiplayer_error_invite_bad_content">Tautan undangan tidak dapat digunakan. Mungkin terdapat kesalahan format atau data yang tak valid.</string>
+    <string name="multiplayer_error_space_deleted_title">Tidak ada akses ke ruang</string>
     <string name="multiplayer_error_space_is_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
     <string name="multiplayer_error_limit_reached">Batas sudah tercapai untuk ruang ini. Harap tingkatkan keanggotaan Anda atau hubungi dukungan untuk mendapatkan bantuan.</string>
     <string name="multiplayer_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>

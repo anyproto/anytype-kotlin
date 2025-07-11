@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Yer imi logosu</string>
     <string name="content_description_file_icon">Dosya simgesi</string>
     <string name="content_description_modal_icon">Modal simgesi</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Yazmak için dokun</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Katılma talebini iptal et</string>
     <string name="multiplayer_cancel_join_request_msg">Tekrar katılma isteği göndermeniz gerekecek.</string>
     <string name="multiplayer_do_not_cancel_join_request">İptal etme</string>
-    <string name="multiplayer_error_invite_not_found">Davetiye mevcut değil. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="multiplayer_error_invite_not_found_title">Bu alana erişim yok</string>
+    <string name="multiplayer_error_invalid_link_title">Bu alana erişim yok</string>
+    <string name="multiplayer_error_invite_not_found">Kullandığınız bağlantı çalışmıyor gibi görünüyor. Lütfen bağlantı sahibinden sizinle yeni bir tane paylaşmasını isteyin.</string>
     <string name="multiplayer_error_invite_bad_content">Davet bağlantısı ayrıştırılamadı. Formatta hatalar veya geçersiz veriler olabilir.</string>
+    <string name="multiplayer_error_space_deleted_title">Bu alana erişim yok</string>
     <string name="multiplayer_error_space_is_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="multiplayer_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
     <string name="multiplayer_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>

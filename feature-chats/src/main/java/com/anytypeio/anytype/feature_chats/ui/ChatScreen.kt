@@ -891,6 +891,7 @@ fun ChatScreen(
                 attachments = attachments,
                 clearText = {
                     text = TextFieldValue()
+                    spans = emptyList()
                 },
                 onAttachObjectClicked = onAttachObjectClicked,
                 onClearAttachmentClicked = onClearAttachmentClicked,
@@ -900,6 +901,7 @@ fun ChatScreen(
                 onExitEditMessageMode = {
                     onExitEditMessageMode().also {
                         text = TextFieldValue()
+                        spans = emptyList()
                     }
                 },
                 onValueChange = { t, s ->

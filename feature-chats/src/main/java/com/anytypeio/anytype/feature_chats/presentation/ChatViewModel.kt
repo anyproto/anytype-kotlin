@@ -550,6 +550,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
+        Timber.d("getMentionedMembers, query: $query")
         val results = members.get().let { store ->
             when (store) {
                 is Store.Data -> {
@@ -557,7 +558,7 @@ class ChatViewModel @Inject constructor(
                         .filter { member -> member.permissions?.isAtLeastReader() == true }
                         .map { member ->
                             MentionPanelState.Member(
-                                member.id,
+                                id = member.id,
                                 name = member.name.orEmpty(),
                                 icon = SpaceMemberIconView.icon(
                                     obj = member,
@@ -1071,7 +1072,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onDeleteMessage(msg: ChatView.Message) {
-        Timber.d("onDeleteMessageClicked")
+        Timber.d("onDeleteMessageClicked msg: ${msg.id}")
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
@@ -1150,12 +1151,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onExitEditMessageMode() {
+        Timber.d("onExitEditMessageMode")
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
     fun onBackButtonPressed(isSpaceRoot: Boolean) {
+        Timber.d("onBackButtonPressed, isSpaceRoot: $isSpaceRoot")
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
@@ -1178,16 +1181,19 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onSpaceNameClicked(isSpaceRoot: Boolean) {
+        Timber.d("onSpaceNameClicked, isSpaceRoot: $isSpaceRoot")
         onBackButtonPressed(isSpaceRoot = isSpaceRoot)
     }
 
     fun onSpaceIconClicked() {
+        Timber.d("onSpaceIconClicked")
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenWidgets)
         }
     }
 
     fun onMediaPreview(url: String) {
+        Timber.d("onMediaPreview, url: $url")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.MediaPreview(url = url)
@@ -1196,6 +1202,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onSelectChatReaction(msg: Id) {
+        Timber.d("onSelectChatReaction, msg: $msg")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.SelectChatReaction(
@@ -1209,6 +1216,7 @@ class ChatViewModel @Inject constructor(
         msg: Id,
         emoji: String
     ) {
+        Timber.d("onViewChatReaction, msg: $msg, emoji: $emoji")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.ViewChatReaction(
@@ -1220,6 +1228,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMemberIconClicked(member: Id?) {
+        Timber.d("onMemberIconClicked: $member")
         viewModelScope.launch {
             if (member != null) {
                 commands.emit(
@@ -1235,10 +1244,12 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onInviteModalDismissed() {
+        Timber.d("onInviteModalDismissed")
         inviteModalState.value = InviteModalState.Hidden
     }
 
     fun onGenerateInviteLinkClicked() {
+        Timber.d("onGenerateInviteLinkClicked")
         viewModelScope.launch {
             isGeneratingInviteLink.value = true
             proceedWithGeneratingInviteLink()
@@ -1388,6 +1399,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMentionClicked(member: Id) {
+        Timber.d("onMentionClicked: $member")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.ViewMemberCard(

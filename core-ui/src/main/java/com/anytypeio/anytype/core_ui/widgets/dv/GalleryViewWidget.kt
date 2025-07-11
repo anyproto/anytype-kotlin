@@ -206,7 +206,7 @@ class GalleryViewWidget @JvmOverloads constructor(
             override val title = binding.tvTitle
             override val iconView = binding.cardIcon
             override val contentContainer = binding.contentContainer
-            private val cover get() = binding.cover
+            val cover get() = binding.cover
             override val checkboxView = binding.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
@@ -282,12 +282,12 @@ class GalleryViewWidget @JvmOverloads constructor(
         protected fun applyTextAndIcon(item: Viewer.GalleryView.Item) {
             val name = item.name.ifEmpty { untitled }
             val showName = !item.hideName
-            val showIconWithName = showName && !item.hideIcon && item.icon != ObjectIcon.None
+            val showIcon = showName && !item.hideIcon && item.icon != ObjectIcon.None
 
             // Title visibility and text
             if (showName) {
                 title.visible()
-                val titleText = if (showIconWithName) {
+                val titleText = if (showIcon) {
                     SpannableString(name).apply {
                         setSpan(
                             LeadingMarginSpan.Standard(firstLineMargin, 0),
@@ -303,11 +303,23 @@ class GalleryViewWidget @JvmOverloads constructor(
             }
 
             // Icon visibility
-            if (showIconWithName) {
+            if (showIcon) {
                 iconView.visible()
                 iconView.setIcon(item.icon)
+                iconView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    bottomMargin = dimen(R.dimen.dp_12)
+                }
             } else {
                 iconView.gone()
+                iconView.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                    bottomMargin = 0
+                }
+                // Remove cover bottom margin
+                if (this is GalleryViewHolder.WithCover) {
+                    cover.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                        bottomMargin = 0
+                    }
+                }
             }
         }
     }

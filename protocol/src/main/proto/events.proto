@@ -119,6 +119,7 @@ message Event {
             Chat.UpdateReactions chatUpdateReactions = 130;
             Chat.UpdateMessageReadStatus chatUpdateMessageReadStatus = 134; // received to update per-message read status (if needed to highlight the unread messages in the UI)
             Chat.UpdateMentionReadStatus chatUpdateMentionReadStatus = 135; // received to update per-message mention read status (if needed to highlight the unread mentions in the UI)
+            Chat.UpdateMessageSyncStatus chatUpdateMessageSyncStatus = 136;
 
             Chat.Delete chatDelete = 131;
             Chat.UpdateState chatStateUpdate = 133; // in case new unread messages received or chat state changed (e.g. message read on another device)
@@ -157,6 +158,11 @@ message Event {
         message UpdateMentionReadStatus {
             repeated string ids = 1;
             bool isRead = 2;
+            repeated string subIds = 3;
+        }
+        message UpdateMessageSyncStatus {
+            repeated string ids = 1;
+            bool isSynced = 2;
             repeated string subIds = 3;
         }
 

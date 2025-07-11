@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">ブックマークアイコン</string>
     <string name="content_description_file_icon">ファイルアイコン</string>
     <string name="content_description_modal_icon">モーダルアイコン</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">アラートアイコン</string>
     <string name="modal_tap_to_type">タップして入力</string>
     <string name="modal_gallery">ギャラリー</string>
     <string name="modal_kanban">ボード</string>

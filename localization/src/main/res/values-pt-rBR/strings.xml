@@ -116,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Toque para digitar</string>
     <string name="modal_gallery">Galeria</string>
     <string name="modal_kanban">Kanban</string>
@@ -1277,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Cancelar solicitação de adesão</string>
     <string name="multiplayer_cancel_join_request_msg">Você terá que enviar o acesso da solicitação novamente</string>
     <string name="multiplayer_do_not_cancel_join_request">Não cancelar</string>
-    <string name="multiplayer_error_invite_not_found">O convite não existe. Por favor, verifique se seus dispositivos estão sincronizados.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">O link do convite não pôde ser analisado. Ele pode conter erros no formato ou dados inválidos.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
     <string name="multiplayer_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>

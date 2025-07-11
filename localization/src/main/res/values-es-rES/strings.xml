@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Favicon de marcador</string>
     <string name="content_description_file_icon">Icono de archivo</string>
     <string name="content_description_modal_icon">Icono de modal</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Icono de alerta</string>
     <string name="modal_tap_to_type">Toca para escribir</string>
     <string name="modal_gallery">Galería</string>
     <string name="modal_kanban">Kanban</string>

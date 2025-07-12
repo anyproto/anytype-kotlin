@@ -39,8 +39,6 @@ fun TopToolbarScreen(
             .height(48.dp)
     ) {
         if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
-            val s = uiSyncStatusBadgeState.status
-
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -55,6 +53,7 @@ fun TopToolbarScreen(
                 StatusBadge(
                     status = uiSyncStatusBadgeState.status,
                     modifier = Modifier
+                        .size(28.dp)
                         .align(Alignment.Center)
                 )
             }

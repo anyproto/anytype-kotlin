@@ -73,12 +73,14 @@ sealed class Viewer {
             abstract val icon: ObjectIcon
             abstract val relations: List<DefaultObjectRelationValueView>
             abstract val hideIcon: Boolean
+            abstract val hideName: Boolean
             data class Default(
                 override val objectId: Id,
                 override val name: String,
                 override val icon: ObjectIcon,
                 override val relations: List<DefaultObjectRelationValueView>,
-                override val hideIcon: Boolean
+                override val hideIcon: Boolean,
+                override val hideName: Boolean
             ) : Item()
             data class Cover(
                 override val objectId: Id,
@@ -86,6 +88,7 @@ sealed class Viewer {
                 override val icon: ObjectIcon,
                 override val relations: List<DefaultObjectRelationValueView>,
                 override val hideIcon: Boolean,
+                override val hideName: Boolean,
                 val fitImage: Boolean,
                 val cover: CoverView? = null,
                 val isLargeSize: Boolean

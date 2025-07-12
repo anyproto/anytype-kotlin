@@ -1,67 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     style="@style/SetGalleryViewCardStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/rootConstraint"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/dp_16">
 
         <com.anytypeio.anytype.core_ui.widgets.GalleryCoverWidget
             android:id="@+id/cover"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/dv_gallery_cover_height"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintDimensionRatio="2:1"/>
 
-        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-            android:id="@+id/cardIcon"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:layout_gravity="bottom|end"
-            app:checkboxSize="16dp"
-            app:emojiSize="16dp"
-            android:layout_marginTop="13dp"
-            android:layout_marginStart="16dp"
-            app:layout_goneMarginTop="17dp"
-            app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
-            app:imageSize="16dp"
-            app:initialTextSize="12sp"
+        <include
+            layout="@layout/item_dv_gallery_title_content_layout"
+            android:id="@+id/rootConstraint"
+            app:layout_constraintTop_toBottomOf="@id/cover"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cover"/>
-
-        <TextView
-            android:id="@+id/tvTitle"
-            style="@style/GalleryViewTitleWidgetStyle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/dp_12"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_goneMarginTop="@dimen/dp_16"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cover"
-            tools:text="Virgil Abloh’s Lecture at Harvard’s School of Design AAAAA" />
-
-        <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
-            android:id="@+id/contentContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            app:defaultTextSize="@dimen/defaultGalleryViewTextSize"
-            app:firstItemMargin="16dp"
-            app:itemIntervalMargin="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-            app:marginAfterIcon="4dp"
-            app:marginAfterText="6dp" />
+            android:layout_marginTop="12dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

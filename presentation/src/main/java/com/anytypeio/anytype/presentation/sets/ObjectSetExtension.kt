@@ -157,6 +157,9 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 
+fun List<SimpleRelationView>.filterNotNameAndHidden(): List<SimpleRelationView> =
+    filterNot { it.key != Relations.NAME && it.isHidden }
+
 fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> {
     val filters = this.toMutableList()
     updates.forEach { update ->

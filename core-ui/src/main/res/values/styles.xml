@@ -796,6 +796,7 @@
         <item name="rippleColor">@android:color/transparent</item>
         <item name="strokeColor">@color/shape_primary</item>
         <item name="strokeWidth">0.5dp</item>
+        <item name="cardBackgroundColor">@android:color/transparent</item>
     </style>
 
     <style name="SetGalleryViewTitleStyle" parent="TextView.ContentStyle.PreviewTitles.2.Medium">

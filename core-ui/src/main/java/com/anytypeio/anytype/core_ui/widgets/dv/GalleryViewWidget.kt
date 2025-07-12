@@ -217,17 +217,7 @@ class GalleryViewWidget @JvmOverloads constructor(
             ) {
                 payload(payload, item, title, iconView)
                 if (payload.contains(CONTENT_CHANGED)) {
-                    setupHolderHeight(item = item)
                     applyContentItems(item, contentContainer)
-                }
-            }
-
-            private fun setupHolderHeight(item: Viewer.GalleryView.Item.Default) {
-                itemView.updateLayoutParams<GridLayoutManager.LayoutParams> {
-                    height = calculateHolderHeight(
-                        withCover = false,
-                        relationsSize = item.relations.size
-                    )
                 }
             }
         }
@@ -242,7 +232,6 @@ class GalleryViewWidget @JvmOverloads constructor(
             val checkboxView = binding.rootConstraint.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
-                setupHolderHeight(item = item)
                 applyTextAndIcon(item, title, iconView)
                 applyContentItems(item, contentContainer)
                 cover.bind(item = item)
@@ -261,22 +250,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                     cover.bind(item = item)
                 }
                 if (payload.contains(CONTENT_CHANGED)) {
-                    setupHolderHeight(item = item)
                     applyContentItems(item, contentContainer)
-                }
-            }
-
-            private fun setupHolderHeight(item: Viewer.GalleryView.Item.Cover) {
-                itemView.updateLayoutParams<GridLayoutManager.LayoutParams> {
-                    if (item.isLargeSize) {
-                        height = GridLayoutManager.LayoutParams.WRAP_CONTENT
-                        //binding.rootConstraint.setPadding(0, 0, 0, dimen(R.dimen.dp_16))
-                    } else {
-                        height = calculateHolderHeight(
-                            withCover = true,
-                            relationsSize = item.relations.size
-                        )
-                    }
                 }
             }
         }
@@ -302,20 +276,6 @@ class GalleryViewWidget @JvmOverloads constructor(
                     cover.bind(item = item)
                 }
             }
-        }
-
-        fun calculateHolderHeight(withCover: Boolean, relationsSize: Int): Int {
-            var itemHeight = 0
-            itemHeight += if (withCover) {
-                dimen(R.dimen.dv_gallery_cover_height) + dimen(R.dimen.dp_12) + dimen(R.dimen.dv_gallery_title_min_height)
-            } else {
-                dimen(R.dimen.dp_16) + dimen(R.dimen.dv_gallery_title_min_height)
-            }
-            if (relationsSize > 0) {
-                itemHeight += dimen(R.dimen.dv_gallery_relation_height) * relationsSize + dimen(R.dimen.dv_gallery_relation_margin_top) * relationsSize
-            }
-            itemHeight += dimen(R.dimen.dp_12)
-            return itemHeight
         }
 
         protected fun payload(

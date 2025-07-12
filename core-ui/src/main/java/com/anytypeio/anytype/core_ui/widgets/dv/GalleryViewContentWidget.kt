@@ -442,7 +442,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                 }
             }
         }
-        val cardBottomMargin = resources.getDimension(R.dimen.dp_16).toInt()
+        val cardBottomMargin = 0//resources.getDimension(R.dimen.dp_16).toInt()
         if (placeholdersBottom > 0) {
             val margin = resources.getDimension(R.dimen.dp_20)
                 .toInt() * placeholdersBottom + cardBottomMargin

@@ -201,10 +201,10 @@ class GalleryViewWidget @JvmOverloads constructor(
         class Default(val binding: ItemDvGalleryViewDefaultBinding) :
             GalleryViewHolder(binding.root) {
 
-            val title = binding.tvTitle
-            val iconView = binding.cardIcon
-            val contentContainer = binding.contentContainer
-            val checkboxView = binding.cardIcon.checkbox
+            val title = binding.rootDvItemContent.tvTitle
+            val iconView = binding.rootDvItemContent.cardIcon
+            val contentContainer = binding.rootDvItemContent.contentContainer
+            val checkboxView = binding.rootDvItemContent.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Default) {
                 applyTextAndIcon(item, title, iconView)
@@ -235,11 +235,11 @@ class GalleryViewWidget @JvmOverloads constructor(
         class WithCover(val binding: ItemDvGalleryItemCoverBinding) :
             GalleryViewHolder(binding.root) {
 
-            val title = binding.tvTitle
-            val iconView = binding.cardIcon
-            val contentContainer = binding.contentContainer
+            val title = binding.rootConstraint.tvTitle
+            val iconView = binding.rootConstraint.cardIcon
+            val contentContainer = binding.rootConstraint.contentContainer
             val cover get() = binding.cover
-            val checkboxView = binding.cardIcon.checkbox
+            val checkboxView = binding.rootConstraint.cardIcon.checkbox
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
                 setupHolderHeight(item = item)
@@ -270,7 +270,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                 itemView.updateLayoutParams<GridLayoutManager.LayoutParams> {
                     if (item.isLargeSize) {
                         height = GridLayoutManager.LayoutParams.WRAP_CONTENT
-                        binding.rootConstraint.setPadding(0, 0, 0, dimen(R.dimen.dp_16))
+                        //binding.rootConstraint.setPadding(0, 0, 0, dimen(R.dimen.dp_16))
                     } else {
                         height = calculateHolderHeight(
                             withCover = true,
@@ -283,7 +283,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
         class OnlyCover(val binding: ItemDvGalleryOnlyCoverBinding) :
             GalleryViewHolder(binding.root) {
-                
+
             val cover get() = binding.cover
 
             fun bind(item: Viewer.GalleryView.Item.Cover) {
@@ -333,7 +333,13 @@ class GalleryViewWidget @JvmOverloads constructor(
             item: Viewer.GalleryView.Item,
             contentContainer: GalleryViewContentWidget
         ) {
-            contentContainer.setItems(item.relations)
+            if (item.relations.isEmpty()) {
+                contentContainer.gone()
+                return
+            } else {
+                contentContainer.visible()
+                contentContainer.setItems(item.relations)
+            }
         }
 
         /**

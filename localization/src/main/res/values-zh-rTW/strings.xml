@@ -178,7 +178,7 @@
     <string name="hint_toggle">摺疊區塊</string>
     <string name="hint_paste_link">貼上連結</string>
     <string name="empty_tap_to_create_new_block">空的。點擊以新建區塊</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">未命名</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">未命名集錦</string>
     <string name="archived">已封存</string>
@@ -377,7 +377,7 @@
     <string name="scroll_to_select_position">滾動以選擇新的位置</string>
     <string name="block_action_add_below">在下方添加</string>
     <string name="content_desc_back_button">返回按鈕</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">分享按鈕</string>
     <string name="content_desc_home_button">首頁按鈕</string>
     <string name="content_desc_search_button">搜尋按鈕</string>
     <string name="content_desc_add_doc_button">添加文件</string>

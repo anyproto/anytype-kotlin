@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog
 import com.anytypeio.anytype.ui.onboarding.OnboardingNetworkSetupDialog
 import com.anytypeio.anytype.ui.settings.system.PreferenceFragment
 import dagger.Component
@@ -35,6 +36,7 @@ interface AppPreferencesComponent {
 
     fun inject(fragment: PreferenceFragment)
     fun inject(fragment: OnboardingNetworkSetupDialog)
+    fun inject(fragment: NotificationPermissionPromptDialog)
 }
 
 @Module

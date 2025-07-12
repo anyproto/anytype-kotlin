@@ -6,7 +6,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.allowPush
+import com.anytypeio.anytype.analytics.base.EventsDictionary.AllowPushRoute
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickAllowPush
+import com.anytypeio.anytype.analytics.base.EventsDictionary.ClickAllowPushType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenAllowPush
+import com.anytypeio.anytype.analytics.base.EventsDictionary.ScreenAllowPushType
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
@@ -62,12 +70,23 @@ class ProfileSettingsViewModel(
 
     val isDebugEnabled = MutableStateFlow(BuildConfig.DEBUG)
 
+    private var previousPermissionState: Boolean? = null
+
     val notificationsDisabled: StateFlow<Boolean> =
         notificationPermissionManager.permissionState().map { state ->
-            when (state) {
+            val isDisabled = when (state) {
                 is NotificationPermissionManagerImpl.PermissionState.Granted -> false
                 else -> true
             }
+            
+            // Track permission granted from settings
+            val prevState = previousPermissionState
+            if (prevState == true && isDisabled == false) {
+                onNotificationPermissionGrantedFromSettings()
+            }
+            previousPermissionState = isDisabled
+            
+            isDisabled
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
 
     val profileData = profileContainer.observe().map { obj ->
@@ -192,6 +211,39 @@ class ProfileSettingsViewModel(
 
     fun refreshPermissionState() {
         notificationPermissionManager.refreshPermissionState()
+    }
+
+    fun onNotificationSettingsScreenShown() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = screenAllowPush,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to ScreenAllowPushType.SETTINGS.value)
+                )
+            )
+        }
+    }
+
+    fun onOpenSettingsClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = clickAllowPush,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to ClickAllowPushType.SETTINGS.value)
+                )
+            )
+        }
+    }
+
+    fun onNotificationPermissionGrantedFromSettings() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = allowPush,
+                props = Props(
+                    mapOf(EventsPropertiesKey.route to AllowPushRoute.SETTINGS.value)
+                )
+            )
+        }
     }
 
     class Factory(

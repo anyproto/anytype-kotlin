@@ -132,7 +132,10 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
                         onHeaderTitleClicked = vm::onHeaderTitleClicked,
                         notificationsDisabled = notificationsDisabled,
-                        onOpenNotificationSettings = { showNotificationSettingsModal = true }
+                        onOpenNotificationSettings = { 
+                            vm.onNotificationSettingsScreenShown()
+                            showNotificationSettingsModal = true 
+                        }
                     )
                     if (showNotificationSettingsModal) {
                         NotificationSettingsScreen(
@@ -141,6 +144,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 showNotificationSettingsModal = false
                             },
                             onOpenSettings = {
+                                vm.onOpenSettingsClicked()
                                 showNotificationSettingsModal = false
                                 requireContext().openNotificationSettings()
                             }

@@ -117,7 +117,7 @@ class GalleryViewWidget @JvmOverloads constructor(
                     setClicks()
                 }
 
-                else -> throw RuntimeException("Unsupported view type")
+                else -> throw IllegalArgumentException("Unsupported view type: $viewType")
             }
         }
 

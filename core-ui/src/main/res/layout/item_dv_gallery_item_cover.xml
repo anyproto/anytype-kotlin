@@ -18,7 +18,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintDimensionRatio="1000:500"/>
+            app:layout_constraintDimensionRatio="2:1"/>
 
         <include
             layout="@layout/item_dv_gallery_title_content_layout"

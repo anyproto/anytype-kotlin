@@ -53,6 +53,7 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
+import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -455,10 +456,10 @@ fun VaultScreenWithUnreadSection(
                     spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = isLoading
                 )
-                com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar(
+                DefaultSearchBar(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
                     onQueryChanged = { query -> searchQuery = query }
                 )
             }

@@ -1488,6 +1488,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun spaceUnsetOrder(request: Rpc.Space.UnsetOrder.Request): Rpc.Space.UnsetOrder.Response {
+        val encoded = Service.spaceUnsetOrder(
+            Rpc.Space.UnsetOrder.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.UnsetOrder.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.UnsetOrder.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response {
         val encoded = Service.workspaceCreate(
             Rpc.Workspace.Create.Request.ADAPTER.encode(request)

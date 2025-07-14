@@ -775,6 +775,12 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun spaceUnsetOrder(spaceViewId: Id) {
+        remote.spaceUnsetOrder(
+            spaceViewId = spaceViewId
+        )
+    }
+
     override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = remote.createWorkspace(
         command = command
     )

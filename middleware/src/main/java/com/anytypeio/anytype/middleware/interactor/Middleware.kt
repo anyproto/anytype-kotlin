@@ -1981,6 +1981,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>) {
+        val request = Rpc.Space.SetOrder.Request(
+            spaceViewId = spaceViewId,
+            spaceViewOrder = spaceViewOrder
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceSetOrder(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,

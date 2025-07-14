@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.PinSpace
 import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
+import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -50,7 +51,8 @@ class VaultViewModelFactory @Inject constructor(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val pinSpace: PinSpace,
     private val unpinSpace: UnpinSpace,
-    private val reorderPinnedSpaces: ReorderPinnedSpaces
+    private val reorderPinnedSpaces: ReorderPinnedSpaces,
+    private val setSpaceOrder: SetSpaceOrder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -78,6 +80,7 @@ class VaultViewModelFactory @Inject constructor(
         notificationPermissionManager = notificationPermissionManager,
         pinSpace = pinSpace,
         unpinSpace = unpinSpace,
-        reorderPinnedSpaces = reorderPinnedSpaces
+        reorderPinnedSpaces = reorderPinnedSpaces,
+        setSpaceOrder = setSpaceOrder
     ) as T
 }

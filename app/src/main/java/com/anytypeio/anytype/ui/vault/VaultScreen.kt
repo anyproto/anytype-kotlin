@@ -459,7 +459,7 @@ fun SpaceActionsDropdownMenuHost(
             }
         },
         onPinToggle = {
-            spaceView.space.targetSpaceId?.let {
+            spaceView.space.id.let {
                 if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
             }
         }

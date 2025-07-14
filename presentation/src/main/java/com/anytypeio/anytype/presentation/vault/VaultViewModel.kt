@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
 import com.anytypeio.anytype.domain.vault.PinSpace
 import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
+import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
@@ -96,7 +97,8 @@ class VaultViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val pinSpace: PinSpace,
     private val unpinSpace: UnpinSpace,
-    private val reorderPinnedSpaces: ReorderPinnedSpaces
+    private val reorderPinnedSpaces: ReorderPinnedSpaces,
+    private val setSpaceOrder: SetSpaceOrder
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -699,9 +701,31 @@ class VaultViewModel(
 
     fun onPinSpaceClicked(spaceId: Id) {
         viewModelScope.launch {
-            pinSpace.async(spaceId).fold(
+            // Implement iOS pin logic with 6-space limit
+            val currentSections = sections.value
+            val pinnedSpaces = currentSections.pinnedSpaces
+            
+            val pinnedSpacesLimit = 6
+            if (pinnedSpaces.count() >= pinnedSpacesLimit) {
+                // Show limit reached error
+                notificationError.value = "Pin limit reached ($pinnedSpacesLimit)"
+                return@launch
+            }
+            
+            // Filter out the space being pinned if it's already in the list
+            val newOrder = pinnedSpaces.filter { it.space.id != spaceId }.map { it.space.id }.toMutableList()
+            // Insert the space at the beginning (position 0)
+            newOrder.add(0, spaceId)
+            
+            setSpaceOrder.async(
+                SetSpaceOrder.Params(
+                    spaceViewId = spaceId,
+                    spaceViewOrder = newOrder
+                )
+            ).fold(
                 onFailure = { error ->
                     Timber.e(error, "Failed to pin space: $spaceId")
+                    notificationError.value = error.message ?: "Failed to pin space"
                 },
                 onSuccess = {
                     Timber.d("Successfully pinned space: $spaceId")
@@ -712,9 +736,12 @@ class VaultViewModel(
 
     fun onUnpinSpaceClicked(spaceId: Id) {
         viewModelScope.launch {
-            unpinSpace.async(spaceId).fold(
+            unpinSpace.async(
+                UnpinSpace.Params(spaceId = spaceId)
+            ).fold(
                 onFailure = { error ->
                     Timber.e(error, "Failed to unpin space: $spaceId")
+                    notificationError.value = error.message ?: "Failed to unpin space"
                 },
                 onSuccess = {
                     Timber.d("Successfully unpinned space: $spaceId")
@@ -844,9 +871,18 @@ class VaultViewModel(
     fun onPinnedSpacesReordered(reorderedSpaces: List<VaultSpaceView>) {
         viewModelScope.launch {
             val reorderedIds = reorderedSpaces.map { it.space.id }
-            reorderPinnedSpaces.async(reorderedIds).fold(
+            // For reordering, we use the first space as the "moved" space
+            val movedSpaceId = reorderedIds.firstOrNull() ?: return@launch
+            
+            reorderPinnedSpaces.async(
+                ReorderPinnedSpaces.Params(
+                    movedSpaceId = movedSpaceId,
+                    newOrder = reorderedIds
+                )
+            ).fold(
                 onFailure = { error ->
                     Timber.e(error, "Failed to reorder pinned spaces: $reorderedIds")
+                    notificationError.value = error.message ?: "Failed to reorder spaces"
                 },
                 onSuccess = {
                     Timber.d("Successfully reordered pinned spaces: $reorderedIds")

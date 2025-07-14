@@ -16,6 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -74,6 +76,15 @@ class VaultFragment : BaseComposeFragment() {
                 val onLeaveSpace: (String) -> Unit = { spaceId ->
                     vm.onLeaveSpaceMenuClicked(spaceId)
                 }
+                val onPinSpace: (Id) -> Unit = { spaceId ->
+                    vm.onPinSpaceClicked(spaceId)
+                }
+                val onUnpinSpace: (Id) -> Unit = { spaceId ->
+                    vm.onUnpinSpaceClicked(spaceId)
+                }
+                val onPinnedSpacesReordered: (List<VaultSpaceView>) -> Unit = { reorderedSpaces ->
+                    vm.onPinnedSpacesReordered(reorderedSpaces)
+                }
                 VaultScreenWithUnreadSection(
                     sections = vm.sections.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
@@ -85,7 +96,10 @@ class VaultFragment : BaseComposeFragment() {
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
                     onDeleteSpace = onDeleteSpace,
-                    onLeaveSpace = onLeaveSpace
+                    onLeaveSpace = onLeaveSpace,
+                    onPinSpace = onPinSpace,
+                    onUnpinSpace = onUnpinSpace,
+                    onPinnedSpacesReordered = onPinnedSpacesReordered
                 )
                 val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
                 if (notificationError != null) {

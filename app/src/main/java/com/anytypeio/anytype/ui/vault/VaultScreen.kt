@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
 import android.os.Build.VERSION.SDK_INT
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -32,6 +33,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,8 +41,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -49,10 +54,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.HapticFeedbackConstantsCompat
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
+import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -66,6 +75,9 @@ import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
+import kotlinx.coroutines.delay
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
 @Composable
@@ -283,8 +295,10 @@ fun SpaceActionsDropdownMenu(
     onDismiss: () -> Unit,
     isMuted: Boolean?,
     isOwner: Boolean,
+    isPinned: Boolean,
     onMuteToggle: () -> Unit,
-    onDeleteOrLeave: () -> Unit
+    onDeleteOrLeave: () -> Unit,
+    onPinToggle: () -> Unit
 ) {
     DropdownMenu(
         modifier = Modifier.width(254.dp),
@@ -298,6 +312,40 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
+        // Pin/Unpin action
+        DropdownMenuItem(
+            onClick = {
+                onPinToggle()
+                onDismiss()
+            },
+            text = {
+                val stringRes = if (isPinned) {
+                    R.string.vault_unpin_space
+                } else {
+                    R.string.vault_pin_space
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        text = stringResource(id = stringRes),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                    Image(
+                        painter = painterResource(id = if (isPinned) R.drawable.ic_unpin_24 else R.drawable.ic_pin_24),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        )
+        
+        if (isMuted != null) {
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        }
+        
         if (isMuted != null) {
             DropdownMenuItem(
                 onClick = {
@@ -356,8 +404,10 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             onDismiss = { expanded = false },
             isMuted = true,
             isOwner = true,
+            isPinned = false,
             onMuteToggle = {},
-            onDeleteOrLeave = {}
+            onDeleteOrLeave = {},
+            onPinToggle = {}
         )
     }
 }
@@ -372,8 +422,10 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             onDismiss = { expanded = false },
             isMuted = false,
             isOwner = false,
+            isPinned = false,
             onMuteToggle = {},
-            onDeleteOrLeave = {}
+            onDeleteOrLeave = {},
+            onPinToggle = {}
         )
     }
 }
@@ -386,13 +438,16 @@ fun SpaceActionsDropdownMenuHost(
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
     onDeleteSpace: (String) -> Unit,
-    onLeaveSpace: (String) -> Unit
+    onLeaveSpace: (String) -> Unit,
+    onPinSpace: (Id) -> Unit,
+    onUnpinSpace: (Id) -> Unit
 ) {
     SpaceActionsDropdownMenu(
         expanded = expanded,
         onDismiss = onDismiss,
         isMuted = spaceView.isMuted,
         isOwner = spaceView.isOwner,
+        isPinned = spaceView.isPinned,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
                 if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
@@ -401,6 +456,11 @@ fun SpaceActionsDropdownMenuHost(
         onDeleteOrLeave = {
             spaceView.space.targetSpaceId?.let {
                 if (spaceView.isOwner) onDeleteSpace(it) else onLeaveSpace(it)
+            }
+        },
+        onPinToggle = {
+            spaceView.space.targetSpaceId?.let {
+                if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
             }
         }
     )
@@ -419,11 +479,15 @@ fun VaultScreenWithUnreadSection(
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
     onDeleteSpace: (String) -> Unit,
-    onLeaveSpace: (String) -> Unit
+    onLeaveSpace: (String) -> Unit,
+    onPinSpace: (Id) -> Unit,
+    onUnpinSpace: (Id) -> Unit,
+    onOrderChanged: (String, String) -> Unit,
+    onDragEnd: () -> Unit = { /* No-op */ }
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
-    val filteredSpaces = remember(searchQuery, sections.mainSpaces) {
+    val filteredMainSpaces = remember(searchQuery, sections.mainSpaces) {
         if (searchQuery.isBlank()) {
             sections.mainSpaces
         } else {
@@ -432,9 +496,90 @@ fun VaultScreenWithUnreadSection(
             }
         }
     }
+    
+    val filteredPinnedSpaces = remember(searchQuery, sections.pinnedSpaces) {
+        if (searchQuery.isBlank()) {
+            sections.pinnedSpaces
+        } else {
+            sections.pinnedSpaces.filter { space ->
+                space.space.name?.contains(searchQuery, ignoreCase = true) == true
+            }
+        }
+    }
+    
+    val hasAnyFilteredSpaces = filteredMainSpaces.isNotEmpty() || filteredPinnedSpaces.isNotEmpty()
 
     val lazyListState = rememberLazyListState()
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
+
+
+    val hapticFeedback = rememberReorderHapticFeedback()
+
+    val view = LocalView.current
+
+    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+        // Extract space IDs from keys (remove prefix) before passing to ViewModel
+        val fromSpaceId = (from.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        val toSpaceId = (to.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+
+        onOrderChanged(fromSpaceId, toSpaceId)
+        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+    }
+
+    var isDragging by remember { mutableStateOf(false) }
+    val density = LocalDensity.current
+
+    LaunchedEffect(reorderableLazyListState.isAnyItemDragging) {
+        if (reorderableLazyListState.isAnyItemDragging) {
+            isDragging = true
+            // Optional: Add a small delay to avoid triggering on very short drags
+            delay(50)
+        } else if (isDragging) {
+            isDragging = false
+            onDragEnd()
+            hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
+        }
+    }
+
+
+//    // Reorderable state for pinned spaces
+//    val pinnedSpacesState = remember { mutableStateOf(filteredPinnedSpaces) }
+//    pinnedSpacesState.value = filteredPinnedSpaces
+//
+//    val lastFromIndex = remember { mutableStateOf<Int?>(null) }
+//    val lastToIndex = remember { mutableStateOf<Int?>(null) }
+//
+//    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+//        // Only handle reordering if both items are in the pinned section
+//        val pinnedSectionSize = filteredPinnedSpaces.size + if (filteredPinnedSpaces.isNotEmpty()) 1 else 0 // +1 for header
+//        if (from.index < pinnedSectionSize && to.index < pinnedSectionSize && from.index != 0 && to.index != 0) {
+//            // Adjust indices to account for header (subtract 1)
+//            val adjustedFromIndex = from.index - 1
+//            val adjustedToIndex = to.index - 1
+//
+//            lastFromIndex.value = adjustedFromIndex
+//            lastToIndex.value = adjustedToIndex
+//
+//            pinnedSpacesState.value = pinnedSpacesState.value.toMutableList().apply {
+//                add(adjustedToIndex, removeAt(adjustedFromIndex))
+//            }
+//            ViewCompat.performHapticFeedback(
+//                view,
+//                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+//            )
+//        }
+//    }
+//
+//    val onDragStoppedHandler = {
+//        val from = lastFromIndex.value
+//        val to = lastToIndex.value
+//        if (from != null && to != null && from != to) {
+//            onPinnedSpacesReordered(pinnedSpacesState.value)
+//        }
+//        // Reset after firing
+//        lastFromIndex.value = null
+//        lastToIndex.value = null
+//    }
 
     Scaffold(
         modifier = Modifier
@@ -468,12 +613,12 @@ fun VaultScreenWithUnreadSection(
             }
         }
     ) { paddings ->
-        if (sections.mainSpaces.isEmpty()) {
+        if (sections.mainSpaces.isEmpty() && sections.pinnedSpaces.isEmpty()) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
-        } else if (filteredSpaces.isEmpty()) {
+        } else if (!hasAnyFilteredSpaces) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),
                 textRes = R.string.vault_empty_search_state_text,
@@ -489,73 +634,170 @@ fun VaultScreenWithUnreadSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 contentPadding = PaddingValues(top = 4.dp)
             ) {
-                itemsIndexed(
-                    items = filteredSpaces,
-                    key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
-                    contentType = { _, item ->
-                        when (item) {
-                            is VaultSpaceView.Chat -> TYPE_CHAT
-                            is VaultSpaceView.Space -> TYPE_SPACE
+                // Pinned Spaces Section
+                if (filteredPinnedSpaces.isNotEmpty()) {
+                    item(key = "pinned_header") {
+                        Text(
+                            text = stringResource(R.string.vault_pinned_section_title),
+                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                    }
+                    
+                    itemsIndexed(
+                        items = filteredPinnedSpaces,
+                        key = { _, item -> "pinned_${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                            }
+                        }
+                    ) { index, item ->
+                        ReorderableItem(reorderableLazyListState,
+                            key = "pinned_${item.space.id}") { isDragging ->
+                            val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
+                            
+                            when (item) {
+                                is VaultSpaceView.Chat -> {
+                                    VaultChatCard(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(80.dp)
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = { expandedSpaceId = item.space.id }
+                                                ))
+                                            .padding(horizontal = 16.dp)
+                                            .graphicsLayer(alpha = alpha.value),
+                                        title = item.space.name.orEmpty(),
+                                        icon = item.icon,
+                                        previewText = item.previewText,
+                                        creatorName = item.creatorName,
+                                        messageText = item.messageText,
+                                        messageTime = item.messageTime,
+                                        chatPreview = item.chatPreview,
+                                        unreadMessageCount = item.unreadMessageCount,
+                                        unreadMentionCount = item.unreadMentionCount,
+                                        attachmentPreviews = item.attachmentPreviews,
+                                        isMuted = item.isMuted,
+                                        spaceView = item,
+                                        expandedSpaceId = expandedSpaceId,
+                                        onDismissMenu = { expandedSpaceId = null },
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace,
+                                        onPinSpace = onPinSpace,
+                                        onUnpinSpace = onUnpinSpace
+                                    )
+                                }
+
+                                is VaultSpaceView.Space -> {
+                                    VaultSpaceCard(
+                                        modifier = Modifier
+                                            .then(
+                                                createCombinedClickableModifier(
+                                                    onClick = { onSpaceClicked(item) },
+                                                    onLongClick = {
+                                                        expandedSpaceId = item.space.id
+                                                    }
+                                                ))
+                                            .graphicsLayer(alpha = alpha.value),
+                                        title = item.space.name.orEmpty(),
+                                        subtitle = item.accessType,
+                                        icon = item.icon,
+                                        spaceView = item,
+                                        expandedSpaceId = expandedSpaceId,
+                                        onDismissMenu = { expandedSpaceId = null },
+                                        onMuteSpace = onMuteSpace,
+                                        onUnmuteSpace = onUnmuteSpace,
+                                        onDeleteSpace = onDeleteSpace,
+                                        onLeaveSpace = onLeaveSpace,
+                                        onPinSpace = onPinSpace,
+                                        onUnpinSpace = onUnpinSpace
+                                    )
+                                }
+                            }
                         }
                     }
-                ) { _, item ->
-                    // All spaces are non-draggable and automatically sorted
-                    when (item) {
-                        is VaultSpaceView.Chat -> {
-                            VaultChatCard(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                                    .then(
-                                        createCombinedClickableModifier(
-                                            onClick = { onSpaceClicked(item) },
-                                            onLongClick = { expandedSpaceId = item.space.id }
-                                        ))
-                                    .padding(horizontal = 16.dp),
-                                title = item.space.name.orEmpty(),
-                                icon = item.icon,
-                                previewText = item.previewText,
-                                creatorName = item.creatorName,
-                                messageText = item.messageText,
-                                messageTime = item.messageTime,
-                                chatPreview = item.chatPreview,
-                                unreadMessageCount = item.unreadMessageCount,
-                                unreadMentionCount = item.unreadMentionCount,
-                                attachmentPreviews = item.attachmentPreviews,
-                                isMuted = item.isMuted,
-                                spaceView = item,
-                                expandedSpaceId = expandedSpaceId,
-                                onDismissMenu = { expandedSpaceId = null },
-                                onMuteSpace = onMuteSpace,
-                                onUnmuteSpace = onUnmuteSpace,
-                                onDeleteSpace = onDeleteSpace,
-                                onLeaveSpace = onLeaveSpace
-                            )
+                }
+                
+                // Main Spaces Section  
+                if (filteredMainSpaces.isNotEmpty()) {
+                    itemsIndexed(
+                        items = filteredMainSpaces,
+                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
+                        contentType = { _, item ->
+                            when (item) {
+                                is VaultSpaceView.Chat -> TYPE_CHAT
+                                is VaultSpaceView.Space -> TYPE_SPACE
+                            }
                         }
+                    ) { _, item ->
+                        when (item) {
+                            is VaultSpaceView.Chat -> {
+                                VaultChatCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .fillMaxWidth()
+                                        .height(80.dp)
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = { expandedSpaceId = item.space.id }
+                                            ))
+                                        .padding(horizontal = 16.dp),
+                                    title = item.space.name.orEmpty(),
+                                    icon = item.icon,
+                                    previewText = item.previewText,
+                                    creatorName = item.creatorName,
+                                    messageText = item.messageText,
+                                    messageTime = item.messageTime,
+                                    chatPreview = item.chatPreview,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews,
+                                    isMuted = item.isMuted,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace,
+                                    onPinSpace = onPinSpace,
+                                    onUnpinSpace = onUnpinSpace
+                                )
+                            }
 
-                        is VaultSpaceView.Space -> {
-                            VaultSpaceCard(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .then(
-                                        createCombinedClickableModifier(
-                                            onClick = { onSpaceClicked(item) },
-                                            onLongClick = {
-                                                expandedSpaceId = item.space.id
-                                            }
-                                        )),
-                                title = item.space.name.orEmpty(),
-                                subtitle = item.accessType,
-                                icon = item.icon,
-                                spaceView = item,
-                                expandedSpaceId = expandedSpaceId,
-                                onDismissMenu = { expandedSpaceId = null },
-                                onMuteSpace = onMuteSpace,
-                                onUnmuteSpace = onUnmuteSpace,
-                                onDeleteSpace = onDeleteSpace,
-                                onLeaveSpace = onLeaveSpace
-                            )
+                            is VaultSpaceView.Space -> {
+                                VaultSpaceCard(
+                                    modifier = Modifier
+                                        .animateItem()
+                                        .then(
+                                            createCombinedClickableModifier(
+                                                onClick = { onSpaceClicked(item) },
+                                                onLongClick = {
+                                                    expandedSpaceId = item.space.id
+                                                }
+                                            )),
+                                    title = item.space.name.orEmpty(),
+                                    subtitle = item.accessType,
+                                    icon = item.icon,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onDeleteSpace = onDeleteSpace,
+                                    onLeaveSpace = onLeaveSpace,
+                                    onPinSpace = onPinSpace,
+                                    onUnpinSpace = onUnpinSpace
+                                )
+                            }
                         }
                     }
                 }

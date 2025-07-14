@@ -34,7 +34,9 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-
+import com.anytypeio.anytype.domain.vault.PinSpace
+import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
+import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -68,7 +70,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.domain.multiplayer.Permissions
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 
@@ -92,7 +93,10 @@ class VaultViewModel(
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val pinSpace: PinSpace,
+    private val unpinSpace: UnpinSpace,
+    private val reorderPinnedSpaces: ReorderPinnedSpaces
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -131,12 +135,11 @@ class VaultViewModel(
                             spaceViewSubscriptionContainer.observe()
                         )
                     },
-                observeVaultSettings.flow(),
                 chatPreviewContainer.observePreviews(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
-            ) { spacesFromFlow, settings, chatPreviews, permissions, _ ->
-                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
+            ) { spacesFromFlow, chatPreviews, permissions, _ ->
+                transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
                 spaces.value = resultingSections.mainSpaces
@@ -177,7 +180,6 @@ class VaultViewModel(
 
     private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
-        settings: VaultSettings,
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSectionView {
@@ -208,16 +210,25 @@ class VaultViewModel(
             Timber.d("No loading space found")
         }
 
-        // New unified sorting logic
-        // Primary sort: lastMessageDate (descending) - most recent message first
-        // Secondary sort: creationDate (descending) - newest spaces first for those without messages
-        val sortedSpaces = allSpaces.sortedWith(
+        // Separate pinned and unpinned spaces based on spaceOrder
+        val (pinnedSpaces, unpinnedSpaces) = allSpaces.partition { space ->
+            !space.space.spaceOrder.isNullOrEmpty()
+        }
+
+        // Sort pinned spaces by spaceOrder (descending)
+        val sortedPinnedSpaces = pinnedSpaces.sortedByDescending { space ->
+            space.space.spaceOrder ?: ""
+        }
+
+        // Sort unpinned spaces by message date (descending), then by creation date (descending)
+        val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
             compareByDescending<VaultSpaceView> { it.lastMessageDate ?: 0L }
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
         return VaultSectionView(
-            mainSpaces = sortedSpaces
+            pinnedSpaces = sortedPinnedSpaces,
+            mainSpaces = sortedUnpinnedSpaces
         )
     }
 
@@ -829,10 +840,6 @@ class VaultViewModel(
     }
 
     //endregion
-
-    fun isSpacePinned(spaceId: Id): Boolean {
-        return sections.value.pinnedSpaces.any { it.space.id == spaceId }
-    }
 
     fun onPinnedSpacesReordered(reorderedSpaces: List<VaultSpaceView>) {
         viewModelScope.launch {

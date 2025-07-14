@@ -12,7 +12,7 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
-    abstract val isPinned: Boolean
+    val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -25,8 +25,7 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
-        override val isPinned: Boolean = false
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class Chat(
@@ -42,8 +41,7 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
-        override val isPinned: Boolean = false
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

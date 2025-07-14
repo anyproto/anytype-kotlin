@@ -45,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -70,7 +69,6 @@ import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -1090,68 +1088,15 @@ fun Messages(
         if (messages.isEmpty()) {
             if (isLoading) {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            text = stringResource(R.string.loading_wait),
-                            textAlign = TextAlign.Center,
-                            style = Caption2Medium,
-                            color = colorResource(R.color.text_secondary)
-                        )
-                    }
+                    LoadingState(modifier = Modifier.fillParentMaxSize())
                 }
             } else {
                 item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .padding(horizontal = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                modifier = Modifier.size(56.dp),
-                                painter = painterResource(id = R.drawable.ic_vault_create_space),
-                                contentDescription = "Empty state icon",
-                                colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
-                            )
-                            Text(
-                                text = stringResource(R.string.chat_empty_state_title),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_primary),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp)
-                            )
-                            Text(
-                                text = stringResource(R.string.chat_empty_state_subtitle),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_secondary),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            if (canCreateInviteLink) {
-                                ButtonSecondary(
-                                    text = stringResource(R.string.chat_empty_state_share_invite_button),
-                                    onClick = { onShareInviteClicked() },
-                                    size = ButtonSize.SmallSecondary,
-                                    modifier = Modifier.padding(top = 10.dp)
-                                )
-                            }
-                        }
-                    }
+                    EmptyState(
+                        modifier = Modifier.fillParentMaxSize(),
+                        canCreateInviteLink = canCreateInviteLink,
+                        onShareInviteClicked = onShareInviteClicked
+                    )
                 }
             }
         }
@@ -1200,4 +1145,3 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
 private const val DATE_KEY_PREFIX = "date-"
 private val JumpToBottomThreshold = 200.dp
 private const val FLOATING_DATE_DELAY = 1000L
-private const val MIN_DRAG_DURATION_MS = 200L

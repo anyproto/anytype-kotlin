@@ -47,6 +47,108 @@ import com.anytypeio.anytype.core_ui.R
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DefaultSearchBar(
+    value: String,
+    modifier: Modifier = Modifier,
+    hint: Int = R.string.search,
+    onQueryChanged: (String) -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val focus = LocalFocusManager.current
+    val focusRequester = FocusRequester()
+    val selectionColors = TextSelectionColors(
+        backgroundColor = colorResource(id = R.color.cursor_color).copy(
+            alpha = 0.2f
+        ),
+        handleColor = colorResource(id = R.color.cursor_color),
+    )
+    Row(
+        modifier = modifier
+            .background(
+                color = colorResource(id = R.color.shape_transparent),
+                shape = RoundedCornerShape(10.dp)
+            )
+            .height(40.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_search_18),
+            contentDescription = "Search icon",
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .padding(
+                    start = 10.dp
+                )
+        )
+        CompositionLocalProvider(value = LocalTextSelectionColors provides selectionColors) {
+            BasicTextField(
+                value = value,
+                modifier = Modifier
+                    .weight(1.0f)
+                    .padding(start = 6.dp)
+                    .align(Alignment.CenterVertically)
+                    .focusRequester(focusRequester),
+                textStyle = BodyRegular.copy(
+                    color = colorResource(id = R.color.text_primary)
+                ),
+                onValueChange = { input ->
+                    onQueryChanged(input)
+                },
+                singleLine = true,
+                maxLines = 1,
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        focus.clearFocus(true)
+                    }
+                ),
+                decorationBox = @Composable { innerTextField ->
+                    TextFieldDefaults.OutlinedTextFieldDecorationBox(
+                        value = value,
+                        innerTextField = innerTextField,
+                        enabled = true,
+                        singleLine = true,
+                        visualTransformation = VisualTransformation.None,
+                        interactionSource = interactionSource,
+                        placeholder = {
+                            Text(
+                                text = stringResource(id = hint),
+                                style = BodyRegular.copy(
+                                    color = colorResource(id = R.color.glyph_active)
+                                )
+                            )
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            backgroundColor = Color.Transparent,
+                            cursorColor = colorResource(id = R.color.cursor_color),
+                        ),
+                        border = {},
+                        contentPadding = PaddingValues()
+                    )
+                },
+                cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
+            )
+        }
+        Spacer(Modifier.width(9.dp))
+        AnimatedVisibility(
+            visible = value.isNotEmpty(),
+            enter = fadeIn(tween(100)),
+            exit = fadeOut(tween(100))
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_clear_18),
+                contentDescription = "Clear icon",
+                modifier = Modifier
+                    .padding(end = 9.dp)
+                    .noRippleClickable {
+                        onQueryChanged("")
+                    }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun DefaultSearchBar(
     modifier: Modifier = Modifier,
     hint: Int = R.string.search,
     onQueryChanged: (String) -> Unit

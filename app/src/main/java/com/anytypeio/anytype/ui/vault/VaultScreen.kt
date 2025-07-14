@@ -423,11 +423,13 @@ fun VaultScreenWithUnreadSection(
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
-    val filteredSpaces = if (searchQuery.isBlank()) {
-        sections.mainSpaces
-    } else {
-        sections.mainSpaces.filter { space ->
-            space.space.name?.contains(searchQuery, ignoreCase = true) == true
+    val filteredSpaces = remember(searchQuery, sections.mainSpaces) {
+        if (searchQuery.isBlank()) {
+            sections.mainSpaces
+        } else {
+            sections.mainSpaces.filter { space ->
+                space.space.name?.contains(searchQuery, ignoreCase = true) == true
+            }
         }
     }
 
@@ -457,6 +459,7 @@ fun VaultScreenWithUnreadSection(
                     isLoading = isLoading
                 )
                 DefaultSearchBar(
+                    value = searchQuery,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 10.dp),

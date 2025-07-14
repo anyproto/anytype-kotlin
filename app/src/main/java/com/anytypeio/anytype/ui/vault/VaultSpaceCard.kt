@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -63,10 +64,12 @@ fun VaultSpaceCard(
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onMuteSpace: (Id) -> Unit = {},
+    onUnmuteSpace: (Id) -> Unit = {},
     onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {}
+    onLeaveSpace: (String) -> Unit = {},
+    onPinSpace: (Id) -> Unit = {},
+    onUnpinSpace: (Id) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -94,7 +97,9 @@ fun VaultSpaceCard(
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
                 onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace
+                onLeaveSpace = onLeaveSpace,
+                onPinSpace = onPinSpace,
+                onUnpinSpace = onUnpinSpace
             )
         }
     }
@@ -143,10 +148,12 @@ fun VaultChatCard(
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
+    onMuteSpace: (Id) -> Unit = {},
+    onUnmuteSpace: (Id) -> Unit = {},
     onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {}
+    onLeaveSpace: (String) -> Unit = {},
+    onPinSpace: (Id) -> Unit = {},
+    onUnpinSpace: (Id) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -178,7 +185,9 @@ fun VaultChatCard(
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
                 onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace
+                onLeaveSpace = onLeaveSpace,
+                onPinSpace = onPinSpace,
+                onUnpinSpace = onUnpinSpace
             )
         }
     }

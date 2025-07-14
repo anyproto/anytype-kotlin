@@ -12,6 +12,7 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
+    abstract val isPinned: Boolean
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -24,7 +25,8 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val isPinned: Boolean = false
     ) : VaultSpaceView()
 
     data class Chat(
@@ -40,7 +42,8 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val isPinned: Boolean = false
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -55,12 +58,23 @@ sealed class VaultSpaceView {
 }
 
 /**
- * Data structure for organizing vault spaces into one list:
- * @property mainSpaces List of spaces
+ * Data structure for organizing vault spaces into pinned and main sections:
+ * @property pinnedSpaces List of pinned spaces (max MAX_PINNED_SPACES)
+ * @property mainSpaces List of unpinned spaces
  */
 data class VaultSectionView(
+    val pinnedSpaces: List<VaultSpaceView> = emptyList(),
     val mainSpaces: List<VaultSpaceView> = emptyList()
-)
+) {
+    /**
+     * All spaces combined for backward compatibility
+     */
+    val allSpaces: List<VaultSpaceView> get() = pinnedSpaces + mainSpaces
+
+    companion object {
+        val MAX_PINNED_SPACES = 6
+    }
+}
 
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()

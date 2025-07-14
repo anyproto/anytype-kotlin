@@ -329,7 +329,8 @@ sealed class Event {
                 override val context: Id,
                 val id: Id,
                 val order: Id,
-                val message: Chat.Message
+                val message: Chat.Message,
+                val dependencies: List<ObjectWrapper.Basic> = emptyList()
             ) : Chats()
 
             /**

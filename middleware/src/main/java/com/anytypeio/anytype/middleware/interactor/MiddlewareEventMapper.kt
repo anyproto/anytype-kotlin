@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
 import com.anytypeio.anytype.middleware.mappers.core
@@ -291,7 +292,10 @@ fun anytype.Event.Message.toCoreModels(
             context = context,
             id = event.id,
             order = event.orderId,
-            message = requireNotNull(event.message).core()
+            message = requireNotNull(event.message).core(),
+            dependencies = event.dependencies
+                .map { ObjectWrapper.Basic(it.orEmpty()) }
+                .filter { it.isValid }
         )
     }
     chatDelete != null -> {

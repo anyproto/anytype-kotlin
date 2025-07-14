@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor.events
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.data.auth.event.ChatEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.MEventMessage
@@ -47,7 +48,10 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
                 context = contextId,
                 order = event.orderId,
                 id = event.id,
-                message = requireNotNull(event.message?.core())
+                message = requireNotNull(event.message?.core()),
+                dependencies = event.dependencies
+                    .map { ObjectWrapper.Basic(it.orEmpty()) }
+                    .filter { it.isValid }
             )
         }
         chatStateUpdate != null -> {
@@ -121,7 +125,10 @@ fun MEventMessage.payload(subscription: Id, contextId: Id) : Event.Command.Chats
                     context = contextId,
                     order = event.orderId,
                     id = event.id,
-                    message = requireNotNull(event.message?.core())
+                    message = requireNotNull(event.message?.core()),
+                    dependencies = event.dependencies
+                        .map { ObjectWrapper.Basic(it.orEmpty()) }
+                        .filter { it.isValid }
                 )
             } else {
                 null

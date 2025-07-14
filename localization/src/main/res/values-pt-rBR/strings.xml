@@ -10,6 +10,7 @@
     <string name="appearance">Aparência</string>
     <string name="file_storage">Armazenamento de arquivos</string>
     <string name="key">Chave</string>
+    <string name="login_key">Chave</string>
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
@@ -28,6 +29,8 @@
     <string name="dark">Escuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Configurações</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
     <string name="about_help_and_community">Ajuda &amp; Comunidade</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Toque para digitar</string>
     <string name="modal_gallery">Galeria</string>
     <string name="modal_kanban">Kanban</string>
@@ -853,13 +857,13 @@
     <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Objetos</string>
     <string name="edit">Editar</string>
-    <string name="unselect_all">Desmarcar todos</string>
+    <string name="unselect_all">Desmarcar</string>
     <string name="sets">Conjuntos</string>
     <string name="favorites">Favoritos</string>
     <string name="recent">Editado recentemente</string>
     <string name="recently_opened">Aberto recentemente</string>
     <string name="bin">Lixeira</string>
-    <string name="synced_files">Arquivos sincronizados</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Entrar</string>
     <string name="create_object_section_library">Biblioteca Anytype</string>
     <string name="bin_empty_title">Sua lixeira está vazia.</string>
@@ -1112,7 +1116,7 @@
     <string name="date_type_older">Mais antigo</string>
     <string name="dates_days_ago">Há %1$s dias</string>
     <string name="dates_days_from">Daqui a %1$s dias</string>
-    <string name="settings_use_yamux">Usar uma biblioteca multiplex reservada</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">O modo de exibição Kanban ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
@@ -1274,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Cancelar solicitação de adesão</string>
     <string name="multiplayer_cancel_join_request_msg">Você terá que enviar o acesso da solicitação novamente</string>
     <string name="multiplayer_do_not_cancel_join_request">Não cancelar</string>
-    <string name="multiplayer_error_invite_not_found">O convite não existe. Por favor, verifique se seus dispositivos estão sincronizados.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">O link do convite não pôde ser analisado. Ele pode conter erros no formato ou dados inválidos.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
     <string name="multiplayer_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
@@ -1799,6 +1806,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="vault_create_space">Espaço</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Câmara</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1813,4 +1821,12 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

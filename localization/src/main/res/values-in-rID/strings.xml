@@ -10,6 +10,7 @@
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="key">Kunci</string>
+    <string name="login_key">Kunci</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
+    <string name="app_preferences">Setelan Aplikasi</string>
+    <string name="vault_key">Brankas &amp; Kunci</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">Anda membutuhkannya untuk masuk. Simplanlah dalam tempat yang aman. Jika hilang, kamu tidak akan bisa mengakses brankasmu.</string>
     <string name="about_help_and_community">Bantuan &amp; Komunitas</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Ketuk untuk mengetik</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -851,13 +855,13 @@
     <string name="create_object_section_lists">Grup</string>
     <string name="create_object_section_objects">Objek</string>
     <string name="edit">Sunting</string>
-    <string name="unselect_all">Batal pilih semua</string>
+    <string name="unselect_all">Batal pilih</string>
     <string name="sets">Set</string>
     <string name="favorites">Favorit</string>
     <string name="recent">Baru disunting</string>
     <string name="recently_opened">Baru saja dibuka</string>
     <string name="bin">Bak Sampah</string>
-    <string name="synced_files">Berkas tersinkronkan</string>
+    <string name="synced_files">Bersihkan berkas</string>
     <string name="log_in">Masuk</string>
     <string name="create_object_section_library">Pustaka Anytype</string>
     <string name="bin_empty_title">Bak sampah kosong.</string>
@@ -1108,7 +1112,7 @@
     <string name="date_type_older">Lebih lama</string>
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Gunakan QUIC</string>
     <string name="settings_share_local_logs">Bagikan log lokal</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1268,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">Batalkan permintaan bergabung</string>
     <string name="multiplayer_cancel_join_request_msg">Kamu akan perlu mengirimkan permintaan bergabung lagi</string>
     <string name="multiplayer_do_not_cancel_join_request">Jangan batalkan</string>
-    <string name="multiplayer_error_invite_not_found">Undangan ini tidak ada. Pastikan perangkatmu tersinkronisasi.</string>
+    <string name="multiplayer_error_invite_not_found_title">Tidak ada akses ke ruang</string>
+    <string name="multiplayer_error_invalid_link_title">Tidak ada akses ke ruang</string>
+    <string name="multiplayer_error_invite_not_found">Tautan yang kamu gunakan tidak berfungsi. Silakan minta pemilik tautan untuk mengirimkan tautan baru kepadamu.</string>
     <string name="multiplayer_error_invite_bad_content">Tautan undangan tidak dapat digunakan. Mungkin terdapat kesalahan format atau data yang tak valid.</string>
+    <string name="multiplayer_error_space_deleted_title">Tidak ada akses ke ruang</string>
     <string name="multiplayer_error_space_is_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
     <string name="multiplayer_error_limit_reached">Batas sudah tercapai untuk ruang ini. Harap tingkatkan keanggotaan Anda atau hubungi dukungan untuk mendapatkan bantuan.</string>
     <string name="multiplayer_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
@@ -1789,6 +1796,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_space">Ruang</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Pesan baru</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_box_take_photo">Ambil Gambar</string>
@@ -1803,4 +1811,12 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
+    <string name="notification_settings_title">Pemberitahuan</string>
+    <string name="notification_settings_disabled">Pemberitahuan dinonaktifkan</string>
+    <string name="notification_settings_disabled_subtitle">Terima pemberitahuan pesan baru dengan mengaktifkannya di setelan perangkatmu.</string>
+    <string name="notification_settings_button_open">Buka Setelan</string>
+    <string name="notification_settings_state_title">Pemberitahuan Pesan</string>
+    <string name="notification_settings_state_disabled">Nonaktif</string>
+    <string name="notification_settings_state_enabled">Aktif</string>
+    <string name="content_desc_muted">Disenyapkan</string>
 </resources>

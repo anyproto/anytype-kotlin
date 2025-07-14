@@ -10,6 +10,7 @@
     <string name="appearance">Apparence</string>
     <string name="file_storage">Stockage de fichiers</string>
     <string name="key">Clé</string>
+    <string name="login_key">Clé</string>
     <string name="clear_file_cache">Vider le cache des fichiers</string>
     <string name="debug_sync_report">Rapport de débogage de synchronisation</string>
     <string name="debug">Débogage</string>
@@ -28,6 +29,8 @@
     <string name="dark">Sombre</string>
     <string name="system">Système</string>
     <string name="settings">Paramètres</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Avez-vous sauvegardé votre Clé ?</string>
     <string name="you_will_need_to_sign_in">Vous en aurez besoin pour accéder à votre coffre. Conservez-la dans un lieu sûr. Si vous la perdez, vous ne pourrez plus accéder à votre coffre.</string>
     <string name="about_help_and_community">Aide &amp; Communauté</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Appuyer pour saisir</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -853,13 +857,13 @@
     <string name="create_object_section_lists">Listes</string>
     <string name="create_object_section_objects">Objets</string>
     <string name="edit">Éditer</string>
-    <string name="unselect_all">Tout désélectionner</string>
+    <string name="unselect_all">Désélectionner</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favoris</string>
     <string name="recent">Récemment modifié</string>
     <string name="recently_opened">Récemment ouvert</string>
     <string name="bin">Corbeille</string>
-    <string name="synced_files">Fichiers synchronisés</string>
+    <string name="synced_files">Nettoyer les fichiers</string>
     <string name="log_in">Se connecter</string>
     <string name="create_object_section_library">Bibliothèque Anytype</string>
     <string name="bin_empty_title">Votre corbeille est vide.</string>
@@ -1112,7 +1116,7 @@
     <string name="date_type_older">Plus ancien</string>
     <string name="dates_days_ago">Il y a %1$s jours</string>
     <string name="dates_days_from">Dans %1$s jours</string>
-    <string name="settings_use_yamux">Utiliser une bibliothèque multiplex de réserve</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Partager les journaux locaux</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vue Kanban n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
@@ -1274,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Annuler la demande d\'adhésion</string>
     <string name="multiplayer_cancel_join_request_msg">Vous devrez envoyer à nouveau la demande d\'accès</string>
     <string name="multiplayer_do_not_cancel_join_request">Ne pas annuler</string>
-    <string name="multiplayer_error_invite_not_found">L\'invitation n\'existe pas. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="multiplayer_error_invite_not_found_title">Pas d\'accès à cet espace</string>
+    <string name="multiplayer_error_invalid_link_title">Pas d\'accès à cet espace</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Le lien d\'invitation n\'a pas pu être analysé. Il peut contenir des erreurs dans le format ou des données non valides.</string>
+    <string name="multiplayer_error_space_deleted_title">Pas d\'accès à cet espace</string>
     <string name="multiplayer_error_space_is_deleted">Il semble que l\'espace ait été supprimé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
     <string name="multiplayer_error_limit_reached">Limite atteinte pour cet espace. Veuillez mettre à jour votre abonnement ou contacter le support pour obtenir de l\'aide.</string>
     <string name="multiplayer_error_not_shareable">Il semble que l\'espace n\'est plus partagé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
@@ -1799,6 +1806,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="vault_create_space">Espace</string>
     <string name="vault_create_space_description">Pour un contenu et des données organisés</string>
     <string name="vault_empty_state_text">Il n\'y a pas encore d\'espaces</string>
+    <string name="vault_empty_search_state_text">Aucun résultat trouvé</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Caméra</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1813,4 +1821,12 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notifications_disable_short">Désactiver</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Les notifications sont désactivées</string>
+    <string name="notification_settings_disabled_subtitle">Recevez des notifications sur les nouveaux messages en les activant dans les paramètres de votre appareil.</string>
+    <string name="notification_settings_button_open">Ouvrir les paramètres</string>
+    <string name="notification_settings_state_title">Notifications de message</string>
+    <string name="notification_settings_state_disabled">Désactivé</string>
+    <string name="notification_settings_state_enabled">Activé</string>
+    <string name="content_desc_muted">En sourdine</string>
 </resources>

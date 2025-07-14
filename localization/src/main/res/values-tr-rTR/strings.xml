@@ -10,6 +10,7 @@
     <string name="appearance">Görünüm</string>
     <string name="file_storage">Dosya depolama alanı</string>
     <string name="key">Kurtarma anahtarı</string>
+    <string name="login_key">Kurtarma anahtarı</string>
     <string name="clear_file_cache">Dosya önbelleğini temizle</string>
     <string name="debug_sync_report">Hata Ayıklama Senkronizasyon Raporu</string>
     <string name="debug">Hata ayıklama</string>
@@ -28,6 +29,8 @@
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
+    <string name="app_preferences">Uygulama Tercihleri</string>
+    <string name="vault_key">Kasa &amp; Anahtar</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
     <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
     <string name="about_help_and_community">Yardım &amp; Topluluk</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Yer imi logosu</string>
     <string name="content_description_file_icon">Dosya simgesi</string>
     <string name="content_description_modal_icon">Modal simgesi</string>
+    <string name="alert_icon_description">Uyarı simgesi</string>
     <string name="modal_tap_to_type">Yazmak için dokun</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -853,13 +857,13 @@
     <string name="create_object_section_lists">Listeler</string>
     <string name="create_object_section_objects">Nesneler</string>
     <string name="edit">Düzenle</string>
-    <string name="unselect_all">Tüm seçimi kaldır</string>
+    <string name="unselect_all">Seçimi kaldır</string>
     <string name="sets">Setler</string>
     <string name="favorites">Favoriler</string>
     <string name="recent">Yakın zamanda düzenlendi</string>
     <string name="recently_opened">Yakın zamanda açıldı</string>
     <string name="bin">Çöp kutusu</string>
-    <string name="synced_files">Senkronize edilmiş dosyalar</string>
+    <string name="synced_files">Dosyaları temizle</string>
     <string name="log_in">Giriş yap</string>
     <string name="create_object_section_library">Anytype Kitaplığı</string>
     <string name="bin_empty_title">Çöp kutunuz boş.</string>
@@ -1112,7 +1116,7 @@
     <string name="date_type_older">Daha eski</string>
     <string name="dates_days_ago">%1$s gün önce</string>
     <string name="dates_days_from">Şu andan itibaren %1$s gün</string>
-    <string name="settings_use_yamux">Multiplex yedekleme kitaplığını kullanın</string>
+    <string name="settings_use_yamux">QUIC kullan</string>
     <string name="settings_share_local_logs">Yerel günlükleri paylaş</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban görünümü henüz mobil cihazlarda mevcut değil.\nVerilerinize erişmek için görünümü değiştirin (Ayarlar -&gt; Görünüm) veya yeni bir görünüm oluşturun.</string>
@@ -1274,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Katılma talebini iptal et</string>
     <string name="multiplayer_cancel_join_request_msg">Tekrar katılma isteği göndermeniz gerekecek.</string>
     <string name="multiplayer_do_not_cancel_join_request">İptal etme</string>
-    <string name="multiplayer_error_invite_not_found">Davetiye mevcut değil. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="multiplayer_error_invite_not_found_title">Bu alana erişim yok</string>
+    <string name="multiplayer_error_invalid_link_title">Bu alana erişim yok</string>
+    <string name="multiplayer_error_invite_not_found">Kullandığınız bağlantı çalışmıyor gibi görünüyor. Lütfen bağlantı sahibinden sizinle yeni bir tane paylaşmasını isteyin.</string>
     <string name="multiplayer_error_invite_bad_content">Davet bağlantısı ayrıştırılamadı. Formatta hatalar veya geçersiz veriler olabilir.</string>
+    <string name="multiplayer_error_space_deleted_title">Bu alana erişim yok</string>
     <string name="multiplayer_error_space_is_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="multiplayer_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
     <string name="multiplayer_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
@@ -1802,6 +1809,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_create_space">Alan</string>
     <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
     <string name="vault_empty_state_text">Henüz alan yok</string>
+    <string name="vault_empty_search_state_text">Eşleşme bulunamadı</string>
     <string name="chat_new_messages_section_text">Yeni mesajlar</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_box_take_photo">Fotoğraf Çek</string>
@@ -1816,4 +1824,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_disable_short">Devre dışı bırak</string>
     <string name="space_notify_unmute">Susturmayı kaldır</string>
     <string name="space_notify_mute">Sustur</string>
+    <string name="notification_settings_title">Bildirimler</string>
+    <string name="notification_settings_disabled">Bildirimler devre dışı</string>
+    <string name="notification_settings_disabled_subtitle">Cihaz ayarlarınızda etkinleştirerek yeni mesajlarla ilgili bildirimler alın.</string>
+    <string name="notification_settings_button_open">Ayarlar\'ı Aç</string>
+    <string name="notification_settings_state_title">Mesaj Bildirimleri</string>
+    <string name="notification_settings_state_disabled">Devre dışı</string>
+    <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
+    <string name="content_desc_muted">Sessiz</string>
 </resources>

@@ -421,11 +421,14 @@ fun VaultScreenWithUnreadSection(
     onLeaveSpace: (String) -> Unit
 ) {
 
-    var mainSpaceList by remember {
-        mutableStateOf<List<VaultSpaceView>>(sections.mainSpaces)
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredSpaces = if (searchQuery.isBlank()) {
+        sections.mainSpaces
+    } else {
+        sections.mainSpaces.filter { space ->
+            space.space.name?.contains(searchQuery, ignoreCase = true) == true
+        }
     }
-
-    mainSpaceList = sections.mainSpaces
 
     val lazyListState = rememberLazyListState()
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
@@ -452,12 +455,25 @@ fun VaultScreenWithUnreadSection(
                     spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = isLoading
                 )
+                com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    onQueryChanged = { query -> searchQuery = query }
+                )
             }
         }
     ) { paddings ->
         if (sections.mainSpaces.isEmpty()) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),
+                onCreateSpaceClicked = onCreateSpaceClicked
+            )
+        } else if (filteredSpaces.isEmpty()) {
+            VaultEmptyState(
+                modifier = Modifier.padding(paddings),
+                textRes = R.string.vault_empty_search_state_text,
+                showButton = false,
                 onCreateSpaceClicked = onCreateSpaceClicked
             )
         } else {
@@ -470,7 +486,7 @@ fun VaultScreenWithUnreadSection(
                 contentPadding = PaddingValues(top = 4.dp)
             ) {
                 itemsIndexed(
-                    items = mainSpaceList,
+                    items = filteredSpaces,
                     key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
                     contentType = { _, item ->
                         when (item) {

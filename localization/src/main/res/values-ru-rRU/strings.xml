@@ -1838,6 +1838,7 @@
     <string name="vault_create_space">Пространство</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Новые сообщения</string>
     <string name="chat_box_camera">Камера</string>
     <string name="chat_box_take_photo">Take Photo</string>

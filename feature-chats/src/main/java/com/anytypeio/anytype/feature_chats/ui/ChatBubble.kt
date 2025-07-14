@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
@@ -330,7 +331,8 @@ fun Bubble(
                     expanded = showDropdownMenu,
                     onDismissRequest = {
                         showDropdownMenu = false
-                    }
+                    },
+                    properties = PopupProperties(focusable = false)
                 ) {
                     if (!isMaxReactionCountReached && !isReadOnly) {
                         DropdownMenuItem(

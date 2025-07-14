@@ -1809,7 +1809,7 @@ En concreto,
     <string name="vault_create_space">Espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">No hay coincidencias</string>
     <string name="chat_new_messages_section_text">Mensajes nuevos</string>
     <string name="chat_box_camera">Cámara</string>
     <string name="chat_box_take_photo">Hacer foto</string>

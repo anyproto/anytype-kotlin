@@ -1809,6 +1809,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_create_space">Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_box_take_photo">Foto machen</string>

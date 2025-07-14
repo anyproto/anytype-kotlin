@@ -731,6 +731,16 @@ class BlockMiddleware(
         middleware.spaceDelete(space)
     }
 
+    override suspend fun spaceSetOrder(
+        spaceViewId: Id,
+        spaceViewOrder: List<Id>
+    ) {
+        middleware.spaceSetOrder(
+            spaceViewId = spaceViewId,
+            spaceViewOrder = spaceViewOrder
+        )
+    }
+
     override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = middleware.workspaceCreate(
         command = command
     )

@@ -765,6 +765,16 @@ class BlockDataRepository(
         remote.deleteSpace(space)
     }
 
+    override suspend fun spaceSetOrder(
+        spaceViewId: Id,
+        spaceViewOrder: List<Id>
+    ) {
+        remote.spaceSetOrder(
+            spaceViewId = spaceViewId,
+            spaceViewOrder = spaceViewOrder
+        )
+    }
+
     override suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result = remote.createWorkspace(
         command = command
     )

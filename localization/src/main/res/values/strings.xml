@@ -144,6 +144,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
 
     <string name="modal_tap_to_type">Tap to type</string>
     <string name="modal_gallery">Gallery</string>
@@ -954,13 +955,13 @@
     <string name="create_object_section_objects">Objects</string>
 
     <string name="edit">Edit</string>
-    <string name="unselect_all">Unselect all</string>
+    <string name="unselect_all">Deselect</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favorites</string>
     <string name="recent">Recently edited</string>
     <string name="recently_opened">Recently opened</string>
     <string name="bin">Bin</string>
-    <string name="synced_files">Synced files</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Anytype Library</string>
 
@@ -1292,7 +1293,7 @@
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
 
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
 
     <!--endregion-->
@@ -1482,8 +1483,11 @@
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
 
-    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
@@ -2098,6 +2102,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -2122,5 +2127,6 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_title">Message Notifications</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 
 </resources>

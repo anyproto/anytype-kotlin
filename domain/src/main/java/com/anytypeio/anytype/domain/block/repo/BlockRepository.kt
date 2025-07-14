@@ -538,4 +538,6 @@ interface BlockRepository {
     suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
 
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
+
+    suspend fun debugStats(): String
 }

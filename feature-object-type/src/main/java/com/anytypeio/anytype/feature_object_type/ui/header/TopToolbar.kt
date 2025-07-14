@@ -152,3 +152,15 @@ fun TopToolbarPreview() {
         onTypeEvent = {},
     )
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@DefaultPreviews
+fun TopToolbarPreviewError() {
+    TopToolbar(
+        uiSyncStatusBadgeState = UiSyncStatusBadgeState.Visible(
+            status = SpaceSyncAndP2PStatusState.Error("")
+        ),
+        onTypeEvent = {},
+    )
+}

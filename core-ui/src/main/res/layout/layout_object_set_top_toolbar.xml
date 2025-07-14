@@ -21,25 +21,18 @@
 
     </FrameLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/statusContainer"
-        android:layout_gravity="center_vertical|end"
-        android:layout_marginEnd="54dp"
+    <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+        android:id="@+id/statusBadge"
         android:layout_width="28dp"
-        android:layout_height="28dp">
-
-        <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-            android:id="@+id/statusBadge"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:backgroundTint="@color/orange"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:visibility="visible" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        android:layout_height="28dp"
+        android:layout_gravity="center_vertical|end"
+        android:scaleType="center"
+        android:layout_marginEnd="54dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
     <FrameLayout
         android:layout_width="match_parent"

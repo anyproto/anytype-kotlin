@@ -65,7 +65,8 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                     onAnytypeNetworkClicked = {
                         vm.proceedWithNetworkMode(NetworkModeConstants.NETWORK_MODE_DEFAULT)
                     },
-                    onExportLogsClick = vm::onExportLogsClick
+                    onExportLogsClick = vm::onExportLogsClick,
+                    onUseYamuxToggled = vm::onChangeQuickLibraryState
                 )
             }
         }

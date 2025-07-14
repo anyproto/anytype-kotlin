@@ -2963,9 +2963,18 @@ class Middleware @Inject constructor(
         val request = Rpc.Device.NetworkState.Set.Request(
             deviceNetworkType = type.mw()
         )
-        logRequestIfDebug(request)
+        //logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
+        //logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun debugStats(): String {
+        val request = Rpc.Debug.Stat.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugStats(request) }
         logResponseIfDebug(response, time)
+        return response.jsonStat
     }
 
     @Throws(Exception::class)

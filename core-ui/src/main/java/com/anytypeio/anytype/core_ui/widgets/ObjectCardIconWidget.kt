@@ -9,10 +9,11 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconCardBinding
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import coil3.load
+import coil3.request.CachePolicy
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
+import coil3.transform.RoundedCornersTransformation
 import timber.log.Timber
 
 class ObjectCardIconWidget @JvmOverloads constructor(
@@ -37,11 +38,10 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     width = emojiSize
                 }
                 try {
-                    Glide
-                        .with(this@ObjectCardIconWidget)
-                        .load(Emojifier.uri(icon.unicode))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(ivIcon)
+                    ivIcon.load(Emojifier.uri(icon.unicode)) {
+                        diskCachePolicy(CachePolicy.ENABLED)
+                        memoryCachePolicy(CachePolicy.ENABLED)
+                    }
                 } catch (e: Throwable) {
                     Timber.w(e, "Error while setting emoji icon for: ${icon.unicode}")
                 }
@@ -53,14 +53,9 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     height = LayoutParams.MATCH_PARENT
                     width = LayoutParams.MATCH_PARENT
                 }
-                Glide
-                    .with(this@ObjectCardIconWidget)
-                    .load(icon.hash)
-                    .transform(
-                        CenterCrop(),
-                        RoundedCorners(rectangleImageRadius)
-                    )
-                    .into(ivIcon)
+                ivIcon.load(icon.hash) {
+                    transformations(RoundedCornersTransformation(rectangleImageRadius.toFloat()))
+                }
             }
             is ObjectIcon.Profile.Avatar -> {
                 clearInitials()
@@ -75,12 +70,9 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                     height = LayoutParams.MATCH_PARENT
                     width = LayoutParams.MATCH_PARENT
                 }
-                Glide
-                    .with(this@ObjectCardIconWidget)
-                    .load(icon.hash)
-                    .centerInside()
-                    .circleCrop()
-                    .into(ivIcon)
+                ivIcon.load(icon.hash) {
+                    transformations(CircleCropTransformation())
+                }
             }
             else -> {
                 // TODO

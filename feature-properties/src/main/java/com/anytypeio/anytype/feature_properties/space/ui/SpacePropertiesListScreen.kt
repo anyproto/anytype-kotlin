@@ -108,7 +108,7 @@ fun SpacePropertiesListScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(52.dp)
-                                    .padding(start = 20.dp, end = 20.dp),
+                                    .padding(start = 20.dp, end = 12.dp),
                                 item = item,
                                 onPropertyClicked = onPropertyClicked,
                                 onMoveToBin = onMoveToBin
@@ -185,7 +185,7 @@ private fun Property(
 
         Text(
             modifier = Modifier
-                .fillMaxWidth()
+                .weight(1.0f)
                 .padding(start = 10.dp),
             text = name,
             style = PreviewTitle1Regular,
@@ -193,6 +193,15 @@ private fun Property(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+
+        Image(
+            painter = painterResource(id = R.drawable.ic_disclosure_8_24),
+            contentDescription = "open property",
+            modifier = Modifier
+                .size(24.dp)
+                .padding(start = 0.dp)
+        )
+
         if (item.isPossibleMoveToBin) {
             ItemDropDownMenu(
                 item = item,

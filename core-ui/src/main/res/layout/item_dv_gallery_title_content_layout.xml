@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/rootDvItemContent"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+        android:id="@+id/cardIcon"
+        android:layout_width="18dp"
+        android:layout_height="18dp"
+        app:checkboxSize="18dp"
+        app:emojiSize="18dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="16dp"
+        app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
+        app:imageSize="16dp"
+        app:initialTextSize="12sp"
+        app:isImageWithCorners="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/GalleryViewTitleWidgetStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Virgil Abloh’s Lecture " />
+
+    <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewContentWidget
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_goneMarginTop="0dp"
+        android:layout_marginTop="4dp"
+        app:defaultTextSize="@dimen/defaultGalleryViewTextSize"
+        app:firstItemMargin="16dp"
+        app:itemIntervalMargin="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:marginAfterIcon="4dp"
+        app:marginAfterText="6dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

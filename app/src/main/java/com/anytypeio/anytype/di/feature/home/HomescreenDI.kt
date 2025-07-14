@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -302,4 +303,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
     fun chatPreviews(): ChatPreviewContainer
+    fun notificationPermissionManager(): NotificationPermissionManager
 }

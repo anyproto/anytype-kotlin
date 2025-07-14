@@ -52,7 +52,9 @@ fun NewSpaceSettingsScreenPreview() {
                 spaceId = SpaceId("space-id"),
                 createdBy = "Thomas",
                 creationDateInMillis = null,
-                networkId = "random network id"
+                networkId = "random network id",
+                isDebugVisible = false,
+                deviceToken = null
             ),
             notificationState = NotificationState.ALL,
             targetSpaceId = "space-view-id"

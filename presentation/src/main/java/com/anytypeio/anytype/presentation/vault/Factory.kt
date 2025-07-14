@@ -19,7 +19,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.SetVaultSpaceOrder
+
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -30,7 +30,6 @@ class VaultViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val setVaultSpaceOrder: SetVaultSpaceOrder,
     private val observeVaultSettings: ObserveVaultSettings,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
@@ -56,7 +55,6 @@ class VaultViewModelFactory @Inject constructor(
         urlBuilder = urlBuilder,
         spaceManager = spaceManager,
         saveCurrentSpace = saveCurrentSpace,
-        setVaultSpaceOrder = setVaultSpaceOrder,
         observeVaultSettings = observeVaultSettings,
         analytics = analytics,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,

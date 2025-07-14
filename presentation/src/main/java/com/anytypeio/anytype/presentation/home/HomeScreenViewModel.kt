@@ -102,6 +102,7 @@ import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companio
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -236,7 +237,8 @@ class HomeScreenViewModel(
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
-    private val chatPreviews: ChatPreviewContainer
+    private val chatPreviews: ChatPreviewContainer,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -512,7 +514,9 @@ class HomeScreenViewModel(
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(
                             widget = widget,
-                            container = chatPreviews
+                            container = chatPreviews,
+                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                            notificationPermissionManager = notificationPermissionManager
                         )
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget,
@@ -2440,7 +2444,8 @@ class HomeScreenViewModel(
                             creationDateInMillis = targetSpaceView
                                 .getValue<Double?>(Relations.CREATED_DATE)
                                 ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                            createdBy = createdByScreenName
+                            createdBy = createdByScreenName,
+                            isDebugVisible = false
                         )
                     )
                 }
@@ -2718,7 +2723,8 @@ class HomeScreenViewModel(
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val chatPreviews: ChatPreviewContainer
+        private val chatPreviews: ChatPreviewContainer,
+        private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2777,7 +2783,8 @@ class HomeScreenViewModel(
             deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
-            chatPreviews = chatPreviews
+            chatPreviews = chatPreviews,
+            notificationPermissionManager = notificationPermissionManager
         ) as T
     }
 

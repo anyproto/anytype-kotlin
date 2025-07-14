@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
+import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -59,7 +60,7 @@ class ProfileSettingsViewModel(
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
-    val isDebugEnabled = MutableStateFlow(false)
+    val isDebugEnabled = MutableStateFlow(BuildConfig.DEBUG)
 
     val notificationsDisabled: StateFlow<Boolean> =
         notificationPermissionManager.permissionState().map { state ->

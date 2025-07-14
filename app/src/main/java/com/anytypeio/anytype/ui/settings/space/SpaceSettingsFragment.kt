@@ -50,6 +50,7 @@ import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
+import com.anytypeio.anytype.ui.settings.DebugFragment
 import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -285,6 +286,15 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                         )
                     }.onFailure {
                         Timber.e(it, "Error while opening space types screen")
+                    }
+                }
+                
+                is Command.OpenDebugScreen -> {
+                    runCatching {
+                        val debugFragment = DebugFragment.newInstance(command.spaceId)
+                        debugFragment.show(childFragmentManager, DebugFragment::class.simpleName)
+                    }.onFailure {
+                        Timber.e(it, "Error while opening debug screen")
                     }
                 }
 

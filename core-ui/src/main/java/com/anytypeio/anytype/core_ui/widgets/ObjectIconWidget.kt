@@ -29,8 +29,8 @@ import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
+import coil3.load
+import coil3.request.CachePolicy
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -40,8 +40,6 @@ class ObjectIconWidget @JvmOverloads constructor(
     companion object {
         const val DEFAULT_SIZE = 28
         const val DRAWABLE_DIR = "drawable"
-        private const val ICON_WITHOUT_BACKGROUND_MAX_SIZE_DP = 31
-        private const val TYPE_ICON_BACKGROUND_MIN_SIZE_DP = 80
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -115,23 +113,46 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Emoji -> {
                 setEmoji(emoji = icon.unicode, fallback = icon.fallback)
             }
-            is ObjectIcon.Basic.Image -> {
-                if (isImageWithCorners)
-                    setRectangularImage(icon.hash)
-                else setCircularImage(icon.hash)
-            }
-            is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
-            is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
-            is ObjectIcon.Task -> setTask(icon.isChecked)
-            is ObjectIcon.Bookmark -> setBookmark(icon.image)
-            is ObjectIcon.None -> removeIcon()
-            is ObjectIcon.File -> setFileImage(
-                mime = icon.mime,
-                extension = icon.extensions
-            )
 
-            ObjectIcon.Deleted -> setDeletedIcon()
-            is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
+            is ObjectIcon.Basic.Image -> {
+                setRectangularImage(icon.hash)
+            }
+
+            is ObjectIcon.Profile.Avatar -> {
+                setProfileInitials(icon.name)
+            }
+
+            is ObjectIcon.Profile.Image -> {
+                setCircularImage(icon.hash)
+            }
+
+            is ObjectIcon.Task -> {
+                setTask(icon.isChecked)
+            }
+
+            is ObjectIcon.Bookmark -> {
+                setBookmark(icon.image)
+            }
+
+            is ObjectIcon.None -> {
+                removeIcon()
+            }
+
+            is ObjectIcon.File -> {
+                setFileImage(
+                    mime = icon.mime,
+                    extension = icon.extensions
+                )
+            }
+
+            ObjectIcon.Deleted -> {
+                setDeletedIcon()
+            }
+
+            is ObjectIcon.Checkbox -> {
+                setCheckbox(icon.isChecked)
+            }
+
             is ObjectIcon.TypeIcon.Fallback -> {
                 setTypeIcon(icon)
             }
@@ -180,7 +201,10 @@ class ObjectIconWidget @JvmOverloads constructor(
             initial.post {
                 val widthPx = initialContainer.width
                 val sizeDp = widthPx / density
-                initial.setTextSize(TypedValue.COMPLEX_UNIT_SP, getAvatarFontSizeSp(sizeDp).toFloat())
+                initial.setTextSize(
+                    TypedValue.COMPLEX_UNIT_SP,
+                    getAvatarFontSizeSp(sizeDp).toFloat()
+                )
             }
         }
     }
@@ -205,11 +229,10 @@ class ObjectIconWidget @JvmOverloads constructor(
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
                     binding.ivEmoji.visible()
-                    Glide
-                        .with(this)
-                        .load(adapted)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(binding.ivEmoji)
+                    binding.ivEmoji.load(adapted) {
+                        diskCachePolicy(CachePolicy.ENABLED)
+                        memoryCachePolicy(CachePolicy.ENABLED)
+                    }
                 } else {
                     setTypeIcon(fallback)
                 }
@@ -236,17 +259,8 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 ivImage.setCircularShape()
-                if (isImageWithCorners) {
-                    ivImage.setStrokeWidthResource(R.dimen.dp_2)
-                    ivImage.strokeColor =
-                        this.root.context.getColorStateList(R.color.background_primary)
-                }
             }
-            Glide
-                .with(this)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivImage)
+            binding.ivImage.load(image)
         } else {
             binding.ivImage.setImageDrawable(null)
         }
@@ -260,17 +274,9 @@ class ObjectIconWidget @JvmOverloads constructor(
                 emojiContainer.invisible()
                 ivBookmark.gone()
                 ivImage.visible()
-
-                if (isImageWithCorners) {
-                    ivImage.setCorneredShape(imageCornerRadius)
-                }
+                ivImage.setCorneredShape(imageCornerRadius)
+                ivImage.load(image)
             }
-
-            Glide
-                .with(this)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivImage)
         }
     }
 
@@ -320,11 +326,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.invisible()
             ivImage.invisible()
             ivBookmark.visible()
-            Glide
-                .with(binding.ivBookmark)
-                .load(image)
-                .centerCrop()
-                .into(binding.ivBookmark)
+            binding.ivBookmark.load(image)
         }
     }
 

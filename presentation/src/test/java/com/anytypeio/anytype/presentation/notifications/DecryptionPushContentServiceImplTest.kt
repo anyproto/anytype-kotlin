@@ -14,6 +14,8 @@ import org.junit.Assert.assertNull
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
@@ -25,6 +27,7 @@ class DecryptionPushContentServiceImplTest {
 
     private lateinit var pushKeyProvider: PushKeyProvider
     private lateinit var cryptoService: CryptoService
+    private lateinit var signatureVerificationService: SignatureVerificationService
     private lateinit var decryptionService: DecryptionPushContentService
 
     private val testKeyId = "test-key-id"
@@ -38,9 +41,11 @@ class DecryptionPushContentServiceImplTest {
     fun setup() {
         pushKeyProvider = mock()
         cryptoService = CryptoServiceImpl()
+        signatureVerificationService = mock()
         decryptionService = DecryptionPushContentServiceImpl(
             pushKeyProvider = pushKeyProvider,
             cryptoService = cryptoService,
+            signatureVerificationService = signatureVerificationService,
             json = Json { ignoreUnknownKeys = true }
         )
     }
@@ -260,5 +265,87 @@ class DecryptionPushContentServiceImplTest {
 
         // Combine nonce and ciphertext
         return nonce + ciphertext
+    }
+
+    @Test
+    fun `decryptAndVerifySignature should return content when signature is valid`() {
+        // Given
+        val keyAsBytes = testKey.toByteArray()
+        val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
+        val expectedContent = createTestContent()
+        val encryptedData = encryptTestData(expectedContent)
+        
+        whenever(pushKeyProvider.getPushKey()).thenReturn(
+            mapOf(testKeyId to PushKey(id = testKeyId, value = value))
+        )
+        whenever(signatureVerificationService.verifyNotificationSignature(
+            accountAddress = eq(testSenderId),
+            data = any(),
+            signature = eq("test-signature")
+        )).thenReturn(true)
+
+        // When
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
+
+        // Then
+        assertNotNull(result)
+        assertEquals(expectedContent, result)
+    }
+
+    @Test
+    fun `decryptAndVerifySignature should return null when signature is invalid`() {
+        // Given
+        val keyAsBytes = testKey.toByteArray()
+        val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
+        val expectedContent = createTestContent()
+        val encryptedData = encryptTestData(expectedContent)
+        
+        whenever(pushKeyProvider.getPushKey()).thenReturn(
+            mapOf(testKeyId to PushKey(id = testKeyId, value = value))
+        )
+        whenever(signatureVerificationService.verifyNotificationSignature(
+            accountAddress = eq(testSenderId),
+            data = any(),
+            signature = eq("test-signature")
+        )).thenReturn(false)
+
+        // When
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
+
+        // Then
+        assertNull(result)
+    }
+
+    @Test
+    fun `decryptAndVerifySignature should return content when signature is missing`() {
+        // Given
+        val keyAsBytes = testKey.toByteArray()
+        val value = Base64.encodeToString(keyAsBytes, Base64.DEFAULT)
+        val expectedContent = createTestContent()
+        val encryptedData = encryptTestData(expectedContent)
+        
+        whenever(pushKeyProvider.getPushKey()).thenReturn(
+            mapOf(testKeyId to PushKey(id = testKeyId, value = value))
+        )
+
+        // When
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, null)
+
+        // Then
+        assertNotNull(result)
+        assertEquals(expectedContent, result)
+    }
+
+    @Test
+    fun `decryptAndVerifySignature should return null when decryption fails`() {
+        // Given
+        val encryptedData = ByteArray(100)
+        whenever(pushKeyProvider.getPushKey()).thenReturn(emptyMap())
+
+        // When
+        val result = decryptionService.decryptAndVerifySignature(encryptedData, testKeyId, "test-signature")
+
+        // Then
+        assertNull(result)
     }
 } 

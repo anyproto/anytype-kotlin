@@ -8351,6 +8351,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                bool added = 2; // Added is true when reaction is added, false when removed
 
                 message Error {
                     Code code = 1;

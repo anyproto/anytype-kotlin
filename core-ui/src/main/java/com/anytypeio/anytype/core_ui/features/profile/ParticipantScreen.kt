@@ -41,9 +41,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.presentation.profile.ParticipantEvent
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel.UiParticipantScreenState
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.bumptech.glide.integration.compose.placeholder
+import coil3.compose.AsyncImage
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,7 +154,6 @@ private fun EditIcon(modifier: Modifier) {
     )
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun ImageBlock(
     modifier: Modifier,
@@ -166,13 +163,13 @@ private fun ImageBlock(
 ) {
     when (icon) {
         is ProfileIconView.Image -> {
-            GlideImage(
+            AsyncImage(
                 model = icon.url,
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
                 modifier = modifier
                     .clip(shape = CircleShape),
-                loading = placeholder(R.drawable.ic_loading_state_112)
+                placeholder = painterResource(R.drawable.ic_loading_state_112)
             )
         }
 

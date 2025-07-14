@@ -178,7 +178,8 @@ sealed class WidgetView {
         override val id: Id,
         val source: Widget.Source,
         val unreadMessageCount: Int = 0,
-        val unreadMentionCount: Int = 0
+        val unreadMentionCount: Int = 0,
+        val isMuted: Boolean = false
     ) : WidgetView() {
         override val isLoading: Boolean = false
     }

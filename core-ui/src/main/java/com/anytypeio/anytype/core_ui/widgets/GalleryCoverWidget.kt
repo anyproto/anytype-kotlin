@@ -2,17 +2,14 @@ package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
+import coil3.load
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
 
 class GalleryCoverWidget @JvmOverloads constructor(
     context: Context,
@@ -47,21 +44,8 @@ class GalleryCoverWidget @JvmOverloads constructor(
                 setImageDrawable(null)
                 setBackgroundColor(0)
                 setBackgroundResource(0)
-                if (item.fitImage) {
-                    Glide
-                        .with(this)
-                        .load(cover.url)
-                        .fitCenter()
-                        .into(this)
-                } else {
-                    Glide
-                        .with(this)
-                        .load(cover.url)
-                        .transform(
-                            CenterCrop(),
-                        )
-                        .into(this)
-                }
+                scaleType = if (item.fitImage) ScaleType.FIT_CENTER else ScaleType.CENTER_CROP
+                load(cover.url)
             }
             null -> {
                 gone()

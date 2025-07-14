@@ -11,7 +11,9 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetAvatarBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.bumptech.glide.Glide
+import coil3.load
+import coil3.request.transformations
+import coil3.transform.CircleCropTransformation
 
 class AvatarWidget @JvmOverloads constructor(
     context: Context,
@@ -69,12 +71,9 @@ class AvatarWidget @JvmOverloads constructor(
     }
 
     fun icon(url: String) {
-        Glide
-            .with(binding.icon)
-            .load(url)
-            .centerInside()
-            .circleCrop()
-            .into(binding.icon)
+        binding.icon.load(url) {
+            transformations(CircleCropTransformation())
+        }
 
         binding.icon.visible()
         binding.initials.invisible()

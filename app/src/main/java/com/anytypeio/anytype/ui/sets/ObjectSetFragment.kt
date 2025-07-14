@@ -47,6 +47,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -137,7 +138,6 @@ import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
-import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
@@ -180,8 +180,8 @@ open class ObjectSetFragment :
     private val topToolbarThreeDotsButton: ViewGroup
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
-    private val topToolbarStatusContainer: ViewGroup
-        get() = binding.topToolbar.root.findViewById(R.id.statusContainer)
+    private val topToolbarStatusContainer: View
+        get() = binding.topToolbar.root.findViewById(R.id.statusBadge)
 
     private val topToolbarThreeDotsIcon: ImageView
         get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
@@ -904,11 +904,7 @@ open class ObjectSetFragment :
 
             if (header.title.image != null) {
                 this.visible()
-                    Glide
-                        .with(this)
-                        .load(header.title.image)
-                        .centerCrop()
-                        .into(this)
+                this.load(header.title.image)
             } else {
                 this.gone()
                 this.setImageDrawable(null)
@@ -997,11 +993,7 @@ open class ObjectSetFragment :
                 ivCover?.apply {
                     visible()
                     setBackgroundColor(0)
-                    Glide
-                        .with(this)
-                        .load(coverImage)
-                        .centerCrop()
-                        .into(this)
+                    load(coverImage)
                 }
                 container.updatePadding(top = 0)
                 onObjectCoverUpdated()

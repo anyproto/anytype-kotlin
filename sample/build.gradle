@@ -45,7 +45,6 @@ dependencies {
 
     implementation libs.kotlin
     implementation libs.appcompat
-    implementation libs.glide
     implementation libs.coroutinesAndroid
     implementation libs.constraintLayout
     implementation libs.androidxCore

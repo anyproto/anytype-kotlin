@@ -686,6 +686,32 @@ class VaultViewModel(
         }
     }
 
+    fun onPinSpaceClicked(spaceId: Id) {
+        viewModelScope.launch {
+            pinSpace.async(spaceId).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to pin space: $spaceId")
+                },
+                onSuccess = {
+                    Timber.d("Successfully pinned space: $spaceId")
+                }
+            )
+        }
+    }
+
+    fun onUnpinSpaceClicked(spaceId: Id) {
+        viewModelScope.launch {
+            unpinSpace.async(spaceId).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to unpin space: $spaceId")
+                },
+                onSuccess = {
+                    Timber.d("Successfully unpinned space: $spaceId")
+                }
+            )
+        }
+    }
+
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
             analytics.sendEvent(
@@ -750,6 +776,76 @@ class VaultViewModel(
 
     fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
         return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
+    }
+
+    // Local state for tracking order changes during drag operations
+    private var pendingPinnedSpacesOrder: List<Id>? = null
+
+    //region Drag and Drop
+    fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
+        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
+
+        // Get current settings to work with the existing order
+        val currentSections = sections.value
+        val currentPinnedSpaces = currentSections.pinnedSpaces
+
+        // Find indices in the current pinned spaces list
+        val fromIndex = currentPinnedSpaces.indexOfFirst { it.space.id == fromSpaceId }
+        val toIndex = currentPinnedSpaces.indexOfFirst { it.space.id == toSpaceId }
+
+        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
+            // Create new ordered list by moving the item (only update local state)
+            val newPinnedSpacesList = currentPinnedSpaces.toMutableList()
+            val movedItem = newPinnedSpacesList.removeAt(fromIndex)
+            newPinnedSpacesList.add(toIndex, movedItem)
+
+            // Store the new order for later persistence in onDragEnd
+            val newPinnedOrder = newPinnedSpacesList.map { it.space.id }
+            val mainSpaceIds = currentSections.mainSpaces.map { it.space.id }
+
+            // Store pending order to be saved in onDragEnd
+            // Use distinct() to remove duplicates and maintain a unique list of space IDs.
+            pendingPinnedSpacesOrder = (newPinnedOrder + mainSpaceIds).distinct()
+
+            // Update local sections state immediately for UI responsiveness
+            val updatedSections = currentSections.copy(pinnedSpaces = newPinnedSpacesList)
+            sections.value = updatedSections
+            spaces.value = updatedSections.allSpaces // For backward compatibility
+        }
+    }
+
+    fun onDragEnd() {
+        Timber.d("onDragEnd called")
+        // Persist the order changes made during the drag operation
+        pendingPinnedSpacesOrder?.let { newOrder ->
+            viewModelScope.launch {
+                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
+                //Добавить сохранение порядка в Middleware
+                //setVaultSpaceOrder.async(params = newOrder)
+                // Clear pending order after persistence
+                pendingPinnedSpacesOrder = null
+            }
+        }
+    }
+
+    //endregion
+
+    fun isSpacePinned(spaceId: Id): Boolean {
+        return sections.value.pinnedSpaces.any { it.space.id == spaceId }
+    }
+
+    fun onPinnedSpacesReordered(reorderedSpaces: List<VaultSpaceView>) {
+        viewModelScope.launch {
+            val reorderedIds = reorderedSpaces.map { it.space.id }
+            reorderPinnedSpaces.async(reorderedIds).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to reorder pinned spaces: $reorderedIds")
+                },
+                onSuccess = {
+                    Timber.d("Successfully reordered pinned spaces: $reorderedIds")
+                }
+            )
+        }
     }
 
     companion object {

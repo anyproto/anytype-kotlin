@@ -541,46 +541,6 @@ fun VaultScreenWithUnreadSection(
         }
     }
 
-
-//    // Reorderable state for pinned spaces
-//    val pinnedSpacesState = remember { mutableStateOf(filteredPinnedSpaces) }
-//    pinnedSpacesState.value = filteredPinnedSpaces
-//
-//    val lastFromIndex = remember { mutableStateOf<Int?>(null) }
-//    val lastToIndex = remember { mutableStateOf<Int?>(null) }
-//
-//    val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-//        // Only handle reordering if both items are in the pinned section
-//        val pinnedSectionSize = filteredPinnedSpaces.size + if (filteredPinnedSpaces.isNotEmpty()) 1 else 0 // +1 for header
-//        if (from.index < pinnedSectionSize && to.index < pinnedSectionSize && from.index != 0 && to.index != 0) {
-//            // Adjust indices to account for header (subtract 1)
-//            val adjustedFromIndex = from.index - 1
-//            val adjustedToIndex = to.index - 1
-//
-//            lastFromIndex.value = adjustedFromIndex
-//            lastToIndex.value = adjustedToIndex
-//
-//            pinnedSpacesState.value = pinnedSpacesState.value.toMutableList().apply {
-//                add(adjustedToIndex, removeAt(adjustedFromIndex))
-//            }
-//            ViewCompat.performHapticFeedback(
-//                view,
-//                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
-//            )
-//        }
-//    }
-//
-//    val onDragStoppedHandler = {
-//        val from = lastFromIndex.value
-//        val to = lastToIndex.value
-//        if (from != null && to != null && from != to) {
-//            onPinnedSpacesReordered(pinnedSpacesState.value)
-//        }
-//        // Reset after firing
-//        lastFromIndex.value = null
-//        lastToIndex.value = null
-//    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -636,15 +596,6 @@ fun VaultScreenWithUnreadSection(
             ) {
                 // Pinned Spaces Section
                 if (filteredPinnedSpaces.isNotEmpty()) {
-                    item(key = "pinned_header") {
-                        Text(
-                            text = stringResource(R.string.vault_pinned_section_title),
-                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
-                    }
-                    
                     itemsIndexed(
                         items = filteredPinnedSpaces,
                         key = { _, item -> "pinned_${item.space.id}" },

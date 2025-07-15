@@ -84,18 +84,15 @@ class VaultViewModelTest {
     }
 
     @Test
-    fun `transformToVaultSpaceViews partitions and sorts pinned and unpinned spaces, maps chat previews`() = runTest {
+    fun `transformToVaultSpaceViews partitions and sorts pinned and unpinned spaces, maps chat previews and sorts chatSpaces by lastMessageDate`() = runTest {
         // Arrange
-        val pinnedSpaceId = "pinned1"
-        val unpinnedSpaceId = "unpinned1"
-        val chatSpaceId = "chat1"
-        val chatId = "chatId1"
         val now = System.currentTimeMillis().toDouble()
         val earlier = now - 10000
+        val muchEarlier = now - 20000
 
         val pinnedSpace = StubSpaceView(
-            id = pinnedSpaceId,
-            targetSpaceId = pinnedSpaceId,
+            id = "pinned1",
+            targetSpaceId = "pinned1",
             spaceAccessType = SpaceAccessType.SHARED,
             spaceAccountStatus = SpaceStatus.OK,
             spaceLocalStatus = SpaceStatus.OK,
@@ -127,8 +124,8 @@ class VaultViewModelTest {
             createdDate = now - 15000
         )
         val unpinnedSpace = StubSpaceView(
-            id = unpinnedSpaceId,
-            targetSpaceId = unpinnedSpaceId,
+            id = "unpinned1",
+            targetSpaceId = "unpinned1",
             spaceAccessType = SpaceAccessType.SHARED,
             spaceAccountStatus = SpaceStatus.OK,
             spaceLocalStatus = SpaceStatus.OK,
@@ -136,31 +133,46 @@ class VaultViewModelTest {
             spaceUxType = SpaceUxType.DATA,
             createdDate = earlier
         )
-        val unpinnedChatSpace = StubSpaceView(
-            id = chatSpaceId,
-            targetSpaceId = chatSpaceId,
+        val chatSpace1 = StubSpaceView(
+            id = "chat1",
+            targetSpaceId = "chat1",
             spaceAccessType = SpaceAccessType.SHARED,
             spaceAccountStatus = SpaceStatus.OK,
             spaceLocalStatus = SpaceStatus.OK,
-            chatId = chatId,
+            chatId = "chatId1",
             spaceUxType = SpaceUxType.CHAT,
-            createdDate = now - 20000
+            createdDate = muchEarlier
         )
-
-        val chatPreview = stubChatPreview(
-            spaceId = chatSpaceId,
-            chatId = chatId,
-            lastMessageDate = 123456789L
+        val chatSpace2 = StubSpaceView(
+            id = "chat2",
+            targetSpaceId = "chat2",
+            spaceAccessType = SpaceAccessType.SHARED,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            chatId = "chatId2",
+            spaceUxType = SpaceUxType.CHAT,
+            createdDate = now - 30000
         )
-
-        val spacesList = listOf(pinnedSpace3, pinnedSpace2, pinnedSpace, unpinnedSpace, unpinnedChatSpace)
-        val chatPreviewsList = listOf(chatPreview)
+        // Chat previews with different lastMessageDate
+        val chatPreview1 = stubChatPreview(
+            spaceId = chatSpace1.id,
+            chatId = chatSpace1.chatId ?: "",
+            lastMessageDate = (now - 1000).toLong()
+        )
+        val chatPreview2 = stubChatPreview(
+            spaceId = chatSpace2.id,
+            chatId = chatSpace2.chatId ?: "",
+            lastMessageDate = (now - 500).toLong()
+        )
+        val spacesList = listOf(pinnedSpace3, pinnedSpace2, pinnedSpace, unpinnedSpace, chatSpace1, chatSpace2)
+        val chatPreviewsList = listOf(chatPreview1, chatPreview2)
         val permissions = mapOf(
             pinnedSpace3.targetSpaceId!! to SpaceMemberPermissions.OWNER,
             pinnedSpace2.targetSpaceId!! to SpaceMemberPermissions.WRITER,
             pinnedSpace.targetSpaceId!! to SpaceMemberPermissions.WRITER,
             unpinnedSpace.targetSpaceId!! to SpaceMemberPermissions.WRITER,
-            unpinnedChatSpace.targetSpaceId!! to SpaceMemberPermissions.WRITER
+            chatSpace1.targetSpaceId!! to SpaceMemberPermissions.WRITER,
+            chatSpace2.targetSpaceId!! to SpaceMemberPermissions.WRITER
         )
         val permissionState = NotificationPermissionManagerImpl.PermissionState.Granted
         val permissionStateFlow = MutableStateFlow(permissionState)
@@ -185,16 +197,14 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        // Assert
-        val sections = viewModel.sections.value
-
         // Assert pinned spaces are sorted by spaceOrder
+        val sections = viewModel.sections.value
         val pinnedIds = sections.pinnedSpaces.map { it.space.id }
         assertEquals(listOf(pinnedSpace.id, pinnedSpace2.id, pinnedSpace3.id), pinnedIds)
 
-        // Assert unpinned/main spaces are sorted by lastMessageDate or createdDate
+        // Assert unpinned/main spaces are sorted by lastMessageDate (desc), then by createdDate (desc)
         val mainIds = sections.mainSpaces.map { it.space.id }
-        // If unpinnedChatSpace has a chat preview, it should come first, otherwise by createdDate
-        assertEquals(listOf(unpinnedChatSpace.id, unpinnedSpace.id), mainIds)
+        // chatSpace2 has the most recent message, then chatSpace1, then unpinnedSpace
+        assertEquals(listOf(chatSpace2.id, chatSpace1.id, unpinnedSpace.id), mainIds)
     }
 } 

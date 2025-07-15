@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
@@ -54,8 +53,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.HapticFeedbackConstantsCompat
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -341,11 +338,11 @@ fun SpaceActionsDropdownMenu(
                 }
             }
         )
-        
+
         if (isMuted != null) {
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         }
-        
+
         if (isMuted != null) {
             DropdownMenuItem(
                 onClick = {
@@ -496,7 +493,7 @@ fun VaultScreenWithUnreadSection(
             }
         }
     }
-    
+
     val filteredPinnedSpaces = remember(searchQuery, sections.pinnedSpaces) {
         if (searchQuery.isBlank()) {
             sections.pinnedSpaces
@@ -506,7 +503,7 @@ fun VaultScreenWithUnreadSection(
             }
         }
     }
-    
+
     val hasAnyFilteredSpaces = filteredMainSpaces.isNotEmpty() || filteredPinnedSpaces.isNotEmpty()
 
     val lazyListState = rememberLazyListState()
@@ -519,15 +516,14 @@ fun VaultScreenWithUnreadSection(
 
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         // Extract space IDs from keys (remove prefix) before passing to ViewModel
-        val fromSpaceId = (from.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
-        val toSpaceId = (to.key as String).removePrefix(MAIN_SECTION_KEY_PREFIX)
+        val fromSpaceId = from.key as String
+        val toSpaceId = to.key as String
 
         onOrderChanged(fromSpaceId, toSpaceId)
         hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
     }
 
     var isDragging by remember { mutableStateOf(false) }
-    val density = LocalDensity.current
 
     LaunchedEffect(reorderableLazyListState.isAnyItemDragging) {
         if (reorderableLazyListState.isAnyItemDragging) {
@@ -598,7 +594,7 @@ fun VaultScreenWithUnreadSection(
                 if (filteredPinnedSpaces.isNotEmpty()) {
                     itemsIndexed(
                         items = filteredPinnedSpaces,
-                        key = { _, item -> "pinned_${item.space.id}" },
+                        key = { _, item -> item.space.id },
                         contentType = { _, item ->
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
@@ -606,23 +602,41 @@ fun VaultScreenWithUnreadSection(
                             }
                         }
                     ) { index, item ->
-                        ReorderableItem(reorderableLazyListState,
-                            key = "pinned_${item.space.id}") { isDragging ->
+                        ReorderableItem(
+                            state = reorderableLazyListState,
+                            key = item.space.id
+                        ) { isDragging ->
                             val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
-                            
+
                             when (item) {
                                 is VaultSpaceView.Chat -> {
                                     VaultChatCard(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(80.dp)
-                                            .then(
-                                                createCombinedClickableModifier(
-                                                    onClick = { onSpaceClicked(item) },
-                                                    onLongClick = { expandedSpaceId = item.space.id }
-                                                ))
                                             .padding(horizontal = 16.dp)
-                                            .graphicsLayer(alpha = alpha.value),
+                                            .graphicsLayer(alpha = alpha.value)
+                                            .animateItem()
+                                            .combinedClickable(
+                                                onClick = {
+                                                    onSpaceClicked(item)
+                                                },
+                                                onLongClick = {
+                                                    expandedSpaceId = item.space.id
+                                                }
+                                            )
+                                            .longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    hapticFeedback.performHapticFeedback(
+                                                        ReorderHapticFeedbackType.START
+                                                    )
+                                                },
+                                                onDragStopped = {
+                                                    hapticFeedback.performHapticFeedback(
+                                                        ReorderHapticFeedbackType.MOVE
+                                                    )
+                                                }
+                                            ),
                                         title = item.space.name.orEmpty(),
                                         icon = item.icon,
                                         previewText = item.previewText,
@@ -650,14 +664,28 @@ fun VaultScreenWithUnreadSection(
                                 is VaultSpaceView.Space -> {
                                     VaultSpaceCard(
                                         modifier = Modifier
-                                            .then(
-                                                createCombinedClickableModifier(
-                                                    onClick = { onSpaceClicked(item) },
-                                                    onLongClick = {
-                                                        expandedSpaceId = item.space.id
-                                                    }
-                                                ))
-                                            .graphicsLayer(alpha = alpha.value),
+                                            .animateItem()
+                                            .graphicsLayer(alpha = alpha.value)
+                                            .combinedClickable(
+                                                onClick = {
+                                                    onSpaceClicked(item)
+                                                },
+                                                onLongClick = {
+                                                    expandedSpaceId = item.space.id
+                                                }
+                                            )
+                                            .longPressDraggableHandle(
+                                                onDragStarted = {
+                                                    hapticFeedback.performHapticFeedback(
+                                                        ReorderHapticFeedbackType.START
+                                                    )
+                                                },
+                                                onDragStopped = {
+                                                    hapticFeedback.performHapticFeedback(
+                                                        ReorderHapticFeedbackType.MOVE
+                                                    )
+                                                }
+                                            ),
                                         title = item.space.name.orEmpty(),
                                         subtitle = item.accessType,
                                         icon = item.icon,
@@ -677,12 +705,12 @@ fun VaultScreenWithUnreadSection(
                         }
                     }
                 }
-                
-                // Main Spaces Section  
+
+                // Not pinned Spaces Section
                 if (filteredMainSpaces.isNotEmpty()) {
                     itemsIndexed(
                         items = filteredMainSpaces,
-                        key = { _, item -> "$MAIN_SECTION_KEY_PREFIX${item.space.id}" },
+                        key = { _, item -> item.space.id },
                         contentType = { _, item ->
                             when (item) {
                                 is VaultSpaceView.Chat -> TYPE_CHAT
@@ -763,8 +791,6 @@ fun VaultScreenWithUnreadSection(
 
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
-
-private const val MAIN_SECTION_KEY_PREFIX = "main_"
 
 
 fun createCombinedClickableModifier(

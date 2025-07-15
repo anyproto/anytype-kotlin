@@ -817,6 +817,7 @@ class VaultViewModel(
 
     // Local state for tracking order changes during drag operations
     private var pendingPinnedSpacesOrder: List<Id>? = null
+    private var lastMovedSpaceId: Id? = null
 
     //region Drag and Drop
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
@@ -838,11 +839,10 @@ class VaultViewModel(
 
             // Store the new order for later persistence in onDragEnd
             val newPinnedOrder = newPinnedSpacesList.map { it.space.id }
-            val mainSpaceIds = currentSections.mainSpaces.map { it.space.id }
 
-            // Store pending order to be saved in onDragEnd
-            // Use distinct() to remove duplicates and maintain a unique list of space IDs.
-            pendingPinnedSpacesOrder = (newPinnedOrder + mainSpaceIds).distinct()
+            // Store pending order to be saved in onDragEnd (only pinned spaces)
+            pendingPinnedSpacesOrder = newPinnedOrder
+            lastMovedSpaceId = fromSpaceId
 
             // Update local sections state immediately for UI responsiveness
             val updatedSections = currentSections.copy(pinnedSpaces = newPinnedSpacesList)
@@ -857,38 +857,39 @@ class VaultViewModel(
         pendingPinnedSpacesOrder?.let { newOrder ->
             viewModelScope.launch {
                 analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
-                //Добавить сохранение порядка в Middleware
-                //setVaultSpaceOrder.async(params = newOrder)
+                
+                // Get the current pinned spaces to determine which space was moved
+                val currentPinnedSpaces = sections.value.pinnedSpaces
+                
+                if (currentPinnedSpaces.isNotEmpty()) {
+                    // Use the tracked moved space ID or fall back to the first space
+                    val movedSpaceId = lastMovedSpaceId ?: newOrder.firstOrNull() ?: return@launch
+                    
+                    reorderPinnedSpaces.async(
+                        ReorderPinnedSpaces.Params(
+                            movedSpaceId = movedSpaceId,
+                            newOrder = newOrder
+                        )
+                    ).fold(
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to reorder pinned spaces: $newOrder")
+                            notificationError.value = error.message ?: "Failed to reorder spaces"
+                        },
+                        onSuccess = {
+                            Timber.d("Successfully reordered pinned spaces: $newOrder")
+                        }
+                    )
+                }
+                
                 // Clear pending order after persistence
                 pendingPinnedSpacesOrder = null
+                lastMovedSpaceId = null
             }
         }
     }
 
     //endregion
 
-    fun onPinnedSpacesReordered(reorderedSpaces: List<VaultSpaceView>) {
-        viewModelScope.launch {
-            val reorderedIds = reorderedSpaces.map { it.space.id }
-            // For reordering, we use the first space as the "moved" space
-            val movedSpaceId = reorderedIds.firstOrNull() ?: return@launch
-            
-            reorderPinnedSpaces.async(
-                ReorderPinnedSpaces.Params(
-                    movedSpaceId = movedSpaceId,
-                    newOrder = reorderedIds
-                )
-            ).fold(
-                onFailure = { error ->
-                    Timber.e(error, "Failed to reorder pinned spaces: $reorderedIds")
-                    notificationError.value = error.message ?: "Failed to reorder spaces"
-                },
-                onSuccess = {
-                    Timber.d("Successfully reordered pinned spaces: $reorderedIds")
-                }
-            )
-        }
-    }
 
     companion object {
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L

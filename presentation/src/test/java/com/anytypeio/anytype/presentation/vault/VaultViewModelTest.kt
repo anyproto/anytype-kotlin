@@ -196,4 +196,389 @@ class VaultViewModelTest {
         // chatSpace1 (latest message), chatSpace2, unpinnedSpace (no chat preview)
         assertEquals(listOf(chatSpace1, chatSpace2, unpinnedSpace).map { it.id }, main.map { it.space.id })
     }
+
+    //region Drag and Drop Tests
+
+    @Test
+    fun `onOrderChanged should update local state immediately with new order`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val space2Id = "space2"
+        val space3Id = "space3"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+        val space2 = StubSpaceView(
+            id = space2Id,
+            targetSpaceId = space2Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--bb",
+            createdDate = now - 1000
+        )
+        val space3 = StubSpaceView(
+            id = space3Id,
+            targetSpaceId = space3Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--cc",
+            createdDate = now - 2000
+        )
+
+        val spacesList = listOf(space1, space2, space3)
+        val permissions = mapOf(
+            space1Id to SpaceMemberPermissions.OWNER,
+            space2Id to SpaceMemberPermissions.OWNER,
+            space3Id to SpaceMemberPermissions.OWNER
+        )
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider
+        )
+
+        advanceUntilIdle()
+
+        // Initial order should be space1, space2, space3 (sorted by spaceOrder)
+        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        assertEquals(listOf(space1Id, space2Id, space3Id), initialPinnedSpaces.map { it.space.id })
+
+        // When - Move space1 to position 2 (the position of space3)
+        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
+
+        // Then - Local state should be updated immediately
+        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        assertEquals(listOf(space2Id, space3Id, space1Id), updatedPinnedSpaces.map { it.space.id })
+    }
+
+    @Test
+    fun `onOrderChanged should do nothing when fromSpaceId equals toSpaceId`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val space2Id = "space2"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+        val space2 = StubSpaceView(
+            id = space2Id,
+            targetSpaceId = space2Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--bb",
+            createdDate = now - 1000
+        )
+
+        val spacesList = listOf(space1, space2)
+        val permissions = mapOf(
+            space1Id to SpaceMemberPermissions.OWNER,
+            space2Id to SpaceMemberPermissions.OWNER
+        )
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider
+        )
+
+        advanceUntilIdle()
+
+        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val initialOrder = initialPinnedSpaces.map { it.space.id }
+
+        // When - Try to move space1 to itself
+        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space1Id)
+
+        // Then - Order should remain unchanged
+        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
+    }
+
+    @Test
+    fun `onOrderChanged should do nothing when space is not found in pinned spaces`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val space2Id = "space2"
+        val nonExistentSpaceId = "nonExistent"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+        val space2 = StubSpaceView(
+            id = space2Id,
+            targetSpaceId = space2Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--bb",
+            createdDate = now - 1000
+        )
+
+        val spacesList = listOf(space1, space2)
+        val permissions = mapOf(
+            space1Id to SpaceMemberPermissions.OWNER,
+            space2Id to SpaceMemberPermissions.OWNER
+        )
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider
+        )
+
+        advanceUntilIdle()
+
+        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val initialOrder = initialPinnedSpaces.map { it.space.id }
+
+        // When - Try to move from non-existent space
+        viewModel.onOrderChanged(fromSpaceId = nonExistentSpaceId, toSpaceId = space1Id)
+
+        // Then - Order should remain unchanged
+        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
+    }
+
+    @Test
+    fun `onDragEnd should call ReorderPinnedSpaces with correct parameters`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val space2Id = "space2"
+        val space3Id = "space3"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+        val space2 = StubSpaceView(
+            id = space2Id,
+            targetSpaceId = space2Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--bb",
+            createdDate = now - 1000
+        )
+        val space3 = StubSpaceView(
+            id = space3Id,
+            targetSpaceId = space3Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--cc",
+            createdDate = now - 2000
+        )
+
+        val spacesList = listOf(space1, space2, space3)
+        val permissions = mapOf(
+            space1Id to SpaceMemberPermissions.OWNER,
+            space2Id to SpaceMemberPermissions.OWNER,
+            space3Id to SpaceMemberPermissions.OWNER
+        )
+
+        // Mock the ReorderPinnedSpaces use case
+        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+        whenever(reorderPinnedSpaces.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(Unit))
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider,
+            reorderPinnedSpaces = reorderPinnedSpaces
+        )
+
+        advanceUntilIdle()
+
+        // When - Perform drag operation
+        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
+        viewModel.onDragEnd()
+
+        advanceUntilIdle()
+
+        // Then - ReorderPinnedSpaces should be called with correct parameters
+        val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
+        val expectedParams = com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces.Params(
+            movedSpaceId = space1Id,
+            newOrder = expectedNewOrder
+        )
+
+        org.mockito.kotlin.verify(reorderPinnedSpaces).async(expectedParams)
+    }
+
+    @Test
+    fun `onDragEnd should do nothing when no pending order changes`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+
+        val spacesList = listOf(space1)
+        val permissions = mapOf(space1Id to SpaceMemberPermissions.OWNER)
+
+        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider,
+            reorderPinnedSpaces = reorderPinnedSpaces
+        )
+
+        advanceUntilIdle()
+
+        // When - Call onDragEnd without any prior onOrderChanged
+        viewModel.onDragEnd()
+
+        advanceUntilIdle()
+
+        // Then - ReorderPinnedSpaces should not be called
+        org.mockito.kotlin.verifyNoInteractions(reorderPinnedSpaces)
+    }
+
+    @Test
+    fun `onDragEnd should handle ReorderPinnedSpaces failure gracefully`() = runTest {
+        // Given
+        val space1Id = "space1"
+        val space2Id = "space2"
+        val now = System.currentTimeMillis().toDouble()
+
+        val space1 = StubSpaceView(
+            id = space1Id,
+            targetSpaceId = space1Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--aa",
+            createdDate = now
+        )
+        val space2 = StubSpaceView(
+            id = space2Id,
+            targetSpaceId = space2Id,
+            spaceAccessType = SpaceAccessType.DEFAULT,
+            spaceAccountStatus = SpaceStatus.OK,
+            spaceLocalStatus = SpaceStatus.OK,
+            spaceOrder = "--bb",
+            createdDate = now - 1000
+        )
+
+        val spacesList = listOf(space1, space2)
+        val permissions = mapOf(
+            space1Id to SpaceMemberPermissions.OWNER,
+            space2Id to SpaceMemberPermissions.OWNER
+        )
+
+        // Mock the ReorderPinnedSpaces use case to return failure
+        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+        val errorMessage = "Network error"
+        whenever(reorderPinnedSpaces.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Failure(Exception(errorMessage)))
+
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider,
+            reorderPinnedSpaces = reorderPinnedSpaces
+        )
+
+        advanceUntilIdle()
+
+        // When - Perform drag operation that will fail
+        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space2Id)
+        viewModel.onDragEnd()
+
+        advanceUntilIdle()
+
+        // Then - Error should be set in notificationError
+        assertEquals(errorMessage, viewModel.notificationError.value)
+    }
+
+    //endregion
 } 

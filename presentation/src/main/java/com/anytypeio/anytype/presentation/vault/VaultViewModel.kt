@@ -217,10 +217,10 @@ class VaultViewModel(
             !space.space.spaceOrder.isNullOrEmpty()
         }
 
-        // Sort pinned spaces by spaceOrder (descending)
-        val sortedPinnedSpaces = pinnedSpaces.sortedByDescending { space ->
-            space.space.spaceOrder ?: ""
-        }
+        // Sort pinned spaces by spaceOrder (ascending)
+        val sortedPinnedSpaces = pinnedSpaces.sortedWith(
+            compareBy(nullsLast()) { it.space.spaceOrder }
+        )
 
         // Sort unpinned spaces by message date (descending), then by creation date (descending)
         val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
@@ -397,14 +397,18 @@ class VaultViewModel(
         } else {
             NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
         }
+
+        val icon = space.spaceIcon(
+            builder = urlBuilder,
+            spaceGradientProvider = SpaceGradientProvider.Default
+        )
+
+        val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
         
         return VaultSpaceView.Space(
             space = space,
-            icon = space.spaceIcon(
-                builder = urlBuilder,
-                spaceGradientProvider = SpaceGradientProvider.Default
-            ),
-            accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType),
+            icon = icon,
+            accessType = accessType,
             isOwner = isOwner,
             isMuted = isMuted
         )

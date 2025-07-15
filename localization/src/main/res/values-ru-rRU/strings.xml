@@ -10,6 +10,7 @@
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
     <string name="key">Ключ</string>
+    <string name="login_key">Ключ</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
@@ -28,6 +29,8 @@
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
     <string name="settings">Настройки</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашего ключа?</string>
     <string name="you_will_need_to_sign_in">Он необходим для входа в хранилище. Храните его в безопасном месте. Если Вы его потеряете - больше не сможете войти в своё хранилище.</string>
     <string name="about_help_and_community">Помощь и сообщество</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Нажмите для ввода</string>
     <string name="modal_gallery">Галерея</string>
     <string name="modal_kanban">Канбан</string>
@@ -857,13 +861,13 @@
     <string name="create_object_section_lists">Списки</string>
     <string name="create_object_section_objects">Объекты</string>
     <string name="edit">Изменить</string>
-    <string name="unselect_all">Отменить выбор</string>
+    <string name="unselect_all">Снять выделение</string>
     <string name="sets">Наборы</string>
     <string name="favorites">Избранное</string>
     <string name="recent">Недавно обновлено</string>
     <string name="recently_opened">Недавно открытые</string>
     <string name="bin">Корзина</string>
-    <string name="synced_files">Синхронизированные файлы</string>
+    <string name="synced_files">Очистка файлов</string>
     <string name="log_in">Войти</string>
     <string name="create_object_section_library">Библиотека Anytype</string>
     <string name="bin_empty_title">Ваша корзина пуста.</string>
@@ -1120,7 +1124,7 @@
     <string name="date_type_older">Раньше</string>
     <string name="dates_days_ago">%1$s дней назад</string>
     <string name="dates_days_from">%1$s дней спустя</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Поделиться локальными журналами</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1286,8 +1290,11 @@
     <string name="multiplayer_cancel_join_request">Отменить запрос на присоединение</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Не отменять</string>
-    <string name="multiplayer_error_invite_not_found">Приглашение не существует. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Ссылку на приглашение не удалось разобрать. Она может содержать ошибки в формате или недопустимые данные.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Похоже, пространство было удалено. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
     <string name="multiplayer_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
     <string name="multiplayer_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
@@ -1831,6 +1838,7 @@
     <string name="vault_create_space">Пространство</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Новые сообщения</string>
     <string name="chat_box_camera">Камера</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1845,4 +1853,12 @@
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

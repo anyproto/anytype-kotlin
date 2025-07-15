@@ -18,8 +18,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.PinSpace
 import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
@@ -33,7 +31,6 @@ class VaultViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val observeVaultSettings: ObserveVaultSettings,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
@@ -49,7 +46,6 @@ class VaultViewModelFactory @Inject constructor(
     private val deleteSpace: DeleteSpace,
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val pinSpace: PinSpace,
     private val unpinSpace: UnpinSpace,
     private val reorderPinnedSpaces: ReorderPinnedSpaces,
     private val setSpaceOrder: SetSpaceOrder
@@ -62,7 +58,6 @@ class VaultViewModelFactory @Inject constructor(
         urlBuilder = urlBuilder,
         spaceManager = spaceManager,
         saveCurrentSpace = saveCurrentSpace,
-        observeVaultSettings = observeVaultSettings,
         analytics = analytics,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         appActionManager = appActionManager,
@@ -78,7 +73,6 @@ class VaultViewModelFactory @Inject constructor(
         deleteSpace = deleteSpace,
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
-        pinSpace = pinSpace,
         unpinSpace = unpinSpace,
         reorderPinnedSpaces = reorderPinnedSpaces,
         setSpaceOrder = setSpaceOrder

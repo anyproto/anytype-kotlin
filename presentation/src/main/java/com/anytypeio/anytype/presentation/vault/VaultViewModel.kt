@@ -12,10 +12,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -26,6 +26,8 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -33,17 +35,19 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-import com.anytypeio.anytype.domain.vault.PinSpace
 import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -54,9 +58,6 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,17 +70,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val observeVaultSettings: ObserveVaultSettings,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
@@ -95,7 +91,6 @@ class VaultViewModel(
     private val deleteSpace: DeleteSpace,
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val pinSpace: PinSpace,
     private val unpinSpace: UnpinSpace,
     private val reorderPinnedSpaces: ReorderPinnedSpaces,
     private val setSpaceOrder: SetSpaceOrder

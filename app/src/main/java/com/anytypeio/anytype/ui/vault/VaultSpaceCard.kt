@@ -61,6 +61,7 @@ fun VaultSpaceCard(
     title: String,
     subtitle: String,
     icon: SpaceIconView,
+    isPinned: Boolean = false,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
@@ -85,7 +86,8 @@ fun VaultSpaceCard(
         )
         ContentSpace(
             title = title,
-            subtitle = subtitle
+            subtitle = subtitle,
+            isPinned = isPinned
         )
         
         // Include dropdown menu inside the card
@@ -109,6 +111,7 @@ fun VaultSpaceCard(
 private fun ContentSpace(
     title: String,
     subtitle: String,
+    isPinned: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -122,12 +125,25 @@ private fun ContentSpace(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
-            text = subtitle,
-            style = Title3,
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = subtitle,
+                style = Title3,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.weight(1f),
+            )
+            if (isPinned) {
+                Image(
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
+                    modifier = Modifier
+                        .size(18.dp),
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                )
+            }
+        }
     }
 }
 
@@ -145,6 +161,7 @@ fun VaultChatCard(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    isPinned: Boolean = false,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
@@ -173,7 +190,8 @@ fun VaultChatCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted
+            isMuted = isMuted,
+            isPinned = isPinned
         )
         
         // Include dropdown menu inside the card
@@ -203,7 +221,8 @@ private fun BoxScope.ContentChat(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null
+    isMuted: Boolean? = null,
+    isPinned: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -289,6 +308,16 @@ private fun BoxScope.ContentChat(
                             color = colorResource(id = R.color.text_white),
                         )
                     }
+                }
+
+                if (unreadMessageCount == 0 && unreadMentionCount == 0 && isPinned) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_pin_18),
+                        contentDescription = stringResource(R.string.content_desc_pin),
+                        modifier = Modifier
+                            .size(18.dp),
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                    )
                 }
             }
         }

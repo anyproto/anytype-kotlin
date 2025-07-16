@@ -64,13 +64,8 @@ data class VaultSectionView(
     val pinnedSpaces: List<VaultSpaceView> = emptyList(),
     val mainSpaces: List<VaultSpaceView> = emptyList()
 ) {
-    /**
-     * All spaces combined for backward compatibility
-     */
-    val allSpaces: List<VaultSpaceView> get() = pinnedSpaces + mainSpaces
-
     companion object {
-        val MAX_PINNED_SPACES = 6
+        const val MAX_PINNED_SPACES = 6
     }
 }
 

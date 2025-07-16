@@ -57,6 +57,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
+import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,7 +96,6 @@ class VaultViewModel(
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
-    val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
@@ -138,7 +138,6 @@ class VaultViewModel(
                 transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
-                spaces.value = resultingSections.mainSpaces
             }
         }
         
@@ -849,7 +848,6 @@ class VaultViewModel(
             // Update local sections state immediately for UI responsiveness
             val updatedSections = currentSections.copy(pinnedSpaces = newPinnedSpacesList)
             sections.value = updatedSections
-            spaces.value = updatedSections.allSpaces // For backward compatibility
         }
     }
 
@@ -894,7 +892,6 @@ class VaultViewModel(
 
 
     companion object {
-        const val MAX_PINNED_SPACES = 6
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
     }
 }

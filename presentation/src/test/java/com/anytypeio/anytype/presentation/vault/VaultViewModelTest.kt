@@ -6,10 +6,12 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -72,8 +74,6 @@ class VaultViewModelTest {
         )
 
         // Then
-        // After init, spaces and sections should be empty
-        assertEquals(emptyList<VaultSpaceView>(), viewModel.spaces.value)
         assertEquals(VaultSectionView(), viewModel.sections.value)
         // Notification badge should be not disabled (since areNotificationsEnabled returns true)
         assertEquals(false, viewModel.isNotificationDisabled.value)
@@ -433,7 +433,7 @@ class VaultViewModelTest {
         )
 
         // Mock the ReorderPinnedSpaces use case
-        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+        val reorderPinnedSpaces = mock<SetSpaceOrder>()
         whenever(reorderPinnedSpaces.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(Unit))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
@@ -448,7 +448,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            reorderPinnedSpaces = reorderPinnedSpaces
+            setSpaceOrder = reorderPinnedSpaces
         )
 
         advanceUntilIdle()
@@ -461,9 +461,9 @@ class VaultViewModelTest {
 
         // Then - ReorderPinnedSpaces should be called with correct parameters
         val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
-        val expectedParams = com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces.Params(
-            movedSpaceId = space1Id,
-            newOrder = expectedNewOrder
+        val expectedParams = com.anytypeio.anytype.domain.vault.SetSpaceOrder.Params(
+            spaceViewId = space1Id,
+            spaceViewOrder = expectedNewOrder
         )
 
         org.mockito.kotlin.verify(reorderPinnedSpaces).async(expectedParams)
@@ -488,7 +488,7 @@ class VaultViewModelTest {
         val spacesList = listOf(space1)
         val permissions = mapOf(space1Id to SpaceMemberPermissions.OWNER)
 
-        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+        val reorderPinnedSpaces = mock<SetSpaceOrder>()
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
@@ -502,7 +502,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            reorderPinnedSpaces = reorderPinnedSpaces
+            setSpaceOrder = reorderPinnedSpaces
         )
 
         advanceUntilIdle()
@@ -549,9 +549,9 @@ class VaultViewModelTest {
         )
 
         // Mock the ReorderPinnedSpaces use case to return failure
-        val reorderPinnedSpaces = mock<com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces>()
+        val reorderPinnedSpaces = mock<SetSpaceOrder>()
         val errorMessage = "Network error"
-        whenever(reorderPinnedSpaces.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Failure(Exception(errorMessage)))
+        whenever(reorderPinnedSpaces.async(any())).thenReturn(Resultat.Failure(Exception(errorMessage)))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
@@ -565,7 +565,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            reorderPinnedSpaces = reorderPinnedSpaces
+            setSpaceOrder = reorderPinnedSpaces
         )
 
         advanceUntilIdle()

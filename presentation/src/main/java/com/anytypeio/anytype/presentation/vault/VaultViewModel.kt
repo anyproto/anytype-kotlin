@@ -181,20 +181,26 @@ class VaultViewModel(
         // Index chatPreviews by space.id for O(1) lookup
         val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
-        val allSpaces = spacesFromFlow
+        val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
-            .map { space ->
-                val chatPreview = space.targetSpaceId?.let { spaceId ->
-                    chatPreviewMap[spaceId]
-                }?.takeIf { preview ->
-                    // Only use chat preview if it matches the main space chat ID
-                    // This filters out previews from other chats in multi-chat spaces
-                    space.chatId?.let { spaceChatId ->
-                        preview.chat == spaceChatId
-                    } == true // If no chatId is set, don't show preview
-                }
-                mapToVaultSpaceViewItem(space, chatPreview, permissions)
+
+        // Compute pinned count first
+        val pinnedIds = allSpacesRaw.filter { !it.spaceOrder.isNullOrEmpty() }.map { it.id }.toSet()
+        val pinnedCount = pinnedIds.size
+
+        val allSpaces = allSpacesRaw.map { space ->
+            val isPinned = !space.spaceOrder.isNullOrEmpty()
+            val chatPreview = space.targetSpaceId?.let { spaceId ->
+                chatPreviewMap[spaceId]
+            }?.takeIf { preview ->
+                // Only use chat preview if it matches the main space chat ID
+                // This filters out previews from other chats in multi-chat spaces
+                space.chatId?.let { spaceChatId ->
+                    preview.chat == spaceChatId
+                } == true // If no chatId is set, don't show preview
             }
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
+        }
 
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
         if (loadingSpaceIndex != -1) {
@@ -227,20 +233,20 @@ class VaultViewModel(
         )
     }
 
-    private suspend fun mapToVaultSpaceViewItem(
+    private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        isPinned: Boolean,
+        pinnedCount: Int
     ): VaultSpaceView {
+        val canPin = isPinned || pinnedCount < VaultSectionView.MAX_PINNED_SPACES
         return when {
             chatPreview != null -> {
-                Timber.d("Creating chat view for space ${space.id}")
-                createChatView(space, chatPreview, permissions)
+                createChatView(space, chatPreview, permissions, canPin)
             }
-
             else -> {
-                Timber.d("Creating standard space view for space ${space.id}")
-                createStandardSpaceView(space, permissions)
+                createStandardSpaceView(space, permissions, canPin)
             }
         }
     }
@@ -312,7 +318,8 @@ class VaultViewModel(
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        canPin: Boolean
     ): VaultSpaceView.Chat {
         val creator = chatPreview.message?.creator ?: ""
         val messageText = chatPreview.message?.content?.text
@@ -375,13 +382,14 @@ class VaultViewModel(
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             isMuted = isMuted,
-            canPin = canPinSpace()
+            canPin = canPin
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        canPin: Boolean
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -405,7 +413,7 @@ class VaultViewModel(
             accessType = accessType,
             isOwner = isOwner,
             isMuted = isMuted,
-            canPin = canPinSpace()
+            canPin = canPin
         )
     }
 

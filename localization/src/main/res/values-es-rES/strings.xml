@@ -1828,6 +1828,8 @@ En concreto,
     <string name="notifications_disable_short">Desactivar</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Notificaciones</string>
     <string name="notification_settings_disabled">Las notificaciones están desactivadas</string>
     <string name="notification_settings_disabled_subtitle">Para recibir notificaciones de mensajes nuevos, actívalas en los ajustes del dispositivo.</string>

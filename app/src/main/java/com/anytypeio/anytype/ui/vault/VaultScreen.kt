@@ -293,7 +293,7 @@ fun SpaceActionsDropdownMenu(
     isMuted: Boolean?,
     isPinned: Boolean,
     maxPinnedSpaces: Int,
-    canPin: Boolean,
+    showPinButton: Boolean,
     onMuteToggle: () -> Unit,
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
@@ -310,7 +310,7 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        if (!canPin && !isPinned) {
+        if (!showPinButton && !isPinned) {
             // Show info message instead of Pin
             Row(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -421,7 +421,7 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             isMuted = true,
             isPinned = false,
             maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-            canPin = true,
+            showPinButton = true,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -440,7 +440,7 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             isMuted = false,
             isPinned = false,
             maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-            canPin = true,
+            showPinButton = true,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -458,7 +458,7 @@ fun SpaceActionsDropdownMenuHost(
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     maxPinnedSpaces: Int,
-    canPin: Boolean,
+    showPinButton: Boolean,
     onSpaceSettings: (Id) -> Unit
 ) {
     SpaceActionsDropdownMenu(
@@ -466,7 +466,7 @@ fun SpaceActionsDropdownMenuHost(
         onDismiss = onDismiss,
         isMuted = spaceView.isMuted,
         isPinned = spaceView.isPinned,
-        canPin = canPin,
+        showPinButton = showPinButton,
         maxPinnedSpaces = maxPinnedSpaces,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
@@ -678,7 +678,7 @@ fun VaultScreenWithUnreadSection(
                                         onUnpinSpace = onUnpinSpace,
                                         onSpaceSettings = onSpaceSettings,
                                         maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-                                        canPin = item.canPin
+                                        showPinButton = item.showPinButton
                                     )
                                 }
 
@@ -720,7 +720,7 @@ fun VaultScreenWithUnreadSection(
                                         onUnpinSpace = onUnpinSpace,
                                         maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
                                         onSpaceSettings = onSpaceSettings,
-                                        canPin = item.canPin
+                                        showPinButton = item.showPinButton
                                     )
                                 }
                             }
@@ -774,7 +774,7 @@ fun VaultScreenWithUnreadSection(
                                     onUnpinSpace = onUnpinSpace,
                                     maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
                                     onSpaceSettings = onSpaceSettings,
-                                    canPin = item.canPin
+                                    showPinButton = item.showPinButton
                                 )
                             }
 
@@ -802,7 +802,7 @@ fun VaultScreenWithUnreadSection(
                                     onUnpinSpace = onUnpinSpace,
                                     maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
                                     onSpaceSettings = onSpaceSettings,
-                                    canPin = item.canPin
+                                    showPinButton = item.showPinButton
                                 )
                             }
                         }

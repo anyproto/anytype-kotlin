@@ -71,7 +71,7 @@ fun VaultSpaceCard(
     onUnpinSpace: (Id) -> Unit = {},
     maxPinnedSpaces: Int,
     onSpaceSettings: (Id) -> Unit = {},
-    canPin: Boolean = false
+    showPinButton: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -103,7 +103,7 @@ fun VaultSpaceCard(
                 onUnpinSpace = onUnpinSpace,
                 maxPinnedSpaces = maxPinnedSpaces,
                 onSpaceSettings = onSpaceSettings,
-                canPin = canPin
+                showPinButton = showPinButton
             )
         }
     }
@@ -173,7 +173,7 @@ fun VaultChatCard(
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
-    canPin: Boolean
+    showPinButton: Boolean
 ) {
     Box(
         modifier = modifier
@@ -209,7 +209,7 @@ fun VaultChatCard(
                 onUnpinSpace = onUnpinSpace,
                 maxPinnedSpaces = maxPinnedSpaces,
                 onSpaceSettings = onSpaceSettings,
-                canPin = canPin
+                showPinButton = showPinButton
             )
         }
     }
@@ -626,7 +626,7 @@ fun VaultSpaceCardPreview() {
         subtitle = "Private space",
         icon = SpaceIconView.Placeholder(),
         maxPinnedSpaces = 6,
-        canPin = true
+        showPinButton = true
     )
 }
 
@@ -663,7 +663,7 @@ fun ChatWithMentionAndMessage() {
                 order = "order-id"
             )
         ),
-        canPin = true
+        showPinButton = true
     )
 }
 
@@ -699,7 +699,7 @@ fun ChatWithMention() {
                 order = "order-id"
             )
         ),
-        canPin = true
+        showPinButton = true
     )
 }
 
@@ -734,7 +734,7 @@ fun ChatPreview() {
                 order = "order-id"
             )
         ),
-        canPin = true
+        showPinButton = true
     )
 }
 

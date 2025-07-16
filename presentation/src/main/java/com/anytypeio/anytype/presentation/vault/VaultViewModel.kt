@@ -240,13 +240,13 @@ class VaultViewModel(
         isPinned: Boolean,
         pinnedCount: Int
     ): VaultSpaceView {
-        val canPin = isPinned || pinnedCount < VaultSectionView.MAX_PINNED_SPACES
+        val showPinButton = isPinned || pinnedCount < VaultSectionView.MAX_PINNED_SPACES
         return when {
             chatPreview != null -> {
-                createChatView(space, chatPreview, permissions, canPin)
+                createChatView(space, chatPreview, permissions, showPinButton)
             }
             else -> {
-                createStandardSpaceView(space, permissions, canPin)
+                createStandardSpaceView(space, permissions, showPinButton)
             }
         }
     }
@@ -319,7 +319,7 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
         permissions: Map<Id, SpaceMemberPermissions>,
-        canPin: Boolean
+        showPinButton: Boolean
     ): VaultSpaceView.Chat {
         val creator = chatPreview.message?.creator ?: ""
         val messageText = chatPreview.message?.content?.text
@@ -382,14 +382,14 @@ class VaultViewModel(
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             isMuted = isMuted,
-            canPin = canPin
+            showPinButton = showPinButton
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
         permissions: Map<Id, SpaceMemberPermissions>,
-        canPin: Boolean
+        showPinButton: Boolean
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -413,7 +413,7 @@ class VaultViewModel(
             accessType = accessType,
             isOwner = isOwner,
             isMuted = isMuted,
-            canPin = canPin
+            showPinButton = showPinButton
         )
     }
 

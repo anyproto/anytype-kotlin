@@ -645,12 +645,12 @@ class VaultViewModelTest {
         
         // All pinned spaces should have canPin = true (they're already pinned)
         sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
         
         // Unpinned space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
         sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
     }
 
@@ -755,12 +755,12 @@ class VaultViewModelTest {
         
         // All pinned spaces should have canPin = true (they're already pinned)
         sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
         
         // Unpinned space should have canPin = false (pinnedCount >= MAX_PINNED_SPACES)
         sections.mainSpaces.forEach { space ->
-            assertEquals(false, space.canPin)
+            assertEquals(false, space.showPinButton)
         }
     }
 
@@ -814,7 +814,7 @@ class VaultViewModelTest {
         
         // All unpinned spaces should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
         sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
     }
 
@@ -879,12 +879,12 @@ class VaultViewModelTest {
         
         // Pinned chat space should have canPin = true (already pinned)
         sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
         
         // Unpinned chat space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
         sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
     }
 
@@ -948,12 +948,12 @@ class VaultViewModelTest {
         
         // All pinned spaces should have canPin = true (already pinned)
         sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
         
         // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
         sections.mainSpaces.forEach { space ->
-            assertEquals(false, space.canPin)
+            assertEquals(false, space.showPinButton)
         }
 
         // When - User unpins one space (pinnedSpace6)
@@ -971,12 +971,12 @@ class VaultViewModelTest {
         
         // All pinned spaces should have canPin = true (already pinned)
         sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.canPin)
+            assertEquals(true, space.showPinButton)
         }
         
         // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
         sections.mainSpaces.forEach { space ->
-            assertEquals("Space ${space.space.id} should have canPin = true after unpinning", true, space.canPin)
+            assertEquals("Space ${space.space.id} should have canPin = true after unpinning", true, space.showPinButton)
         }
     }
 

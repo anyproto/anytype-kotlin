@@ -41,6 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -63,6 +64,7 @@ import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -293,9 +295,11 @@ fun SpaceActionsDropdownMenu(
     isMuted: Boolean?,
     isOwner: Boolean,
     isPinned: Boolean,
+    pinnedSpacesCount: Int,
+    maxPinnedSpaces: Int,
     onMuteToggle: () -> Unit,
-    onDeleteOrLeave: () -> Unit,
-    onPinToggle: () -> Unit
+    onPinToggle: () -> Unit,
+    onSpaceSettings: () -> Unit
 ) {
     DropdownMenu(
         modifier = Modifier.width(254.dp),
@@ -309,41 +313,50 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        // Pin/Unpin action
-        DropdownMenuItem(
-            onClick = {
-                onPinToggle()
-                onDismiss()
-            },
-            text = {
-                val stringRes = if (isPinned) {
-                    R.string.vault_unpin_space
-                } else {
-                    R.string.vault_pin_space
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = stringResource(id = stringRes),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = if (isPinned) R.drawable.ic_unpin_24 else R.drawable.ic_pin_24),
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 4.dp)
-                            .size(24.dp)
-                    )
-                }
+        // Pin/Unpin or Info message
+        if (!isPinned && pinnedSpacesCount >= maxPinnedSpaces) {
+            // Show info message instead of Pin
+            Row(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = stringResource(R.string.vault_pinned_limit_message, maxPinnedSpaces),
+                    style = PreviewTitle2Regular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
             }
-        )
-
-        if (isMuted != null) {
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        } else {
+            DropdownMenuItem(
+                onClick = {
+                    onPinToggle()
+                    onDismiss()
+                },
+                text = {
+                    val stringRes = if (isPinned) {
+                        R.string.vault_unpin_space
+                    } else {
+                        R.string.vault_pin_space
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(id = stringRes),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Image(
+                            painter = painterResource(id = if (isPinned) R.drawable.ic_unpin_24 else R.drawable.ic_pin_24),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .padding(end = 4.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
+            )
         }
 
+        // Mute/Unmute only if chat enabled
         if (isMuted != null) {
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             DropdownMenuItem(
                 onClick = {
                     onMuteToggle()
@@ -372,20 +385,30 @@ fun SpaceActionsDropdownMenu(
                     }
                 }
             )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         }
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        // Space Settings (always shown)
         DropdownMenuItem(
             onClick = {
-                onDeleteOrLeave()
+                onSpaceSettings()
                 onDismiss()
             },
             text = {
-                Text(
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.palette_system_red),
-                    text = if (isOwner) stringResource(R.string.delete_space)
-                    else stringResource(R.string.multiplayer_leave_space)
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(R.string.vault_space_settings)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_space_settings_24),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(24.dp)
+                    )
+                }
             }
         )
     }
@@ -402,9 +425,11 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             isMuted = true,
             isOwner = true,
             isPinned = false,
+            pinnedSpacesCount = 0,
+            maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
             onMuteToggle = {},
-            onDeleteOrLeave = {},
-            onPinToggle = {}
+            onPinToggle = {},
+            onSpaceSettings = {}
         )
     }
 }
@@ -420,9 +445,11 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             isMuted = false,
             isOwner = false,
             isPinned = false,
+            pinnedSpacesCount = 0,
+            maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
             onMuteToggle = {},
-            onDeleteOrLeave = {},
-            onPinToggle = {}
+            onPinToggle = {},
+            onSpaceSettings = {}
         )
     }
 }
@@ -434,10 +461,11 @@ fun SpaceActionsDropdownMenuHost(
     onDismiss: () -> Unit,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
-    onDeleteSpace: (String) -> Unit,
-    onLeaveSpace: (String) -> Unit,
     onPinSpace: (Id) -> Unit,
-    onUnpinSpace: (Id) -> Unit
+    onUnpinSpace: (Id) -> Unit,
+    pinnedSpacesCount: Int,
+    maxPinnedSpaces: Int,
+    onSpaceSettings: (Id) -> Unit
 ) {
     SpaceActionsDropdownMenu(
         expanded = expanded,
@@ -445,20 +473,20 @@ fun SpaceActionsDropdownMenuHost(
         isMuted = spaceView.isMuted,
         isOwner = spaceView.isOwner,
         isPinned = spaceView.isPinned,
+        pinnedSpacesCount = pinnedSpacesCount,
+        maxPinnedSpaces = maxPinnedSpaces,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
                 if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-            }
-        },
-        onDeleteOrLeave = {
-            spaceView.space.targetSpaceId?.let {
-                if (spaceView.isOwner) onDeleteSpace(it) else onLeaveSpace(it)
             }
         },
         onPinToggle = {
             spaceView.space.id.let {
                 if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
             }
+        },
+        onSpaceSettings = {
+            spaceView.space.id.let { onSpaceSettings(it) }
         }
     )
 }
@@ -480,7 +508,8 @@ fun VaultScreenWithUnreadSection(
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
-    onDragEnd: () -> Unit = { /* No-op */ }
+    onDragEnd: () -> Unit = { /* No-op */ },
+    onSpaceSettings: (Id) -> Unit
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -556,7 +585,7 @@ fun VaultScreenWithUnreadSection(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                    spaceCountLimitReached = sections.mainSpaces.size >= VaultSectionView.MAX_PINNED_SPACES,
                     isLoading = isLoading
                 )
                 DefaultSearchBar(
@@ -654,10 +683,11 @@ fun VaultScreenWithUnreadSection(
                                         onDismissMenu = { expandedSpaceId = null },
                                         onMuteSpace = onMuteSpace,
                                         onUnmuteSpace = onUnmuteSpace,
-                                        onDeleteSpace = onDeleteSpace,
-                                        onLeaveSpace = onLeaveSpace,
                                         onPinSpace = onPinSpace,
-                                        onUnpinSpace = onUnpinSpace
+                                        onUnpinSpace = onUnpinSpace,
+                                        pinnedSpacesCount = sections.pinnedSpaces.size,
+                                        maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+                                        onSpaceSettings = onSpaceSettings
                                     )
                                 }
 
@@ -695,10 +725,11 @@ fun VaultScreenWithUnreadSection(
                                         onDismissMenu = { expandedSpaceId = null },
                                         onMuteSpace = onMuteSpace,
                                         onUnmuteSpace = onUnmuteSpace,
-                                        onDeleteSpace = onDeleteSpace,
-                                        onLeaveSpace = onLeaveSpace,
                                         onPinSpace = onPinSpace,
-                                        onUnpinSpace = onUnpinSpace
+                                        onUnpinSpace = onUnpinSpace,
+                                        pinnedSpacesCount = sections.pinnedSpaces.size,
+                                        maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+                                        onSpaceSettings = onSpaceSettings
                                     )
                                 }
                             }
@@ -748,10 +779,11 @@ fun VaultScreenWithUnreadSection(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace,
                                     onPinSpace = onPinSpace,
-                                    onUnpinSpace = onUnpinSpace
+                                    onUnpinSpace = onUnpinSpace,
+                                    pinnedSpacesCount = sections.pinnedSpaces.size,
+                                    maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+                                    onSpaceSettings = onSpaceSettings
                                 )
                             }
 
@@ -775,10 +807,11 @@ fun VaultScreenWithUnreadSection(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
-                                    onDeleteSpace = onDeleteSpace,
-                                    onLeaveSpace = onLeaveSpace,
                                     onPinSpace = onPinSpace,
-                                    onUnpinSpace = onUnpinSpace
+                                    onUnpinSpace = onUnpinSpace,
+                                    pinnedSpacesCount = sections.pinnedSpaces.size,
+                                    maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+                                    onSpaceSettings = onSpaceSettings
                                 )
                             }
                         }

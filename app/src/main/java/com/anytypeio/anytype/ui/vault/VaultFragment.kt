@@ -39,6 +39,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
@@ -93,6 +94,7 @@ class VaultFragment : BaseComposeFragment() {
                     onUnpinSpace = vm::onUnpinSpaceClicked,
                     onOrderChanged = vm::onOrderChanged,
                     onDragEnd = vm::onDragEnd,
+                    onSpaceSettings = vm::onSpaceSettingsClicked
                 )
                 val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
                 if (notificationError != null) {
@@ -268,6 +270,17 @@ class VaultFragment : BaseComposeFragment() {
                     vm.onLeaveSpaceWarningCancelled()
                 }
                 fragment.show(childFragmentManager, null)
+            }
+
+            is VaultCommand.OpenSpaceSettings -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.action_open_space_settings,
+                        SpaceSettingsFragment.args(space = command.space)
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space settings")
+                }
             }
         }
     }

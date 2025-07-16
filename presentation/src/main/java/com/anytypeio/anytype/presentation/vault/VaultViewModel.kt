@@ -410,24 +410,41 @@ class VaultViewModel(
     fun onSpaceClicked(view: VaultSpaceView) {
         Timber.i("onSpaceClicked")
         viewModelScope.launch {
-            val targetSpace = view.space.targetSpaceId
-            if (targetSpace != null) {
-                analytics.sendEvent(eventName = EventsDictionary.switchSpace)
-                spaceManager.set(targetSpace).fold(
-                    onFailure = {
-                        Timber.e(it, "Could not select space")
-                    },
-                    onSuccess = {
-                        proceedWithSavingCurrentSpace(
-                            targetSpace = targetSpace,
-                            chat = view.space.chatId?.ifEmpty { null },
-                            spaceUxType = view.space.spaceUxType
-                        )
-                    }
-                )
+            handleSpaceSelection(view, emitSettings = false)
+        }
+    }
+
+    fun onSpaceSettingsClicked(spaceId: Id) {
+        viewModelScope.launch {
+            val spaceView = sections.value.pinnedSpaces.find { it.space.id == spaceId }
+                ?: sections.value.mainSpaces.find { it.space.id == spaceId }
+            if (spaceView != null) {
+                handleSpaceSelection(spaceView, emitSettings = true)
             } else {
-                Timber.e("Missing target space")
+                Timber.e("SpaceView not found for id: $spaceId")
             }
+        }
+    }
+
+    private suspend fun handleSpaceSelection(view: VaultSpaceView, emitSettings: Boolean) {
+        val targetSpace = view.space.targetSpaceId
+        if (targetSpace != null) {
+            analytics.sendEvent(eventName = EventsDictionary.switchSpace)
+            spaceManager.set(targetSpace).fold(
+                onFailure = {
+                    Timber.e(it, "Could not select space")
+                },
+                onSuccess = {
+                    proceedWithSavingCurrentSpace(
+                        targetSpace = targetSpace,
+                        chat = view.space.chatId?.ifEmpty { null },
+                        spaceUxType = view.space.spaceUxType,
+                        emitSettings = emitSettings
+                    )
+                }
+            )
+        } else {
+            Timber.e("Missing target space")
         }
     }
 
@@ -563,7 +580,8 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: String,
         chat: Id?,
-        spaceUxType: SpaceUxType?
+        spaceUxType: SpaceUxType?,
+        emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -573,7 +591,9 @@ class VaultViewModel(
             },
             onSuccess = {
                 Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType, Chat ID: $chat")
-                if (spaceUxType == SpaceUxType.CHAT && chat != null) {
+                if (emitSettings) {
+                    commands.emit(VaultCommand.OpenSpaceSettings(SpaceId(targetSpace)))
+                } else if (spaceUxType == SpaceUxType.CHAT && chat != null) {
                     commands.emit(
                         VaultCommand.EnterSpaceLevelChat(
                             space = Space(targetSpace),

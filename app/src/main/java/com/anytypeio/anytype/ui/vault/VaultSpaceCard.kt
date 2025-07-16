@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
@@ -67,10 +68,11 @@ fun VaultSpaceCard(
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
-    onUnpinSpace: (Id) -> Unit = {}
+    onUnpinSpace: (Id) -> Unit = {},
+    pinnedSpacesCount: Int = 0,
+    maxPinnedSpaces: Int,
+    onSpaceSettings: (Id) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -98,10 +100,11 @@ fun VaultSpaceCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace,
                 onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace
+                onUnpinSpace = onUnpinSpace,
+                pinnedSpacesCount = pinnedSpacesCount,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings
             )
         }
     }
@@ -167,10 +170,11 @@ fun VaultChatCard(
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
-    onUnpinSpace: (Id) -> Unit = {}
+    onUnpinSpace: (Id) -> Unit = {},
+    pinnedSpacesCount: Int = 0,
+    maxPinnedSpaces: Int,
+    onSpaceSettings: (Id) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -202,10 +206,11 @@ fun VaultChatCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace,
                 onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace
+                onUnpinSpace = onUnpinSpace,
+                pinnedSpacesCount = pinnedSpacesCount,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings
             )
         }
     }
@@ -620,7 +625,8 @@ fun VaultSpaceCardPreview() {
         modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
-        icon = SpaceIconView.Placeholder()
+        icon = SpaceIconView.Placeholder(),
+        maxPinnedSpaces = 6
     )
 }
 
@@ -637,6 +643,7 @@ fun ChatWithMentionAndMessage() {
         unreadMessageCount = 32,
         unreadMentionCount = 1,
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -671,6 +678,7 @@ fun ChatWithMention() {
         messageTime = "18:32",
         unreadMentionCount = 1,
         isMuted = true,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -704,6 +712,7 @@ fun ChatPreview() {
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",

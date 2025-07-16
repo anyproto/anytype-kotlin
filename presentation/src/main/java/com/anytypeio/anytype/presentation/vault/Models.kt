@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -13,6 +14,7 @@ sealed class VaultSpaceView {
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
     val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
+    abstract val showPinButton: Boolean
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -25,7 +27,8 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val showPinButton: Boolean
     ) : VaultSpaceView()
 
     data class Chat(
@@ -41,7 +44,8 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val showPinButton: Boolean
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -77,6 +81,7 @@ sealed class VaultCommand {
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
+    data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()

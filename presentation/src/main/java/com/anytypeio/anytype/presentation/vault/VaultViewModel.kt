@@ -181,20 +181,26 @@ class VaultViewModel(
         // Index chatPreviews by space.id for O(1) lookup
         val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
-        val allSpaces = spacesFromFlow
+        val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
-            .map { space ->
-                val chatPreview = space.targetSpaceId?.let { spaceId ->
-                    chatPreviewMap[spaceId]
-                }?.takeIf { preview ->
-                    // Only use chat preview if it matches the main space chat ID
-                    // This filters out previews from other chats in multi-chat spaces
-                    space.chatId?.let { spaceChatId ->
-                        preview.chat == spaceChatId
-                    } == true // If no chatId is set, don't show preview
-                }
-                mapToVaultSpaceViewItem(space, chatPreview, permissions)
+
+        // Compute pinned count first
+        val pinnedIds = allSpacesRaw.filter { !it.spaceOrder.isNullOrEmpty() }.map { it.id }.toSet()
+        val pinnedCount = pinnedIds.size
+
+        val allSpaces = allSpacesRaw.map { space ->
+            val isPinned = !space.spaceOrder.isNullOrEmpty()
+            val chatPreview = space.targetSpaceId?.let { spaceId ->
+                chatPreviewMap[spaceId]
+            }?.takeIf { preview ->
+                // Only use chat preview if it matches the main space chat ID
+                // This filters out previews from other chats in multi-chat spaces
+                space.chatId?.let { spaceChatId ->
+                    preview.chat == spaceChatId
+                } == true // If no chatId is set, don't show preview
             }
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
+        }
 
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
         if (loadingSpaceIndex != -1) {
@@ -227,20 +233,20 @@ class VaultViewModel(
         )
     }
 
-    private suspend fun mapToVaultSpaceViewItem(
+    private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        isPinned: Boolean,
+        pinnedCount: Int
     ): VaultSpaceView {
+        val showPinButton = isPinned || pinnedCount < VaultSectionView.MAX_PINNED_SPACES
         return when {
             chatPreview != null -> {
-                Timber.d("Creating chat view for space ${space.id}")
-                createChatView(space, chatPreview, permissions)
+                createChatView(space, chatPreview, permissions, showPinButton)
             }
-
             else -> {
-                Timber.d("Creating standard space view for space ${space.id}")
-                createStandardSpaceView(space, permissions)
+                createStandardSpaceView(space, permissions, showPinButton)
             }
         }
     }
@@ -312,7 +318,8 @@ class VaultViewModel(
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        showPinButton: Boolean
     ): VaultSpaceView.Chat {
         val creator = chatPreview.message?.creator ?: ""
         val messageText = chatPreview.message?.content?.text
@@ -374,13 +381,15 @@ class VaultViewModel(
             unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            showPinButton = showPinButton
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        showPinButton: Boolean
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -403,31 +412,49 @@ class VaultViewModel(
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            showPinButton = showPinButton
         )
     }
 
     fun onSpaceClicked(view: VaultSpaceView) {
         Timber.i("onSpaceClicked")
         viewModelScope.launch {
-            val targetSpace = view.space.targetSpaceId
-            if (targetSpace != null) {
-                analytics.sendEvent(eventName = EventsDictionary.switchSpace)
-                spaceManager.set(targetSpace).fold(
-                    onFailure = {
-                        Timber.e(it, "Could not select space")
-                    },
-                    onSuccess = {
-                        proceedWithSavingCurrentSpace(
-                            targetSpace = targetSpace,
-                            chat = view.space.chatId?.ifEmpty { null },
-                            spaceUxType = view.space.spaceUxType
-                        )
-                    }
-                )
+            handleSpaceSelection(view, emitSettings = false)
+        }
+    }
+
+    fun onSpaceSettingsClicked(spaceId: Id) {
+        viewModelScope.launch {
+            val spaceView = sections.value.pinnedSpaces.find { it.space.id == spaceId }
+                ?: sections.value.mainSpaces.find { it.space.id == spaceId }
+            if (spaceView != null) {
+                handleSpaceSelection(spaceView, emitSettings = true)
             } else {
-                Timber.e("Missing target space")
+                Timber.e("SpaceView not found for id: $spaceId")
             }
+        }
+    }
+
+    private suspend fun handleSpaceSelection(view: VaultSpaceView, emitSettings: Boolean) {
+        val targetSpace = view.space.targetSpaceId
+        if (targetSpace != null) {
+            analytics.sendEvent(eventName = EventsDictionary.switchSpace)
+            spaceManager.set(targetSpace).fold(
+                onFailure = {
+                    Timber.e(it, "Could not select space")
+                },
+                onSuccess = {
+                    proceedWithSavingCurrentSpace(
+                        targetSpace = targetSpace,
+                        chat = view.space.chatId?.ifEmpty { null },
+                        spaceUxType = view.space.spaceUxType,
+                        emitSettings = emitSettings
+                    )
+                }
+            )
+        } else {
+            Timber.e("Missing target space")
         }
     }
 
@@ -563,7 +590,8 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: String,
         chat: Id?,
-        spaceUxType: SpaceUxType?
+        spaceUxType: SpaceUxType?,
+        emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
             SaveCurrentSpace.Params(SpaceId(targetSpace))
@@ -573,7 +601,9 @@ class VaultViewModel(
             },
             onSuccess = {
                 Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType, Chat ID: $chat")
-                if (spaceUxType == SpaceUxType.CHAT && chat != null) {
+                if (emitSettings) {
+                    commands.emit(VaultCommand.OpenSpaceSettings(SpaceId(targetSpace)))
+                } else if (spaceUxType == SpaceUxType.CHAT && chat != null) {
                     commands.emit(
                         VaultCommand.EnterSpaceLevelChat(
                             space = Space(targetSpace),
@@ -705,7 +735,7 @@ class VaultViewModel(
             val currentSections = sections.value
             val pinnedSpaces = currentSections.pinnedSpaces
             
-            if (pinnedSpaces.count() >= MAX_PINNED_SPACES) {
+            if (!canPinSpace()) {
                 Timber.w("Max pinned spaces limit reached: ${MAX_PINNED_SPACES}")
                 // Show limit reached error
                 vaultErrors.value = VaultErrors.MaxPinnedSpacesReached
@@ -814,6 +844,13 @@ class VaultViewModel(
 
     fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
         return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
+    }
+
+    /**
+     * Returns true if the user can pin a space (i.e., the max pinned spaces limit is not reached).
+     */
+    fun canPinSpace(): Boolean {
+        return sections.value.pinnedSpaces.size < MAX_PINNED_SPACES
     }
 
     // Local state for tracking order changes during drag operations

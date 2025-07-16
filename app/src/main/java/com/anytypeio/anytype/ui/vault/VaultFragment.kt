@@ -39,6 +39,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
@@ -71,12 +72,7 @@ class VaultFragment : BaseComposeFragment() {
                 val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
-                val onDeleteSpace: (String) -> Unit = { spaceId ->
-                    vm.onDeleteSpaceMenuClicked(spaceId)
-                }
-                val onLeaveSpace: (String) -> Unit = { spaceId ->
-                    vm.onLeaveSpaceMenuClicked(spaceId)
-                }
+
                 VaultScreenWithUnreadSection(
                     sections = vm.sections.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
@@ -87,12 +83,11 @@ class VaultFragment : BaseComposeFragment() {
                     isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
-                    onDeleteSpace = onDeleteSpace,
-                    onLeaveSpace = onLeaveSpace,
                     onPinSpace = vm::onPinSpaceClicked,
                     onUnpinSpace = vm::onUnpinSpaceClicked,
                     onOrderChanged = vm::onOrderChanged,
                     onDragEnd = vm::onDragEnd,
+                    onSpaceSettings = vm::onSpaceSettingsClicked
                 )
                 val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
                 if (notificationError != null) {
@@ -268,6 +263,17 @@ class VaultFragment : BaseComposeFragment() {
                     vm.onLeaveSpaceWarningCancelled()
                 }
                 fragment.show(childFragmentManager, null)
+            }
+
+            is VaultCommand.OpenSpaceSettings -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.action_open_space_settings,
+                        SpaceSettingsFragment.args(space = command.space)
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space settings")
+                }
             }
         }
     }

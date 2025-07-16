@@ -67,10 +67,11 @@ fun VaultSpaceCard(
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
-    onUnpinSpace: (Id) -> Unit = {}
+    onUnpinSpace: (Id) -> Unit = {},
+    maxPinnedSpaces: Int,
+    onSpaceSettings: (Id) -> Unit = {},
+    showPinButton: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -98,10 +99,11 @@ fun VaultSpaceCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace,
                 onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace
+                onUnpinSpace = onUnpinSpace,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings,
+                showPinButton = showPinButton
             )
         }
     }
@@ -162,15 +164,16 @@ fun VaultChatCard(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     isPinned: Boolean = false,
+    maxPinnedSpaces: Int,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
-    onUnpinSpace: (Id) -> Unit = {}
+    onUnpinSpace: (Id) -> Unit = {},
+    onSpaceSettings: (Id) -> Unit = {},
+    showPinButton: Boolean
 ) {
     Box(
         modifier = modifier
@@ -202,10 +205,11 @@ fun VaultChatCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace,
                 onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace
+                onUnpinSpace = onUnpinSpace,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings,
+                showPinButton = showPinButton
             )
         }
     }
@@ -620,7 +624,9 @@ fun VaultSpaceCardPreview() {
         modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
-        icon = SpaceIconView.Placeholder()
+        icon = SpaceIconView.Placeholder(),
+        maxPinnedSpaces = 6,
+        showPinButton = true
     )
 }
 
@@ -637,6 +643,7 @@ fun ChatWithMentionAndMessage() {
         unreadMessageCount = 32,
         unreadMentionCount = 1,
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -655,7 +662,8 @@ fun ChatWithMentionAndMessage() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 
@@ -671,6 +679,7 @@ fun ChatWithMention() {
         messageTime = "18:32",
         unreadMentionCount = 1,
         isMuted = true,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -689,7 +698,8 @@ fun ChatWithMention() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 
@@ -704,6 +714,7 @@ fun ChatPreview() {
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -722,7 +733,8 @@ fun ChatPreview() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 

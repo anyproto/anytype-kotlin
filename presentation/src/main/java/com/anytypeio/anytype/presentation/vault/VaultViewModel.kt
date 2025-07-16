@@ -704,10 +704,9 @@ class VaultViewModel(
             val currentSections = sections.value
             val pinnedSpaces = currentSections.pinnedSpaces
             
-            val pinnedSpacesLimit = 6
-            if (pinnedSpaces.count() >= pinnedSpacesLimit) {
+            if (pinnedSpaces.count() >= MAX_PINNED_SPACES) {
                 // Show limit reached error
-                notificationError.value = "Pin limit reached ($pinnedSpacesLimit)"
+                notificationError.value = "Pin limit reached ($MAX_PINNED_SPACES)"
                 return@launch
             }
             
@@ -892,6 +891,7 @@ class VaultViewModel(
 
 
     companion object {
+        private const val MAX_PINNED_SPACES = 6
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
     }
 }

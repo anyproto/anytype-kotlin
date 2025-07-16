@@ -41,7 +41,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -71,7 +70,6 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import kotlinx.coroutines.delay
@@ -293,10 +291,9 @@ fun SpaceActionsDropdownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
     isMuted: Boolean?,
-    isOwner: Boolean,
     isPinned: Boolean,
-    pinnedSpacesCount: Int,
     maxPinnedSpaces: Int,
+    canPin: Boolean,
     onMuteToggle: () -> Unit,
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
@@ -313,8 +310,7 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        // Pin/Unpin or Info message
-        if (!isPinned && pinnedSpacesCount >= maxPinnedSpaces) {
+        if (!canPin && !isPinned) {
             // Show info message instead of Pin
             Row(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -423,10 +419,9 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             expanded = expanded,
             onDismiss = { expanded = false },
             isMuted = true,
-            isOwner = true,
             isPinned = false,
-            pinnedSpacesCount = 0,
             maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+            canPin = true,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -443,10 +438,9 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             expanded = expanded,
             onDismiss = { expanded = false },
             isMuted = false,
-            isOwner = false,
             isPinned = false,
-            pinnedSpacesCount = 0,
             maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
+            canPin = true,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -463,17 +457,16 @@ fun SpaceActionsDropdownMenuHost(
     onUnmuteSpace: (Id) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
-    pinnedSpacesCount: Int,
     maxPinnedSpaces: Int,
+    canPin: Boolean,
     onSpaceSettings: (Id) -> Unit
 ) {
     SpaceActionsDropdownMenu(
         expanded = expanded,
         onDismiss = onDismiss,
         isMuted = spaceView.isMuted,
-        isOwner = spaceView.isOwner,
         isPinned = spaceView.isPinned,
-        pinnedSpacesCount = pinnedSpacesCount,
+        canPin = canPin,
         maxPinnedSpaces = maxPinnedSpaces,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
@@ -503,8 +496,6 @@ fun VaultScreenWithUnreadSection(
     isLoading: Boolean,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
-    onDeleteSpace: (String) -> Unit,
-    onLeaveSpace: (String) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
@@ -685,9 +676,9 @@ fun VaultScreenWithUnreadSection(
                                         onUnmuteSpace = onUnmuteSpace,
                                         onPinSpace = onPinSpace,
                                         onUnpinSpace = onUnpinSpace,
-                                        pinnedSpacesCount = sections.pinnedSpaces.size,
+                                        onSpaceSettings = onSpaceSettings,
                                         maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-                                        onSpaceSettings = onSpaceSettings
+                                        canPin = item.canPin
                                     )
                                 }
 
@@ -727,9 +718,9 @@ fun VaultScreenWithUnreadSection(
                                         onUnmuteSpace = onUnmuteSpace,
                                         onPinSpace = onPinSpace,
                                         onUnpinSpace = onUnpinSpace,
-                                        pinnedSpacesCount = sections.pinnedSpaces.size,
                                         maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-                                        onSpaceSettings = onSpaceSettings
+                                        onSpaceSettings = onSpaceSettings,
+                                        canPin = item.canPin
                                     )
                                 }
                             }
@@ -781,9 +772,9 @@ fun VaultScreenWithUnreadSection(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    pinnedSpacesCount = sections.pinnedSpaces.size,
                                     maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-                                    onSpaceSettings = onSpaceSettings
+                                    onSpaceSettings = onSpaceSettings,
+                                    canPin = item.canPin
                                 )
                             }
 
@@ -809,9 +800,9 @@ fun VaultScreenWithUnreadSection(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    pinnedSpacesCount = sections.pinnedSpaces.size,
                                     maxPinnedSpaces = VaultSectionView.MAX_PINNED_SPACES,
-                                    onSpaceSettings = onSpaceSettings
+                                    onSpaceSettings = onSpaceSettings,
+                                    canPin = item.canPin
                                 )
                             }
                         }

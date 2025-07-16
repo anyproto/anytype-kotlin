@@ -23,6 +23,7 @@ fun ChatWithManyAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:30",
         maxPinnedSpaces = 6,
+        canPin = true,
         // No message text, so should show "5 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -62,6 +63,7 @@ fun ChatWithManyMixedAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "14:15",
         maxPinnedSpaces = 6,
+        canPin = true,
         // No message text, should show "6 Attachments"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -109,6 +111,7 @@ fun ChatWithImageAttachments() {
         messageText = "Check out these designs",
         messageTime = "10:45",
         maxPinnedSpaces = 6,
+        canPin = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -141,6 +144,7 @@ fun ChatWithFileAttachments() {
         messageText = "Here are the documents",
         messageTime = "14:22",
         maxPinnedSpaces = 6,
+        canPin = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
@@ -169,6 +173,7 @@ fun ChatWithLinkAttachments() {
         messageText = "Found some useful links",
         messageTime = "11:30",
         maxPinnedSpaces = 6,
+        canPin = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
@@ -207,6 +212,7 @@ fun ChatWithMixedAttachments() {
         messageText = "Latest progress and resources",
         messageTime = "16:30",
         maxPinnedSpaces = 6,
+        canPin = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -237,6 +243,7 @@ fun ChatWithAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "12:15",
         maxPinnedSpaces = 6,
+        canPin = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -263,6 +270,7 @@ fun ChatWithManyLinksNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "15:45",
         maxPinnedSpaces = 6,
+        canPin = true,
         // No message text, should show "5 Attachments" for mixed link/file types
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -306,6 +314,7 @@ fun ChatWithSingleLinkNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:15",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Single link should show object name instead of "1 Object"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -329,6 +338,7 @@ fun ChatWithMultipleLinksOnlyNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "10:30",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Multiple links only should show "3 Objects"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -363,6 +373,7 @@ fun ChatWithSingleImageNoMessage() {
         creatorName = "Alice",
         messageTime = "09:00",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Single image, no message: "Alice: [] Image"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -387,6 +398,7 @@ fun ChatWithSingleLinkWithMessage() {
         messageText = "Check this out",
         messageTime = "10:00",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Single link with message: "Bob: [] API Documentation Check this out"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -411,6 +423,7 @@ fun ChatWithMultipleImagesNoMessage() {
         creatorName = "Charlie",
         messageTime = "11:00",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Multiple images, no message: "Charlie: [][][] 3 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -443,6 +456,7 @@ fun ChatWithMultipleObjectsWithMessage() {
         messageText = "Here are some resources",
         messageTime = "12:00",
         maxPinnedSpaces = 6,
+        canPin = true,
         // Multiple objects with message: "Dana: [][][] 3 Objects Here are some resources"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -475,6 +489,7 @@ fun ChatEmpty() {
         title = "Empty Chat",
         icon = SpaceIconView.Placeholder(),
         messageTime = "08:00",
+        canPin = true,
         maxPinnedSpaces = 6
     )
 }

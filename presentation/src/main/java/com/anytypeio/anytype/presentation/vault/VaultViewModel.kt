@@ -374,7 +374,8 @@ class VaultViewModel(
             unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            canPin = canPinSpace()
         )
     }
 
@@ -403,7 +404,8 @@ class VaultViewModel(
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            canPin = canPinSpace()
         )
     }
 
@@ -725,7 +727,7 @@ class VaultViewModel(
             val currentSections = sections.value
             val pinnedSpaces = currentSections.pinnedSpaces
             
-            if (pinnedSpaces.count() >= MAX_PINNED_SPACES) {
+            if (!canPinSpace()) {
                 Timber.w("Max pinned spaces limit reached: ${MAX_PINNED_SPACES}")
                 // Show limit reached error
                 vaultErrors.value = VaultErrors.MaxPinnedSpacesReached
@@ -834,6 +836,13 @@ class VaultViewModel(
 
     fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
         return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
+    }
+
+    /**
+     * Returns true if the user can pin a space (i.e., the max pinned spaces limit is not reached).
+     */
+    fun canPinSpace(): Boolean {
+        return sections.value.pinnedSpaces.size < MAX_PINNED_SPACES
     }
 
     // Local state for tracking order changes during drag operations

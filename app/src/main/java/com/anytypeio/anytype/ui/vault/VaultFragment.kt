@@ -72,12 +72,7 @@ class VaultFragment : BaseComposeFragment() {
                 val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
-                val onDeleteSpace: (String) -> Unit = { spaceId ->
-                    vm.onDeleteSpaceMenuClicked(spaceId)
-                }
-                val onLeaveSpace: (String) -> Unit = { spaceId ->
-                    vm.onLeaveSpaceMenuClicked(spaceId)
-                }
+
                 VaultScreenWithUnreadSection(
                     sections = vm.sections.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
@@ -88,8 +83,6 @@ class VaultFragment : BaseComposeFragment() {
                     isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
-                    onDeleteSpace = onDeleteSpace,
-                    onLeaveSpace = onLeaveSpace,
                     onPinSpace = vm::onPinSpaceClicked,
                     onUnpinSpace = vm::onUnpinSpaceClicked,
                     onOrderChanged = vm::onOrderChanged,

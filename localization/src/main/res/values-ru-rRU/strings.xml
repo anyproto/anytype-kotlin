@@ -1576,6 +1576,10 @@
     <string name="vault_my_spaces">Мои пространства</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Все</string>
+    <string name="vault_pinned_section_title">Закреплённые</string>
+    <string name="vault_pin_space">Закрепить</string>
+    <string name="vault_unpin_space">Открепить</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Все объекты</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

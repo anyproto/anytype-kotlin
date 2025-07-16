@@ -1547,6 +1547,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_my_spaces">Mijn Ruimtes</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Alles</string>
+    <string name="vault_pinned_section_title">Vastgezet</string>
+    <string name="vault_pin_space">Zet vast</string>
+    <string name="vault_unpin_space">Losmaken</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Alle objecten</string>
     <string name="all_content_title_only_unlinked">Alleen niet-gekoppeld</string>
     <string name="all_content_title_only_unlinked_description">Niet-gekoppelde objecten die geen directe koppeling of terugkoppeling hebben met andere objecten binnen de weergave.</string>

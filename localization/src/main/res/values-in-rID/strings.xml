@@ -1534,6 +1534,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_my_spaces">Ruangku</string>
     <string name="vault_unread_section_title">Belum dibaca</string>
     <string name="vault_all_section_title">Semua</string>
+    <string name="vault_pinned_section_title">Tersemat</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Lepas sematan</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>

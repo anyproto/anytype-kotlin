@@ -2123,7 +2123,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
-    <string name="vault_pinned_limit_message">%1$d pinned spaces is your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
     <string name="vault_space_settings">Space Settings</string>
 
     <string name="notification_settings_title">Notifications</string>

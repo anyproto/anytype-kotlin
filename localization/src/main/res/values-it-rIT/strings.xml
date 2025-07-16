@@ -1548,6 +1548,10 @@ Please provide specific details of your needs here.</string>
     <string name="vault_my_spaces">I miei Spazi</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
+    <string name="vault_pinned_section_title">Fissato</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Togli</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

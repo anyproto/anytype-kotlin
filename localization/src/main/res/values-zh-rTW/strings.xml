@@ -1534,6 +1534,10 @@ Please provide specific details of your needs here.</string>
     <string name="vault_my_spaces">My Spaces</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">全部</string>
+    <string name="vault_pinned_section_title">已釘選</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">取消釘選</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">所有物件</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

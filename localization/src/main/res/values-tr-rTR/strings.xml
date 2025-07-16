@@ -1828,6 +1828,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_disable_short">Devre dışı bırak</string>
     <string name="space_notify_unmute">Susturmayı kaldır</string>
     <string name="space_notify_mute">Sustur</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Bildirimler</string>
     <string name="notification_settings_disabled">Bildirimler devre dışı</string>
     <string name="notification_settings_disabled_subtitle">Cihaz ayarlarınızda etkinleştirerek yeni mesajlarla ilgili bildirimler alın.</string>

@@ -12,6 +12,7 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
+    val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -55,12 +56,18 @@ sealed class VaultSpaceView {
 }
 
 /**
- * Data structure for organizing vault spaces into one list:
- * @property mainSpaces List of spaces
+ * Data structure for organizing vault spaces into pinned and main sections:
+ * @property pinnedSpaces List of pinned spaces (max MAX_PINNED_SPACES)
+ * @property mainSpaces List of unpinned spaces
  */
 data class VaultSectionView(
+    val pinnedSpaces: List<VaultSpaceView> = emptyList(),
     val mainSpaces: List<VaultSpaceView> = emptyList()
-)
+) {
+    companion object {
+        const val MAX_PINNED_SPACES = 6
+    }
+}
 
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
@@ -92,4 +99,9 @@ sealed class VaultNavigation {
     data class OpenType(val target: Id, val space: Id) : VaultNavigation()
     data class OpenUrl(val url: String) : VaultNavigation()
     data class ShowError(val message: String) : VaultNavigation()
+}
+
+sealed class VaultErrors {
+    data object Hidden : VaultErrors()
+    data object MaxPinnedSpacesReached : VaultErrors()
 }

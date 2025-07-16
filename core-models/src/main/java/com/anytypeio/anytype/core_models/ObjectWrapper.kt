@@ -374,6 +374,8 @@ sealed class ObjectWrapper {
                 ?.let { code ->
                     NotificationState.entries.firstOrNull { it.code == code.toInt() }
                 } ?: NotificationState.ALL
+
+        val spaceOrder: String? get() = getSingleValue(Relations.SPACE_ORDER)
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

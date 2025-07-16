@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.vault
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -23,35 +21,32 @@ import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import javax.inject.Inject
+import org.mockito.kotlin.mock
 
-class VaultViewModelFactory @Inject constructor(
-    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder,
-    private val spaceManager: SpaceManager,
-    private val saveCurrentSpace: SaveCurrentSpace,
-    private val analytics: Analytics,
-    private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
-    private val appActionManager: AppActionManager,
-    private val spaceInviteResolver: SpaceInviteResolver,
-    private val profileContainer: ProfileSubscriptionManager,
-    private val chatPreviewContainer: ChatPreviewContainer,
-    private val pendingIntentStore: PendingIntentStore,
-    private val stringResourceProvider: StringResourceProvider,
-    private val dateProvider: DateProvider,
-    private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val deleteSpace: DeleteSpace,
-    private val userPermissionProvider: UserPermissionProvider,
-    private val notificationPermissionManager: NotificationPermissionManager,
-    private val unpinSpace: UnpinSpace,
-    private val setSpaceOrder: SetSpaceOrder
-) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(
-        modelClass: Class<T>
-    ) = VaultViewModel(
+object VaultViewModelFabric {
+    fun create(
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer = mock(),
+        urlBuilder: UrlBuilder = mock(),
+        spaceManager: SpaceManager = mock(),
+        saveCurrentSpace: SaveCurrentSpace = mock(),
+        analytics: Analytics = mock(),
+        deepLinkToObjectDelegate: DeepLinkToObjectDelegate = mock(),
+        appActionManager: AppActionManager = mock(),
+        spaceInviteResolver: SpaceInviteResolver = mock(),
+        profileContainer: ProfileSubscriptionManager = mock(),
+        chatPreviewContainer: ChatPreviewContainer = mock(),
+        pendingIntentStore: PendingIntentStore = mock(),
+        stringResourceProvider: StringResourceProvider = mock(),
+        dateProvider: DateProvider = mock(),
+        fieldParser: FieldParser = mock(),
+        storeOfObjectTypes: StoreOfObjectTypes = mock(),
+        setSpaceNotificationMode: SetSpaceNotificationMode = mock(),
+        deleteSpace: DeleteSpace = mock(),
+        userPermissionProvider: UserPermissionProvider = mock(),
+        notificationPermissionManager: NotificationPermissionManager = mock(),
+        unpinSpace: UnpinSpace = mock(),
+        setSpaceOrder: SetSpaceOrder = mock()
+    ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
         spaceManager = spaceManager,
@@ -73,5 +68,5 @@ class VaultViewModelFactory @Inject constructor(
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
         setSpaceOrder = setSpaceOrder
-    ) as T
-}
+    )
+} 

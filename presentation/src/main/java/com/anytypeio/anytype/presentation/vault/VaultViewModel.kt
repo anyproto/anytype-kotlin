@@ -12,10 +12,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -26,6 +26,8 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -33,14 +35,18 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-
+import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -51,9 +57,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
+import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,18 +70,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.domain.multiplayer.Permissions
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val observeVaultSettings: ObserveVaultSettings,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
@@ -92,17 +90,19 @@ class VaultViewModel(
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val unpinSpace: UnpinSpace,
+    private val setSpaceOrder: SetSpaceOrder
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
-    val spaces = MutableStateFlow<List<VaultSpaceView>>(emptyList())
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
+    val vaultErrors = MutableStateFlow<VaultErrors>(VaultErrors.Hidden)
     
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
@@ -131,15 +131,13 @@ class VaultViewModel(
                             spaceViewSubscriptionContainer.observe()
                         )
                     },
-                observeVaultSettings.flow(),
                 chatPreviewContainer.observePreviews(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
-            ) { spacesFromFlow, settings, chatPreviews, permissions, _ ->
-                transformToVaultSpaceViews(spacesFromFlow, settings, chatPreviews, permissions)
+            ) { spacesFromFlow, chatPreviews, permissions, _ ->
+                transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->
                 sections.value = resultingSections
-                spaces.value = resultingSections.mainSpaces
             }
         }
         
@@ -177,7 +175,6 @@ class VaultViewModel(
 
     private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
-        settings: VaultSettings,
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSectionView {
@@ -208,16 +205,25 @@ class VaultViewModel(
             Timber.d("No loading space found")
         }
 
-        // New unified sorting logic
-        // Primary sort: lastMessageDate (descending) - most recent message first
-        // Secondary sort: creationDate (descending) - newest spaces first for those without messages
-        val sortedSpaces = allSpaces.sortedWith(
+        // Separate pinned and unpinned spaces based on spaceOrder
+        val (pinnedSpaces, unpinnedSpaces) = allSpaces.partition { space ->
+            !space.space.spaceOrder.isNullOrEmpty()
+        }
+
+        // Sort pinned spaces by spaceOrder (ascending)
+        val sortedPinnedSpaces = pinnedSpaces.sortedWith(
+            compareBy(nullsLast()) { it.space.spaceOrder }
+        )
+
+        // Sort unpinned spaces by message date (descending), then by creation date (descending)
+        val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
             compareByDescending<VaultSpaceView> { it.lastMessageDate ?: 0L }
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
         return VaultSectionView(
-            mainSpaces = sortedSpaces
+            pinnedSpaces = sortedPinnedSpaces,
+            mainSpaces = sortedUnpinnedSpaces
         )
     }
 
@@ -384,14 +390,18 @@ class VaultViewModel(
         } else {
             NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
         }
+
+        val icon = space.spaceIcon(
+            builder = urlBuilder,
+            spaceGradientProvider = SpaceGradientProvider.Default
+        )
+
+        val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
         
         return VaultSpaceView.Space(
             space = space,
-            icon = space.spaceIcon(
-                builder = urlBuilder,
-                spaceGradientProvider = SpaceGradientProvider.Default
-            ),
-            accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType),
+            icon = icon,
+            accessType = accessType,
             isOwner = isOwner,
             isMuted = isMuted
         )
@@ -670,6 +680,10 @@ class VaultViewModel(
         notificationError.value = null
     }
 
+    fun clearVaultError() {
+        vaultErrors.value = VaultErrors.Hidden
+    }
+
     fun onDeleteSpaceMenuClicked(spaceId: Id?) {
         if (spaceId == null) {
             Timber.e("Space ID is null, cannot proceed with deletion")
@@ -683,6 +697,56 @@ class VaultViewModel(
     fun onLeaveSpaceMenuClicked(spaceId: Id) {
         viewModelScope.launch {
             commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
+        }
+    }
+
+    fun onPinSpaceClicked(spaceId: Id) {
+        viewModelScope.launch {
+            val currentSections = sections.value
+            val pinnedSpaces = currentSections.pinnedSpaces
+            
+            if (pinnedSpaces.count() >= MAX_PINNED_SPACES) {
+                Timber.w("Max pinned spaces limit reached: ${MAX_PINNED_SPACES}")
+                // Show limit reached error
+                vaultErrors.value = VaultErrors.MaxPinnedSpacesReached
+                return@launch
+            }
+            
+            // Filter out the space being pinned if it's already in the list
+            val newOrder = pinnedSpaces.filter { it.space.id != spaceId }.map { it.space.id }.toMutableList()
+            // Insert the space at the beginning (position 0)
+            newOrder.add(0, spaceId)
+            
+            setSpaceOrder.async(
+                SetSpaceOrder.Params(
+                    spaceViewId = spaceId,
+                    spaceViewOrder = newOrder
+                )
+            ).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to pin space: $spaceId")
+                    notificationError.value = error.message ?: "Failed to pin space"
+                },
+                onSuccess = {
+                    Timber.d("Successfully pinned space: $spaceId")
+                }
+            )
+        }
+    }
+
+    fun onUnpinSpaceClicked(spaceId: Id) {
+        viewModelScope.launch {
+            unpinSpace.async(
+                UnpinSpace.Params(spaceId = spaceId)
+            ).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to unpin space: $spaceId")
+                    notificationError.value = error.message ?: "Failed to unpin space"
+                },
+                onSuccess = {
+                    Timber.d("Successfully unpinned space: $spaceId")
+                }
+            )
         }
     }
 
@@ -751,6 +815,81 @@ class VaultViewModel(
     fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
         return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
     }
+
+    // Local state for tracking order changes during drag operations
+    private var pendingPinnedSpacesOrder: List<Id>? = null
+    private var lastMovedSpaceId: Id? = null
+
+    //region Drag and Drop
+    fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
+        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
+
+        // Get current settings to work with the existing order
+        val currentSections = sections.value
+        val currentPinnedSpaces = currentSections.pinnedSpaces
+
+        // Find indices in the current pinned spaces list
+        val fromIndex = currentPinnedSpaces.indexOfFirst { it.space.id == fromSpaceId }
+        val toIndex = currentPinnedSpaces.indexOfFirst { it.space.id == toSpaceId }
+
+        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
+            // Create new ordered list by moving the item (only update local state)
+            val newPinnedSpacesList = currentPinnedSpaces.toMutableList()
+            val movedItem = newPinnedSpacesList.removeAt(fromIndex)
+            newPinnedSpacesList.add(toIndex, movedItem)
+
+            // Store the new order for later persistence in onDragEnd
+            val newPinnedOrder = newPinnedSpacesList.map { it.space.id }
+
+            // Store pending order to be saved in onDragEnd (only pinned spaces)
+            pendingPinnedSpacesOrder = newPinnedOrder
+            lastMovedSpaceId = fromSpaceId
+
+            // Update local sections state immediately for UI responsiveness
+            val updatedSections = currentSections.copy(pinnedSpaces = newPinnedSpacesList)
+            sections.value = updatedSections
+        }
+    }
+
+    fun onDragEnd() {
+        Timber.d("onDragEnd called")
+        // Persist the order changes made during the drag operation
+        pendingPinnedSpacesOrder?.let { newOrder ->
+            viewModelScope.launch {
+                analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
+                
+                // Get the current pinned spaces to determine which space was moved
+                val currentPinnedSpaces = sections.value.pinnedSpaces
+                
+                if (currentPinnedSpaces.isNotEmpty()) {
+                    // Use the tracked moved space ID or fall back to the first space
+                    val movedSpaceId = lastMovedSpaceId ?: newOrder.firstOrNull() ?: return@launch
+                    
+                    setSpaceOrder.async(
+                        SetSpaceOrder.Params(
+                            spaceViewId = movedSpaceId,
+                            spaceViewOrder = newOrder
+                        )
+                    ).fold(
+                        onFailure = { error ->
+                            Timber.e(error, "Failed to reorder pinned spaces: $newOrder")
+                            notificationError.value = error.message ?: "Failed to reorder spaces"
+                        },
+                        onSuccess = {
+                            Timber.d("Successfully reordered pinned spaces: $newOrder")
+                        }
+                    )
+                }
+                
+                // Clear pending order after persistence
+                pendingPinnedSpacesOrder = null
+                lastMovedSpaceId = null
+            }
+        }
+    }
+
+    //endregion
+
 
     companion object {
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L

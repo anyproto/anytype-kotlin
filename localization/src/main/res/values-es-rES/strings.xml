@@ -10,6 +10,7 @@
     <string name="appearance">Aspecto</string>
     <string name="file_storage">Almacenamiento de archivos</string>
     <string name="key">Clave</string>
+    <string name="login_key">Clave</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
     <string name="debug_sync_report">Informe de sincronización de depuración</string>
     <string name="debug">Depurar</string>
@@ -28,6 +29,8 @@
     <string name="dark">Oscuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Ajustes</string>
+    <string name="app_preferences">Preferencias de la aplicación</string>
+    <string name="vault_key">Arca y clave</string>
     <string name="have_you_back_up_your_recovery_phrase">¿Has hecho una copia de respaldo de tu clave?</string>
     <string name="you_will_need_to_sign_in">La necesitarás para entrar en tu arca. Mantenla en un lugar seguro. Si la pierdes, ya no podrás entrar en tu arca.</string>
     <string name="about_help_and_community">Ayuda y comunidad</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Favicon de marcador</string>
     <string name="content_description_file_icon">Icono de archivo</string>
     <string name="content_description_modal_icon">Icono de modal</string>
+    <string name="alert_icon_description">Icono de alerta</string>
     <string name="modal_tap_to_type">Toca para escribir</string>
     <string name="modal_gallery">Galería</string>
     <string name="modal_kanban">Kanban</string>
@@ -853,13 +857,13 @@
     <string name="create_object_section_lists">Listas</string>
     <string name="create_object_section_objects">Objetos</string>
     <string name="edit">Editar</string>
-    <string name="unselect_all">Deseleccionar todo</string>
+    <string name="unselect_all">Deseleccionar</string>
     <string name="sets">Conjuntos</string>
     <string name="favorites">Favoritos</string>
     <string name="recent">Editado recientemente</string>
     <string name="recently_opened">Abierto recientemente</string>
     <string name="bin">Papelera</string>
-    <string name="synced_files">Archivos sincronizados</string>
+    <string name="synced_files">Limpiar archivos</string>
     <string name="log_in">Iniciar sesión</string>
     <string name="create_object_section_library">Biblioteca de Anytype</string>
     <string name="bin_empty_title">Tu papelera está vacía.</string>
@@ -1112,7 +1116,7 @@
     <string name="date_type_older">Más antiguo</string>
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">Dentro de %1$s días</string>
-    <string name="settings_use_yamux">Usar una biblioteca multiplex de reserva</string>
+    <string name="settings_use_yamux">Usar QUIC</string>
     <string name="settings_share_local_logs">Compartir registros locales</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista de kanban aún no está disponible en dispositivos móviles.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
@@ -1245,7 +1249,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Tus derechos de acceso al espacio %1$s ahora son de solo lectura.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Tus derechos de acceso al espacio %1$s ahora son de edición.</string>
     <string name="multiplayer_notification_member_join_request_declined">Tu solicitud de acceso al espacio %1$s se ha rechazado.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">Te has unido a %1$s.</string>
     <string name="multiplayer_notification_request_declined">Solicitud rechazada</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Ir al espacio</string>
@@ -1274,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Cancelar solicitud de acceso</string>
     <string name="multiplayer_cancel_join_request_msg">Tendrás que volver a solicitar el acceso.</string>
     <string name="multiplayer_do_not_cancel_join_request">No cancelar</string>
-    <string name="multiplayer_error_invite_not_found">No existe esa invitación. Asegúrate de que tus dispositivos están sincronizados.</string>
+    <string name="multiplayer_error_invite_not_found_title">Sin acceso a este espacio</string>
+    <string name="multiplayer_error_invalid_link_title">Sin acceso a este espacio</string>
+    <string name="multiplayer_error_invite_not_found">El enlace que estás usando no parece válido. Pide al propietario que te envíe un enlace nuevo.</string>
     <string name="multiplayer_error_invite_bad_content">El enlace de invitación no se puede analizar. Es posible que tenga errores de formato o datos inválidos.</string>
+    <string name="multiplayer_error_space_deleted_title">Sin acceso a este espacio</string>
     <string name="multiplayer_error_space_is_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="multiplayer_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>
     <string name="multiplayer_error_not_shareable">Parece que este espacio ya no está compartido. Asegúrate de que tus dispositivos están sincronizados.</string>
@@ -1802,18 +1809,27 @@ En concreto,
     <string name="vault_create_space">Espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
+    <string name="vault_empty_search_state_text">No hay coincidencias</string>
     <string name="chat_new_messages_section_text">Mensajes nuevos</string>
     <string name="chat_box_camera">Cámara</string>
     <string name="chat_box_take_photo">Hacer foto</string>
     <string name="chat_box_record_video">Grabar vídeo</string>
     <string name="chat_camera_permission_denied">Sin acceso a la cámara</string>
-    <string name="notifications_title">Notifications</string>
-    <string name="notifications_all">All activity</string>
-    <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_title">Notificaciones</string>
+    <string name="notifications_all">Toda la actividad</string>
+    <string name="notifications_mentions">Solo menciones</string>
+    <string name="notifications_disable">Desactivar las notificaciones</string>
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
-    <string name="notifications_disable_short">Disable</string>
-    <string name="space_notify_unmute">Unmute</string>
-    <string name="space_notify_mute">Mute</string>
+    <string name="notifications_disable_short">Desactivar</string>
+    <string name="space_notify_unmute">No silenciar</string>
+    <string name="space_notify_mute">Silenciar</string>
+    <string name="notification_settings_title">Notificaciones</string>
+    <string name="notification_settings_disabled">Las notificaciones están desactivadas</string>
+    <string name="notification_settings_disabled_subtitle">Para recibir notificaciones de mensajes nuevos, actívalas en los ajustes del dispositivo.</string>
+    <string name="notification_settings_button_open">Abrir ajustes</string>
+    <string name="notification_settings_state_title">Notificaciones de mensajes</string>
+    <string name="notification_settings_state_disabled">Deshabilitado</string>
+    <string name="notification_settings_state_enabled">Activado</string>
+    <string name="content_desc_muted">Silenciado</string>
 </resources>

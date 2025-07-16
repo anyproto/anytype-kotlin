@@ -1981,6 +1981,27 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>) {
+        val request = Rpc.Space.SetOrder.Request(
+            spaceViewId = spaceViewId,
+            spaceViewOrder = spaceViewOrder
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceSetOrder(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun spaceUnsetOrder(spaceViewId: Id) {
+        val request = Rpc.Space.UnsetOrder.Request(
+            spaceViewId = spaceViewId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceUnsetOrder(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
@@ -2963,9 +2984,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Device.NetworkState.Set.Request(
             deviceNetworkType = type.mw()
         )
-        logRequestIfDebug(request)
+        //logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }
-        logResponseIfDebug(response, time)
+        //logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

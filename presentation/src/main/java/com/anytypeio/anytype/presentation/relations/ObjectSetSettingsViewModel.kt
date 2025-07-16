@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block.Content.DataView.Viewer.Type
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeS
 import com.anytypeio.anytype.presentation.mapper.mapToSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
+import com.anytypeio.anytype.presentation.sets.filterNotNameAndHidden
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -29,7 +31,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -69,10 +70,17 @@ class ObjectSetSettingsViewModel(
 
                 Timber.d("Found in store: ${inStore.size}, available in index: ${state.dataViewContent.relationLinks.size}")
 
-                val relations = inStore.mapToSimpleRelationView(
-                    viewer.viewerRelations
-                ).filterHiddenRelations()
-                    .map { view -> ViewerRelationListView.Relation(view) }
+                val relations = if (viewer.type == Type.GALLERY) {
+                    inStore.mapToSimpleRelationView(
+                        viewer.viewerRelations
+                    ).filterNotNameAndHidden()
+                        .map { view -> ViewerRelationListView.Relation(view) }
+                } else {
+                    inStore.mapToSimpleRelationView(
+                        viewer.viewerRelations
+                    ).filterHiddenRelations()
+                        .map { view -> ViewerRelationListView.Relation(view) }
+                }
 
                 result.addAll(relations)
 

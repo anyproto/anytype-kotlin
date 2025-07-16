@@ -10,6 +10,7 @@
     <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
+    <string name="login_key">Schlüssel</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
+    <string name="app_preferences">App-Einstellungen</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Tippe zum Eingeben</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -853,13 +857,13 @@
     <string name="create_object_section_lists">Gruppen</string>
     <string name="create_object_section_objects">Objekte</string>
     <string name="edit">Bearbeiten</string>
-    <string name="unselect_all">Alle abwählen</string>
+    <string name="unselect_all">Abwählen</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favoriten</string>
     <string name="recent">Zuletzt bearbeitet</string>
     <string name="recently_opened">Zuletzt geöffnet</string>
     <string name="bin">Papierkorb</string>
-    <string name="synced_files">Synchronisierte Dateien</string>
+    <string name="synced_files">Dateien bereinigen</string>
     <string name="log_in">Anmelden</string>
     <string name="create_object_section_library">Anytype-Bibliothek</string>
     <string name="bin_empty_title">Dein Papierkorb ist leer.</string>
@@ -1112,7 +1116,7 @@
     <string name="date_type_older">Älter</string>
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
-    <string name="settings_use_yamux">Verwende eine reserve multiplex library</string>
+    <string name="settings_use_yamux">QUIC verwenden</string>
     <string name="settings_share_local_logs">Lokale Protokolle teilen</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
@@ -1274,8 +1278,11 @@
     <string name="multiplayer_cancel_join_request">Beitrittsanfrage zurückziehen</string>
     <string name="multiplayer_cancel_join_request_msg">Du wirst eine neue Beitrittsanfrage senden müssen</string>
     <string name="multiplayer_do_not_cancel_join_request">Nicht verwerfen</string>
-    <string name="multiplayer_error_invite_not_found">Die Einladung existiert nicht. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Der Einladungslink konnte nicht geparst werden. Er kann Fehler im Format oder ungültige Daten enthalten.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
     <string name="multiplayer_error_limit_reached">Limit für diesen Bereich erreicht. Bitte erweitere deine Mitgliedschaft oder kontaktiere den Support für Hilfe.</string>
     <string name="multiplayer_error_not_shareable">Es sieht so aus, als ob der Space nicht mehr geteilt ist. Bitte stellen Sie sicher, dass Ihre Geräte synchronisiert sind.</string>
@@ -1538,7 +1545,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
     <string name="vault_my_spaces">Meine Spaces</string>
-    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_unread_section_title">Ungelesen</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
@@ -1665,7 +1672,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="image">Bild</string>
     <string name="images">Bilder</string>
     <string name="attachment">Anhang</string>
-    <string name="attachments">Attachments</string>
+    <string name="attachments">Anhänge</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; Leute</string>
@@ -1802,18 +1809,27 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_create_space">Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
     <string name="chat_box_camera">Kamera</string>
-    <string name="chat_box_take_photo">Take Photo</string>
-    <string name="chat_box_record_video">Record Video</string>
-    <string name="chat_camera_permission_denied">Camera permission denied</string>
+    <string name="chat_box_take_photo">Foto machen</string>
+    <string name="chat_box_record_video">Video aufnehmen</string>
+    <string name="chat_camera_permission_denied">Kameraberechtigung verweigert</string>
     <string name="notifications_title">Benachrichtigungen</string>
-    <string name="notifications_all">All activity</string>
-    <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_all">Alle Aktivitäten</string>
+    <string name="notifications_mentions">Nur Erwähnungen</string>
+    <string name="notifications_disable">Benachrichtigungen deaktivieren</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
-    <string name="notifications_disable_short">Disable</string>
-    <string name="space_notify_unmute">Unmute</string>
-    <string name="space_notify_mute">Mute</string>
+    <string name="notifications_disable_short">Deaktivieren</string>
+    <string name="space_notify_unmute">Stummschaltung aufheben</string>
+    <string name="space_notify_mute">Stummschalten</string>
+    <string name="notification_settings_title">Benachrichtigungen</string>
+    <string name="notification_settings_disabled">Benachrichtigungen sind deaktiviert</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Einstellungen öffnen</string>
+    <string name="notification_settings_state_title">Mitteilungsbenachrichtigungen</string>
+    <string name="notification_settings_state_disabled">Deaktiviert</string>
+    <string name="notification_settings_state_enabled">Aktiviert</string>
+    <string name="content_desc_muted">Stumm geschaltet</string>
 </resources>

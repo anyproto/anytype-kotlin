@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -12,6 +13,8 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
+    val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
+    abstract val showPinButton: Boolean
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -24,7 +27,8 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val showPinButton: Boolean
     ) : VaultSpaceView()
 
     data class Chat(
@@ -40,7 +44,8 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val showPinButton: Boolean
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -55,12 +60,18 @@ sealed class VaultSpaceView {
 }
 
 /**
- * Data structure for organizing vault spaces into one list:
- * @property mainSpaces List of spaces
+ * Data structure for organizing vault spaces into pinned and main sections:
+ * @property pinnedSpaces List of pinned spaces (max MAX_PINNED_SPACES)
+ * @property mainSpaces List of unpinned spaces
  */
 data class VaultSectionView(
+    val pinnedSpaces: List<VaultSpaceView> = emptyList(),
     val mainSpaces: List<VaultSpaceView> = emptyList()
-)
+) {
+    companion object {
+        const val MAX_PINNED_SPACES = 6
+    }
+}
 
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
@@ -70,6 +81,7 @@ sealed class VaultCommand {
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
+    data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()
@@ -92,4 +104,9 @@ sealed class VaultNavigation {
     data class OpenType(val target: Id, val space: Id) : VaultNavigation()
     data class OpenUrl(val url: String) : VaultNavigation()
     data class ShowError(val message: String) : VaultNavigation()
+}
+
+sealed class VaultErrors {
+    data object Hidden : VaultErrors()
+    data object MaxPinnedSpacesReached : VaultErrors()
 }

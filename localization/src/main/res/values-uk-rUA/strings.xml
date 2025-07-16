@@ -10,6 +10,7 @@
     <string name="appearance">Оформлення</string>
     <string name="file_storage">Files storage</string>
     <string name="key">Key</string>
+    <string name="login_key">Key</string>
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -28,6 +29,8 @@
     <string name="dark">Темна</string>
     <string name="system">Система</string>
     <string name="settings">Налаштування</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
     <string name="you_will_need_to_sign_in">You will need it to enter your vault. Keep it in a safe place. If you lose it, you can no longer enter your vault.</string>
     <string name="about_help_and_community">Help &amp; Community</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Tap to type</string>
     <string name="modal_gallery">Галерея</string>
     <string name="modal_kanban">Канбан</string>
@@ -857,13 +861,13 @@
     <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Об\'єкти</string>
     <string name="edit">Редагувати</string>
-    <string name="unselect_all">Скасувати вибір</string>
+    <string name="unselect_all">Deselect</string>
     <string name="sets">Набори</string>
     <string name="favorites">Обрані</string>
     <string name="recent">Нещодавно відредаговані</string>
     <string name="recently_opened">Нещодавно відкриті</string>
     <string name="bin">Кошик</string>
-    <string name="synced_files">Синхронізовані файли</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Log In</string>
     <string name="create_object_section_library">Бібліотека Anytype</string>
     <string name="bin_empty_title">Your bin is empty.</string>
@@ -1120,7 +1124,7 @@
     <string name="date_type_older">Older</string>
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1286,8 +1290,11 @@
     <string name="multiplayer_cancel_join_request">Cancel join request</string>
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
-    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_limit_reached">Досягнута межа для цього простору. Будь ласка, оновіть ваш членство або зверніться до служби підтримки за допомогою.</string>
     <string name="multiplayer_error_not_shareable">Схоже, що простір більше не спільний. Переконайтеся, що ваші пристрої синхронізовані.</string>
@@ -1828,6 +1835,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">Простір</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1842,4 +1850,12 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

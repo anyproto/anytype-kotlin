@@ -10,6 +10,7 @@
     <string name="appearance">外観</string>
     <string name="file_storage">ファイルストレージ</string>
     <string name="key">鍵</string>
+    <string name="login_key">鍵</string>
     <string name="clear_file_cache">ファイルキャッシュを消去</string>
     <string name="debug_sync_report">デバッグ同期レポート</string>
     <string name="debug">デバッグ</string>
@@ -28,6 +29,8 @@
     <string name="dark">ダーク</string>
     <string name="system">標準</string>
     <string name="settings">設定</string>
+    <string name="app_preferences">アプリ設定</string>
+    <string name="vault_key">保管庫と鍵</string>
     <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
     <string name="about_help_and_community">ヘルプとコミュニティ</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">ブックマークアイコン</string>
     <string name="content_description_file_icon">ファイルアイコン</string>
     <string name="content_description_modal_icon">モーダルアイコン</string>
+    <string name="alert_icon_description">アラートアイコン</string>
     <string name="modal_tap_to_type">タップして入力</string>
     <string name="modal_gallery">ギャラリー</string>
     <string name="modal_kanban">ボード</string>
@@ -851,13 +855,13 @@
     <string name="create_object_section_lists">リスト</string>
     <string name="create_object_section_objects">オブジェクト</string>
     <string name="edit">編集</string>
-    <string name="unselect_all">すべて選択を解除</string>
+    <string name="unselect_all">選択解除</string>
     <string name="sets">クエリ</string>
     <string name="favorites">お気に入り</string>
     <string name="recent">最近編集された</string>
     <string name="recently_opened">最近開かれた</string>
     <string name="bin">ゴミ箱</string>
-    <string name="synced_files">同期済みファイル</string>
+    <string name="synced_files">ファイルを削除する</string>
     <string name="log_in">ログイン</string>
     <string name="create_object_section_library">Anytypeライブラリ</string>
     <string name="bin_empty_title">ごみ箱が空です。</string>
@@ -903,7 +907,7 @@
     <string name="slash_widget_media_file_subtitle">ファイルをそのまま保存</string>
     <string name="slash_widget_media_picture">画像</string>
     <string name="slash_widget_media_image">画像</string>
-    <string name="slash_widget_media_picture_subtitle">画像でページに彩を添えましょう</string>
+    <string name="slash_widget_media_picture_subtitle">画像でページを充実させましょう</string>
     <string name="slash_widget_media_video">動画</string>
     <string name="slash_widget_media_video_subtitle">再生可能な動画をアップロード</string>
     <string name="slash_widget_media_bookmark">ブックマーク</string>
@@ -1108,7 +1112,7 @@
     <string name="date_type_older">さらに古い</string>
     <string name="dates_days_ago">%1$s日前</string>
     <string name="dates_days_from">%1$s日後</string>
-    <string name="settings_use_yamux">予備のマルチプレックスライブラリを使用する</string>
+    <string name="settings_use_yamux">QUICを使用</string>
     <string name="settings_share_local_logs">ローカルログを共有</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">モバイル版では、まだボードビューに対応していません。\nビューの種類を変更するか（設定 -&gt; ビュー）、新しく作成してください。</string>
@@ -1268,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">参加リクエストをキャンセル</string>
     <string name="multiplayer_cancel_join_request_msg">もう一度参加リクエストを送信してください</string>
     <string name="multiplayer_do_not_cancel_join_request">キャンセルしない</string>
-    <string name="multiplayer_error_invite_not_found">招待が見つかりませんでした。デバイスの同期状況をご確認ください。</string>
+    <string name="multiplayer_error_invite_not_found_title">スペースにアクセスできません</string>
+    <string name="multiplayer_error_invalid_link_title">スペースにアクセスできません</string>
+    <string name="multiplayer_error_invite_not_found">申し訳ございませんが、このリンクは現在利用できません。お手数ですが、新しいリンクを所有者の方にお尋ねください。</string>
     <string name="multiplayer_error_invite_bad_content">無効な招待リンクです。URLに間違いがないかご確認ください。</string>
+    <string name="multiplayer_error_space_deleted_title">スペースにアクセスできません</string>
     <string name="multiplayer_error_space_is_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="multiplayer_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
     <string name="multiplayer_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
@@ -1790,6 +1797,7 @@
     <string name="vault_create_space">スペース</string>
     <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
     <string name="chat_box_camera">カメラ</string>
     <string name="chat_box_take_photo">写真を撮る</string>
@@ -1804,4 +1812,12 @@
     <string name="notifications_disable_short">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
+    <string name="notification_settings_title">通知</string>
+    <string name="notification_settings_disabled">通知が無効です</string>
+    <string name="notification_settings_disabled_subtitle">メッセージ通知を受け取るには、デバイスの設定から通知を有効にしてください。</string>
+    <string name="notification_settings_button_open">設定を開く</string>
+    <string name="notification_settings_state_title">メッセージ通知</string>
+    <string name="notification_settings_state_disabled">無効</string>
+    <string name="notification_settings_state_enabled">有効</string>
+    <string name="content_desc_muted">ミュート</string>
 </resources>

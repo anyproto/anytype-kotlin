@@ -180,8 +180,8 @@ open class ObjectSetFragment :
     private val topToolbarThreeDotsButton: ViewGroup
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
-    private val topToolbarStatusContainer: ViewGroup
-        get() = binding.topToolbar.root.findViewById(R.id.statusContainer)
+    private val topToolbarStatusContainer: View
+        get() = binding.topToolbar.root.findViewById(R.id.statusBadge)
 
     private val topToolbarThreeDotsIcon: ImageView
         get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)

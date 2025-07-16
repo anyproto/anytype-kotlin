@@ -10,6 +10,7 @@
     <string name="appearance">外觀</string>
     <string name="file_storage">檔案儲存空間</string>
     <string name="key">密鑰</string>
+    <string name="login_key">密鑰</string>
     <string name="clear_file_cache">清除檔案緩存</string>
     <string name="debug_sync_report">除錯同步報告</string>
     <string name="debug">除錯模式</string>
@@ -28,6 +29,8 @@
     <string name="dark">深色</string>
     <string name="system">跟隨系統</string>
     <string name="settings">設置</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">您備份好您的密鑰了嗎？</string>
     <string name="you_will_need_to_sign_in">您將需要使用它來登入您的帳號。請將其保存在安全的地方。 若遺失了，您將無法再登入您的帳號。</string>
     <string name="about_help_and_community">幫助 &amp; 社群</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">書籤圖示</string>
     <string name="content_description_file_icon">檔案圖示</string>
     <string name="content_description_modal_icon">互動視窗圖示</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">點擊輸入文字</string>
     <string name="modal_gallery">畫廊</string>
     <string name="modal_kanban">看板</string>
@@ -174,7 +178,7 @@
     <string name="hint_toggle">摺疊區塊</string>
     <string name="hint_paste_link">貼上連結</string>
     <string name="empty_tap_to_create_new_block">空的。點擊以新建區塊</string>
-    <string name="untitled">Untitled</string>
+    <string name="untitled">未命名</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">未命名集錦</string>
     <string name="archived">已封存</string>
@@ -373,7 +377,7 @@
     <string name="scroll_to_select_position">滾動以選擇新的位置</string>
     <string name="block_action_add_below">在下方添加</string>
     <string name="content_desc_back_button">返回按鈕</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">分享按鈕</string>
     <string name="content_desc_home_button">首頁按鈕</string>
     <string name="content_desc_search_button">搜尋按鈕</string>
     <string name="content_desc_add_doc_button">添加文件</string>
@@ -851,13 +855,13 @@
     <string name="create_object_section_lists">列表</string>
     <string name="create_object_section_objects">物件</string>
     <string name="edit">編輯</string>
-    <string name="unselect_all">取消全選</string>
+    <string name="unselect_all">取消選擇</string>
     <string name="sets">集合</string>
     <string name="favorites">我的最愛</string>
     <string name="recent">最近編輯</string>
     <string name="recently_opened">最近開啟</string>
     <string name="bin">垃圾桶</string>
-    <string name="synced_files">已同步的檔案</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">登入</string>
     <string name="create_object_section_library">Anytype 資料庫</string>
     <string name="bin_empty_title">Your bin is empty.</string>
@@ -1108,7 +1112,7 @@
     <string name="date_type_older">較舊的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天後</string>
-    <string name="settings_use_yamux">使用預訂的多工資料庫</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">行動裝置目前尚未支持看板檢視。\n更換檢視類型（設定 -&gt; 檢視）或建立一個新的來存取您的資料。</string>
@@ -1268,8 +1272,11 @@
     <string name="multiplayer_cancel_join_request">取消加入請求</string>
     <string name="multiplayer_cancel_join_request_msg">您將需要再次發送加入請求</string>
     <string name="multiplayer_do_not_cancel_join_request">不要取消</string>
-    <string name="multiplayer_error_invite_not_found">邀請不存在。請確保您的裝置已同步。</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">無法辨認邀請連結。可能是格式錯誤或無效的資料。</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">此空間似乎已被刪除。請確保您的裝置已同步。</string>
     <string name="multiplayer_error_limit_reached">此空間容量已達上限。請升級您的會員資格或聯繫支援部門尋求協助。</string>
     <string name="multiplayer_error_not_shareable">此空間似乎已不再共享。請確保您的裝置已同步。</string>
@@ -1789,6 +1796,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">空間</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1803,4 +1811,12 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

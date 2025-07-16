@@ -58,7 +58,10 @@ interface ChatPreviewContainer {
                                 is Event.Command.Chats.Add -> {
                                     state.map { preview ->
                                         if (preview.chat == event.context) {
-                                            preview.copy(message = event.message)
+                                            preview.copy(
+                                                message = event.message,
+                                                dependencies = event.dependencies
+                                            )
                                         } else {
                                             preview
                                         }

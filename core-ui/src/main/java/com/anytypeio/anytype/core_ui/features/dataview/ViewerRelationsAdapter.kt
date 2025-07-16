@@ -67,11 +67,7 @@ class ViewerRelationsAdapter(
             item: SimpleRelationView,
             onSwitchClick: (SimpleRelationView) -> Unit
         ) = with(binding) {
-            if (item.key == ObjectSetConfig.NAME_KEY) {
-                switchView.invisible()
-            } else {
-                switchView.visible()
-            }
+            switchView.visible()
             iconRelation.bind(item.format)
             title.text = item.title
             switchView.isChecked = item.isVisible

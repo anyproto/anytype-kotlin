@@ -10,6 +10,7 @@
     <string name="appearance">Знешні выгляд</string>
     <string name="file_storage">Сховішча файлаў</string>
     <string name="key">Ключ</string>
+    <string name="login_key">Ключ</string>
     <string name="clear_file_cache">Ачысціць файлавы кэш</string>
     <string name="debug_sync_report">Адладкавая справаздача сінхранізацыі</string>
     <string name="debug">Адладка</string>
@@ -28,6 +29,8 @@
     <string name="dark">Цёмны</string>
     <string name="system">Сістэма</string>
     <string name="settings">Налады</string>
+    <string name="app_preferences">App Preferences</string>
+    <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы стварылі рэзервовую копію свайго ключа?</string>
     <string name="you_will_need_to_sign_in">Ён спатрэбіцца вам для ўваходу ў сховішча. Захоўвайце яго ў надзейным месцы. Калі вы страціце яго, вы больш не зможаце ўвайсці ў сховішча.</string>
     <string name="about_help_and_community">Дапамога &amp; Супольнасць</string>
@@ -113,6 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
     <string name="modal_tap_to_type">Націсніце, каб увесці</string>
     <string name="modal_gallery">Галерэя </string>
     <string name="modal_kanban">Канбан</string>
@@ -857,13 +861,13 @@
     <string name="create_object_section_lists">Спісы</string>
     <string name="create_object_section_objects">Аб\'екты</string>
     <string name="edit">Рэдагаваць</string>
-    <string name="unselect_all">Скасаваць выбар</string>
+    <string name="unselect_all">Зняць вылучэнне</string>
     <string name="sets">Наборы</string>
     <string name="favorites">Абранае</string>
     <string name="recent">Нядаўна адрэдагаваны</string>
     <string name="recently_opened">Нядаўна адкрытыя</string>
     <string name="bin">Сметніца</string>
-    <string name="synced_files">Сінхранізаваныя файлы</string>
+    <string name="synced_files">Clean up files</string>
     <string name="log_in">Увайсці</string>
     <string name="create_object_section_library">Бібліятэка Anytype</string>
     <string name="bin_empty_title">Your bin is empty.</string>
@@ -1120,7 +1124,7 @@
     <string name="date_type_older">Раней</string>
     <string name="dates_days_ago">%1$s дзён таму</string>
     <string name="dates_days_from">%1$s дзён праз</string>
-    <string name="settings_use_yamux">Выкарыстоўвайце рэзервовую бібліятэку multiplex</string>
+    <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Выгляд канбан пакуль недаступны на мабільных прыладах.\nЗмяніце тып выгляду (Налады -&gt; Выгляд) або стварыце новы, каб атрымаць доступ да сваіх даных.</string>
@@ -1286,8 +1290,11 @@
     <string name="multiplayer_cancel_join_request">Адмяніць запыт на далучэнне</string>
     <string name="multiplayer_cancel_join_request_msg">Вам трэба будзе зноў адправіць запыт на далучэнне</string>
     <string name="multiplayer_do_not_cancel_join_request">Не адмяняць</string>
-    <string name="multiplayer_error_invite_not_found">Запрашэння не існуе. Пераканайцеся, што вашыя прылады сінхранізаваныя.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">Не атрымалася разабраць запрашальную спасылку. Яна можа змяшчаць памылкі ў фармаце або недапушчальныя даныя.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">Здаецца, Прастора была выдалена. Калі ласка, пераканайцеся, што вашы прылады сінхранізаваны.</string>
     <string name="multiplayer_error_limit_reached">Для гэтай прасторы дасягнуты ліміт. Калі ласка, абнавіце сваё членства або звярніцеся ў службу падтрымкі за дапамогай.</string>
     <string name="multiplayer_error_not_shareable">Падобна, што прастора больш не з\'яўляецца агульнай. Калі ласка, пераканайцеся, што вашыя прылады сінхранізаваныя.</string>
@@ -1828,6 +1835,7 @@
     <string name="vault_create_space">Прастора</string>
     <string name="vault_create_space_description">For organized content and data</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -1842,4 +1850,12 @@
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="notification_settings_title">Notifications</string>
+    <string name="notification_settings_disabled">Notifications are disabled</string>
+    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_button_open">Open Settings</string>
+    <string name="notification_settings_state_title">Message Notifications</string>
+    <string name="notification_settings_state_disabled">Disabled</string>
+    <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
 </resources>

@@ -25,7 +25,7 @@ class StatusBadgeWidget @JvmOverloads constructor(
         when (status) {
             is SpaceSyncAndP2PStatusState.Error -> {
                 visible()
-                setImageResource(R.drawable.ic_sync_error_10)
+                setImageResource(R.drawable.ic_sync_error_8)
             }
             SpaceSyncAndP2PStatusState.Init -> {
                 gone()
@@ -36,12 +36,12 @@ class StatusBadgeWidget @JvmOverloads constructor(
                         val error = spaceSyncUpdate.error
                         if (error != SpaceSyncError.NULL) {
                             visible()
-                            setImageResource(R.drawable.ic_sync_error_10)
+                            setImageResource(R.drawable.ic_sync_error_8)
                         } else {
                             return when (spaceSyncUpdate.status) {
                                 SpaceSyncStatus.SYNCED -> {
                                     visible()
-                                    setImageResource(R.drawable.ic_synced_10)
+                                    setImageResource(R.drawable.ic_synced_8)
                                 }
                                 SpaceSyncStatus.SYNCING -> {
                                     visible()
@@ -51,15 +51,15 @@ class StatusBadgeWidget @JvmOverloads constructor(
                                 }
                                 SpaceSyncStatus.ERROR -> {
                                     visible()
-                                    setImageResource(R.drawable.ic_sync_error_10)
+                                    setImageResource(R.drawable.ic_sync_error_8)
                                 }
                                 SpaceSyncStatus.OFFLINE -> {
                                     visible()
-                                    setImageResource(R.drawable.ic_sync_grey_10)
+                                    setImageResource(R.drawable.ic_sync_grey_8)
                                 }
                                 SpaceSyncStatus.NETWORK_UPDATE_NEEDED -> {
                                     visible()
-                                    setImageResource(R.drawable.ic_sync_slow_10)
+                                    setImageResource(R.drawable.ic_sync_slow_8)
                                 }
                             }
                         }

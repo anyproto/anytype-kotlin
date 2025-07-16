@@ -325,6 +325,9 @@
         <action
             android:id="@+id/actionCreateChatFromVault"
             app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/action_open_space_settings"
+            app:destination="@id/spaceSettingsScreen" />
     </fragment>
 
     <dialog

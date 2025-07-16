@@ -18,8 +18,8 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ObserveVaultSettings
-
+import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -30,7 +30,6 @@ class VaultViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val spaceManager: SpaceManager,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val observeVaultSettings: ObserveVaultSettings,
     private val analytics: Analytics,
     private val deepLinkToObjectDelegate: DeepLinkToObjectDelegate,
     private val appActionManager: AppActionManager,
@@ -45,7 +44,9 @@ class VaultViewModelFactory @Inject constructor(
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deleteSpace: DeleteSpace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val unpinSpace: UnpinSpace,
+    private val setSpaceOrder: SetSpaceOrder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -55,7 +56,6 @@ class VaultViewModelFactory @Inject constructor(
         urlBuilder = urlBuilder,
         spaceManager = spaceManager,
         saveCurrentSpace = saveCurrentSpace,
-        observeVaultSettings = observeVaultSettings,
         analytics = analytics,
         deepLinkToObjectDelegate = deepLinkToObjectDelegate,
         appActionManager = appActionManager,
@@ -70,6 +70,8 @@ class VaultViewModelFactory @Inject constructor(
         setSpaceNotificationMode = setSpaceNotificationMode,
         deleteSpace = deleteSpace,
         userPermissionProvider = userPermissionProvider,
-        notificationPermissionManager = notificationPermissionManager
+        notificationPermissionManager = notificationPermissionManager,
+        unpinSpace = unpinSpace,
+        setSpaceOrder = setSpaceOrder
     ) as T
 }

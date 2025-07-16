@@ -2,7 +2,6 @@ package com.anytypeio.anytype.feature_chats.ui
 
 import android.net.Uri
 import android.provider.OpenableColumns
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -45,15 +43,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
@@ -70,15 +65,10 @@ import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -918,247 +908,6 @@ fun ChatScreen(
 }
 
 @Composable
-fun Messages(
-    modifier: Modifier = Modifier,
-    messages: List<ChatView>,
-    isLoading: Boolean = false,
-    scrollState: LazyListState,
-    onReacted: (Id, String) -> Unit,
-    onDeleteMessage: (ChatView.Message) -> Unit,
-    onCopyMessage: (ChatView.Message) -> Unit,
-    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
-    onEditMessage: (ChatView.Message) -> Unit,
-    onReplyMessage: (ChatView.Message) -> Unit,
-    onMarkupLinkClicked: (String) -> Unit,
-    onAddReactionClicked: (String) -> Unit,
-    onViewChatReaction: (Id, String) -> Unit,
-    onMemberIconClicked: (Id?) -> Unit,
-    onMentionClicked: (Id) -> Unit,
-    onScrollToReplyClicked: (Id) -> Unit,
-    onHighlightMessage: (Id) -> Unit,
-    onShareInviteClicked: () -> Unit,
-    canCreateInviteLink: Boolean = false,
-    isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
-    highlightedMessageId: Id?
-) {
-    Timber.d("DROID-2966 Messages composition")
-    val scope = rememberCoroutineScope()
-
-    LazyColumn(
-        modifier = modifier,
-        reverseLayout = true,
-        state = scrollState,
-    ) {
-        itemsIndexed(
-            messages,
-            key = { _, msg ->
-                when(msg) {
-                    is ChatView.DateSection -> "$DATE_KEY_PREFIX${msg.timeInMillis}"
-                    is ChatView.Message -> msg.id
-                }
-            }
-        ) { idx, msg ->
-            if (msg is ChatView.Message) {
-
-                val isHighlighted = msg.id == highlightedMessageId
-
-                if (idx == 0)
-                    Spacer(modifier = Modifier.height(36.dp))
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .then(
-                            if (isHighlighted)
-                                Modifier.background(
-                                    color = colorResource(R.color.transparent_active).copy(alpha = 0.1f)
-                                )
-                            else
-                                Modifier
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                        .animateItem()
-                        .horizontalSwipeToReply(
-                            swipeThreshold = with(LocalDensity.current) { SWIPE_THRESHOLD_DP.toPx() },
-                            onReplyTriggered = { onReplyMessage(msg) }
-                        )
-                    ,
-                    horizontalArrangement = if (msg.isUserAuthor)
-                        Arrangement.End
-                    else
-                        Arrangement.Start
-                ) {
-                    if (!msg.isUserAuthor) {
-                        ChatUserAvatar(
-                            msg = msg,
-                            avatar = msg.avatar,
-                            modifier = Modifier
-                                .align(Alignment.Bottom)
-                                .clickable { onMemberIconClicked(msg.creator) }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Bubble(
-                        modifier = Modifier.padding(
-                            start = if (msg.isUserAuthor) 32.dp else 0.dp,
-                            end = if (msg.isUserAuthor) 0.dp else 32.dp
-                        ),
-                        name = msg.author,
-                        content = msg.content,
-                        timestamp = msg.timestamp,
-                        attachments = msg.attachments,
-                        isUserAuthor = msg.isUserAuthor,
-                        shouldHideUsername = msg.shouldHideUsername,
-                        isMaxReactionCountReached = msg.isMaxReactionCountReached,
-                        isEdited = msg.isEdited,
-                        onReacted = { emoji ->
-                            onReacted(msg.id, emoji)
-                        },
-                        reactions = msg.reactions,
-                        onDeleteMessage = {
-                            onDeleteMessage(msg)
-                        },
-                        onCopyMessage = {
-                            onCopyMessage(msg)
-                        },
-                        onAttachmentClicked = onAttachmentClicked,
-                        onEditMessage = {
-                            onEditMessage(msg)
-                        },
-                        onMarkupLinkClicked = onMarkupLinkClicked,
-                        onReply = {
-                            onReplyMessage(msg)
-                        },
-                        reply = msg.reply,
-                        onScrollToReplyClicked = { reply ->
-                            val targetIndex = messages.indexOfFirst { it is ChatView.Message && it.id == reply.msg }
-                            scope.launch {
-                                if (targetIndex != -1 && targetIndex < scrollState.layoutInfo.totalItemsCount) {
-                                    scrollState.animateScrollToItem(index = targetIndex)
-                                    onHighlightMessage(reply.msg)
-                                } else {
-                                    // Defer to VM: message likely not yet in the list (e.g. paged)
-                                    onScrollToReplyClicked(reply.msg)
-                                }
-                            }
-                        },
-                        onAddReactionClicked = {
-                            onAddReactionClicked(msg.id)
-                        },
-                        onViewChatReaction = { emoji ->
-                            onViewChatReaction(msg.id, emoji)
-                        },
-                        onMentionClicked = onMentionClicked,
-                        isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer
-                    )
-                }
-                if (idx == messages.lastIndex) {
-                    Spacer(modifier = Modifier.height(36.dp))
-                }
-
-                if (msg.startOfUnreadMessageSection) {
-                    Box(
-                        modifier = Modifier
-                            .height(50.dp)
-                            .fillParentMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(R.string.chat_new_messages_section_text),
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxWidth(),
-                            style = Caption1Medium,
-                            color = colorResource(R.color.transparent_active),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                }
-
-            } else if (msg is ChatView.DateSection) {
-                Text(
-                    text = msg.formattedDate,
-                    style = Caption1Medium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    textAlign = TextAlign.Center,
-                    color = colorResource(R.color.transparent_active)
-                )
-            }
-        }
-        if (messages.isEmpty()) {
-            if (isLoading) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize(),
-
-                    ) {
-                        Text(
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            text = stringResource(R.string.loading_wait),
-                            textAlign = TextAlign.Center,
-                            style = Caption2Medium,
-                            color = colorResource(R.color.text_secondary)
-                        )
-                    }
-                }
-            } else {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillParentMaxSize()
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .padding(horizontal = 20.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                modifier = Modifier.size(56.dp),
-                                painter = painterResource(id = R.drawable.ic_vault_create_space),
-                                contentDescription = "Empty state icon",
-                                colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
-                            )
-                            Text(
-                                text = stringResource(R.string.chat_empty_state_title),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_primary),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 10.dp)
-                            )
-                            Text(
-                                text = stringResource(R.string.chat_empty_state_subtitle),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_secondary),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
-                            if (canCreateInviteLink) {
-                                ButtonSecondary(
-                                    text = stringResource(R.string.chat_empty_state_share_invite_button),
-                                    onClick = { onShareInviteClicked() },
-                                    size = ButtonSize.SmallSecondary,
-                                    modifier = Modifier.padding(top = 10.dp)
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
 fun rememberFloatingDateHeaderState(
     lazyListState: LazyListState,
     messages: List<ChatView>
@@ -1197,7 +946,6 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
-private const val DATE_KEY_PREFIX = "date-"
+internal const val DATE_KEY_PREFIX = "date-"
 private val JumpToBottomThreshold = 200.dp
 private const val FLOATING_DATE_DELAY = 1000L
-private const val MIN_DRAG_DURATION_MS = 200L

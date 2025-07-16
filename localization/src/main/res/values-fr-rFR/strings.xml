@@ -1544,6 +1544,10 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="vault_my_spaces">Mes espaces</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Tout</string>
+    <string name="vault_pinned_section_title">Épinglé</string>
+    <string name="vault_pin_space">Épingler</string>
+    <string name="vault_unpin_space">Désépingler</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Tous les objets</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>

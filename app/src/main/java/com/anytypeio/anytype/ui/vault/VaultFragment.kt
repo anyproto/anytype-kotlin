@@ -10,13 +10,13 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -27,8 +27,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
+import com.anytypeio.anytype.presentation.vault.VaultErrors
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -101,6 +101,25 @@ class VaultFragment : BaseComposeFragment() {
                         onButtonClick = { vm.clearNotificationError() },
                         onDismissRequest = { vm.clearNotificationError() }
                     )
+                }
+
+                val vaultErrors = vm.vaultErrors.collectAsStateWithLifecycle().value
+                when (vaultErrors) {
+                    VaultErrors.MaxPinnedSpacesReached -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(
+                                R.string.vault_max_pinned_limit_reached,
+                                VaultViewModel.MAX_PINNED_SPACES
+                            ),
+                            buttonText = getString(R.string.button_ok),
+                            onButtonClick = { vm.clearVaultError() },
+                            onDismissRequest = { vm.clearVaultError() }
+                        )
+                    }
+
+                    VaultErrors.Hidden -> {
+                        //do nothing
+                    }
                 }
 
                 if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {

@@ -105,3 +105,8 @@ sealed class VaultNavigation {
     data class OpenUrl(val url: String) : VaultNavigation()
     data class ShowError(val message: String) : VaultNavigation()
 }
+
+sealed class VaultErrors {
+    data object Hidden : VaultErrors()
+    data object MaxPinnedSpacesReached : VaultErrors()
+}

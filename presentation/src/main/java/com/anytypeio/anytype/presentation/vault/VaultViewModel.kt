@@ -104,6 +104,7 @@ class VaultViewModel(
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
+    val vaultErrors = MutableStateFlow<VaultErrors>(VaultErrors.Hidden)
     
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
@@ -682,6 +683,10 @@ class VaultViewModel(
         notificationError.value = null
     }
 
+    fun clearVaultError() {
+        vaultErrors.value = VaultErrors.Hidden
+    }
+
     fun onDeleteSpaceMenuClicked(spaceId: Id?) {
         if (spaceId == null) {
             Timber.e("Space ID is null, cannot proceed with deletion")
@@ -700,13 +705,13 @@ class VaultViewModel(
 
     fun onPinSpaceClicked(spaceId: Id) {
         viewModelScope.launch {
-            // Implement iOS pin logic with 6-space limit
             val currentSections = sections.value
             val pinnedSpaces = currentSections.pinnedSpaces
             
             if (pinnedSpaces.count() >= MAX_PINNED_SPACES) {
+                Timber.w("Max pinned spaces limit reached: ${MAX_PINNED_SPACES}")
                 // Show limit reached error
-                notificationError.value = "Pin limit reached ($MAX_PINNED_SPACES)"
+                vaultErrors.value = VaultErrors.MaxPinnedSpacesReached
                 return@launch
             }
             
@@ -891,7 +896,7 @@ class VaultViewModel(
 
 
     companion object {
-        private const val MAX_PINNED_SPACES = 6
+        const val MAX_PINNED_SPACES = 6
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
     }
 }

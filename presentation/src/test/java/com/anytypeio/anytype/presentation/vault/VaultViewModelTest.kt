@@ -390,7 +390,7 @@ class VaultViewModelTest {
     }
 
     @Test
-    fun `onDragEnd should call ReorderPinnedSpaces with correct parameters`() = runTest {
+    fun `onDragEnd should call SetSpaceOrder with correct parameters`() = runTest {
         // Given
         val space1Id = "space1"
         val space2Id = "space2"
@@ -433,8 +433,8 @@ class VaultViewModelTest {
         )
 
         // Mock the ReorderPinnedSpaces use case
-        val reorderPinnedSpaces = mock<SetSpaceOrder>()
-        whenever(reorderPinnedSpaces.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(Unit))
+        val setSpaceOrder = mock<SetSpaceOrder>()
+        whenever(setSpaceOrder.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(Unit))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
@@ -448,7 +448,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = reorderPinnedSpaces
+            setSpaceOrder = setSpaceOrder
         )
 
         advanceUntilIdle()
@@ -459,14 +459,14 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        // Then - ReorderPinnedSpaces should be called with correct parameters
+        // Then - SetSpaceOrder should be called with correct parameters
         val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
-        val expectedParams = com.anytypeio.anytype.domain.vault.SetSpaceOrder.Params(
+        val expectedParams = SetSpaceOrder.Params(
             spaceViewId = space1Id,
             spaceViewOrder = expectedNewOrder
         )
 
-        org.mockito.kotlin.verify(reorderPinnedSpaces).async(expectedParams)
+        org.mockito.kotlin.verify(setSpaceOrder).async(expectedParams)
     }
 
     @Test
@@ -488,7 +488,7 @@ class VaultViewModelTest {
         val spacesList = listOf(space1)
         val permissions = mapOf(space1Id to SpaceMemberPermissions.OWNER)
 
-        val reorderPinnedSpaces = mock<SetSpaceOrder>()
+        val setSpaceOrder = mock<SetSpaceOrder>()
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
@@ -502,7 +502,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = reorderPinnedSpaces
+            setSpaceOrder = setSpaceOrder
         )
 
         advanceUntilIdle()
@@ -512,12 +512,12 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        // Then - ReorderPinnedSpaces should not be called
-        org.mockito.kotlin.verifyNoInteractions(reorderPinnedSpaces)
+        // Then - SetSpaceOrder should not be called
+        org.mockito.kotlin.verifyNoInteractions(setSpaceOrder)
     }
 
     @Test
-    fun `onDragEnd should handle ReorderPinnedSpaces failure gracefully`() = runTest {
+    fun `onDragEnd should handle SetSpaceOrder failure gracefully`() = runTest {
         // Given
         val space1Id = "space1"
         val space2Id = "space2"
@@ -548,10 +548,10 @@ class VaultViewModelTest {
             space2Id to SpaceMemberPermissions.OWNER
         )
 
-        // Mock the ReorderPinnedSpaces use case to return failure
-        val reorderPinnedSpaces = mock<SetSpaceOrder>()
+        // Mock the SetSpaceOrder use case to return failure
+        val setSpaceOrder = mock<SetSpaceOrder>()
         val errorMessage = "Network error"
-        whenever(reorderPinnedSpaces.async(any())).thenReturn(Resultat.Failure(Exception(errorMessage)))
+        whenever(setSpaceOrder.async(any())).thenReturn(Resultat.Failure(Exception(errorMessage)))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
@@ -565,7 +565,7 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = reorderPinnedSpaces
+            setSpaceOrder = setSpaceOrder
         )
 
         advanceUntilIdle()

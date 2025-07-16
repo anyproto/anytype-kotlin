@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultSectionView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import kotlinx.coroutines.delay
@@ -576,7 +577,7 @@ fun VaultScreenWithUnreadSection(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = sections.mainSpaces.size >= VaultSectionView.MAX_PINNED_SPACES,
+                    spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = isLoading
                 )
                 DefaultSearchBar(

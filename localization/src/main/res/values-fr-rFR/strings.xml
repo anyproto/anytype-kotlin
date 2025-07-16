@@ -1825,6 +1825,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notifications_disable_short">Désactiver</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Notifications</string>
     <string name="notification_settings_disabled">Les notifications sont désactivées</string>
     <string name="notification_settings_disabled_subtitle">Recevez des notifications sur les nouveaux messages en les activant dans les paramètres de votre appareil.</string>

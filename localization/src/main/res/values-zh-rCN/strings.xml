@@ -1530,6 +1530,10 @@
     <string name="vault_my_spaces">我的空间</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">所有</string>
+    <string name="vault_pinned_section_title">固定</string>
+    <string name="vault_pin_space">钉住</string>
+    <string name="vault_unpin_space">取消固定</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">所有对象</string>
     <string name="all_content_title_only_unlinked">仅未链接</string>
     <string name="all_content_title_only_unlinked_description">在关联图中没有直连或反链的对象。</string>

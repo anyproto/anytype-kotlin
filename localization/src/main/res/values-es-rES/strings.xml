@@ -1547,6 +1547,10 @@ En concreto,
     <string name="vault_my_spaces">Mis espacios</string>
     <string name="vault_unread_section_title">No leído</string>
     <string name="vault_all_section_title">Todo</string>
+    <string name="vault_pinned_section_title">Anclado</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Desanclar</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Todos los objetos</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>

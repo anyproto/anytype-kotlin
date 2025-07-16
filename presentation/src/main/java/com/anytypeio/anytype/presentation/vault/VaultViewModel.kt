@@ -35,7 +35,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -92,7 +91,6 @@ class VaultViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
-    private val reorderPinnedSpaces: ReorderPinnedSpaces,
     private val setSpaceOrder: SetSpaceOrder
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -869,10 +867,10 @@ class VaultViewModel(
                     // Use the tracked moved space ID or fall back to the first space
                     val movedSpaceId = lastMovedSpaceId ?: newOrder.firstOrNull() ?: return@launch
                     
-                    reorderPinnedSpaces.async(
-                        ReorderPinnedSpaces.Params(
-                            movedSpaceId = movedSpaceId,
-                            newOrder = newOrder
+                    setSpaceOrder.async(
+                        SetSpaceOrder.Params(
+                            spaceViewId = movedSpaceId,
+                            spaceViewOrder = newOrder
                         )
                     ).fold(
                         onFailure = { error ->

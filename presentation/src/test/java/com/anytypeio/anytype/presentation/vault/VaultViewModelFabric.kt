@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -46,7 +45,6 @@ object VaultViewModelFabric {
         userPermissionProvider: UserPermissionProvider = mock(),
         notificationPermissionManager: NotificationPermissionManager = mock(),
         unpinSpace: UnpinSpace = mock(),
-        reorderPinnedSpaces: ReorderPinnedSpaces = mock(),
         setSpaceOrder: SetSpaceOrder = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
@@ -69,7 +67,6 @@ object VaultViewModelFabric {
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
-        reorderPinnedSpaces = reorderPinnedSpaces,
         setSpaceOrder = setSpaceOrder
     )
 } 

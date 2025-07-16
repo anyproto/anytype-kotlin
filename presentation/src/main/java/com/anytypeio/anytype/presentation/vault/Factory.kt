@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.vault.ReorderPinnedSpaces
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -47,7 +46,6 @@ class VaultViewModelFactory @Inject constructor(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
-    private val reorderPinnedSpaces: ReorderPinnedSpaces,
     private val setSpaceOrder: SetSpaceOrder
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -74,7 +72,6 @@ class VaultViewModelFactory @Inject constructor(
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
-        reorderPinnedSpaces = reorderPinnedSpaces,
         setSpaceOrder = setSpaceOrder
     ) as T
 }

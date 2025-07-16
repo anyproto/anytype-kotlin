@@ -888,5 +888,97 @@ class VaultViewModelTest {
         }
     }
 
+    @Test
+    fun `transformToVaultSpaceViews should update canPin dynamically when unpinning space at MAX_PINNED_SPACES limit`() = runTest {
+        // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 4 unpinned spaces
+        val pinnedSpace1Id = "pinned1"
+        val pinnedSpace2Id = "pinned2"
+        val pinnedSpace3Id = "pinned3"
+        val pinnedSpace4Id = "pinned4"
+        val pinnedSpace5Id = "pinned5"
+        val pinnedSpace6Id = "pinned6"
+        val unpinnedSpace1Id = "unpinned1"
+        val unpinnedSpace2Id = "unpinned2"
+        val unpinnedSpace3Id = "unpinned3"
+        val unpinnedSpace4Id = "unpinned4"
+
+        // Initial state with 6 pinned spaces
+        val initialPinnedSpaces = listOf(
+            StubSpaceView(id = pinnedSpace1Id, targetSpaceId = pinnedSpace1Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--aa"),
+            StubSpaceView(id = pinnedSpace2Id, targetSpaceId = pinnedSpace2Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--bb"),
+            StubSpaceView(id = pinnedSpace3Id, targetSpaceId = pinnedSpace3Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--cc"),
+            StubSpaceView(id = pinnedSpace4Id, targetSpaceId = pinnedSpace4Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--dd"),
+            StubSpaceView(id = pinnedSpace5Id, targetSpaceId = pinnedSpace5Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--ee"),
+            StubSpaceView(id = pinnedSpace6Id, targetSpaceId = pinnedSpace6Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--ff")
+        )
+
+        val unpinnedSpaces = listOf(
+            StubSpaceView(id = unpinnedSpace1Id, targetSpaceId = unpinnedSpace1Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
+            StubSpaceView(id = unpinnedSpace2Id, targetSpaceId = unpinnedSpace2Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
+            StubSpaceView(id = unpinnedSpace3Id, targetSpaceId = unpinnedSpace3Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
+            StubSpaceView(id = unpinnedSpace4Id, targetSpaceId = unpinnedSpace4Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK)
+        )
+
+        val initialSpacesList = initialPinnedSpaces + unpinnedSpaces
+        val permissions = (initialPinnedSpaces + unpinnedSpaces).associate { it.id to SpaceMemberPermissions.OWNER }
+
+        // Create a MutableStateFlow to simulate dynamic updates
+        val spacesFlow = MutableStateFlow(initialSpacesList)
+        
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
+        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+        val viewModel = VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            stringResourceProvider = stringResourceProvider
+        )
+
+        advanceUntilIdle()
+
+        // Initial state - 6 pinned spaces, unpinned spaces should have canPin = false
+        var sections = viewModel.sections.value
+        assertEquals(6, sections.pinnedSpaces.size)
+        assertEquals(4, sections.mainSpaces.size)
+        
+        // All pinned spaces should have canPin = true (already pinned)
+        sections.pinnedSpaces.forEach { space ->
+            assertEquals(true, space.canPin)
+        }
+        
+        // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
+        sections.mainSpaces.forEach { space ->
+            assertEquals(false, space.canPin)
+        }
+
+        // When - User unpins one space (pinnedSpace6)
+        val updatedSpacesList = initialPinnedSpaces.take(5) + listOf(
+            StubSpaceView(id = pinnedSpace6Id, targetSpaceId = pinnedSpace6Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK) // Remove spaceOrder to unpin
+        ) + unpinnedSpaces
+        
+        spacesFlow.value = updatedSpacesList
+        advanceUntilIdle()
+
+        // Then - Now there are 5 pinned spaces, all unpinned spaces should have canPin = true
+        sections = viewModel.sections.value
+        assertEquals(5, sections.pinnedSpaces.size)
+        assertEquals(5, sections.mainSpaces.size) // 4 original unpinned + 1 newly unpinned
+        
+        // All pinned spaces should have canPin = true (already pinned)
+        sections.pinnedSpaces.forEach { space ->
+            assertEquals(true, space.canPin)
+        }
+        
+        // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+        sections.mainSpaces.forEach { space ->
+            assertEquals("Space ${space.space.id} should have canPin = true after unpinning", true, space.canPin)
+        }
+    }
+
     //endregion
 } 

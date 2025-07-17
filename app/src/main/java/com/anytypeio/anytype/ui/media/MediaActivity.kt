@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.anytypeio.anytype.ui.media.screens.MediaScreen
+import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
+import com.anytypeio.anytype.ui.media.screens.ImageBox
+import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
 
 class MediaActivity : ComponentActivity() {
 
@@ -17,6 +19,7 @@ class MediaActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         
         val url = intent.getStringExtra(EXTRA_URL)
+        val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
         
         if (url == null || mediaType == TYPE_UNKNOWN) {
@@ -29,11 +32,16 @@ class MediaActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = Color.Black
             ) {
-                MediaScreen(
-                    url = url,
-                    mediaType = mediaType,
-                    onClose = { finish() }
-                )
+                when(mediaType) {
+                    TYPE_VIDEO -> VideoPlayerBox(url = url)
+                    TYPE_IMAGE -> ImageBox(url = url)
+                    TYPE_AUDIO -> {
+                        AudioPlayerBox(
+                            name = name.orEmpty(),
+                            url = url
+                        )
+                    }
+                }
             }
         }
     }
@@ -41,15 +49,23 @@ class MediaActivity : ComponentActivity() {
     companion object {
         const val TYPE_IMAGE = 1
         const val TYPE_VIDEO = 2
+        const val TYPE_AUDIO = 3
         private const val TYPE_UNKNOWN = 0
 
         private const val EXTRA_URL = "extra_url"
         private const val EXTRA_MEDIA_TYPE = "extra_media_type"
+        private const val EXTRA_MEDIA_NAME = "extra_media_name"
 
-        fun start(context: Context, url: String, mediaType: Int) {
+        fun start(
+            context: Context,
+            url: String,
+            mediaType: Int,
+            name: String? = null
+        ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
                 putExtra(EXTRA_URL, url)
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
+                putExtra(EXTRA_MEDIA_NAME, name)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             context.startActivity(intent)

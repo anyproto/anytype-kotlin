@@ -485,7 +485,6 @@ fun SpaceActionsDropdownMenuHost(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VaultScreenWithUnreadSection(
     profile: AccountProfile,
@@ -635,9 +634,6 @@ fun VaultScreenWithUnreadSection(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(80.dp)
-                                            .padding(horizontal = 16.dp)
-                                            .graphicsLayer(alpha = alpha.value)
-                                            .animateItem()
                                             .combinedClickable(
                                                 onClick = {
                                                     onSpaceClicked(item)
@@ -646,6 +642,9 @@ fun VaultScreenWithUnreadSection(
                                                     expandedSpaceId = item.space.id
                                                 }
                                             )
+                                            .padding(horizontal = 16.dp)
+                                            .graphicsLayer(alpha = alpha.value)
+                                            .animateItem()
                                             .longPressDraggableHandle(
                                                 onDragStarted = {
                                                     hapticFeedback.performHapticFeedback(

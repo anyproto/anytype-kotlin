@@ -387,6 +387,18 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
                             }
+                            is ChatViewModel.ViewModelCommand.PlayAudio -> {
+                                runCatching {
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_AUDIO,
+                                        url = command.url,
+                                        name = command.name
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching audio player")
+                                }
+                            }
                             is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
                                 runCatching {
                                     val intent = Intent().apply {

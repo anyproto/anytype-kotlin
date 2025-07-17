@@ -55,6 +55,7 @@ import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.ui.media.MediaActivity
 import kotlinx.coroutines.delay
 
@@ -394,12 +395,13 @@ private fun AudioPlayer(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.TopCenter)
-                        .padding(top = 32.dp)
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 48.dp)
                     ,
                     text = name,
                     textAlign = TextAlign.Center,
-                    color = Color.White
+                    color = Color.White,
+                    style = Caption1Medium
                 )
 
                 // SeekBar + time

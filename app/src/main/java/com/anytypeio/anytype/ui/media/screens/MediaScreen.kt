@@ -67,6 +67,7 @@ fun MediaScreen(
         when (mediaType) {
             MediaActivity.TYPE_IMAGE -> ImageViewer(url = url)
             MediaActivity.TYPE_VIDEO -> VideoPlayer(url = url)
+            MediaActivity.TYPE_AUDIO -> VideoPlayer(url = url)
             else -> UnknownMediaType()
         }
     }

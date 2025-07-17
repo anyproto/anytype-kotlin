@@ -4920,7 +4920,10 @@ class EditorViewModel(
     //region SLASH WIDGET
     fun onStartSlashWidgetClicked() {
         dispatch(Command.AddSlashWidgetTriggerToFocusedBlock)
-        viewModelScope.sendAnalyticsSlashMenuEvent(analytics)
+        viewModelScope.sendAnalyticsScreenSlashMenuEvent(
+            analytics = analytics,
+            route = EventsDictionary.Routes.slash
+        )
     }
 
     fun onSlashItemClicked(item: SlashItem) {
@@ -4937,6 +4940,10 @@ class EditorViewModel(
         Timber.d("onSlashTextWatcherEvent, event:[$event]")
         when (event) {
             is SlashEvent.Start -> {
+                viewModelScope.sendAnalyticsScreenSlashMenuEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.keyboardBar
+                )
                 slashStartIndex = event.slashStart
                 filterSearchEmptyCount = 0
                 val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
@@ -5025,6 +5032,10 @@ class EditorViewModel(
     private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Style"
+                )
                 val items =
                     listOf(SlashItem.Subheader.StyleWithBack) + getSlashWidgetStyleItems(
                         slashViewType
@@ -5036,6 +5047,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Media -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Media"
+                )
                 val items =
                     listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getSlashWidgetMediaItems()
                 onSlashWidgetStateChanged(
@@ -5045,9 +5060,17 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Properties -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Properties"
+                )
                 getProperties { proceedWithProperties(it) }
             }
             is SlashItem.Main.Objects -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Objects"
+                )
                 proceedWithGettingObjectTypes(
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
                 ) {
@@ -5055,6 +5078,10 @@ class EditorViewModel(
                 }
             }
             is SlashItem.Main.Other -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Other"
+                )
                 val items =
                     listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getSlashWidgetOtherItems()
                 onSlashWidgetStateChanged(
@@ -5064,6 +5091,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Actions -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Actions"
+                )
                 val items =
                     listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getSlashWidgetActionItems()
                 onSlashWidgetStateChanged(
@@ -5073,6 +5104,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Alignment -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Alignment"
+                )
                 val items =
                     listOf(SlashItem.Subheader.AlignmentWithBack) + getSlashWidgetAlignmentItems(
                         slashViewType
@@ -5084,6 +5119,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Color -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Color"
+                )
                 val block = blocks.find { it.id == targetId }
                 if (block == null) {
                     Timber.d("Could not find target block for slash item action: color")
@@ -5104,6 +5143,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Background -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Background"
+                )
                 val block = blocks.find { it.id == targetId }
                 if (block == null) {
                     Timber.d("Could not find target block for slash item action: background")

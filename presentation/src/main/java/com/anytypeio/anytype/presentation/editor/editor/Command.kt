@@ -129,8 +129,8 @@ sealed class Command {
         }
     }
 
-    object AddSlashWidgetTriggerToFocusedBlock : Command()
-    object AddMentionWidgetTriggerToFocusedBlock : Command()
+    data object AddSlashWidgetTriggerToFocusedBlock : Command()
+    data object AddMentionWidgetTriggerToFocusedBlock : Command()
 
     data class OpenObjectSelectTypeScreen(
         val excludedTypes: List<Key>,

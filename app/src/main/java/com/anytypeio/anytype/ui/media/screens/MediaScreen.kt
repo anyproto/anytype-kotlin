@@ -396,8 +396,7 @@ private fun AudioPlayer(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .padding(bottom = 48.dp)
-                    ,
+                        .padding(bottom = 48.dp),
                     text = name,
                     textAlign = TextAlign.Center,
                     color = Color.White,

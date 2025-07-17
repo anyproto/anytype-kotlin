@@ -310,6 +310,16 @@ fun NameTextField(
                     } else {
                         strokeColor.value = strokeColorInactive
                         strokeWidth.value = strokeWidthInactive
+                        // Save current text when focus is lost only if the name has changed
+                        // to avoid unnecessary updates
+                        if (innerValue != state.name) {
+                            action.invoke(
+                                ViewEditAction.UpdateName(
+                                    id = state.id,
+                                    name = innerValue
+                                )
+                            )
+                        }
                     }
                 },
             keyboardOptions = KeyboardOptions(

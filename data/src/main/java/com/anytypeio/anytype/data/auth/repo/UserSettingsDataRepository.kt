@@ -95,19 +95,8 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getVaultSettings(account)
     }
 
-    override suspend fun setVaultSettings(account: Account, settings: VaultSettings) {
-        cache.setVaultSettings(account, settings)
-    }
-
     override suspend fun observeVaultSettings(account: Account): Flow<VaultSettings> {
         return cache.observeVaultSettings(account)
-    }
-
-    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
-        cache.setVaultSpaceOrder(
-            account = account,
-            order = order
-        )
     }
 
     override suspend fun getAllContentSort(space: SpaceId): Pair<Id, Boolean>? {

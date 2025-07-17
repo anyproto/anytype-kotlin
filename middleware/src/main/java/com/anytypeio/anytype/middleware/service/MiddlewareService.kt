@@ -484,6 +484,12 @@ interface MiddlewareService {
     fun spaceDelete(request: Rpc.Space.Delete.Request): Rpc.Space.Delete.Response
 
     @Throws(Exception::class)
+    fun spaceSetOrder(request: Rpc.Space.SetOrder.Request): Rpc.Space.SetOrder.Response
+
+    @Throws(Exception::class)
+    fun spaceUnsetOrder(request: Rpc.Space.UnsetOrder.Request): Rpc.Space.UnsetOrder.Response
+
+    @Throws(Exception::class)
     fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response
 
     @Throws(Exception::class)

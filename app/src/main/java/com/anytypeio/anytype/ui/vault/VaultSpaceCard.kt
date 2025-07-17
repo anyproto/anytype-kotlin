@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -60,13 +61,17 @@ fun VaultSpaceCard(
     title: String,
     subtitle: String,
     icon: SpaceIconView,
+    isPinned: Boolean = false,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {}
+    onMuteSpace: (Id) -> Unit = {},
+    onUnmuteSpace: (Id) -> Unit = {},
+    onPinSpace: (Id) -> Unit = {},
+    onUnpinSpace: (Id) -> Unit = {},
+    maxPinnedSpaces: Int,
+    onSpaceSettings: (Id) -> Unit = {},
+    showPinButton: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -82,7 +87,8 @@ fun VaultSpaceCard(
         )
         ContentSpace(
             title = title,
-            subtitle = subtitle
+            subtitle = subtitle,
+            isPinned = isPinned
         )
         
         // Include dropdown menu inside the card
@@ -93,8 +99,11 @@ fun VaultSpaceCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace
+                onPinSpace = onPinSpace,
+                onUnpinSpace = onUnpinSpace,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings,
+                showPinButton = showPinButton
             )
         }
     }
@@ -104,6 +113,7 @@ fun VaultSpaceCard(
 private fun ContentSpace(
     title: String,
     subtitle: String,
+    isPinned: Boolean = false,
 ) {
     Column(
         modifier = Modifier
@@ -117,12 +127,25 @@ private fun ContentSpace(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
-        Text(
-            text = subtitle,
-            style = Title3,
-            color = colorResource(id = R.color.text_secondary),
-            modifier = Modifier
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = subtitle,
+                style = Title3,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.weight(1f),
+            )
+            if (isPinned) {
+                Image(
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
+                    modifier = Modifier
+                        .size(18.dp),
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                )
+            }
+        }
     }
 }
 
@@ -140,13 +163,17 @@ fun VaultChatCard(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    isPinned: Boolean = false,
+    maxPinnedSpaces: Int,
     spaceView: VaultSpaceView? = null,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onUnmuteSpace: (com.anytypeio.anytype.core_models.Id) -> Unit = {},
-    onDeleteSpace: (String) -> Unit = {},
-    onLeaveSpace: (String) -> Unit = {}
+    onMuteSpace: (Id) -> Unit = {},
+    onUnmuteSpace: (Id) -> Unit = {},
+    onPinSpace: (Id) -> Unit = {},
+    onUnpinSpace: (Id) -> Unit = {},
+    onSpaceSettings: (Id) -> Unit = {},
+    showPinButton: Boolean
 ) {
     Box(
         modifier = modifier
@@ -166,7 +193,8 @@ fun VaultChatCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted
+            isMuted = isMuted,
+            isPinned = isPinned
         )
         
         // Include dropdown menu inside the card
@@ -177,8 +205,11 @@ fun VaultChatCard(
                 onDismiss = onDismissMenu,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
-                onDeleteSpace = onDeleteSpace,
-                onLeaveSpace = onLeaveSpace
+                onPinSpace = onPinSpace,
+                onUnpinSpace = onUnpinSpace,
+                maxPinnedSpaces = maxPinnedSpaces,
+                onSpaceSettings = onSpaceSettings,
+                showPinButton = showPinButton
             )
         }
     }
@@ -194,7 +225,8 @@ private fun BoxScope.ContentChat(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null
+    isMuted: Boolean? = null,
+    isPinned: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -280,6 +312,16 @@ private fun BoxScope.ContentChat(
                             color = colorResource(id = R.color.text_white),
                         )
                     }
+                }
+
+                if (unreadMessageCount == 0 && unreadMentionCount == 0 && isPinned) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_pin_18),
+                        contentDescription = stringResource(R.string.content_desc_pin),
+                        modifier = Modifier
+                            .size(18.dp),
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                    )
                 }
             }
         }
@@ -582,7 +624,9 @@ fun VaultSpaceCardPreview() {
         modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
-        icon = SpaceIconView.Placeholder()
+        icon = SpaceIconView.Placeholder(),
+        maxPinnedSpaces = 6,
+        showPinButton = true
     )
 }
 
@@ -599,6 +643,7 @@ fun ChatWithMentionAndMessage() {
         unreadMessageCount = 32,
         unreadMentionCount = 1,
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -617,7 +662,8 @@ fun ChatWithMentionAndMessage() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 
@@ -633,6 +679,7 @@ fun ChatWithMention() {
         messageTime = "18:32",
         unreadMentionCount = 1,
         isMuted = true,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -651,7 +698,8 @@ fun ChatWithMention() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 
@@ -666,6 +714,7 @@ fun ChatPreview() {
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
         isMuted = false,
+        maxPinnedSpaces = 6,
         chatPreview = Chat.Preview(
             space = SpaceId("space-id"),
             chat = "chat-id",
@@ -684,7 +733,8 @@ fun ChatPreview() {
                 ),
                 order = "order-id"
             )
-        )
+        ),
+        showPinButton = true
     )
 }
 

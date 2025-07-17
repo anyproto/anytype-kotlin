@@ -392,7 +392,8 @@ class ChatFragment : BaseComposeFragment() {
                                     MediaActivity.start(
                                         context = requireContext(),
                                         mediaType = MediaActivity.TYPE_AUDIO,
-                                        url = command.url
+                                        url = command.url,
+                                        name = command.name
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error while launching audio player")

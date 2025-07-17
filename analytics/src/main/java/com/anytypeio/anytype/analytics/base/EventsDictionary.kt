@@ -134,7 +134,8 @@ object EventsDictionary {
     const val hideKeyboard = "KeyboardBarHideKeyboardMenu"
 
     // Toolbars
-    const val slashMenu = "KeyboardBarSlashMenu"
+    const val screenSlashMenu = "ScreenSlashMenu"
+    const val clickSlashMenu = "ClickSlashMenu"
     const val styleMenu = "KeyboardBarStyleMenu"
     const val selectionMenu = "KeyboardBarSelectionMenu"
     const val mentionMenu = "KeyboardBarMentionMenu"
@@ -329,6 +330,9 @@ object EventsDictionary {
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
         const val objLink = "Link"
+        const val keyboardBar = "KeyboardBar"
+        const val slash = "Slash"
+        const val slashMenu = "SlashMenu"
         const val screenSettings = "ScreenSettings"
         const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"

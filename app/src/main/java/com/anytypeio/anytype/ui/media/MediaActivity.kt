@@ -41,6 +41,7 @@ class MediaActivity : ComponentActivity() {
     companion object {
         const val TYPE_IMAGE = 1
         const val TYPE_VIDEO = 2
+        const val TYPE_AUDIO = 3
         private const val TYPE_UNKNOWN = 0
 
         private const val EXTRA_URL = "extra_url"

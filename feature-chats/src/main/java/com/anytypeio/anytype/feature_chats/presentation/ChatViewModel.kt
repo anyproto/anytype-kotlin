@@ -1117,6 +1117,11 @@ class ChatViewModel @Inject constructor(
                                 // If url not found, open bookmark object instead of browsing.
                                 navigation.emit(wrapper.navigation())
                             }
+                        } else if (wrapper.layout == ObjectType.Layout.AUDIO) {
+                            val hash = urlBuilder.original(wrapper.id)
+                            commands.emit(
+                                ViewModelCommand.PlayAudio(hash)
+                            )
                         } else {
                             navigation.emit(wrapper.navigation())
                         }
@@ -1626,6 +1631,7 @@ class ChatViewModel @Inject constructor(
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
+        data class PlayAudio(val url: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()

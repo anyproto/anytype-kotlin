@@ -394,6 +394,8 @@ class ChatFragment : BaseComposeFragment() {
                                         mediaType = MediaActivity.TYPE_AUDIO,
                                         url = command.url
                                     )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching audio player")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.ShareInviteLink -> {

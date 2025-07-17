@@ -47,6 +47,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -58,22 +59,6 @@ import com.anytypeio.anytype.ui.media.MediaActivity
 import kotlinx.coroutines.delay
 
 @Composable
-fun MediaScreen(
-    url: String,
-    mediaType: Int,
-    onClose: () -> Unit
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        when (mediaType) {
-            MediaActivity.TYPE_IMAGE -> ImageViewer(url = url)
-            MediaActivity.TYPE_VIDEO -> VideoPlayer(url = url)
-            MediaActivity.TYPE_AUDIO -> VideoPlayer(url = url)
-            else -> UnknownMediaType()
-        }
-    }
-}
-
-@Composable
 private fun ImageViewer(url: String) {
     AsyncImage(
         model = url,
@@ -81,6 +66,41 @@ private fun ImageViewer(url: String) {
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.Fit
     )
+}
+
+@Composable
+fun AudioPlayerBox(
+    name: String,
+    url: String
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        AudioPlayer(
+            url = url,
+            name = name
+        )
+    }
+}
+
+@Composable
+fun VideoPlayerBox(
+    url: String
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        VideoPlayer(
+            url = url
+        )
+    }
+}
+
+@Composable
+fun ImageBox(
+    url: String
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        ImageViewer(
+            url = url
+        )
+    }
 }
 
 @Composable
@@ -279,6 +299,208 @@ private fun VideoPlayer(url: String) {
 }
 
 @Composable
+private fun AudioPlayer(
+    url: String,
+    name: String
+) {
+    val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
+    var isPlaying by remember { mutableStateOf(false) }
+    var isBuffering by remember { mutableStateOf(true) }
+    var videoDuration by remember { mutableStateOf(0) }
+    var currentPosition by remember { mutableStateOf(0) }
+    var userSeeking by remember { mutableStateOf(false) }
+    var showControls by remember { mutableStateOf(true) }
+
+    // Poll playback progress
+    LaunchedEffect(isPlaying, userSeeking) {
+        while (isPlaying && !userSeeking) {
+            videoViewRef.value?.let {
+                currentPosition = it.currentPosition
+            }
+            delay(500)
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            videoViewRef.value?.apply {
+                stopPlayback()
+                videoViewRef.value = null
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures { showControls = !showControls }
+            }
+    ) {
+        // VideoView rendering
+        AndroidView(
+            factory = { ctx ->
+                VideoView(ctx).apply {
+                    setVideoURI(Uri.parse(url))
+                    setOnPreparedListener {
+                        videoDuration = it.duration
+                        isBuffering = false
+                        start()
+                        isPlaying = true
+                    }
+                    setOnInfoListener { _, what, _ ->
+                        when (what) {
+                            MEDIA_INFO_BUFFERING_START -> isBuffering = true
+                            MEDIA_INFO_BUFFERING_END -> isBuffering = false
+                        }
+                        false
+                    }
+                    setOnCompletionListener {
+                        isPlaying = false
+                        showControls = true
+                        currentPosition = videoDuration
+                    }
+                    isFocusable = false
+                    isFocusableInTouchMode = false
+                    videoViewRef.value = this
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+
+        // Loading indicator
+        if (isBuffering) {
+            CircularProgressIndicator(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(48.dp),
+                color = Color.White,
+                strokeWidth = 4.dp
+            )
+        }
+
+        // Overlay controls with fade-in/out
+        AnimatedVisibility(
+            visible = true,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp)
+            ) {
+
+                Text(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(top = 32.dp)
+                    ,
+                    text = name,
+                    textAlign = TextAlign.Center,
+                    color = Color.White
+                )
+
+                // SeekBar + time
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = 16.dp)
+                    ,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = formatMillis(currentPosition),
+                        color = Color.White,
+                        style = BodyCallout,
+                        modifier = Modifier.alpha(0.5f)
+                    )
+                    DotScrubberSlider(
+                        value = currentPosition.toFloat(),
+                        onValueChange = {
+                            userSeeking = true
+                            currentPosition = it.toInt()
+                            videoViewRef.value?.seekTo(currentPosition)
+                            userSeeking = false
+                        },
+                        valueRange = 0f..videoDuration.coerceAtLeast(1).toFloat(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(horizontal = 8.dp)
+                    )
+                    Text(
+                        text = formatMillis(videoDuration),
+                        color = Color.White,
+                        style = BodyCallout,
+                        modifier = Modifier.alpha(0.5f)
+                    )
+                }
+
+                if (!isPlaying) {
+                    Box(
+                        modifier = Modifier.background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        ).align(
+                            Alignment.Center
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
+                            }
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_player_play),
+                            contentDescription = "Play button",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(12.dp)
+                                .size(24.dp)
+                        )
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        ).align(
+                            Alignment.Center
+                        ).clickable {
+                            val player = videoViewRef.value ?: return@clickable
+                            if (player.isPlaying) {
+                                player.pause()
+                                isPlaying = false
+                                showControls = true
+                            } else {
+                                player.start()
+                                isPlaying = true
+                            }
+                        }
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_player_pause),
+                            contentDescription = "Pause button",
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(12.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun UnknownMediaType() {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -365,10 +587,17 @@ fun DotScrubberSlider(
 @DefaultPreviews
 @Composable
 private fun MediaScreenVideoPreview() {
-    MediaScreen(
-        url = "",
-        onClose = {},
-        mediaType = MediaActivity.TYPE_VIDEO
+    VideoPlayerBox(
+        url = "https://www.youtube.com/watch?v=I-oAtRUEcPM"
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun MediaScreenAudioPreview() {
+    AudioPlayerBox(
+        name = "Clara Luciani - Nue",
+        url = "https://www.youtube.com/watch?v=I-oAtRUEcPM"
     )
 }
 

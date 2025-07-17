@@ -127,7 +127,8 @@ class Orchestrator(
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
                                 spaceParams = spaceParams,
-                                isDate = intent.isDate
+                                isDate = intent.isDate,
+                                route = intent.route
                             )
                         },
                         onFailure = defaultOnError
@@ -151,7 +152,8 @@ class Orchestrator(
                                 prototype = intent.prototype,
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
-                                spaceParams = spaceParams
+                                spaceParams = spaceParams,
+                                route = intent.route
                             )
                         }
                     )
@@ -337,7 +339,8 @@ class Orchestrator(
                         success = { payload ->
                             analytics.sendAnalyticsChangeTextBlockStyleEvent(
                                 style = intent.style,
-                                count = intent.targets.size
+                                count = intent.targets.size,
+                                route = intent.route
                             )
                             proxies.payloads.send(payload)
                         }
@@ -526,7 +529,8 @@ class Orchestrator(
                                 prototype = Block.Prototype.Bookmark.New,
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
-                                spaceParams = spaceParams
+                                spaceParams = spaceParams,
+                                route = null
                             )
                         }
                     )
@@ -623,7 +627,8 @@ class Orchestrator(
                                 prototype = Block.Prototype.SimpleTable,
                                 startTime = startTime,
                                 middlewareTime = middlewareTime,
-                                spaceParams = spaceParams
+                                spaceParams = spaceParams,
+                                route = null
                             )
                         }
                     )

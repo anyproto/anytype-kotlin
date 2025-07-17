@@ -1547,6 +1547,10 @@ En concreto,
     <string name="vault_my_spaces">Mis espacios</string>
     <string name="vault_unread_section_title">No leído</string>
     <string name="vault_all_section_title">Todo</string>
+    <string name="vault_pinned_section_title">Anclado</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Desanclar</string>
+    <string name="vault_max_pinned_limit_reached">Has alcanzado el límite de %1$d espacios anclados</string>
     <string name="all_content_title_all_content">Todos los objetos</string>
     <string name="all_content_title_only_unlinked">Solo desconectados</string>
     <string name="all_content_title_only_unlinked_description">Objetos desconectados que no tienen un enlace a o desde otro objeto del gráfico.</string>
@@ -1824,6 +1828,8 @@ En concreto,
     <string name="notifications_disable_short">Desactivar</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
+    <string name="vault_pinned_limit_message">Tu límite actual es de %1$d espacios anclados. Desancla alguno si quieres añadir otro nuevo.</string>
+    <string name="vault_space_settings">Ajustes del espacio</string>
     <string name="notification_settings_title">Notificaciones</string>
     <string name="notification_settings_disabled">Las notificaciones están desactivadas</string>
     <string name="notification_settings_disabled_subtitle">Para recibir notificaciones de mensajes nuevos, actívalas en los ajustes del dispositivo.</string>

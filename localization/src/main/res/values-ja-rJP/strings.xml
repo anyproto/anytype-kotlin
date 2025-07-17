@@ -1535,6 +1535,10 @@
     <string name="vault_my_spaces">自分のスペース</string>
     <string name="vault_unread_section_title">未読</string>
     <string name="vault_all_section_title">すべて</string>
+    <string name="vault_pinned_section_title">ピン留め</string>
+    <string name="vault_pin_space">ピン留め</string>
+    <string name="vault_unpin_space">ピン留め解除</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">すべてのオブジェクト</string>
     <string name="all_content_title_only_unlinked">リンクのない</string>
     <string name="all_content_title_only_unlinked_description">グラフビューで、どのオブジェクトともリンクやバックリンクなどの繋がりのないオブジェクトです。</string>
@@ -1797,7 +1801,7 @@
     <string name="vault_create_space">スペース</string>
     <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">一致するものが見つかりませんでした</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
     <string name="chat_box_camera">カメラ</string>
     <string name="chat_box_take_photo">写真を撮る</string>
@@ -1812,6 +1816,8 @@
     <string name="notifications_disable_short">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">通知</string>
     <string name="notification_settings_disabled">通知が無効です</string>
     <string name="notification_settings_disabled_subtitle">メッセージ通知を受け取るには、デバイスの設定から通知を有効にしてください。</string>

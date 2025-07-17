@@ -1547,6 +1547,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_my_spaces">Meine Spaces</string>
     <string name="vault_unread_section_title">Ungelesen</string>
     <string name="vault_all_section_title">Alle</string>
+    <string name="vault_pinned_section_title">Angeheftet</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Loslösen</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
@@ -1824,6 +1828,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_disable_short">Deaktivieren</string>
     <string name="space_notify_unmute">Stummschaltung aufheben</string>
     <string name="space_notify_mute">Stummschalten</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Benachrichtigungen</string>
     <string name="notification_settings_disabled">Benachrichtigungen sind deaktiviert</string>
     <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>

@@ -1534,6 +1534,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_my_spaces">Ruangku</string>
     <string name="vault_unread_section_title">Belum dibaca</string>
     <string name="vault_all_section_title">Semua</string>
+    <string name="vault_pinned_section_title">Tersemat</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Lepas sematan</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
@@ -1811,6 +1815,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Pemberitahuan</string>
     <string name="notification_settings_disabled">Pemberitahuan dinonaktifkan</string>
     <string name="notification_settings_disabled_subtitle">Terima pemberitahuan pesan baru dengan mengaktifkannya di setelan perangkatmu.</string>

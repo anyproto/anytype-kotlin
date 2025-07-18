@@ -290,7 +290,7 @@ interface ChatPreviewContainer {
 
         companion object {
             private const val SUBSCRIPTION_ID = "chat-previews-subscription"
-            private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
+            private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "chat-previews-attachments"
         }
     }
 }

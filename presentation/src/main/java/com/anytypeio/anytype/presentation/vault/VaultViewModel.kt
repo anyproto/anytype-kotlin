@@ -131,7 +131,7 @@ class VaultViewModel(
                             spaceViewSubscriptionContainer.observe()
                         )
                     },
-                chatPreviewContainer.observePreviews(),
+                chatPreviewContainer.observePreviewsWithAttachments(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
             ) { spacesFromFlow, chatPreviews, permissions, _ ->

@@ -60,6 +60,30 @@ interface ChatPreviewContainer {
                 val initial = runCatching { repo.subscribeToMessagePreviews(SUBSCRIPTION_ID) }
                     .onFailure { logger.logWarning("DROID-2966 Error while getting initial previews: ${it.message}") }
                     .getOrDefault(emptyList())
+                
+                // Check initial previews for missing attachments
+                val initialAttachmentIds = mutableMapOf<SpaceId, Set<Id>>()
+                initial.forEach { preview ->
+                    preview.message?.let { message ->
+                        // Extract attachment IDs from the message
+                        val messageAttachmentIds = message.attachments.map { it.target }.toSet()
+                        val dependencyIds = preview.dependencies.map { it.id }.toSet()
+                        
+                        // Find attachments that are NOT in dependencies - these need subscription
+                        val missingAttachmentIds = messageAttachmentIds - dependencyIds
+                        
+                        if (missingAttachmentIds.isNotEmpty()) {
+                            logger.logInfo("DROID-3309 Found missing attachments for space: ${preview.space.id}, ids: $missingAttachmentIds")
+                            initialAttachmentIds[preview.space] = missingAttachmentIds
+                        }
+                    }
+                }
+                
+                // Update attachment tracking with initial missing attachments
+                if (initialAttachmentIds.isNotEmpty()) {
+                    attachmentIds.value = initialAttachmentIds
+                }
+                
                 events
                     .subscribe(SUBSCRIPTION_ID)
                     .scan(initial = initial) { previews, events ->
@@ -76,7 +100,11 @@ interface ChatPreviewContainer {
                                     // Update attachment tracking for this space (only missing ones)
                                     state.firstOrNull { it.chat == event.context }?.let { matchingPreview ->
                                         if (missingAttachmentIds.isNotEmpty()) {
-                                            attachmentIds.value = attachmentIds.value + (matchingPreview.space to missingAttachmentIds)
+                                            logger.logInfo("DROID-3309 Found missing attachments for space: ${matchingPreview.space.id}, ids: $missingAttachmentIds")
+                                            val currentAttachmentIds = attachmentIds.value
+                                            val existingIds = currentAttachmentIds[matchingPreview.space] ?: emptySet()
+                                            val mergedIds = existingIds + missingAttachmentIds
+                                            attachmentIds.value = currentAttachmentIds + (matchingPreview.space to mergedIds)
                                         }
                                     }
                                     
@@ -183,10 +211,10 @@ interface ChatPreviewContainer {
                 .map { it[space] ?: emptySet() }
                 .distinctUntilChanged()
                 .flatMapLatest { ids ->
-                    logger.logInfo("DROID-3309 Subscribing to attachments for space: ${space.id}, ids: $ids")
                     if (ids.isEmpty()) {
                         kotlinx.coroutines.flow.flowOf(emptyMap())
                     } else {
+                        logger.logInfo("DROID-3309 Subscribing to attachments for space: ${space.id}, ids: $ids")
                         subscription.subscribe(
                             searchParams = StoreSearchByIdsParams(
                                 subscription = "${space.id}/$ATTACHMENT_SUBSCRIPTION_POSTFIX",

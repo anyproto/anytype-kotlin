@@ -77,7 +77,7 @@ class ChatPreviewContainerTest {
         }
 
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -195,7 +195,7 @@ class ChatPreviewContainerTest {
             }
 
             // When
-            val container = ChatPreviewContainer.Default(
+            val container = VaultChatPreviewContainer(
                 repo = repo,
                 events = channel,
                 dispatchers = dispatchers,
@@ -246,7 +246,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -284,7 +284,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container: ChatPreviewContainer = ChatPreviewContainer.Default(
+        val container: ChatPreviewContainer = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -383,7 +383,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -480,7 +480,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -564,7 +564,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -651,7 +651,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -720,7 +720,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -783,7 +783,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -850,7 +850,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -892,7 +892,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -966,7 +966,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1017,7 +1017,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1072,7 +1072,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1108,7 +1108,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1149,7 +1149,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1190,7 +1190,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1259,7 +1259,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1306,7 +1306,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1387,7 +1387,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1491,7 +1491,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1609,7 +1609,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1727,7 +1727,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1805,7 +1805,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1933,7 +1933,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = ChatPreviewContainer.Default(
+        val container = VaultChatPreviewContainer(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,

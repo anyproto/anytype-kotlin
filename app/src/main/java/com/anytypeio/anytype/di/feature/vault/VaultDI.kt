@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -96,7 +96,7 @@ object VaultModule {
         logger: Logger,
         events: ChatEventChannel,
         subscription: StorelessSubscriptionContainer
-    ): ChatPreviewContainer = ChatPreviewContainer.Default(
+    ): VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
         repo = repo,
         dispatchers = dispatchers,
         scope = scope,
@@ -120,7 +120,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun logger(): Logger
     fun awaitAccount(): AwaitAccountStartManager
     fun profileContainer(): ProfileSubscriptionManager
-    fun chatPreviewContainer(): ChatPreviewContainer
     fun pendingIntentStore(): PendingIntentStore
     fun stringResourceProvider(): StringResourceProvider
     fun dateProvider(): DateProvider
@@ -129,4 +128,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
     fun provideStorelessSubscriptionContainer(): StorelessSubscriptionContainer
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -35,7 +35,7 @@ class VaultViewModelFactory @Inject constructor(
     private val appActionManager: AppActionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
-    private val chatPreviewContainer: ChatPreviewContainer,
+    private val chatPreviewContainer: VaultChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,

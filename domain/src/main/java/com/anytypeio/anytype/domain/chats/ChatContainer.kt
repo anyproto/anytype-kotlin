@@ -778,7 +778,7 @@ class ChatContainer @Inject constructor(
         private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
 
 
-        private val ATTACHMENT_KEYS = listOf(
+        val ATTACHMENT_KEYS = listOf(
             Relations.ID,
             Relations.SPACE_ID,
             Relations.PICTURE,

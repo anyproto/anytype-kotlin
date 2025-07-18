@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
-import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -14,44 +13,55 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
 /**
- * Cross-space (vault-level) chat previews container
+ * Space-level chat previews container
+ * 
+ * This container handles chat previews for a single space and focuses on:
+ * - Lightweight preview updates
+ * - No attachment handling or dependencies
+ * - Single-space event processing
+ * 
+ * For vault-level previews with attachments, use [VaultChatPreviewContainer] instead.
  */
-interface ChatPreviewContainer {
-
-    fun start()
+interface SpaceChatPreviewContainer {
+    
+    fun start(space: SpaceId)
     fun stop()
 
-    suspend fun getAll(): List<Chat.Preview>
-    suspend fun getPreview(space: SpaceId): Chat.Preview?
     fun observePreview(space: SpaceId) : Flow<Chat.Preview?>
-    fun observePreviews() : Flow<List<Chat.Preview>>
-
-    class Default @Inject constructor(
+    
+    class Default(
         private val repo: BlockRepository,
         private val events: ChatEventChannel,
         private val dispatchers: AppCoroutineDispatchers,
         private val scope: CoroutineScope,
         private val logger: Logger
-    ) : ChatPreviewContainer {
-
+    ) : SpaceChatPreviewContainer {
+        
         private var job: Job? = null
         private val previews = MutableStateFlow<List<Chat.Preview>>(emptyList())
+        private var currentSpace: SpaceId? = null
 
-        override fun start() {
+        override fun start(space: SpaceId) {
             job?.cancel()
+            currentSpace = space
             job = scope.launch(dispatchers.io) {
                 previews.value = emptyList()
-                val initial = runCatching { repo.subscribeToMessagePreviews(SUBSCRIPTION_ID) }
-                    .onFailure { logger.logWarning("DROID-2966 Error while getting initial previews: ${it.message}") }
+                
+                val initial = runCatching { 
+                    repo.subscribeToMessagePreviews("${space.id}/$SUBSCRIPTION_ID") 
+                        .filter { it.space == space }
+                }
+                    .onFailure { 
+                        logger.logWarning("DROID-2966 Error while getting initial previews for space ${space.id}: ${it.message}") 
+                    }
                     .getOrDefault(emptyList())
+                
                 events
-                    .subscribe(SUBSCRIPTION_ID)
+                    .subscribe("${space.id}/$SUBSCRIPTION_ID")
                     .scan(initial = initial) { previews, events ->
                         events.fold(previews) { state, event ->
                             when (event) {
@@ -60,7 +70,8 @@ interface ChatPreviewContainer {
                                         if (preview.chat == event.context) {
                                             preview.copy(
                                                 message = event.message,
-                                                dependencies = event.dependencies
+                                                // Don't include dependencies for space-level container
+                                                dependencies = emptyList()
                                             )
                                         } else {
                                             preview
@@ -85,14 +96,13 @@ interface ChatPreviewContainer {
                                                     currentOrder = preview.state?.order
                                                 )
                                             ) {
-                                                logger.logInfo("DROID-3799 Applying new chat preview state with order: ${newState.order}")
+                                                logger.logInfo("DROID-3799 Applying new chat preview state for space ${space.id} with order: ${newState.order}")
                                                 preview.copy(state = newState)
                                             } else {
-                                                logger.logInfo("DROID-3799 Skipping chat preview state update due to order comparison")
+                                                logger.logInfo("DROID-3799 Skipping chat preview state update for space ${space.id} due to order comparison")
                                                 preview
                                             }
                                         } else {
-                                            logger.logInfo("Skipping chat preview state update for non-matching chat: ${event.context}")
                                             preview
                                         }
                                     }
@@ -107,36 +117,37 @@ interface ChatPreviewContainer {
                                     }
                                 }
                                 else -> state.also {
-                                    logger.logInfo("DROID-2966 Ignoring event: $event")
+                                    logger.logInfo("DROID-2966 Ignoring event for space ${space.id}: $event")
                                 }
                             }
                         }
                     }
                     .flowOn(dispatchers.io)
-                    .catch { logger.logException(it, "DROID-2966 Exception in chat preview flow") }
+                    .catch { 
+                        logger.logException(it, "DROID-2966 Exception in space-level chat preview flow for space ${space.id}") 
+                    }
                     .collect {
                         previews.value = it
                     }
             }
         }
-
+        
         override fun stop() {
             job?.cancel()
             job = null
             scope.launch(dispatchers.io) {
                 previews.value = emptyList()
-                runCatching {
-                    repo.unsubscribeFromMessagePreviews(subscription = SUBSCRIPTION_ID)
-                }.onFailure {
-                    logger.logException(it, "DROID-2966 Error while unsubscribing from message previews")
+                
+                currentSpace?.let { space ->
+                    runCatching {
+                        repo.unsubscribeFromMessagePreviews("${space.id}/$SUBSCRIPTION_ID")
+                    }.onFailure {
+                        logger.logException(it, "DROID-3309 Error while unsubscribing from message previews for space ${space.id}")
+                    }
                 }
+                
+                currentSpace = null
             }
-        }
-
-        override suspend fun getAll(): List<Chat.Preview> = previews.value
-
-        override suspend fun getPreview(space: SpaceId): Chat.Preview? {
-            return previews.value.firstOrNull { preview -> preview.space.id == space.id }
         }
 
         override fun observePreview(space: SpaceId): Flow<Chat.Preview?> {
@@ -144,14 +155,9 @@ interface ChatPreviewContainer {
                 it.firstOrNull { preview -> preview.space.id == space.id }
             }
         }
-
-        override fun observePreviews(): Flow<List<Chat.Preview>> {
-            return previews
-        }
-
-
+        
         companion object {
-            private const val SUBSCRIPTION_ID = "chat-previews-subscription"
+            private const val SUBSCRIPTION_ID = "space-chat-previews"
         }
     }
 }

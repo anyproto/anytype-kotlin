@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -81,7 +81,7 @@ class VaultViewModel(
     private val appActionManager: AppActionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
-    private val chatPreviewContainer: ChatPreviewContainer,
+    private val chatPreviewContainer: VaultChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -131,7 +131,7 @@ class VaultViewModel(
                             spaceViewSubscriptionContainer.observe()
                         )
                     },
-                chatPreviewContainer.observePreviews(),
+                chatPreviewContainer.observePreviewsWithAttachments(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
             ) { spacesFromFlow, chatPreviews, permissions, _ ->
@@ -574,6 +574,16 @@ class VaultViewModel(
         viewModelScope.launch {
             appActionManager.setup(AppActionManager.Action.ClearAll)
         }
+    }
+
+    fun onStart() {
+        Timber.d("onStart")
+        chatPreviewContainer.start()
+    }
+
+    fun onStop() {
+        Timber.d("onStop")
+        chatPreviewContainer.stop()
     }
 
     fun processPendingDeeplink() {

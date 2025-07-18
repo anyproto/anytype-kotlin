@@ -37,7 +37,6 @@ interface GlobalSubscriptionManager {
             profile.onStart()
             networkConnectionStatus.start()
             deviceTokenStoringService.start()
-            chatPreviewContainer.start()
         }
 
         override fun onStop() {
@@ -49,7 +48,6 @@ interface GlobalSubscriptionManager {
             profile.onStop()
             networkConnectionStatus.stop()
             deviceTokenStoringService.stop()
-            chatPreviewContainer.stop()
         }
     }
 

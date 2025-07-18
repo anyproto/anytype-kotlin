@@ -186,11 +186,15 @@ interface ChatPreviewContainer {
                 
                 runCatching {
                     repo.unsubscribeFromMessagePreviews(subscription = SUBSCRIPTION_ID)
+                }.onFailure {
+                    logger.logException(it, "DROID-3309 Error while unsubscribing from message previews")
+                }
+                runCatching {
                     if (attachmentSubscriptions.isNotEmpty()) {
                         repo.cancelObjectSearchSubscription(attachmentSubscriptions)
                     }
                 }.onFailure {
-                    logger.logException(it, "DROID-2966 Error while unsubscribing from message previews")
+                    logger.logException(it, "DROID-3309 Error while unsubscribing from attachment subscriptions")
                 }
             }
         }

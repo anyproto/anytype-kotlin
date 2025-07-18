@@ -576,6 +576,16 @@ class VaultViewModel(
         }
     }
 
+    fun onStart() {
+        Timber.d("onStart")
+        chatPreviewContainer.start()
+    }
+
+    fun onStop() {
+        Timber.d("onStop")
+        chatPreviewContainer.stop()
+    }
+
     fun processPendingDeeplink() {
         viewModelScope.launch {
             delay(1000) // Simulate some delay

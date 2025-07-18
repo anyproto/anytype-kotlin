@@ -27,7 +27,7 @@ import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 
-class SpaceLevelChatPreviewContainerTest {
+class SpaceChatPreviewContainerTest {
 
     @get:Rule
     val rule = DefaultCoroutineTestRule()
@@ -85,7 +85,7 @@ class SpaceLevelChatPreviewContainerTest {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should return initial preview count as zero`() = runTest {
+    fun `should return initial preview as null`() = runTest {
         // Given
         val spaceId = SpaceId("test-space")
         
@@ -110,15 +110,15 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(0, count)
+        val preview = container.observePreview(spaceId).first()
+        assertEquals(null, preview)
         
         container.stop()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should return correct preview count for initial previews`() = runTest {
+    fun `should return correct preview for initial previews`() = runTest {
         // Given
         val spaceId = SpaceId("test-space")
         
@@ -126,12 +126,6 @@ class SpaceLevelChatPreviewContainerTest {
             Chat.Preview(
                 space = spaceId,
                 chat = "chat-1",
-                message = null,
-                dependencies = emptyList()
-            ),
-            Chat.Preview(
-                space = spaceId,
-                chat = "chat-2",
                 message = null,
                 dependencies = emptyList()
             )
@@ -158,18 +152,17 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(2, count)
-        
-        val previews = container.observePreviews().first()
-        assertEquals(2, previews.size)
+        val preview = container.observePreview(spaceId).first()
+        assertNotNull(preview)
+        assertEquals(spaceId, preview.space)
+        assertEquals("chat-1", preview.chat)
         
         container.stop()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should handle Add events and update preview count`() = runTest {
+    fun `should handle Add events and update preview`() = runTest {
         // Given
         val spaceId = SpaceId("test-space")
         val chatId = "test-chat"
@@ -224,15 +217,12 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(1, count)
-        
-        val previews = container.observePreviews().first()
-        assertEquals(1, previews.size)
-        assertEquals(newMessage, previews.first().message)
+        val preview = container.observePreview(spaceId).first()
+        assertNotNull(preview)
+        assertEquals(newMessage, preview.message)
         
         // Verify dependencies are not included (space-level container doesn't handle attachments)
-        assertEquals(0, previews.first().dependencies.size)
+        assertEquals(0, preview.dependencies.size)
         
         container.stop()
     }
@@ -307,13 +297,10 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(1, count)
-        
-        val previews = container.observePreviews().first()
-        assertEquals(1, previews.size)
-        assertEquals(updatedMessage, previews.first().message)
-        assertEquals("Updated message", previews.first().message?.content?.text)
+        val preview = container.observePreview(spaceId).first()
+        assertNotNull(preview)
+        assertEquals(updatedMessage, preview.message)
+        assertEquals("Updated message", preview.message?.content?.text)
         
         container.stop()
     }
@@ -373,12 +360,9 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(1, count)
-        
-        val previews = container.observePreviews().first()
-        assertEquals(1, previews.size)
-        assertEquals(null, previews.first().message) // Message should be deleted
+        val preview = container.observePreview(spaceId).first()
+        assertNotNull(preview)
+        assertEquals(null, preview.message) // Message should be deleted
         
         container.stop()
     }
@@ -432,12 +416,9 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(1, count)
-        
-        val previews = container.observePreviews().first()
-        assertEquals(1, previews.size)
-        assertEquals(higherOrderState, previews.first().state)
+        val preview = container.observePreview(spaceId).first()
+        assertNotNull(preview)
+        assertEquals(higherOrderState, preview.state)
         
         container.stop()
     }
@@ -470,8 +451,8 @@ class SpaceLevelChatPreviewContainerTest {
         delay(100)
 
         // Then
-        val count = container.observePreviewCount().first()
-        assertEquals(0, count)
+        val preview = container.observePreview(spaceId).first()
+        assertEquals(null, preview)
         
         // Verify logger was called with the error
         verify(logger).logWarning(any())
@@ -531,15 +512,17 @@ class SpaceLevelChatPreviewContainerTest {
         container.start(space1)
         delay(100)
         
-        val count1 = container.observePreviewCount().first()
-        assertEquals(1, count1)
+        val preview1 = container.observePreview(space1).first()
+        assertNotNull(preview1)
+        assertEquals(space1, preview1.space)
         
         // Start with space2 (should cancel previous and start new)
         container.start(space2)
         delay(100)
         
-        val count2 = container.observePreviewCount().first()
-        assertEquals(2, count2)
+        val preview2 = container.observePreview(space2).first()
+        assertNotNull(preview2)
+        assertEquals(space2, preview2.space)
         
         container.stop()
     }
@@ -580,15 +563,15 @@ class SpaceLevelChatPreviewContainerTest {
         container.start(spaceId)
         delay(100)
         
-        val countBeforeStop = container.observePreviewCount().first()
-        assertEquals(1, countBeforeStop)
+        val previewBeforeStop = container.observePreview(spaceId).first()
+        assertNotNull(previewBeforeStop)
         
         container.stop()
         delay(100)
         
         // Then
-        val countAfterStop = container.observePreviewCount().first()
-        assertEquals(0, countAfterStop)
+        val previewAfterStop = container.observePreview(spaceId).first()
+        assertEquals(null, previewAfterStop)
         
         verify(repo).unsubscribeFromMessagePreviews("${spaceId.id}/space-chat-previews")
     }

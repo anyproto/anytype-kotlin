@@ -77,7 +77,7 @@ class ChatPreviewContainerTest {
         }
 
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -195,7 +195,7 @@ class ChatPreviewContainerTest {
             }
 
             // When
-            val container = VaultChatPreviewContainer(
+            val container = VaultChatPreviewContainer.Default(
                 repo = repo,
                 events = channel,
                 dispatchers = dispatchers,
@@ -246,7 +246,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -284,7 +284,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container: ChatPreviewContainer = VaultChatPreviewContainer(
+        val container: VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -383,7 +383,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -480,7 +480,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -564,7 +564,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -651,7 +651,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -666,10 +666,11 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify update
-        val preview = container.observePreview(spaceId).first()
+        val previews = container.observePreviewsWithAttachments().first()
         
         // Then - verify message was updated
-        assertNotNull(preview)
+        assertEquals(1, previews.size)
+        val preview = previews.first()
         assertEquals(updatedMessage, preview.message)
         assertEquals("Updated message", preview.message?.content?.text)
         
@@ -720,7 +721,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -735,10 +736,11 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify deletion
-        val preview = container.observePreview(spaceId).first()
+        val previews = container.observePreviewsWithAttachments().first()
         
         // Then - verify message was deleted (set to null)
-        assertNotNull(preview)
+        assertEquals(1, previews.size)
+        val preview = previews.first()
         assertEquals(null, preview.message)
         
         container.stop()
@@ -783,7 +785,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -798,10 +800,11 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify state update
-        val preview = container.observePreview(spaceId).first()
+        val previews = container.observePreviewsWithAttachments().first()
         
         // Then - verify state was updated with higher order
-        assertNotNull(preview)
+        assertEquals(1, previews.size)
+        val preview = previews.first()
         assertEquals(higherOrderState, preview.state)
         assertEquals(10L, preview.state?.order)
         assertEquals("msg-2", preview.state?.lastStateId)
@@ -850,7 +853,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -865,10 +868,11 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify state was not updated
-        val preview = container.observePreview(spaceId).first()
+        val previews = container.observePreviewsWithAttachments().first()
         
         // Then - verify state remains unchanged (original state preserved)
-        assertNotNull(preview)
+        assertEquals(1, previews.size)
+        val preview = previews.first()
         assertEquals(initialState, preview.state)
         assertEquals(10L, preview.state?.order)
         assertEquals("msg-1", preview.state?.lastStateId)
@@ -892,7 +896,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -966,7 +970,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1017,7 +1021,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1072,7 +1076,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1087,8 +1091,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container handles unknown event gracefully
-        val preview = container.observePreview(spaceId).first()
-        assertNotNull(preview)
+        val previews = container.observePreviewsWithAttachments().first()
+        assertEquals(1, previews.size)
         
         // Verify logger was called for unknown event
         verify(logger).logInfo(any())
@@ -1108,7 +1112,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1149,7 +1153,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1190,7 +1194,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1259,7 +1263,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1306,7 +1310,7 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1387,7 +1391,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1404,8 +1408,8 @@ class ChatPreviewContainerTest {
         assertEquals(2, allPreviews.size)
         
         // Verify individual space previews
-        val space1Preview = container.observePreview(space1).first()
-        val space2Preview = container.observePreview(space2).first()
+        val space1Preview = allPreviews.find { it.space == space1 }
+        val space2Preview = allPreviews.find { it.space == space2 }
         
         assertNotNull(space1Preview)
         assertNotNull(space2Preview)
@@ -1491,7 +1495,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1504,8 +1508,9 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify both spaces were updated correctly
-        val space1Preview = container.observePreview(space1).first()
-        val space2Preview = container.observePreview(space2).first()
+        val allPreviews = container.observePreviewsWithAttachments().first()
+        val space1Preview = allPreviews.find { it.space == space1 }
+        val space2Preview = allPreviews.find { it.space == space2 }
         
         assertNotNull(space1Preview)
         assertNotNull(space2Preview)
@@ -1609,7 +1614,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1727,7 +1732,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1742,9 +1747,9 @@ class ChatPreviewContainerTest {
         delay(200)
         
         // Then - verify final state has the last message
-        val finalPreview = container.observePreview(spaceId).first()
-        
-        assertNotNull(finalPreview)
+        val finalPreviews = container.observePreviewsWithAttachments().first()
+        assertEquals(1, finalPreviews.size)
+        val finalPreview = finalPreviews.first()
         assertEquals(message3, finalPreview.message)
         assertEquals("Third message", finalPreview.message?.content?.text)
         
@@ -1805,7 +1810,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
@@ -1933,7 +1938,7 @@ class ChatPreviewContainerTest {
         }
         
         // When
-        val container = VaultChatPreviewContainer(
+        val container = VaultChatPreviewContainer.Default(
             repo = repo,
             events = channel,
             dispatchers = dispatchers,

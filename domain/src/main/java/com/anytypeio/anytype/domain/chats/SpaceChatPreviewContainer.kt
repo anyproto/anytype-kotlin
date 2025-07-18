@@ -17,10 +17,9 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
 /**
- * Space-level chat previews container used on VaultScreen
+ * Space-level chat previews container
  * 
  * This container handles chat previews for a single space and focuses on:
- * - Preview count tracking
  * - Lightweight preview updates
  * - No attachment handling or dependencies
  * - Single-space event processing

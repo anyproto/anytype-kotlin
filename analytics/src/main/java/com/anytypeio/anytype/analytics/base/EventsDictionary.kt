@@ -90,6 +90,7 @@ object EventsDictionary {
     const val blockChangeBlockStyle = "ChangeBlockStyle"
     const val blockChangeBlockAlign = "ChangeBlockAlign"
     const val blockChangeBackground = "ChangeBlockBackground"
+    const val blockChangeColor = "ChangeBlockColor"
     const val blockDuplicate = "DuplicateBlock"
     const val blockPaste = "PasteBlock"
     const val blockCopy = "CopyBlock"

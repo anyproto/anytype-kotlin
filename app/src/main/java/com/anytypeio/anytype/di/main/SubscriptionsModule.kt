@@ -256,13 +256,15 @@ object SubscriptionsModule {
         dispatchers: AppCoroutineDispatchers,
         repo: BlockRepository,
         logger: Logger,
-        events: ChatEventChannel
+        events: ChatEventChannel,
+        subscription: StorelessSubscriptionContainer
     ): ChatPreviewContainer = ChatPreviewContainer.Default(
         repo = repo,
         dispatchers = dispatchers,
         scope = scope,
         logger = logger,
-        events = events
+        events = events,
+        subscription = subscription
     )
 
     @JvmStatic

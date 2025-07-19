@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -2526,6 +2527,14 @@ fun CoroutineScope.sendAnalyticsScreenObjectType(
         analytics = analytics,
         eventName = EventsDictionary.screenObjectType
     )
+}
+//endregion
+
+//region Notification State Extensions
+fun NotificationState.toMessageNotificationType(): EventsDictionary.MessageNotificationType = when (this) {
+    NotificationState.ALL -> EventsDictionary.MessageNotificationType.ALL
+    NotificationState.MENTIONS -> EventsDictionary.MessageNotificationType.MENTIONS
+    NotificationState.DISABLE -> EventsDictionary.MessageNotificationType.NOTHING
 }
 //endregion
 

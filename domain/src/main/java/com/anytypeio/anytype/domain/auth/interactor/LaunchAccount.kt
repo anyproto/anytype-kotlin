@@ -7,11 +7,13 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
+import kotlin.math.log
 import kotlinx.coroutines.Dispatchers
 
 /**
@@ -25,6 +27,7 @@ class LaunchAccount @Inject constructor(
     private val initialParamsProvider: InitialParamsProvider,
     private val settings: UserSettingsRepository,
     private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val logger: Logger,
     context: CoroutineContext = Dispatchers.IO
     ) : BaseUseCase<Id, BaseUseCase.None>(context) {
 
@@ -45,7 +48,11 @@ class LaunchAccount @Inject constructor(
             configStorage.set(config = setup.config)
             val lastSessionSpace = settings.getCurrentSpace()
             if (lastSessionSpace != null) {
-                spaceManager.set(lastSessionSpace.id)
+                spaceManager.set(lastSessionSpace.id).onFailure {
+                    logger.logException(it, "Error while restoring last session space")
+                    // Clearing current space in case of error.
+                    settings.clearCurrentSpace()
+                }
             }
             awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
             setup.config.analytics

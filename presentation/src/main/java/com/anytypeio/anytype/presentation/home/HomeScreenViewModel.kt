@@ -1773,7 +1773,8 @@ class HomeScreenViewModel(
                             if (type.map.containsKey(Relations.UNIQUE_KEY)) {
                                 AppActionManager.Action.CreateNew(
                                     type = TypeKey(type.uniqueKey),
-                                    name = type.name.orEmpty()
+                                    name = type.name.orEmpty(),
+                                    isDefault = defaultObjectType?.key == type.uniqueKey
                                 )
                             } else {
                                 null

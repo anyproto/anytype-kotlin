@@ -55,6 +55,7 @@ dependencies {
     implementation libs.coilCompose
     implementation libs.coilSvg
     implementation libs.coilNetwork
+    implementation libs.coilVideo
     implementation libs.composeConstraintLayout
     implementation libs.composeReorderable
 

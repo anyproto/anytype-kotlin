@@ -39,6 +39,9 @@ sealed class Command {
         val id: String
     ) : Command()
 
+    data class PlayVideo(val url: String) : Command()
+    data class PlayAudio(val url: String) : Command()
+
     data class OpenObjectSnackbar(
         val id: Id,
         val space: Id,

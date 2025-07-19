@@ -4259,7 +4259,12 @@ class EditorViewModel(
                     }
                 }
             }
-            else -> {}
+            ListenerType.Header.Video -> {
+                dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+            }
+            else -> {
+                Timber.w("Ignoring listener type: $clicked")
+            }
         }
     }
 
@@ -4353,11 +4358,22 @@ class EditorViewModel(
     }
 
     private fun onFileBlockClicked(blockId: String) {
-        dispatch(
-            Command.OpenFileByDefaultApp(
-                id = blockId
+
+        val fileDetails = blocks.getFileDetailsForBlock(blockId, orchestrator, fieldParser)
+
+        if (fileDetails != null) {
+            dispatch(
+                Command.PlayVideo(
+                    url = urlBuilder.original(fileDetails.targetObjectId)
+                )
             )
-        )
+        } else {
+            dispatch(
+                Command.OpenFileByDefaultApp(
+                    id = blockId
+                )
+            )
+        }
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {

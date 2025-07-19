@@ -31,7 +31,7 @@
             android:layout_width="0dp"
             android:layout_height="200dp"
             android:layout_marginTop="@dimen/dp_48"
-            app:cardCornerRadius="4dp"
+            app:cardCornerRadius="8dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cover"
@@ -43,13 +43,12 @@
                 android:layout_height="match_parent"
                 android:padding="1dp">
 
-                <com.google.android.exoplayer2.ui.StyledPlayerView
-                    android:id="@+id/playerView"
+                <ImageView
+                    android:id="@+id/videoThumbnail"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@android:color/transparent"
-                    app:resize_mode="fit"
-                    app:use_controller="true" />
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Video thumbnail" />
 
                 <ImageView
                     android:id="@+id/playButton"
@@ -58,6 +57,7 @@
                     android:layout_gravity="center"
                     android:src="@drawable/play"
                     android:visibility="gone" />
+
             </FrameLayout>
 
         </com.google.android.material.card.MaterialCardView>

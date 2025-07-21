@@ -9,10 +9,10 @@ import javax.inject.Inject
 class SetSpaceOrder @Inject constructor(
     private val repository: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-): ResultInteractor<SetSpaceOrder.Params, Unit>(dispatchers.io) {
+): ResultInteractor<SetSpaceOrder.Params, List<Id>>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Unit {
-        repository.spaceSetOrder(
+    override suspend fun doWork(params: Params): List<Id> {
+        return repository.spaceSetOrder(
             spaceViewId = params.spaceViewId,
             spaceViewOrder = params.spaceViewOrder
         )

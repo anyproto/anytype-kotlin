@@ -561,6 +561,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                repeated string spaceViewOrder = 2; // final order of space view ids with their lexids
 
                 message Error {
                     Code code = 1;

@@ -396,7 +396,7 @@ interface BlockRepository {
     ): Payload
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>)
+    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
     suspend fun spaceUnsetOrder(spaceViewId: Id)
     suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
     suspend fun getSpaceConfig(space: Id): Config

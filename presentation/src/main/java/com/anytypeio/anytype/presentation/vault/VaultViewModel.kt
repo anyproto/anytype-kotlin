@@ -767,8 +767,11 @@ class VaultViewModel(
                     Timber.e(error, "Failed to pin space: $spaceId")
                     notificationError.value = error.message ?: "Failed to pin space"
                 },
-                onSuccess = {
-                    Timber.d("Successfully pinned space: $spaceId")
+                onSuccess = { finalOrder ->
+                    Timber.d("Successfully pinned space: $spaceId with final order: $finalOrder")
+                    // The finalOrder contains the actual order from middleware with lexids
+                    // Backend has confirmed the order, so we can trust the current state
+                    // The space subscription will automatically update with the new order
                 }
             )
         }
@@ -921,16 +924,24 @@ class VaultViewModel(
                         onFailure = { error ->
                             Timber.e(error, "Failed to reorder pinned spaces: $newOrder")
                             notificationError.value = error.message ?: "Failed to reorder spaces"
+                            // Reset pending state on failure
+                            pendingPinnedSpacesOrder = null
+                            lastMovedSpaceId = null
                         },
-                        onSuccess = {
-                            Timber.d("Successfully reordered pinned spaces: $newOrder")
+                        onSuccess = { finalOrder ->
+                            Timber.d("Successfully reordered pinned spaces with final order: $finalOrder")
+                            // The finalOrder contains the actual order from middleware with lexids
+                            // Verify if the backend order matches our expected order
+                            if (finalOrder != newOrder) {
+                                Timber.w("Backend order differs from expected order. Expected: $newOrder, Actual: $finalOrder")
+                                // The subscription will automatically update with the correct order
+                            }
+                            // Clear pending state as the order has been persisted
+                            pendingPinnedSpacesOrder = null
+                            lastMovedSpaceId = null
                         }
                     )
                 }
-                
-                // Clear pending order after persistence
-                pendingPinnedSpacesOrder = null
-                lastMovedSpaceId = null
             }
         }
     }

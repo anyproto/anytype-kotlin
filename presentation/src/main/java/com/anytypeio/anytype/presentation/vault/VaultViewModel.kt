@@ -140,9 +140,8 @@ class VaultViewModel(
                     Timber.d("VaultViewModel - Showing loading for first emission")
                     // Show loading briefly on first emission
                     loadingState.value = true
-                    delay(200)
-                    isFirstEmission = false
                     delay(INITIAL_LOADING_DELAY_MS)
+                    isFirstEmission = false
                     hasInitialLoadCompleted = true
                     loadingState.value = false
                     Timber.d("VaultViewModel - Loading hidden after first emission")

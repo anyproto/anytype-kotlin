@@ -142,6 +142,7 @@ class VaultViewModel(
                     loadingState.value = true
                     delay(200)
                     isFirstEmission = false
+                    delay(INITIAL_LOADING_DELAY_MS)
                     hasInitialLoadCompleted = true
                     loadingState.value = false
                     Timber.d("VaultViewModel - Loading hidden after first emission")
@@ -964,5 +965,6 @@ class VaultViewModel(
 
     companion object {
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
+        const val INITIAL_LOADING_DELAY_MS = 200L
     }
 }

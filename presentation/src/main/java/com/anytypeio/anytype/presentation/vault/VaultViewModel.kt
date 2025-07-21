@@ -63,11 +63,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -98,6 +95,7 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
+    private var hasInitialLoadCompleted = false
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -120,24 +118,39 @@ class VaultViewModel(
     )
 
     init {
-        Timber.i("VaultViewModel, init")
+        Timber.i("VaultViewModel - init started")
+        var isFirstEmission = true
+        Timber.d("VaultViewModel - Starting combine flow")
         viewModelScope.launch {
             combine(
-                spaceViewSubscriptionContainer
-                    .observe()
-                    .take(1)
-                    .onCompletion {
-                        emitAll(
-                            spaceViewSubscriptionContainer.observe()
-                        )
-                    },
+                spaceViewSubscriptionContainer.observe(),
                 chatPreviewContainer.observePreviewsWithAttachments(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
             ) { spacesFromFlow, chatPreviews, permissions, _ ->
                 transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->
+                val ids = resultingSections.mainSpaces.map { it.space.id }
+                Timber.d("Vault sections main spaces IDs: $ids")
+                Timber.d("VaultViewModel - isFirstEmission: $isFirstEmission")
+                Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
+                Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
+
+                if (isFirstEmission) {
+                    Timber.d("VaultViewModel - Showing loading for first emission")
+                    // Show loading briefly on first emission
+                    loadingState.value = true
+                    delay(INITIAL_LOADING_DELAY_MS)
+                    isFirstEmission = false
+                    hasInitialLoadCompleted = true
+                    loadingState.value = false
+                    Timber.d("VaultViewModel - Loading hidden after first emission")
+                } else {
+                    Timber.d("VaultViewModel - No loading needed - isFirstEmission: $isFirstEmission, hasInitialLoadCompleted: $hasInitialLoadCompleted")
+                }
+                
                 sections.value = resultingSections
+                Timber.d("VaultViewModel - Sections updated")
             }
         }
         
@@ -202,12 +215,11 @@ class VaultViewModel(
             mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
         }
 
+        // Loading state is now managed in the main combine flow, not here
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
         if (loadingSpaceIndex != -1) {
-            loadingState.value = true
             Timber.d("Found loading space ID: ${allSpaces[loadingSpaceIndex].space.id}, space name: ${allSpaces[loadingSpaceIndex].space.name}")
         } else {
-            loadingState.value = false
             Timber.d("No loading space found")
         }
 
@@ -577,8 +589,9 @@ class VaultViewModel(
     }
 
     fun onStart() {
-        Timber.d("onStart")
+        Timber.d("VaultViewModel - onStart called")
         chatPreviewContainer.start()
+        Timber.d("VaultViewModel - chatPreviewContainer started")
     }
 
     fun onStop() {
@@ -767,8 +780,11 @@ class VaultViewModel(
                     Timber.e(error, "Failed to pin space: $spaceId")
                     notificationError.value = error.message ?: "Failed to pin space"
                 },
-                onSuccess = {
-                    Timber.d("Successfully pinned space: $spaceId")
+                onSuccess = { finalOrder ->
+                    Timber.d("Successfully pinned space: $spaceId with final order: $finalOrder")
+                    // The finalOrder contains the actual order from middleware with lexids
+                    // Backend has confirmed the order, so we can trust the current state
+                    // The space subscription will automatically update with the new order
                 }
             )
         }
@@ -921,16 +937,24 @@ class VaultViewModel(
                         onFailure = { error ->
                             Timber.e(error, "Failed to reorder pinned spaces: $newOrder")
                             notificationError.value = error.message ?: "Failed to reorder spaces"
+                            // Reset pending state on failure
+                            pendingPinnedSpacesOrder = null
+                            lastMovedSpaceId = null
                         },
-                        onSuccess = {
-                            Timber.d("Successfully reordered pinned spaces: $newOrder")
+                        onSuccess = { finalOrder ->
+                            Timber.d("Successfully reordered pinned spaces with final order: $finalOrder")
+                            // The finalOrder contains the actual order from middleware with lexids
+                            // Verify if the backend order matches our expected order
+                            if (finalOrder != newOrder) {
+                                Timber.w("Backend order differs from expected order. Expected: $newOrder, Actual: $finalOrder")
+                                // The subscription will automatically update with the correct order
+                            }
+                            // Clear pending state as the order has been persisted
+                            pendingPinnedSpacesOrder = null
+                            lastMovedSpaceId = null
                         }
                     )
                 }
-                
-                // Clear pending order after persistence
-                pendingPinnedSpacesOrder = null
-                lastMovedSpaceId = null
             }
         }
     }
@@ -940,5 +964,6 @@ class VaultViewModel(
 
     companion object {
         const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
+        const val INITIAL_LOADING_DELAY_MS = 200L
     }
 }

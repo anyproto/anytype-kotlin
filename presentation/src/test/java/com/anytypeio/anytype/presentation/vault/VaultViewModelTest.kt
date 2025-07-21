@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -36,7 +36,7 @@ class VaultViewModelTest {
     val coroutineTestRule = DefaultCoroutineTestRule()
 
     private lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
-    private lateinit var chatPreviewContainer: ChatPreviewContainer
+    private lateinit var chatPreviewContainer: VaultChatPreviewContainer
     private lateinit var userPermissionProvider: UserPermissionProvider
     private lateinit var notificationPermissionManager: NotificationPermissionManager
     private lateinit var stringResourceProvider: StringResourceProvider
@@ -60,7 +60,7 @@ class VaultViewModelTest {
         val permissionStateFlow = MutableStateFlow(permissionState)
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(chatPreviews))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(permissionStateFlow)
         whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
@@ -170,7 +170,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(chatPreviews))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
@@ -243,7 +243,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -303,7 +303,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -363,7 +363,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -434,10 +434,10 @@ class VaultViewModelTest {
 
         // Mock the ReorderPinnedSpaces use case
         val setSpaceOrder = mock<SetSpaceOrder>()
-        whenever(setSpaceOrder.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(Unit))
+        whenever(setSpaceOrder.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(listOf(space1Id, space2Id)))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -491,7 +491,7 @@ class VaultViewModelTest {
         val setSpaceOrder = mock<SetSpaceOrder>()
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -554,7 +554,7 @@ class VaultViewModelTest {
         whenever(setSpaceOrder.async(any())).thenReturn(Resultat.Failure(Exception(errorMessage)))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -623,7 +623,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -733,7 +733,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -792,7 +792,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
@@ -857,7 +857,7 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(chatPreviews))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
@@ -926,7 +926,7 @@ class VaultViewModelTest {
         val spacesFlow = MutableStateFlow(initialSpacesList)
         
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
-        whenever(chatPreviewContainer.observePreviews()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")

@@ -22,16 +22,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +45,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -53,11 +53,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
-import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -111,14 +111,41 @@ fun VaultScreenToolbar(
                 )
             }
 
-            Text(
-                modifier = Modifier.align(Alignment.Center),
-                style = Title1,
-                text = stringResource(R.string.vault_my_spaces),
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            ConstraintLayout(
+                modifier = Modifier.fillMaxSize(),
+            ) {
+                val (t, l) = createRefs()
+                Text(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .constrainAs(t) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                    ,
+                    style = Title1,
+                    text = stringResource(R.string.vault_my_spaces),
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .padding(end = 7.dp)
+                            .size(16.dp)
+                            .constrainAs(l) {
+                                end.linkTo(t.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            },
+                        color = colorResource(id = R.color.glyph_active),
+                        strokeWidth = 2.dp
+                    )
+                }
+            }
 
             if (!spaceCountLimitReached) {
                 Box(
@@ -140,16 +167,6 @@ fun VaultScreenToolbar(
                     )
                 }
             }
-        }
-
-        if (isLoading) {
-            ShimmerEffect(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(4.dp),
-            )
-        } else {
-            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -532,8 +549,6 @@ fun VaultScreenWithUnreadSection(
 
     val hapticFeedback = rememberReorderHapticFeedback()
 
-    val view = LocalView.current
-
     val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
         // Extract space IDs from keys (remove prefix) before passing to ViewModel
         val fromSpaceId = from.key as String
@@ -579,16 +594,32 @@ fun VaultScreenWithUnreadSection(
                     spaceCountLimitReached = sections.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = isLoading
                 )
-                DefaultSearchBar(
-                    value = searchQuery,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    onQueryChanged = { query -> searchQuery = query }
-                )
+                if (isLoading) {
+                    Spacer(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(60.dp)
+                    )
+                } else {
+                    DefaultSearchBar(
+                        value = searchQuery,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                        onQueryChanged = { query -> searchQuery = query }
+                    )
+                }
             }
         }
     ) { paddings ->
+        if (isLoading) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddings),
+            )
+            return@Scaffold
+        }
         if (sections.mainSpaces.isEmpty() && sections.pinnedSpaces.isEmpty()) {
             VaultEmptyState(
                 modifier = Modifier.padding(paddings),

@@ -98,6 +98,8 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
+    private var isReturningFromSpace = false
+    private var hasInitialLoadCompleted = false
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -120,8 +122,9 @@ class VaultViewModel(
     )
 
     init {
-        Timber.i("VaultViewModel, init")
+        Timber.i("VaultViewModel - init started")
         var isFirstEmission = true
+        Timber.d("VaultViewModel - Starting combine flow")
         viewModelScope.launch {
             combine(
                 spaceViewSubscriptionContainer
@@ -140,16 +143,33 @@ class VaultViewModel(
             }.collect { resultingSections ->
                 val ids = resultingSections.mainSpaces.map { it.space.id }
                 Timber.d("Vault sections main spaces IDs: $ids")
+                Timber.d("VaultViewModel - isFirstEmission: $isFirstEmission, isReturningFromSpace: $isReturningFromSpace")
+                Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
+                Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
 
                 if (isFirstEmission) {
-                    // Show loading briefly to hide reordering animation when returning from space
+                    Timber.d("VaultViewModel - Showing loading for first emission")
+                    // Show loading briefly on first emission
                     loadingState.value = true
                     delay(200)
                     isFirstEmission = false
+                    hasInitialLoadCompleted = true
                     loadingState.value = false
+                    Timber.d("VaultViewModel - Loading hidden after first emission")
+                } else if (isReturningFromSpace && hasInitialLoadCompleted) {
+                    Timber.d("VaultViewModel - Showing loading for return from space")
+                    // Show loading briefly to hide reordering animation when returning from space
+                    loadingState.value = true
+                    delay(200)
+                    loadingState.value = false
+                    isReturningFromSpace = false
+                    Timber.d("VaultViewModel - Loading hidden after return from space")
+                } else {
+                    Timber.d("VaultViewModel - No loading needed - isFirstEmission: $isFirstEmission, isReturningFromSpace: $isReturningFromSpace, hasInitialLoadCompleted: $hasInitialLoadCompleted")
                 }
                 
                 sections.value = resultingSections
+                Timber.d("VaultViewModel - Sections updated")
             }
         }
         
@@ -589,8 +609,16 @@ class VaultViewModel(
     }
 
     fun onStart() {
-        Timber.d("onStart")
+        Timber.d("VaultViewModel - onStart called")
+        // Only set isReturningFromSpace if initial load is complete
+        if (hasInitialLoadCompleted) {
+            isReturningFromSpace = true
+            Timber.d("VaultViewModel - isReturningFromSpace set to true")
+        } else {
+            Timber.d("VaultViewModel - Initial load not complete, not setting isReturningFromSpace")
+        }
         chatPreviewContainer.start()
+        Timber.d("VaultViewModel - chatPreviewContainer started")
     }
 
     fun onStop() {

@@ -63,11 +63,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -218,12 +215,11 @@ class VaultViewModel(
             mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
         }
 
+        // Loading state is now managed in the main combine flow, not here
         val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
         if (loadingSpaceIndex != -1) {
-            loadingState.value = true
             Timber.d("Found loading space ID: ${allSpaces[loadingSpaceIndex].space.id}, space name: ${allSpaces[loadingSpaceIndex].space.name}")
         } else {
-            loadingState.value = false
             Timber.d("No loading space found")
         }
 

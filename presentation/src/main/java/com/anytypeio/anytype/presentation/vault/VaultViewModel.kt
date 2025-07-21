@@ -157,9 +157,11 @@ class VaultViewModel(
                     loadingState.value = false
                     Timber.d("VaultViewModel - Loading hidden after first emission")
                 } else if (isReturningFromSpace && hasInitialLoadCompleted) {
-                    Timber.d("VaultViewModel - Showing loading for return from space")
-                    // Show loading briefly to hide reordering animation when returning from space
-                    loadingState.value = true
+                    Timber.d("VaultViewModel - Handling return from space emission")
+                    // Loading may already be showing from onStart(), just ensure it stays for enough time
+                    if (!loadingState.value) {
+                        loadingState.value = true
+                    }
                     delay(200)
                     loadingState.value = false
                     isReturningFromSpace = false
@@ -613,7 +615,9 @@ class VaultViewModel(
         // Only set isReturningFromSpace if initial load is complete
         if (hasInitialLoadCompleted) {
             isReturningFromSpace = true
-            Timber.d("VaultViewModel - isReturningFromSpace set to true")
+            // Show loading immediately to prevent seeing old data
+            loadingState.value = true
+            Timber.d("VaultViewModel - isReturningFromSpace set to true, loading started immediately")
         } else {
             Timber.d("VaultViewModel - Initial load not complete, not setting isReturningFromSpace")
         }

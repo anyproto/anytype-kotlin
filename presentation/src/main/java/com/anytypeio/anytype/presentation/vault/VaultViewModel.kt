@@ -121,6 +121,7 @@ class VaultViewModel(
 
     init {
         Timber.i("VaultViewModel, init")
+        var isFirstEmission = true
         viewModelScope.launch {
             combine(
                 spaceViewSubscriptionContainer
@@ -137,6 +138,17 @@ class VaultViewModel(
             ) { spacesFromFlow, chatPreviews, permissions, _ ->
                 transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->
+                val ids = resultingSections.mainSpaces.map { it.space.id }
+                Timber.d("Vault sections main spaces IDs: $ids")
+
+                if (isFirstEmission) {
+                    // Show loading briefly to hide reordering animation when returning from space
+                    loadingState.value = true
+                    delay(200)
+                    isFirstEmission = false
+                    loadingState.value = false
+                }
+                
                 sections.value = resultingSections
             }
         }

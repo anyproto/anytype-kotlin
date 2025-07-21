@@ -98,7 +98,6 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
-    private var isReturningFromSpace = false
     private var hasInitialLoadCompleted = false
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
@@ -127,14 +126,7 @@ class VaultViewModel(
         Timber.d("VaultViewModel - Starting combine flow")
         viewModelScope.launch {
             combine(
-                spaceViewSubscriptionContainer
-                    .observe()
-                    .take(1)
-                    .onCompletion {
-                        emitAll(
-                            spaceViewSubscriptionContainer.observe()
-                        )
-                    },
+                spaceViewSubscriptionContainer.observe(),
                 chatPreviewContainer.observePreviewsWithAttachments(),
                 userPermissionProvider.all(),
                 notificationPermissionManager.permissionState()
@@ -143,7 +135,7 @@ class VaultViewModel(
             }.collect { resultingSections ->
                 val ids = resultingSections.mainSpaces.map { it.space.id }
                 Timber.d("Vault sections main spaces IDs: $ids")
-                Timber.d("VaultViewModel - isFirstEmission: $isFirstEmission, isReturningFromSpace: $isReturningFromSpace")
+                Timber.d("VaultViewModel - isFirstEmission: $isFirstEmission")
                 Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
                 Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
 
@@ -156,18 +148,8 @@ class VaultViewModel(
                     hasInitialLoadCompleted = true
                     loadingState.value = false
                     Timber.d("VaultViewModel - Loading hidden after first emission")
-                } else if (isReturningFromSpace && hasInitialLoadCompleted) {
-                    Timber.d("VaultViewModel - Handling return from space emission")
-                    // Loading may already be showing from onStart(), just ensure it stays for enough time
-                    if (!loadingState.value) {
-                        loadingState.value = true
-                    }
-                    delay(200)
-                    loadingState.value = false
-                    isReturningFromSpace = false
-                    Timber.d("VaultViewModel - Loading hidden after return from space")
                 } else {
-                    Timber.d("VaultViewModel - No loading needed - isFirstEmission: $isFirstEmission, isReturningFromSpace: $isReturningFromSpace, hasInitialLoadCompleted: $hasInitialLoadCompleted")
+                    Timber.d("VaultViewModel - No loading needed - isFirstEmission: $isFirstEmission, hasInitialLoadCompleted: $hasInitialLoadCompleted")
                 }
                 
                 sections.value = resultingSections
@@ -612,15 +594,6 @@ class VaultViewModel(
 
     fun onStart() {
         Timber.d("VaultViewModel - onStart called")
-        // Only set isReturningFromSpace if initial load is complete
-        if (hasInitialLoadCompleted) {
-            isReturningFromSpace = true
-            // Show loading immediately to prevent seeing old data
-            loadingState.value = true
-            Timber.d("VaultViewModel - isReturningFromSpace set to true, loading started immediately")
-        } else {
-            Timber.d("VaultViewModel - Initial load not complete, not setting isReturningFromSpace")
-        }
         chatPreviewContainer.start()
         Timber.d("VaultViewModel - chatPreviewContainer started")
     }

@@ -63,6 +63,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -124,9 +125,9 @@ class VaultViewModel(
         viewModelScope.launch {
             combine(
                 spaceViewSubscriptionContainer.observe(),
-                chatPreviewContainer.observePreviewsWithAttachments(),
-                userPermissionProvider.all(),
-                notificationPermissionManager.permissionState()
+                chatPreviewContainer.observePreviewsWithAttachments().distinctUntilChanged(),
+                userPermissionProvider.all().distinctUntilChanged(),
+                notificationPermissionManager.permissionState().distinctUntilChanged()
             ) { spacesFromFlow, chatPreviews, permissions, _ ->
                 transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
             }.collect { resultingSections ->

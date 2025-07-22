@@ -1327,7 +1327,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             name = ""
                         )
                     }.onFailure {
-                        Timber.e(it, "Error while launching audio player")
+                        Timber.e(it, "Error while launching video player")
                     }
                 }
                 is Command.PlayAudio -> {

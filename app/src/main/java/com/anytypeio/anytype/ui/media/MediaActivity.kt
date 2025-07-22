@@ -31,7 +31,7 @@ class MediaActivity : ComponentActivity() {
         }
 
         if (BuildConfig.DEBUG) {
-            Timber.d("Media player url: $url")
+            Timber.d("Media player for url: $url")
         }
 
         setContent {

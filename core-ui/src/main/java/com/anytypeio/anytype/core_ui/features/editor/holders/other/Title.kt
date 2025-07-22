@@ -712,17 +712,30 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 click = {}
             )
             content.setText(item.text)
-            setupPreview(onPlayClicked)
+            setupPreview(onPlayClicked, item.videoUrl)
         }
 
         private fun setupPreview(
-            onPlayClicked: () -> Unit
+            onPlayClicked: () -> Unit,
+            url: String?
         ) {
             with(videoBinding) {
                 objectIconWidget.gone()
                 playButton.visible()
                 playButton.setOnClickListener {
                     onPlayClicked()
+                }
+
+                if (!url.isNullOrEmpty()) {
+                    val imageLoader = ImageLoader.Builder(itemView.context)
+                        .components {
+                            add(VideoFrameDecoder.Factory())
+                        }
+                        .build()
+                    videoThumbnail.load(url, imageLoader) {
+                        crossfade(true)
+                        videoFrameMillis(1000L)
+                    }
                 }
             }
         }

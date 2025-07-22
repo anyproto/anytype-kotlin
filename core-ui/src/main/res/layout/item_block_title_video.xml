@@ -56,6 +56,15 @@
                     android:src="@drawable/play"
                     android:visibility="gone" />
 
+                <androidx.core.widget.ContentLoadingProgressBar
+                    android:layout_gravity="center"
+                    android:id="@+id/progress"
+                    style="?android:attr/progressBarStyleSmall"
+                    android:theme="@style/GreyProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"/>
+
             </FrameLayout>
 
         </com.google.android.material.card.MaterialCardView>

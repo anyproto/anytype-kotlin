@@ -720,8 +720,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             url: String?
         ) {
             with(videoBinding) {
+
+                progress.visible()
                 objectIconWidget.gone()
-                playButton.visible()
                 playButton.setOnClickListener {
                     onPlayClicked()
                 }
@@ -735,6 +736,19 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     videoThumbnail.load(url, imageLoader) {
                         crossfade(true)
                         videoFrameMillis(1000L)
+                        listener(
+                            onStart = {
+                                progress.visible()
+                            },
+                            onSuccess = { _, _ ->
+                                progress.gone()
+                                playButton.visible()
+                            },
+                            onError = { _, _ ->
+                                progress.gone()
+                                playButton.visible()
+                            }
+                        )
                     }
                 }
             }

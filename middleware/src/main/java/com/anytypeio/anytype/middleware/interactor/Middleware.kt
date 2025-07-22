@@ -1981,7 +1981,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>) {
+    fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id> {
         val request = Rpc.Space.SetOrder.Request(
             spaceViewId = spaceViewId,
             spaceViewOrder = spaceViewOrder
@@ -1989,6 +1989,7 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceSetOrder(request) }
         logResponseIfDebug(response, time)
+        return response.spaceViewOrder
     }
 
     @Throws(Exception::class)

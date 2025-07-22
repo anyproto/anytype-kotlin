@@ -768,8 +768,8 @@ class BlockDataRepository(
     override suspend fun spaceSetOrder(
         spaceViewId: Id,
         spaceViewOrder: List<Id>
-    ) {
-        remote.spaceSetOrder(
+    ): List<Id> {
+        return remote.spaceSetOrder(
             spaceViewId = spaceViewId,
             spaceViewOrder = spaceViewOrder
         )

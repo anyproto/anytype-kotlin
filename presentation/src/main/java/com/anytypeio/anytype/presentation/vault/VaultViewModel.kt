@@ -65,6 +65,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -100,7 +101,6 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
-    private var hasInitialLoadCompleted = false
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -130,6 +130,12 @@ class VaultViewModel(
             // First wait for chat previews, then combine with other flows
             chatPreviewContainer.observePreviewsWithAttachments()
                 .distinctUntilChanged()
+                .filter { chatPreviews ->
+                    // Skip the initial empty emission from VaultChatPreviewContainer.start()
+                    val shouldProcess = chatPreviews.isNotEmpty()
+                    Timber.d("VaultViewModel - Chat previews filter: size=${chatPreviews.size}, shouldProcess=$shouldProcess")
+                    shouldProcess
+                }
                 .flatMapLatest { chatPreviews ->
                     Timber.d("VaultViewModel - Chat previews received: ${chatPreviews.size}, now combining with other flows")
                     combine(
@@ -148,18 +154,6 @@ class VaultViewModel(
                     Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
                     Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
 
-                    if (!hasInitialLoadCompleted) {
-                        Timber.d("VaultViewModel - Showing loading for first emission")
-                        // Show loading briefly on first emission
-                        loadingState.value = true
-                        delay(INITIAL_LOADING_DELAY_MS)
-                        hasInitialLoadCompleted = true
-                        loadingState.value = false
-                        Timber.d("VaultViewModel - Loading hidden after first emission")
-                    } else {
-                        Timber.d("VaultViewModel - No loading needed - hasInitialLoadCompleted: $hasInitialLoadCompleted")
-                    }
-                    
                     sections.value = resultingSections
                     Timber.d("VaultViewModel - Sections updated")
                 }

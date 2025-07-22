@@ -101,6 +101,7 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
+    private var hasInitialLoadCompleted = false
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -130,12 +131,6 @@ class VaultViewModel(
             // First wait for chat previews, then combine with other flows
             chatPreviewContainer.observePreviewsWithAttachments()
                 .distinctUntilChanged()
-                .filter { chatPreviews ->
-                    // Skip the initial empty emission from VaultChatPreviewContainer.start()
-                    val shouldProcess = chatPreviews.isNotEmpty()
-                    Timber.d("VaultViewModel - Chat previews filter: size=${chatPreviews.size}, shouldProcess=$shouldProcess")
-                    shouldProcess
-                }
                 .flatMapLatest { chatPreviews ->
                     Timber.d("VaultViewModel - Chat previews received: ${chatPreviews.size}, now combining with other flows")
                     combine(
@@ -149,6 +144,18 @@ class VaultViewModel(
                     }
                 }
                 .collect { resultingSections ->
+                    if (!hasInitialLoadCompleted) {
+                        Timber.d("VaultViewModel - Showing loading for first emission")
+                        // Show loading briefly on first emission
+                        loadingState.value = true
+                        delay(INITIAL_LOADING_DELAY_MS)
+                        hasInitialLoadCompleted = true
+                        loadingState.value = false
+                        Timber.d("VaultViewModel - Loading hidden after first emission")
+                    } else {
+                        Timber.d("VaultViewModel - No loading needed - hasInitialLoadCompleted: $hasInitialLoadCompleted")
+                    }
+
                     val ids = resultingSections.mainSpaces.map { it.space.id }
                     Timber.d("Vault sections main spaces IDs: $ids")
                     Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")

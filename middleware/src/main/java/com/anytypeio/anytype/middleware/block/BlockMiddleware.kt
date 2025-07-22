@@ -734,8 +734,8 @@ class BlockMiddleware(
     override suspend fun spaceSetOrder(
         spaceViewId: Id,
         spaceViewOrder: List<Id>
-    ) {
-        middleware.spaceSetOrder(
+    ): List<Id> {
+        return middleware.spaceSetOrder(
             spaceViewId = spaceViewId,
             spaceViewOrder = spaceViewOrder
         )

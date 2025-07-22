@@ -58,6 +58,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -591,13 +592,11 @@ class VaultViewModel(
 
     fun onStart() {
         Timber.d("VaultViewModel - onStart called")
-        chatPreviewContainer.start()
-        Timber.d("VaultViewModel - chatPreviewContainer started")
+        // Chat preview container is already started in init block
     }
 
     fun onStop() {
         Timber.d("onStop")
-        chatPreviewContainer.stop()
     }
 
     fun processPendingDeeplink() {

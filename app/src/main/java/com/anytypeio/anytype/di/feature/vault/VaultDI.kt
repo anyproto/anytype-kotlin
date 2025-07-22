@@ -85,25 +85,6 @@ object VaultModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideChatPreviewContainer(
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        dispatchers: AppCoroutineDispatchers,
-        repo: BlockRepository,
-        logger: Logger,
-        events: ChatEventChannel,
-        subscription: StorelessSubscriptionContainer
-    ): VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
-        repo = repo,
-        dispatchers = dispatchers,
-        scope = scope,
-        logger = logger,
-        events = events,
-        subscription = subscription
-    )
 }
 
 interface VaultComponentDependencies : ComponentDependencies {
@@ -128,5 +109,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
     fun provideStorelessSubscriptionContainer(): StorelessSubscriptionContainer
+    fun provideVaultChatPreviewContainer(): VaultChatPreviewContainer
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

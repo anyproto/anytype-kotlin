@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -38,12 +39,31 @@ interface VaultChatPreviewContainer {
         private val dispatchers: AppCoroutineDispatchers,
         private val scope: CoroutineScope,
         private val logger: Logger,
-        private val subscription: StorelessSubscriptionContainer
+        private val subscription: StorelessSubscriptionContainer,
+        private val awaitAccountStart: AwaitAccountStartManager
     ) : VaultChatPreviewContainer {
 
         private var job: Job? = null
         private val previews = MutableStateFlow<List<Chat.Preview>>(emptyList())
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
+
+        init {
+            scope.launch {
+                awaitAccountStart.state().collect { state ->
+                    when(state) {
+                        AwaitAccountStartManager.State.Init -> {
+                            // Do nothing
+                        }
+                        AwaitAccountStartManager.State.Started -> {
+                            start()
+                        }
+                        AwaitAccountStartManager.State.Stopped -> {
+                            stop()
+                        }
+                    }
+                }
+            }
+        }
 
         override fun start() {
             job?.cancel()

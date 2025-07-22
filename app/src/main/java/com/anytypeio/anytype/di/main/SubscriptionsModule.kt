@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -170,6 +172,27 @@ object SubscriptionsModule {
         awaitAccountStart = awaitAccountStartManager,
         logger = logger,
         config = configStorage
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideChatPreviewContainer(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        dispatchers: AppCoroutineDispatchers,
+        repo: BlockRepository,
+        logger: Logger,
+        events: ChatEventChannel,
+        subscription: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ): VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
+        repo = repo,
+        dispatchers = dispatchers,
+        scope = scope,
+        logger = logger,
+        events = events,
+        subscription = subscription,
+        awaitAccountStart = awaitAccountStartManager
     )
 
     @JvmStatic

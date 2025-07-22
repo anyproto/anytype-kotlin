@@ -1817,7 +1817,7 @@
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
     <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
-    <string name="vault_space_settings">Space Settings</string>
+    <string name="vault_space_settings">スペース設定</string>
     <string name="notification_settings_title">通知</string>
     <string name="notification_settings_disabled">通知が無効です</string>
     <string name="notification_settings_disabled_subtitle">メッセージ通知を受け取るには、デバイスの設定から通知を有効にしてください。</string>

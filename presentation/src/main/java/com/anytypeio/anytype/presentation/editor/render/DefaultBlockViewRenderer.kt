@@ -1503,7 +1503,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = Mode.READ,
                     id = block.id,
                     text = fieldParser.getObjectName(currentObject),
-                    videoUrl = currentObject.getFileUrl(urlBuilder),
+                    videoUrl = urlBuilder.video(
+                        currentObject.id
+                    ),
                     icon = currentObject.objectIcon(builder = urlBuilder),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,

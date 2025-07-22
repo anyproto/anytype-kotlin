@@ -4358,15 +4358,32 @@ class EditorViewModel(
     }
 
     private fun onFileBlockClicked(blockId: String) {
-
         val fileDetails = blocks.getFileDetailsForBlock(blockId, orchestrator, fieldParser)
-
         if (fileDetails != null) {
-            dispatch(
-                Command.PlayVideo(
-                    url = urlBuilder.original(fileDetails.targetObjectId)
-                )
-            )
+            val target = orchestrator.stores.details.current().getObject(fileDetails.targetObjectId)
+            when(target?.layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        Command.PlayVideo(
+                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        )
+                    )
+                }
+                ObjectType.Layout.AUDIO-> {
+                    dispatch(
+                        Command.PlayVideo(
+                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        )
+                    )
+                }
+                else -> {
+                    dispatch(
+                        Command.OpenFileByDefaultApp(
+                            id = blockId
+                        )
+                    )
+                }
+            }
         } else {
             dispatch(
                 Command.OpenFileByDefaultApp(

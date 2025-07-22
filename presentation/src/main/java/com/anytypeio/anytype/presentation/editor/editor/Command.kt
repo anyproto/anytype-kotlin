@@ -40,7 +40,7 @@ sealed class Command {
     ) : Command()
 
     data class PlayVideo(val url: String) : Command()
-    data class PlayAudio(val url: String) : Command()
+    data class PlayAudio(val url: String, val name: String? = null) : Command()
 
     data class OpenObjectSnackbar(
         val id: Id,

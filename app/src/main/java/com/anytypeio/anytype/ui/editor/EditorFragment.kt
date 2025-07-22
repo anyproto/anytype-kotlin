@@ -1336,7 +1336,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_AUDIO,
                             url = command.url,
-                            name = ""
+                            name = command.name
                         )
                     }.onFailure {
                         Timber.e(it, "Error while launching audio player")

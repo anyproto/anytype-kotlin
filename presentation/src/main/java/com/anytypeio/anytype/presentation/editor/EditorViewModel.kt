@@ -4291,7 +4291,7 @@ class EditorViewModel(
             if (type != null) {
                 navigate(
                     EventWrapper(
-                        AppNavigation.Command.OpenTypeObject(
+                        OpenTypeObject(
                             target = type.id,
                             space = vmParams.space.id
                         )
@@ -4371,8 +4371,9 @@ class EditorViewModel(
                 }
                 ObjectType.Layout.AUDIO-> {
                     dispatch(
-                        Command.PlayVideo(
-                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        Command.PlayAudio(
+                            url = urlBuilder.original(fileDetails.targetObjectId),
+                            name = target.name
                         )
                     )
                 }

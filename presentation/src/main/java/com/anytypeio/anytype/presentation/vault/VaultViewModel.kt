@@ -600,15 +600,6 @@ class VaultViewModel(
         }
     }
 
-    fun onStart() {
-        Timber.d("VaultViewModel - onStart called")
-        // Chat preview container is already started in init block
-    }
-
-    fun onStop() {
-        Timber.d("onStop")
-    }
-
     fun processPendingDeeplink() {
         viewModelScope.launch {
             delay(1000) // Simulate some delay

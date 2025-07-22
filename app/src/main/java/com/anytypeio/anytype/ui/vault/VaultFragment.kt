@@ -393,16 +393,6 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
-    }
-
     override fun onResume() {
         super.onResume()
         proceedWithDeepLinks()

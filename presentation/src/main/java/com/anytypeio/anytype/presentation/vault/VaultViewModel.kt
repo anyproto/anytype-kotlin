@@ -65,11 +65,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -121,39 +124,45 @@ class VaultViewModel(
 
     init {
         Timber.i("VaultViewModel - init started")
-        var isFirstEmission = true
-        Timber.d("VaultViewModel - Starting combine flow")
+        
+        Timber.d("VaultViewModel - Starting flatMapLatest flow")
         viewModelScope.launch {
-            combine(
-                spaceViewSubscriptionContainer.observe(),
-                chatPreviewContainer.observePreviewsWithAttachments().distinctUntilChanged(),
-                userPermissionProvider.all().distinctUntilChanged(),
-                notificationPermissionManager.permissionState().distinctUntilChanged()
-            ) { spacesFromFlow, chatPreviews, permissions, _ ->
-                transformToVaultSpaceViews(spacesFromFlow, chatPreviews, permissions)
-            }.collect { resultingSections ->
-                val ids = resultingSections.mainSpaces.map { it.space.id }
-                Timber.d("Vault sections main spaces IDs: $ids")
-                Timber.d("VaultViewModel - isFirstEmission: $isFirstEmission")
-                Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
-                Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
-
-                if (isFirstEmission) {
-                    Timber.d("VaultViewModel - Showing loading for first emission")
-                    // Show loading briefly on first emission
-                    loadingState.value = true
-                    delay(INITIAL_LOADING_DELAY_MS)
-                    isFirstEmission = false
-                    hasInitialLoadCompleted = true
-                    loadingState.value = false
-                    Timber.d("VaultViewModel - Loading hidden after first emission")
-                } else {
-                    Timber.d("VaultViewModel - No loading needed - isFirstEmission: $isFirstEmission, hasInitialLoadCompleted: $hasInitialLoadCompleted")
+            // First wait for chat previews, then combine with other flows
+            chatPreviewContainer.observePreviewsWithAttachments()
+                .distinctUntilChanged()
+                .flatMapLatest { chatPreviews ->
+                    Timber.d("VaultViewModel - Chat previews received: ${chatPreviews.size}, now combining with other flows")
+                    combine(
+                        spaceViewSubscriptionContainer.observe(),
+                        flowOf(chatPreviews), // Use the chat previews we already have
+                        userPermissionProvider.all().distinctUntilChanged(),
+                        notificationPermissionManager.permissionState().distinctUntilChanged()
+                    ) { spacesFromFlow, previews, permissions, _ ->
+                        Timber.d("VaultViewModel - combine flow emitted with spaces: ${spacesFromFlow.size}, chatPreviews: ${previews.size}, permissions: ${permissions.size}")
+                        transformToVaultSpaceViews(spacesFromFlow, previews, permissions)
+                    }
                 }
-                
-                sections.value = resultingSections
-                Timber.d("VaultViewModel - Sections updated")
-            }
+                .collect { resultingSections ->
+                    val ids = resultingSections.mainSpaces.map { it.space.id }
+                    Timber.d("Vault sections main spaces IDs: $ids")
+                    Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
+                    Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
+
+                    if (!hasInitialLoadCompleted) {
+                        Timber.d("VaultViewModel - Showing loading for first emission")
+                        // Show loading briefly on first emission
+                        loadingState.value = true
+                        delay(INITIAL_LOADING_DELAY_MS)
+                        hasInitialLoadCompleted = true
+                        loadingState.value = false
+                        Timber.d("VaultViewModel - Loading hidden after first emission")
+                    } else {
+                        Timber.d("VaultViewModel - No loading needed - hasInitialLoadCompleted: $hasInitialLoadCompleted")
+                    }
+                    
+                    sections.value = resultingSections
+                    Timber.d("VaultViewModel - Sections updated")
+                }
         }
         
         // Track notification permission status for profile icon badge

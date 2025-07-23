@@ -93,6 +93,7 @@ fun Bubble(
     isUserAuthor: Boolean = false,
     shouldHideUsername: Boolean = false,
     isEdited: Boolean = false,
+    isSynced: Boolean = false,
     isMaxReactionCountReached: Boolean = false,
     reactions: List<ChatView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,

@@ -277,7 +277,7 @@ class BlockAdapter(
                 holder.recycle()
             }
             is Title.Video -> {
-                holder.release()
+                // Do nothing
             }
         }
     }
@@ -386,8 +386,7 @@ class BlockAdapter(
             }
 
             HOLDER_VIDEO_TITLE -> Title.Video(
-                ItemBlockTitleVideoBinding.inflate(inflater, parent, false),
-                lifecycle
+                ItemBlockTitleVideoBinding.inflate(inflater, parent, false)
             )
 
             HOLDER_TODO_TITLE -> {
@@ -1444,7 +1443,12 @@ class BlockAdapter(
 
             is Title.Video -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.Video)
+                    bind(
+                        item = blocks[position] as BlockView.Title.Video,
+                        onPlayClicked = {
+                            onClickListener(ListenerType.Header.Video)
+                        }
+                    )
                 }
             }
 

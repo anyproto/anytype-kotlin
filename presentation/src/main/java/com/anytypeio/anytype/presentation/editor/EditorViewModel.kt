@@ -4259,7 +4259,12 @@ class EditorViewModel(
                     }
                 }
             }
-            else -> {}
+            ListenerType.Header.Video -> {
+                dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+            }
+            else -> {
+                Timber.w("Ignoring listener type: $clicked")
+            }
         }
     }
 
@@ -4286,7 +4291,7 @@ class EditorViewModel(
             if (type != null) {
                 navigate(
                     EventWrapper(
-                        AppNavigation.Command.OpenTypeObject(
+                        OpenTypeObject(
                             target = type.id,
                             space = vmParams.space.id
                         )
@@ -4353,11 +4358,40 @@ class EditorViewModel(
     }
 
     private fun onFileBlockClicked(blockId: String) {
-        dispatch(
-            Command.OpenFileByDefaultApp(
-                id = blockId
+        val fileDetails = blocks.getFileDetailsForBlock(blockId, orchestrator, fieldParser)
+        if (fileDetails != null) {
+            val target = orchestrator.stores.details.current().getObject(fileDetails.targetObjectId)
+            when(target?.layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        Command.PlayVideo(
+                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        )
+                    )
+                }
+                ObjectType.Layout.AUDIO-> {
+                    dispatch(
+                        Command.PlayAudio(
+                            url = urlBuilder.original(fileDetails.targetObjectId),
+                            name = target.name
+                        )
+                    )
+                }
+                else -> {
+                    dispatch(
+                        Command.OpenFileByDefaultApp(
+                            id = blockId
+                        )
+                    )
+                }
+            }
+        } else {
+            dispatch(
+                Command.OpenFileByDefaultApp(
+                    id = blockId
+                )
             )
-        )
+        }
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {

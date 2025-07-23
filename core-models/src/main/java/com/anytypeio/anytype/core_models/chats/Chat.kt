@@ -24,7 +24,7 @@ sealed class Chat {
         val replyToMessageId: Id? = null,
         val read: Boolean = false,
         val mentionRead: Boolean = false,
-        val synced: Boolean
+        val synced: Boolean = false
     ) {
         data class Content(
             val text: String,

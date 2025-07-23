@@ -363,6 +363,7 @@ class ChatViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
+                        isSynced = msg.synced,
                         reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (emoji, ids) -> ids.size }

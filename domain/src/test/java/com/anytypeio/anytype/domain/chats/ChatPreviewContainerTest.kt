@@ -2068,6 +2068,69 @@ class ChatPreviewContainerTest {
         assertNotNull(newPreview)
         assertEquals(chatMessage, newPreview.message)
         container.stop()
+        delay(100)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should track missing attachments for new chat preview`() = runTest {
+        // Given
+        val spaceId = SpaceId("test-space")
+        val chatId = "new-chat"
+        val messageId = "msg-id"
+        val attachmentId = "missing-attachment"
+        val chatMessage = Chat.Message(
+            id = messageId,
+            order = "order-id",
+            creator = "creator-id",
+            createdAt = System.currentTimeMillis(),
+            modifiedAt = System.currentTimeMillis(),
+            content = Chat.Message.Content(
+                text = "New chat message",
+                style = Block.Content.Text.Style.P,
+                marks = emptyList()
+            ),
+            attachments = listOf(
+                Chat.Message.Attachment(target = attachmentId, type = Chat.Message.Attachment.Type.File)
+            )
+        )
+        val addEvent = Event.Command.Chats.Add(
+            spaceId = spaceId,
+            context = chatId,
+            id = messageId,
+            order = "order-id",
+            message = chatMessage,
+            dependencies = emptyList() // No attachment details in dependencies
+        )
+        // Initial previews do not contain the new chat
+        repo.stub {
+            onBlocking { subscribeToMessagePreviews(any()) } doReturn emptyList()
+        }
+        channel.stub {
+            on { subscribe(any()) } doReturn flowOf(listOf(addEvent))
+        }
+        val container = VaultChatPreviewContainer.Default(
+            repo = repo,
+            events = channel,
+            dispatchers = dispatchers,
+            scope = this,
+            logger = logger,
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
+        )
+        container.start()
+        delay(100)
+        // Use reflection to access private attachmentIds for test verification
+        val attachmentIdsField = container.javaClass.getDeclaredField("attachmentIds")
+        attachmentIdsField.isAccessible = true
+        val attachmentIdsValue = attachmentIdsField.get(container) as kotlinx.coroutines.flow.MutableStateFlow<*>
+        val map = attachmentIdsValue.value as Map<*, *>
+        // Then: attachmentIds should contain the space and the missing attachment
+        assertTrue(map.containsKey(spaceId))
+        val tracked = map[spaceId] as Set<*>
+        assertTrue(tracked.contains(attachmentId))
+        container.stop()
+        delay(100)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

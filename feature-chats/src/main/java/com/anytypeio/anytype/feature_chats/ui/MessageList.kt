@@ -124,7 +124,6 @@ fun Messages(
                         shouldHideUsername = msg.shouldHideUsername,
                         isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,
-                        isSynced = msg.isSynced,
                         onReacted = { emoji ->
                             onReacted(msg.id, emoji)
                         },

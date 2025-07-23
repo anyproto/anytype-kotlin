@@ -98,12 +98,13 @@ interface VaultChatPreviewContainer {
                 }
             }
         }
-        
-        override fun start() {
-            job?.cancel()
-            job = scope.launch(dispatchers.io) {
 
-                previews.value = null               // ← back to Loading
+        override fun start() {
+            attachmentIds.value = emptyMap() // Reset attachment tracking
+            previews.value = null // Reset previews
+            job?.cancel()
+
+            job = scope.launch(dispatchers.io) {
 
                 val initial = runCatching {
                     repo.subscribeToMessagePreviews(SUBSCRIPTION_ID)
@@ -118,9 +119,9 @@ interface VaultChatPreviewContainer {
         }
 
         override fun stop() {
-            job?.cancel()
-            job = null
             scope.launch(dispatchers.io) {
+                job?.cancel()
+                job = null
                 previews.value = null           // back to Loading for next start()
                 unsubscribeAll()
             }

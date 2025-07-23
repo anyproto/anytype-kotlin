@@ -11,8 +11,8 @@ fun StubChatMessage(
     timestamp: Long = MockDataFactory.randomLong(),
     modifiedAt: Long = MockDataFactory.randomLong(),
     reactions: Map<String, List<Id>> = emptyMap(),
-    content: Chat.Message.Content? = null
-
+    content: Chat.Message.Content? = null,
+    isSynced: Boolean = true
 ): Chat.Message = Chat.Message(
     id = id,
     order = order,
@@ -20,7 +20,8 @@ fun StubChatMessage(
     createdAt = timestamp,
     reactions = reactions,
     content = content,
-    modifiedAt = modifiedAt
+    modifiedAt = modifiedAt,
+    synced = isSynced
 )
 
 fun StubChatMessageContent(
@@ -36,7 +37,7 @@ fun StubChatMessageContent(
 fun stubChatPreview(
     spaceId: String,
     chatId: String,
-    lastMessageDate: Long
+    lastMessageDate: Long,
 ): Chat.Preview {
     return Chat.Preview(
         space = SpaceId(spaceId),
@@ -53,6 +54,7 @@ fun stubChatPreview(
             attachments = emptyList(),
             order = "order1",
             modifiedAt = System.currentTimeMillis(),
+            synced = true
         ),
         dependencies = emptyList(),
         state = null

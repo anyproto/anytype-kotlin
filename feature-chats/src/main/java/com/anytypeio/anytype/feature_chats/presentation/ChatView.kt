@@ -31,6 +31,7 @@ sealed interface ChatView {
         val isUserAuthor: Boolean = false,
         val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
+        val isSynced: Boolean,
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null,
         val startOfUnreadMessageSection: Boolean = false

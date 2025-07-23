@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 
@@ -57,8 +56,8 @@ interface VaultChatPreviewContainer {
 
         private var job: Job? = null
         /**
-         * `null`  – previews not fetched yet  → emit [com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer.PreviewState.Loading]
-         * non‑null – subscription finished   → emit [com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer.PreviewState.Ready]
+         * `null`  – previews not fetched yet  → emit [VaultChatPreviewContainer.PreviewState.Loading]
+         * non‑null – subscription finished   → emit [VaultChatPreviewContainer.PreviewState.Ready]
          */
         private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
@@ -125,10 +124,9 @@ interface VaultChatPreviewContainer {
                 }
                 .distinctUntilChanged()
                 .catch { e ->
-                    logger.logException(e, "DROID‑2966 Exception in preview flow")
+                    logger.logException(e, "Exception in preview flow")
                     emit(PreviewState.Loading)
                 }
-                .onEach { logger.logInfo("VaultChatPreviewContainer emit → ${it::class.java.simpleName}") }
                 .flowOn(dispatchers.io)
 
         // ------------------------------------------------------------

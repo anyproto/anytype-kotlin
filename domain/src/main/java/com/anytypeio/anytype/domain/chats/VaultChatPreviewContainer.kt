@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Emits chat‑preview data enriched with attachment objects. The flow surfaces a
@@ -253,15 +254,17 @@ interface VaultChatPreviewContainer {
                 flowOf(ready)
             } else {
                 combine(attachmentStreams) { pairs ->
-                    val attachmentsBySpace = pairs.toMap()
-                    val enriched = current.map { preview ->
-                        val deps = buildUpdatedDependencies(
-                            preview,
-                            attachmentsBySpace[preview.space].orEmpty()
-                        )
-                        preview.copy(dependencies = deps)
+                    withContext(dispatchers.computation) {
+                        val attachmentsBySpace = pairs.toMap()
+                        val enriched = current.map { preview ->
+                            val deps = buildUpdatedDependencies(
+                                preview = preview,
+                                attachments = attachmentsBySpace[preview.space].orEmpty()
+                            )
+                            preview.copy(dependencies = deps)
+                        }
+                        PreviewState.Ready(enriched)
                     }
-                    PreviewState.Ready(enriched)
                 }
             }
         }

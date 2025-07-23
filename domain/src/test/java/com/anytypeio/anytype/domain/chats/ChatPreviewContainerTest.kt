@@ -39,6 +39,15 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.atLeastOnce
 import kotlin.test.assertTrue
 import org.mockito.kotlin.never
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.withTimeout
+import org.junit.After
 
 class ChatPreviewContainerTest {
 
@@ -60,6 +69,8 @@ class ChatPreviewContainerTest {
     @Mock
     lateinit var awaitAccountStart: AwaitAccountStartManager
 
+    val testScope = TestScope(rule.dispatcher)
+
     val dispatchers = AppCoroutineDispatchers(
         io = rule.dispatcher,
         computation = rule.dispatcher,
@@ -73,6 +84,11 @@ class ChatPreviewContainerTest {
         awaitAccountStart.stub {
             on { state() } doReturn flowOf(AwaitAccountStartManager.State.Started)
         }
+    }
+
+    @After
+    fun onStop() {
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -92,7 +108,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -100,6 +116,8 @@ class ChatPreviewContainerTest {
 
         // Then
         assertNotNull(container)
+        container.start()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -211,7 +229,7 @@ class ChatPreviewContainerTest {
                 repo = repo,
                 events = channel,
                 dispatchers = dispatchers,
-                scope = this,
+                scope = testScope,
                 logger = logger,
                 subscription = subscription,
                 awaitAccountStart = awaitAccountStart
@@ -228,7 +246,7 @@ class ChatPreviewContainerTest {
 
             // Cleanup
             container.stop()
-            assertNotNull(container)
+            testScope.cancel()
         }
     }
 
@@ -263,7 +281,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -280,6 +298,8 @@ class ChatPreviewContainerTest {
         // Verify the preview has no dependencies (no attachments)
         assertEquals(1, previewsWithAttachments.size)
         assertEquals(0, previewsWithAttachments.first().dependencies.size)
+        container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -301,7 +321,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -318,6 +338,7 @@ class ChatPreviewContainerTest {
         assertEquals(0, result.size)
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -402,7 +423,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -429,6 +450,7 @@ class ChatPreviewContainerTest {
         assertEquals(true, dependencyIds.contains(attachmentNotInDependencies))
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -501,7 +523,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -523,6 +545,7 @@ class ChatPreviewContainerTest {
         assertEquals(attachmentDetails, previewWithAttachments.dependencies.first())
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -587,7 +610,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -611,6 +634,7 @@ class ChatPreviewContainerTest {
         assertEquals(attachmentDetails, preview.dependencies.first())
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -676,7 +700,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -747,7 +771,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -812,7 +836,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -881,7 +905,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -925,7 +949,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1001,7 +1025,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1054,7 +1078,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1111,7 +1135,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1149,7 +1173,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1192,7 +1216,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1235,7 +1259,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1256,6 +1280,8 @@ class ChatPreviewContainerTest {
         // Then - verify no errors occurred and unsubscribe was called
         val state = container.observePreviewsWithAttachments().first()
         assertTrue(state is VaultChatPreviewContainer.PreviewState.Loading)
+        container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1306,7 +1332,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1324,6 +1350,8 @@ class ChatPreviewContainerTest {
         
         // Then - verify errors were logged
         verify(logger, times(2)).logException(any(), any())
+        container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1354,7 +1382,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1377,6 +1405,7 @@ class ChatPreviewContainerTest {
         assertTrue(stateAfterStop is VaultChatPreviewContainer.PreviewState.Loading)
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1439,7 +1468,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1463,6 +1492,7 @@ class ChatPreviewContainerTest {
         assertEquals("Message in space 2", space2Preview.message?.content?.text)
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1548,7 +1578,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1569,6 +1599,7 @@ class ChatPreviewContainerTest {
         assertEquals(message2, space2Preview.message)
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1656,10 +1687,14 @@ class ChatPreviewContainerTest {
         subscription.stub {
             on { subscribe(any<StoreSearchByIdsParams>()) } doAnswer { invocation ->
                 val params = invocation.arguments[0] as StoreSearchByIdsParams
-                when {
-                    params.subscription.startsWith(space1.id) -> flowOf(listOf(attachmentDetails1))
-                    params.subscription.startsWith(space2.id) -> flowOf(listOf(attachmentDetails2))
-                    else -> flowOf(emptyList())
+                if (params.subscription.startsWith(space1.id)) {
+                    println("Stub called for space1: ${params.subscription}")
+                    flowOf(listOf(attachmentDetails1))
+                } else if (params.subscription.startsWith(space2.id)) {
+                    println("Stub called for space2: ${params.subscription}")
+                    flowOf(listOf(attachmentDetails2))
+                } else {
+                    flowOf(emptyList())
                 }
             }
         }
@@ -1669,33 +1704,36 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
         )
         
         container.start()
-        delay(100)
+        advanceUntilIdle()
         
         // Then - verify attachments are handled independently for each space
-        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val state = withTimeout(2000) {
+            container.observePreviewsWithAttachments()
+                .mapNotNull { it as? VaultChatPreviewContainer.PreviewState.Ready }
+                .first { ready ->
+                    val s1 = ready.items.find { it.space == space1 }
+                    val s2 = ready.items.find { it.space == space2 }
+                    s1 != null && s2 != null && s1.dependencies.isNotEmpty() && s2.dependencies.isNotEmpty()
+                }
+        }
         val allPreviews = state.items
         assertEquals(2, allPreviews.size)
-        
-        val space1Preview = allPreviews.find { it.space == space1 }
-        val space2Preview = allPreviews.find { it.space == space2 }
-        
-        assertNotNull(space1Preview)
-        assertNotNull(space2Preview)
-        
+        val space1Preview = allPreviews.find { it.space == space1 }!!
+        val space2Preview = allPreviews.find { it.space == space2 }!!
         assertEquals(1, space1Preview.dependencies.size)
         assertEquals(1, space2Preview.dependencies.size)
-        
         assertEquals(attachmentDetails1, space1Preview.dependencies.first())
         assertEquals(attachmentDetails2, space2Preview.dependencies.first())
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1790,7 +1828,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1810,6 +1848,7 @@ class ChatPreviewContainerTest {
         assertEquals("Third message", finalPreview.message?.content?.text)
         
         container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1870,7 +1909,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -1892,6 +1931,8 @@ class ChatPreviewContainerTest {
         // Then - verify cleanup methods were called
         verify(repo).unsubscribeFromMessagePreviews(any())
         verify(repo, never()).cancelObjectSearchSubscription(any())
+        container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1992,7 +2033,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -2013,6 +2054,8 @@ class ChatPreviewContainerTest {
         // Then - verify cleanup methods were called
         verify(repo).unsubscribeFromMessagePreviews(any())
         verify(repo).cancelObjectSearchSubscription(listOf("${space1.id}/chat-previews-attachments", "${space2.id}/chat-previews-attachments"))
+        container.stop()
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -2054,7 +2097,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -2068,7 +2111,7 @@ class ChatPreviewContainerTest {
         assertNotNull(newPreview)
         assertEquals(chatMessage, newPreview.message)
         container.stop()
-        delay(100)
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -2113,7 +2156,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -2130,7 +2173,7 @@ class ChatPreviewContainerTest {
         val tracked = map[spaceId] as Set<*>
         assertTrue(tracked.contains(attachmentId))
         container.stop()
-        delay(100)
+        testScope.cancel()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -2179,7 +2222,7 @@ class ChatPreviewContainerTest {
             repo = repo,
             events = channel,
             dispatchers = dispatchers,
-            scope = this,
+            scope = testScope,
             logger = logger,
             subscription = subscription,
             awaitAccountStart = awaitAccountStart
@@ -2200,6 +2243,5 @@ class ChatPreviewContainerTest {
         val attachmentIdsValue = attachmentIdsField.get(container) as kotlinx.coroutines.flow.MutableStateFlow<*>
         val map = attachmentIdsValue.value as Map<*, *>
         assertTrue(spaceId !in map.keys)
-        container.stop()
     }
 }

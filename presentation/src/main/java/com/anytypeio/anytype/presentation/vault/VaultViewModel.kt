@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
@@ -57,16 +58,16 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
-import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
+import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -98,9 +99,6 @@ class VaultViewModel(
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
-    val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
-    val loadingState = MutableStateFlow(false)
-    private var isFirstEmissionInCurrentSession = true
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -110,60 +108,52 @@ class VaultViewModel(
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
 
+    private val previewFlow: StateFlow<VaultChatPreviewContainer.PreviewState> =
+        chatPreviewContainer.observePreviewsWithAttachments()
+            .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>() // wait until ready
+            .stateIn(
+                viewModelScope,
+                SharingStarted.Eagerly,
+                VaultChatPreviewContainer.PreviewState.Loading
+            )
+
+    private val spaceFlow: StateFlow<List<ObjectWrapper.SpaceView>> =
+        spaceViewSubscriptionContainer.observe()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
+    private val permissionsFlow: StateFlow<Map<Id, SpaceMemberPermissions>> =
+        userPermissionProvider.all()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyMap())
+
+    private val notificationsFlow: StateFlow<NotificationPermissionManagerImpl.PermissionState> =
+        notificationPermissionManager.permissionState()
+            .stateIn(
+                viewModelScope, SharingStarted.Eagerly,
+                NotificationPermissionManagerImpl.PermissionState.NotRequested
+            )
 
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
             name = obj.name.orEmpty(),
             icon = obj.profileIcon(urlBuilder)
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(1000L),
-        AccountProfile.Idle
-    )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
+
+    /**
+     * The main UI state for the Vault screen, combining space views and chat previews.
+     * It emits a loading state initially, then combines space views, permissions, and chat previews.
+     */
+    val uiState: StateFlow<VaultUiState> = previewFlow
+        .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>()
+        .flatMapLatest { previews ->
+            combine(spaceFlow, permissionsFlow, notificationsFlow) { spaces, perms, _ ->
+                transformToVaultSpaceViews(spaces, previews.items, perms) as VaultUiState
+            }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VaultUiState.Loading)
 
     init {
         Timber.i("VaultViewModel - init started")
-        
-        Timber.d("VaultViewModel - Starting flatMapLatest flow")
-        viewModelScope.launch {
-            // First wait for chat previews, then combine with other flows
-            chatPreviewContainer.observePreviewsWithAttachments()
-                .distinctUntilChanged()
-                .flatMapLatest { chatPreviews ->
-                    Timber.d("VaultViewModel - Chat previews received: ${chatPreviews.size}, now combining with other flows")
-                    combine(
-                        spaceViewSubscriptionContainer.observe(),
-                        flowOf(chatPreviews), // Use the chat previews we already have
-                        userPermissionProvider.all().distinctUntilChanged(),
-                        notificationPermissionManager.permissionState().distinctUntilChanged()
-                    ) { spacesFromFlow, previews, permissions, _ ->
-                        Timber.d("VaultViewModel - combine flow emitted with spaces: ${spacesFromFlow.size}, chatPreviews: ${previews.size}, permissions: ${permissions.size}")
-                        transformToVaultSpaceViews(spacesFromFlow, previews, permissions)
-                    }
-                }
-                .collect { resultingSections ->
-                    if (isFirstEmissionInCurrentSession) {
-                        Timber.d("VaultViewModel - Showing loading for first emission")
-                        // Show loading briefly on first emission
-                        loadingState.value = true
-                        delay(INITIAL_LOADING_DELAY_MS)
-                        isFirstEmissionInCurrentSession = false
-                        loadingState.value = false
-                        Timber.d("VaultViewModel - Loading hidden after first emission")
-                    } else {
-                        Timber.d("VaultViewModel - No loading needed - subsequent emission")
-                    }
-
-                    val ids = resultingSections.mainSpaces.map { it.space.id }
-                    Timber.d("Vault sections main spaces IDs: $ids")
-                    Timber.d("VaultViewModel - sections before: ${sections.value.mainSpaces.size} main, ${sections.value.pinnedSpaces.size} pinned")
-                    Timber.d("VaultViewModel - sections after: ${resultingSections.mainSpaces.size} main, ${resultingSections.pinnedSpaces.size} pinned")
-
-                    sections.value = resultingSections
-                    Timber.d("VaultViewModel - Sections updated")
-                }
-        }
         
         // Track notification permission status for profile icon badge
         viewModelScope.launch {
@@ -201,7 +191,7 @@ class VaultViewModel(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>
-    ): VaultSectionView {
+    ): VaultUiState.Sections {
         // Index chatPreviews by space.id for O(1) lookup
         val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
@@ -227,9 +217,10 @@ class VaultViewModel(
         }
 
         // Loading state is now managed in the main combine flow, not here
-        val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading == true }
+        val loadingSpaceIndex = allSpaces.indexOfFirst { space -> space.space.isLoading }
         if (loadingSpaceIndex != -1) {
-            Timber.d("Found loading space ID: ${allSpaces[loadingSpaceIndex].space.id}, space name: ${allSpaces[loadingSpaceIndex].space.name}")
+            Timber.d("Found loading space ID: ${allSpaces[loadingSpaceIndex].space.id}, " +
+                    "space name: ${allSpaces[loadingSpaceIndex].space.name}")
         } else {
             Timber.d("No loading space found")
         }
@@ -250,7 +241,7 @@ class VaultViewModel(
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
-        return VaultSectionView(
+        return VaultUiState.Sections(
             pinnedSpaces = sortedPinnedSpaces,
             mainSpaces = sortedUnpinnedSpaces
         )
@@ -263,7 +254,7 @@ class VaultViewModel(
         isPinned: Boolean,
         pinnedCount: Int
     ): VaultSpaceView {
-        val showPinButton = isPinned || pinnedCount < VaultSectionView.MAX_PINNED_SPACES
+        val showPinButton = isPinned || pinnedCount < VaultUiState.MAX_PINNED_SPACES
         return when {
             chatPreview != null -> {
                 createChatView(space, chatPreview, permissions, showPinButton)
@@ -448,9 +439,11 @@ class VaultViewModel(
     }
 
     fun onSpaceSettingsClicked(spaceId: Id) {
+        val state = uiState.value
+        if (state !is VaultUiState.Sections) return
         viewModelScope.launch {
-            val spaceView = sections.value.pinnedSpaces.find { it.space.id == spaceId }
-                ?: sections.value.mainSpaces.find { it.space.id == spaceId }
+            val spaceView = state.pinnedSpaces.find { it.space.id == spaceId }
+                ?: state.mainSpaces.find { it.space.id == spaceId }
             if (spaceView != null) {
                 handleSpaceSelection(spaceView, emitSettings = true)
             } else {
@@ -754,8 +747,10 @@ class VaultViewModel(
     }
 
     fun onPinSpaceClicked(spaceId: Id) {
+        val state = uiState.value
+        if (state !is VaultUiState.Sections) return
         viewModelScope.launch {
-            val currentSections = sections.value
+            val currentSections = state
             val pinnedSpaces = currentSections.pinnedSpaces
             
             if (!canPinSpace()) {
@@ -876,7 +871,9 @@ class VaultViewModel(
      * Returns true if the user can pin a space (i.e., the max pinned spaces limit is not reached).
      */
     fun canPinSpace(): Boolean {
-        return sections.value.pinnedSpaces.size < MAX_PINNED_SPACES
+        val state = uiState.value
+        if (state !is VaultUiState.Sections) return false
+        return state.pinnedSpaces.size < MAX_PINNED_SPACES
     }
 
     // Local state for tracking order changes during drag operations
@@ -885,10 +882,11 @@ class VaultViewModel(
 
     //region Drag and Drop
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
+        val currentSections = uiState.value
+        if (currentSections !is VaultUiState.Sections) return
         Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
 
         // Get current settings to work with the existing order
-        val currentSections = sections.value
         val currentPinnedSpaces = currentSections.pinnedSpaces
 
         // Find indices in the current pinned spaces list
@@ -916,13 +914,15 @@ class VaultViewModel(
 
     fun onDragEnd() {
         Timber.d("onDragEnd called")
+        val state = uiState.value
+        if (state !is VaultUiState.Sections) return
         // Persist the order changes made during the drag operation
         pendingPinnedSpacesOrder?.let { newOrder ->
             viewModelScope.launch {
                 analytics.sendEvent(eventName = EventsDictionary.reorderSpace)
                 
                 // Get the current pinned spaces to determine which space was moved
-                val currentPinnedSpaces = sections.value.pinnedSpaces
+                val currentPinnedSpaces = state.pinnedSpaces
                 
                 if (currentPinnedSpaces.isNotEmpty()) {
                     // Use the tracked moved space ID or fall back to the first space

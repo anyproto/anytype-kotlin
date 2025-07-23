@@ -657,7 +657,15 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-
+                is Event.Command.Chats.UpdateMessageSyncStatus -> {
+                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
+                    idsInWindow.forEach { id ->
+                        val index = messageList.indexOfFirst { it.id == id }
+                        if (messageList[index].read != event.isSynced) {
+                            messageList[index] = messageList[index].copy(read = event.isSynced)
+                        }
+                    }
+                }
                 is Event.Command.Chats.UpdateState -> {
                     logger.logWarning(
                         "DROID-2966 Updating chat state, " +

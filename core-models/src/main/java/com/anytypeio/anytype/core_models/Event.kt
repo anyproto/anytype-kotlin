@@ -373,6 +373,16 @@ sealed class Event {
                 val messages: List<Id>,
                 val isRead: Boolean
             ) : Chats()
+
+            /**
+             * @property [messages] message ids
+             */
+            data class UpdateMessageSyncStatus(
+                override val context: Id,
+                val messages: List<Id>,
+                val isSynced: Boolean,
+                val subscriptions: List<Id>
+            ) : Chats()
         }
     }
 }

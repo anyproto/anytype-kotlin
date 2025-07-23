@@ -662,7 +662,7 @@ class ChatContainer @Inject constructor(
                     idsInWindow.forEach { id ->
                         val index = messageList.indexOfFirst { it.id == id }
                         if (messageList[index].synced != event.isSynced) {
-                            messageList[index] = messageList[index].copy(read = event.isSynced)
+                            messageList[index] = messageList[index].copy(synced = event.isSynced)
                         }
                     }
                 }

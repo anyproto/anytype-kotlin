@@ -65,7 +65,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -101,7 +100,7 @@ class VaultViewModel(
 
     val sections = MutableStateFlow<VaultSectionView>(VaultSectionView())
     val loadingState = MutableStateFlow(false)
-    private var hasInitialLoadCompleted = false
+    private var isFirstEmissionInCurrentSession = true
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showChooseSpaceType = MutableStateFlow(false)
@@ -144,16 +143,16 @@ class VaultViewModel(
                     }
                 }
                 .collect { resultingSections ->
-                    if (!hasInitialLoadCompleted) {
+                    if (isFirstEmissionInCurrentSession) {
                         Timber.d("VaultViewModel - Showing loading for first emission")
                         // Show loading briefly on first emission
                         loadingState.value = true
                         delay(INITIAL_LOADING_DELAY_MS)
-                        hasInitialLoadCompleted = true
+                        isFirstEmissionInCurrentSession = false
                         loadingState.value = false
                         Timber.d("VaultViewModel - Loading hidden after first emission")
                     } else {
-                        Timber.d("VaultViewModel - No loading needed - hasInitialLoadCompleted: $hasInitialLoadCompleted")
+                        Timber.d("VaultViewModel - No loading needed - subsequent emission")
                     }
 
                     val ids = resultingSections.mainSpaces.map { it.space.id }

@@ -661,7 +661,7 @@ class ChatContainer @Inject constructor(
                     val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
                     idsInWindow.forEach { id ->
                         val index = messageList.indexOfFirst { it.id == id }
-                        if (messageList[index].read != event.isSynced) {
+                        if (messageList[index].synced != event.isSynced) {
                             messageList[index] = messageList[index].copy(read = event.isSynced)
                         }
                     }

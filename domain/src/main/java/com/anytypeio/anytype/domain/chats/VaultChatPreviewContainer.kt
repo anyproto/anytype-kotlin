@@ -100,11 +100,12 @@ interface VaultChatPreviewContainer {
         }
 
         override fun start() {
-            attachmentIds.value = emptyMap() // Reset attachment tracking
-            previews.value = null // Reset previews
             job?.cancel()
 
             job = scope.launch(dispatchers.io) {
+
+                attachmentIds.value = emptyMap() // Reset attachment tracking
+                previews.value = null // Reset previews
 
                 val initial = runCatching {
                     repo.subscribeToMessagePreviews(SUBSCRIPTION_ID)
@@ -193,6 +194,12 @@ interface VaultChatPreviewContainer {
             val idx = state.indexOfFirst { it.chat == event.context }
             if (idx == -1) {
                 // Brand-new preview
+                // Track missing attachments for later subscription
+                if (missing.isNotEmpty()) {
+                    val space = event.spaceId
+                    val merged = (attachmentIds.value[space] ?: emptySet()) + missing
+                    attachmentIds.value = attachmentIds.value + (space to merged)
+                }
                 return state + Chat.Preview(
                     space = event.spaceId,
                     chat = event.context,

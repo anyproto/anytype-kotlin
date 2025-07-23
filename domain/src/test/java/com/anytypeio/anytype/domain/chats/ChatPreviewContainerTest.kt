@@ -2084,4 +2084,74 @@ class ChatPreviewContainerTest {
         assertEquals(chatMessage, newPreview.message)
         container.stop()
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should clear attachmentIds when all attachments are resolved`() = runTest {
+        // Given
+        val spaceId = SpaceId("test-space")
+        val chatId = "chat-with-attachments"
+        val attachmentId1 = "attachment-1"
+        val attachmentId2 = "attachment-2"
+        val chatMessage = Chat.Message(
+            id = "msg-id",
+            order = "order-id",
+            creator = "creator-id",
+            createdAt = System.currentTimeMillis(),
+            modifiedAt = System.currentTimeMillis(),
+            content = Chat.Message.Content(
+                text = "Message with attachments",
+                style = Block.Content.Text.Style.P,
+                marks = emptyList()
+            ),
+            attachments = listOf(
+                Chat.Message.Attachment(target = attachmentId1, type = Chat.Message.Attachment.Type.File),
+                Chat.Message.Attachment(target = attachmentId2, type = Chat.Message.Attachment.Type.File)
+            )
+        )
+        val initialPreview = Chat.Preview(
+            space = spaceId,
+            chat = chatId,
+            message = chatMessage,
+            dependencies = emptyList()
+        )
+        val attachmentDetails1 = StubObject(id = attachmentId1, name = "Attachment 1")
+        val attachmentDetails2 = StubObject(id = attachmentId2, name = "Attachment 2")
+        repo.stub {
+            onBlocking { subscribeToMessagePreviews(any()) } doReturn listOf(initialPreview)
+        }
+        channel.stub {
+            on { subscribe(any()) } doReturn emptyFlow()
+        }
+        // Simulate both attachments arriving
+        subscription.stub {
+            on { subscribe(any<StoreSearchByIdsParams>()) } doReturn flowOf(listOf(attachmentDetails1, attachmentDetails2))
+        }
+        val container = VaultChatPreviewContainer.Default(
+            repo = repo,
+            events = channel,
+            dispatchers = dispatchers,
+            scope = this,
+            logger = logger,
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
+        )
+        container.start()
+        delay(100)
+        // When: all attachments are resolved, attachmentIds for the space should be removed
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
+        // Then: preview has both dependencies, and attachmentIds is cleared
+        val preview = previews.first { it.chat == chatId }
+        val dependencyIds = preview.dependencies.map { it.id }.toSet()
+        assertTrue(dependencyIds.contains(attachmentId1))
+        assertTrue(dependencyIds.contains(attachmentId2))
+        // Use reflection to access private attachmentIds for test verification
+        val attachmentIdsField = container.javaClass.getDeclaredField("attachmentIds")
+        attachmentIdsField.isAccessible = true
+        val attachmentIdsValue = attachmentIdsField.get(container) as kotlinx.coroutines.flow.MutableStateFlow<*>
+        val map = attachmentIdsValue.value as Map<*, *>
+        assertTrue(spaceId !in map.keys)
+        container.stop()
+    }
 }

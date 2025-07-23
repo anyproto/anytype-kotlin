@@ -25,6 +25,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -290,9 +291,18 @@ interface VaultChatPreviewContainer {
             preview: Chat.Preview,
             attachments: Map<Id, ObjectWrapper.Basic>
         ): List<ObjectWrapper.Basic> {
-            val existing = preview.dependencies.associateBy { it.id }
-            val all = existing + attachments
+            val all = (preview.dependencies + attachments.values)
+                .associateBy { it.id }
             return all.values.toList()
+                .also { deps ->
+                    // Drop resolved IDs
+                    val remaining = preview.message?.attachments
+                        ?.map { it.target }?.toSet()
+                        ?.minus(deps.map { it.id }.toSet())
+                    if (remaining?.isEmpty() == true) {
+                        attachmentIds.update { it - preview.space }
+                    }
+                }
         }
 
         private suspend fun unsubscribeAll() {

@@ -17,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -25,7 +26,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
@@ -56,12 +59,32 @@ interface VaultChatPreviewContainer {
     ) : VaultChatPreviewContainer {
 
         private var job: Job? = null
+
         /**
          * `null`  – previews not fetched yet  → emit [VaultChatPreviewContainer.PreviewState.Loading]
          * non‑null – subscription finished   → emit [VaultChatPreviewContainer.PreviewState.Ready]
          */
         private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
+
+        // Hot shared state for UI collectors
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val previewsState: StateFlow<PreviewState> = previews
+            .map { list ->
+                if (list == null) PreviewState.Loading else PreviewState.Ready(list)
+            }
+            .flatMapLatest { state ->
+                when (state) {
+                    PreviewState.Loading -> flowOf(state)
+                    is PreviewState.Ready -> enrichWithAttachments(state)
+                }
+            }
+            .distinctUntilChanged()
+            .catch { e ->
+                logger.logException(e, "Exception in preview flow")
+                emit(PreviewState.Loading)
+            }
+            .stateIn(scope, SharingStarted.Eagerly, PreviewState.Loading)
 
         init {
             // Auto start/stop together with account lifecycle
@@ -75,11 +98,7 @@ interface VaultChatPreviewContainer {
                 }
             }
         }
-
-        // ------------------------------------------------------------
-        //  Public API
-        // ------------------------------------------------------------
-
+        
         override fun start() {
             job?.cancel()
             job = scope.launch(dispatchers.io) {
@@ -107,32 +126,8 @@ interface VaultChatPreviewContainer {
             }
         }
 
-        // ------------------------------------------------------------
-        //  Preview stream
-        // ------------------------------------------------------------
-
         @OptIn(ExperimentalCoroutinesApi::class)
-        override fun observePreviewsWithAttachments(): Flow<PreviewState> =
-            previews
-                .map { list ->
-                    if (list == null) PreviewState.Loading else PreviewState.Ready(list)
-                }
-                .flatMapLatest { state ->
-                    when (state) {
-                        PreviewState.Loading -> flowOf(state)
-                        is PreviewState.Ready -> enrichWithAttachments(state)
-                    }
-                }
-                .distinctUntilChanged()
-                .catch { e ->
-                    logger.logException(e, "Exception in preview flow")
-                    emit(PreviewState.Loading)
-                }
-                .flowOn(dispatchers.io)
-
-        // ------------------------------------------------------------
-        //  Private helpers
-        // ------------------------------------------------------------
+        override fun observePreviewsWithAttachments(): Flow<PreviewState> = previewsState
 
         private suspend fun collectEvents(initial: List<Chat.Preview>) {
             events.subscribe(SUBSCRIPTION_ID)

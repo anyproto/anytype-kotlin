@@ -39,6 +39,7 @@ import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.atLeastOnce
 import kotlin.test.assertTrue
+import org.mockito.kotlin.never
 
 class ChatPreviewContainerTest {
 
@@ -1891,14 +1892,7 @@ class ChatPreviewContainerTest {
         
         // Then - verify cleanup methods were called
         verify(repo).unsubscribeFromMessagePreviews(any())
-        verify(repo).cancelObjectSearchSubscription(any())
-        
-        // Verify attachment subscriptions were cleaned up (should include the space-specific subscription)
-        verifyBlocking(repo) {
-            cancelObjectSearchSubscription(
-                listOf("${spaceId.id}/chat-previews-attachments")
-            )
-        }
+        verify(repo, never()).cancelObjectSearchSubscription(any())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1911,6 +1905,8 @@ class ChatPreviewContainerTest {
         val chat2 = "chat-2"
         val attachment1 = "attachment-1"
         val attachment2 = "attachment-2"
+        val unresolved1 = "unresolved-1"
+        val unresolved2 = "unresolved-2"
         
         val message1 = Chat.Message(
             id = "msg-1",
@@ -1924,10 +1920,8 @@ class ChatPreviewContainerTest {
                 marks = emptyList()
             ),
             attachments = listOf(
-                Chat.Message.Attachment(
-                    target = attachment1,
-                    type = Chat.Message.Attachment.Type.File
-                )
+                Chat.Message.Attachment(target = attachment1, type = Chat.Message.Attachment.Type.File),
+                Chat.Message.Attachment(target = unresolved1, type = Chat.Message.Attachment.Type.File)
             )
         )
         
@@ -1943,10 +1937,8 @@ class ChatPreviewContainerTest {
                 marks = emptyList()
             ),
             attachments = listOf(
-                Chat.Message.Attachment(
-                    target = attachment2,
-                    type = Chat.Message.Attachment.Type.File
-                )
+                Chat.Message.Attachment(target = attachment2, type = Chat.Message.Attachment.Type.File),
+                Chat.Message.Attachment(target = unresolved2, type = Chat.Message.Attachment.Type.File)
             )
         )
         
@@ -1984,12 +1976,13 @@ class ChatPreviewContainerTest {
             on { subscribe(any()) } doReturn emptyFlow()
         }
         
+        // Mock subscription to return only one attachment per space (simulate unresolved attachments)
         subscription.stub {
             on { subscribe(any<StoreSearchByIdsParams>()) } doAnswer { invocation ->
                 val params = invocation.arguments[0] as StoreSearchByIdsParams
                 when {
-                    params.subscription.startsWith(space1.id) -> flowOf(listOf(attachmentDetails1))
-                    params.subscription.startsWith(space2.id) -> flowOf(listOf(attachmentDetails2))
+                    params.subscription.startsWith(space1.id) -> flowOf(listOf(attachmentDetails1)) // Only one, not all
+                    params.subscription.startsWith(space2.id) -> flowOf(listOf(attachmentDetails2)) // Only one, not all
                     else -> flowOf(emptyList())
                 }
             }
@@ -2020,14 +2013,7 @@ class ChatPreviewContainerTest {
         
         // Then - verify cleanup methods were called
         verify(repo).unsubscribeFromMessagePreviews(any())
-        verify(repo).cancelObjectSearchSubscription(any())
-        
-        // Verify both attachment subscriptions were cleaned up
-        verifyBlocking(repo) {
-            cancelObjectSearchSubscription(
-                listOf("${space1.id}/chat-previews-attachments", "${space2.id}/chat-previews-attachments")
-            )
-        }
+        verify(repo).cancelObjectSearchSubscription(listOf("${space1.id}/chat-previews-attachments", "${space2.id}/chat-previews-attachments"))
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

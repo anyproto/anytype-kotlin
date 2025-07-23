@@ -166,11 +166,6 @@ fun Messages(
                         isReadOnly = isReadOnly,
                         onRequestVideoPlayer = onRequestVideoPlayer
                     )
-                    if (msg.isSynced) {
-                        Text("+")
-                    } else {
-                        Text("-")
-                    }
                 }
                 if (idx == messages.lastIndex) {
                     Spacer(modifier = Modifier.height(36.dp))

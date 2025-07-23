@@ -828,7 +828,8 @@ class ChatViewModel @Inject constructor(
                                 id = mode.msg,
                                 text = msg.trim(),
                                 attachments = attachments,
-                                marks = normalizedMarkup
+                                marks = normalizedMarkup,
+                                synced = false
                             )
                         )
                     ).onSuccess {

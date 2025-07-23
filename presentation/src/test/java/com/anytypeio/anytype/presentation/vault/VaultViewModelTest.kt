@@ -74,7 +74,7 @@ class VaultViewModelTest {
         )
 
         // Then
-        assertEquals(VaultSectionView(), viewModel.sections.value)
+        assertEquals(VaultUiState(), viewModel.uiState.value)
         // Notification badge should be not disabled (since areNotificationsEnabled returns true)
         assertEquals(false, viewModel.isNotificationDisabled.value)
     }
@@ -185,7 +185,7 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val sections = viewModel.sections.value
+        val sections = viewModel.uiState.value
         val pinned = sections.pinnedSpaces
         val main = sections.mainSpaces
 
@@ -259,14 +259,14 @@ class VaultViewModelTest {
         advanceUntilIdle()
 
         // Initial order should be space1, space2, space3 (sorted by spaceOrder)
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val initialPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         assertEquals(listOf(space1Id, space2Id, space3Id), initialPinnedSpaces.map { it.space.id })
 
         // When - Move space1 to position 2 (the position of space3)
         viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
 
         // Then - Local state should be updated immediately
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val updatedPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         assertEquals(listOf(space2Id, space3Id, space1Id), updatedPinnedSpaces.map { it.space.id })
     }
 
@@ -318,14 +318,14 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val initialPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         val initialOrder = initialPinnedSpaces.map { it.space.id }
 
         // When - Try to move space1 to itself
         viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space1Id)
 
         // Then - Order should remain unchanged
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val updatedPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
     }
 
@@ -378,14 +378,14 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val initialPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         val initialOrder = initialPinnedSpaces.map { it.space.id }
 
         // When - Try to move from non-existent space
         viewModel.onOrderChanged(fromSpaceId = nonExistentSpaceId, toSpaceId = space1Id)
 
         // Then - Order should remain unchanged
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
+        val updatedPinnedSpaces = viewModel.uiState.value.pinnedSpaces
         assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
     }
 
@@ -638,7 +638,7 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val sections = viewModel.sections.value
+        val sections = viewModel.uiState.value
         
         // Then - pinnedCount should be 2
         assertEquals(2, sections.pinnedSpaces.size)
@@ -748,7 +748,7 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val sections = viewModel.sections.value
+        val sections = viewModel.uiState.value
         
         // Then - pinnedCount should be 6 (at MAX_PINNED_SPACES limit)
         assertEquals(6, sections.pinnedSpaces.size)
@@ -807,7 +807,7 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val sections = viewModel.sections.value
+        val sections = viewModel.uiState.value
         
         // Then - pinnedCount should be 0
         assertEquals(0, sections.pinnedSpaces.size)
@@ -872,7 +872,7 @@ class VaultViewModelTest {
 
         advanceUntilIdle()
 
-        val sections = viewModel.sections.value
+        val sections = viewModel.uiState.value
         
         // Then - pinnedCount should be 1
         assertEquals(1, sections.pinnedSpaces.size)
@@ -942,7 +942,7 @@ class VaultViewModelTest {
         advanceUntilIdle()
 
         // Initial state - 6 pinned spaces, unpinned spaces should have canPin = false
-        var sections = viewModel.sections.value
+        var sections = viewModel.uiState.value
         assertEquals(6, sections.pinnedSpaces.size)
         assertEquals(4, sections.mainSpaces.size)
         
@@ -965,7 +965,7 @@ class VaultViewModelTest {
         advanceUntilIdle()
 
         // Then - Now there are 5 pinned spaces, all unpinned spaces should have canPin = true
-        sections = viewModel.sections.value
+        sections = viewModel.uiState.value
         assertEquals(5, sections.pinnedSpaces.size)
         assertEquals(5, sections.mainSpaces.size) // 4 original unpinned + 1 newly unpinned
         

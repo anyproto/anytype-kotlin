@@ -29,7 +29,7 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
 import com.anytypeio.anytype.presentation.vault.VaultErrors
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
-import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
+import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -73,14 +73,13 @@ class VaultFragment : BaseComposeFragment() {
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
 
-                VaultScreenWithUnreadSection(
-                    sections = vm.sections.collectAsStateWithLifecycle().value,
+                VaultScreen(
+                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                     onSettingsClicked = vm::onSettingsClicked,
                     profile = vm.profileView.collectAsStateWithLifecycle().value,
-                    isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
                     onPinSpace = vm::onPinSpaceClicked,

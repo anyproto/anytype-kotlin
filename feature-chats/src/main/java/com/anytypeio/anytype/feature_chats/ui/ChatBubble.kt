@@ -66,6 +66,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -320,6 +321,7 @@ fun Bubble(
                                 contentDescription = "Message not synced icon"
                             )
                         }
+                        Spacer(modifier = Modifier.width(2.dp))
                         Text(
                             text = timestamp.formatTimeInMillis(TIME_H24).let {
                                 if (isEdited) {

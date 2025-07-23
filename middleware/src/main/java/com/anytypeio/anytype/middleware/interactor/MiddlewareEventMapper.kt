@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.interactor
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.mappers.MWidgetLayout
 import com.anytypeio.anytype.middleware.mappers.core
@@ -289,6 +290,7 @@ fun anytype.Event.Message.toCoreModels(
         val event = chatAdd
         checkNotNull(event)
         Event.Command.Chats.Add(
+            spaceId = SpaceId(spaceId),
             context = context,
             id = event.id,
             order = event.orderId,

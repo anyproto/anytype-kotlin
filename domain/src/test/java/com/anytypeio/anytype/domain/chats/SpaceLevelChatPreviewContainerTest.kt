@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -193,7 +194,8 @@ class SpaceChatPreviewContainerTest {
             id = "msg-1",
             order = "order-1",
             message = newMessage,
-            dependencies = emptyList()
+            dependencies = emptyList(),
+            spaceId = SpaceId(MockDataFactory.randomUuid())
         )
         
         repo.stub {

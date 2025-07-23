@@ -193,6 +193,17 @@ interface VaultChatPreviewContainer {
             val dependencyIds = event.dependencies.map { it.id }.toSet()
             val missing = messageAttachmentIds - dependencyIds
 
+            val idx = state.indexOfFirst { it.chat == event.context }
+            if (idx == -1) {
+                // Brand-new preview
+                return state + Chat.Preview(
+                    space = event.spaceId,
+                    chat = event.context,
+                    message = event.message,
+                    dependencies = event.dependencies
+                )
+            }
+
             // Track missing attachments for later subscription
             state.firstOrNull { it.chat == event.context }?.let { preview ->
                 if (missing.isNotEmpty()) {

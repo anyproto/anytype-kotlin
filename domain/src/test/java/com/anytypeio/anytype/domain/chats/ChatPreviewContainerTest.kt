@@ -365,6 +365,7 @@ class ChatPreviewContainerTest {
             id = "msg-id",
             order = "order-id",
             message = chatMessage,
+            spaceId = spaceId,
             dependencies = listOf(dependencyWithAttachment) // Only one attachment in dependencies
         )
         
@@ -463,6 +464,7 @@ class ChatPreviewContainerTest {
             id = "msg-id",
             order = "order-id",
             message = chatMessage,
+            spaceId = spaceId,
             dependencies = emptyList() // No attachment details in dependencies
         )
         
@@ -1466,6 +1468,7 @@ class ChatPreviewContainerTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should handle concurrent updates to different spaces`() = runTest {
+        val spaceId = SpaceId("test-space")
         // Given
         val space1 = SpaceId("space-1")
         val space2 = SpaceId("space-2")
@@ -1515,6 +1518,7 @@ class ChatPreviewContainerTest {
         )
         
         val addEvent1 = Event.Command.Chats.Add(
+            spaceId = spaceId,
             context = chat1,
             id = "msg-1",
             order = "order-1",
@@ -1523,6 +1527,7 @@ class ChatPreviewContainerTest {
         )
         
         val addEvent2 = Event.Command.Chats.Add(
+            spaceId = spaceId,
             context = chat2,
             id = "msg-2",
             order = "order-2",
@@ -1752,6 +1757,7 @@ class ChatPreviewContainerTest {
         )
         
         val addEvent = Event.Command.Chats.Add(
+            spaceId = spaceId,
             context = chatId,
             id = messageId,
             order = "order-1",
@@ -2022,5 +2028,60 @@ class ChatPreviewContainerTest {
                 listOf("${space1.id}/chat-previews-attachments", "${space2.id}/chat-previews-attachments")
             )
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should add new preview when Add event is for unknown chat`() = runTest {
+        // Given
+        val spaceId = SpaceId("test-space")
+        val chatId = "new-chat"
+        val messageId = "msg-id"
+        val chatMessage = Chat.Message(
+            id = messageId,
+            order = "order-id",
+            creator = "creator-id",
+            createdAt = System.currentTimeMillis(),
+            modifiedAt = System.currentTimeMillis(),
+            content = Chat.Message.Content(
+                text = "New chat message",
+                style = Block.Content.Text.Style.P,
+                marks = emptyList()
+            ),
+            attachments = emptyList()
+        )
+        val addEvent = Event.Command.Chats.Add(
+            spaceId = spaceId,
+            context = chatId,
+            id = messageId,
+            order = "order-id",
+            message = chatMessage,
+            dependencies = emptyList()
+        )
+        // Initial previews do not contain the new chat
+        repo.stub {
+            onBlocking { subscribeToMessagePreviews(any()) } doReturn emptyList()
+        }
+        channel.stub {
+            on { subscribe(any()) } doReturn flowOf(listOf(addEvent))
+        }
+        val container = VaultChatPreviewContainer.Default(
+            repo = repo,
+            events = channel,
+            dispatchers = dispatchers,
+            scope = this,
+            logger = logger,
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
+        )
+        container.start()
+        delay(100)
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
+        // Then - verify the new preview is present
+        val newPreview = previews.find { it.chat == chatId }
+        assertNotNull(newPreview)
+        assertEquals(chatMessage, newPreview.message)
+        container.stop()
     }
 }

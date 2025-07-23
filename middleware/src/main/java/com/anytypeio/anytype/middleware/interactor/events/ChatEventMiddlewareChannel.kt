@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.interactor.events
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.event.ChatEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.MEventMessage
@@ -45,6 +46,7 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
             val event = chatAdd
             checkNotNull(event)
             Event.Command.Chats.Add(
+                spaceId = SpaceId(spaceId),
                 context = contextId,
                 order = event.orderId,
                 id = event.id,
@@ -122,6 +124,7 @@ fun MEventMessage.payload(subscription: Id, contextId: Id) : Event.Command.Chats
             checkNotNull(event)
             if (event.subIds.contains(subscription)) {
                 Event.Command.Chats.Add(
+                    spaceId = SpaceId(spaceId),
                     context = contextId,
                     order = event.orderId,
                     id = event.id,

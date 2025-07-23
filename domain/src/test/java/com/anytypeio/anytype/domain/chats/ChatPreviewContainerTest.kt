@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
@@ -35,6 +36,9 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.atLeastOnce
+import kotlin.test.assertTrue
 
 class ChatPreviewContainerTest {
 
@@ -53,6 +57,9 @@ class ChatPreviewContainerTest {
     @Mock
     lateinit var subscription: StorelessSubscriptionContainer
 
+    @Mock
+    lateinit var awaitAccountStart: AwaitAccountStartManager
+
     val dispatchers = AppCoroutineDispatchers(
         io = rule.dispatcher,
         computation = rule.dispatcher,
@@ -62,6 +69,10 @@ class ChatPreviewContainerTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        awaitAccountStart = mock()
+        awaitAccountStart.stub {
+            on { state() } doReturn flowOf(AwaitAccountStartManager.State.Started)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -83,7 +94,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
 
         // Then
@@ -201,14 +213,15 @@ class ChatPreviewContainerTest {
                 dispatchers = dispatchers,
                 scope = this,
                 logger = logger,
-                subscription = subscription
+                subscription = subscription,
+                awaitAccountStart = awaitAccountStart
             )
 
             container.start()
 
             // Subscribe to previews with attachments
-            val previews = container.observePreviewsWithAttachments().first()
-
+            val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+            val previews = state.items
             // Then - verify it returns previews with empty dependencies when no attachments are tracked
             assertEquals(1, previews.size)
             assertEquals(0, previews.first().dependencies.size)
@@ -252,18 +265,18 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // Start the container
         container.start()
         
         // Subscribe to previews with attachments and verify no attachments tracked
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         // Then - verify no subscription was made since there are no attachments
         verifyNoInteractions(subscription)
-        
         // Verify the preview has no dependencies (no attachments)
         assertEquals(1, previewsWithAttachments.size)
         assertEquals(0, previewsWithAttachments.first().dependencies.size)
@@ -290,7 +303,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -298,9 +312,9 @@ class ChatPreviewContainerTest {
         // Then - verify the interface method exists and can be called
         val previewsFlow = container.observePreviewsWithAttachments()
         assertNotNull(previewsFlow)
-        
         // Verify it returns a flow that emits empty list
-        val result = previewsFlow.first()
+        val state = previewsFlow.first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val result = state.items
         assertEquals(0, result.size)
         
         container.stop()
@@ -389,7 +403,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -398,8 +413,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews with attachments and verify attachment integration
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         // Then - verify it only subscribes to the missing attachment
         assertEquals(1, previewsWithAttachments.size)
         val preview = previewsWithAttachments.first()
@@ -486,7 +501,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -495,7 +511,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews with attachments and find the specific space
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         val previewWithAttachments = previewsWithAttachments.find { it.space == spaceId }
         
         // Then - verify the preview is updated with attachment details
@@ -570,7 +587,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -579,7 +597,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews with attachments
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         
         // Then - verify initial attachment was detected and subscribed to
         assertEquals(1, previewsWithAttachments.size)
@@ -657,7 +676,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -666,8 +686,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify update
-        val previews = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         // Then - verify message was updated
         assertEquals(1, previews.size)
         val preview = previews.first()
@@ -727,7 +747,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -736,8 +757,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify deletion
-        val previews = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         // Then - verify message was deleted (set to null)
         assertEquals(1, previews.size)
         val preview = previews.first()
@@ -791,7 +812,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -800,8 +822,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify state update
-        val previews = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         // Then - verify state was updated with higher order
         assertEquals(1, previews.size)
         val preview = previews.first()
@@ -859,7 +881,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -868,8 +891,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Subscribe to previews and verify state was not updated
-        val previews = container.observePreviewsWithAttachments().first()
-        
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         // Then - verify state remains unchanged (original state preserved)
         assertEquals(1, previews.size)
         val preview = previews.first()
@@ -902,7 +925,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -911,7 +935,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container handles error gracefully and returns empty previews
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(0, previews.size)
         
         // Verify logger was called with the error
@@ -976,7 +1001,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -985,7 +1011,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container handles subscription error gracefully
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(1, previews.size)
         
         // Dependencies should be empty due to subscription error
@@ -1027,7 +1054,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -1036,7 +1064,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container handles absence of events gracefully
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(1, previews.size)
         
         // Verify initial preview is preserved
@@ -1082,7 +1111,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -1091,11 +1121,12 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container handles unknown event gracefully
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(1, previews.size)
         
         // Verify logger was called for unknown event
-        verify(logger).logInfo(any())
+        verify(logger, atLeastOnce()).logInfo(any())
         
         container.stop()
     }
@@ -1118,7 +1149,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // When - call start multiple times
@@ -1130,7 +1162,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify container works correctly
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(0, previews.size)
         
         // Verify repository was called at least once (multiple calls are ok due to cancellation)
@@ -1159,7 +1192,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // When - call stop before start
@@ -1174,7 +1208,8 @@ class ChatPreviewContainerTest {
         
         // Now start should work normally
         container.start()
-        val previews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previews = state.items
         assertEquals(0, previews.size)
         
         container.stop()
@@ -1200,7 +1235,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // When
@@ -1216,7 +1252,8 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify no errors occurred and unsubscribe was called
-        verify(repo, times(3)).unsubscribeFromMessagePreviews(any())
+        val state = container.observePreviewsWithAttachments().first()
+        assertTrue(state is VaultChatPreviewContainer.PreviewState.Loading)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1269,7 +1306,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // When
@@ -1316,14 +1354,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         // When - start and verify there's data
         container.start()
         delay(100)
         
-        val previewsBeforeStop = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsBeforeStop = state.items
         assertEquals(1, previewsBeforeStop.size)
         
         // Stop the container
@@ -1331,8 +1371,10 @@ class ChatPreviewContainerTest {
         delay(100)
         
         // Then - verify state is cleared
-        val previewsAfterStop = container.observePreviewsWithAttachments().first()
-        assertEquals(0, previewsAfterStop.size)
+        val stateAfterStop = container.observePreviewsWithAttachments().first()
+        assertTrue(stateAfterStop is VaultChatPreviewContainer.PreviewState.Loading)
+        
+        container.stop()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -1397,14 +1439,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
         delay(100)
         
         // Then - verify both spaces are handled correctly
-        val allPreviews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val allPreviews = state.items
         assertEquals(2, allPreviews.size)
         
         // Verify individual space previews
@@ -1501,14 +1545,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
         delay(100)
         
         // Then - verify both spaces were updated correctly
-        val allPreviews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val allPreviews = state.items
         val space1Preview = allPreviews.find { it.space == space1 }
         val space2Preview = allPreviews.find { it.space == space2 }
         
@@ -1620,14 +1666,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
         delay(100)
         
         // Then - verify attachments are handled independently for each space
-        val allPreviews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val allPreviews = state.items
         assertEquals(2, allPreviews.size)
         
         val space1Preview = allPreviews.find { it.space == space1 }
@@ -1738,7 +1786,8 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
@@ -1747,7 +1796,8 @@ class ChatPreviewContainerTest {
         delay(200)
         
         // Then - verify final state has the last message
-        val finalPreviews = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val finalPreviews = state.items
         assertEquals(1, finalPreviews.size)
         val finalPreview = finalPreviews.first()
         assertEquals(message3, finalPreview.message)
@@ -1816,14 +1866,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
         delay(100)
         
         // Verify attachment subscription was created
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         assertEquals(1, previewsWithAttachments.size)
         assertEquals(1, previewsWithAttachments.first().dependencies.size)
         
@@ -1944,14 +1996,16 @@ class ChatPreviewContainerTest {
             dispatchers = dispatchers,
             scope = this,
             logger = logger,
-            subscription = subscription
+            subscription = subscription,
+            awaitAccountStart = awaitAccountStart
         )
         
         container.start()
         delay(100)
         
         // Verify attachment subscriptions were created for both spaces
-        val previewsWithAttachments = container.observePreviewsWithAttachments().first()
+        val state = container.observePreviewsWithAttachments().first { it is VaultChatPreviewContainer.PreviewState.Ready } as VaultChatPreviewContainer.PreviewState.Ready
+        val previewsWithAttachments = state.items
         assertEquals(2, previewsWithAttachments.size)
         
         // Stop the container

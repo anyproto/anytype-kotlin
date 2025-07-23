@@ -302,7 +302,7 @@ interface VaultChatPreviewContainer {
                     val remaining = preview.message?.attachments
                         ?.map { it.target }?.toSet()
                         ?.minus(deps.map { it.id }.toSet())
-                    if (remaining?.isEmpty() == true) {
+                    if (remaining?.isEmpty() == true && attachmentIds.value.containsKey(preview.space)) {
                         attachmentIds.update { it - preview.space }
                     }
                 }

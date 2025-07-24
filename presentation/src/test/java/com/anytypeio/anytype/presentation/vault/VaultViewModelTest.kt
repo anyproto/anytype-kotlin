@@ -281,9 +281,9 @@ class VaultViewModelTest {
                 // When - Move space1 to position 2 (the position of space3)
                 viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
 
-                // Then - onOrderChanged doesn't emit new state, it only stores pending order internally
-                // The UI update should happen through other mechanisms
-                expectNoEvents()
+                // Then - onOrderChanged should emit new state immediately with updated order
+                val updatedState = awaitItem() as VaultUiState.Sections
+                assertEquals(listOf(space2Id, space3Id, space1Id), updatedState.pinnedSpaces.map { it.space.id })
             }
         }
         }
@@ -497,10 +497,13 @@ class VaultViewModelTest {
                 // When - Perform drag operation
                 viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
                 
-                // onOrderChanged doesn't emit new state, it only stores pending order internally
-                expectNoEvents()
+                // onOrderChanged should emit immediate state change
+                val dragState = awaitItem() as VaultUiState.Sections
+                assertEquals(listOf(space2Id, space3Id, space1Id), dragState.pinnedSpaces.map { it.space.id })
                 
                 viewModel.onDragEnd()
+                
+                // No backend response state update expected with direct state approach
                 
                 // Give the coroutine time to complete
                 testScheduler.advanceUntilIdle()
@@ -633,10 +636,13 @@ class VaultViewModelTest {
                 // When - Perform drag operation that will fail
                 viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space2Id)
                 
-                // onOrderChanged doesn't emit new state, it only stores pending order internally
-                expectNoEvents()
+                // onOrderChanged should emit immediate state change
+                val dragState = awaitItem() as VaultUiState.Sections
+                assertEquals(listOf(space2Id, space1Id), dragState.pinnedSpaces.map { it.space.id })
                 
                 viewModel.onDragEnd()
+                
+                // No backend response state update expected with direct state approach
                 
                 // Give the coroutine time to complete
                 testScheduler.advanceUntilIdle()

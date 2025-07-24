@@ -978,12 +978,6 @@ class VaultViewModel(
                             Timber.d("Successfully reordered pinned spaces with final order: $finalOrder")
                             // The finalOrder contains the actual order from middleware with lexids
                             // Verify if the backend order matches our expected order
-                            val properNewOrder = _uiState.value
-                                .let { (it as? VaultUiState.Sections)?.pinnedSpaces?.mapNotNull { v -> v.space.spaceOrder } }
-                            if (finalOrder != properNewOrder) {
-                                Timber.w("Backend order differs from expected order. Expected: $properNewOrder, Actual: $finalOrder")
-                                // The subscription will automatically update with the correct order
-                            }
                             // Clear pending state as the order has been persisted
                             clearDragState()
                         }

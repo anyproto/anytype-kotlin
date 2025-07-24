@@ -157,20 +157,14 @@ class VaultViewModel(
         }.onEach { sections ->
             val previousState = _uiState.value
             val isStructurallyEqual = previousState == sections
-            val hasSamePinnedOrder = if (previousState is VaultUiState.Sections && sections is VaultUiState.Sections) {
+            val hasSamePinnedOrder = if (previousState is VaultUiState.Sections) {
                 val prevIds = previousState.pinnedSpaces.map { it.space.id }
                 val newIds = sections.pinnedSpaces.map { it.space.id }
                 prevIds == newIds
             } else false
             
-            // Check if this is just a spaceOrder value update (same visual order, different backend values)
-            val isOnlySpaceOrderUpdate = if (previousState is VaultUiState.Sections && hasSamePinnedOrder && !isStructurallyEqual) {
-                // Same IDs in same order, but different structure = likely only spaceOrder values changed
-                areOnlySpaceOrderValuesDifferent(previousState.pinnedSpaces, sections.pinnedSpaces)
-            } else false
-            
             Timber.d("VaultViewModel - Setting new UI state. Previous: ${previousState.javaClass.simpleName}, New: ${sections.javaClass.simpleName}")
-            Timber.d("VaultViewModel - Structural equality: $isStructurallyEqual, Same pinned order: $hasSamePinnedOrder, Only spaceOrder update: $isOnlySpaceOrderUpdate")
+            Timber.d("VaultViewModel - Structural equality: $isStructurallyEqual, Same pinned order: $hasSamePinnedOrder")
             Timber.d("VaultViewModel - Pinned spaces order: ${sections.pinnedSpaces.map { "${it.space.name}(${it.space.id.take(8)}...)" }}")
             if (previousState is VaultUiState.Sections && !hasSamePinnedOrder) {
                 val prevIds = previousState.pinnedSpaces.map { it.space.id.take(8) }
@@ -184,17 +178,12 @@ class VaultViewModel(
             val isBackendRemovingSpaces = isDuringBackendTransaction && 
                 previousState is VaultUiState.Sections && 
                 sections.pinnedSpaces.size < previousState.pinnedSpaces.size
-            val shouldPreserveDragOrder = isDuringBackendTransaction && 
-                (isOnlySpaceOrderUpdate || isBackendRemovingSpaces)
+            val shouldPreserveDragOrder = isDuringBackendTransaction && isBackendRemovingSpaces
             
             if (shouldPreserveDragOrder) {
-                if (isBackendRemovingSpaces) {
-                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
-                } else {
-                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend transaction (skipped backend update)")
-                }
+                Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
                 // Don't update the UI state - keep the current drag order visible
-            } else if (!isOnlySpaceOrderUpdate) {
+            } else {
                 _uiState.value = sections
                 
                 if (isStructurallyEqual) {
@@ -202,8 +191,6 @@ class VaultViewModel(
                 } else {
                     Timber.d("VaultViewModel - 🎨 Compose WILL redraw (different structure)")
                 }
-            } else {
-                Timber.d("VaultViewModel - ⚡ Compose will NOT redraw (skipped spaceOrder-only update)")
             }
         }
             .launchIn(viewModelScope)
@@ -237,61 +224,6 @@ class VaultViewModel(
             Timber.e(e, "Error checking notification permission state")
             // Set a safe default state if we can't determine the actual state
             isNotificationDisabled.value = true
-        }
-    }
-    
-    /**
-     * Checks if two lists of VaultSpaceView only differ in their spaceOrder values
-     * (same spaces in same positions, but different spaceOrder backend values)
-     */
-    private fun areOnlySpaceOrderValuesDifferent(
-        oldSpaces: List<VaultSpaceView>, 
-        newSpaces: List<VaultSpaceView>
-    ): Boolean {
-        if (oldSpaces.size != newSpaces.size) return false
-        
-        return oldSpaces.zip(newSpaces).all { (old, new) ->
-            // Same space ID at same position
-            old.space.id == new.space.id && 
-            // But potentially different spaceOrder values - we'll create copies without spaceOrder to compare
-            areSpacesEqualIgnoringSpaceOrder(old, new)
-        }
-    }
-    
-    /**
-     * Compares two VaultSpaceView objects ignoring spaceOrder differences
-     */
-    private fun areSpacesEqualIgnoringSpaceOrder(old: VaultSpaceView, new: VaultSpaceView): Boolean {
-        // For now, we'll do a simple comparison - if they're the same type and same space ID,
-        // and only spaceOrder differs, we consider them equivalent for UI purposes
-        return when {
-            old is VaultSpaceView.Space && new is VaultSpaceView.Space -> {
-                old.space.id == new.space.id &&
-                old.icon == new.icon &&
-                old.accessType == new.accessType &&
-                old.isOwner == new.isOwner &&
-                old.isMuted == new.isMuted &&
-                old.showPinButton == new.showPinButton
-                // We intentionally ignore old.space vs new.space comparison since spaceOrder differs
-            }
-            old is VaultSpaceView.Chat && new is VaultSpaceView.Chat -> {
-                old.space.id == new.space.id &&
-                old.icon == new.icon &&
-                old.unreadMessageCount == new.unreadMessageCount &&
-                old.unreadMentionCount == new.unreadMentionCount &&
-                old.chatMessage == new.chatMessage &&
-                old.chatPreview == new.chatPreview &&
-                old.previewText == new.previewText &&
-                old.creatorName == new.creatorName &&
-                old.messageText == new.messageText &&
-                old.messageTime == new.messageTime &&
-                old.attachmentPreviews == new.attachmentPreviews &&
-                old.isOwner == new.isOwner &&
-                old.isMuted == new.isMuted &&
-                old.showPinButton == new.showPinButton
-                // We intentionally ignore old.space vs new.space comparison since spaceOrder differs
-            }
-            else -> false // Different types
         }
     }
 

@@ -44,14 +44,19 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil3.compose.AsyncImage
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
@@ -62,13 +67,59 @@ import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @Composable
 private fun ImageViewer(url: String) {
-    ZoomableAsyncImage(
-        model = url,
-        contentDescription = null,
-        modifier = Modifier.fillMaxSize(),
-        contentScale = ContentScale.Fit
-    )
+
+    val context = LocalContext.current
+    var isLoading by remember { mutableStateOf(true) }
+    var hasError by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        ZoomableAsyncImage(
+            model = ImageRequest.Builder(context)
+                .data(url)
+                .crossfade(1_000)
+                .memoryCachePolicy(CachePolicy.DISABLED)
+                .listener(
+                    onStart = {
+                        isLoading = true
+                        hasError = false
+                    },
+                    onSuccess = { _, _ ->
+                        isLoading = false
+                    },
+                    onError = { _, _ ->
+                        isLoading = false
+                        hasError = true
+                    }
+                )
+                .build(),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Fit
+        )
+
+        when {
+            isLoading -> {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(alignment = Alignment.Center)
+                        .size(48.dp),
+                    color = colorResource(R.color.glyph_active),
+                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                    strokeWidth = 4.dp
+                )
+            }
+            hasError -> {
+                Text(
+                    text = stringResource(R.string.failed_to_load_image),
+                    color = colorResource(R.color.palette_system_red),
+                    modifier = Modifier.align(Alignment.Center),
+                    style = Caption1Medium
+                )
+            }
+        }
+    }
 }
+
 
 @Composable
 fun AudioPlayerBox(
@@ -240,22 +291,25 @@ private fun VideoPlayer(url: String) {
 
                 if (!isPlaying) {
                     Box(
-                        modifier = Modifier.background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        ).align(
-                            Alignment.Center
-                        ).clickable {
-                            val player = videoViewRef.value ?: return@clickable
-                            if (player.isPlaying) {
-                                player.pause()
-                                isPlaying = false
-                                showControls = true
-                            } else {
-                                player.start()
-                                isPlaying = true
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                            .align(
+                                Alignment.Center
+                            )
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
                             }
-                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_play),
@@ -268,22 +322,25 @@ private fun VideoPlayer(url: String) {
                     }
                 } else {
                     Box(
-                        modifier = Modifier.background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        ).align(
-                            Alignment.Center
-                        ).clickable {
-                            val player = videoViewRef.value ?: return@clickable
-                            if (player.isPlaying) {
-                                player.pause()
-                                isPlaying = false
-                                showControls = true
-                            } else {
-                                player.start()
-                                isPlaying = true
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                            .align(
+                                Alignment.Center
+                            )
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
                             }
-                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_pause),
@@ -442,22 +499,25 @@ private fun AudioPlayer(
 
                 if (!isPlaying) {
                     Box(
-                        modifier = Modifier.background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        ).align(
-                            Alignment.Center
-                        ).clickable {
-                            val player = videoViewRef.value ?: return@clickable
-                            if (player.isPlaying) {
-                                player.pause()
-                                isPlaying = false
-                                showControls = true
-                            } else {
-                                player.start()
-                                isPlaying = true
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                            .align(
+                                Alignment.Center
+                            )
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
                             }
-                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_play),
@@ -470,22 +530,25 @@ private fun AudioPlayer(
                     }
                 } else {
                     Box(
-                        modifier = Modifier.background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        ).align(
-                            Alignment.Center
-                        ).clickable {
-                            val player = videoViewRef.value ?: return@clickable
-                            if (player.isPlaying) {
-                                player.pause()
-                                isPlaying = false
-                                showControls = true
-                            } else {
-                                player.start()
-                                isPlaying = true
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                            .align(
+                                Alignment.Center
+                            )
+                            .clickable {
+                                val player = videoViewRef.value ?: return@clickable
+                                if (player.isPlaying) {
+                                    player.pause()
+                                    isPlaying = false
+                                    showControls = true
+                                } else {
+                                    player.start()
+                                    isPlaying = true
+                                }
                             }
-                        }
                     ) {
                         Image(
                             painter = painterResource(R.drawable.ic_player_pause),
@@ -537,8 +600,9 @@ fun DotScrubberSlider(
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
                     val ratio = offset.x / size.width
-                    val newValue = (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
-                        .coerceIn(valueRange)
+                    val newValue =
+                        (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
+                            .coerceIn(valueRange)
                     onValueChange(newValue)
                 }
             }

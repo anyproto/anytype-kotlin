@@ -10,6 +10,7 @@ sealed interface ListenerType {
 
     sealed class Header : ListenerType {
         data object Video : Header()
+        data object Image : Header()
     }
 
     sealed class Bookmark : ListenerType {

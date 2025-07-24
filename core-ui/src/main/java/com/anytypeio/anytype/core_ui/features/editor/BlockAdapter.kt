@@ -1435,7 +1435,10 @@ class BlockAdapter(
 
             is Title.Image -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.Image)
+                    bind(
+                        item = blocks[position] as BlockView.Title.Image,
+                        clicked = onClickListener
+                    )
                 }
             }
             is Code -> {
@@ -1478,8 +1481,7 @@ class BlockAdapter(
             is Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Media.Video,
-                    clicked = onClickListener,
-                    lifecycle = lifecycle
+                    clicked = onClickListener
                 )
             }
             is VideoUpload -> {

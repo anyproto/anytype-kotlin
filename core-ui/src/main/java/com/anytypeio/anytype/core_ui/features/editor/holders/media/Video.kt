@@ -38,7 +38,10 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
-    fun bind(item: BlockView.Media.Video, clicked: (ListenerType) -> Unit, lifecycle: Lifecycle) {
+    fun bind(
+        item: BlockView.Media.Video,
+        clicked: (ListenerType) -> Unit
+    ) {
         super.bind(item, clicked)
         setupPreview(
             onPlayClicked = {

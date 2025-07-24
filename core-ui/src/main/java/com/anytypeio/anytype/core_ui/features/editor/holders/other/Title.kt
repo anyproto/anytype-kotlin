@@ -628,7 +628,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             // Do nothing
         }
 
-        fun bind(item: BlockView.Title.Image) {
+        fun bind(
+            item: BlockView.Title.Image,
+            clicked: (ListenerType) -> Unit
+        ) {
             super.bind(
                 item = item,
                 onCoverClicked = {
@@ -639,6 +642,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 }
             )
             content.setText(item.text)
+
+            image.setOnClickListener {
+                clicked(ListenerType.Header.Image)
+            }
         }
 
         override fun setImage(item: BlockView.Title) {

@@ -635,10 +635,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             super.bind(
                 item = item,
                 onCoverClicked = {
-                    Timber.d("Cover clicked ignored")
+                    // Click event intentionally ignored
                 },
                 click = {
-                    Timber.d("Click ignored")
+                    // Click event intentionally ignored
                 }
             )
             content.setText(item.text)

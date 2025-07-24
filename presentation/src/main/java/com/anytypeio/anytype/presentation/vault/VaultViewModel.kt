@@ -156,16 +156,12 @@ class VaultViewModel(
             transformToVaultSpaceViews(spaces, previews.items, perms)
         }.onEach { sections ->
             val previousState = _uiState.value
-            val isStructurallyEqual = previousState == sections
             val hasSamePinnedOrder = if (previousState is VaultUiState.Sections) {
                 val prevIds = previousState.pinnedSpaces.map { it.space.id }
                 val newIds = sections.pinnedSpaces.map { it.space.id }
                 prevIds == newIds
             } else false
             
-            Timber.d("VaultViewModel - Setting new UI state. Previous: ${previousState.javaClass.simpleName}, New: ${sections.javaClass.simpleName}")
-            Timber.d("VaultViewModel - Structural equality: $isStructurallyEqual, Same pinned order: $hasSamePinnedOrder")
-            Timber.d("VaultViewModel - Pinned spaces order: ${sections.pinnedSpaces.map { "${it.space.name}(${it.space.id.take(8)}...)" }}")
             if (previousState is VaultUiState.Sections && !hasSamePinnedOrder) {
                 val prevIds = previousState.pinnedSpaces.map { it.space.id.take(8) }
                 val newIds = sections.pinnedSpaces.map { it.space.id.take(8) }
@@ -185,12 +181,6 @@ class VaultViewModel(
                 // Don't update the UI state - keep the current drag order visible
             } else {
                 _uiState.value = sections
-                
-                if (isStructurallyEqual) {
-                    Timber.d("VaultViewModel - ⚡ Compose will NOT redraw (same structure)")
-                } else {
-                    Timber.d("VaultViewModel - 🎨 Compose WILL redraw (different structure)")
-                }
             }
         }
             .launchIn(viewModelScope)
@@ -780,12 +770,6 @@ class VaultViewModel(
         }
     }
 
-    fun onLeaveSpaceMenuClicked(spaceId: Id) {
-        viewModelScope.launch {
-            commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
-        }
-    }
-
     fun onPinSpaceClicked(spaceId: Id) {
         val state = uiState.value
         if (state !is VaultUiState.Sections) return
@@ -901,10 +885,6 @@ class VaultViewModel(
                     }
                 )
         }
-    }
-
-    fun getPermissionsForSpace(spaceId: Id): SpaceMemberPermissions {
-        return userPermissionProvider.get(SpaceId(spaceId)) ?: SpaceMemberPermissions.NO_PERMISSIONS
     }
 
     /**

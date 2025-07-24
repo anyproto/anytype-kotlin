@@ -325,13 +325,13 @@ class ChatFragment : BaseComposeFragment() {
                             }
                             is ChatViewModel.ViewModelCommand.MediaPreview -> {
                                 runCatching {
-                                    findNavController().navigate(
-                                        R.id.fullScreenImageFragment,
-                                        FullScreenPictureFragment.args(
-                                            url = command.url,
-                                            ignoreRootWindowInsets = true
-                                        )
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_IMAGE,
+                                        url = command.url
                                     )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching media image viewer")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.SelectChatReaction -> {

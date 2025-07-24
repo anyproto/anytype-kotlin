@@ -1154,7 +1154,8 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
         identities.ids
     } ?: emptyMap(),
     read = read,
-    mentionRead = mentionRead
+    mentionRead = mentionRead,
+    synced = synced
 )
 
 fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(

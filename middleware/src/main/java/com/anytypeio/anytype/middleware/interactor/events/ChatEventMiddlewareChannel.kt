@@ -82,6 +82,16 @@ fun MEventMessage.payload(contextId: Id) : Event.Command.Chats? {
                 isRead = event.isRead
             )
         }
+        chatUpdateMessageSyncStatus != null -> {
+            val event = chatUpdateMessageSyncStatus
+            checkNotNull(event)
+            Event.Command.Chats.UpdateMessageSyncStatus(
+                context = contextId,
+                messages = event.ids,
+                isSynced = event.isSynced,
+                subscriptions = event.subIds
+            )
+        }
         chatUpdate != null -> {
             val event = chatUpdate
             checkNotNull(event)
@@ -174,6 +184,16 @@ fun MEventMessage.payload(subscription: Id, contextId: Id) : Event.Command.Chats
             } else {
                 null
             }
+        }
+        chatUpdateMessageSyncStatus != null -> {
+            val event = chatUpdateMessageSyncStatus
+            checkNotNull(event)
+            Event.Command.Chats.UpdateMessageSyncStatus(
+                context = contextId,
+                messages = event.ids,
+                isSynced = event.isSynced,
+                subscriptions = event.subIds
+            )
         }
         chatUpdate != null -> {
             val event = chatUpdate

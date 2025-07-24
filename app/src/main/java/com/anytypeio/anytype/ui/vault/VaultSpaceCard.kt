@@ -660,7 +660,8 @@ fun ChatWithMentionAndMessage() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
         showPinButton = true
@@ -696,7 +697,8 @@ fun ChatWithMention() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
         showPinButton = true
@@ -731,7 +733,8 @@ fun ChatPreview() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
         showPinButton = true

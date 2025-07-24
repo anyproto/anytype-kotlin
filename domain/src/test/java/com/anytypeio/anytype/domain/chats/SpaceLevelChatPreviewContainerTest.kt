@@ -53,7 +53,6 @@ class SpaceChatPreviewContainerTest {
         MockitoAnnotations.openMocks(this)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should create container with proper dependencies and not crash`() = runTest {
         // Given

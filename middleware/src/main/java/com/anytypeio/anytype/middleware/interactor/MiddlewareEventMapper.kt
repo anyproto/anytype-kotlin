@@ -354,6 +354,16 @@ fun anytype.Event.Message.toCoreModels(
             isRead = event.isRead
         )
     }
+    chatUpdateMessageSyncStatus != null -> {
+        val event = chatUpdateMessageSyncStatus
+        checkNotNull(event)
+        Event.Command.Chats.UpdateMessageSyncStatus(
+            context = context,
+            messages = event.ids,
+            isSynced = event.isSynced,
+            subscriptions = event.subIds
+        )
+    }
     spaceAutoWidgetAdded != null -> {
         val event = spaceAutoWidgetAdded
         checkNotNull(event)

@@ -167,6 +167,7 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -1315,6 +1316,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenFileByDefaultApp -> {
                     vm.startSharingFile(command.id) { uri ->
                         openFileByDefaultApp(uri)
+                    }
+                }
+                is Command.PlayVideo -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_VIDEO,
+                            url = command.url,
+                            name = ""
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching video player")
+                    }
+                }
+                is Command.PlayAudio -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_AUDIO,
+                            url = command.url,
+                            name = command.name
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching audio player")
                     }
                 }
                 is Command.SaveTextToSystemClipboard -> {

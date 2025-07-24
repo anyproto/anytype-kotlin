@@ -21,6 +21,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -506,7 +507,7 @@ class VaultViewModelTest {
                 // No backend response state update expected with direct state approach
                 
                 // Give the coroutine time to complete
-                testScheduler.advanceUntilIdle()
+                advanceUntilIdle()
 
                 // Then - SetSpaceOrder should be called with correct parameters
                 val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
@@ -645,7 +646,7 @@ class VaultViewModelTest {
                 // No backend response state update expected with direct state approach
                 
                 // Give the coroutine time to complete
-                testScheduler.advanceUntilIdle()
+                advanceUntilIdle()
 
                 // Then - Error should be set in notificationError
                 assertEquals(errorMessage, viewModel.notificationError.value)

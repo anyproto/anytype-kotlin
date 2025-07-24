@@ -156,19 +156,7 @@ class VaultViewModel(
             transformToVaultSpaceViews(spaces, previews.items, perms)
         }.onEach { sections ->
             val previousState = _uiState.value
-            val hasSamePinnedOrder = if (previousState is VaultUiState.Sections) {
-                val prevIds = previousState.pinnedSpaces.map { it.space.id }
-                val newIds = sections.pinnedSpaces.map { it.space.id }
-                prevIds == newIds
-            } else false
-            
-            if (previousState is VaultUiState.Sections && !hasSamePinnedOrder) {
-                val prevIds = previousState.pinnedSpaces.map { it.space.id.take(8) }
-                val newIds = sections.pinnedSpaces.map { it.space.id.take(8) }
-                Timber.d("VaultViewModel - Previous IDs: $prevIds")
-                Timber.d("VaultViewModel - New IDs: $newIds")
-            }
-            
+
             // Check if we should preserve drag order during backend transactions
             val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
             val isBackendRemovingSpaces = isDuringBackendTransaction && 

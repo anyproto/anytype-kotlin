@@ -58,10 +58,11 @@ import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.ui.media.MediaActivity
 import kotlinx.coroutines.delay
+import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @Composable
 private fun ImageViewer(url: String) {
-    AsyncImage(
+    ZoomableAsyncImage(
         model = url,
         contentDescription = null,
         modifier = Modifier.fillMaxSize(),

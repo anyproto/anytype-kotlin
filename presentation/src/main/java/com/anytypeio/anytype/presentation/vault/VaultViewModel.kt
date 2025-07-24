@@ -170,7 +170,7 @@ class VaultViewModel(
             }
             
             // Check if we should preserve drag order during backend transactions
-            val isDuringBackendTransaction = isInDragOperation && dragOrderSnapshot != null
+            val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
             val isBackendRemovingSpaces = isDuringBackendTransaction && 
                 previousState is VaultUiState.Sections && 
                 sections.pinnedSpaces.size < previousState.pinnedSpaces.size
@@ -899,19 +899,15 @@ class VaultViewModel(
     // Local state for tracking order changes during drag operations
     private var pendingPinnedSpacesOrder: List<Id>? = null
     private var lastMovedSpaceId: Id? = null
-    private var isInDragOperation = false
-    private var dragOrderSnapshot: List<VaultSpaceView>? = null
 
     //region Drag and Drop
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
         Timber.d("VaultViewModel - onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
         val previousState = _uiState.value
         
-        // Mark that we're in a drag operation and capture the initial order snapshot
-        if (!isInDragOperation) {
-            isInDragOperation = true
-            dragOrderSnapshot = (previousState as? VaultUiState.Sections)?.pinnedSpaces
-            Timber.d("VaultViewModel - Starting drag operation, captured snapshot with ${dragOrderSnapshot?.size} spaces")
+        // Mark that we're starting a drag operation if we haven't already
+        if (pendingPinnedSpacesOrder == null) {
+            Timber.d("VaultViewModel - Starting drag operation")
         }
         
         _uiState.update { state ->
@@ -1002,8 +998,6 @@ class VaultViewModel(
     
     private fun clearDragState() {
         Timber.d("VaultViewModel - Clearing drag state")
-        isInDragOperation = false
-        dragOrderSnapshot = null
         pendingPinnedSpacesOrder = null
         lastMovedSpaceId = null
     }

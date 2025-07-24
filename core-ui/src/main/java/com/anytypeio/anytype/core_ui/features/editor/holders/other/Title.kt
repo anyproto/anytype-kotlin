@@ -629,8 +629,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         fun bind(item: BlockView.Title.Image) {
             super.bind(
                 item = item,
-                onCoverClicked = {},
-                click = {}
+                onCoverClicked = {
+                    Timber.d("Cover clicked ignored")
+                },
+                click = {
+                    Timber.d("Click ignored")
+                }
             )
             content.setText(item.text)
         }

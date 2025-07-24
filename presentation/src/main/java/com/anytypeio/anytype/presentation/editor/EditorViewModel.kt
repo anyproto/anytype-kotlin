@@ -3952,7 +3952,11 @@ class EditorViewModel(
             }
             is ListenerType.Video.View -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit, EditorMode.Read, EditorMode.Locked -> {
+                        dispatch(
+                            Command.PlayVideo(url = clicked.url)
+                        )
+                    }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }

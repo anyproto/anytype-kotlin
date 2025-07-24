@@ -263,25 +263,6 @@ class BlockAdapter(
         isInDragAndDropMode = false
     }
 
-    override fun onViewDetachedFromWindow(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.pause()
-            }
-        }
-    }
-
-    override fun onViewRecycled(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.recycle()
-            }
-            is Title.Video -> {
-                // Do nothing
-            }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)

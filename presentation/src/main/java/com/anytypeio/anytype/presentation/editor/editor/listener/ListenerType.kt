@@ -35,7 +35,7 @@ sealed interface ListenerType {
     }
 
     sealed class Video : ListenerType {
-        data class View(val target: String) : Video()
+        data class View(val target: String, val url: String) : Video()
         data class Placeholder(val target: String) : Video()
         data class Upload(val target: String) : Video()
         data class Error(val target: String) : Video()

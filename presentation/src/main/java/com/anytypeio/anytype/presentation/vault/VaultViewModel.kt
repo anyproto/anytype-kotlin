@@ -68,7 +68,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -146,19 +145,6 @@ class VaultViewModel(
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
-//    /**
-//     * The main UI state for the Vault screen, combining space views and chat previews.
-//     * It emits a loading state initially, then combines space views, permissions, and chat previews.
-//     */
-//    val uiState: StateFlow<VaultUiState> = previewFlow
-//        .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>()
-//        .flatMapLatest { previews ->
-//            combine(spaceFlow, permissionsFlow, notificationsFlow) { spaces, perms, _ ->
-//                transformToVaultSpaceViews(spaces, previews.items, perms) as VaultUiState
-//            }
-//        }
-//        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VaultUiState.Loading)
-
     init {
         Timber.i("VaultViewModel - init started")
         combine(
@@ -178,7 +164,7 @@ class VaultViewModel(
             } else false
             
             // Check if this is just a spaceOrder value update (same visual order, different backend values)
-            val isOnlySpaceOrderUpdate = if (previousState is VaultUiState.Sections && sections is VaultUiState.Sections && hasSamePinnedOrder && !isStructurallyEqual) {
+            val isOnlySpaceOrderUpdate = if (previousState is VaultUiState.Sections && hasSamePinnedOrder && !isStructurallyEqual) {
                 // Same IDs in same order, but different structure = likely only spaceOrder values changed
                 areOnlySpaceOrderValuesDifferent(previousState.pinnedSpaces, sections.pinnedSpaces)
             } else false
@@ -391,17 +377,17 @@ class VaultViewModel(
         attachment: Chat.Message.Attachment,
         dependency: ObjectWrapper.Basic
     ): VaultSpaceView.AttachmentPreview? {
-        // 1️⃣ Determine if we have a valid object to render a "real" icon
-        val isValid = dependency.isValid == true
+        // Determine if we have a valid object to render a "real" icon
+        val isValid = dependency.isValid
 
-        // 2️⃣ Helper to pick the preview‐type enum
+        // Helper to pick the preview‐type enum
         val previewType = when (attachment.type) {
             Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
             Chat.Message.Attachment.Type.File -> VaultSpaceView.AttachmentType.FILE
             Chat.Message.Attachment.Type.Link -> VaultSpaceView.AttachmentType.LINK
         }
 
-        // 3️⃣ Helper to produce the "default" fallback icon when dependency is missing or invalid
+        // Helper to produce the "default" fallback icon when dependency is missing or invalid
         fun defaultIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
             Chat.Message.Attachment.Type.Image ->
                 FileDefault(mime = MimeTypes.Category.IMAGE)
@@ -413,7 +399,7 @@ class VaultViewModel(
                 ObjectIcon.TypeIcon.Default.DEFAULT
         }
 
-        // 4️⃣ Helper to produce the "real" icon when we have a valid object
+        // Helper to produce the "real" icon when we have a valid object
         suspend fun realIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
             Chat.Message.Attachment.Type.Image,
             Chat.Message.Attachment.Type.Link ->
@@ -429,7 +415,7 @@ class VaultViewModel(
             }
         }
 
-        // 5️⃣ Build the preview, choosing between default vs. real icon
+        // Build the preview, choosing between default vs. real icon
         val icon = if (isValid) {
             realIconFor(type = attachment.type)
         } else {
@@ -437,7 +423,7 @@ class VaultViewModel(
             defaultIconFor(type = attachment.type)
         }
 
-        // 6️⃣ Only link‐types get a title
+        // Only link‐types get a title
         val title = if (isValid && attachment.type == Chat.Message.Attachment.Type.Link) {
             fieldParser.getObjectName(objectWrapper = dependency)
         } else null

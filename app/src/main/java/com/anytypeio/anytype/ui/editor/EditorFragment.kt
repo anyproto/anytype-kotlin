@@ -154,7 +154,6 @@ import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -1144,15 +1143,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 is Command.OpenFullScreenImage -> {
-                    val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
-                        enterTransition = Fade()
-                        exitTransition = Fade()
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_IMAGE,
+                            url = command.url
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching media image viewer")
                     }
-                    childFragmentManager
-                        .beginTransaction()
-                        .add(R.id.root, screen)
-                        .addToBackStack(null)
-                        .commit()
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {

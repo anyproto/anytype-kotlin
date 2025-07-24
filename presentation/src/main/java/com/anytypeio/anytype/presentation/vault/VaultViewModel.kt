@@ -65,11 +65,15 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -139,21 +143,84 @@ class VaultViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
 
-    /**
-     * The main UI state for the Vault screen, combining space views and chat previews.
-     * It emits a loading state initially, then combines space views, permissions, and chat previews.
-     */
-    val uiState: StateFlow<VaultUiState> = previewFlow
-        .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>()
-        .flatMapLatest { previews ->
-            combine(spaceFlow, permissionsFlow, notificationsFlow) { spaces, perms, _ ->
-                transformToVaultSpaceViews(spaces, previews.items, perms) as VaultUiState
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VaultUiState.Loading)
+    private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
+    val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
+
+//    /**
+//     * The main UI state for the Vault screen, combining space views and chat previews.
+//     * It emits a loading state initially, then combines space views, permissions, and chat previews.
+//     */
+//    val uiState: StateFlow<VaultUiState> = previewFlow
+//        .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>()
+//        .flatMapLatest { previews ->
+//            combine(spaceFlow, permissionsFlow, notificationsFlow) { spaces, perms, _ ->
+//                transformToVaultSpaceViews(spaces, previews.items, perms) as VaultUiState
+//            }
+//        }
+//        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), VaultUiState.Loading)
 
     init {
         Timber.i("VaultViewModel - init started")
+        combine(
+            previewFlow.filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>(),
+            spaceFlow,
+            permissionsFlow,
+            notificationsFlow
+        ) { previews, spaces, perms, _ ->
+            transformToVaultSpaceViews(spaces, previews.items, perms)
+        }.onEach { sections ->
+            val previousState = _uiState.value
+            val isStructurallyEqual = previousState == sections
+            val hasSamePinnedOrder = if (previousState is VaultUiState.Sections && sections is VaultUiState.Sections) {
+                val prevIds = previousState.pinnedSpaces.map { it.space.id }
+                val newIds = sections.pinnedSpaces.map { it.space.id }
+                prevIds == newIds
+            } else false
+            
+            // Check if this is just a spaceOrder value update (same visual order, different backend values)
+            val isOnlySpaceOrderUpdate = if (previousState is VaultUiState.Sections && sections is VaultUiState.Sections && hasSamePinnedOrder && !isStructurallyEqual) {
+                // Same IDs in same order, but different structure = likely only spaceOrder values changed
+                areOnlySpaceOrderValuesDifferent(previousState.pinnedSpaces, sections.pinnedSpaces)
+            } else false
+            
+            Timber.d("VaultViewModel - Setting new UI state. Previous: ${previousState.javaClass.simpleName}, New: ${sections.javaClass.simpleName}")
+            Timber.d("VaultViewModel - Structural equality: $isStructurallyEqual, Same pinned order: $hasSamePinnedOrder, Only spaceOrder update: $isOnlySpaceOrderUpdate")
+            Timber.d("VaultViewModel - Pinned spaces order: ${sections.pinnedSpaces.map { "${it.space.name}(${it.space.id.take(8)}...)" }}")
+            if (previousState is VaultUiState.Sections && !hasSamePinnedOrder) {
+                val prevIds = previousState.pinnedSpaces.map { it.space.id.take(8) }
+                val newIds = sections.pinnedSpaces.map { it.space.id.take(8) }
+                Timber.d("VaultViewModel - Previous IDs: $prevIds")
+                Timber.d("VaultViewModel - New IDs: $newIds")
+            }
+            
+            // Check if we should preserve drag order during backend transactions
+            val isDuringBackendTransaction = isInDragOperation && dragOrderSnapshot != null
+            val isBackendRemovingSpaces = isDuringBackendTransaction && 
+                previousState is VaultUiState.Sections && 
+                sections.pinnedSpaces.size < previousState.pinnedSpaces.size
+            val shouldPreserveDragOrder = isDuringBackendTransaction && 
+                (isOnlySpaceOrderUpdate || isBackendRemovingSpaces)
+            
+            if (shouldPreserveDragOrder) {
+                if (isBackendRemovingSpaces) {
+                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
+                } else {
+                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend transaction (skipped backend update)")
+                }
+                // Don't update the UI state - keep the current drag order visible
+            } else if (!isOnlySpaceOrderUpdate) {
+                _uiState.value = sections
+                
+                if (isStructurallyEqual) {
+                    Timber.d("VaultViewModel - ⚡ Compose will NOT redraw (same structure)")
+                } else {
+                    Timber.d("VaultViewModel - 🎨 Compose WILL redraw (different structure)")
+                }
+            } else {
+                Timber.d("VaultViewModel - ⚡ Compose will NOT redraw (skipped spaceOrder-only update)")
+            }
+        }
+            .launchIn(viewModelScope)
         
         // Track notification permission status for profile icon badge
         viewModelScope.launch {
@@ -184,6 +251,61 @@ class VaultViewModel(
             Timber.e(e, "Error checking notification permission state")
             // Set a safe default state if we can't determine the actual state
             isNotificationDisabled.value = true
+        }
+    }
+    
+    /**
+     * Checks if two lists of VaultSpaceView only differ in their spaceOrder values
+     * (same spaces in same positions, but different spaceOrder backend values)
+     */
+    private fun areOnlySpaceOrderValuesDifferent(
+        oldSpaces: List<VaultSpaceView>, 
+        newSpaces: List<VaultSpaceView>
+    ): Boolean {
+        if (oldSpaces.size != newSpaces.size) return false
+        
+        return oldSpaces.zip(newSpaces).all { (old, new) ->
+            // Same space ID at same position
+            old.space.id == new.space.id && 
+            // But potentially different spaceOrder values - we'll create copies without spaceOrder to compare
+            areSpacesEqualIgnoringSpaceOrder(old, new)
+        }
+    }
+    
+    /**
+     * Compares two VaultSpaceView objects ignoring spaceOrder differences
+     */
+    private fun areSpacesEqualIgnoringSpaceOrder(old: VaultSpaceView, new: VaultSpaceView): Boolean {
+        // For now, we'll do a simple comparison - if they're the same type and same space ID,
+        // and only spaceOrder differs, we consider them equivalent for UI purposes
+        return when {
+            old is VaultSpaceView.Space && new is VaultSpaceView.Space -> {
+                old.space.id == new.space.id &&
+                old.icon == new.icon &&
+                old.accessType == new.accessType &&
+                old.isOwner == new.isOwner &&
+                old.isMuted == new.isMuted &&
+                old.showPinButton == new.showPinButton
+                // We intentionally ignore old.space vs new.space comparison since spaceOrder differs
+            }
+            old is VaultSpaceView.Chat && new is VaultSpaceView.Chat -> {
+                old.space.id == new.space.id &&
+                old.icon == new.icon &&
+                old.unreadMessageCount == new.unreadMessageCount &&
+                old.unreadMentionCount == new.unreadMentionCount &&
+                old.chatMessage == new.chatMessage &&
+                old.chatPreview == new.chatPreview &&
+                old.previewText == new.previewText &&
+                old.creatorName == new.creatorName &&
+                old.messageText == new.messageText &&
+                old.messageTime == new.messageTime &&
+                old.attachmentPreviews == new.attachmentPreviews &&
+                old.isOwner == new.isOwner &&
+                old.isMuted == new.isMuted &&
+                old.showPinButton == new.showPinButton
+                // We intentionally ignore old.space vs new.space comparison since spaceOrder differs
+            }
+            else -> false // Different types
         }
     }
 
@@ -879,37 +1001,55 @@ class VaultViewModel(
     // Local state for tracking order changes during drag operations
     private var pendingPinnedSpacesOrder: List<Id>? = null
     private var lastMovedSpaceId: Id? = null
+    private var isInDragOperation = false
+    private var dragOrderSnapshot: List<VaultSpaceView>? = null
 
     //region Drag and Drop
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
-        val currentSections = uiState.value
-        if (currentSections !is VaultUiState.Sections) return
-        Timber.d("onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
-
-        // Get current settings to work with the existing order
-        val currentPinnedSpaces = currentSections.pinnedSpaces
-
-        // Find indices in the current pinned spaces list
-        val fromIndex = currentPinnedSpaces.indexOfFirst { it.space.id == fromSpaceId }
-        val toIndex = currentPinnedSpaces.indexOfFirst { it.space.id == toSpaceId }
-
-        if (fromIndex != -1 && toIndex != -1 && fromIndex != toIndex) {
-            // Create new ordered list by moving the item (only update local state)
-            val newPinnedSpacesList = currentPinnedSpaces.toMutableList()
-            val movedItem = newPinnedSpacesList.removeAt(fromIndex)
-            newPinnedSpacesList.add(toIndex, movedItem)
-
-            // Store the new order for later persistence in onDragEnd
-            val newPinnedOrder = newPinnedSpacesList.map { it.space.id }
-
-            // Store pending order to be saved in onDragEnd (only pinned spaces)
-            pendingPinnedSpacesOrder = newPinnedOrder
-            lastMovedSpaceId = fromSpaceId
-
-            // Update local sections state immediately for UI responsiveness
-            val updatedSections = currentSections.copy(pinnedSpaces = newPinnedSpacesList)
-            sections.value = updatedSections
+        Timber.d("VaultViewModel - onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
+        val previousState = _uiState.value
+        
+        // Mark that we're in a drag operation and capture the initial order snapshot
+        if (!isInDragOperation) {
+            isInDragOperation = true
+            dragOrderSnapshot = (previousState as? VaultUiState.Sections)?.pinnedSpaces
+            Timber.d("VaultViewModel - Starting drag operation, captured snapshot with ${dragOrderSnapshot?.size} spaces")
         }
+        
+        _uiState.update { state ->
+            if (state !is VaultUiState.Sections) {
+                Timber.d("VaultViewModel - onOrderChanged: Not in Sections state, ignoring")
+                return      // no-op
+            }
+            val current = state.pinnedSpaces.toMutableList()
+            val from = current.indexOfFirst { it.space.id == fromSpaceId }
+            val to   = current.indexOfFirst { it.space.id == toSpaceId }
+            if (from == -1 || to == -1 || from == to) {
+                Timber.d("VaultViewModel - onOrderChanged: Invalid indices (from=$from, to=$to), ignoring")
+                return // no-op
+            }
+
+            val movedItem = current.removeAt(from)
+            current.add(to, movedItem)
+
+            val newState = state.copy(pinnedSpaces = current)
+            Timber.d("VaultViewModel - onOrderChanged: Creating new state with order: ${current.map { "${it.space.name}(${it.space.id.take(8)}...)" }}")
+            
+            newState      // ← immediate value visible to UI
+        }
+        
+        val newState = _uiState.value
+        val stateChanged = previousState != newState
+        Timber.d("VaultViewModel - onOrderChanged: State changed: $stateChanged")
+        if (stateChanged) {
+            Timber.d("VaultViewModel - onOrderChanged: 🎨 Compose WILL redraw (immediate drag feedback)")
+        } else {
+            Timber.d("VaultViewModel - onOrderChanged: ⚡ Compose will NOT redraw (same state)")
+        }
+        
+        pendingPinnedSpacesOrder = _uiState.value
+            .let { (it as? VaultUiState.Sections)?.pinnedSpaces?.map { v -> v.space.id } }
+        lastMovedSpaceId = fromSpaceId
     }
 
     fun onDragEnd() {
@@ -938,25 +1078,36 @@ class VaultViewModel(
                             Timber.e(error, "Failed to reorder pinned spaces: $newOrder")
                             notificationError.value = error.message ?: "Failed to reorder spaces"
                             // Reset pending state on failure
-                            pendingPinnedSpacesOrder = null
-                            lastMovedSpaceId = null
+                            clearDragState()
                         },
                         onSuccess = { finalOrder ->
                             Timber.d("Successfully reordered pinned spaces with final order: $finalOrder")
                             // The finalOrder contains the actual order from middleware with lexids
                             // Verify if the backend order matches our expected order
-                            if (finalOrder != newOrder) {
-                                Timber.w("Backend order differs from expected order. Expected: $newOrder, Actual: $finalOrder")
+                            val properNewOrder = _uiState.value
+                                .let { (it as? VaultUiState.Sections)?.pinnedSpaces?.mapNotNull { v -> v.space.spaceOrder } }
+                            if (finalOrder != properNewOrder) {
+                                Timber.w("Backend order differs from expected order. Expected: $properNewOrder, Actual: $finalOrder")
                                 // The subscription will automatically update with the correct order
                             }
                             // Clear pending state as the order has been persisted
-                            pendingPinnedSpacesOrder = null
-                            lastMovedSpaceId = null
+                            clearDragState()
                         }
                     )
                 }
             }
+        } ?: run {
+            // No pending order changes, just clear drag state
+            clearDragState()
         }
+    }
+    
+    private fun clearDragState() {
+        Timber.d("VaultViewModel - Clearing drag state")
+        isInDragOperation = false
+        dragOrderSnapshot = null
+        pendingPinnedSpacesOrder = null
+        lastMovedSpaceId = null
     }
 
     //endregion

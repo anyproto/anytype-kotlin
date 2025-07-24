@@ -1825,4 +1825,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notification_settings_state_disabled">Nonaktif</string>
     <string name="notification_settings_state_enabled">Aktif</string>
     <string name="content_desc_muted">Disenyapkan</string>
+    <string name="failed_to_load_image">Failed to load image</string>
 </resources>

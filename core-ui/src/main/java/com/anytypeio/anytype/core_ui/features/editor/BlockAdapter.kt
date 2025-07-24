@@ -263,25 +263,6 @@ class BlockAdapter(
         isInDragAndDropMode = false
     }
 
-    override fun onViewDetachedFromWindow(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.pause()
-            }
-        }
-    }
-
-    override fun onViewRecycled(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.recycle()
-            }
-            is Title.Video -> {
-                // Do nothing
-            }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
@@ -1454,7 +1435,10 @@ class BlockAdapter(
 
             is Title.Image -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.Image)
+                    bind(
+                        item = blocks[position] as BlockView.Title.Image,
+                        clicked = onClickListener
+                    )
                 }
             }
             is Code -> {
@@ -1497,8 +1481,7 @@ class BlockAdapter(
             is Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Media.Video,
-                    clicked = onClickListener,
-                    lifecycle = lifecycle
+                    clicked = onClickListener
                 )
             }
             is VideoUpload -> {

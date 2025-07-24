@@ -127,9 +127,6 @@ class DragAndDropDelegate {
         if (vm.mode is Editor.Mode.Edit) {
             if (vh is BlockViewHolder.DragAndDropHolder && binding.recycler.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
                 dndTargetPos = vh.bindingAdapterPosition
-                if (vh is Video) {
-                    vh.pause()
-                }
 
                 val item = ClipData.Item(EditorFragment.EMPTY_TEXT)
 

@@ -62,7 +62,6 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.home.isSpaceRootScreen
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -325,13 +324,13 @@ class ChatFragment : BaseComposeFragment() {
                             }
                             is ChatViewModel.ViewModelCommand.MediaPreview -> {
                                 runCatching {
-                                    findNavController().navigate(
-                                        R.id.fullScreenImageFragment,
-                                        FullScreenPictureFragment.args(
-                                            url = command.url,
-                                            ignoreRootWindowInsets = true
-                                        )
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_IMAGE,
+                                        url = command.url
                                     )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching media image viewer")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.SelectChatReaction -> {

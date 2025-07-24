@@ -748,16 +748,6 @@ class VaultViewModel(
         vaultErrors.value = VaultErrors.Hidden
     }
 
-    fun onDeleteSpaceMenuClicked(spaceId: Id?) {
-        if (spaceId == null) {
-            Timber.e("Space ID is null, cannot proceed with deletion")
-            return
-        }
-        viewModelScope.launch {
-            commands.emit(VaultCommand.ShowDeleteSpaceWarning(spaceId))
-        }
-    }
-
     fun onPinSpaceClicked(spaceId: Id) {
         val state = uiState.value
         if (state !is VaultUiState.Sections) return
@@ -983,12 +973,5 @@ class VaultViewModel(
         pendingPinnedSpacesOrder = null
         lastMovedSpaceId = null
     }
-
     //endregion
-
-
-    companion object {
-        const val SPACE_VAULT_DEBOUNCE_DURATION = 300L
-        const val INITIAL_LOADING_DELAY_MS = 200L
-    }
 }

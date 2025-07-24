@@ -36,6 +36,19 @@
         app:strokeWidth="1dp"
         tools:src="@drawable/ic_mime_pdf"/>
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:layout_gravity="center"
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleSmall"
+        android:theme="@style/GreyProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/objectIconWidget"
         android:layout_width="64dp"

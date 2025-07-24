@@ -618,6 +618,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = imageBinding.title
         override val selectionView: View = itemView
 
+        private val progress = imageBinding.progress
+
         override fun applyTextColor(item: BlockView.Title) {
             // Do nothing
         }
@@ -652,6 +654,17 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
             val request = ImageRequest.Builder(context)
                 .data(url)
+                .listener(
+                    onStart = {
+                        progress.visible()
+                    },
+                    onSuccess = { _, _ ->
+                        progress.gone()
+                    },
+                    onError = { _, _ ->
+                        progress.gone()
+                    }
+                )
                 .target(object : Target {
                     override fun onSuccess(result: coil3.Image) {
                         if (result is android.graphics.drawable.BitmapDrawable) {

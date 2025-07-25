@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -34,7 +34,7 @@ object VaultViewModelFabric {
         appActionManager: AppActionManager = mock(),
         spaceInviteResolver: SpaceInviteResolver = mock(),
         profileContainer: ProfileSubscriptionManager = mock(),
-        chatPreviewContainer: VaultChatPreviewContainer = mock(),
+        chatPreviewContainer: ChatPreviewContainer = mock(),
         pendingIntentStore: PendingIntentStore = mock(),
         stringResourceProvider: StringResourceProvider = mock(),
         dateProvider: DateProvider = mock(),

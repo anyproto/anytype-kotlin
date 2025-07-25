@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Block.Content.Text
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 
@@ -327,6 +328,7 @@ sealed class Event {
              */
             data class Add(
                 override val context: Id,
+                val spaceId: SpaceId,
                 val id: Id,
                 val order: Id,
                 val message: Chat.Message,

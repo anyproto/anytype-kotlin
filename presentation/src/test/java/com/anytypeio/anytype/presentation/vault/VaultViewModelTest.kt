@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.vault
 
+import app.cash.turbine.test
+import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -7,7 +9,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -18,9 +20,10 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,10 +39,11 @@ class VaultViewModelTest {
     val coroutineTestRule = DefaultCoroutineTestRule()
 
     private lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
-    private lateinit var chatPreviewContainer: VaultChatPreviewContainer
+    private lateinit var chatPreviewContainer: ChatPreviewContainer
     private lateinit var userPermissionProvider: UserPermissionProvider
     private lateinit var notificationPermissionManager: NotificationPermissionManager
     private lateinit var stringResourceProvider: StringResourceProvider
+    private lateinit var setSpaceOrder: SetSpaceOrder
 
     @Before
     fun setup() {
@@ -48,7 +52,9 @@ class VaultViewModelTest {
         userPermissionProvider = mock()
         notificationPermissionManager = mock()
         stringResourceProvider = mock()
+        setSpaceOrder = mock()
     }
+
 
     @Test
     fun `init should subscribe to flows and update state`() = runTest {
@@ -60,7 +66,11 @@ class VaultViewModelTest {
         val permissionStateFlow = MutableStateFlow(permissionState)
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(chatPreviews)
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(permissionStateFlow)
         whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
@@ -74,7 +84,7 @@ class VaultViewModelTest {
         )
 
         // Then
-        assertEquals(VaultSectionView(), viewModel.sections.value)
+        assertEquals(VaultUiState.Loading, viewModel.uiState.value)
         // Notification badge should be not disabled (since areNotificationsEnabled returns true)
         assertEquals(false, viewModel.isNotificationDisabled.value)
     }
@@ -90,184 +100,220 @@ class VaultViewModelTest {
      * This test covers a mix of pinned, unpinned, and chat spaces, each with different properties and dates.
      */
     @Test
-    fun `partitions and sorts pinned, unpinned, and chat spaces with previews according to VaultViewModel logic`() = runTest {
-        // Arrange
-        val pinnedSpaceId = "pinned1"
-        val pinnedSpace2Id = "pinned2"
-        val unpinnedSpaceId = "unpinned1"
-        val chatSpace1Id = "chat1"
-        val chatSpace2Id = "chat2"
-        val chatId1 = "chatId1"
-        val chatId2 = "chatId2"
-        val now = System.currentTimeMillis().toDouble()
-        val earlier = now - 10000
-        val evenEarlier = now - 20000
+    fun `partitions and sorts pinned, unpinned, and chat spaces with previews according to VaultViewModel logic`() =
+        runTest {
+            turbineScope {
+                // Arrange
+                val pinnedSpaceId = "pinned1"
+                val pinnedSpace2Id = "pinned2"
+                val unpinnedSpaceId = "unpinned1"
+                val chatSpace1Id = "chat1"
+                val chatSpace2Id = "chat2"
+                val chatId1 = "chatId1"
+                val chatId2 = "chatId2"
+                val now = System.currentTimeMillis().toDouble()
+                val earlier = now - 10000
+                val evenEarlier = now - 20000
 
-        val pinnedSpace = StubSpaceView(
-            id = pinnedSpaceId,
-            targetSpaceId = pinnedSpaceId,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            chatId = "",
-            spaceUxType = SpaceUxType.DATA,
-            spaceOrder = "--aa",
-            createdDate = now
-        )
-        val pinnedSpace2 = StubSpaceView(
-            id = pinnedSpace2Id,
-            targetSpaceId = pinnedSpace2Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            chatId = "",
-            spaceUxType = SpaceUxType.DATA,
-            spaceOrder = "--bb",
-            createdDate = earlier
-        )
-        val unpinnedSpace = StubSpaceView(
-            id = unpinnedSpaceId,
-            targetSpaceId = unpinnedSpaceId,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            chatId = "",
-            spaceUxType = SpaceUxType.DATA,
-            createdDate = evenEarlier
-        )
-        val chatSpace1 = StubSpaceView(
-            id = chatSpace1Id,
-            targetSpaceId = chatSpace1Id,
-            spaceAccessType = SpaceAccessType.SHARED,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            chatId = chatId1,
-            spaceUxType = SpaceUxType.CHAT,
-            createdDate = now
-        )
-        val chatSpace2 = StubSpaceView(
-            id = chatSpace2Id,
-            targetSpaceId = chatSpace2Id,
-            spaceAccessType = SpaceAccessType.SHARED,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            chatId = chatId2,
-            spaceUxType = SpaceUxType.CHAT,
-            createdDate = earlier
-        )
+                val pinnedSpace = StubSpaceView(
+                    id = pinnedSpaceId,
+                    targetSpaceId = pinnedSpaceId,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    chatId = "",
+                    spaceUxType = SpaceUxType.DATA,
+                    spaceOrder = "--aa",
+                    createdDate = now
+                )
+                val pinnedSpace2 = StubSpaceView(
+                    id = pinnedSpace2Id,
+                    targetSpaceId = pinnedSpace2Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    chatId = "",
+                    spaceUxType = SpaceUxType.DATA,
+                    spaceOrder = "--bb",
+                    createdDate = earlier
+                )
+                val unpinnedSpace = StubSpaceView(
+                    id = unpinnedSpaceId,
+                    targetSpaceId = unpinnedSpaceId,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    chatId = "",
+                    spaceUxType = SpaceUxType.DATA,
+                    createdDate = evenEarlier
+                )
+                val chatSpace1 = StubSpaceView(
+                    id = chatSpace1Id,
+                    targetSpaceId = chatSpace1Id,
+                    spaceAccessType = SpaceAccessType.SHARED,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    chatId = chatId1,
+                    spaceUxType = SpaceUxType.CHAT,
+                    createdDate = now
+                )
+                val chatSpace2 = StubSpaceView(
+                    id = chatSpace2Id,
+                    targetSpaceId = chatSpace2Id,
+                    spaceAccessType = SpaceAccessType.SHARED,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    chatId = chatId2,
+                    spaceUxType = SpaceUxType.CHAT,
+                    createdDate = earlier
+                )
 
-        val chatPreview1 = stubChatPreview(chatSpace1Id, chatId1, (now + 5000).toLong())
-        val chatPreview2 = stubChatPreview(chatSpace2Id, chatId2, (now + 1000).toLong())
+                val chatPreview1 = stubChatPreview(chatSpace1Id, chatId1, (now + 5000).toLong())
+                val chatPreview2 = stubChatPreview(chatSpace2Id, chatId2, (now + 1000).toLong())
 
-        val spacesList = listOf(pinnedSpace2, pinnedSpace, unpinnedSpace, chatSpace1, chatSpace2)
-        val chatPreviews = listOf(chatPreview1, chatPreview2)
-        val permissions = mapOf(
-            pinnedSpaceId to SpaceMemberPermissions.OWNER,
-            pinnedSpace2Id to SpaceMemberPermissions.OWNER,
-            unpinnedSpaceId to SpaceMemberPermissions.OWNER,
-            chatSpace1Id to SpaceMemberPermissions.OWNER,
-            chatSpace2Id to SpaceMemberPermissions.OWNER
-        )
+                val spacesList =
+                    listOf(pinnedSpace2, pinnedSpace, unpinnedSpace, chatSpace1, chatSpace2)
+                val chatPreviews = listOf(chatPreview1, chatPreview2)
+                val permissions = mapOf(
+                    pinnedSpaceId to SpaceMemberPermissions.OWNER,
+                    pinnedSpace2Id to SpaceMemberPermissions.OWNER,
+                    unpinnedSpaceId to SpaceMemberPermissions.OWNER,
+                    chatSpace1Id to SpaceMemberPermissions.OWNER,
+                    chatSpace2Id to SpaceMemberPermissions.OWNER
+                )
 
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+                whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+                whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                    flowOf(
+                        ChatPreviewContainer.PreviewState.Ready(chatPreviews)
+                    )
+                )
+                whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+                whenever(notificationPermissionManager.permissionState()).thenReturn(
+                    MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+                )
+                whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+                val viewModel = VaultViewModelFabric.create(
+                    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                    chatPreviewContainer = chatPreviewContainer,
+                    userPermissionProvider = userPermissionProvider,
+                    notificationPermissionManager = notificationPermissionManager,
+                    stringResourceProvider = stringResourceProvider
+                )
 
-        advanceUntilIdle()
+                viewModel.uiState.test {
+                    // First emission should be Loading
+                    val loading = awaitItem()
+                    assertTrue(loading is VaultUiState.Loading)
 
-        val sections = viewModel.sections.value
-        val pinned = sections.pinnedSpaces
-        val main = sections.mainSpaces
+                    // Second emission should be Sections with our data
+                    val sections = awaitItem() as VaultUiState.Sections
+                    val pinned = sections.pinnedSpaces
+                    val main = sections.mainSpaces
 
-        // Assert pinned spaces are sorted by spaceOrder
-        assertEquals(listOf(pinnedSpace, pinnedSpace2).map { it.id }, pinned.map { it.space.id })
+                    // Assert pinned spaces are sorted by spaceOrder
+                    assertEquals(
+                        listOf(pinnedSpace, pinnedSpace2).map { it.id },
+                        pinned.map { it.space.id })
 
-        // Assert main spaces (unpinned and chat) are sorted by lastMessageDate (desc), then createdDate (desc)
-        // chatSpace1 (latest message), chatSpace2, unpinnedSpace (no chat preview)
-        assertEquals(listOf(chatSpace1, chatSpace2, unpinnedSpace).map { it.id }, main.map { it.space.id })
-    }
+                    // Assert main spaces (unpinned and chat) are sorted by lastMessageDate (desc), then createdDate (desc)
+                    // chatSpace1 (latest message), chatSpace2, unpinnedSpace (no chat preview)
+                    assertEquals(
+                        listOf(chatSpace1, chatSpace2, unpinnedSpace).map { it.id },
+                        main.map { it.space.id })
+                }
+            }
+        }
 
     //region Drag and Drop Tests
 
     @Test
     fun `onOrderChanged should update local state immediately with new order`() = runTest {
-        // Given
-        val space1Id = "space1"
-        val space2Id = "space2"
-        val space3Id = "space3"
-        val now = System.currentTimeMillis().toDouble()
+        turbineScope {
+            // Given
+            val space1Id = "space1"
+            val space2Id = "space2"
+            val space3Id = "space3"
+            val now = System.currentTimeMillis().toDouble()
 
-        val space1 = StubSpaceView(
-            id = space1Id,
-            targetSpaceId = space1Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--aa",
-            createdDate = now
-        )
-        val space2 = StubSpaceView(
-            id = space2Id,
-            targetSpaceId = space2Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--bb",
-            createdDate = now - 1000
-        )
-        val space3 = StubSpaceView(
-            id = space3Id,
-            targetSpaceId = space3Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--cc",
-            createdDate = now - 2000
-        )
+            val space1 = StubSpaceView(
+                id = space1Id,
+                targetSpaceId = space1Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--aa",
+                createdDate = now
+            )
+            val space2 = StubSpaceView(
+                id = space2Id,
+                targetSpaceId = space2Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--bb",
+                createdDate = now - 1000
+            )
+            val space3 = StubSpaceView(
+                id = space3Id,
+                targetSpaceId = space3Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--cc",
+                createdDate = now - 2000
+            )
 
-        val spacesList = listOf(space1, space2, space3)
-        val permissions = mapOf(
-            space1Id to SpaceMemberPermissions.OWNER,
-            space2Id to SpaceMemberPermissions.OWNER,
-            space3Id to SpaceMemberPermissions.OWNER
-        )
+            val spacesList = listOf(space1, space2, space3)
+            val permissions = mapOf(
+                space1Id to SpaceMemberPermissions.OWNER,
+                space2Id to SpaceMemberPermissions.OWNER,
+                space3Id to SpaceMemberPermissions.OWNER
+            )
 
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
+                )
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(
+                    NotificationPermissionManagerImpl.PermissionState.Granted
+                )
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
 
-        advanceUntilIdle()
+            viewModel.uiState.test {
+                // Skip Loading state
+                skipItems(1)
 
-        // Initial order should be space1, space2, space3 (sorted by spaceOrder)
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        assertEquals(listOf(space1Id, space2Id, space3Id), initialPinnedSpaces.map { it.space.id })
+                // Get initial Sections state
+                val initialState = awaitItem() as VaultUiState.Sections
+                assertEquals(
+                    listOf(space1Id, space2Id, space3Id),
+                    initialState.pinnedSpaces.map { it.space.id })
 
-        // When - Move space1 to position 2 (the position of space3)
-        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
+                // When - Move space1 to position 2 (the position of space3)
+                viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
 
-        // Then - Local state should be updated immediately
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        assertEquals(listOf(space2Id, space3Id, space1Id), updatedPinnedSpaces.map { it.space.id })
+                // Then - onOrderChanged should emit new state immediately with updated order
+                val updatedState = awaitItem() as VaultUiState.Sections
+                assertEquals(
+                    listOf(space2Id, space3Id, space1Id),
+                    updatedState.pinnedSpaces.map { it.space.id })
+            }
+        }
     }
 
     @Test
@@ -303,9 +349,17 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
         val viewModel = VaultViewModelFabric.create(
@@ -316,17 +370,25 @@ class VaultViewModelTest {
             stringResourceProvider = stringResourceProvider
         )
 
-        advanceUntilIdle()
+        viewModel.uiState.test {
+            // First emission should be Loading
+            val loading = awaitItem()
+            assertTrue(loading is VaultUiState.Loading)
 
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        val initialOrder = initialPinnedSpaces.map { it.space.id }
+            // Second emission should be Sections with our data
+            val sections = awaitItem() as VaultUiState.Sections
+            val initialOrder = sections.pinnedSpaces.map { it.space.id }
 
-        // When - Try to move space1 to itself
-        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space1Id)
+            // When - Try to move space1 to itself
+            viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space1Id)
 
-        // Then - Order should remain unchanged
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
+            // Then - Order should remain unchanged (no new emission expected)
+            expectNoEvents()
+
+            // Verify final state
+            val finalSections = viewModel.uiState.value as VaultUiState.Sections
+            assertEquals(initialOrder, finalSections.pinnedSpaces.map { it.space.id })
+        }
     }
 
     @Test
@@ -363,9 +425,17 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
         val viewModel = VaultViewModelFabric.create(
@@ -376,17 +446,25 @@ class VaultViewModelTest {
             stringResourceProvider = stringResourceProvider
         )
 
-        advanceUntilIdle()
+        viewModel.uiState.test {
+            // First emission should be Loading
+            val loading = awaitItem()
+            assertTrue(loading is VaultUiState.Loading)
 
-        val initialPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        val initialOrder = initialPinnedSpaces.map { it.space.id }
+            // Second emission should be Sections with our data
+            val sections = awaitItem() as VaultUiState.Sections
+            val initialOrder = sections.pinnedSpaces.map { it.space.id }
 
-        // When - Try to move from non-existent space
-        viewModel.onOrderChanged(fromSpaceId = nonExistentSpaceId, toSpaceId = space1Id)
+            // When - Try to move from non-existent space
+            viewModel.onOrderChanged(fromSpaceId = nonExistentSpaceId, toSpaceId = space1Id)
 
-        // Then - Order should remain unchanged
-        val updatedPinnedSpaces = viewModel.sections.value.pinnedSpaces
-        assertEquals(initialOrder, updatedPinnedSpaces.map { it.space.id })
+            // Then - Order should remain unchanged (no new emission expected)
+            expectNoEvents()
+
+            // Verify final state
+            val finalSections = viewModel.uiState.value as VaultUiState.Sections
+            assertEquals(initialOrder, finalSections.pinnedSpaces.map { it.space.id })
+        }
     }
 
     @Test
@@ -434,12 +512,24 @@ class VaultViewModelTest {
 
         // Mock the ReorderPinnedSpaces use case
         val setSpaceOrder = mock<SetSpaceOrder>()
-        whenever(setSpaceOrder.async(any())).thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(listOf(space1Id, space2Id)))
+        whenever(setSpaceOrder.async(any())).thenReturn(
+            com.anytypeio.anytype.domain.base.Resultat.Success(
+                listOf(space1Id, space2Id)
+            )
+        )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
         val viewModel = VaultViewModelFabric.create(
@@ -451,22 +541,40 @@ class VaultViewModelTest {
             setSpaceOrder = setSpaceOrder
         )
 
-        advanceUntilIdle()
+        turbineScope {
+            viewModel.uiState.test {
+                // Skip Loading state
+                skipItems(1)
 
-        // When - Perform drag operation
-        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
-        viewModel.onDragEnd()
+                // Get initial Sections state
+                awaitItem() as VaultUiState.Sections
 
-        advanceUntilIdle()
+                // When - Perform drag operation
+                viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space3Id)
 
-        // Then - SetSpaceOrder should be called with correct parameters
-        val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
-        val expectedParams = SetSpaceOrder.Params(
-            spaceViewId = space1Id,
-            spaceViewOrder = expectedNewOrder
-        )
+                // onOrderChanged should emit immediate state change
+                val dragState = awaitItem() as VaultUiState.Sections
+                assertEquals(
+                    listOf(space2Id, space3Id, space1Id),
+                    dragState.pinnedSpaces.map { it.space.id })
 
-        org.mockito.kotlin.verify(setSpaceOrder).async(expectedParams)
+                viewModel.onDragEnd()
+
+                // No backend response state update expected with direct state approach
+
+                // Give the coroutine time to complete
+                advanceUntilIdle()
+
+                // Then - SetSpaceOrder should be called with correct parameters
+                val expectedNewOrder = listOf(space2Id, space3Id, space1Id)
+                val expectedParams = SetSpaceOrder.Params(
+                    spaceViewId = space1Id,
+                    spaceViewOrder = expectedNewOrder
+                )
+
+                org.mockito.kotlin.verify(setSpaceOrder).async(expectedParams)
+            }
+        }
     }
 
     @Test
@@ -491,9 +599,17 @@ class VaultViewModelTest {
         val setSpaceOrder = mock<SetSpaceOrder>()
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
         val viewModel = VaultViewModelFabric.create(
@@ -505,15 +621,21 @@ class VaultViewModelTest {
             setSpaceOrder = setSpaceOrder
         )
 
-        advanceUntilIdle()
+        viewModel.uiState.test {
+            // First emission should be Loading
+            val loading = awaitItem()
+            assertTrue(loading is VaultUiState.Loading)
 
-        // When - Call onDragEnd without any prior onOrderChanged
-        viewModel.onDragEnd()
+            // Second emission should be Sections with our data
+            awaitItem() as VaultUiState.Sections
 
-        advanceUntilIdle()
+            // When - Call onDragEnd without any prior onOrderChanged
+            viewModel.onDragEnd()
 
-        // Then - SetSpaceOrder should not be called
-        org.mockito.kotlin.verifyNoInteractions(setSpaceOrder)
+            // Then - No new emissions expected and SetSpaceOrder should not be called
+            expectNoEvents()
+            org.mockito.kotlin.verifyNoInteractions(setSpaceOrder)
+        }
     }
 
     @Test
@@ -554,9 +676,17 @@ class VaultViewModelTest {
         whenever(setSpaceOrder.async(any())).thenReturn(Resultat.Failure(Exception(errorMessage)))
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
         val viewModel = VaultViewModelFabric.create(
@@ -568,16 +698,32 @@ class VaultViewModelTest {
             setSpaceOrder = setSpaceOrder
         )
 
-        advanceUntilIdle()
+        turbineScope {
+            viewModel.uiState.test {
+                // Skip Loading state
+                skipItems(1)
 
-        // When - Perform drag operation that will fail
-        viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space2Id)
-        viewModel.onDragEnd()
+                // Get initial Sections state
+                awaitItem() as VaultUiState.Sections
 
-        advanceUntilIdle()
+                // When - Perform drag operation that will fail
+                viewModel.onOrderChanged(fromSpaceId = space1Id, toSpaceId = space2Id)
 
-        // Then - Error should be set in notificationError
-        assertEquals(errorMessage, viewModel.notificationError.value)
+                // onOrderChanged should emit immediate state change
+                val dragState = awaitItem() as VaultUiState.Sections
+                assertEquals(listOf(space2Id, space1Id), dragState.pinnedSpaces.map { it.space.id })
+
+                viewModel.onDragEnd()
+
+                // No backend response state update expected with direct state approach
+
+                // Give the coroutine time to complete
+                advanceUntilIdle()
+
+                // Then - Error should be set in notificationError
+                assertEquals(errorMessage, viewModel.notificationError.value)
+            }
+        }
     }
 
     //endregion
@@ -585,238 +731,284 @@ class VaultViewModelTest {
     //region PinnedCount Tests
 
     @Test
-    fun `transformToVaultSpaceViews should calculate pinnedCount correctly with mixed spaces`() = runTest {
-        // Given - 2 pinned spaces, 1 unpinned space
-        val pinnedSpace1Id = "pinned1"
-        val pinnedSpace2Id = "pinned2"
-        val unpinnedSpaceId = "unpinned1"
+    fun `transformToVaultSpaceViews should calculate pinnedCount correctly with mixed spaces`() =
+        runTest {
+            turbineScope {
+                // Given - 2 pinned spaces, 1 unpinned space
+                val pinnedSpace1Id = "pinned1"
+                val pinnedSpace2Id = "pinned2"
+                val unpinnedSpaceId = "unpinned1"
 
-        val pinnedSpace1 = StubSpaceView(
-            id = pinnedSpace1Id,
-            targetSpaceId = pinnedSpace1Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--aa"
-        )
-        val pinnedSpace2 = StubSpaceView(
-            id = pinnedSpace2Id,
-            targetSpaceId = pinnedSpace2Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--bb"
-        )
-        val unpinnedSpace = StubSpaceView(
-            id = unpinnedSpaceId,
-            targetSpaceId = unpinnedSpaceId,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK
-        )
+                val pinnedSpace1 = StubSpaceView(
+                    id = pinnedSpace1Id,
+                    targetSpaceId = pinnedSpace1Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--aa"
+                )
+                val pinnedSpace2 = StubSpaceView(
+                    id = pinnedSpace2Id,
+                    targetSpaceId = pinnedSpace2Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--bb"
+                )
+                val unpinnedSpace = StubSpaceView(
+                    id = unpinnedSpaceId,
+                    targetSpaceId = unpinnedSpaceId,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                )
 
-        val spacesList = listOf(pinnedSpace1, pinnedSpace2, unpinnedSpace)
-        val permissions = mapOf(
-            pinnedSpace1Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace2Id to SpaceMemberPermissions.OWNER,
-            unpinnedSpaceId to SpaceMemberPermissions.OWNER
-        )
+                val spacesList = listOf(pinnedSpace1, pinnedSpace2, unpinnedSpace)
+                val permissions = mapOf(
+                    pinnedSpace1Id to SpaceMemberPermissions.OWNER,
+                    pinnedSpace2Id to SpaceMemberPermissions.OWNER,
+                    unpinnedSpaceId to SpaceMemberPermissions.OWNER
+                )
 
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+                whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+                whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                    flowOf(
+                        ChatPreviewContainer.PreviewState.Ready(emptyList())
+                    )
+                )
+                whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+                whenever(notificationPermissionManager.permissionState()).thenReturn(
+                    MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+                )
+                whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+                val viewModel = VaultViewModelFabric.create(
+                    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                    chatPreviewContainer = chatPreviewContainer,
+                    userPermissionProvider = userPermissionProvider,
+                    notificationPermissionManager = notificationPermissionManager,
+                    stringResourceProvider = stringResourceProvider
+                )
 
-        advanceUntilIdle()
+                viewModel.uiState.test {
+                    // First emission should be Loading
+                    val loading = awaitItem()
+                    assertTrue(loading is VaultUiState.Loading)
 
-        val sections = viewModel.sections.value
-        
-        // Then - pinnedCount should be 2
-        assertEquals(2, sections.pinnedSpaces.size)
-        
-        // All pinned spaces should have canPin = true (they're already pinned)
-        sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
+                    // Second emission should be Sections with our data
+                    val sections = awaitItem() as VaultUiState.Sections
+
+                    // Then - pinnedCount should be 2
+                    assertEquals(2, sections.pinnedSpaces.size)
+
+                    // All pinned spaces should have canPin = true (they're already pinned)
+                    sections.pinnedSpaces.forEach { space ->
+                        assertEquals(true, space.showPinButton)
+                    }
+
+                    // Unpinned space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                    sections.mainSpaces.forEach { space ->
+                        assertEquals(true, space.showPinButton)
+                    }
+                }
+            }
         }
-        
-        // Unpinned space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
-        sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
-        }
-    }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly when at MAX_PINNED_SPACES limit`() = runTest {
-        // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 1 unpinned space
-        val pinnedSpace1Id = "pinned1"
-        val pinnedSpace2Id = "pinned2"
-        val pinnedSpace3Id = "pinned3"
-        val pinnedSpace4Id = "pinned4"
-        val pinnedSpace5Id = "pinned5"
-        val pinnedSpace6Id = "pinned6"
-        val unpinnedSpaceId = "unpinned1"
+    fun `transformToVaultSpaceViews should handle canPin correctly when at MAX_PINNED_SPACES limit`() =
+        runTest {
+            // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 1 unpinned space
+            val pinnedSpace1Id = "pinned1"
+            val pinnedSpace2Id = "pinned2"
+            val pinnedSpace3Id = "pinned3"
+            val pinnedSpace4Id = "pinned4"
+            val pinnedSpace5Id = "pinned5"
+            val pinnedSpace6Id = "pinned6"
+            val unpinnedSpaceId = "unpinned1"
 
-        val pinnedSpace1 = StubSpaceView(
-            id = pinnedSpace1Id,
-            targetSpaceId = pinnedSpace1Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--aa"
-        )
-        val pinnedSpace2 = StubSpaceView(
-            id = pinnedSpace2Id,
-            targetSpaceId = pinnedSpace2Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--bb"
-        )
-        val pinnedSpace3 = StubSpaceView(
-            id = pinnedSpace3Id,
-            targetSpaceId = pinnedSpace3Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--cc"
-        )
-        val pinnedSpace4 = StubSpaceView(
-            id = pinnedSpace4Id,
-            targetSpaceId = pinnedSpace4Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--dd"
-        )
-        val pinnedSpace5 = StubSpaceView(
-            id = pinnedSpace5Id,
-            targetSpaceId = pinnedSpace5Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--ee"
-        )
-        val pinnedSpace6 = StubSpaceView(
-            id = pinnedSpace6Id,
-            targetSpaceId = pinnedSpace6Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK,
-            spaceOrder = "--ff"
-        )
-        val unpinnedSpace = StubSpaceView(
-            id = unpinnedSpaceId,
-            targetSpaceId = unpinnedSpaceId,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK
-        )
+            val pinnedSpace1 = StubSpaceView(
+                id = pinnedSpace1Id,
+                targetSpaceId = pinnedSpace1Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--aa"
+            )
+            val pinnedSpace2 = StubSpaceView(
+                id = pinnedSpace2Id,
+                targetSpaceId = pinnedSpace2Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--bb"
+            )
+            val pinnedSpace3 = StubSpaceView(
+                id = pinnedSpace3Id,
+                targetSpaceId = pinnedSpace3Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--cc"
+            )
+            val pinnedSpace4 = StubSpaceView(
+                id = pinnedSpace4Id,
+                targetSpaceId = pinnedSpace4Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--dd"
+            )
+            val pinnedSpace5 = StubSpaceView(
+                id = pinnedSpace5Id,
+                targetSpaceId = pinnedSpace5Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--ee"
+            )
+            val pinnedSpace6 = StubSpaceView(
+                id = pinnedSpace6Id,
+                targetSpaceId = pinnedSpace6Id,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spaceOrder = "--ff"
+            )
+            val unpinnedSpace = StubSpaceView(
+                id = unpinnedSpaceId,
+                targetSpaceId = unpinnedSpaceId,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
 
-        val spacesList = listOf(pinnedSpace1, pinnedSpace2, pinnedSpace3, pinnedSpace4, pinnedSpace5, pinnedSpace6, unpinnedSpace)
-        val permissions = mapOf(
-            pinnedSpace1Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace2Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace3Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace4Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace5Id to SpaceMemberPermissions.OWNER,
-            pinnedSpace6Id to SpaceMemberPermissions.OWNER,
-            unpinnedSpaceId to SpaceMemberPermissions.OWNER
-        )
+            val spacesList = listOf(
+                pinnedSpace1,
+                pinnedSpace2,
+                pinnedSpace3,
+                pinnedSpace4,
+                pinnedSpace5,
+                pinnedSpace6,
+                unpinnedSpace
+            )
+            val permissions = mapOf(
+                pinnedSpace1Id to SpaceMemberPermissions.OWNER,
+                pinnedSpace2Id to SpaceMemberPermissions.OWNER,
+                pinnedSpace3Id to SpaceMemberPermissions.OWNER,
+                pinnedSpace4Id to SpaceMemberPermissions.OWNER,
+                pinnedSpace5Id to SpaceMemberPermissions.OWNER,
+                pinnedSpace6Id to SpaceMemberPermissions.OWNER,
+                unpinnedSpaceId to SpaceMemberPermissions.OWNER
+            )
 
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
+                )
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(
+                    NotificationPermissionManagerImpl.PermissionState.Granted
+                )
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
 
-        advanceUntilIdle()
+            viewModel.uiState.test {
+                // First emission should be Loading
+                val loading = awaitItem()
+                assertTrue(loading is VaultUiState.Loading)
 
-        val sections = viewModel.sections.value
-        
-        // Then - pinnedCount should be 6 (at MAX_PINNED_SPACES limit)
-        assertEquals(6, sections.pinnedSpaces.size)
-        
-        // All pinned spaces should have canPin = true (they're already pinned)
-        sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
+                // Second emission should be Sections with our data
+                val sections = awaitItem() as VaultUiState.Sections
+
+                // Then - pinnedCount should be 6 (at MAX_PINNED_SPACES limit)
+                assertEquals(6, sections.pinnedSpaces.size)
+
+                // All pinned spaces should have canPin = true (they're already pinned)
+                sections.pinnedSpaces.forEach { space ->
+                    assertEquals(true, space.showPinButton)
+                }
+
+                // Unpinned space should have canPin = false (pinnedCount >= MAX_PINNED_SPACES)
+                sections.mainSpaces.forEach { space ->
+                    assertEquals(false, space.showPinButton)
+                }
+            }
         }
-        
-        // Unpinned space should have canPin = false (pinnedCount >= MAX_PINNED_SPACES)
-        sections.mainSpaces.forEach { space ->
-            assertEquals(false, space.showPinButton)
-        }
-    }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly with no pinned spaces`() = runTest {
-        // Given - 0 pinned spaces, 2 unpinned spaces
-        val unpinnedSpace1Id = "unpinned1"
-        val unpinnedSpace2Id = "unpinned2"
+    fun `transformToVaultSpaceViews should handle canPin correctly with no pinned spaces`() =
+        runTest {
+            turbineScope {
+                // Given - 0 pinned spaces, 2 unpinned spaces
+                val unpinnedSpace1Id = "unpinned1"
+                val unpinnedSpace2Id = "unpinned2"
 
-        val unpinnedSpace1 = StubSpaceView(
-            id = unpinnedSpace1Id,
-            targetSpaceId = unpinnedSpace1Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK
-        )
-        val unpinnedSpace2 = StubSpaceView(
-            id = unpinnedSpace2Id,
-            targetSpaceId = unpinnedSpace2Id,
-            spaceAccessType = SpaceAccessType.DEFAULT,
-            spaceAccountStatus = SpaceStatus.OK,
-            spaceLocalStatus = SpaceStatus.OK
-        )
+                val unpinnedSpace1 = StubSpaceView(
+                    id = unpinnedSpace1Id,
+                    targetSpaceId = unpinnedSpace1Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                )
+                val unpinnedSpace2 = StubSpaceView(
+                    id = unpinnedSpace2Id,
+                    targetSpaceId = unpinnedSpace2Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                )
 
-        val spacesList = listOf(unpinnedSpace1, unpinnedSpace2)
-        val permissions = mapOf(
-            unpinnedSpace1Id to SpaceMemberPermissions.OWNER,
-            unpinnedSpace2Id to SpaceMemberPermissions.OWNER
-        )
+                val spacesList = listOf(unpinnedSpace1, unpinnedSpace2)
+                val permissions = mapOf(
+                    unpinnedSpace1Id to SpaceMemberPermissions.OWNER,
+                    unpinnedSpace2Id to SpaceMemberPermissions.OWNER
+                )
 
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+                whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+                whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                    flowOf(
+                        ChatPreviewContainer.PreviewState.Ready(emptyList())
+                    )
+                )
+                whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+                whenever(notificationPermissionManager.permissionState()).thenReturn(
+                    MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+                )
+                whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+                val viewModel = VaultViewModelFabric.create(
+                    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                    chatPreviewContainer = chatPreviewContainer,
+                    userPermissionProvider = userPermissionProvider,
+                    notificationPermissionManager = notificationPermissionManager,
+                    stringResourceProvider = stringResourceProvider
+                )
 
-        advanceUntilIdle()
-
-        val sections = viewModel.sections.value
-        
-        // Then - pinnedCount should be 0
-        assertEquals(0, sections.pinnedSpaces.size)
-        
-        // All unpinned spaces should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
-        sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
+                viewModel.uiState.test {
+                    val firstState = awaitItem()
+                    val secondState = awaitItem() as VaultUiState.Sections
+                    assertTrue(firstState is VaultUiState.Loading)
+                    assertEquals(0, secondState.pinnedSpaces.size)
+                    secondState.mainSpaces.forEach { space ->
+                        assertEquals(
+                            true,
+                            space.showPinButton
+                        ) // canPin should be true for unpinned spaces
+                    }
+                }
+            }
         }
-    }
 
     @Test
     fun `transformToVaultSpaceViews should handle canPin correctly with chat spaces`() = runTest {
@@ -857,9 +1049,17 @@ class VaultViewModelTest {
         )
 
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(chatPreviews))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(
+                ChatPreviewContainer.PreviewState.Ready(chatPreviews)
+            )
+        )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(
+                NotificationPermissionManagerImpl.PermissionState.Granted
+            )
+        )
         whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
 
         val viewModel = VaultViewModelFabric.create(
@@ -870,115 +1070,212 @@ class VaultViewModelTest {
             stringResourceProvider = stringResourceProvider
         )
 
-        advanceUntilIdle()
+        viewModel.uiState.test {
+            // First emission should be Loading
+            val loading = awaitItem()
+            assertTrue(loading is VaultUiState.Loading)
 
-        val sections = viewModel.sections.value
-        
-        // Then - pinnedCount should be 1
-        assertEquals(1, sections.pinnedSpaces.size)
-        
-        // Pinned chat space should have canPin = true (already pinned)
-        sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
-        }
-        
-        // Unpinned chat space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
-        sections.mainSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
+            // Second emission should be Sections with our data
+            val sections = awaitItem() as VaultUiState.Sections
+
+            // Then - pinnedCount should be 1
+            assertEquals(1, sections.pinnedSpaces.size)
+
+            // Pinned chat space should have canPin = true (already pinned)
+            sections.pinnedSpaces.forEach { space ->
+                assertEquals(true, space.showPinButton)
+            }
+
+            // Unpinned chat space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+            sections.mainSpaces.forEach { space ->
+                assertEquals(true, space.showPinButton)
+            }
         }
     }
 
     @Test
-    fun `transformToVaultSpaceViews should update canPin dynamically when unpinning space at MAX_PINNED_SPACES limit`() = runTest {
-        // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 4 unpinned spaces
-        val pinnedSpace1Id = "pinned1"
-        val pinnedSpace2Id = "pinned2"
-        val pinnedSpace3Id = "pinned3"
-        val pinnedSpace4Id = "pinned4"
-        val pinnedSpace5Id = "pinned5"
-        val pinnedSpace6Id = "pinned6"
-        val unpinnedSpace1Id = "unpinned1"
-        val unpinnedSpace2Id = "unpinned2"
-        val unpinnedSpace3Id = "unpinned3"
-        val unpinnedSpace4Id = "unpinned4"
+    fun `transformToVaultSpaceViews should update canPin dynamically when unpinning space at MAX_PINNED_SPACES limit`() =
+        runTest {
+            // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 4 unpinned spaces
+            val pinnedSpace1Id = "pinned1"
+            val pinnedSpace2Id = "pinned2"
+            val pinnedSpace3Id = "pinned3"
+            val pinnedSpace4Id = "pinned4"
+            val pinnedSpace5Id = "pinned5"
+            val pinnedSpace6Id = "pinned6"
+            val unpinnedSpace1Id = "unpinned1"
+            val unpinnedSpace2Id = "unpinned2"
+            val unpinnedSpace3Id = "unpinned3"
+            val unpinnedSpace4Id = "unpinned4"
 
-        // Initial state with 6 pinned spaces
-        val initialPinnedSpaces = listOf(
-            StubSpaceView(id = pinnedSpace1Id, targetSpaceId = pinnedSpace1Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--aa"),
-            StubSpaceView(id = pinnedSpace2Id, targetSpaceId = pinnedSpace2Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--bb"),
-            StubSpaceView(id = pinnedSpace3Id, targetSpaceId = pinnedSpace3Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--cc"),
-            StubSpaceView(id = pinnedSpace4Id, targetSpaceId = pinnedSpace4Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--dd"),
-            StubSpaceView(id = pinnedSpace5Id, targetSpaceId = pinnedSpace5Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--ee"),
-            StubSpaceView(id = pinnedSpace6Id, targetSpaceId = pinnedSpace6Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK, spaceOrder = "--ff")
-        )
+            // Initial state with 6 pinned spaces
+            val initialPinnedSpaces = listOf(
+                StubSpaceView(
+                    id = pinnedSpace1Id,
+                    targetSpaceId = pinnedSpace1Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--aa"
+                ),
+                StubSpaceView(
+                    id = pinnedSpace2Id,
+                    targetSpaceId = pinnedSpace2Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--bb"
+                ),
+                StubSpaceView(
+                    id = pinnedSpace3Id,
+                    targetSpaceId = pinnedSpace3Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--cc"
+                ),
+                StubSpaceView(
+                    id = pinnedSpace4Id,
+                    targetSpaceId = pinnedSpace4Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--dd"
+                ),
+                StubSpaceView(
+                    id = pinnedSpace5Id,
+                    targetSpaceId = pinnedSpace5Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--ee"
+                ),
+                StubSpaceView(
+                    id = pinnedSpace6Id,
+                    targetSpaceId = pinnedSpace6Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK,
+                    spaceOrder = "--ff"
+                )
+            )
 
-        val unpinnedSpaces = listOf(
-            StubSpaceView(id = unpinnedSpace1Id, targetSpaceId = unpinnedSpace1Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
-            StubSpaceView(id = unpinnedSpace2Id, targetSpaceId = unpinnedSpace2Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
-            StubSpaceView(id = unpinnedSpace3Id, targetSpaceId = unpinnedSpace3Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK),
-            StubSpaceView(id = unpinnedSpace4Id, targetSpaceId = unpinnedSpace4Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK)
-        )
+            val unpinnedSpaces = listOf(
+                StubSpaceView(
+                    id = unpinnedSpace1Id,
+                    targetSpaceId = unpinnedSpace1Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                ),
+                StubSpaceView(
+                    id = unpinnedSpace2Id,
+                    targetSpaceId = unpinnedSpace2Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                ),
+                StubSpaceView(
+                    id = unpinnedSpace3Id,
+                    targetSpaceId = unpinnedSpace3Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                ),
+                StubSpaceView(
+                    id = unpinnedSpace4Id,
+                    targetSpaceId = unpinnedSpace4Id,
+                    spaceAccessType = SpaceAccessType.DEFAULT,
+                    spaceAccountStatus = SpaceStatus.OK,
+                    spaceLocalStatus = SpaceStatus.OK
+                )
+            )
 
-        val initialSpacesList = initialPinnedSpaces + unpinnedSpaces
-        val permissions = (initialPinnedSpaces + unpinnedSpaces).associate { it.id to SpaceMemberPermissions.OWNER }
+            val initialSpacesList = initialPinnedSpaces + unpinnedSpaces
+            val permissions =
+                (initialPinnedSpaces + unpinnedSpaces).associate { it.id to SpaceMemberPermissions.OWNER }
 
-        // Create a MutableStateFlow to simulate dynamic updates
-        val spacesFlow = MutableStateFlow(initialSpacesList)
-        
-        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
-        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(flowOf(emptyList()))
-        whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
-        whenever(notificationPermissionManager.permissionState()).thenReturn(MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted))
-        whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            // Create a MutableStateFlow to simulate dynamic updates
+            val spacesFlow = MutableStateFlow(initialSpacesList)
 
-        val viewModel = VaultViewModelFabric.create(
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            chatPreviewContainer = chatPreviewContainer,
-            userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
-        )
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
+                )
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(
+                    NotificationPermissionManagerImpl.PermissionState.Granted
+                )
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
 
-        advanceUntilIdle()
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
 
-        // Initial state - 6 pinned spaces, unpinned spaces should have canPin = false
-        var sections = viewModel.sections.value
-        assertEquals(6, sections.pinnedSpaces.size)
-        assertEquals(4, sections.mainSpaces.size)
-        
-        // All pinned spaces should have canPin = true (already pinned)
-        sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
+            viewModel.uiState.test {
+                // First emission should be Loading
+                val loading = awaitItem()
+                assertTrue(loading is VaultUiState.Loading)
+
+                // Second emission should be initial Sections with our data
+                val initialSections = awaitItem() as VaultUiState.Sections
+                assertEquals(6, initialSections.pinnedSpaces.size)
+                assertEquals(4, initialSections.mainSpaces.size)
+
+                // All pinned spaces should have canPin = true (already pinned)
+                initialSections.pinnedSpaces.forEach { space ->
+                    assertEquals(true, space.showPinButton)
+                }
+
+                // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
+                initialSections.mainSpaces.forEach { space ->
+                    assertEquals(false, space.showPinButton)
+                }
+
+                // When - User unpins one space (pinnedSpace6)
+                val updatedSpacesList = initialPinnedSpaces.take(5) + listOf(
+                    StubSpaceView(
+                        id = pinnedSpace6Id,
+                        targetSpaceId = pinnedSpace6Id,
+                        spaceAccessType = SpaceAccessType.DEFAULT,
+                        spaceAccountStatus = SpaceStatus.OK,
+                        spaceLocalStatus = SpaceStatus.OK
+                    ) // Remove spaceOrder to unpin
+                ) + unpinnedSpaces
+
+                spacesFlow.value = updatedSpacesList
+
+                // Third emission should be updated Sections after unpinning
+                val updatedSections = awaitItem() as VaultUiState.Sections
+                assertEquals(5, updatedSections.pinnedSpaces.size)
+                assertEquals(
+                    5,
+                    updatedSections.mainSpaces.size
+                ) // 4 original unpinned + 1 newly unpinned
+
+                // All pinned spaces should have canPin = true (already pinned)
+                updatedSections.pinnedSpaces.forEach { space ->
+                    assertEquals(true, space.showPinButton)
+                }
+
+                // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                updatedSections.mainSpaces.forEach { space ->
+                    assertEquals(
+                        "Space ${space.space.id} should have canPin = true after unpinning",
+                        true,
+                        space.showPinButton
+                    )
+                }
+            }
         }
-        
-        // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
-        sections.mainSpaces.forEach { space ->
-            assertEquals(false, space.showPinButton)
-        }
-
-        // When - User unpins one space (pinnedSpace6)
-        val updatedSpacesList = initialPinnedSpaces.take(5) + listOf(
-            StubSpaceView(id = pinnedSpace6Id, targetSpaceId = pinnedSpace6Id, spaceAccessType = SpaceAccessType.DEFAULT, spaceAccountStatus = SpaceStatus.OK, spaceLocalStatus = SpaceStatus.OK) // Remove spaceOrder to unpin
-        ) + unpinnedSpaces
-        
-        spacesFlow.value = updatedSpacesList
-        advanceUntilIdle()
-
-        // Then - Now there are 5 pinned spaces, all unpinned spaces should have canPin = true
-        sections = viewModel.sections.value
-        assertEquals(5, sections.pinnedSpaces.size)
-        assertEquals(5, sections.mainSpaces.size) // 4 original unpinned + 1 newly unpinned
-        
-        // All pinned spaces should have canPin = true (already pinned)
-        sections.pinnedSpaces.forEach { space ->
-            assertEquals(true, space.showPinButton)
-        }
-        
-        // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
-        sections.mainSpaces.forEach { space ->
-            assertEquals("Space ${space.space.id} should have canPin = true after unpinning", true, space.showPinButton)
-        }
-    }
 
     //endregion
 } 

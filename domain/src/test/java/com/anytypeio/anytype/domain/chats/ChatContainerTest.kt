@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.StubChatMessage
 import com.anytypeio.anytype.core_models.StubChatMessageContent
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
@@ -104,7 +105,8 @@ class ChatContainerTest {
                             context = givenChatID,
                             message = msg,
                             id = msg.id,
-                            order = "A"
+                            order = "A",
+                            spaceId = SpaceId(MockDataFactory.randomUuid())
                         )
                     )
                 )
@@ -384,7 +386,8 @@ class ChatContainerTest {
                             context = givenChatID,
                             message = newMsg,
                             id = newMsg.id,
-                            order = newMsg.order
+                            order = newMsg.order,
+                            spaceId = SpaceId(MockDataFactory.randomUuid())
                         )
                     )
                 )

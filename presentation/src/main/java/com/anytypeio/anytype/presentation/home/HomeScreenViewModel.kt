@@ -47,7 +47,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.chats.SpaceChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -237,7 +237,7 @@ class HomeScreenViewModel(
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
-    private val chatPreviews: SpaceChatPreviewContainer,
+    private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
@@ -1443,10 +1443,6 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        viewModelScope.launch {
-            val space = spaceManager.get()
-            chatPreviews.start(SpaceId(space))
-        }
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
@@ -1538,7 +1534,6 @@ class HomeScreenViewModel(
                 )
             )
         }
-        chatPreviews.stop()
     }
 
     private fun proceedWithExitingEditMode() {
@@ -2697,7 +2692,6 @@ class HomeScreenViewModel(
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
-        private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
@@ -2728,7 +2722,7 @@ class HomeScreenViewModel(
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val chatPreviews: SpaceChatPreviewContainer,
+        private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")

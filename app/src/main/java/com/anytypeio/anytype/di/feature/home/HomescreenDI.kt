@@ -6,14 +6,13 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.SpaceChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -65,8 +64,6 @@ import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 @Component(
@@ -235,23 +232,6 @@ object HomeScreenModule {
         clearLastOpenedSpace = clearLastOpenedSpace
     )
 
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideSpaceChatPreviewContainer(
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        dispatchers: AppCoroutineDispatchers,
-        repo: BlockRepository,
-        logger: Logger,
-        events: ChatEventChannel,
-    ): SpaceChatPreviewContainer = SpaceChatPreviewContainer.Default(
-        repo = repo,
-        events = events,
-        dispatchers = dispatchers,
-        scope = scope,
-        logger = logger
-    )
-
     @Module
     interface Declarations {
         @PerScreen
@@ -325,5 +305,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
-    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
+    fun provideChatPreviewContainer(): ChatPreviewContainer
 }

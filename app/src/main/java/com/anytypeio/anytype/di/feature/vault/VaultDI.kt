@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -85,25 +85,6 @@ object VaultModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideChatPreviewContainer(
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        dispatchers: AppCoroutineDispatchers,
-        repo: BlockRepository,
-        logger: Logger,
-        events: ChatEventChannel,
-        subscription: StorelessSubscriptionContainer
-    ): VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
-        repo = repo,
-        dispatchers = dispatchers,
-        scope = scope,
-        logger = logger,
-        events = events,
-        subscription = subscription
-    )
 }
 
 interface VaultComponentDependencies : ComponentDependencies {
@@ -128,5 +109,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
     fun provideStorelessSubscriptionContainer(): StorelessSubscriptionContainer
+    fun provideVaultChatPreviewContainer(): ChatPreviewContainer
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

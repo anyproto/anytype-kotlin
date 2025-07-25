@@ -423,7 +423,6 @@ class VaultViewModel(
                 spaceGradientProvider = SpaceGradientProvider.Default
             ),
             chatPreview = chatPreview,
-            previewText = messageText,
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,

@@ -38,7 +38,6 @@ sealed class VaultSpaceView {
         val unreadMentionCount: Int = 0,
         val chatMessage: com.anytypeio.anytype.core_models.chats.Chat.Message.Content? = null,
         val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,
-        val previewText: String? = null,
         val creatorName: String? = null,
         val messageText: String? = null,
         val messageTime: String? = null,

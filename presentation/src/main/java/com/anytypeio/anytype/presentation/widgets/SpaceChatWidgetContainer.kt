@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.chats.SpaceChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
@@ -17,17 +17,23 @@ import kotlinx.coroutines.flow.onStart
 
 class SpaceChatWidgetContainer @Inject constructor(
     private val widget: Widget,
-    private val container: SpaceChatPreviewContainer,
+    private val container: VaultChatPreviewContainer,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager
 ) : WidgetContainer {
     override val view: Flow<WidgetView.SpaceChat> = flow {
         emitAll(
             combine(
-                container.observePreview(space = SpaceId(widget.config.space)),
+                container.observePreviewsWithAttachments(),
                 spaceViewSubscriptionContainer.observe(),
                 notificationPermissionManager.permissionState()
-            ) { preview, spaceViews, _ ->
+            ) { previews, spaceViews, _ ->
+                val preview = when (previews) {
+                    VaultChatPreviewContainer.PreviewState.Loading -> null
+                    is VaultChatPreviewContainer.PreviewState.Ready -> {
+                        previews.items.find { it.space == SpaceId(widget.config.space) }
+                    }
+                }
                 val unreadMessageCount = preview?.state?.unreadMessages?.counter ?: 0
                 val unreadMentionCount = preview?.state?.unreadMentions?.counter ?: 0
 

@@ -11,12 +11,14 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -26,11 +28,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * Emits chat‑preview data enriched with attachment objects. The flow surfaces a
@@ -126,6 +126,7 @@ interface VaultChatPreviewContainer {
                 job = null
                 previews.value = null           // back to Loading for next start()
                 unsubscribeAll()
+                attachmentFlows.clear()         // let the cached StateFlows be GC-ed
             }
         }
 
@@ -199,7 +200,10 @@ interface VaultChatPreviewContainer {
                 if (missing.isNotEmpty()) {
                     val space = event.spaceId
                     val merged = (attachmentIds.value[space] ?: emptySet()) + missing
-                    attachmentIds.value = attachmentIds.value + (space to merged)
+                    if (attachmentIds.value[space] != merged) {
+                        logger.logInfo("DROID‑3309: Adding missing attachments for space ${space.id}: $merged")
+                        attachmentIds.value = attachmentIds.value + (space to merged)
+                    }
                 }
                 return state + Chat.Preview(
                     space = event.spaceId,
@@ -214,7 +218,10 @@ interface VaultChatPreviewContainer {
                 if (missing.isNotEmpty()) {
                     val merged =
                         (attachmentIds.value[preview.space] ?: emptySet()) + missing
-                    attachmentIds.value = attachmentIds.value + (preview.space to merged)
+                    if (attachmentIds.value[preview.space] != merged) {
+                        logger.logInfo("DROID‑3309: Adding missing attachments for space ${preview.space.id}: $merged")
+                        attachmentIds.value = attachmentIds.value + (preview.space to merged)
+                    }
                 }
             }
 
@@ -237,61 +244,62 @@ interface VaultChatPreviewContainer {
                     }
                 }
             }
-            if (initialMissing.isNotEmpty()) attachmentIds.value = initialMissing
+            if (initialMissing.isNotEmpty() && attachmentIds.value != initialMissing) {
+                logger.logInfo("DROID‑3309: Initial missing attachments: $initialMissing")
+                attachmentIds.value = initialMissing
+            }
         }
 
-        @OptIn(ExperimentalCoroutinesApi::class)
         private fun enrichWithAttachments(ready: PreviewState.Ready): Flow<PreviewState> {
-            val current = ready.items
-            if (current.isEmpty()) return flowOf(ready) // user has no chats
+            val spaces = ready.items.map { it.space }.distinct()
+            val sharedFlows = spaces.map { attachmentFlow(it) }
 
-            val spaces = current.map { it.space }.distinct()
-            val attachmentStreams = spaces.map { space ->
-                subscribeToAttachments(space).map { space to it }
-            }
-
-            return if (attachmentStreams.isEmpty()) {
+            return if (sharedFlows.isEmpty()) {
                 flowOf(ready)
             } else {
-                combine(attachmentStreams) { pairs ->
-                    withContext(dispatchers.computation) {
-                        val attachmentsBySpace = pairs.toMap()
-                        val enriched = current.map { preview ->
-                            val deps = buildUpdatedDependencies(
-                                preview = preview,
-                                attachments = attachmentsBySpace[preview.space].orEmpty()
-                            )
-                            preview.copy(dependencies = deps)
-                        }
-                        PreviewState.Ready(enriched)
+                combine(sharedFlows) { arrays ->          // ← combine is still rebuilt,
+                    val attachmentsBySpace = arrays
+                        .mapIndexed { idx, map -> spaces[idx] to map }
+                        .toMap()
+
+                    val enriched = ready.items.map { preview ->
+                        val deps = buildUpdatedDependencies(
+                            preview,
+                            attachmentsBySpace[preview.space].orEmpty()
+                        )
+                        preview.copy(dependencies = deps)
                     }
+                    PreviewState.Ready(enriched)
                 }
             }
         }
 
-        @OptIn(ExperimentalCoroutinesApi::class)
-        private fun subscribeToAttachments(space: SpaceId): Flow<Map<Id, ObjectWrapper.Basic>> =
-            attachmentIds
-                .map { it[space] ?: emptySet() }
-                .distinctUntilChanged()
-                .flatMapLatest { ids ->
-                    if (ids.isEmpty()) {
-                        flowOf(emptyMap())
-                    } else {
-                        subscription.subscribe(
+        private val attachmentFlows =
+            ConcurrentHashMap<SpaceId, StateFlow<Map<Id, ObjectWrapper.Basic>>>()
+
+        private fun attachmentFlow(space: SpaceId): StateFlow<Map<Id, ObjectWrapper.Basic>> =
+            attachmentFlows.getOrPut(space) {
+                attachmentIds
+                    .map { it[space] ?: emptySet() }
+                    .distinctUntilChanged()
+                    .flatMapLatest { ids ->
+                        if (ids.isEmpty()) flowOf(emptyMap())
+                        else subscription.subscribe(
                             searchParams = StoreSearchByIdsParams(
                                 subscription = "${space.id}/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
                                 space = space,
                                 targets = ids.toList(),
-                                keys = ChatContainer.ATTACHMENT_KEYS
+                                keys    = ChatContainer.ATTACHMENT_KEYS
                             )
                         ).map { wrappers -> wrappers.associateBy { it.id } }
                     }
-                }
-                .catch { e ->
-                    logger.logException(e, "DROID‑3309 Error in attachment flow for ${space.id}")
-                    emit(emptyMap())
-                }
+                    .catch { e ->
+                        logger.logException(e,"DROID-3309 attachment flow error for ${space.id}")
+                        emit(emptyMap())
+                    }
+                    // one upstream subscription, replay last value for new collectors
+                    .stateIn(scope, SharingStarted.Lazily, emptyMap())
+            }
 
         private fun buildUpdatedDependencies(
             preview: Chat.Preview,

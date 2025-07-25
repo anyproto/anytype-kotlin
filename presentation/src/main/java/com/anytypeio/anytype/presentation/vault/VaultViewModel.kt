@@ -892,11 +892,21 @@ class VaultViewModel(
         return state.pinnedSpaces.size < MAX_PINNED_SPACES
     }
 
+    //region Drag and Drop
     // Local state for tracking order changes during drag operations
     private var pendingPinnedSpacesOrder: List<Id>? = null
     private var lastMovedSpaceId: Id? = null
 
-    //region Drag and Drop
+
+    /**
+     * Called when the order of pinned spaces changes during a drag operation.
+     *
+     * This method updates the UI state immediately to reflect the new order,
+     * allowing for instant visual feedback during the drag operation.
+     *
+     * @param fromSpaceId The ID of the space being dragged from.
+     * @param toSpaceId The ID of the space being dragged to.
+     */
     fun onOrderChanged(fromSpaceId: String, toSpaceId: String) {
         Timber.d("VaultViewModel - onOrderChanged: from=$fromSpaceId, to=$toSpaceId")
         val previousState = _uiState.value
@@ -942,6 +952,12 @@ class VaultViewModel(
         lastMovedSpaceId = fromSpaceId
     }
 
+    /**
+     * Called when the drag operation ends, either successfully or cancelled.
+     *
+     * This method persists the order changes made during the drag operation
+     * and resets the local state tracking the pending order.
+     */
     fun onDragEnd() {
         Timber.d("onDragEnd called")
         val state = uiState.value
@@ -972,9 +988,6 @@ class VaultViewModel(
                         },
                         onSuccess = { finalOrder ->
                             Timber.d("Successfully reordered pinned spaces with final order: $finalOrder")
-                            // The finalOrder contains the actual order from middleware with lexids
-                            // Verify if the backend order matches our expected order
-                            // Clear pending state as the order has been persisted
                             clearDragState()
                         }
                     )
@@ -985,7 +998,14 @@ class VaultViewModel(
             clearDragState()
         }
     }
-    
+
+    /**
+     * Clears the drag-and-drop state by resetting the pending order and last moved space ID.
+     *
+     * This method is called at the end of a drag-and-drop operation, regardless of whether
+     * the operation was successful or failed. It ensures that the local state is reset
+     * to avoid inconsistencies in subsequent drag-and-drop actions.
+     */
     private fun clearDragState() {
         Timber.d("VaultViewModel - Clearing drag state")
         pendingPinnedSpacesOrder = null

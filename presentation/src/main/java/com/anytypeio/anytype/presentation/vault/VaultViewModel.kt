@@ -290,8 +290,22 @@ class VaultViewModel(
     ): VaultSpaceView.AttachmentPreview {
         Timber.d("mapToAttachmentPreview, attachment: $attachment, dependency: $dependency")
         
-        // Helper to pick the preview‐type enum
-        val previewType = when (attachment.type) {
+        // Check if we have a valid dependency with ID
+        val hasValidDependency = dependency != null && dependency.isValid
+        
+        // Determine the actual type based on MIME type if available
+        val effectiveType = if (hasValidDependency && attachment.type == Chat.Message.Attachment.Type.File) {
+            val mimeType = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+            when {
+                mimeType?.startsWith("image/") == true -> Chat.Message.Attachment.Type.Image
+                else -> attachment.type
+            }
+        } else {
+            attachment.type
+        }
+        
+        // Helper to pick the preview‐type enum based on effective type
+        val previewType = when (effectiveType) {
             Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
             Chat.Message.Attachment.Type.File -> VaultSpaceView.AttachmentType.FILE
             Chat.Message.Attachment.Type.Link -> VaultSpaceView.AttachmentType.LINK
@@ -309,15 +323,11 @@ class VaultViewModel(
                 ObjectIcon.TypeIcon.Default.DEFAULT
         }
 
-        // Check if we have a valid dependency with ID
-        val hasValidDependency = dependency != null && dependency.isValid
-
         // Build the icon based on whether we have valid dependency data
         val icon = if (hasValidDependency) {
             try {
-                when (attachment.type) {
-                    Chat.Message.Attachment.Type.Image,
-                    Chat.Message.Attachment.Type.Link ->
+                when (effectiveType) {
+                    Chat.Message.Attachment.Type.Image ->
                         dependency.objectIcon(
                             builder = urlBuilder,
                             objType = storeOfObjectTypes.getTypeOfObject(dependency)
@@ -328,19 +338,25 @@ class VaultViewModel(
                         val ext = dependency.getSingleValue<String>(Relations.FILE_EXT)
                         ObjectIcon.File(mime = mime, extensions = ext)
                     }
+                    
+                    Chat.Message.Attachment.Type.Link ->
+                        dependency.objectIcon(
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                        )
                 }
             } catch (e: Exception) {
                 Timber.w(e, "Failed to create icon for attachment ${attachment.target}")
-                defaultIconFor(type = attachment.type)
+                defaultIconFor(type = effectiveType)
             }
         } else {
             // No dependency yet or invalid - use default icon as placeholder
             Timber.d("Using default icon for attachment ${attachment.target} (dependency: ${dependency?.id})")
-            defaultIconFor(type = attachment.type)
+            defaultIconFor(type = effectiveType)
         }
 
         // Only link‐types get a title when we have valid dependency
-        val title = if (hasValidDependency && attachment.type == Chat.Message.Attachment.Type.Link) {
+        val title = if (hasValidDependency && effectiveType == Chat.Message.Attachment.Type.Link) {
             fieldParser.getObjectName(objectWrapper = dependency)
         } else null
 

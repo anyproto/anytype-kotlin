@@ -5,12 +5,19 @@ import android.widget.FrameLayout
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
+import coil3.ImageLoader
+import coil3.load
+import coil3.request.crossfade
+import coil3.video.VideoFrameDecoder
+import coil3.video.videoFrameMillis
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.exoplayer2.DefaultLoadControl
@@ -21,55 +28,72 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.util.Util
 
-class Video(val binding: ItemBlockVideoBinding) : Media(binding.root), LifecycleEventObserver {
+class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
 
     override val root: View = itemView
     override val container: View = root
-    override val clickContainer: View =
-        binding.playerView.findViewById<FrameLayout>(R.id.exo_controller)
+    override val clickContainer: View = binding.videoContainer
 
     init {
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
-    fun bind(item: BlockView.Media.Video, clicked: (ListenerType) -> Unit, lifecycle: Lifecycle) {
+    fun bind(
+        item: BlockView.Media.Video,
+        clicked: (ListenerType) -> Unit
+    ) {
         super.bind(item, clicked)
-        lifecycle.addObserver(this)
-        binding.playerView.findViewById<View>(R.id.exo_prev).invisible()
-        binding.playerView.findViewById<View>(R.id.exo_next).invisible()
-        binding.playerView.visibility = View.VISIBLE
-
-        val loadControl = DefaultLoadControl.Builder()
-            .setBufferDurationsMs(
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS,
-                DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_AFTER_REBUFFER_MS
-            ).build()
-
-        val player = ExoPlayer.Builder(itemView.context)
-            .setLoadControl(loadControl)
-            .build()
-
-        val source = DefaultDataSource.Factory(
-            itemView.context,
-            DefaultHttpDataSource.Factory().setUserAgent(
-                Util.getUserAgent(itemView.context, BuildConfig.LIBRARY_PACKAGE_NAME)
-            )
+        setupPreview(
+            onPlayClicked = {
+                clicked(ListenerType.Video.View(target = item.id, url = item.url))
+            },
+            url = item.url
         )
+    }
 
-        val mediaSource =
-            ProgressiveMediaSource.Factory(source).createMediaSource(MediaItem.fromUri(item.url))
+    private fun setupPreview(
+        onPlayClicked: () -> Unit,
+        url: String?
+    ) {
+        with(binding) {
 
-        player.playWhenReady = false
-        player.seekTo(0)
-        player.setMediaSource(mediaSource)
-        player.prepare()
-        binding.playerView.player = player
+            progress.visible()
+            playButton.setOnClickListener {
+                onPlayClicked()
+            }
+
+            if (!url.isNullOrEmpty()) {
+                val imageLoader = ImageLoader.Builder(itemView.context)
+                    .components {
+                        add(VideoFrameDecoder.Factory())
+                    }
+                    .build()
+
+                videoThumbnail.load(url, imageLoader) {
+                    crossfade(true)
+                    videoFrameMillis(1000L)
+                    listener(
+                        onStart = {
+                            progress.visible()
+                        },
+                        onSuccess = { _, _ ->
+                            progress.gone()
+                            playButton.visible()
+                        },
+                        onError = { _, _ ->
+                            progress.gone()
+                            playButton.visible()
+                        }
+                    )
+                }
+            }
+        }
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {
-        clicked(ListenerType.Video.View(item.id))
+        if (item is BlockView.Media.Video) {
+            clicked(ListenerType.Video.View(target = item.id, url = item.url))
+        }
     }
 
     override fun indentize(item: BlockView.Indentable) {
@@ -82,20 +106,5 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root), Lifecycle
 
     override fun select(isSelected: Boolean) {
         itemView.isSelected = isSelected
-    }
-
-    fun pause() {
-        binding.playerView.player?.pause()
-    }
-
-    fun recycle() {
-        binding.playerView.player?.release()
-        binding.playerView.player = null
-    }
-
-    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if (event == Lifecycle.Event.ON_PAUSE) {
-            pause()
-        }
     }
 }

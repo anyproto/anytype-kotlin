@@ -3892,10 +3892,7 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         if (!clicked.item.image.isNullOrEmpty()){
                             dispatch(
-                                Command.OpenFullScreenImage(
-                                    target = "",
-                                    url = clicked.item.image
-                                )
+                                Command.OpenFullScreenImage(url = clicked.item.image)
                             )
                         } else {
                             Timber.e("Can't proceed with opening full screen image")
@@ -3952,7 +3949,11 @@ class EditorViewModel(
             }
             is ListenerType.Video.View -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit, EditorMode.Read, EditorMode.Locked -> {
+                        dispatch(
+                            Command.PlayVideo(url = clicked.url)
+                        )
+                    }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4261,6 +4262,9 @@ class EditorViewModel(
             }
             ListenerType.Header.Video -> {
                 dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+            }
+            ListenerType.Header.Image -> {
+                dispatch(Command.OpenFullScreenImage(url = urlBuilder.original(context)))
             }
             else -> {
                 Timber.w("Ignoring listener type: $clicked")

@@ -168,6 +168,7 @@ class VaultViewModel(
                 Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
                 // Don't update the UI state - keep the current drag order visible
             } else {
+                Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces}")
                 _uiState.value = sections
             }
         }
@@ -285,12 +286,10 @@ class VaultViewModel(
 
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
-        dependency: ObjectWrapper.Basic
+        dependency: ObjectWrapper.Basic?
     ): VaultSpaceView.AttachmentPreview {
         Timber.d("mapToAttachmentPreview, attachment: $attachment, dependency: $dependency")
-        // Determine if we have a valid object to render a "real" icon
-        val isValid = dependency.isValid
-
+        
         // Helper to pick the preview‐type enum
         val previewType = when (attachment.type) {
             Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
@@ -310,32 +309,38 @@ class VaultViewModel(
                 ObjectIcon.TypeIcon.Default.DEFAULT
         }
 
-        // Helper to produce the "real" icon when we have a valid object
-        suspend fun realIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
-            Chat.Message.Attachment.Type.Image,
-            Chat.Message.Attachment.Type.Link ->
-                dependency.objectIcon(
-                    builder = urlBuilder,
-                    objType = storeOfObjectTypes.getTypeOfObject(dependency)
-                )
+        // Check if we have a valid dependency with ID
+        val hasValidDependency = dependency != null && dependency.isValid
 
-            Chat.Message.Attachment.Type.File -> {
-                val mime = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
-                val ext = dependency.getSingleValue<String>(Relations.FILE_EXT)
-                ObjectIcon.File(mime = mime, extensions = ext)
+        // Build the icon based on whether we have valid dependency data
+        val icon = if (hasValidDependency) {
+            try {
+                when (attachment.type) {
+                    Chat.Message.Attachment.Type.Image,
+                    Chat.Message.Attachment.Type.Link ->
+                        dependency.objectIcon(
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                        )
+
+                    Chat.Message.Attachment.Type.File -> {
+                        val mime = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)
+                        val ext = dependency.getSingleValue<String>(Relations.FILE_EXT)
+                        ObjectIcon.File(mime = mime, extensions = ext)
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to create icon for attachment ${attachment.target}")
+                defaultIconFor(type = attachment.type)
             }
-        }
-
-        // Build the preview, choosing between default vs. real icon
-        val icon = if (isValid) {
-            realIconFor(type = attachment.type)
         } else {
-            Timber.w("Object for attachment ${attachment.target} not valid")
+            // No dependency yet or invalid - use default icon as placeholder
+            Timber.d("Using default icon for attachment ${attachment.target} (dependency: ${dependency?.id})")
             defaultIconFor(type = attachment.type)
         }
 
-        // Only link‐types get a title
-        val title = if (isValid && attachment.type == Chat.Message.Attachment.Type.Link) {
+        // Only link‐types get a title when we have valid dependency
+        val title = if (hasValidDependency && attachment.type == Chat.Message.Attachment.Type.Link) {
             fieldParser.getObjectName(objectWrapper = dependency)
         } else null
 
@@ -375,16 +380,14 @@ class VaultViewModel(
         }
 
         // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.mapNotNull { attachment ->
+        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
             val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            if (dependency != null) {
-                mapToAttachmentPreview(
-                    attachment = attachment,
-                    dependency = dependency
-                )
-            } else {
-                null
-            }
+            val attachmentPreview = mapToAttachmentPreview(
+                attachment = attachment,
+                dependency = dependency
+            )
+            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+            attachmentPreview
 
         } ?: emptyList()
 

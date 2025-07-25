@@ -1838,5 +1838,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notification_settings_state_disabled">Devre dışı</string>
     <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
     <string name="content_desc_muted">Sessiz</string>
-    <string name="failed_to_load_image">Failed to load image</string>
+    <string name="failed_to_load_image">Görüntü yüklenemedi</string>
 </resources>

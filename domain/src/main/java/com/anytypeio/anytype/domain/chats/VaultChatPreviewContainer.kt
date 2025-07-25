@@ -42,6 +42,14 @@ interface VaultChatPreviewContainer {
     fun stop()
 
     fun observePreviewsWithAttachments(): Flow<PreviewState>
+    
+    /**
+     * Observes chat preview for a specific space without attachment enrichment.
+     * Returns only the unread counts for the specified space.
+     * @param spaceId The space ID to observe
+     * @return Flow of chat preview for the space, or null if not found
+     */
+    fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?>
 
     sealed interface PreviewState {
         object Loading : PreviewState
@@ -131,6 +139,11 @@ interface VaultChatPreviewContainer {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun observePreviewsWithAttachments(): Flow<PreviewState> = previewsState
+        
+        override fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?> = 
+            previews
+                .map { list -> list?.find { it.space == spaceId } }
+                .distinctUntilChanged()
 
         private suspend fun collectEvents(initial: List<Chat.Preview>) {
             events.subscribe(SUBSCRIPTION_ID)
@@ -276,6 +289,7 @@ interface VaultChatPreviewContainer {
         private val attachmentFlows =
             ConcurrentHashMap<SpaceId, StateFlow<Map<Id, ObjectWrapper.Basic>>>()
 
+        @OptIn(ExperimentalCoroutinesApi::class)
         private fun attachmentFlow(space: SpaceId): StateFlow<Map<Id, ObjectWrapper.Basic>> =
             attachmentFlows.getOrPut(space) {
                 attachmentIds

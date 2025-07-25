@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import javax.inject.Inject
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -21,19 +22,14 @@ class SpaceChatWidgetContainer @Inject constructor(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager
 ) : WidgetContainer {
+    @OptIn(FlowPreview::class)
     override val view: Flow<WidgetView.SpaceChat> = flow {
         emitAll(
             combine(
-                container.observePreviewsWithAttachments(),
+                container.observePreviewBySpaceId(SpaceId(widget.config.space)),
                 spaceViewSubscriptionContainer.observe(),
                 notificationPermissionManager.permissionState()
-            ) { previews, spaceViews, _ ->
-                val preview = when (previews) {
-                    VaultChatPreviewContainer.PreviewState.Loading -> null
-                    is VaultChatPreviewContainer.PreviewState.Ready -> {
-                        previews.items.find { it.space == SpaceId(widget.config.space) }
-                    }
-                }
+            ) { preview, spaceViews, _ ->
                 val unreadMessageCount = preview?.state?.unreadMessages?.counter ?: 0
                 val unreadMentionCount = preview?.state?.unreadMentions?.counter ?: 0
 

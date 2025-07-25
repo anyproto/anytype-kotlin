@@ -42,7 +42,7 @@ interface ChatPreviewContainer {
     fun stop()
 
     fun observePreviewsWithAttachments(): Flow<PreviewState>
-    
+
     /**
      * Observes chat preview for a specific space without attachment enrichment.
      * Returns only the unread counts for the specified space.
@@ -139,8 +139,8 @@ interface ChatPreviewContainer {
 
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun observePreviewsWithAttachments(): Flow<PreviewState> = previewsState
-        
-        override fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?> = 
+
+        override fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?> =
             previews
                 .map { list -> list?.find { it.space == spaceId } }
                 .distinctUntilChanged()
@@ -302,12 +302,12 @@ interface ChatPreviewContainer {
                                 subscription = "${space.id}/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
                                 space = space,
                                 targets = ids.toList(),
-                                keys    = ChatContainer.ATTACHMENT_KEYS
+                                keys = ChatContainer.ATTACHMENT_KEYS
                             )
                         ).map { wrappers -> wrappers.associateBy { it.id } }
                     }
                     .catch { e ->
-                        logger.logException(e,"DROID-3309 attachment flow error for ${space.id}")
+                        logger.logException(e, "DROID-3309 attachment flow error for ${space.id}")
                         emit(emptyMap())
                     }
                     // one upstream subscription, replay last value for new collectors
@@ -322,8 +322,10 @@ interface ChatPreviewContainer {
                 .associateBy { it.id }
             return all.values.toList()
                 .also { deps ->
-                    logger.logInfo("DROID-3309: buildUpdatedDependencies for space ${preview.space.id}, " +
-                        "found ${deps.size} dependencies for ${preview.message?.attachments?.size ?: 0} attachments")
+                    logger.logInfo(
+                        "DROID-3309: buildUpdatedDependencies for space ${preview.space.id}, " +
+                                "found ${deps.size} dependencies for ${preview.message?.attachments?.size ?: 0} attachments"
+                    )
                 }
         }
 

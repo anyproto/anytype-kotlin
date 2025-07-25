@@ -327,11 +327,15 @@ class VaultViewModel(
         val icon = if (hasValidDependency) {
             try {
                 when (effectiveType) {
-                    Chat.Message.Attachment.Type.Image ->
-                        dependency.objectIcon(
-                            builder = urlBuilder,
-                            objType = storeOfObjectTypes.getTypeOfObject(dependency)
+                    Chat.Message.Attachment.Type.Image -> {
+                        // For image attachments, create an ObjectIcon.Basic.Image with the actual image URL
+                        val imageHash = dependency.id
+                        val imageUrl = urlBuilder.thumbnail(imageHash)
+                        ObjectIcon.Basic.Image(
+                            hash = imageUrl,
+                            fallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         )
+                    }
 
                     Chat.Message.Attachment.Type.File -> {
                         val mime = dependency.getSingleValue<String>(Relations.FILE_MIME_TYPE)

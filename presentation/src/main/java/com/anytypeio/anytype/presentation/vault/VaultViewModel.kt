@@ -286,7 +286,6 @@ class VaultViewModel(
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
         dependency: ObjectWrapper.Basic
-    ): VaultSpaceView.AttachmentPreview? {
         // Determine if we have a valid object to render a "real" icon
         val isValid = dependency.isValid
 

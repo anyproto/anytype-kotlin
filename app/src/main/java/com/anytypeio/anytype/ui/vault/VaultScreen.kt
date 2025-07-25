@@ -147,7 +147,8 @@ fun VaultScreenContent(
         if (reorderableLazyListState.isAnyItemDragging) {
             isDragging = true
             // Optional: Add a small delay to avoid triggering on very short drags
-            delay(50)
+            delay(1000)
+            expandedSpaceId = null
         } else if (isDragging) {
             isDragging = false
             onDragEnd()
@@ -213,8 +214,8 @@ fun VaultScreenContent(
                     ReorderableItem(
                         state = reorderableLazyListState,
                         key = item.space.id
-                    ) { isDragging ->
-                        val alpha = animateFloatAsState(if (isDragging) 0.8f else 1.0f)
+                    ) { isItemDragging ->
+                        val alpha = animateFloatAsState(if (isItemDragging) 0.8f else 1.0f)
 
                         when (item) {
                             is VaultSpaceView.Chat -> {

@@ -29,7 +29,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 /**
@@ -257,15 +256,15 @@ interface VaultChatPreviewContainer {
             return if (sharedFlows.isEmpty()) {
                 flowOf(ready)
             } else {
-                combine(sharedFlows) { arrays ->          // ← combine is still rebuilt,
+                combine(sharedFlows) { arrays ->
                     val attachmentsBySpace = arrays
                         .mapIndexed { idx, map -> spaces[idx] to map }
                         .toMap()
 
                     val enriched = ready.items.map { preview ->
                         val deps = buildUpdatedDependencies(
-                            preview,
-                            attachmentsBySpace[preview.space].orEmpty()
+                            preview = preview,
+                            attachments = attachmentsBySpace[preview.space].orEmpty()
                         )
                         preview.copy(dependencies = deps)
                     }
@@ -309,13 +308,8 @@ interface VaultChatPreviewContainer {
                 .associateBy { it.id }
             return all.values.toList()
                 .also { deps ->
-                    // Drop resolved IDs
-                    val remaining = preview.message?.attachments
-                        ?.map { it.target }?.toSet()
-                        ?.minus(deps.map { it.id }.toSet())
-                    if (remaining?.isEmpty() == true && attachmentIds.value.containsKey(preview.space)) {
-                        attachmentIds.update { it - preview.space }
-                    }
+                    logger.logInfo("DROID-3309: buildUpdatedDependencies for space ${preview.space.id}, " +
+                        "found ${deps.size} dependencies for ${preview.message?.attachments?.size ?: 0} attachments")
                 }
         }
 

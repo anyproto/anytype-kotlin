@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -109,6 +109,6 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
     fun provideStorelessSubscriptionContainer(): StorelessSubscriptionContainer
-    fun provideVaultChatPreviewContainer(): VaultChatPreviewContainer
+    fun provideVaultChatPreviewContainer(): ChatPreviewContainer
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

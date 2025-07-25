@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -305,5 +305,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
-    fun provideChatPreviewContainer(): VaultChatPreviewContainer
+    fun provideChatPreviewContainer(): ChatPreviewContainer
 }

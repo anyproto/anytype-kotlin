@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -185,7 +185,7 @@ object SubscriptionsModule {
         events: ChatEventChannel,
         subscription: StorelessSubscriptionContainer,
         awaitAccountStartManager: AwaitAccountStartManager
-    ): VaultChatPreviewContainer = VaultChatPreviewContainer.Default(
+    ): ChatPreviewContainer = ChatPreviewContainer.Default(
         repo = repo,
         dispatchers = dispatchers,
         scope = scope,

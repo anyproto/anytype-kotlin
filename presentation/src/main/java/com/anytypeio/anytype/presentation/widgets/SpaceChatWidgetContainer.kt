@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.onStart
 
 class SpaceChatWidgetContainer @Inject constructor(
     private val widget: Widget,
-    private val container: VaultChatPreviewContainer,
+    private val container: ChatPreviewContainer,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager
 ) : WidgetContainer {

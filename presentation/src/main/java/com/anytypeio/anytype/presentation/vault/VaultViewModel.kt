@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -87,7 +87,7 @@ class VaultViewModel(
     private val appActionManager: AppActionManager,
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
-    private val chatPreviewContainer: VaultChatPreviewContainer,
+    private val chatPreviewContainer: ChatPreviewContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -111,13 +111,13 @@ class VaultViewModel(
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
 
-    private val previewFlow: StateFlow<VaultChatPreviewContainer.PreviewState> =
+    private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
-            .filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>() // wait until ready
+            .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                VaultChatPreviewContainer.PreviewState.Loading
+                ChatPreviewContainer.PreviewState.Loading
             )
 
     private val spaceFlow: StateFlow<List<ObjectWrapper.SpaceView>> =
@@ -148,7 +148,7 @@ class VaultViewModel(
     init {
         Timber.i("VaultViewModel - init started")
         combine(
-            previewFlow.filterIsInstance<VaultChatPreviewContainer.PreviewState.Ready>(),
+            previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
             spaceFlow,
             permissionsFlow,
             notificationsFlow

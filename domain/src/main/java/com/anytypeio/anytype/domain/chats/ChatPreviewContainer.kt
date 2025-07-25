@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
  * semantic [PreviewState] so downstream collectors (e.g. the VaultViewModel)
  * can ignore early loading emissions without relying on timing hacks.
  */
-interface VaultChatPreviewContainer {
+interface ChatPreviewContainer {
 
     fun start()
     fun stop()
@@ -64,13 +64,13 @@ interface VaultChatPreviewContainer {
         private val logger: Logger,
         private val subscription: StorelessSubscriptionContainer,
         private val awaitAccountStart: AwaitAccountStartManager
-    ) : VaultChatPreviewContainer {
+    ) : ChatPreviewContainer {
 
         private var job: Job? = null
 
         /**
-         * `null`  – previews not fetched yet  → emit [VaultChatPreviewContainer.PreviewState.Loading]
-         * non‑null – subscription finished   → emit [VaultChatPreviewContainer.PreviewState.Ready]
+         * `null`  – previews not fetched yet  → emit [ChatPreviewContainer.PreviewState.Loading]
+         * non‑null – subscription finished   → emit [ChatPreviewContainer.PreviewState.Ready]
          */
         private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())

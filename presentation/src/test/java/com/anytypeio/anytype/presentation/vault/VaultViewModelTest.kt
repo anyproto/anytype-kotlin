@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.chats.VaultChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -39,7 +39,7 @@ class VaultViewModelTest {
     val coroutineTestRule = DefaultCoroutineTestRule()
 
     private lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
-    private lateinit var chatPreviewContainer: VaultChatPreviewContainer
+    private lateinit var chatPreviewContainer: ChatPreviewContainer
     private lateinit var userPermissionProvider: UserPermissionProvider
     private lateinit var notificationPermissionManager: NotificationPermissionManager
     private lateinit var stringResourceProvider: StringResourceProvider
@@ -68,7 +68,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(chatPreviews)
+                ChatPreviewContainer.PreviewState.Ready(chatPreviews)
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -185,7 +185,7 @@ class VaultViewModelTest {
                 whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
                 whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                     flowOf(
-                        VaultChatPreviewContainer.PreviewState.Ready(chatPreviews)
+                        ChatPreviewContainer.PreviewState.Ready(chatPreviews)
                     )
                 )
                 whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -275,7 +275,7 @@ class VaultViewModelTest {
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
             whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                 flowOf(
-                    VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
                 )
             )
             whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -351,7 +351,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -427,7 +427,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -521,7 +521,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -601,7 +601,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -678,7 +678,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                ChatPreviewContainer.PreviewState.Ready(emptyList())
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -773,7 +773,7 @@ class VaultViewModelTest {
                 whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
                 whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                     flowOf(
-                        VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                        ChatPreviewContainer.PreviewState.Ready(emptyList())
                     )
                 )
                 whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -904,7 +904,7 @@ class VaultViewModelTest {
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
             whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                 flowOf(
-                    VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
                 )
             )
             whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -978,7 +978,7 @@ class VaultViewModelTest {
                 whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
                 whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                     flowOf(
-                        VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                        ChatPreviewContainer.PreviewState.Ready(emptyList())
                     )
                 )
                 whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -1051,7 +1051,7 @@ class VaultViewModelTest {
         whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
         whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
             flowOf(
-                VaultChatPreviewContainer.PreviewState.Ready(chatPreviews)
+                ChatPreviewContainer.PreviewState.Ready(chatPreviews)
             )
         )
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
@@ -1201,7 +1201,7 @@ class VaultViewModelTest {
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
             whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
                 flowOf(
-                    VaultChatPreviewContainer.PreviewState.Ready(emptyList())
+                    ChatPreviewContainer.PreviewState.Ready(emptyList())
                 )
             )
             whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))

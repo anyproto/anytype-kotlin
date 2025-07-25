@@ -286,6 +286,8 @@ class VaultViewModel(
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
         dependency: ObjectWrapper.Basic
+    ): VaultSpaceView.AttachmentPreview {
+        Timber.d("mapToAttachmentPreview, attachment: $attachment, dependency: $dependency")
         // Determine if we have a valid object to render a "real" icon
         val isValid = dependency.isValid
 
@@ -366,12 +368,6 @@ class VaultViewModel(
             null
         }
 
-        val previewText = if (creatorName != null && messageText != null) {
-            "$creatorName: $messageText"
-        } else {
-            messageText
-        }
-
         val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
                 dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
@@ -404,7 +400,7 @@ class VaultViewModel(
                 spaceGradientProvider = SpaceGradientProvider.Default
             ),
             chatPreview = chatPreview,
-            previewText = previewText,
+            previewText = messageText,
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,

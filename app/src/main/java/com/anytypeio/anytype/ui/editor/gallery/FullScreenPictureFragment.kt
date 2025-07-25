@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentFullScreenPictureBinding
 import coil3.load
 
+@Deprecated("Use MediaActivity")
 class FullScreenPictureFragment : BaseFragment<FragmentFullScreenPictureBinding>(R.layout.fragment_full_screen_picture) {
 
     private val url: String

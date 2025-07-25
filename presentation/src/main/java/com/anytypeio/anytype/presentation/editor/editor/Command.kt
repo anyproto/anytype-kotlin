@@ -78,10 +78,10 @@ sealed class Command {
     data class OpenObjectLayout(val ctx: Id) : Command()
     data class SetObjectIcon(val ctx: Id, val space: Id) : Command()
 
-    object AlertDialog : Command()
+    data object AlertDialog : Command()
 
     data class OpenFullScreenImage(
-        val target: Id,
+        val target: Id = "",
         val url: Url
     ) : Command()
 

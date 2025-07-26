@@ -1838,4 +1838,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
 </resources>

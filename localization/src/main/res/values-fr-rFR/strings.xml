@@ -1835,4 +1835,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notification_settings_state_disabled">Désactivé</string>
     <string name="notification_settings_state_enabled">Activé</string>
     <string name="content_desc_muted">En sourdine</string>
+    <string name="failed_to_load_image">Failed to load image</string>
 </resources>

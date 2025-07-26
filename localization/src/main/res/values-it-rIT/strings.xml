@@ -1839,4 +1839,5 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
 </resources>

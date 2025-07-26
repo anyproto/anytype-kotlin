@@ -49,7 +49,8 @@ sealed class Intent {
         class Replace(
             val context: Id,
             val target: Id,
-            val prototype: Block.Prototype
+            val prototype: Block.Prototype,
+            val onSuccess: ((Id) -> Unit)? = null,
         ) : CRUD()
 
         class Create(
@@ -57,7 +58,7 @@ sealed class Intent {
             val target: Id,
             val position: Position,
             val prototype: Block.Prototype,
-            val onSuccess: (() -> Unit)? = null,
+            val onSuccess: ((Id) -> Unit)? = null,
             val isDate: Boolean = false
         ) : CRUD()
 

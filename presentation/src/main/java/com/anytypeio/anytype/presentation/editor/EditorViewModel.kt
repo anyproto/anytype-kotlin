@@ -2463,7 +2463,14 @@ class EditorViewModel(
                     context = context,
                     target = id,
                     position = position,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
         }
@@ -2479,9 +2486,45 @@ class EditorViewModel(
                 Intent.CRUD.Replace(
                     context = context,
                     target = id,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
+        }
+    }
+
+    private fun proceedWithOpeningMediaPicker(
+        blockId: String,
+        type: Block.Content.File.Type
+    ) {
+        when (type) {
+            Content.File.Type.IMAGE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
+                dispatch(Command.OpenPhotoPicker)
+            }
+
+            Content.File.Type.VIDEO -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
+                dispatch(Command.OpenVideoPicker)
+            }
+
+            Content.File.Type.FILE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
+                dispatch(Command.OpenFilePicker)
+            }
+
+            else -> {
+                // No action for other types
+            }
         }
     }
 

@@ -5,11 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeMessageNotificationState
 import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
+import com.anytypeio.anytype.analytics.base.EventsDictionary.MessageNotificationRoute
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.presentation.extension.toMessageNotificationType
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
@@ -806,6 +809,19 @@ class SpaceSettingsViewModel(
                 onSuccess = {
                     _notificationState.value = newState
                     Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
+                    
+                    // Send analytics event
+                    val notificationType = newState.toMessageNotificationType()
+                    
+                    analytics.sendEvent(
+                        eventName = changeMessageNotificationState,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.type to notificationType.value,
+                                EventsPropertiesKey.route to MessageNotificationRoute.SCREEN_SETTINGS_SPACE_INDEX.value
+                            )
+                        )
+                    )
                 },
                 onFailure = { error ->
                     Timber.e("Failed to set notification state: $error")

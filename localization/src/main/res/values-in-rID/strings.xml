@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Ikon peringatan</string>
     <string name="modal_tap_to_type">Ketuk untuk mengetik</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -1825,5 +1825,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notification_settings_state_disabled">Nonaktif</string>
     <string name="notification_settings_state_enabled">Aktif</string>
     <string name="content_desc_muted">Disenyapkan</string>
-    <string name="failed_to_load_image">Failed to load image</string>
+    <string name="failed_to_load_image">Gagal memuat gambar</string>
 </resources>

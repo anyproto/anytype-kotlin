@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -159,4 +160,5 @@ interface AllContentDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun searchObjects(): SearchObjects
     fun fieldsProvider(): FieldParser
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

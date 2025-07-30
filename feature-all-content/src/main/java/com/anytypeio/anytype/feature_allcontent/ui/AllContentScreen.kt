@@ -353,9 +353,9 @@ fun BottomMenu(
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
-        searchClick = onGlobalSearchClicked,
-        addDocClick = onAddDocClicked,
-        addDocLongClick = onCreateObjectLongClicked,
+        onSearchClick = onGlobalSearchClicked,
+        onAddDocClick = onAddDocClicked,
+        onAddDocLongClick = onCreateObjectLongClicked,
         onShareButtonClicked = onShareButtonClicked,
         state = uiBottomMenu,
         onHomeButtonClicked = onHomeButtonClicked

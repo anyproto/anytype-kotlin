@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -34,7 +35,8 @@ class AllContentViewModelFactory @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -53,6 +55,7 @@ class AllContentViewModelFactory @Inject constructor(
             setObjectListIsArchived = setObjectListIsArchived,
             removeObjectsFromWorkspace = removeObjectsFromWorkspace,
             userPermissionProvider = userPermissionProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spaceViews
         ) as T
 }

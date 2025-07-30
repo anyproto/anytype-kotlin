@@ -248,6 +248,8 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -356,7 +358,8 @@ class EditorViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -441,7 +444,12 @@ class EditorViewModel(
      */
     val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
-    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
+    val navPanelState = permission.map { permission ->
+        NavPanelState.fromPermission(
+            permission = permission,
+            spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
+        )
+    }
 
     init {
         Timber.i("EditorViewModel, init")
@@ -1877,7 +1885,7 @@ class EditorViewModel(
             if (view is BlockView.Selectable) {
                 select(view.id)
             } else {
-                Timber.w("SelectAll", "Block with id ${view.id} cannot be selected.")
+                Timber.w("SelectAll, Block with id ${view.id} cannot be selected.")
             }
         }
 

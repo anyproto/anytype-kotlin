@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.RelationListWithValueItem
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
@@ -45,6 +47,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenDate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSwitchRelationDate
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.toUiObjectsListItem
@@ -97,14 +100,15 @@ class DateObjectViewModel(
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
     val uiSyncStatusBadgeState =
         MutableStateFlow<UiSyncStatusBadgeState>(UiSyncStatusBadgeState.Hidden)
     val uiHeaderState = MutableStateFlow<UiHeaderState>(UiHeaderState.Empty)
-    val uiNavigationWidget = MutableStateFlow<UiNavigationWidget>(UiNavigationWidget.Hidden)
+    val uiNavigationWidget = MutableStateFlow<NavPanelState>(NavPanelState.Init)
     val uiFieldsState = MutableStateFlow<UiFieldsState>(UiFieldsState.Empty)
     val uiFieldsSheetState = MutableStateFlow<UiFieldsSheetState>(UiFieldsSheetState.Hidden)
     val uiObjectsListState = MutableStateFlow<UiObjectsListState>(UiObjectsListState.Empty)
@@ -259,11 +263,11 @@ class DateObjectViewModel(
             userPermissionProvider
                 .observe(space = vmParams.spaceId)
                 .collect { result ->
-                    uiNavigationWidget.value = if (result?.isOwnerOrEditor() == true) {
-                        UiNavigationWidget.Editor
-                    } else {
-                        UiNavigationWidget.Viewer
-                    }
+                    val navPanelState = NavPanelState.fromPermission(
+                        permission = result,
+                        spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA,
+                    )
+                    uiNavigationWidget.value = navPanelState
                     permission.value = result
                 }
         }
@@ -910,13 +914,19 @@ class DateObjectViewModel(
 
             DateEvent.NavigationWidget.OnBackLongClick -> {
                 viewModelScope.launch {
-                    effects.emit(DateObjectCommand.ExitToSpaceWidgets)
+                    effects.emit(DateObjectCommand.ExitToHomeOrChat)
                 }
             }
 
             DateEvent.NavigationWidget.OnGlobalSearchClick -> {
                 viewModelScope.launch {
                     effects.emit(DateObjectCommand.OpenGlobalSearch)
+                }
+            }
+
+            DateEvent.NavigationWidget.OnHomeClick -> {
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.ExitToHomeOrChat)
                 }
             }
         }

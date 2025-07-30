@@ -197,29 +197,21 @@ class ChatViewModel @Inject constructor(
 
         // Check if we should show invite modal for newly created Chat spaces
         viewModelScope.launch {
+
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.space)
+                .onFailure { Timber.e(it, "Error while getting space invite link") }
+                .getOrNull()
+
             combine(
                 spaceViews.observe(vmParams.space),
                 canCreateInviteLink,
-                uiState,
-                inviteModalState
-            ) { spaceView, canCreateInvite, ui, currentModalState ->
-                val hasExistingLink = when (currentModalState) {
-                    is InviteModalState.ShowShareCard -> true
-                    else -> {
-                        // Check current invite link status
-                        val inviteLink = getSpaceInviteLink
-                            .async(vmParams.space)
-                            .onFailure { Timber.e(it, "Error while getting space invite link") }
-                            .getOrNull()
-                        inviteLink != null
-                    }
-                }
-                
+                uiState
+            ) { spaceView, canCreateInvite, ui ->
                 spaceView.spaceUxType == SpaceUxType.CHAT
                         && canCreateInvite
-                        && !hasExistingLink
+                        && inviteLink == null
                         && ui.messages.isEmpty()
-                        && currentModalState == InviteModalState.Hidden
             }.collect { shouldShow ->
                 Timber.d("DROID-3626 Should show invite modal: $shouldShow")
                 if (shouldShow) {

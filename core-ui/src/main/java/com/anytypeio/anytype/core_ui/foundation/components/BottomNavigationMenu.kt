@@ -5,6 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -173,80 +174,48 @@ fun BottomNavigationMenu(
             .noRippleClickable { },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        if (state is NavPanelState.Default) {
-            when (val left = state.leftButtonState) {
-                is NavPanelState.LeftButtonState.AddMembers -> {
-                    MenuItem(
-                        modifier = Modifier
-                            .width(72.dp)
-                            .height(52.dp)
-                            .alpha(
-                                if (left.isActive)
-                                    FULL_ALPHA
-                                else
-                                    DEFAULT_DISABLED_ALPHA
-                            )
-                        ,
-                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-                        res = BottomNavigationItem.ADD_MEMBERS.res,
-                        onClick = onShareButtonClicked,
-                        enabled = left.isActive
-                    )
-                }
-                is NavPanelState.LeftButtonState.Comment -> {
-                    // TODO
-                }
-                NavPanelState.LeftButtonState.ViewMembers -> {
-                    MenuItem(
-                        modifier = Modifier
-                            .width(72.dp)
-                            .height(52.dp),
-                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-                        res = BottomNavigationItem.MEMBERS.res,
-                        onClick = onShareButtonClicked
-                    )
-                }
-                is NavPanelState.LeftButtonState.Home -> {
-                    MenuItem(
-                        modifier = Modifier
-                            .width(72.dp)
-                            .height(52.dp),
-                        contentDescription = stringResource(id = R.string.main_navigation_content_desc_home_button),
-                        res = BottomNavigationItem.HOME.res,
-                        onClick = onHomeButtonClicked
-                    )
-                }
+        when (state) {
+            is NavPanelState.Chat -> {
+                leftButton(
+                    state = state.leftButtonState,
+                    onShareButtonClicked = onShareButtonClicked,
+                    onHomeButtonClicked = onHomeButtonClicked
+                )
             }
-        } else {
-            MenuItem(
-                modifier = Modifier
-                    .width(72.dp)
-                    .height(52.dp),
-                contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
-                res = BottomNavigationItem.MEMBERS.res,
-                onClick = onShareButtonClicked
-            )
+            is NavPanelState.Default -> {
+                leftButton(
+                    state = state.leftButtonState,
+                    onShareButtonClicked = onShareButtonClicked,
+                    onHomeButtonClicked = onHomeButtonClicked
+                )
+            }
+            NavPanelState.Init -> {
+                MenuItem(
+                    modifier = Modifier
+                        .width(72.dp)
+                        .height(52.dp),
+                    contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                    res = BottomNavigationItem.MEMBERS.res,
+                    onClick = onShareButtonClicked
+                )
+            }
+        }
+        val (enabled, alpha) = when (state) {
+            is NavPanelState.Chat -> if (state.isCreateObjectButtonEnabled) true to FULL_ALPHA else false to DEFAULT_DISABLED_ALPHA
+            is NavPanelState.Default -> if (state.isCreateObjectButtonEnabled) true to FULL_ALPHA else false to DEFAULT_DISABLED_ALPHA
+            NavPanelState.Init -> false to DEFAULT_DISABLED_ALPHA
         }
         MenuItem(
             modifier = Modifier
                 .width(72.dp)
                 .height(52.dp)
-                .alpha(
-                    if (state is NavPanelState.Default) {
-                        if (state.isCreateObjectButtonEnabled)
-                            FULL_ALPHA
-                        else
-                            DEFAULT_DISABLED_ALPHA
-                    } else {
-                        DEFAULT_DISABLED_ALPHA
-                    }
-                )
+                .alpha(alpha)
             ,
             contentDescription = stringResource(id = R.string.main_navigation_content_desc_create_button),
             res = BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = addDocLongClick,
-            enabled = (state is NavPanelState.Default && state.isCreateObjectButtonEnabled)
+            enabled = enabled
         )
         MenuItem(
             modifier = Modifier
@@ -256,6 +225,68 @@ fun BottomNavigationMenu(
             res = BottomNavigationItem.SEARCH.res,
             onClick = searchClick
         )
+    }
+}
+
+@Composable
+private fun RowScope.leftButton(
+    state: NavPanelState.LeftButtonState,
+    onShareButtonClicked: () -> Unit = {},
+    onHomeButtonClicked: () -> Unit
+) {
+    when (val left = state) {
+        is NavPanelState.LeftButtonState.AddMembers -> {
+            MenuItem(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp)
+                    .alpha(
+                        if (left.isActive)
+                            FULL_ALPHA
+                        else
+                            DEFAULT_DISABLED_ALPHA
+                    )
+                ,
+                contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                res = BottomNavigationItem.ADD_MEMBERS.res,
+                onClick = onShareButtonClicked,
+                enabled = left.isActive
+            )
+        }
+        is NavPanelState.LeftButtonState.Comment -> {
+            // TODO
+        }
+        NavPanelState.LeftButtonState.ViewMembers -> {
+            MenuItem(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp),
+                contentDescription = stringResource(id = R.string.main_navigation_content_desc_members_button),
+                res = BottomNavigationItem.MEMBERS.res,
+                onClick = onShareButtonClicked
+            )
+        }
+        is NavPanelState.LeftButtonState.Home -> {
+            MenuItem(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp),
+                contentDescription = stringResource(id = R.string.main_navigation_content_desc_home_button),
+                res = BottomNavigationItem.HOME.res,
+                onClick = onHomeButtonClicked
+            )
+        }
+
+        NavPanelState.LeftButtonState.Chat -> {
+            MenuItem(
+                modifier = Modifier
+                    .width(72.dp)
+                    .height(52.dp),
+                contentDescription = stringResource(id = R.string.main_navigation_content_desc_chat_button),
+                res = BottomNavigationItem.CHAT.res,
+                onClick = onHomeButtonClicked
+            )
+        }
     }
 }
 
@@ -295,6 +326,7 @@ private fun MenuItem(
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     HOME(R.drawable.ic_nav_panel_home),
+    CHAT(R.drawable.ic_chat_32),
     MEMBERS(R.drawable.ic_nav_panel_members),
     ADD_MEMBERS(R.drawable.ic_nav_panel_add_member),
     SEARCH(R.drawable.ic_nav_panel_search),

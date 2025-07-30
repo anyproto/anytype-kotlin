@@ -144,11 +144,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToSpaceLevelChat -> {
                 runCatching {
                     findNavController().navigate(
-                        resId = R.id.actionOpenVaultFromSplash,
-                        args = VaultFragment.args(deeplink = null)
-                    )
-                    findNavController().navigate(
-                        R.id.actionOpenChatFromVault,
+                        R.id.chatScreen,
                         args = ChatFragment.args(
                             space = command.space,
                             ctx = command.chat

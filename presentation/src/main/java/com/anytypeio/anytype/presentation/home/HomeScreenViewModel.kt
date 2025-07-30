@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -410,10 +411,15 @@ class HomeScreenViewModel(
                 spaceAccessType,
                 userPermissions
             ) { type, permission ->
+                val spaceId = spaceManager.get()
+                val spaceUxType =
+                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
+                        ?: SpaceUxType.DATA
                 NavPanelState.fromPermission(
                     permission = permission,
                     forceHome = false,
-                    spaceAccessType = type
+                    spaceAccess = type,
+                    spaceUxType = spaceUxType
                 )
             }.collect {
                 navPanelState.value = it
@@ -1949,8 +1955,32 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(isSpaceRoot: Boolean) {
-        proceedWithExiting(isSpaceRoot)
+    fun onBackClicked(currentSpace: SpaceId, isSpaceRoot: Boolean) {
+        viewModelScope.launch {
+            val currentSpaceView = spaceViewSubscriptionContainer.get(space = currentSpace)
+            // Check if current space is a chat type
+            val isChatSpace = currentSpaceView?.spaceUxType == SpaceUxType.CHAT
+            
+            if (isChatSpace) {
+                // For chat spaces, emit command to handle navigation stack checking
+                val chat = currentSpaceView.getValue<Id?>(Relations.CHAT_ID)
+                val space = currentSpaceView.targetSpaceId
+                if (chat != null && space != null) {
+                    commands.emit(
+                        Command.HandleChatSpaceBackNavigation(
+                            chat = chat,
+                            space = space
+                        )
+                    )
+                } else {
+                    Timber.w("Chat or space not found - proceeding with normal exit")
+                    proceedWithExiting(isSpaceRoot)
+                }
+            } else {
+                // For non-chat spaces, proceed with normal exit
+                proceedWithExiting(isSpaceRoot)
+            }
+        }
     }
 
     private fun proceedWithExiting(isSpaceRoot: Boolean) {
@@ -2897,6 +2927,8 @@ sealed class Command {
     data class ShowInviteLinkQrCode(val link: String) : Command()
 
     data object ShowLeaveSpaceWarning : Command()
+
+    data class HandleChatSpaceBackNavigation(val chat: Id, val space: Id) : Command()
 }
 
 /**

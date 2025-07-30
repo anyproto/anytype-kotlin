@@ -67,6 +67,7 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -122,6 +123,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         name = view?.space?.name.orEmpty(),
                         onBackButtonClicked = {
                             vm.onBackClicked(
+                                currentSpace = SpaceId(space),
                                 isSpaceRoot = isSpaceRootScreen()
                             )
                         },
@@ -162,6 +164,7 @@ class HomeScreenFragment : BaseComposeFragment(),
 
             BackHandler {
                 vm.onBackClicked(
+                    currentSpace = SpaceId(space),
                     isSpaceRoot = isSpaceRootScreen()
                 )
             }
@@ -441,6 +444,37 @@ class HomeScreenFragment : BaseComposeFragment(),
                     ),
                     duration = Toast.LENGTH_LONG
                 )
+            }
+            is Command.HandleChatSpaceBackNavigation -> {
+                runCatching {
+                    val navController = findNavController()
+                    
+                    // Check previous screen in navigation stack
+                    val previous = navController.previousBackStackEntry
+                    
+                    when (previous?.destination?.id) {
+                        R.id.chatScreen -> {
+                            // Back to ChatFragment if that was previous
+                            navController.popBackStack(R.id.chatScreen, false)
+                        }
+                        R.id.vaultScreen -> {
+                            // Back to VaultFragment if that was previous
+                            navController.popBackStack(R.id.vaultScreen, false)
+                        }
+                        else -> {
+                            // No previous screen, for chat space go to ChatFragment
+                            navController.navigate(
+                                R.id.chatScreen,
+                                ChatFragment.args(
+                                    space = command.space,
+                                    ctx = command.chat
+                                )
+                            )
+                        }
+                    }
+                }.onFailure {
+                    Timber.e(it, "Error while handling chat space back navigation")
+                }
             }
         }
     }

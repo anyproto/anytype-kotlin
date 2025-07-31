@@ -422,7 +422,7 @@ class SplashViewModel(
                         view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
                             Timber.i("Navigating to space level chat with id: $chat")
                             commands.emit(
-                                Command.NavigateToSpaceLevelChat(
+                                Command.NavigateToChat(
                                     space = space.id,
                                     chat = chat,
                                     deeplink = deeplink
@@ -479,17 +479,16 @@ class SplashViewModel(
     }
 
     sealed class Command {
+        data class NavigateToVault(val deeplink: String? = null) : Command()
         data class NavigateToWidgets(val space: Id, val deeplink: String? = null) : Command()
-        data class NavigateToSpaceLevelChat(
+        data class NavigateToChat(
             val space: Id,
             val chat: Id,
             val deeplink: String? = null
         ) : Command()
-        data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
-        data class NavigateToChat(val space: Id, val chat: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToDateObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectType(val id: Id, val space: Id, val chat: Id?) : Command()

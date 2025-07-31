@@ -8,9 +8,6 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
@@ -43,7 +40,6 @@ import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -146,7 +142,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 )
             }
 
-            is SplashViewModel.Command.NavigateToSpaceLevelChat -> {
+            is SplashViewModel.Command.NavigateToChat -> {
                 nav.safeNavigateOrLog(
                     id = R.id.chatScreen,
                     args = ChatFragment.args(
@@ -179,29 +175,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         ),
                         errorTag = "object from splash",
                     )
-                }
-            }
-
-            is SplashViewModel.Command.NavigateToChat -> {
-                runCatching {
-                    nav.safeNavigateOrLog(
-                        id = R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            space = command.space,
-                            deeplink = null
-                        ),
-                        errorTag = "Open space from vault for chat push",
-                    )
-                    nav.safeNavigateOrLog(
-                        id = R.id.chatScreen,
-                        args = ChatFragment.args(
-                            space = command.space,
-                            ctx = command.chat
-                        ),
-                        errorTag = "Chat from push",
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to chat from push")
                 }
             }
 

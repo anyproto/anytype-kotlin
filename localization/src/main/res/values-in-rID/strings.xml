@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">Tombol kembali</string>
     <string name="content_desc_share_button">Tombol bagikan</string>
     <string name="content_desc_home_button">Tombol beranda</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Tombol cari</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Balok tak didukung</string>
@@ -1587,6 +1588,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_back_button">Tombol kembali</string>
     <string name="main_navigation_content_desc_members_button">Tombol bagikan dan anggota</string>
     <string name="main_navigation_content_desc_home_button">Tombol beranda</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Tombol telusuri objek</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>

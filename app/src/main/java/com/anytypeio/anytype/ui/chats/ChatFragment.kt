@@ -299,20 +299,10 @@ class ChatFragment : BaseComposeFragment() {
                         Timber.d("Command: $command")
                         when (command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
-                                val isVaultPrevDestination =
-                                    findNavController().previousBackStackEntry?.destination?.id == R.id.vaultScreen
-                                if (isVaultPrevDestination) {
-                                    runCatching {
-                                        findNavController().popBackStack()
-                                    }.onFailure {
-                                        Timber.e(it, "Error while exiting chat")
-                                    }
-                                } else {
-                                    runCatching {
-                                        findNavController().navigate(R.id.action_open_vault)
-                                    }.onFailure {
-                                        Timber.e(it, "Error while opening vault from home screen")
-                                    }
+                                runCatching {
+                                    findNavController().navigate(R.id.action_back_on_vault)
+                                }.onFailure {
+                                    Timber.e(it, "Error while back on vault from chat screen")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.OpenWidgets -> {

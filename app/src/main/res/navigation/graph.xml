@@ -176,7 +176,7 @@
             app:popUpTo="@id/chatScreen"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_open_vault"
+            android:id="@+id/action_back_on_vault"
             app:destination="@id/vaultScreen"
             app:popUpTo="@+id/main_navigation"
             app:popUpToInclusive="false" />

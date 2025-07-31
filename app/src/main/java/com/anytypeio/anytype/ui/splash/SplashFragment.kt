@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -54,72 +56,70 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showVersion()
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    vm.commands.collect {
-                        try {
-                            observe(it)
-                        } catch (e: Exception) {
-                            toast(e.message ?: resources.getString(R.string.unknown_error))
-                        }
-                    }
-                }
-                launch {
-                    vm.state.collect { state ->
-                        when(state) {
-                            is SplashViewModel.State.Init -> {
-                                binding.error.gone()
-                                binding.compose.visibility = View.GONE
-                            }
-                            is SplashViewModel.State.Error -> {
-                                binding.error.text = state.msg
-                                binding.error.visible()
-                            }
-                            is SplashViewModel.State.Loading -> {
-                                binding.compose.setContent {
-                                    PulsatingCircleScreen()
-                                }
-                                binding.compose.visible()
-                            }
-                            is SplashViewModel.State.Migration -> {
-                                binding.compose.setContent {
-                                    when(state) {
-                                        is SplashViewModel.State.Migration.AwaitingStart -> {
-                                            MigrationStartScreen(
-                                                onStartUpdate = vm::onStartMigrationClicked
-                                            )
-                                        }
-                                        is SplashViewModel.State.Migration.InProgress -> {
-                                            MigrationInProgressScreen(
-                                                progress = state.progress
-                                            )
-                                        }
-                                        is SplashViewModel.State.Migration.Failed -> {
-                                            MigrationFailedScreen(
-                                                state = state.state,
-                                                onRetryClicked = vm::onRetryMigrationClicked
-                                            )
-                                        }
-                                    }
-                                }
-                                binding.compose.visible()
-                            }
-                            is SplashViewModel.State.Success -> {
-                                binding.compose.gone()
-                                binding.error.gone()
-                                binding.error.text = ""
-                            }
-                        }
-                    }
-                }
-            }
+        subscribe(vm.state) {
+            Timber.d("Splash state: $it")
+            handleState(it)
+        }
+        subscribe(vm.commands) {
+            Timber.d("Splash command: $it")
+            observe(it)
         }
         if (BuildConfig.DEBUG) {
             binding.error.setOnClickListener {
                 vm.onErrorClicked()
             }
         }
+    }
+
+    private fun handleState(state: SplashViewModel.State) = with(binding) {
+        when (state) {
+            is SplashViewModel.State.Init -> {
+                error.gone()
+                compose.gone()
+            }
+            is SplashViewModel.State.Error -> {
+                error.text = state.msg
+                error.visible()
+                compose.gone()
+            }
+            is SplashViewModel.State.Loading -> {
+                showCompose {
+                    PulsatingCircleScreen()
+                }
+                error.gone()
+            }
+            is SplashViewModel.State.Migration -> {
+                showCompose {
+                    when (state) {
+                        is SplashViewModel.State.Migration.AwaitingStart -> {
+                            MigrationStartScreen(onStartUpdate = vm::onStartMigrationClicked)
+                        }
+                        is SplashViewModel.State.Migration.InProgress -> {
+                            MigrationInProgressScreen(progress = state.progress)
+                        }
+                        is SplashViewModel.State.Migration.Failed -> {
+                            MigrationFailedScreen(
+                                state = state.state,
+                                onRetryClicked = vm::onRetryMigrationClicked
+                            )
+                        }
+                    }
+                }
+                error.gone()
+            }
+            is SplashViewModel.State.Success -> {
+                error.gone()
+                compose.gone()
+                error.text = ""
+            }
+        }
+    }
+
+    private fun showCompose(content: @Composable () -> Unit) = with(binding) {
+        compose.setContent {
+            content()
+        }
+        compose.visible()
     }
 
     private fun observe(command: SplashViewModel.Command) {

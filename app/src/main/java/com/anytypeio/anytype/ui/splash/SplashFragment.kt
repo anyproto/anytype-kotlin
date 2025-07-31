@@ -127,18 +127,15 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToWidgets -> {
                 runCatching {
                     findNavController().navigate(
-                        resId = R.id.actionOpenVaultFromSplash,
-                        args = VaultFragment.args(deeplink = null)
-                    )
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
+                        R.id.homeScreen,
                         args = HomeScreenFragment.args(
                             deeplink = command.deeplink,
                             space = command.space
                         )
                     )
                 }.onFailure {
-                    Timber.e(it, "Error while navigating to widgets from splash")
+                    Timber.e(it, "Error while navigating to Widgets Screen from Splash Screen")
+                    toast("Error while navigating to Widgets Screen: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToSpaceLevelChat -> {
@@ -151,7 +148,8 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         )
                     )
                 }.onFailure {
-                    Timber.e(it, "Error while navigating to space-level chat from splash")
+                    Timber.e(it, "Error while navigating to Chat Screen from Splash Screen")
+                    toast("Error while navigating to Chat Screen: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToVault -> {
@@ -161,25 +159,24 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                         args = VaultFragment.args(deeplink = command.deeplink)
                     )
                 } catch (e: Exception) {
-                    Timber.e(e, "Error while opening dashboard from splash screen")
-                    toast("Error while navigating to desktop: ${e.message}")
+                    Timber.e(e, "Error while opening Vault Screen from Splash Screen")
+                    toast("Error while navigating to Vault Screen: ${e.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToObject -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat.isNullOrBlank()) {
                         findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
+                            R.id.homeScreen,
                             args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
+                                deeplink = null,
+                                space = command.space
                             )
                         )
                     } else {
                         findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
+                            R.id.chatScreen,
                             args = ChatFragment.args(
                                 space = command.space,
                                 ctx = chat
@@ -195,11 +192,11 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to object from splash")
+                    toast("Error while navigating to object: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToChat -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
                         args = HomeScreenFragment.args(
@@ -220,19 +217,18 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.NavigateToObjectType -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat.isNullOrBlank()) {
                         findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
+                            R.id.homeScreen,
                             args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
+                                deeplink = null,
+                                space = command.space
                             )
                         )
                     } else {
                         findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
+                            R.id.chatScreen,
                             args = ChatFragment.args(
                                 space = command.space,
                                 ctx = chat
@@ -248,23 +244,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to object from splash")
+                    toast("Error while navigating to object type: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat.isNullOrBlank()) {
                         findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
+                            R.id.homeScreen,
                             args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
+                                deeplink = null,
+                                space = command.space
                             )
                         )
                     } else {
                         findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
+                            R.id.chatScreen,
                             args = ChatFragment.args(
                                 space = command.space,
                                 ctx = chat
@@ -280,23 +276,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to set-or-collection from splash")
+                    toast("Error while navigating to set-or-collection: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToDateObject -> {
                 runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
                     val chat = command.chat
-                    if (chat == null) {
+                    if (chat.isNullOrBlank()) {
                         findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
+                            R.id.homeScreen,
                             args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
+                                deeplink = null,
+                                space = command.space
                             )
                         )
                     } else {
                         findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
+                            R.id.chatScreen,
                             args = ChatFragment.args(
                                 space = command.space,
                                 ctx = chat
@@ -312,6 +308,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigating to date object from splash")
+                    toast("Error while navigating to date object: ${it.message}")
                 }
             }
             is SplashViewModel.Command.NavigateToAuthStart -> {

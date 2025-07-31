@@ -444,32 +444,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     if (!result) {
                         findNavController().navigate(R.id.action_back_on_vault)
                     }
-
-//                    val navController = findNavController()
-//
-//                    // Check previous screen in navigation stack
-//                    val previous = navController.previousBackStackEntry
-//
-//                    when (previous?.destination?.id) {
-//                        R.id.chatScreen -> {
-//                            // Back to ChatFragment if that was previous
-//                            navController.popBackStack(R.id.chatScreen, false)
-//                        }
-//                        R.id.vaultScreen -> {
-//                            // Back to VaultFragment if that was previous
-//                            navController.popBackStack(R.id.vaultScreen, false)
-//                        }
-//                        else -> {
-//                            // No previous screen, for chat space go to ChatFragment
-//                            navController.navigate(
-//                                R.id.chatScreen,
-//                                ChatFragment.args(
-//                                    space = command.space,
-//                                    ctx = command.chat
-//                                )
-//                            )
-//                        }
-//                    }
                 }.onFailure {
                     Timber.e(it, "Error while handling home screen back navigation")
                 }

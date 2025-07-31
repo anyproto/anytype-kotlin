@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">返回按钮</string>
     <string name="content_desc_share_button">分享按钮</string>
     <string name="content_desc_home_button">主页按钮</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">搜索按钮</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">不支持的数据块</string>
@@ -1583,6 +1584,7 @@
     <string name="main_navigation_content_desc_back_button">返回按钮</string>
     <string name="main_navigation_content_desc_members_button">分享和会员按钮</string>
     <string name="main_navigation_content_desc_home_button">主页按钮</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>

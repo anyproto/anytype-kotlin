@@ -567,9 +567,9 @@ fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: D
             time + SECONDS_IN_DAY * value
         }
         DVFilterQuickOption.EXACT_DATE -> value
-        DVFilterQuickOption.LAST_YEAR -> TODO()
-        DVFilterQuickOption.CURRENT_YEAR -> TODO()
-        DVFilterQuickOption.NEXT_YEAR -> TODO()
+        DVFilterQuickOption.LAST_YEAR -> time - SECONDS_IN_DAY * 365
+        DVFilterQuickOption.CURRENT_YEAR -> time
+        DVFilterQuickOption.NEXT_YEAR -> time + SECONDS_IN_DAY * 365
     }
 }
 

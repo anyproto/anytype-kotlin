@@ -431,6 +431,9 @@ fun Block.Content.DataView.Filter.QuickOption.toMiddlewareModel(): MDVFilterQuic
         Block.Content.DataView.Filter.QuickOption.NEXT_MONTH -> MDVFilterQuickOption.NextMonth
         Block.Content.DataView.Filter.QuickOption.DAYS_AGO -> MDVFilterQuickOption.NumberOfDaysAgo
         Block.Content.DataView.Filter.QuickOption.DAYS_AHEAD -> MDVFilterQuickOption.NumberOfDaysNow
+        Block.Content.DataView.Filter.QuickOption.LAST_YEAR -> MDVFilterQuickOption.LastYear
+        Block.Content.DataView.Filter.QuickOption.CURRENT_YEAR -> MDVFilterQuickOption.CurrentYear
+        Block.Content.DataView.Filter.QuickOption.NEXT_YEAR -> MDVFilterQuickOption.NextYear
     }
 
 fun Block.Content.DataView.Filter.Condition.toMiddlewareModel(): MDVFilterCondition = when (this) {

@@ -362,7 +362,8 @@ data class Block(
 
                 enum class QuickOption {
                     EXACT_DATE, YESTERDAY, TODAY, TOMORROW, LAST_WEEK, CURRENT_WEEK, NEXT_WEEK,
-                    LAST_MONTH, CURRENT_MONTH, NEXT_MONTH, DAYS_AGO, DAYS_AHEAD,
+                    LAST_MONTH, CURRENT_MONTH, NEXT_MONTH, DAYS_AGO, DAYS_AHEAD, LAST_YEAR,
+                    CURRENT_YEAR, NEXT_YEAR
                 }
             }
         }

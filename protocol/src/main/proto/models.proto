@@ -498,6 +498,9 @@ message Block {
                     NextMonth = 9;
                     NumberOfDaysAgo = 10;
                     NumberOfDaysNow = 11;
+                    LastYear = 12;
+                    CurrentYear = 13;
+                    NextYear = 14;
                 }
             }
 
@@ -1268,7 +1271,7 @@ enum SpaceShareableStatus {
 }
 
 message ManifestInfo {
-    string schema = 1;
+    string schema = 1 [json_name="$schema"];
     string id = 2;
     string name = 3;
     string author = 4;

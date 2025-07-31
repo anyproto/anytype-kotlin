@@ -114,12 +114,8 @@ class ChatFragment : BaseComposeFragment() {
                     ) {
                         ChatTopToolbar(
                             header = vm.header.collectAsStateWithLifecycle().value,
-                            onBackButtonClicked = {
-                                vm.onBackButtonPressed(isSpaceRootScreen())
-                            },
-                            onSpaceNameClicked = {
-                                vm.onSpaceNameClicked(isSpaceRoot = isSpaceRootScreen())
-                            },
+                            onBackButtonClicked = vm::onBackButtonPressed,
+                            onSpaceNameClicked = vm::onSpaceIconClicked,
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )
                         ChatScreenWrapper(
@@ -448,9 +444,7 @@ class ChatFragment : BaseComposeFragment() {
                     }
                 }
                 BackHandler {
-                    vm.onBackButtonPressed(
-                        isSpaceRoot = isSpaceRootScreen()
-                    )
+                    vm.onBackButtonPressed()
                 }
                 LaunchedEffect(Unit) {
                     vm.checkNotificationPermissionDialogState()

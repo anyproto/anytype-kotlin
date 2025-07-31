@@ -141,11 +141,15 @@ class DefaultDataViewSubscription(
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
 
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             subscription = getDataViewSubscriptionId(context),
-            sorts = getSortsWithDefaultCreatedDate(activeViewer.sorts, dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = query,
             keys = keys,
@@ -194,11 +198,15 @@ class DefaultDataViewSubscription(
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
 
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             subscription = getDataViewSubscriptionId(context),
-            sorts = getSortsWithDefaultCreatedDate(activeViewer.sorts, dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = query,
             keys = keys,

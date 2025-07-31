@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Deelknop</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blok niet ondersteund</string>
@@ -1600,6 +1601,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Deel en leden knop</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>

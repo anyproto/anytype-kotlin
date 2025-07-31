@@ -567,9 +567,9 @@ fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: D
             time + SECONDS_IN_DAY * value
         }
         DVFilterQuickOption.EXACT_DATE -> value
-        DVFilterQuickOption.LAST_YEAR -> TODO()
-        DVFilterQuickOption.CURRENT_YEAR -> TODO()
-        DVFilterQuickOption.NEXT_YEAR -> TODO()
+        DVFilterQuickOption.LAST_YEAR -> dateProvider.getTimestampForLastYearAtStartOfYear()
+        DVFilterQuickOption.CURRENT_YEAR -> dateProvider.getTimestampForCurrentYearAtStartOfYear()
+        DVFilterQuickOption.NEXT_YEAR -> dateProvider.getTimestampForNextYearAtStartOfYear()
     }
 }
 

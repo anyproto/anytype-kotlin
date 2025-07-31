@@ -8,11 +8,10 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.presentation.navigation.NavPanelState.LeftButtonState.Chat.sendAnalytics
 
 sealed class NavPanelState {
 
-    object Init : NavPanelState()
+    data object Init : NavPanelState()
 
     data class Default(
         val isCreateEnabled: Boolean,
@@ -25,9 +24,9 @@ sealed class NavPanelState {
     ) : NavPanelState()
 
     sealed class LeftButtonState {
-        object Home : LeftButtonState()
-        object Chat : LeftButtonState()
-        object ViewMembers : LeftButtonState()
+        data object Home : LeftButtonState()
+        data object Chat : LeftButtonState()
+        data object ViewMembers : LeftButtonState()
         data class AddMembers(val isActive: Boolean) : LeftButtonState()
 
         suspend fun sendAnalytics(analytics: Analytics) {
@@ -95,7 +94,7 @@ sealed class NavPanelState {
 suspend fun NavPanelState.leftButtonClickAnalytics(analytics: Analytics) {
     when (this) {
         is NavPanelState.Default,
-        is NavPanelState.Chat -> sendAnalytics(analytics)
+        is NavPanelState.Chat -> NavPanelState.LeftButtonState.Chat.sendAnalytics(analytics)
         else -> Unit
     }
 }

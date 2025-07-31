@@ -83,11 +83,16 @@ class DefaultDataViewSubscription(
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
+
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             collection = collection,
             subscription = getDataViewSubscriptionId(context),
-            sorts = getSortsWithDefaultCreatedDate(activeViewer.sorts, dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = listOf(),
             keys = keys,
@@ -224,7 +229,7 @@ private fun getSortsWithDefaultCreatedDate(
     viewerSorts: List<DVSort>,
     relationLinks: List<RelationLink>
 ): List<DVSort> {
-    return if (viewerSorts.isEmpty()) {
+    return viewerSorts.ifEmpty {
         listOf(
             DVSort(
                 relationKey = Relations.CREATED_DATE,
@@ -233,7 +238,5 @@ private fun getSortsWithDefaultCreatedDate(
                 relationFormat = RelationFormat.DATE
             )
         )
-    } else {
-        viewerSorts
     }.updateWithRelationFormat(relationLinks)
 }

@@ -382,6 +382,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Кнопка \"Поделиться\"</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Неподдерживаемый блок</string>
@@ -1629,6 +1630,7 @@
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Кнопка \"Поделиться\" и \"Участники\"</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>

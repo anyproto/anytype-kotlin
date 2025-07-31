@@ -340,13 +340,14 @@ class GetImageContract : ActivityResultContract<Int, Uri?>() {
 fun NavController.safeNavigate(
     @IdRes currentDestinationId: Int,
     @IdRes id: Int,
-    args: Bundle? = null
+    args: Bundle? = null,
+    errorMessage: String? = null
 ) {
     if (currentDestinationId == currentDestination?.id) {
         runCatching {
             navigate(id, args)
         }.onFailure {
-            Timber.e(it, "Error while navigation")
+            Timber.e(it, "Error while navigation, $errorMessage")
         }
     }
 }

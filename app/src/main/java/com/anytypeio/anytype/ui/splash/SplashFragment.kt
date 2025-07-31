@@ -331,10 +331,10 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     private fun NavController.safeNavigateOrLog(
         @IdRes id: Int,
         args: Bundle? = null,
-        errorTag: String? = null, // optional, for logging context if you want to extend
+        errorTag: String? = null
     ) {
         val currentId = currentDestination?.id ?: return
-        safeNavigate(currentId, id, args)
+        safeNavigate(currentId, id, args, errorTag)
     }
 
     private fun showVersion() {

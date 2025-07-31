@@ -19,6 +19,9 @@ interface DateProvider {
     fun getTimestampForYesterdayAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
+    fun getTimestampForLastYearAtStartOfYear(): TimeInSeconds
+    fun getTimestampForCurrentYearAtStartOfYear(): TimeInSeconds
+    fun getTimestampForNextYearAtStartOfYear(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
     fun adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis: TimeInMillis): TimeInSeconds
     fun formatToDateString(timestamp: Long, pattern: String): String

@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Botón Atrás</string>
     <string name="content_desc_share_button">Botón Compartir</string>
     <string name="content_desc_home_button">Botón Inicio</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Botón Buscar</string>
     <string name="content_desc_add_doc_button">Añadir documento</string>
     <string name="unsupported_block">Bloque no compatible</string>
@@ -1600,6 +1601,7 @@ En concreto,
     <string name="main_navigation_content_desc_back_button">Botón Atrás</string>
     <string name="main_navigation_content_desc_members_button">Botón de compartir y miembros</string>
     <string name="main_navigation_content_desc_home_button">Botón Inicio</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>

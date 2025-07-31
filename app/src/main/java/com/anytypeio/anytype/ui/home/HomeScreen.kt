@@ -166,9 +166,9 @@ fun HomeScreen(
             BottomNavigationMenu(
                 state = navPanelState,
                 modifier = Modifier,
-                searchClick = onSearchClicked,
-                addDocClick = onCreateNewObjectClicked,
-                addDocLongClick = onCreateNewObjectLongClicked,
+                onSearchClick = onSearchClicked,
+                onAddDocClick = onCreateNewObjectClicked,
+                onAddDocLongClick = onCreateNewObjectLongClicked,
                 onShareButtonClicked = onNavBarShareButtonClicked,
                 onHomeButtonClicked = onHomeButtonClicked
             )

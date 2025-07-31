@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -79,7 +80,8 @@ class ObjectSetViewModelFactory(
     private val dateProvider: DateProvider,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -122,7 +124,8 @@ class ObjectSetViewModelFactory(
             dateProvider = dateProvider,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spaceViews
         ) as T
     }
 }

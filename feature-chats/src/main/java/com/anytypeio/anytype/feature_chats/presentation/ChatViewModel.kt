@@ -1167,8 +1167,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed(isSpaceRoot: Boolean) {
-        Timber.d("onBackButtonPressed, isSpaceRoot: $isSpaceRoot")
+    fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
@@ -1182,17 +1182,14 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            if (isSpaceRoot) {
-                Timber.d("Root space screen. Releasing resources...")
-                proceedWithClearingSpaceBeforeExitingToVault()
-            }
+            proceedWithClearingSpaceBeforeExitingToVault()
             commands.emit(ViewModelCommand.Exit)
         }
     }
 
-    fun onSpaceNameClicked(isSpaceRoot: Boolean) {
-        Timber.d("onSpaceNameClicked, isSpaceRoot: $isSpaceRoot")
-        onBackButtonPressed(isSpaceRoot = isSpaceRoot)
+    fun onSpaceNameClicked() {
+        Timber.d("onSpaceNameClicked")
+        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {

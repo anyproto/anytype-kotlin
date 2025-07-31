@@ -255,7 +255,8 @@ object SubscriptionsModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
-        pushKeyProvider: PushKeyProvider
+        pushKeyProvider: PushKeyProvider,
+        logger: Logger
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -264,7 +265,8 @@ object SubscriptionsModule {
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
-        pushKeyProvider = pushKeyProvider
+        pushKeyProvider = pushKeyProvider,
+        logger = logger
     )
 
     @JvmStatic

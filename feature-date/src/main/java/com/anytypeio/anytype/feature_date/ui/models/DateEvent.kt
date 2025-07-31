@@ -38,6 +38,7 @@ sealed class DateEvent {
         data object OnAddDocLongClick : NavigationWidget()
         data object OnBackClick : NavigationWidget()
         data object OnBackLongClick : NavigationWidget()
+        data object OnHomeClick : NavigationWidget()
     }
 
     sealed class ObjectsList : DateEvent() {

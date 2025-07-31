@@ -71,8 +71,7 @@ class SplashViewModel(
     private val migration: MigrationHelperDelegate
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
-    MigrationHelperDelegate by migration
-{
+    MigrationHelperDelegate by migration {
 
     val state = MutableStateFlow<State>(State.Init)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -135,6 +134,7 @@ class SplashViewModel(
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
+                    Timber.i("Authorization status: $status")
                     if (status == AuthStatus.UNAUTHORIZED) {
                         commands.emit(Command.NavigateToAuthStart)
                     } else {
@@ -146,10 +146,15 @@ class SplashViewModel(
     }
 
     private fun proceedWithLaunchingWallet() {
+        Timber.i("proceedWithLaunchingWallet")
         viewModelScope.launch {
             launchWallet(BaseUseCase.None).either(
-                fnL = { retryLaunchingWallet() },
+                fnL = {
+                    Timber.e(it, "Error while launching wallet")
+                    retryLaunchingWallet()
+                },
                 fnR = {
+                    Timber.i("Wallet launched successfully")
                     proceedWithLaunchingAccount()
                 }
             )
@@ -172,11 +177,13 @@ class SplashViewModel(
     }
 
     private fun proceedWithLaunchingAccount() {
+        Timber.i("proceedWithLaunchingAccount")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
                 success = { analyticsId ->
+                    Timber.i("Account launched successfully, analyticsId: $analyticsId")
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
                     val props = Props.empty()
@@ -295,6 +302,7 @@ class SplashViewModel(
     }
 
     fun onIntentActionNotFound() {
+        Timber.i("onIntentActionNotFound")
         proceedWithNavigation()
     }
 
@@ -306,6 +314,7 @@ class SplashViewModel(
     }
 
     private fun proceedWithNavigation() {
+        Timber.i("proceedWithNavigation, get getLastOpenedObject")
         viewModelScope.launch {
             getLastOpenedObject(
                 params = GetLastOpenedObject.Params(space = SpaceId(spaceManager.get()))
@@ -315,9 +324,11 @@ class SplashViewModel(
                     proceedWithVaultNavigation()
                 },
                 success = { response ->
+                    Timber.i("Last opened object response: $response")
                     when (response) {
                         is GetLastOpenedObject.Response.Success -> {
                             if (SupportedLayouts.lastOpenObjectLayouts.contains(response.obj.layout)) {
+                                Timber.i("Navigating to last opened object with id: ${response.obj.id}")
                                 val id = response.obj.id
                                 val space = requireNotNull(response.obj.spaceId)
                                 spaceViews
@@ -403,19 +414,23 @@ class SplashViewModel(
             }
 
             if (view != null) {
+                Timber.i("Space view loaded: $view")
                 if (view.isActive || view.isLoading) {
                     val chat = view.chatId
                     when {
                         view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
+                            Timber.i("Navigating to space level chat with id: $chat")
                             commands.emit(
-                                Command.NavigateToSpaceLevelChat(
+                                Command.NavigateToChat(
                                     space = space.id,
                                     chat = chat,
                                     deeplink = deeplink
                                 )
                             )
                         }
+
                         else -> {
+                            Timber.i("Navigating to widgets (HomeScreen) for space with id: ${space.id}")
                             commands.emit(
                                 Command.NavigateToWidgets(
                                     space = space.id,
@@ -425,6 +440,7 @@ class SplashViewModel(
                         }
                     }
                 } else {
+                    Timber.w("Space view is not active or loading. Navigating to vault.")
                     commands.emit(Command.NavigateToVault(deeplink))
                 }
             } else {
@@ -432,6 +448,7 @@ class SplashViewModel(
                 commands.emit(Command.NavigateToVault(deeplink))
             }
         } else {
+            Timber.w("No space found or space manager state is NoSpace. Navigating to vault.")
             commands.emit(Command.NavigateToVault(deeplink))
         }
     }
@@ -461,17 +478,16 @@ class SplashViewModel(
     }
 
     sealed class Command {
+        data class NavigateToVault(val deeplink: String? = null) : Command()
         data class NavigateToWidgets(val space: Id, val deeplink: String? = null) : Command()
-        data class NavigateToSpaceLevelChat(
+        data class NavigateToChat(
             val space: Id,
             val chat: Id,
             val deeplink: String? = null
         ) : Command()
-        data class NavigateToVault(val deeplink: String? = null) : Command()
         data object NavigateToAuthStart : Command()
         data object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id, val space: Id, val chat: Id?) : Command()
-        data class NavigateToChat(val space: Id, val chat: Id) : Command()
         data class NavigateToObjectSet(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToDateObject(val id: Id, val space: Id, val chat: Id?) : Command()
         data class NavigateToObjectType(val id: Id, val space: Id, val chat: Id?) : Command()
@@ -480,7 +496,8 @@ class SplashViewModel(
 
     companion object {
         const val ERROR_MESSAGE = "An error occurred while starting account"
-        const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
+        const val ERROR_NEED_UPDATE =
+            "Unable to retrieve account. Please update Anytype to the latest version."
         const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
         const val SPACE_LOADING_TIMEOUT = 5000L
     }
@@ -488,11 +505,11 @@ class SplashViewModel(
     sealed class State {
         data object Init : State()
         data object Loading : State()
-        data object Success: State()
-        data class Error(val msg: String): State()
+        data object Success : State()
+        data class Error(val msg: String) : State()
         sealed class Migration : State() {
-            data object AwaitingStart: Migration()
-            data class InProgress(val progress: Float): Migration()
+            data object AwaitingStart : Migration()
+            data class InProgress(val progress: Float) : Migration()
             data class Failed(val state: MigrationHelperDelegate.State.Failed) : Migration()
         }
     }

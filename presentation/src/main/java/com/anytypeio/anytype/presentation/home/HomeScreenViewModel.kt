@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -410,10 +411,15 @@ class HomeScreenViewModel(
                 spaceAccessType,
                 userPermissions
             ) { type, permission ->
+                val spaceId = spaceManager.get()
+                val spaceUxType =
+                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
+                        ?: SpaceUxType.DATA
                 NavPanelState.fromPermission(
                     permission = permission,
                     forceHome = false,
-                    spaceAccessType = type
+                    spaceAccess = type,
+                    spaceUxType = spaceUxType
                 )
             }.collect {
                 navPanelState.value = it
@@ -1949,8 +1955,12 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(isSpaceRoot: Boolean) {
-        proceedWithExiting(isSpaceRoot)
+    fun onBackClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.HandleChatSpaceBackNavigation
+            )
+        }
     }
 
     private fun proceedWithExiting(isSpaceRoot: Boolean) {
@@ -2897,6 +2907,8 @@ sealed class Command {
     data class ShowInviteLinkQrCode(val link: String) : Command()
 
     data object ShowLeaveSpaceWarning : Command()
+
+    data object HandleChatSpaceBackNavigation : Command()
 }
 
 /**

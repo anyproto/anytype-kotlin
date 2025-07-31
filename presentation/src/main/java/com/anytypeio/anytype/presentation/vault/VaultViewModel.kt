@@ -168,7 +168,7 @@ class VaultViewModel(
                 Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
                 // Don't update the UI state - keep the current drag order visible
             } else {
-                Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces}")
+                Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces.size}")
                 _uiState.value = sections
             }
         }

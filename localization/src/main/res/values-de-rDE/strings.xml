@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Nicht unterstützter Block</string>
@@ -1600,6 +1601,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>

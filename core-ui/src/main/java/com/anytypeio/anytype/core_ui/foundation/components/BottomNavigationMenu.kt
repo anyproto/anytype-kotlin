@@ -57,7 +57,7 @@ fun BottomNavigationMenu(
     val leftNavItem = when (state) {
         is NavPanelState.Chat -> state.left.toNavItem(
             onShare = onShareButtonClicked,
-            onHome = onHomeButtonClicked
+            onChat = onHomeButtonClicked
         )
 
         is NavPanelState.Default -> state.left.toNavItem(
@@ -122,7 +122,8 @@ fun BottomNavigationMenu(
 // Extension to map LeftButtonState to NavItem
 private fun NavPanelState.LeftButtonState.toNavItem(
     onShare: () -> Unit,
-    onHome: () -> Unit
+    onHome: () -> Unit = {},
+    onChat: () -> Unit = {}
 ): NavItem = when (this) {
     is NavPanelState.LeftButtonState.AddMembers -> NavItem(
         res = BottomNavigationItem.ADD_MEMBERS.res,
@@ -147,7 +148,7 @@ private fun NavPanelState.LeftButtonState.toNavItem(
     NavPanelState.LeftButtonState.Chat -> NavItem(
         res = BottomNavigationItem.CHAT.res,
         contentDescRes = R.string.main_navigation_content_desc_chat_button,
-        onClick = onHome
+        onClick = onChat
     )
 }
 

@@ -40,6 +40,7 @@ import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
+import kotlin.collections.plusAssign
 import timber.log.Timber
 
 /**
@@ -56,19 +57,27 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showVersion()
-        subscribe(vm.state) {
-            Timber.d("Splash state: $it")
-            handleState(it)
-        }
-        subscribe(vm.commands) {
-            Timber.d("Splash command: $it")
-            handleCommand(it)
-        }
         if (BuildConfig.DEBUG) {
             binding.error.setOnClickListener {
                 vm.onErrorClicked()
             }
         }
+    }
+
+    override fun onStart() {
+        jobs += subscribe(vm.state) {
+            Timber.d("Splash state: $it")
+            handleState(it)
+        }
+        jobs += subscribe(vm.commands) {
+            Timber.d("Splash command: $it")
+            handleCommand(it)
+        }
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
     }
 
     private fun handleState(state: SplashViewModel.State) = with(binding) {

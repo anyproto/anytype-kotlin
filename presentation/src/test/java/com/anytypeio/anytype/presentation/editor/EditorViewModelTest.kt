@@ -108,6 +108,7 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.primitives.ParsedProperties
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -381,6 +382,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var resourceProvider: ResourceProvider
+
+    @Mock
+    lateinit var spacedViews: SpaceViewSubscriptionContainer
 
     lateinit var vm: EditorViewModel
 
@@ -3738,6 +3742,7 @@ open class EditorViewModelTest {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
+            spaceViews = spacedViews
         )
     }
 

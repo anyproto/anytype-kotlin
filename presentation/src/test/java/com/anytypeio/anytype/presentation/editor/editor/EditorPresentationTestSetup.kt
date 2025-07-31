@@ -11,7 +11,9 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
 import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -61,6 +63,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -308,6 +311,9 @@ open class EditorPresentationTestSetup {
     lateinit var fillTableRow: FillTableRow
 
     @Mock
+    lateinit var spacedViews: SpaceViewSubscriptionContainer
+
+    @Mock
     lateinit var convertObjectToCollection: ConvertObjectToCollection
 
     lateinit var tableDelegate: EditorTableDelegate
@@ -540,7 +546,8 @@ open class EditorPresentationTestSetup {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            spaceViews = spacedViews
         )
     }
 
@@ -929,5 +936,12 @@ open class EditorPresentationTestSetup {
         stubInterceptEvents()
         stubClosePage()
         stubInterceptThreadStatus()
+        val spaceView = StubSpaceView(
+            id = defaultSpace,
+            spaceUxType = SpaceUxType.DATA
+        )
+        spacedViews.stub {
+            onBlocking { get(space = SpaceId(defaultSpace)) } doReturn spaceView
+        }
     }
 }

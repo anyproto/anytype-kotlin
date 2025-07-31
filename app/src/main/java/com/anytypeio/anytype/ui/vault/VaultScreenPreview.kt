@@ -22,6 +22,8 @@ fun ChatWithManyAttachmentsNoText() {
         title = "File Archive",
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:30",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // No message text, so should show "5 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -60,6 +62,8 @@ fun ChatWithManyMixedAttachmentsNoText() {
         title = "Mixed Files",
         icon = SpaceIconView.Placeholder(),
         messageTime = "14:15",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // No message text, should show "6 Attachments"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -102,10 +106,11 @@ fun ChatWithImageAttachments() {
             .padding(horizontal = 16.dp),
         title = "Design Team",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Alice: Check out these designs",
         creatorName = "Alice",
         messageText = "Check out these designs",
         messageTime = "10:45",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -133,10 +138,11 @@ fun ChatWithFileAttachments() {
             .padding(horizontal = 16.dp),
         title = "Project Discussion",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Bob: Here are the documents",
         creatorName = "Bob",
         messageText = "Here are the documents",
         messageTime = "14:22",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
@@ -160,10 +166,11 @@ fun ChatWithLinkAttachments() {
             .padding(horizontal = 16.dp),
         title = "Resource Sharing",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Charlie: Found some useful links",
         creatorName = "Charlie",
         messageText = "Found some useful links",
         messageTime = "11:30",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
@@ -197,10 +204,11 @@ fun ChatWithMixedAttachments() {
             .padding(horizontal = 16.dp),
         title = "Development Updates",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Dana: Latest progress and resources",
         creatorName = "Dana",
         messageText = "Latest progress and resources",
         messageTime = "16:30",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -230,6 +238,8 @@ fun ChatWithAttachmentsNoText() {
         title = "Media Sharing",
         icon = SpaceIconView.Placeholder(),
         messageTime = "12:15",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -255,6 +265,8 @@ fun ChatWithManyLinksNoText() {
         title = "Reference Links",
         icon = SpaceIconView.Placeholder(),
         messageTime = "15:45",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // No message text, should show "5 Attachments" for mixed link/file types
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -297,6 +309,8 @@ fun ChatWithSingleLinkNoText() {
         title = "Single Link",
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:15",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Single link should show object name instead of "1 Object"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -319,6 +333,8 @@ fun ChatWithMultipleLinksOnlyNoText() {
         title = "Multiple Links Only",
         icon = SpaceIconView.Placeholder(),
         messageTime = "10:30",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Multiple links only should show "3 Objects"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -352,6 +368,8 @@ fun ChatWithSingleImageNoMessage() {
         icon = SpaceIconView.Placeholder(),
         creatorName = "Alice",
         messageTime = "09:00",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Single image, no message: "Alice: [] Image"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -375,6 +393,8 @@ fun ChatWithSingleLinkWithMessage() {
         creatorName = "Bob",
         messageText = "Check this out",
         messageTime = "10:00",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Single link with message: "Bob: [] API Documentation Check this out"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -398,6 +418,8 @@ fun ChatWithMultipleImagesNoMessage() {
         icon = SpaceIconView.Placeholder(),
         creatorName = "Charlie",
         messageTime = "11:00",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Multiple images, no message: "Charlie: [][][] 3 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -429,6 +451,8 @@ fun ChatWithMultipleObjectsWithMessage() {
         creatorName = "Dana",
         messageText = "Here are some resources",
         messageTime = "12:00",
+        maxPinnedSpaces = 6,
+        showPinButton = true,
         // Multiple objects with message: "Dana: [][][] 3 Objects Here are some resources"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -460,6 +484,8 @@ fun ChatEmpty() {
             .padding(horizontal = 16.dp),
         title = "Empty Chat",
         icon = SpaceIconView.Placeholder(),
-        messageTime = "08:00"
+        messageTime = "08:00",
+        showPinButton = true,
+        maxPinnedSpaces = 6
     )
 }

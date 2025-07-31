@@ -154,7 +154,6 @@ import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -167,6 +166,7 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -630,6 +630,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.bottomToolbar
             .homeClicks()
+            .onEach { vm.onHomeButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
+            .chatClicks()
             .onEach { vm.onHomeButtonClicked() }
             .launchIn(lifecycleScope)
 
@@ -1143,15 +1148,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 is Command.OpenFullScreenImage -> {
-                    val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
-                        enterTransition = Fade()
-                        exitTransition = Fade()
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_IMAGE,
+                            url = command.url
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching media image viewer")
                     }
-                    childFragmentManager
-                        .beginTransaction()
-                        .add(R.id.root, screen)
-                        .addToBackStack(null)
-                        .commit()
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
@@ -1315,6 +1320,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenFileByDefaultApp -> {
                     vm.startSharingFile(command.id) { uri ->
                         openFileByDefaultApp(uri)
+                    }
+                }
+                is Command.PlayVideo -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_VIDEO,
+                            url = command.url,
+                            name = ""
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching video player")
+                    }
+                }
+                is Command.PlayAudio -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_AUDIO,
+                            url = command.url,
+                            name = command.name
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching audio player")
                     }
                 }
                 is Command.SaveTextToSystemClipboard -> {

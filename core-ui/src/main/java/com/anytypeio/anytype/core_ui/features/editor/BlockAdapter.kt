@@ -263,25 +263,6 @@ class BlockAdapter(
         isInDragAndDropMode = false
     }
 
-    override fun onViewDetachedFromWindow(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.pause()
-            }
-        }
-    }
-
-    override fun onViewRecycled(holder: BlockViewHolder) {
-        when (holder) {
-            is Video -> {
-                holder.recycle()
-            }
-            is Title.Video -> {
-                holder.release()
-            }
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
@@ -386,8 +367,7 @@ class BlockAdapter(
             }
 
             HOLDER_VIDEO_TITLE -> Title.Video(
-                ItemBlockTitleVideoBinding.inflate(inflater, parent, false),
-                lifecycle
+                ItemBlockTitleVideoBinding.inflate(inflater, parent, false)
             )
 
             HOLDER_TODO_TITLE -> {
@@ -1444,13 +1424,21 @@ class BlockAdapter(
 
             is Title.Video -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.Video)
+                    bind(
+                        item = blocks[position] as BlockView.Title.Video,
+                        onPlayClicked = {
+                            onClickListener(ListenerType.Header.Video)
+                        }
+                    )
                 }
             }
 
             is Title.Image -> {
                 holder.apply {
-                    bind(item = blocks[position] as BlockView.Title.Image)
+                    bind(
+                        item = blocks[position] as BlockView.Title.Image,
+                        clicked = onClickListener
+                    )
                 }
             }
             is Code -> {
@@ -1493,8 +1481,7 @@ class BlockAdapter(
             is Video -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Media.Video,
-                    clicked = onClickListener,
-                    lifecycle = lifecycle
+                    clicked = onClickListener
                 )
             }
             is VideoUpload -> {

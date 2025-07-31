@@ -8,6 +8,7 @@ import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl.PermissionState
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import timber.log.Timber
@@ -18,7 +19,7 @@ interface NotificationPermissionManager {
     fun onPermissionGranted()
     fun onPermissionDenied()
     fun onPermissionDismissed()
-    fun permissionState(): StateFlow<PermissionState>
+    fun permissionState(): Flow<PermissionState>
     fun refreshPermissionState()
     fun areNotificationsEnabled(): Boolean
 }

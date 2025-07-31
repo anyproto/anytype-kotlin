@@ -23,7 +23,8 @@ sealed class Chat {
         val reactions: Map<String, List<String>> = emptyMap(),
         val replyToMessageId: Id? = null,
         val read: Boolean = false,
-        val mentionRead: Boolean = false
+        val mentionRead: Boolean = false,
+        val synced: Boolean = false
     ) {
         data class Content(
             val text: String,
@@ -63,7 +64,8 @@ sealed class Chat {
                     marks = marks,
                     style = Block.Content.Text.Style.P
                 ),
-                order = ""
+                order = "",
+                synced = false
             )
 
             /**
@@ -73,7 +75,8 @@ sealed class Chat {
                 id: Id,
                 text: String,
                 attachments: List<Attachment> = emptyList(),
-                marks: List<Block.Content.Text.Mark>
+                marks: List<Block.Content.Text.Mark>,
+                synced: Boolean = false
             ) : Message = Message(
                 id = id,
                 createdAt = 0L,
@@ -87,7 +90,8 @@ sealed class Chat {
                     marks = marks,
                     style = Block.Content.Text.Style.P
                 ),
-                order = ""
+                order = "",
+                synced = synced
             )
         }
     }
@@ -96,6 +100,7 @@ sealed class Chat {
         val unreadMessages: UnreadState? = null,
         val unreadMentions: UnreadState? = null,
         val lastStateId: Id? = null,
+        val order: Long = -1L,
     ) {
         /**
          * @property olderOrderId oldest(in the lex sorting) unread message order id. Client should ALWAYS scroll through unread messages from the oldest to the newest

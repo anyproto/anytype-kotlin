@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.42.0-rc10"
+middlewareVersion = "v0.42.0-rc27"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -60,6 +60,7 @@ roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.2.0'
+telephotoZoomableVersion = '0.16.0'
 coilVideoVersion = '3.2.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
@@ -100,6 +101,7 @@ coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVe
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }
 coilCache = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coilComposeVersion"  }
+telephotoZoomableImage = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "telephotoZoomableVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }
@@ -159,6 +161,7 @@ fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", vers
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
+anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2" }
 
 [bundles]
 

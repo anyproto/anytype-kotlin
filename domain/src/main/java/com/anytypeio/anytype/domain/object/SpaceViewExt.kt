@@ -59,5 +59,5 @@ fun activeWriters(participants: List<SpaceMember>): Int =
     }
 
 fun isSubscriberLimitReached(currentSubscribers: Int, subscriberLimit: Int?): Boolean {
-    return subscriberLimit?.let { currentSubscribers >= it } ?: false
+    return subscriberLimit?.let { currentSubscribers >= it } == true
 }

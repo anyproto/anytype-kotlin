@@ -68,6 +68,9 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -209,6 +212,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var dateProvider: DateProvider
 
+    @Mock
+    lateinit var spacedViews: SpaceViewSubscriptionContainer
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -271,6 +277,13 @@ open class ObjectSetViewModelTestSetup {
         stubNetworkMode()
         givenNetworkNodeMocked()
         stubInterceptThreadStatus()
+        val spaceView = StubSpaceView(
+            id = defaultSpace,
+            spaceUxType = SpaceUxType.DATA
+        )
+        spacedViews.stub {
+            onBlocking { get(space = SpaceId(defaultSpace)) } doReturn spaceView
+        }
     }
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -316,7 +329,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spacedViews
         )
     }
 

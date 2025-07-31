@@ -173,7 +173,12 @@
         <action
             android:id="@+id/actionOpenWidgetsFromChat"
             app:destination="@id/homeScreen"
-            app:popUpTo="@id/vaultScreen"
+            app:popUpTo="@id/chatScreen"
+            app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_back_on_vault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@+id/main_navigation"
             app:popUpToInclusive="false" />
     </fragment>
 
@@ -222,6 +227,11 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_back_on_vault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment
@@ -248,7 +258,7 @@
         android:label="Date Object">
         <action
             android:id="@+id/actionExitToSpaceWidgets"
-            app:popUpTo="@+id/homeScreen"
+            app:popUpTo="@+id/vaultScreen"
             app:popUpToInclusive="false" />
     </fragment>
 
@@ -325,6 +335,9 @@
         <action
             android:id="@+id/actionCreateChatFromVault"
             app:destination="@id/createSpaceScreen" />
+        <action
+            android:id="@+id/action_open_space_settings"
+            app:destination="@id/spaceSettingsScreen" />
     </fragment>
 
     <dialog

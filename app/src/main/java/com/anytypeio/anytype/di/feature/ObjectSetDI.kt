@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -227,7 +228,8 @@ object ObjectSetModule {
         permissions: UserPermissionProvider,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        spaceViews: SpaceViewSubscriptionContainer
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -267,7 +269,8 @@ object ObjectSetModule {
         permissions = permissions,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 
     @JvmStatic

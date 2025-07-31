@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -74,12 +75,12 @@ fun VersionHistoryPreviewScreen(
             dragHandle = null,
             sheetState = sheetState,
             onDismissRequest = onDismiss,
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding()
+                .padding(top = 16.dp),
             scrimColor = Color.Transparent,
-            containerColor = colorResource(id = R.color.background_primary),
-            contentWindowInsets = {
-                WindowInsets(top = 60.dp)
-            }
+            containerColor = colorResource(id = R.color.background_primary)
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(

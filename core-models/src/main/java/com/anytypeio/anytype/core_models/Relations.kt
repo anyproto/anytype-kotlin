@@ -114,6 +114,7 @@ object Relations {
     const val SPACE_PUSH_NOTIFICATIONS_KEY = "spacePushNotificationEncryptionKey"
     const val SPACE_PUSH_NOTIFICATIONS_TOPIC = "spacePushNotificationsTopics"
     const val SPACE_PUSH_NOTIFICATION_MODE = "spacePushNotificationMode"
+    const val SPACE_ORDER = "spaceOrder"
 
     val systemRelationKeys = listOf(
         "id",

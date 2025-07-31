@@ -108,6 +108,7 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
     private fun setupAnalytics() {
         Amplitude
             .getInstance()
+            .setMinTimeBetweenSessionsMillis(5 * 60 * 1000)
             .setTrackingOptions(TrackingOptions().disableIpAddress())
             .initialize(this, BuildConfig.AMPLITUDE_KEY)
     }

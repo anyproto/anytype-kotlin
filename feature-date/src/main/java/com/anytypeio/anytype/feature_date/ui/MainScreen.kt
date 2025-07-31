@@ -43,9 +43,9 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiCalendarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsSheetState
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 import com.anytypeio.anytype.feature_date.viewmodel.UiHeaderState
-import com.anytypeio.anytype.feature_date.viewmodel.UiNavigationWidget
 import com.anytypeio.anytype.feature_date.viewmodel.UiSnackbarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -58,7 +58,7 @@ fun DateMainScreen(
     uiHeaderState: UiHeaderState,
     uiFieldsState: UiFieldsState,
     uiObjectsListState: UiObjectsListState,
-    uiNavigationWidget: UiNavigationWidget,
+    uiNavigationWidget: NavPanelState,
     uiFieldsSheetState: UiFieldsSheetState,
     uiSyncStatusState: SyncStatusWidgetState,
     uiCalendarState: UiCalendarState,
@@ -172,16 +172,19 @@ fun DateMainScreen(
                     modifier = Modifier
                         .align(Alignment.BottomCenter)
                         .padding(bottom = 16.dp),
-                    searchClick = {
+                    onSearchClick = {
                         onDateEvent(DateEvent.NavigationWidget.OnGlobalSearchClick)
                     },
-                    addDocClick = {
+                    onAddDocClick = {
                         onDateEvent(DateEvent.NavigationWidget.OnAddDocClick)
                     },
-                    addDocLongClick = {
+                    onAddDocLongClick = {
                         onDateEvent(DateEvent.NavigationWidget.OnAddDocLongClick)
                     },
-                    isOwnerOrEditor = uiNavigationWidget is UiNavigationWidget.Editor
+                    state = uiNavigationWidget,
+                    onHomeButtonClicked = {
+                        onDateEvent(DateEvent.NavigationWidget.OnHomeClick)
+                    }
                 )
             }
         },

@@ -11,17 +11,15 @@ import javax.inject.Inject
 
 interface DecryptionPushContentService {
     fun decrypt(encryptedData: ByteArray, keyId: String): DecryptedPushContent?
+    fun decryptAndVerifySignature(encryptedData: ByteArray, keyId: String, signature: String?): DecryptedPushContent?
 }
 
 class DecryptionPushContentServiceImpl @Inject constructor(
     private val pushKeyProvider: PushKeyProvider,
     private val cryptoService: CryptoService,
+    private val signatureVerificationService: SignatureVerificationService,
     private val json: Json
 ) : DecryptionPushContentService {
-
-    init {
-        Timber.d("DecryptionPushContentService initialized")
-    }
 
     @OptIn(ExperimentalSerializationApi::class)
     override fun decrypt(encryptedData: ByteArray, keyId: String): DecryptedPushContent? {
@@ -58,6 +56,41 @@ class DecryptionPushContentServiceImpl @Inject constructor(
             }
         } catch (e: Exception) {
             Timber.e(e, "Unexpected error during decryption for keyId: $keyId")
+            null
+        }
+    }
+
+    override fun decryptAndVerifySignature(
+        encryptedData: ByteArray,
+        keyId: String,
+        signature: String?
+    ): DecryptedPushContent? {
+        return try {
+            // First decrypt the content
+            val decryptedContent = decrypt(encryptedData, keyId) ?: return null
+
+            // Check if signature verification is required
+            if (signature == null) {
+                return decryptedContent
+            }
+
+            // Extract sender's account address from decrypted content
+            val senderAccountAddress = decryptedContent.senderId
+
+            // Verify signature against the encryptedData
+            val isSignatureValid = signatureVerificationService.verifyNotificationSignature(
+                accountAddress = senderAccountAddress,
+                data = encryptedData,
+                signature = signature
+            )
+
+            if (isSignatureValid) {
+                decryptedContent
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error during signature verification for keyId: $keyId")
             null
         }
     }

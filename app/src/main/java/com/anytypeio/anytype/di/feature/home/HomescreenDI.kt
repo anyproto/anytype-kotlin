@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -48,6 +49,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -301,5 +303,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun featureToggles(): FeatureToggles
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
-    fun chatPreviews(): ChatPreviewContainer
+    fun notificationPermissionManager(): NotificationPermissionManager
+    fun provideChatEventChannel(): ChatEventChannel
+    fun provideChatPreviewContainer(): ChatPreviewContainer
 }

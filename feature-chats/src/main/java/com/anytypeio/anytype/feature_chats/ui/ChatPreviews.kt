@@ -44,7 +44,8 @@ fun ChatPreview() {
                         count = 10,
                         isSelected = false
                     )
-                )
+                ),
+                isSynced = false
             ),
             ChatView.Message(
                 id = "2",
@@ -59,7 +60,8 @@ fun ChatPreview() {
                 author = "Leo",
                 timestamp = System.currentTimeMillis(),
                 creator = "",
-                isUserAuthor = true
+                isUserAuthor = true,
+                isSynced = false
             ),
             ChatView.Message(
                 id = "3",
@@ -73,7 +75,8 @@ fun ChatPreview() {
                 ),
                 author = "Gilbert",
                 timestamp = System.currentTimeMillis(),
-                creator = ""
+                creator = "",
+                isSynced = false
             )
         ),
         scrollState = LazyListState(),
@@ -127,7 +130,8 @@ fun ChatPreview2() {
                         isSelected = false
                     )
                 ),
-                isUserAuthor = true
+                isUserAuthor = true,
+                isSynced = false
             )
         ),
         scrollState = LazyListState(),
@@ -173,7 +177,8 @@ fun ChatScreenPreview() {
                         System.currentTimeMillis()
                                 - 30.toDuration(DurationUnit.DAYS).inWholeMilliseconds
                                 + idx.toDuration(DurationUnit.DAYS).inWholeMilliseconds,
-                        creator = "random id"
+                        creator = "random id",
+                        isSynced = false
                     )
                 )
             }

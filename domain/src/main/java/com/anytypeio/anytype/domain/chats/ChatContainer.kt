@@ -657,14 +657,32 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-
+                is Event.Command.Chats.UpdateMessageSyncStatus -> {
+                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
+                    idsInWindow.forEach { id ->
+                        val index = messageList.indexOfFirst { it.id == id }
+                        if (messageList[index].synced != event.isSynced) {
+                            messageList[index] = messageList[index].copy(synced = event.isSynced)
+                        }
+                    }
+                }
                 is Event.Command.Chats.UpdateState -> {
                     logger.logWarning(
                         "DROID-2966 Updating chat state, " +
                                 "last state: ${this.state.lastStateId}, " +
                                 "new state: ${event.state?.lastStateId}"
                     )
-                    countersState = event.state ?: Chat.State()
+                    val newState = event.state ?: Chat.State()
+                    if (ChatStateUtils.shouldApplyNewChatState(
+                            newOrder = newState.order,
+                            currentOrder = countersState.order
+                        )
+                    ) {
+                        logger.logInfo("DROID-3799 Applying new chat state with order: ${newState.order}")
+                        countersState = newState
+                    } else {
+                        logger.logInfo("DROID-3799 Skipping chat state update due to order comparison")
+                    }
                 }
             }
         }
@@ -724,6 +742,7 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.ClearIntent)
     }
 
+
     internal sealed class Transformation {
         sealed class Events : Transformation() {
             data class Payload(val events: List<Event.Command.Chats>) : Events()
@@ -767,7 +786,7 @@ class ChatContainer @Inject constructor(
         private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
 
 
-        private val ATTACHMENT_KEYS = listOf(
+        val ATTACHMENT_KEYS = listOf(
             Relations.ID,
             Relations.SPACE_ID,
             Relations.PICTURE,

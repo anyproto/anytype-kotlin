@@ -75,7 +75,7 @@ class DefaultPushMessageProcessorTest {
             "x-any-payload" to "test-payload",
             "x-any-key-id" to "test-key-id"
         )
-        whenever(decryptionService.decrypt(any(), any())).thenReturn(null)
+        whenever(decryptionService.decryptAndVerifySignature(any(), any(), any())).thenReturn(null)
 
         // When
         val result = processor.process(messageData)
@@ -109,7 +109,7 @@ class DefaultPushMessageProcessorTest {
             )
         )
 
-        whenever(decryptionService.decrypt(Base64.decode(payload, Base64.DEFAULT), keyId))
+        whenever(decryptionService.decryptAndVerifySignature(Base64.decode(payload, Base64.DEFAULT), keyId, null))
             .thenReturn(decryptedContent)
 
         // When
@@ -121,5 +121,68 @@ class DefaultPushMessageProcessorTest {
             message = decryptedContent.newMessage,
             spaceId = decryptedContent.spaceId
         )
+    }
+
+    @Test
+    fun `process should return true and show notification when decryption with signature succeeds`() {
+        // Given
+        val payload = "test-payload"
+        val keyId = "test-key-id"
+        val signature = "test-signature"
+        val messageData = mapOf(
+            "x-any-payload" to payload,
+            "x-any-key-id" to keyId,
+            "x-any-signature" to signature
+        )
+        
+        val decryptedContent = DecryptedPushContent(
+            spaceId = "test-space-id",
+            type = 1,
+            senderId = "test-sender-id",
+            newMessage = DecryptedPushContent.Message(
+                chatId = "test-chat-id",
+                msgId = "test-msg-id",
+                text = "Test message",
+                spaceName = "Test Space",
+                senderName = "Test Sender",
+                hasAttachments = true
+            )
+        )
+
+        whenever(decryptionService.decryptAndVerifySignature(Base64.decode(payload, Base64.DEFAULT), keyId, signature))
+            .thenReturn(decryptedContent)
+
+        // When
+        val result = processor.process(messageData)
+
+        // Then
+        assertTrue(result)
+        verify(notificationBuilder).buildAndNotify(
+            message = decryptedContent.newMessage,
+            spaceId = decryptedContent.spaceId
+        )
+    }
+
+    @Test
+    fun `process should return false when signature verification fails`() {
+        // Given
+        val payload = "test-payload"
+        val keyId = "test-key-id"
+        val signature = "invalid-signature"
+        val messageData = mapOf(
+            "x-any-payload" to payload,
+            "x-any-key-id" to keyId,
+            "x-any-signature" to signature
+        )
+
+        whenever(decryptionService.decryptAndVerifySignature(Base64.decode(payload, Base64.DEFAULT), keyId, signature))
+            .thenReturn(null)
+
+        // When
+        val result = processor.process(messageData)
+
+        // Then
+        assertFalse(result)
+        verifyNoInteractions(notificationBuilder)
     }
 } 

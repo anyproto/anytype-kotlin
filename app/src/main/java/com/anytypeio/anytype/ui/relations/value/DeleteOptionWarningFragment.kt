@@ -30,10 +30,8 @@ import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.color
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -84,10 +82,6 @@ class DeleteOptionWarningFragment : BaseBottomSheetComposeFragment() {
                                 .wrapContentHeight()
                                 .padding(bottom = 16.dp, start = 20.dp, end = 20.dp)
                         ) {
-                            val icon = AlertConfig.Icon(
-                                GRADIENT_TYPE_RED,
-                                icon = R.drawable.ic_alert_question_warning
-                            )
                             Box(
                                 Modifier
                                     .padding(vertical = 6.dp)
@@ -96,7 +90,7 @@ class DeleteOptionWarningFragment : BaseBottomSheetComposeFragment() {
                                 Dragger()
                             }
                             Spacer(modifier = Modifier.height(16.dp))
-                            AlertIcon(icon)
+                            AlertIcon(R.drawable.ic_popup_question_56)
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(
                                 modifier = Modifier.fillMaxWidth(),

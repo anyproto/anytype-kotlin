@@ -258,7 +258,8 @@ class SelectWidgetSourceViewModel(
                 )
             ).onSuccess { result ->
                 suggested.value = SuggestedWidgetsState.Default(
-                    suggestedSystemSources = result.suggestedSystemSources,
+                    suggestedSystemSources = result.suggestedSystemSources
+                        .filterNot { it == BundledWidgetSourceIds.CHAT },
                     suggestedObjectTypes = result.suggestedObjectTypes.map { type ->
                         SuggestWidgetObjectType(
                             id = type.id,

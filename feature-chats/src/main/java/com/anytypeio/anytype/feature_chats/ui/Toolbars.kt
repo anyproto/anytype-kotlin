@@ -1,11 +1,11 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,12 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -70,23 +70,36 @@ fun ChatTopToolbar(
                 contentDescription = stringResource(R.string.content_desc_back_button)
             )
         }
-        Text(
+        Row(
             modifier = Modifier
                 .weight(1f)
-                .noRippleClickable { onSpaceNameClicked() }
-            ,
-            text = when(header) {
-                is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
-                    stringResource(R.string.untitled)
-                }
-                is ChatViewModel.HeaderView.Init -> ""
-            },
-            color = colorResource(R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            style = Title1
-        )
+                .noRippleClickable { onSpaceNameClicked() },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = when(header) {
+                    is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
+                        stringResource(R.string.untitled)
+                    }
+                    is ChatViewModel.HeaderView.Init -> ""
+                },
+                color = colorResource(R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                textAlign = TextAlign.Center,
+                style = Title1
+            )
+            if (header is ChatViewModel.HeaderView.Default && header.isMuted) {
+                Spacer(modifier = Modifier.width(6.dp))
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(id = R.drawable.ci_notifications_off),
+                    contentDescription = stringResource(id = R.string.content_desc_muted),
+                    colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
+                )
+            }
+        }
         if (header is ChatViewModel.HeaderView.Default && header.showIcon) {
             Box(
                 modifier = Modifier
@@ -121,7 +134,24 @@ fun ChatTopToolbarPreview() {
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
             icon = SpaceIconView.Placeholder(name = "Us"),
-            showIcon = true
+            showIcon = true,
+            isMuted = false
+        ),
+        onSpaceIconClicked = {},
+        onBackButtonClicked = {},
+        onSpaceNameClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun ChatTopToolbarMutedPreview() {
+    ChatTopToolbar(
+        header = ChatViewModel.HeaderView.Default(
+            title = "My Chat Space",
+            icon = SpaceIconView.Placeholder(name = "MCS"),
+            showIcon = true,
+            isMuted = true
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},

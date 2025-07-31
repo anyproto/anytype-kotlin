@@ -48,7 +48,8 @@ object DummyMessageGenerator {
             content = content,
             attachments = attachments,
             reactions = reactions,
-            replyToMessageId = replyTo
+            replyToMessageId = replyTo,
+            synced = false
         )
     }
 

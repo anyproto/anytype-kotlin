@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.os.Build.VERSION.SDK_INT
-import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +10,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavOptions.*
+import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
@@ -22,11 +22,14 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
+import com.anytypeio.anytype.presentation.vault.VaultErrors
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
+import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -36,6 +39,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
@@ -68,26 +72,21 @@ class VaultFragment : BaseComposeFragment() {
                 val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
-                val onDeleteSpace: (String) -> Unit = { spaceId ->
-                    vm.onDeleteSpaceMenuClicked(spaceId)
-                }
-                val onLeaveSpace: (String) -> Unit = { spaceId ->
-                    vm.onLeaveSpaceMenuClicked(spaceId)
-                }
-                VaultScreenWithUnreadSection(
-                    sections = vm.sections.collectAsStateWithLifecycle().value,
+
+                VaultScreen(
+                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                     onSettingsClicked = vm::onSettingsClicked,
-                    onOrderChanged = vm::onOrderChanged,
-                    onDragEnd = vm::onDragEnd,
                     profile = vm.profileView.collectAsStateWithLifecycle().value,
-                    isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
-                    onDeleteSpace = onDeleteSpace,
-                    onLeaveSpace = onLeaveSpace
+                    onPinSpace = vm::onPinSpaceClicked,
+                    onUnpinSpace = vm::onUnpinSpaceClicked,
+                    onOrderChanged = vm::onOrderChanged,
+                    onDragEnd = vm::onDragEnd,
+                    onSpaceSettings = vm::onSpaceSettingsClicked
                 )
                 val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
                 if (notificationError != null) {
@@ -97,6 +96,25 @@ class VaultFragment : BaseComposeFragment() {
                         onButtonClick = { vm.clearNotificationError() },
                         onDismissRequest = { vm.clearNotificationError() }
                     )
+                }
+
+                val vaultErrors = vm.vaultErrors.collectAsStateWithLifecycle().value
+                when (vaultErrors) {
+                    VaultErrors.MaxPinnedSpacesReached -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(
+                                R.string.vault_max_pinned_limit_reached,
+                                MAX_PINNED_SPACES
+                            ),
+                            buttonText = getString(R.string.button_ok),
+                            onButtonClick = { vm.clearVaultError() },
+                            onDismissRequest = { vm.clearVaultError() }
+                        )
+                    }
+
+                    VaultErrors.Hidden -> {
+                        //do nothing
+                    }
                 }
 
                 if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
@@ -244,6 +262,17 @@ class VaultFragment : BaseComposeFragment() {
                     vm.onLeaveSpaceWarningCancelled()
                 }
                 fragment.show(childFragmentManager, null)
+            }
+
+            is VaultCommand.OpenSpaceSettings -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.action_open_space_settings,
+                        SpaceSettingsFragment.args(space = command.space)
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space settings")
+                }
             }
         }
     }

@@ -23,10 +23,8 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -91,10 +89,7 @@ fun LeaveSpaceWarningScreen(
         Header(text = stringResource(R.string.multiplayer_leave_space))
         Spacer(modifier = Modifier.height(8.dp))
         AlertIcon(
-            icon = AlertConfig.Icon(
-                gradient = GRADIENT_TYPE_RED,
-                icon = R.drawable.ic_alert_question_warning
-            )
+            icon = R.drawable.ic_popup_question_56
         )
         Spacer(modifier = Modifier.height(12.dp))
         Text(

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -43,6 +44,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -59,10 +61,12 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.PopupProperties
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -92,6 +96,7 @@ fun Bubble(
     isUserAuthor: Boolean = false,
     shouldHideUsername: Boolean = false,
     isEdited: Boolean = false,
+    isSynced: Boolean = true,
     isMaxReactionCountReached: Boolean = false,
     reactions: List<ChatView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
@@ -130,10 +135,7 @@ fun Bubble(
                     secondButtonText = stringResource(R.string.delete),
                     secondButtonType = BUTTON_WARNING,
                     firstButtonType = BUTTON_SECONDARY,
-                    icon = AlertConfig.Icon(
-                        gradient = GRADIENT_TYPE_RED,
-                        icon = R.drawable.ic_alert_question_warning
-                    )
+                    icon = R.drawable.ic_popup_question_56
                 ),
                 onFirstButtonClicked = {
                     showDeleteMessageWarning = false
@@ -213,14 +215,16 @@ fun Bubble(
             )
             if (content.msg.isNotEmpty()) {
                 Box(
-                    modifier = Modifier.padding(
-                        top = 4.dp,
-                        start = 12.dp,
-                        end = 12.dp,
-                        bottom = 4.dp
-                    ).then(
-                        if (attachments.isNotEmpty()) Modifier.fillMaxWidth() else Modifier
-                    )
+                    modifier = Modifier
+                        .padding(
+                            top = 4.dp,
+                            start = 12.dp,
+                            end = 12.dp,
+                            bottom = 4.dp
+                        )
+                        .then(
+                            if (attachments.isNotEmpty()) Modifier.fillMaxWidth() else Modifier
+                        )
                 ) {
                     // Rendering text body message
                     Text(
@@ -289,9 +293,9 @@ fun Bubble(
                                 append(
                                     timestamp.formatTimeInMillis(TIME_H24).let {
                                         if (isEdited) {
-                                            "${stringResource(R.string.chats_message_edited)} $it"
+                                            " ${stringResource(R.string.chats_message_edited)} $it"
                                         } else {
-                                            it
+                                            " $it"
                                         }
                                     }
                                 )
@@ -302,20 +306,35 @@ fun Bubble(
                     )
                     // Rendering message timestamp
 
-                    Text(
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.BottomEnd),
-                        text = timestamp.formatTimeInMillis(TIME_H24).let {
-                            if (isEdited) {
-                                "${stringResource(R.string.chats_message_edited)} $it"
-                            } else {
-                                it
-                            }
-                        },
-                        style = Caption2Regular,
-                        color = colorResource(id = R.color.transparent_active),
-                        maxLines = 1
-                    )
+                            .align(Alignment.BottomEnd)
+                    ) {
+                        if (isSynced) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_chat_msg_synced),
+                                contentDescription = "Message synced icon"
+                            )
+                        } else {
+                            Image(
+                                painter = painterResource(R.drawable.ic_chat_msg_not_synced),
+                                contentDescription = "Message not synced icon"
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Text(
+                            text = timestamp.formatTimeInMillis(TIME_H24).let {
+                                if (isEdited) {
+                                    "${stringResource(R.string.chats_message_edited)} $it"
+                                } else {
+                                    it
+                                }
+                            },
+                            style = Caption2Regular,
+                            color = colorResource(id = R.color.transparent_active),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
             MaterialTheme(
@@ -333,7 +352,8 @@ fun Bubble(
                     expanded = showDropdownMenu,
                     onDismissRequest = {
                         showDropdownMenu = false
-                    }
+                    },
+                    properties = PopupProperties(focusable = false)
                 ) {
                     if (!isMaxReactionCountReached && !isReadOnly) {
                         DropdownMenuItem(

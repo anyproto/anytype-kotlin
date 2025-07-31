@@ -51,8 +51,7 @@ class DefaultUserSettingsCache(
         return VaultPreference(
             showIntroduceVault = DEFAULT_SHOW_INTRODUCE_VAULT,
             isRelativeDates = DEFAULT_RELATIVE_DATES,
-            dateFormat = appDefaultDateFormatProvider.provide(),
-            orderOfSpaces = emptyList()
+            dateFormat = appDefaultDateFormatProvider.provide()
         )
     }
     //endregion
@@ -421,7 +420,6 @@ class DefaultUserSettingsCache(
                     defaultValue = initialVaultSettings()
                 )
                 VaultSettings(
-                    orderOfSpaces = curr.orderOfSpaces,
                     isRelativeDates = curr.isRelativeDates,
                     dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide(),
                 )
@@ -438,39 +436,10 @@ class DefaultUserSettingsCache(
                     defaultValue = initialVaultSettings()
                 )
                 VaultSettings(
-                    orderOfSpaces = curr.orderOfSpaces,
                     isRelativeDates = curr.isRelativeDates,
                     dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
-    }
-
-    override suspend fun setVaultSpaceOrder(account: Account, order: List<Id>) {
-        context.vaultPrefsStore.updateData { existingPreferences ->
-            val curr = existingPreferences.preferences.getOrDefault(
-                key = account.id,
-                defaultValue = initialVaultSettings()
-            )
-            existingPreferences.copy(
-                preferences = existingPreferences.preferences + mapOf(
-                    account.id to curr.copy(
-                        orderOfSpaces = order
-                    )
-                )
-            )
-        }
-    }
-
-    override suspend fun setVaultSettings(account: Account, settings: VaultSettings) {
-        context.vaultPrefsStore.updateData { existingPreferences ->
-            existingPreferences.copy(
-                preferences = existingPreferences.preferences + mapOf(
-                    account.id to VaultPreference(
-                        orderOfSpaces = settings.orderOfSpaces,
-                    )
-                )
-            )
-        }
     }
 
     override suspend fun setRelativeDates(account: Account, enabled: Boolean) {

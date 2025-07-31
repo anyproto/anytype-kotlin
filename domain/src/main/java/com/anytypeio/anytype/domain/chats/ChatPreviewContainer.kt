@@ -1,143 +1,350 @@
 package com.anytypeio.anytype.domain.chats
 
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 /**
- * Cross-space (vault-level) chat previews container
+ * Emits chat‑preview data enriched with attachment objects. The flow surfaces a
+ * semantic [PreviewState] so downstream collectors (e.g. the VaultViewModel)
+ * can ignore early loading emissions without relying on timing hacks.
  */
 interface ChatPreviewContainer {
 
     fun start()
     fun stop()
 
-    suspend fun getAll(): List<Chat.Preview>
-    suspend fun getPreview(space: SpaceId): Chat.Preview?
-    fun observePreview(space: SpaceId) : Flow<Chat.Preview?>
-    fun observePreviews() : Flow<List<Chat.Preview>>
+    fun observePreviewsWithAttachments(): Flow<PreviewState>
+
+    /**
+     * Observes chat preview for a specific space without attachment enrichment.
+     * Returns only the unread counts for the specified space.
+     * @param spaceId The space ID to observe
+     * @return Flow of chat preview for the space, or null if not found
+     */
+    fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?>
+
+    sealed interface PreviewState {
+        object Loading : PreviewState
+        data class Ready(val items: List<Chat.Preview>) : PreviewState
+    }
 
     class Default @Inject constructor(
         private val repo: BlockRepository,
         private val events: ChatEventChannel,
         private val dispatchers: AppCoroutineDispatchers,
         private val scope: CoroutineScope,
-        private val logger: Logger
+        private val logger: Logger,
+        private val subscription: StorelessSubscriptionContainer,
+        private val awaitAccountStart: AwaitAccountStartManager
     ) : ChatPreviewContainer {
 
         private var job: Job? = null
-        private val previews = MutableStateFlow<List<Chat.Preview>>(emptyList())
 
-        override fun start() {
-            job?.cancel()
-            job = scope.launch(dispatchers.io) {
-                previews.value = emptyList()
-                val initial = runCatching { repo.subscribeToMessagePreviews(SUBSCRIPTION_ID) }
-                    .onFailure { logger.logWarning("DROID-2966 Error while getting initial previews: ${it.message}") }
-                    .getOrDefault(emptyList())
-                events
-                    .subscribe(SUBSCRIPTION_ID)
-                    .scan(initial = initial) { previews, events ->
-                        events.fold(previews) { state, event ->
-                            when (event) {
-                                is Event.Command.Chats.Add -> {
-                                    state.map { preview ->
-                                        if (preview.chat == event.context) {
-                                            preview.copy(message = event.message)
-                                        } else {
-                                            preview
-                                        }
-                                    }
-                                }
-                                is Event.Command.Chats.Update -> {
-                                    state.map { preview ->
-                                        if (preview.chat == event.context && preview.message?.id == event.id) {
-                                            preview.copy(message = event.message)
-                                        } else {
-                                            preview
-                                        }
-                                    }
-                                }
-                                is Event.Command.Chats.UpdateState -> {
-                                    state.map { preview ->
-                                        if (preview.chat == event.context) {
-                                            preview.copy(
-                                                state = event.state
-                                            )
-                                        } else {
-                                            preview
-                                        }
-                                    }
-                                }
-                                is Event.Command.Chats.Delete -> {
-                                    state.map { preview ->
-                                        if (preview.chat == event.context && preview.message?.id == event.message) {
-                                            preview.copy(message = null)
-                                        } else {
-                                            preview
-                                        }
-                                    }
-                                }
-                                else -> state.also {
-                                    logger.logInfo("DROID-2966 Ignoring event: $event")
-                                }
-                            }
-                        }
-                    }
-                    .flowOn(dispatchers.io)
-                    .catch { logger.logException(it, "DROID-2966 Exception in chat preview flow") }
-                    .collect {
-                        previews.value = it
-                    }
+        /**
+         * `null`  – previews not fetched yet  → emit [ChatPreviewContainer.PreviewState.Loading]
+         * non‑null – subscription finished   → emit [ChatPreviewContainer.PreviewState.Ready]
+         */
+        private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
+        private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
+
+        // Hot shared state for UI collectors
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val previewsState: StateFlow<PreviewState> = previews
+            .map { list ->
+                if (list == null) PreviewState.Loading else PreviewState.Ready(list)
             }
-        }
+            .flatMapLatest { state ->
+                when (state) {
+                    PreviewState.Loading -> flowOf(state)
+                    is PreviewState.Ready -> enrichWithAttachments(state)
+                }
+            }
+            .distinctUntilChanged()
+            .catch { e ->
+                logger.logException(e, "Exception in preview flow")
+                emit(PreviewState.Loading)
+            }
+            .stateIn(scope, SharingStarted.Eagerly, PreviewState.Loading)
 
-        override fun stop() {
-            job?.cancel()
-            job = null
-            scope.launch(dispatchers.io) {
-                previews.value = emptyList()
-                runCatching {
-                    repo.unsubscribeFromMessagePreviews(subscription = SUBSCRIPTION_ID)
-                }.onFailure {
-                    logger.logException(it, "DROID-2966 Error while unsubscribing from message previews")
+        init {
+            // Auto start/stop together with account lifecycle
+            scope.launch {
+                awaitAccountStart.state().collect { state ->
+                    when (state) {
+                        AwaitAccountStartManager.State.Init -> Unit
+                        AwaitAccountStartManager.State.Started -> start()
+                        AwaitAccountStartManager.State.Stopped -> stop()
+                    }
                 }
             }
         }
 
-        override suspend fun getAll(): List<Chat.Preview> = previews.value
+        override fun start() {
+            job?.cancel()
 
-        override suspend fun getPreview(space: SpaceId): Chat.Preview? {
-            return previews.value.firstOrNull { preview -> preview.space.id == space.id }
-        }
+            job = scope.launch(dispatchers.io) {
 
-        override fun observePreview(space: SpaceId): Flow<Chat.Preview?> {
-            return previews.map {
-                it.firstOrNull { preview -> preview.space.id == space.id }
+                attachmentIds.value = emptyMap() // Reset attachment tracking
+                previews.value = null // Reset previews
+
+                val initial = runCatching {
+                    repo.subscribeToMessagePreviews(SUBSCRIPTION_ID)
+                }.onFailure {
+                    logger.logWarning("Error while getting initial previews: ${it.message}")
+                }.getOrDefault(emptyList())
+
+                previews.value = initial            // ← Ready (may be empty)
+                trackMissingAttachments(initial)
+                collectEvents(initial)
             }
         }
 
-        override fun observePreviews(): Flow<List<Chat.Preview>> {
-            return previews
+        override fun stop() {
+            scope.launch(dispatchers.io) {
+                job?.cancel()
+                job = null
+                previews.value = null           // back to Loading for next start()
+                unsubscribeAll()
+                attachmentFlows.clear()         // let the cached StateFlows be GC-ed
+            }
+        }
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        override fun observePreviewsWithAttachments(): Flow<PreviewState> = previewsState
+
+        override fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?> =
+            previews
+                .map { list -> list?.find { it.space == spaceId } }
+                .distinctUntilChanged()
+
+        private suspend fun collectEvents(initial: List<Chat.Preview>) {
+            events.subscribe(SUBSCRIPTION_ID)
+                .scan(initial = initial) { previews, batch ->
+                    batch.fold(previews) { state, event ->
+                        applyEvent(state, event)
+                    }
+                }
+                .flowOn(dispatchers.io)
+                .catch { logger.logException(it, "Event stream error") }
+                .collect { previews.value = it }
+        }
+
+        private fun applyEvent(
+            state: List<Chat.Preview>,
+            event: Event.Command.Chats
+        ): List<Chat.Preview> {
+            return when (event) {
+                is Event.Command.Chats.Add -> handleAdd(state, event)
+
+                is Event.Command.Chats.Update -> state.map { preview ->
+                    if (preview.chat == event.context && preview.message?.id == event.id) {
+                        preview.copy(message = event.message)
+                    } else preview
+                }
+
+                is Event.Command.Chats.UpdateState -> state.map { preview ->
+                    if (preview.chat == event.context) {
+                        val newState = event.state
+                        if (newState != null && ChatStateUtils.shouldApplyNewChatState(
+                                newOrder = newState.order,
+                                currentOrder = preview.state?.order
+                            )
+                        ) {
+                            logger.logInfo("Applying new chat preview state with order: ${newState.order}")
+                            preview.copy(state = newState)
+                        } else preview
+                    } else preview
+                }
+
+                is Event.Command.Chats.Delete -> state.map { preview ->
+                    if (preview.chat == event.context && preview.message?.id == event.message) {
+                        preview.copy(message = null)
+                    } else preview
+                }
+
+                else -> state.also {
+                    logger.logInfo("Ignoring event: $event")
+                }
+            }
+        }
+
+        private fun handleAdd(
+            state: List<Chat.Preview>,
+            event: Event.Command.Chats.Add
+        ): List<Chat.Preview> {
+            // Extract attachment IDs
+            val messageAttachmentIds = event.message.attachments.map { it.target }.toSet()
+            val dependencyIds = event.dependencies.map { it.id }.toSet()
+            val missing = messageAttachmentIds - dependencyIds
+
+            val idx = state.indexOfFirst { it.chat == event.context }
+            if (idx == -1) {
+                // Brand-new preview
+                // Track missing attachments for later subscription
+                if (missing.isNotEmpty()) {
+                    val space = event.spaceId
+                    val merged = (attachmentIds.value[space] ?: emptySet()) + missing
+                    if (attachmentIds.value[space] != merged) {
+                        logger.logInfo("DROID‑3309: Adding missing attachments for space ${space.id}: $merged")
+                        attachmentIds.value = attachmentIds.value + (space to merged)
+                    }
+                }
+                return state + Chat.Preview(
+                    space = event.spaceId,
+                    chat = event.context,
+                    message = event.message,
+                    dependencies = event.dependencies
+                )
+            }
+
+            // Track missing attachments for later subscription
+            state.firstOrNull { it.chat == event.context }?.let { preview ->
+                if (missing.isNotEmpty()) {
+                    val merged =
+                        (attachmentIds.value[preview.space] ?: emptySet()) + missing
+                    if (attachmentIds.value[preview.space] != merged) {
+                        logger.logInfo("DROID‑3309: Adding missing attachments for space ${preview.space.id}: $merged")
+                        attachmentIds.value = attachmentIds.value + (preview.space to merged)
+                    }
+                }
+            }
+
+            return state.map { preview ->
+                if (preview.chat == event.context) {
+                    preview.copy(message = event.message, dependencies = event.dependencies)
+                } else preview
+            }
+        }
+
+        private fun trackMissingAttachments(previews: List<Chat.Preview>) {
+            val initialMissing = mutableMapOf<SpaceId, Set<Id>>()
+            previews.forEach { preview ->
+                preview.message?.let { message ->
+                    val messageAttachments = message.attachments.map { it.target }.toSet()
+                    val dependencyIds = preview.dependencies.map { it.id }.toSet()
+                    val missing = messageAttachments - dependencyIds
+                    if (missing.isNotEmpty()) {
+                        initialMissing[preview.space] = missing
+                    }
+                }
+            }
+            if (initialMissing.isNotEmpty() && attachmentIds.value != initialMissing) {
+                logger.logInfo("DROID‑3309: Initial missing attachments: $initialMissing")
+                attachmentIds.value = initialMissing
+            }
+        }
+
+        private fun enrichWithAttachments(ready: PreviewState.Ready): Flow<PreviewState> {
+            val spaces = ready.items.map { it.space }.distinct()
+            val sharedFlows = spaces.map { attachmentFlow(it) }
+
+            return if (sharedFlows.isEmpty()) {
+                flowOf(ready)
+            } else {
+                combine(sharedFlows) { arrays ->
+                    val attachmentsBySpace = arrays
+                        .mapIndexed { idx, map -> spaces[idx] to map }
+                        .toMap()
+
+                    val enriched = ready.items.map { preview ->
+                        val deps = buildUpdatedDependencies(
+                            preview = preview,
+                            attachments = attachmentsBySpace[preview.space].orEmpty()
+                        )
+                        preview.copy(dependencies = deps)
+                    }
+                    PreviewState.Ready(enriched)
+                }
+            }
+        }
+
+        private val attachmentFlows =
+            ConcurrentHashMap<SpaceId, StateFlow<Map<Id, ObjectWrapper.Basic>>>()
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private fun attachmentFlow(space: SpaceId): StateFlow<Map<Id, ObjectWrapper.Basic>> =
+            attachmentFlows.getOrPut(space) {
+                attachmentIds
+                    .map { it[space] ?: emptySet() }
+                    .distinctUntilChanged()
+                    .flatMapLatest { ids ->
+                        if (ids.isEmpty()) flowOf(emptyMap())
+                        else subscription.subscribe(
+                            searchParams = StoreSearchByIdsParams(
+                                subscription = "${space.id}/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
+                                space = space,
+                                targets = ids.toList(),
+                                keys = ChatContainer.ATTACHMENT_KEYS
+                            )
+                        ).map { wrappers -> wrappers.associateBy { it.id } }
+                    }
+                    .catch { e ->
+                        logger.logException(e, "DROID-3309 attachment flow error for ${space.id}")
+                        emit(emptyMap())
+                    }
+                    // one upstream subscription, replay last value for new collectors
+                    .stateIn(scope, SharingStarted.Lazily, emptyMap())
+            }
+
+        private fun buildUpdatedDependencies(
+            preview: Chat.Preview,
+            attachments: Map<Id, ObjectWrapper.Basic>
+        ): List<ObjectWrapper.Basic> {
+            val all = (preview.dependencies + attachments.values)
+                .associateBy { it.id }
+            return all.values.toList()
+                .also { deps ->
+                    logger.logInfo(
+                        "DROID-3309: buildUpdatedDependencies for space ${preview.space.id}, " +
+                                "found ${deps.size} dependencies for ${preview.message?.attachments?.size ?: 0} attachments"
+                    )
+                }
+        }
+
+        private suspend fun unsubscribeAll() {
+            val attachmentSubs =
+                attachmentIds.value.keys.map { "${it.id}/$ATTACHMENT_SUBSCRIPTION_POSTFIX" }
+            attachmentIds.value = emptyMap()
+
+            runCatching { repo.unsubscribeFromMessagePreviews(SUBSCRIPTION_ID) }
+                .onFailure { logger.logException(it, "DROID‑3309 Error unsubscribing previews") }
+
+            runCatching {
+                if (attachmentSubs.isNotEmpty()) repo.cancelObjectSearchSubscription(attachmentSubs)
+            }.onFailure { logger.logException(it, "DROID‑3309 Error unsubscribing attachments") }
         }
 
         companion object {
             private const val SUBSCRIPTION_ID = "chat-previews-subscription"
+            private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "chat-previews-attachments"
         }
     }
 }

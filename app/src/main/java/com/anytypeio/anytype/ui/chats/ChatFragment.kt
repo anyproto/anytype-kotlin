@@ -62,9 +62,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.home.isSpaceRootScreen
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -115,12 +113,8 @@ class ChatFragment : BaseComposeFragment() {
                     ) {
                         ChatTopToolbar(
                             header = vm.header.collectAsStateWithLifecycle().value,
-                            onBackButtonClicked = {
-                                vm.onBackButtonPressed(isSpaceRootScreen())
-                            },
-                            onSpaceNameClicked = {
-                                vm.onSpaceNameClicked(isSpaceRoot = isSpaceRootScreen())
-                            },
+                            onBackButtonClicked = vm::onBackButtonPressed,
+                            onSpaceNameClicked = vm::onSpaceIconClicked,
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )
                         ChatScreenWrapper(
@@ -305,9 +299,9 @@ class ChatFragment : BaseComposeFragment() {
                         when (command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
-                                    findNavController().popBackStack()
+                                    findNavController().navigate(R.id.action_back_on_vault)
                                 }.onFailure {
-                                    Timber.e(it, "Error while exiting chat")
+                                    Timber.e(it, "Error while back on vault from chat screen")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.OpenWidgets -> {
@@ -325,13 +319,13 @@ class ChatFragment : BaseComposeFragment() {
                             }
                             is ChatViewModel.ViewModelCommand.MediaPreview -> {
                                 runCatching {
-                                    findNavController().navigate(
-                                        R.id.fullScreenImageFragment,
-                                        FullScreenPictureFragment.args(
-                                            url = command.url,
-                                            ignoreRootWindowInsets = true
-                                        )
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_IMAGE,
+                                        url = command.url
                                     )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching media image viewer")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.SelectChatReaction -> {
@@ -387,6 +381,18 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
                             }
+                            is ChatViewModel.ViewModelCommand.PlayAudio -> {
+                                runCatching {
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_AUDIO,
+                                        url = command.url,
+                                        name = command.name
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching audio player")
+                                }
+                            }
                             is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
                                 runCatching {
                                     val intent = Intent().apply {
@@ -427,9 +433,7 @@ class ChatFragment : BaseComposeFragment() {
                     }
                 }
                 BackHandler {
-                    vm.onBackButtonPressed(
-                        isSpaceRoot = isSpaceRootScreen()
-                    )
+                    vm.onBackButtonPressed()
                 }
                 LaunchedEffect(Unit) {
                     vm.checkNotificationPermissionDialogState()

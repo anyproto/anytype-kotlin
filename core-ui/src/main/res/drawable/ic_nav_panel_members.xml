@@ -8,20 +8,20 @@
         android:pathData="M4,4h24v24h-24z"/>
     <path
         android:pathData="M7.75,12.75a3.25,3.75 0,1 0,6.5 0a3.25,3.75 0,1 0,-6.5 0z"
-        android:fillColor="@color/transparent_active_full_alpha"
+        android:fillColor="@color/text_primary"
         android:fillAlpha="0.4" />
     <path
         android:pathData="M17.063,25C17.615,25 18.07,24.55 17.992,24.003C17.503,20.609 14.559,18 11,18C7.441,18 4.497,20.609 4.009,24.003C3.93,24.55 4.385,25 4.938,25H17.063Z"
-        android:fillColor="@color/transparent_active_full_alpha"
+        android:fillColor="@color/text_primary"
         android:fillAlpha="0.4"
         android:fillType="evenOdd"/>
     <path
         android:pathData="M17.75,9.75a3.25,3.75 0,1 0,6.5 0a3.25,3.75 0,1 0,-6.5 0z"
-        android:fillColor="@color/transparent_active_full_alpha"
+        android:fillColor="@color/text_primary"
         android:fillAlpha="0.4"/>
     <path
         android:pathData="M27.99,21.003C28.069,21.55 27.614,22 27.061,22H19.015C18.331,20.2 17.05,18.693 15.414,17.715C16.706,16.063 18.727,15 20.999,15C24.558,15 27.502,17.609 27.99,21.003Z"
-        android:fillColor="@color/transparent_active_full_alpha"
+        android:fillColor="@color/text_primary"
         android:fillAlpha="0.4"
         android:fillType="evenOdd"/>
   </group>

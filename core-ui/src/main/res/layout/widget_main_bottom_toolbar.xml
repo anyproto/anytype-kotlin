@@ -23,6 +23,24 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/btnChat"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@drawable/default_ripple">
+
+        <ImageView
+            android:id="@+id/icChat"
+            android:layout_width="@dimen/main_bottom_toolbar_icon_width"
+            android:layout_height="@dimen/main_bottom_toolbar_icon_height"
+            android:layout_gravity="center"
+            android:scaleType="center"
+            android:contentDescription="@string/content_desc_chat_button"
+            app:srcCompat="@drawable/ic_chat_32" />
+
+    </FrameLayout>
+
+    <FrameLayout
         android:id="@+id/btnShare"
         android:layout_width="0dp"
         android:layout_height="match_parent"

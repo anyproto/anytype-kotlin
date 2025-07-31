@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">戻るボタン</string>
     <string name="content_desc_share_button">共有ボタン</string>
     <string name="content_desc_home_button">ホームボタン</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">検索ボタン</string>
     <string name="content_desc_add_doc_button">ドキュメントを追加</string>
     <string name="unsupported_block">未対応ブロック</string>
@@ -1588,6 +1589,7 @@
     <string name="main_navigation_content_desc_back_button">戻るボタン</string>
     <string name="main_navigation_content_desc_members_button">共有とメンバーボタン</string>
     <string name="main_navigation_content_desc_home_button">ホームボタン</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">オブジェクト検索ボタン</string>
     <string name="main_navigation_content_desc_create_button">オブジェクト作成ボタン</string>
     <string name="chat">チャット</string>

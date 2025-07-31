@@ -63,7 +63,6 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.home.isSpaceRootScreen
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
 import com.anytypeio.anytype.ui.profile.ParticipantFragment

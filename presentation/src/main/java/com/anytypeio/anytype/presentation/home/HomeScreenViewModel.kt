@@ -1955,31 +1955,11 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(currentSpace: SpaceId, isSpaceRoot: Boolean) {
+    fun onBackClicked() {
         viewModelScope.launch {
-            val currentSpaceView = spaceViewSubscriptionContainer.get(space = currentSpace)
-            // Check if current space is a chat type
-            val isChatSpace = currentSpaceView?.spaceUxType == SpaceUxType.CHAT
-            
-            if (isChatSpace) {
-                // For chat spaces, emit command to handle navigation stack checking
-                val chat = currentSpaceView.getValue<Id?>(Relations.CHAT_ID)
-                val space = currentSpaceView.targetSpaceId
-                if (chat != null && space != null) {
-                    commands.emit(
-                        Command.HandleChatSpaceBackNavigation(
-                            chat = chat,
-                            space = space
-                        )
-                    )
-                } else {
-                    Timber.w("Chat or space not found - proceeding with normal exit")
-                    proceedWithExiting(isSpaceRoot)
-                }
-            } else {
-                // For non-chat spaces, proceed with normal exit
-                proceedWithExiting(isSpaceRoot)
-            }
+            commands.emit(
+                Command.HandleChatSpaceBackNavigation
+            )
         }
     }
 
@@ -2928,7 +2908,7 @@ sealed class Command {
 
     data object ShowLeaveSpaceWarning : Command()
 
-    data class HandleChatSpaceBackNavigation(val chat: Id, val space: Id) : Command()
+    data object HandleChatSpaceBackNavigation : Command()
 }
 
 /**

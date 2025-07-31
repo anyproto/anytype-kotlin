@@ -227,6 +227,11 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_back_on_vault"
+            app:destination="@id/vaultScreen"
+            app:popUpTo="@+id/main_navigation"
+            app:popUpToInclusive="false" />
     </fragment>
 
     <fragment

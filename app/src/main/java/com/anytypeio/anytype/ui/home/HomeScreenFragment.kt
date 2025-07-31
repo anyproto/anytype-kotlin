@@ -121,12 +121,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
                         membersCount = view?.membersCount ?: 0,
                         name = view?.space?.name.orEmpty(),
-                        onBackButtonClicked = {
-                            vm.onBackClicked(
-                                currentSpace = SpaceId(space),
-                                isSpaceRoot = isSpaceRootScreen()
-                            )
-                        },
+                        onBackButtonClicked = vm::onBackClicked,
                         onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
                     )
                     PageWithWidgets(
@@ -163,10 +158,7 @@ class HomeScreenFragment : BaseComposeFragment(),
             }
 
             BackHandler {
-                vm.onBackClicked(
-                    currentSpace = SpaceId(space),
-                    isSpaceRoot = isSpaceRootScreen()
-                )
+                vm.onBackClicked()
             }
         }
     }
@@ -447,33 +439,39 @@ class HomeScreenFragment : BaseComposeFragment(),
             }
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
-                    val navController = findNavController()
-                    
-                    // Check previous screen in navigation stack
-                    val previous = navController.previousBackStackEntry
-                    
-                    when (previous?.destination?.id) {
-                        R.id.chatScreen -> {
-                            // Back to ChatFragment if that was previous
-                            navController.popBackStack(R.id.chatScreen, false)
-                        }
-                        R.id.vaultScreen -> {
-                            // Back to VaultFragment if that was previous
-                            navController.popBackStack(R.id.vaultScreen, false)
-                        }
-                        else -> {
-                            // No previous screen, for chat space go to ChatFragment
-                            navController.navigate(
-                                R.id.chatScreen,
-                                ChatFragment.args(
-                                    space = command.space,
-                                    ctx = command.chat
-                                )
-                            )
-                        }
+                    // Back to ChatFragment if that was previous
+                    val result = findNavController().popBackStack(R.id.chatScreen, false)
+                    if (!result) {
+                        findNavController().navigate(R.id.action_back_on_vault)
                     }
+
+//                    val navController = findNavController()
+//
+//                    // Check previous screen in navigation stack
+//                    val previous = navController.previousBackStackEntry
+//
+//                    when (previous?.destination?.id) {
+//                        R.id.chatScreen -> {
+//                            // Back to ChatFragment if that was previous
+//                            navController.popBackStack(R.id.chatScreen, false)
+//                        }
+//                        R.id.vaultScreen -> {
+//                            // Back to VaultFragment if that was previous
+//                            navController.popBackStack(R.id.vaultScreen, false)
+//                        }
+//                        else -> {
+//                            // No previous screen, for chat space go to ChatFragment
+//                            navController.navigate(
+//                                R.id.chatScreen,
+//                                ChatFragment.args(
+//                                    space = command.space,
+//                                    ctx = command.chat
+//                                )
+//                            )
+//                        }
+//                    }
                 }.onFailure {
-                    Timber.e(it, "Error while handling chat space back navigation")
+                    Timber.e(it, "Error while handling home screen back navigation")
                 }
             }
         }
@@ -617,9 +615,4 @@ class HomeScreenFragment : BaseComposeFragment(),
             SPACE_ID_KEY to space
         )
     }
-}
-
-fun Fragment.isSpaceRootScreen() : Boolean {
-    val previous = findNavController().previousBackStackEntry
-    return previous?.destination?.id == R.id.vaultScreen
 }

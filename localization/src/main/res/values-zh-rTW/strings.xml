@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">返回按鈕</string>
     <string name="content_desc_share_button">分享按鈕</string>
     <string name="content_desc_home_button">首頁按鈕</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">搜尋按鈕</string>
     <string name="content_desc_add_doc_button">添加文件</string>
     <string name="unsupported_block">不支援的區塊</string>
@@ -1587,6 +1588,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_back_button">返回按鈕</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">首頁按鈕</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

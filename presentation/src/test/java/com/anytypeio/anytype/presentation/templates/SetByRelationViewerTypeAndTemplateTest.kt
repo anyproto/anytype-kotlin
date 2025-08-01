@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -80,6 +81,8 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         Relations.SET_OF to listOf(setByRelationId),
     )
 
+    val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
@@ -113,7 +116,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             defaultObjectType = null,
             defaultTemplateId = null
         )
-        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
         val dvKeys = listOf(relationObject1.key)
         val pageTypeMap = mapOf(
             Relations.ID to pageTypeId,
@@ -150,7 +153,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
             objects = listOf()
@@ -203,7 +205,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             defaultObjectType = null,
             defaultTemplateId = null
         )
-        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
         val dvKeys = listOf(relationObject1.key)
         val pageTypeMap = mapOf(
             Relations.ID to pageTypeId,
@@ -240,7 +242,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = workspaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
             objects = listOf()
@@ -293,7 +294,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             defaultObjectType = null,
             defaultTemplateId = null
         )
-        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+        val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
         val dvKeys = listOf(relationObject1.key)
         val pageTypeMap = mapOf(
             Relations.ID to pageTypeId,
@@ -330,7 +331,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = workspaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
             objects = listOf()
@@ -384,7 +384,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultObjectType = customType1Id,
                 defaultTemplateId = null
             )
-            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
             val dvKeys = listOf(relationObject1.key)
             val pageTypeMap = mapOf(
                 Relations.ID to pageTypeId,
@@ -431,7 +431,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
                 objects = listOf()
@@ -485,7 +484,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultObjectType = customType1Id,
                 defaultTemplateId = null
             )
-            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
             val dvKeys = listOf(relationObject1.key)
             val pageTypeMap = mapOf(
                 Relations.ID to pageTypeId,
@@ -532,7 +531,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
                 objects = listOf()
@@ -586,7 +584,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultObjectType = customType1Id,
                 defaultTemplateId = null
             )
-            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
             val dvKeys = listOf(relationObject1.key)
             val pageTypeMap = mapOf(
                 Relations.ID to pageTypeId,
@@ -633,7 +631,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
                 objects = listOf()
@@ -687,7 +684,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultObjectType = customType1Id,
                 defaultTemplateId = DEFAULT_TEMPLATE_ID_BLANK
             )
-            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
             val dvKeys = listOf(relationObject1.key)
             val pageTypeMap = mapOf(
                 Relations.ID to pageTypeId,
@@ -734,7 +731,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
                 objects = listOf()
@@ -788,7 +784,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 defaultObjectType = customType1Id,
                 defaultTemplateId = template2.id
             )
-            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
+            val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1, createdDateRelationLink))
             val dvKeys = listOf(relationObject1.key)
             val pageTypeMap = mapOf(
                 Relations.ID to pageTypeId,
@@ -835,7 +831,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = workspaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
                 objects = listOf()

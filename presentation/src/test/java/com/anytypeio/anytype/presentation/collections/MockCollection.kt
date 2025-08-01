@@ -63,6 +63,12 @@ class MockCollection(
         isReadOnlyValue = false,
         format = Relation.Format.NUMBER
     )
+    val createdDateRelation = StubRelationObject(
+        key = Relations.CREATED_DATE,
+        uniqueKey = Relations.CREATED_DATE,
+        isReadOnlyValue = true,
+        format = Relation.Format.DATE
+    )
 
     // VIEW RELATIONS
     val dvViewerRelation1 =
@@ -85,8 +91,9 @@ class MockCollection(
     val relationLink4 = StubRelationLink(relationObject4.key, format = Relation.Format.entries.toTypedArray().random())
     val relationLink5 = StubRelationLink(relationObject5.key, format = Relation.Format.entries.toTypedArray().random())
     val relationLink6 = StubRelationLink(relationObject6.key, format = Relation.Format.entries.toTypedArray().random())
+    val createdDateRelationLink = StubRelationLink(createdDateRelation.key,)
 
-    val relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6)
+    val relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6, createdDateRelationLink)
 
     // SEARCH OBJECTS COMMAND, RELATION KEYS
     val dvKeys = listOf(
@@ -95,7 +102,8 @@ class MockCollection(
         relationObject3.key,
         relationObject4.key,
         relationObject5.key,
-        relationObject6.key
+        relationObject6.key,
+        createdDateRelation.key
     )
 
     // SORTS
@@ -230,14 +238,6 @@ class MockCollection(
         relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6),
         objectOrder = listOf(objectOrderList, objectOrderGrid, objectOrderGallery),
         isCollection = true
-    )
-
-    val dataViewWithFilters = StubDataView(
-        id = "dv-${RandomString.make()}",
-        views = listOf(viewerListWithFilters),
-        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6),
-        isCollection = true,
-        objectOrder = emptyList()
     )
     val spaceId = space
 

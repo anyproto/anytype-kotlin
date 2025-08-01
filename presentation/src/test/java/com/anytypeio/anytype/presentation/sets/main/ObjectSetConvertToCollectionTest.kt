@@ -109,21 +109,22 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
+            // Verify that the collection subscription was called (may be among multiple calls)
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
                     SpaceId(mockObjectSet.space),
                     mockObjectSet.subscriptionId,
-                    listOf(),
+                    listOf(), // collections should have empty sorts
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(),
-                    ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys,
-                    listOf(),
+                    ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys, // collections should not include CREATED_DATE
+                    listOf(), // collections should have empty sources
                     0L,
                     ObjectSetConfig.DEFAULT_LIMIT,
                     null,
                     null,
                     null,
                     null,
-                    collection = mockObjectSet.root
+                    collection = mockObjectSet.root // collection parameter should be set
                 )
             }
         }

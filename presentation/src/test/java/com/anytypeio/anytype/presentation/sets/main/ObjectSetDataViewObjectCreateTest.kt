@@ -13,6 +13,9 @@ import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import kotlin.test.assertFalse

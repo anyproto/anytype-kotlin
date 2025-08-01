@@ -6,8 +6,6 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -60,7 +58,6 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
             subscription = objectCollection.subscriptionId,
             collection = root,
             spaceId = objectCollection.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = objectCollection.dvKeys,
             objects = listOf(objectCollection.obj1, objectCollection.obj2),
             dvSorts = objectCollection.sorts
@@ -103,7 +100,6 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
                 subscription = objectCollection.subscriptionId,
                 collection = root,
                 spaceId = objectCollection.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = objectCollection.dvKeys,
                 objects = listOf(objectCollection.obj1, objectCollection.obj2),
                 dvSorts = listOf(newSort)

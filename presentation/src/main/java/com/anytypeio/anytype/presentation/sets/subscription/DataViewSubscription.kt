@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.subscription
 
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
@@ -81,11 +83,16 @@ class DefaultDataViewSubscription(
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
+
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             collection = collection,
             subscription = getDataViewSubscriptionId(context),
-            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = listOf(),
             keys = keys,
@@ -134,11 +141,15 @@ class DefaultDataViewSubscription(
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
 
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             subscription = getDataViewSubscriptionId(context),
-            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = query,
             keys = keys,
@@ -187,11 +198,15 @@ class DefaultDataViewSubscription(
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
+        val sorts = getSortsWithDefaultCreatedDate(
+            viewerSorts = activeViewer.sorts,
+            relationLinks = dataViewRelationLinks
+        )
 
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
             subscription = getDataViewSubscriptionId(context),
-            sorts = activeViewer.sorts.updateWithRelationFormat(relationLinks = dataViewRelationLinks),
+            sorts = sorts,
             filters = filters,
             sources = query,
             keys = keys,
@@ -216,4 +231,20 @@ private fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLi
         val relationLink = relationLinks.find { it.key == sort.relationKey }
         sort.copy(relationFormat = relationLink?.format ?: RelationFormat.LONG_TEXT)
     }
+}
+
+private fun getSortsWithDefaultCreatedDate(
+    viewerSorts: List<DVSort>,
+    relationLinks: List<RelationLink>
+): List<DVSort> {
+    return viewerSorts.ifEmpty {
+        listOf(
+            DVSort(
+                relationKey = Relations.CREATED_DATE,
+                type = DVSortType.DESC,
+                includeTime = true,
+                relationFormat = RelationFormat.DATE
+            )
+        )
+    }.updateWithRelationFormat(relationLinks)
 }

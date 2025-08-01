@@ -3,7 +3,10 @@ package com.anytypeio.anytype.presentation.sets.main
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.page.CloseObject
@@ -55,15 +58,26 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubStoreOfRelations(mockObjectSet)
+        
+        // Create dataView with CREATED_DATE relation link
+        val relationLinksWithCreatedDate = mockObjectSet.relationLinks + StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+        val dataViewWithCreatedDate = StubDataView(
+            id = mockObjectSet.dataView.id,
+            views = listOf(mockObjectSet.viewer),
+            relationLinks = relationLinksWithCreatedDate
+        )
+        
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details
         )
+        val keys = mockObjectSet.dvKeys
+        
+        // Stub both subscription calls - one without CREATED_DATE and one with it
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
+            keys = keys, // without createdDate
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
             dvFilters = mockObjectSet.filters
@@ -101,8 +115,17 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubStoreOfRelations(mockObjectSet)
+        
+        // Create dataView with CREATED_DATE relation link
+        val relationLinksWithCreatedDate = mockObjectSet.relationLinks + StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+        val dataViewWithCreatedDate = StubDataView(
+            id = mockObjectSet.dataView.id,
+            views = listOf(mockObjectSet.viewer),
+            relationLinks = relationLinksWithCreatedDate
+        )
+        
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details
         )
 
@@ -122,11 +145,11 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             )
         )
 
+        // Stub both subscription calls - one without CREATED_DATE and one with it
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
+            keys = mockObjectSet.dvKeys, // without createdDate
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2, object3),
             dependencies = listOf(targetObject),
@@ -171,16 +194,25 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubStoreOfRelations(mockObjectSet)
+        
+        // Create dataView with CREATED_DATE relation link
+        val relationLinksWithCreatedDate = mockObjectSet.relationLinks + StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+        val dataViewWithCreatedDate = StubDataView(
+            id = mockObjectSet.dataView.id,
+            views = listOf(mockObjectSet.viewer),
+            relationLinks = relationLinksWithCreatedDate
+        )
+        
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details
         )
 
+        // Stub both subscription calls - one without CREATED_DATE and one with it
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
+            keys = mockObjectSet.dvKeys, // without createdDate
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
             dvFilters = mockObjectSet.filters
@@ -220,8 +252,17 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubStoreOfRelations(mockObjectSet)
+        
+        // Create dataView with CREATED_DATE relation link
+        val relationLinksWithCreatedDate = mockObjectSet.relationLinks + StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+        val dataViewWithCreatedDate = StubDataView(
+            id = mockObjectSet.dataView.id,
+            views = listOf(mockObjectSet.viewer),
+            relationLinks = relationLinksWithCreatedDate
+        )
+        
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details
         )
 
@@ -252,11 +293,11 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             )
         )
 
+        // Stub both subscription calls - one without CREATED_DATE and one with it
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
+            keys = mockObjectSet.dvKeys, // without createdDate
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2, objectUnsupportedLayout),
             dependencies = listOf(),

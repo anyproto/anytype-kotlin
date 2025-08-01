@@ -71,6 +71,13 @@ class MockSet(
         format = Relation.Format.OBJECT
     )
 
+    val createdDateRelation = StubRelationObject(
+        key = Relations.CREATED_DATE,
+        uniqueKey = Relations.CREATED_DATE,
+        isReadOnlyValue = true,
+        format = Relation.Format.DATE
+    )
+
     // VIEW RELATIONS
     private val dvViewerRelation1 =
         StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
@@ -164,17 +171,12 @@ class MockSet(
     val dataView = StubDataView(
         id = "dv-${RandomString.make()}",
         views = listOf(viewer),
-        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5)
+        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE))
     )
     val dataViewNoViews = StubDataView(
         id = "dvNoViews-${RandomString.make()}",
         views = listOf(),
         relationLinks = listOf()
-    )
-    val dataViewWith3Views = StubDataView(
-        id = "dv-${RandomString.make()}",
-        views = listOf(viewerGrid, viewerGallery, viewerList),
-        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5)
     )
 
     // RECORDS

@@ -68,7 +68,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             subscription = objectCollection.subscriptionId,
             collection = root,
             spaceId = objectCollection.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = objectCollection.dvKeys,
             objects = listOf(objectCollection.obj1, objectCollection.obj2),
             dvSorts = objectCollection.sorts
@@ -231,7 +230,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                 subscription = objectCollection.subscriptionId,
                 collection = root,
                 spaceId = objectCollection.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = objectCollection.dvKeys + relationObject4.key,
                 objects = listOf(objectCollection.obj1, objectCollection.obj2),
                 dvSorts = objectCollection.sorts

@@ -151,7 +151,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys, // without createdDate
             objects = listOf(),
             collection = root,
@@ -170,7 +169,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys + Relations.CREATED_DATE, // with createdDate
             objects = listOf(),
             collection = root,
@@ -273,7 +271,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
             collection = root,
@@ -375,7 +372,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
             collection = root,
@@ -477,7 +473,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
             collection = root,
@@ -579,7 +574,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
             collection = root,
@@ -681,7 +675,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
             collection = root,

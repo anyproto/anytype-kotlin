@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
@@ -139,7 +138,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 dvSorts = mockObjectCollection.sorts
             )
@@ -179,7 +177,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(mockObjectCollection.obj1, mockObjectCollection.obj2),
                 dvSorts = mockObjectCollection.sorts
@@ -221,7 +218,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj1,
@@ -279,7 +275,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj5,
@@ -338,7 +333,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj1,
@@ -398,7 +392,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj1,
@@ -457,7 +450,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj1,
@@ -516,7 +508,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 subscription = mockObjectCollection.subscriptionId,
                 spaceId = mockObjectCollection.spaceId,
                 collection = root,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectCollection.dvKeys,
                 objects = listOf(
                     mockObjectCollection.obj1,
@@ -603,7 +594,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                     subscription = mockObjectCollection.subscriptionId,
                     spaceId = mockObjectCollection.spaceId,
                     collection = root,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectCollection.dvKeys,
                     dvSorts = mockObjectCollection.sorts
                 )
@@ -673,7 +663,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                     subscription = mockObjectCollection.subscriptionId,
                     spaceId = mockObjectCollection.spaceId,
                     collection = root,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectCollection.dvKeys,
                     dvSorts = mockObjectCollection.sorts
                 )
@@ -745,7 +734,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                     subscription = mockObjectCollection.subscriptionId,
                     spaceId = mockObjectCollection.spaceId,
                     collection = root,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectCollection.dvKeys,
                     dvSorts = mockObjectCollection.sorts
                 )
@@ -813,7 +801,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                     subscription = mockObjectCollection.subscriptionId,
                     spaceId = mockObjectCollection.spaceId,
                     collection = root,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectCollection.dvKeys,
                     dvSorts = mockObjectCollection.sorts
                 )

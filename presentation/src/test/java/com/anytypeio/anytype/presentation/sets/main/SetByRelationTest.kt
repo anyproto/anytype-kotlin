@@ -55,7 +55,6 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),

@@ -199,7 +199,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(mockObjectSet.setOf),
                 objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -233,7 +232,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(mockObjectSet.setOf),
                 dvFilters = mockObjectSet.filters
@@ -306,7 +304,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(type2.id),
                 objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -431,7 +428,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 stubSubscriptionResults(
                     subscription = mockObjectSet.subscriptionId,
                     spaceId = mockObjectSet.spaceId,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectSet.dvKeys,
                     sources = listOf(ObjectTypeIds.PAGE),
                     dvFilters = mockObjectSet.filters

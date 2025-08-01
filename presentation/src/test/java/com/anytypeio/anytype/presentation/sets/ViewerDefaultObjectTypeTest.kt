@@ -110,7 +110,6 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setOfValue),
                 dvFilters = filters
@@ -188,7 +187,6 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(relationObject3.id),
                 dvFilters = filters
@@ -268,7 +266,6 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                 subscription = this.subscriptionId,
                 collection = root,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 objects = listOf(obj1, obj2),
                 dvSorts = sorts

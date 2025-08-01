@@ -1,10 +1,8 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -53,7 +51,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -97,7 +94,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -141,7 +137,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -187,7 +182,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -233,7 +227,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),

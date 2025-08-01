@@ -82,7 +82,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(mockObjectSet.setOf),
                 dvFilters = mockObjectSet.filters,
@@ -161,7 +160,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 stubSubscriptionResults(
                     subscription = mockObjectSet.subscriptionId,
                     spaceId = mockObjectSet.spaceId,
-                    storeOfRelations = storeOfRelations,
                     keys = mockObjectSet.dvKeys,
                     sources = listOf(mockObjectSet.setOf),
                     dvFilters = mockObjectSet.filters,
@@ -257,7 +255,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(setByRelationValue),
                 dvFilters = mockObjectSet.filters,
@@ -316,7 +313,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 subscription = objectCollection.subscriptionId,
                 collection = root,
                 spaceId = objectCollection.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = objectCollection.dvKeys,
                 objects = listOf(objectCollection.obj1, objectCollection.obj2),
                 dvSorts = objectCollection.sorts

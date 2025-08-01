@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.turbineScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -114,7 +117,14 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 searchObjectsWithSubscription(
                     SpaceId(mockObjectSet.space),
                     mockObjectSet.subscriptionId,
-                    listOf(), // collections should have empty sorts
+                    listOf(
+                        Block.Content.DataView.Sort(
+                            relationKey = Relations.CREATED_DATE,
+                            type = Block.Content.DataView.Sort.Type.DESC,
+                            relationFormat = RelationFormat.DATE,
+                            includeTime = true
+                        )
+                    ),
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(),
                     ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys, // collections should not include CREATED_DATE
                     listOf(), // collections should have empty sources

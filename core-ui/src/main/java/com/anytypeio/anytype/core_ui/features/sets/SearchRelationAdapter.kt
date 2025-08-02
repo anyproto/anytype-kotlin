@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import com.anytypeio.anytype.core_ui.common.AbstractAdapter
 import com.anytypeio.anytype.core_ui.common.AbstractViewHolder
 import com.anytypeio.anytype.core_ui.databinding.ItemSearchRelationBinding
-import com.anytypeio.anytype.core_ui.extensions.relationIconSmall
+import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 class SearchRelationAdapter(
@@ -26,7 +26,7 @@ class SearchRelationAdapter(
         val binding: ItemSearchRelationBinding
     ) : AbstractViewHolder<SimpleRelationView>(binding.root) {
         override fun bind(item: SimpleRelationView) = with(binding) {
-            val icon: Int? = item.format.relationIconSmall()
+            val icon: Int? = item.icon()
             if (icon != null) {
                 ivRelation.setImageResource(icon)
             } else {

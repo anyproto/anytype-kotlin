@@ -30,7 +30,7 @@
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
     <string name="app_preferences">App-Einstellungen</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Alarmsymbol</string>
     <string name="modal_tap_to_type">Tippe zum Eingeben</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Nicht unterstützter Block</string>
@@ -1026,7 +1027,7 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
-    <string name="onboarding_your_name">Type your name</string>
+    <string name="onboarding_your_name">Gib deinen Namen ein</string>
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>
@@ -1600,6 +1601,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
@@ -1838,4 +1840,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
     <string name="content_desc_muted">Stumm geschaltet</string>
+    <string name="failed_to_load_image">Failed to load image</string>
 </resources>

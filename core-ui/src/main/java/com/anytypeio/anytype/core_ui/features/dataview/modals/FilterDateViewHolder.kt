@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.extension.hasValue
-import com.anytypeio.anytype.presentation.relations.toName
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 
 class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :

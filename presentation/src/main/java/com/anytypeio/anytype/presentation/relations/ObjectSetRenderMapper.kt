@@ -12,21 +12,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
-import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
-import com.anytypeio.anytype.core_utils.ext.EXACT_DAY
-import com.anytypeio.anytype.core_utils.ext.LAST_WEEK
-import com.anytypeio.anytype.core_utils.ext.MONTH_AGO
-import com.anytypeio.anytype.core_utils.ext.MONTH_AHEAD
-import com.anytypeio.anytype.core_utils.ext.NEXT_WEEK
-import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_AGO
-import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_FROM_NOW
-import com.anytypeio.anytype.core_utils.ext.TODAY
-import com.anytypeio.anytype.core_utils.ext.TOMORROW
-import com.anytypeio.anytype.core_utils.ext.YESTERDAY
-import com.anytypeio.anytype.core_utils.ext.LAST_YEAR
-import com.anytypeio.anytype.core_utils.ext.CURRENT_YEAR
-import com.anytypeio.anytype.core_utils.ext.NEXT_YEAR
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -315,7 +300,6 @@ fun ObjectWrapper.Relation.toCreateFilterDateView(
         val fieldDate = fieldParser.toDate(any = value)
         CreateFilterView.Date(
             id = key,
-            description = it.toName(),
             type = it,
             condition = condition,
             value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
@@ -390,27 +374,6 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
     }
 }
 
-private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
-    buildMap {
-        put(DVFilterQuickOption.EXACT_DATE, EXACT_DAY)
-        put(DVFilterQuickOption.YESTERDAY, YESTERDAY)
-        put(DVFilterQuickOption.TODAY, TODAY)
-        put(DVFilterQuickOption.TOMORROW, TOMORROW)
-        put(DVFilterQuickOption.LAST_WEEK, LAST_WEEK)
-        put(DVFilterQuickOption.CURRENT_WEEK, CURRENT_WEEK)
-        put(DVFilterQuickOption.NEXT_WEEK, NEXT_WEEK)
-        put(DVFilterQuickOption.LAST_MONTH, MONTH_AGO)
-        put(DVFilterQuickOption.CURRENT_MONTH, CURRENT_MONTH)
-        put(DVFilterQuickOption.NEXT_MONTH, MONTH_AHEAD)
-        put(DVFilterQuickOption.DAYS_AGO, NUMBER_OF_DAYS_AGO)
-        put(DVFilterQuickOption.DAYS_AHEAD, NUMBER_OF_DAYS_FROM_NOW)
-        put(DVFilterQuickOption.LAST_YEAR, LAST_YEAR)
-        put(DVFilterQuickOption.CURRENT_YEAR, CURRENT_YEAR)
-        put(DVFilterQuickOption.NEXT_YEAR, NEXT_YEAR)
-    }
-}
-
-fun DVFilterQuickOption.toName() = quickOptionToNameMapping.getOrDefault(this, "Error")
 
 fun ObjectState.DataView.filterExpression(viewerId: Id?): List<DVFilter> {
     val viewer =

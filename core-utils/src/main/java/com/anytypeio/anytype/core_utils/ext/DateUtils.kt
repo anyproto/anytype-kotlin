@@ -24,4 +24,7 @@ const val MONTH_AHEAD = "One month from now"
 const val EXACT_DAY = "Exact day"
 const val NUMBER_OF_DAYS_AGO = "Number of days ago"
 const val NUMBER_OF_DAYS_FROM_NOW = "Number of days from now"
+const val LAST_YEAR = "Last year"
+const val CURRENT_YEAR = "Current year"
+const val NEXT_YEAR = "Next year"
 

@@ -24,6 +24,9 @@ import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_FROM_NOW
 import com.anytypeio.anytype.core_utils.ext.TODAY
 import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
+import com.anytypeio.anytype.core_utils.ext.LAST_YEAR
+import com.anytypeio.anytype.core_utils.ext.CURRENT_YEAR
+import com.anytypeio.anytype.core_utils.ext.NEXT_YEAR
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -376,6 +379,9 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
                 DVFilterQuickOption.LAST_MONTH,
                 DVFilterQuickOption.CURRENT_MONTH,
                 DVFilterQuickOption.NEXT_MONTH,
+                DVFilterQuickOption.LAST_YEAR,
+                DVFilterQuickOption.CURRENT_YEAR,
+                DVFilterQuickOption.NEXT_YEAR,
             )
         )
 
@@ -398,6 +404,9 @@ private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
         put(DVFilterQuickOption.NEXT_MONTH, MONTH_AHEAD)
         put(DVFilterQuickOption.DAYS_AGO, NUMBER_OF_DAYS_AGO)
         put(DVFilterQuickOption.DAYS_AHEAD, NUMBER_OF_DAYS_FROM_NOW)
+        put(DVFilterQuickOption.LAST_YEAR, LAST_YEAR)
+        put(DVFilterQuickOption.CURRENT_YEAR, CURRENT_YEAR)
+        put(DVFilterQuickOption.NEXT_YEAR, NEXT_YEAR)
     }
 }
 

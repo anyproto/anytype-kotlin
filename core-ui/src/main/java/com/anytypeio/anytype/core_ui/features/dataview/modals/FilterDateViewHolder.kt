@@ -48,6 +48,9 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
                     val relativeDate = item.relativeDate
                     relativeDate?.getPrettyName(resources = resources)
                 }
+                DVFilterQuickOption.LAST_YEAR,
+                DVFilterQuickOption.CURRENT_YEAR,
+                DVFilterQuickOption.NEXT_YEAR -> item.quickOption.toName()
                 else -> item.quickOption.toName()
             }
         } else {

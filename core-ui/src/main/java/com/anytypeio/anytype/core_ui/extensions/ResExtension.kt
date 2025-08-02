@@ -10,12 +10,14 @@ import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 fun Context.drawable(
     @DrawableRes id: Int
@@ -35,77 +37,54 @@ fun Context.avatarColor(
     return color
 }
 
-fun ColumnView.Format.relationIcon(isMedium: Boolean = false): Int = when (this) {
-    ColumnView.Format.SHORT_TEXT, ColumnView.Format.LONG_TEXT -> {
-        if (isMedium)
-            R.drawable.ic_relation_text_48
-        else
-            R.drawable.ic_relation_text_32
+fun ColumnView.Format.relationIcon(): Int = when (this) {
+    ColumnView.Format.SHORT_TEXT,
+    ColumnView.Format.LONG_TEXT -> {
+        R.drawable.ic_relation_format_text_small
     }
     ColumnView.Format.NUMBER -> {
-        if (isMedium)
-            R.drawable.ic_relation_number_48
-        else
-            R.drawable.ic_relation_number_32
+        R.drawable.ic_relation_format_number_small
     }
     ColumnView.Format.STATUS -> {
-        if (isMedium)
-            R.drawable.ic_relation_status_48
-        else
-            R.drawable.ic_relation_status_32
+        R.drawable.ic_relation_format_status_small
     }
     ColumnView.Format.DATE -> {
-        if (isMedium)
-            R.drawable.ic_relation_date_48
-        else
-            R.drawable.ic_relation_date_32
+        R.drawable.ic_relation_format_date_small
     }
     ColumnView.Format.FILE -> {
-        if (isMedium)
-            R.drawable.ic_relation_attachment_48
-        else
-            R.drawable.ic_relation_attachment_32
+        R.drawable.ic_relation_format_attachment_small
     }
     ColumnView.Format.CHECKBOX -> {
-        if (isMedium)
-            R.drawable.ic_relation_checkbox_48
-        else
-            R.drawable.ic_relation_checkbox_32
+        R.drawable.ic_relation_format_checkbox_small
     }
     ColumnView.Format.URL -> {
-        if (isMedium)
-            R.drawable.ic_relation_url_48
-        else
-            R.drawable.ic_relation_url_32
+        R.drawable.ic_relation_format_url_small
     }
     ColumnView.Format.EMAIL -> {
-        if (isMedium)
-            R.drawable.ic_relation_email_48
-        else
-            R.drawable.ic_relation_email_32
+        R.drawable.ic_relation_format_email_small
     }
     ColumnView.Format.PHONE -> {
-        if (isMedium)
-            R.drawable.ic_relation_phone_number_48
-        else
-            R.drawable.ic_relation_phone_number_32
+        R.drawable.ic_relation_format_phone_number_small
     }
-    ColumnView.Format.EMOJI -> R.drawable.ic_relation_object_32
     ColumnView.Format.OBJECT -> {
-        if (isMedium)
-            R.drawable.ic_relation_object_48
-        else
-            R.drawable.ic_relation_object_32
+        R.drawable.ic_relation_format_object_small
     }
     ColumnView.Format.TAG -> {
-        if (isMedium)
-            R.drawable.ic_relation_tag_48
-        else
-            R.drawable.ic_relation_tag_32
+        R.drawable.ic_relation_format_tag_small
     }
     else -> {
-        // TODO
-        R.drawable.circle_solid_default
+        R.drawable.ic_relation_format_text_small
+    }
+}
+
+
+fun SimpleRelationView.icon(): Int {
+    val format = this.format
+    val formatIcon = format.relationIcon()
+    return if (this.key == Relations.NAME) {
+        R.drawable.ic_relation_name
+    } else {
+        formatIcon
     }
 }
 

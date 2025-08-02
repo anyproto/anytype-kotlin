@@ -10,7 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.core_ui.extensions.setInputTypeBaseOnFormat
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -63,7 +63,7 @@ open class ModifyFilterFromInputFieldValueFragment :
     private fun setupJobs() {
         jobs += lifecycleScope.subscribe(vm.relationState.filterNotNull()) {
             binding.tvRelationName.text = it.title
-            binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
+            binding.ivRelationIcon.setImageResource(it.icon())
             binding.enterTextValueInputField.setInputTypeBaseOnFormat(it.format)
         }
         jobs += lifecycleScope.subscribe(vm.filterValueState) { value ->

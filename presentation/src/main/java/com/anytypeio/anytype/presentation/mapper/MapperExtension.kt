@@ -494,13 +494,13 @@ fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
 }
 
 fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Text.None()
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Text.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Text.NotEqual()
     DVFilterCondition.LIKE -> Viewer.Filter.Condition.Text.Like()
     DVFilterCondition.NOT_LIKE -> Viewer.Filter.Condition.Text.NotLike()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Text.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Text.NotEmpty()
-    DVFilterCondition.NONE -> Viewer.Filter.Condition.Text.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Text relations")
 }
 
@@ -519,6 +519,7 @@ fun DVFilterCondition.toDateView(): Viewer.Filter.Condition.Date = when (this) {
 }
 
 fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (this) {
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Number.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Number.NotEqual()
     DVFilterCondition.GREATER -> Viewer.Filter.Condition.Number.Greater()
@@ -527,7 +528,6 @@ fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (thi
     DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Number.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Number.NotEmpty()
-    DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
 }
 

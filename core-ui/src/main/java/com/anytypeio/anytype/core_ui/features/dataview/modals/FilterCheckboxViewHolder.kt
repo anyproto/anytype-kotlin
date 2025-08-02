@@ -22,6 +22,7 @@ class FilterCheckboxViewHolder(
 
     fun bind(item: FilterView.Expression.Checkbox) = with(itemView) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,

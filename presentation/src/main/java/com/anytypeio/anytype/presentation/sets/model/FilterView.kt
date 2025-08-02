@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.model
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_utils.ui.ViewType
 
@@ -16,7 +17,7 @@ sealed class FilterView : ViewType {
         abstract val condition: Viewer.Filter.Condition
         open val quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE
         abstract val filterValue: FilterValue
-        abstract val format: ColumnView.Format
+        abstract val format: RelationFormat
         abstract val isValueRequired: Boolean
         abstract val isInEditMode:Boolean
 
@@ -27,7 +28,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
             override val filterValue: FilterValue.Text,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -41,7 +42,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
             override val filterValue: FilterValue.TextShort,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -55,7 +56,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
             override val filterValue: FilterValue.Url,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -69,7 +70,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
             override val filterValue: FilterValue.Email,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -83,7 +84,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Text,
             override val filterValue: FilterValue.Phone,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -97,7 +98,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Number,
             override val filterValue: FilterValue.Number,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -111,7 +112,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
             override val filterValue: FilterValue.Status,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -125,7 +126,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
             override val filterValue: FilterValue.Tag,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -140,7 +141,7 @@ sealed class FilterView : ViewType {
             override val condition: Viewer.Filter.Condition.Date,
             override val quickOption: DVFilterQuickOption,
             override val filterValue: FilterValue.Date,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean,
             val relativeDate: RelativeDate?
@@ -155,7 +156,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Selected,
             override val filterValue: FilterValue.Object,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {
@@ -169,7 +170,7 @@ sealed class FilterView : ViewType {
             override val operator: Viewer.FilterOperator,
             override val condition: Viewer.Filter.Condition.Checkbox,
             override val filterValue: FilterValue.Check,
-            override val format: ColumnView.Format,
+            override val format: RelationFormat,
             override val isValueRequired: Boolean,
             override val isInEditMode: Boolean
         ) : Expression(), ViewType {

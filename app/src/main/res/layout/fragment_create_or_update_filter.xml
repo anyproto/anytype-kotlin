@@ -31,6 +31,8 @@
             android:layout_height="48dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="14dp"
+            android:background="@drawable/ic_relation_format_background"
+            android:scaleType="center"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/dragger"
             tools:src="@drawable/ic_relation_name_48" />

@@ -30,6 +30,7 @@ class FilterTagViewHolder(val binding: ItemDvViewerFilterTagBinding) :
         item: FilterView.Expression.Tag
     ) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,

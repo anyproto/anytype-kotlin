@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.model
 
 import android.os.Parcelable
+import com.anytypeio.anytype.core_models.RelationFormat
 import kotlinx.parcelize.Parcelize
 
 /**
@@ -11,7 +12,7 @@ import kotlinx.parcelize.Parcelize
 data class SimpleRelationView(
     val key: String,
     val title: String,
-    val format: ColumnView.Format,
+    val format: RelationFormat,
     val isVisible: Boolean = false,
     val isHidden: Boolean = false,
     val isReadonly: Boolean = false,

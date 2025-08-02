@@ -171,7 +171,23 @@ class CreateFilterAdapter(
 
         class Date(val binding: ItemCreateFilterDateBinding) : ViewHolder(binding.root) {
             fun bind(item: CreateFilterView.Date) = with(binding) {
-                tvDateTitle.text = item.description
+                tvDateTitle.text = when (item.type) {
+                    DVFilterQuickOption.EXACT_DATE -> itemView.resources.getString(R.string.dates_filter_exact_day)
+                    DVFilterQuickOption.YESTERDAY -> itemView.resources.getString(R.string.yesterday)
+                    DVFilterQuickOption.TODAY -> itemView.resources.getString(R.string.today)
+                    DVFilterQuickOption.TOMORROW -> itemView.resources.getString(R.string.tomorrow)
+                    DVFilterQuickOption.LAST_WEEK -> itemView.resources.getString(R.string.dates_filter_last_week)
+                    DVFilterQuickOption.CURRENT_WEEK -> itemView.resources.getString(R.string.dates_filter_current_week)
+                    DVFilterQuickOption.NEXT_WEEK -> itemView.resources.getString(R.string.dates_filter_next_week)
+                    DVFilterQuickOption.LAST_MONTH -> itemView.resources.getString(R.string.dates_filter_last_month)
+                    DVFilterQuickOption.CURRENT_MONTH -> itemView.resources.getString(R.string.dates_filter_current_month)
+                    DVFilterQuickOption.NEXT_MONTH -> itemView.resources.getString(R.string.dates_filter_next_month)
+                    DVFilterQuickOption.DAYS_AGO -> itemView.resources.getString(R.string.number_days_ago)
+                    DVFilterQuickOption.DAYS_AHEAD -> itemView.resources.getString(R.string.number_days_from)
+                    DVFilterQuickOption.LAST_YEAR -> itemView.resources.getString(R.string.dates_filter_last_year)
+                    DVFilterQuickOption.CURRENT_YEAR -> itemView.resources.getString(R.string.dates_filter_current_year)
+                    DVFilterQuickOption.NEXT_YEAR -> itemView.resources.getString(R.string.dates_filter_next_year)
+                }
                 when (item.type) {
                     DVFilterQuickOption.EXACT_DATE -> {
                         tvDate.visible()

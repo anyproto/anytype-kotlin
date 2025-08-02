@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.sets.filter
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.sets.model.ColumnView.Format
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
@@ -10,18 +10,18 @@ class CreateFilterFlowViewModel : BaseViewModel() {
 
     val step = MutableStateFlow<Step>(Step.SelectRelation)
 
-    fun onRelationSelected(ctx: Id, relation: Id, format: Format) {
+    fun onRelationSelected(ctx: Id, relation: Id, format: RelationFormat) {
         Timber.d("onRelationSelected: ctx=$ctx, relation=$relation, format=$format")
         step.value = Step.CreateFilter(
             ctx = ctx,
             relation = relation,
             type = when (format) {
-                Format.SHORT_TEXT,
-                Format.LONG_TEXT,
-                Format.NUMBER,
-                Format.EMAIL,
-                Format.PHONE,
-                Format.URL -> {
+                RelationFormat.SHORT_TEXT,
+                RelationFormat.LONG_TEXT,
+                RelationFormat.NUMBER,
+                RelationFormat.EMAIL,
+                RelationFormat.PHONE,
+                RelationFormat.URL -> {
                     Step.CreateFilter.Type.INPUT_FIELD
                 }
                 else -> Step.CreateFilter.Type.UNDEFINED

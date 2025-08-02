@@ -33,7 +33,7 @@ sealed class CreateFilterView {
 
     data class Date(
         val id: Id,
-        val description: String,
+        val description: String = "",
         val type: DVFilterQuickOption,
         val condition: DVFilterCondition,
         val value: Long,

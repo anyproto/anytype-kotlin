@@ -4,7 +4,7 @@ import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.hasSpan
-import com.anytypeio.anytype.presentation.relations.toName
+import com.anytypeio.anytype.localization.R
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import timber.log.Timber
@@ -20,10 +20,15 @@ class FilterHelper {
             putSerializable(KEY_OPTION, command.option)
         }
         runCatching {
+            val name = when (command.option) {
+                DVFilterQuickOption.DAYS_AGO -> fragment.getString(R.string.number_days_ago)
+                DVFilterQuickOption.DAYS_AHEAD -> fragment.getString(R.string.number_days_from)
+                else -> ""
+            }
             RelationTextValueFragment.new(
                 ctx = ctx,
                 space = space,
-                name = command.option.toName(),
+                name = name,
                 value = command.value
             ).show(fragment.childFragmentManager, null)
         }.onFailure {

@@ -13,27 +13,33 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.core_ui.features.sets.CreateFilterAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentCreateOrUpdateFilterBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment.DatePickerReceiver
 import com.anytypeio.anytype.ui.sets.modals.PickFilterConditionFragment
+import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.onStart
-import javax.inject.Inject
 
 open class ModifyFilterFromSelectedValueFragment :
     BaseBottomSheetFragment<FragmentCreateOrUpdateFilterBinding>(),
@@ -90,12 +96,12 @@ open class ModifyFilterFromSelectedValueFragment :
                 vm.onModifyApplyClicked(ctx = ctx, viewerId = viewer)
             }
             subscribe(vm.relationState.filterNotNull()) {
-                if (it.format == ColumnView.Format.DATE) {
+                if (it.format == RelationFormat.DATE) {
                     binding.searchBar.root.gone()
                     binding.btnBottomAction.hideNumber()
                 }
                 binding.tvRelationName.text = it.title
-                binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
+                binding.ivRelationIcon.setImageResource(it.icon())
             }
             subscribe(vm.optionCountState) { binding.btnBottomAction.setNumber(it.toString()) }
             subscribe(vm.isCompleted) { isCompleted -> if (isCompleted) dismiss() }

@@ -28,6 +28,7 @@ class FilterObjectViewHolder(val binding: ItemDvViewerFilterObjectBinding) :
 
     fun bind(item: FilterView.Expression.Object) = with(itemView) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,

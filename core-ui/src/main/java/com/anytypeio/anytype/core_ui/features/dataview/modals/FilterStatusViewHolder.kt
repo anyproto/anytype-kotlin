@@ -27,6 +27,7 @@ class FilterStatusViewHolder(val binding: ItemDvViewerFilterStatusBinding) :
         item: FilterView.Expression.Status
     ) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,

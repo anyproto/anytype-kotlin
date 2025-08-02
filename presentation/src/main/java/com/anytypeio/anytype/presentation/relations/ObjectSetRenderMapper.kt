@@ -250,7 +250,7 @@ fun DVViewer.toViewRelation(relation: ObjectWrapper.Relation): SimpleRelationVie
         isHidden = relation.isHidden ?: false,
         isVisible = viewerRelation?.isVisible ?: false,
         title = relation.name.orEmpty(),
-        format = relation.format.toView()
+        format = relation.format
     )
 }
 
@@ -477,7 +477,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.TextShort(relation.toText(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -491,7 +491,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Text(relation.toText(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -505,7 +505,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Url(relation.toUrl(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -519,7 +519,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Email(relation.toEmail(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -533,7 +533,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Phone(relation.toPhone(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -547,7 +547,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toNumberView(),
             filterValue = FilterValue.Number(NumberParser.parse(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = true,
             isInEditMode = isInEditMode
         )
@@ -563,7 +563,7 @@ suspend fun DVFilter.toView(
             condition = condition.toDateView(),
             quickOption = quickOption,
             filterValue = FilterValue.Date(fieldDate?.timestamp?.time),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode,
             relativeDate = fieldDate?.relativeDate
@@ -582,7 +582,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toSelectedView(),
             filterValue = FilterValue.Status(value = updatedFilterValue),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -601,7 +601,7 @@ suspend fun DVFilter.toView(
                     store = store
                 )
             ),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -623,7 +623,7 @@ suspend fun DVFilter.toView(
                     storeOfObjectTypes = storeOfObjectTypes
                 )
             ),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -637,7 +637,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toCheckboxView(),
             filterValue = FilterValue.Check(relation.toCheckbox(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )

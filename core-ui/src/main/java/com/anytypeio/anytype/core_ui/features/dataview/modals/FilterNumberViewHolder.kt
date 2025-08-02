@@ -22,6 +22,7 @@ class FilterNumberViewHolder(val binding: ItemDvViewerFilterNumberBinding) : Fil
         item: FilterView.Expression.Number
     ) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,

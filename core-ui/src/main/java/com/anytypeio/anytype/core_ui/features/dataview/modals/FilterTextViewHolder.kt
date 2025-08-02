@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 
 import android.widget.ImageView
 import android.widget.TextView
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTextBinding
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
@@ -23,6 +25,7 @@ class FilterTextViewHolder(val binding: ItemDvViewerFilterTextBinding) : FilterV
         item: FilterView.Expression
     ) {
         init(
+            relationKey = item.relation,
             isInEditMode = item.isInEditMode,
             condition = item.condition.title,
             title = item.title,
@@ -58,12 +61,14 @@ class FilterTextViewHolder(val binding: ItemDvViewerFilterTextBinding) : FilterV
         if (value == null) "" else itemView.context.getString(R.string.value_quotes, value)
 
     private fun init(
+        relationKey: Key,
         isInEditMode: Boolean,
         title: String,
         condition: String,
-        format: ColumnView.Format
+        format: RelationFormat
     ) {
         setup(
+            relationKey = relationKey,
             isEditMode = isInEditMode,
             title = title,
             condition = condition,

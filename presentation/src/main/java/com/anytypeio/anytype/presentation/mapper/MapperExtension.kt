@@ -659,7 +659,7 @@ fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
     SimpleRelationView(
         key = dataViewRelation.key,
         title = dataViewRelation.name.orEmpty(),
-        format = dataViewRelation.format.toView(),
+        format = dataViewRelation.format,
         isVisible = isVisible,
         isHidden = dataViewRelation.isHidden == true,
         isReadonly = dataViewRelation.isReadonlyValue,
@@ -679,7 +679,7 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
                     SimpleRelationView(
                         key = relation.key,
                         title = relation.name.orEmpty(),
-                        format = relation.format.toView(),
+                        format = relation.format,
                         isVisible = viewerRelation.isVisible,
                         isHidden = relation.isHidden ?: false,
                         isReadonly = relation.isReadonlyValue,

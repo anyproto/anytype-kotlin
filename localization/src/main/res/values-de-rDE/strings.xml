@@ -30,7 +30,7 @@
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
     <string name="app_preferences">App-Einstellungen</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Alarmsymbol</string>
     <string name="modal_tap_to_type">Tippe zum Eingeben</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -1027,7 +1027,7 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
-    <string name="onboarding_your_name">Type your name</string>
+    <string name="onboarding_your_name">Gib deinen Namen ein</string>
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>

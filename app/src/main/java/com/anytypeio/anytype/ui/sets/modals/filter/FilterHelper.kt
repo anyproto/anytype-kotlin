@@ -21,8 +21,8 @@ class FilterHelper {
         }
         runCatching {
             val name = when (command.option) {
-                DVFilterQuickOption.DAYS_AGO -> fragment.getString(R.string.dates_days_ago, "")
-                DVFilterQuickOption.DAYS_AHEAD -> fragment.getString(R.string.dates_days_from, "")
+                DVFilterQuickOption.DAYS_AGO -> fragment.getString(R.string.number_days_ago)
+                DVFilterQuickOption.DAYS_AHEAD -> fragment.getString(R.string.number_days_from)
                 else -> ""
             }
             RelationTextValueFragment.new(

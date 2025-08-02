@@ -1293,6 +1293,8 @@
 
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="number_days_from">Number of days from now</string>
+    <string name="number_days_ago">Number of days ago</string>
     
     <!-- Date filter quick options -->
     <string name="dates_filter_exact_day">Exact day</string>

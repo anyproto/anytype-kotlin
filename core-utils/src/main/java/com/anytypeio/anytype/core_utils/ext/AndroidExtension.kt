@@ -469,6 +469,15 @@ fun Context.openNotificationSettings() {
     startActivity(intent)
 }
 
+/**
+ * Opens the application's settings screen in the system settings.
+ *
+ * This extension function launches an intent that navigates the user to the
+ * app-specific settings page, where permissions and other options can be managed.
+ * Typically used when prompting the user to manually adjust app permissions.
+ *
+ * @receiver Context used to start the settings activity.
+ */
 fun Context.openAppSettings() {
     val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
         data = Uri.fromParts("package", packageName, null)

@@ -1117,6 +1117,19 @@
     <string name="date_type_older">Eldre</string>
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="number_days_from">Antall dager fra nå</string>
+    <string name="number_days_ago">Antall dager siden</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Eksakt dag</string>
+    <string name="dates_filter_last_week">Forrige uke</string>
+    <string name="dates_filter_current_week">Denne uken</string>
+    <string name="dates_filter_next_week">Neste uke</string>
+    <string name="dates_filter_last_month">Forrige måned</string>
+    <string name="dates_filter_current_month">Denne måneden</string>
+    <string name="dates_filter_next_month">Neste måned</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->

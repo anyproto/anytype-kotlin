@@ -5,6 +5,7 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -118,7 +119,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationName.key,
                 title = relationName.name.orEmpty(),
-                format = ColumnView.Format.SHORT_TEXT,
+                format = RelationFormat.SHORT_TEXT,
                 isVisible = true,
                 isHidden = true,
                 isReadonly = false,
@@ -127,7 +128,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationLastModifiedDate.key,
                 title = relationLastModifiedDate.name.orEmpty(),
-                format = ColumnView.Format.DATE,
+                format = RelationFormat.DATE,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -136,7 +137,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationCustomNumber.key,
                 title = relationCustomNumber.name.orEmpty(),
-                format = ColumnView.Format.NUMBER,
+                format = RelationFormat.NUMBER,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -145,7 +146,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationCustomText.key,
                 title = relationCustomText.name.orEmpty(),
-                format = ColumnView.Format.LONG_TEXT,
+                format = RelationFormat.LONG_TEXT,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -154,7 +155,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationDone.key,
                 title = relationDone.name.orEmpty(),
-                format = ColumnView.Format.CHECKBOX,
+                format = RelationFormat.CHECKBOX,
                 isVisible = true,
                 isHidden = true,
                 isReadonly = false,
@@ -163,7 +164,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationStatus.key,
                 title = relationStatus.name.orEmpty(),
-                format = ColumnView.Format.STATUS,
+                format = RelationFormat.STATUS,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -172,7 +173,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationTag.key,
                 title = relationTag.name.orEmpty(),
-                format = ColumnView.Format.TAG,
+                format = RelationFormat.TAG,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -240,7 +241,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationName.key,
                 title = relationName.name.orEmpty(),
-                format = ColumnView.Format.SHORT_TEXT,
+                format = RelationFormat.SHORT_TEXT,
                 isVisible = true,
                 isHidden = true,
                 isReadonly = false,
@@ -249,7 +250,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationCustomNumber.key,
                 title = relationCustomNumber.name.orEmpty(),
-                format = ColumnView.Format.NUMBER,
+                format = RelationFormat.NUMBER,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,
@@ -258,7 +259,7 @@ class SearchRelationViewModelTest {
             SimpleRelationView(
                 key = relationCustomText.key,
                 title = relationCustomText.name.orEmpty(),
-                format = ColumnView.Format.LONG_TEXT,
+                format = RelationFormat.LONG_TEXT,
                 isVisible = true,
                 isHidden = false,
                 isReadonly = false,

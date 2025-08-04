@@ -124,11 +124,11 @@ class FilterConditionExtensionTest {
     @Test
     fun `should return proper condition when initial condition is null`() {
 
-        val expectedText = Viewer.Filter.Condition.Text.Equal()
-        val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedText = Viewer.Filter.Condition.Text.None()
+        val expectedNumber = Viewer.Filter.Condition.Number.None()
         val expectedDate = Viewer.Filter.Condition.Date.None()
-        val expectedSelected = Viewer.Filter.Condition.Selected.In()
-        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
+        val expectedSelected = Viewer.Filter.Condition.Selected.None()
+        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.None()
 
         asserter.assertEquals(
             message = "Condition should be Text Equal",
@@ -904,11 +904,11 @@ class FilterConditionExtensionTest {
     @Test
     fun `should return default values for exact-in condition`() {
 
-        val expectedText = Viewer.Filter.Condition.Text.Equal()
-        val expectedSelected = Viewer.Filter.Condition.Selected.In()
-        val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedText = Viewer.Filter.Condition.Text.None()
+        val expectedSelected = Viewer.Filter.Condition.Selected.None()
+        val expectedNumber = Viewer.Filter.Condition.Number.None()
         val expectedDate = Viewer.Filter.Condition.Date.None()
-        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
+        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.None()
 
         asserter.assertEquals(
             message = null,
@@ -973,11 +973,11 @@ class FilterConditionExtensionTest {
     @Test
     fun `should return default values for not-exact-in condition`() {
 
-        val expectedText = Viewer.Filter.Condition.Text.Equal()
-        val expectedSelected = Viewer.Filter.Condition.Selected.In()
-        val expectedNumber = Viewer.Filter.Condition.Number.Equal()
+        val expectedText = Viewer.Filter.Condition.Text.None()
+        val expectedSelected = Viewer.Filter.Condition.Selected.None()
+        val expectedNumber = Viewer.Filter.Condition.Number.None()
         val expectedDate = Viewer.Filter.Condition.Date.None()
-        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.Equal()
+        val expectedCheckbox = Viewer.Filter.Condition.Checkbox.None()
 
         asserter.assertEquals(
             message = null,

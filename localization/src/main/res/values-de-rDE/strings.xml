@@ -1861,4 +1861,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_qr_invalid_title">Invalid QR code</string>
     <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
     <string name="vault_qr_try_again">Erneut versuchen</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="allow">Zulassen</string>
 </resources>

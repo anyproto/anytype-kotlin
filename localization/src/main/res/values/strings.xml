@@ -1298,12 +1298,12 @@
     
     <!-- Date filter quick options -->
     <string name="dates_filter_exact_day">Exact day</string>
-    <string name="dates_filter_last_week">One week ago</string>
+    <string name="dates_filter_last_week">Last week</string>
     <string name="dates_filter_current_week">Current week</string>
-    <string name="dates_filter_next_week">One week from now</string>
-    <string name="dates_filter_last_month">One month ago</string>
+    <string name="dates_filter_next_week">Next week</string>
+    <string name="dates_filter_last_month">Last month</string>
     <string name="dates_filter_current_month">Current month</string>
-    <string name="dates_filter_next_month">One month from now</string>
+    <string name="dates_filter_next_month">Next month</string>
     <string name="dates_filter_last_year">Last year</string>
     <string name="dates_filter_current_year">Current year</string>
     <string name="dates_filter_next_year">Next year</string>

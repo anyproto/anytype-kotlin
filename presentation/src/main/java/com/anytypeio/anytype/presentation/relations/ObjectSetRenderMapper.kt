@@ -325,8 +325,8 @@ private fun DVFilterQuickOption?.isSelected(
 private val quickOptionDefaultOrder by lazy {
     listOf(
         DVFilterQuickOption.TODAY,
-        DVFilterQuickOption.TOMORROW,
         DVFilterQuickOption.YESTERDAY,
+        DVFilterQuickOption.TOMORROW,
         DVFilterQuickOption.CURRENT_WEEK,
         DVFilterQuickOption.LAST_WEEK,
         DVFilterQuickOption.NEXT_WEEK,
@@ -344,8 +344,8 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
         put(
             DVFilterCondition.EQUAL, listOf(
                 DVFilterQuickOption.TODAY,
-                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.YESTERDAY,
+                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.DAYS_AGO,
                 DVFilterQuickOption.DAYS_AHEAD,
                 DVFilterQuickOption.EXACT_DATE,
@@ -355,16 +355,16 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
         put(
             DVFilterCondition.IN, listOf(
                 DVFilterQuickOption.TODAY,
-                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.YESTERDAY,
-                DVFilterQuickOption.LAST_WEEK,
+                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.CURRENT_WEEK,
+                DVFilterQuickOption.LAST_WEEK,
                 DVFilterQuickOption.NEXT_WEEK,
-                DVFilterQuickOption.LAST_MONTH,
                 DVFilterQuickOption.CURRENT_MONTH,
+                DVFilterQuickOption.LAST_MONTH,
                 DVFilterQuickOption.NEXT_MONTH,
-                DVFilterQuickOption.LAST_YEAR,
                 DVFilterQuickOption.CURRENT_YEAR,
+                DVFilterQuickOption.LAST_YEAR,
                 DVFilterQuickOption.NEXT_YEAR,
             )
         )

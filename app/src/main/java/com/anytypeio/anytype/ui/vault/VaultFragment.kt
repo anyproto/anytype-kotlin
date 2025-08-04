@@ -149,7 +149,7 @@ class VaultFragment : BaseComposeFragment() {
                     }
 
                     VaultErrors.QrCodeIsNotValid -> {
-                        VaultAlertScreenModals(
+                        AlertScreenModals(
                             title = getString(R.string.vault_qr_invalid_title),
                             description = getString(R.string.vault_qr_invalid_description),
                             firstButtonText = getString(R.string.vault_qr_try_again),
@@ -159,7 +159,7 @@ class VaultFragment : BaseComposeFragment() {
                     }
 
                     VaultErrors.QrScannerError -> {
-                        VaultAlertScreenModals(
+                        AlertScreenModals(
                             title = getString(R.string.vault_qr_scan_error_title),
                             description = getString(R.string.vault_qr_scan_error_description),
                             firstButtonText = getString(R.string.vault_qr_try_again),
@@ -169,7 +169,7 @@ class VaultFragment : BaseComposeFragment() {
                     }
                     
                     VaultErrors.CameraPermissionDenied -> {
-                        VaultAlertScreenModals(
+                        AlertScreenModals(
                             title = getString(R.string.camera_permission_required_title),
                             description = getString(R.string.camera_permission_settings_message),
                             firstButtonText = getString(R.string.open_settings),

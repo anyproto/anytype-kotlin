@@ -1113,6 +1113,19 @@
     <string name="date_type_older">較舊的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天後</string>
+    <string name="number_days_from">幾天後</string>
+    <string name="number_days_ago">幾天前</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">確切日期</string>
+    <string name="dates_filter_last_week">上週</string>
+    <string name="dates_filter_current_week">本週</string>
+    <string name="dates_filter_next_week">下週</string>
+    <string name="dates_filter_last_month">上個月</string>
+    <string name="dates_filter_current_month">本月</string>
+    <string name="dates_filter_next_month">下個月</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->

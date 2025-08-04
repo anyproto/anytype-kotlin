@@ -147,7 +147,7 @@ fun ChooseSpaceTypeScreen(
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = stringResource(id = R.string.create_space_join_via_qr),
+                        text = stringResource(id = R.string.vault_join_via_qr),
                         style = Title1,
                         color = colorResource(id = R.color.text_primary)
                     )

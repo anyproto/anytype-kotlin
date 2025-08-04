@@ -79,6 +79,8 @@ sealed class VaultCommand {
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
     data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
+    data object ScanQrCode : VaultCommand()
+    data class NavigateToRequestJoinSpace(val link: String) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()
@@ -106,4 +108,6 @@ sealed class VaultNavigation {
 sealed class VaultErrors {
     data object Hidden : VaultErrors()
     data object MaxPinnedSpacesReached : VaultErrors()
+    data object QrScannerError : VaultErrors()
+    data object QrCodeIsNotValid : VaultErrors()
 }

@@ -1810,9 +1810,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_modal_description">Dapatkan pemberitahuan segera ketika seseorang mengirim pesan atau menyebutmu di ruangmu.</string>
     <string name="notifications_modal_success_button">Nyalakan Pemberitahuan</string>
     <string name="notifications_modal_cancel_button">Tidak dulu</string>
-    <string name="vault_create_chat">Obrolan</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
-    <string name="vault_create_space">Ruang</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1841,4 +1841,11 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notification_settings_state_enabled">Aktif</string>
     <string name="content_desc_muted">Disenyapkan</string>
     <string name="failed_to_load_image">Gagal memuat gambar</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Gabung via kode QR</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Coba lagi</string>
 </resources>

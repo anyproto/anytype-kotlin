@@ -131,26 +131,22 @@ class VaultFragment : BaseComposeFragment() {
                     }
 
                     VaultErrors.QrCodeIsNotValid -> {
-                        val (title, description) = getString(R.string.vault_qr_invalid_title) to getString(R.string.vault_qr_invalid_description)
-                        BaseAlertDialog(
-                            dialogText = "$title\n\n$description",
-                            buttonText = getString(R.string.vault_qr_try_again),
-                            onButtonClick = {
-                                vm.onModalTryAgainClicked()
-                            },
-                            onDismissRequest = { vm.onModalCancelClicked() }
+                        VaultAlertScreenModals(
+                            title = getString(R.string.vault_qr_invalid_title),
+                            description = getString(R.string.vault_qr_invalid_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
                         )
                     }
 
                     VaultErrors.QrScannerError -> {
-                        val (title, description) = getString(R.string.vault_qr_scan_error_title) to getString(R.string.vault_qr_scan_error_description)
-                        BaseAlertDialog(
-                            dialogText = "$title\n\n$description",
-                            buttonText = getString(R.string.vault_qr_try_again),
-                            onButtonClick = {
-                                vm.onModalTryAgainClicked()
-                            },
-                            onDismissRequest = { vm.onModalCancelClicked() }
+                        VaultAlertScreenModals(
+                            title = getString(R.string.vault_qr_scan_error_title),
+                            description = getString(R.string.vault_qr_scan_error_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
                         )
                     }
                 }

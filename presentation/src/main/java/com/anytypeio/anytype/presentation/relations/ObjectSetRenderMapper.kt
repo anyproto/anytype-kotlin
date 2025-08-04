@@ -304,7 +304,8 @@ fun ObjectWrapper.Relation.toCreateFilterDateView(
             condition = condition,
             value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
             isSelected = isSelected,
-            relativeDate = fieldDate?.relativeDate
+            relativeDate = fieldDate?.relativeDate,
+            description = ""
         )
     }
 

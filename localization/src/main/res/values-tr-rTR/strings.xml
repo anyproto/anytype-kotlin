@@ -1823,9 +1823,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_modal_description">Alanlarınızda biri size mesaj attığında veya sizden bahsettiğinde anında bildirim alın.</string>
     <string name="notifications_modal_success_button">Bildirimleri etkinleştir</string>
     <string name="notifications_modal_cancel_button">Şimdi değil</string>
-    <string name="vault_create_chat">Sohbet</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">Gerçek zamanlı görüşmeler için</string>
-    <string name="vault_create_space">Alan</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
     <string name="vault_empty_state_text">Henüz alan yok</string>
     <string name="vault_empty_search_state_text">Eşleşme bulunamadı</string>
@@ -1854,4 +1854,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
     <string name="content_desc_muted">Sessiz</string>
     <string name="failed_to_load_image">Görüntü yüklenemedi</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Karekod ile katıl</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Tekrar deneyin</string>
 </resources>

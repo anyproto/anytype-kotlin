@@ -709,24 +709,6 @@ fun RelationFormat.toView() = when (this) {
     RelationFormat.UNDEFINED -> ColumnView.Format.UNDEFINED
 }
 
-fun ColumnView.Format.toRelationFormat(): RelationFormat = when (this) {
-    ColumnView.Format.SHORT_TEXT -> RelationFormat.SHORT_TEXT
-    ColumnView.Format.LONG_TEXT -> RelationFormat.LONG_TEXT
-    ColumnView.Format.NUMBER -> RelationFormat.NUMBER
-    ColumnView.Format.STATUS -> RelationFormat.STATUS
-    ColumnView.Format.DATE -> RelationFormat.DATE
-    ColumnView.Format.FILE -> RelationFormat.FILE
-    ColumnView.Format.CHECKBOX -> RelationFormat.CHECKBOX
-    ColumnView.Format.URL -> RelationFormat.URL
-    ColumnView.Format.EMAIL -> RelationFormat.EMAIL
-    ColumnView.Format.PHONE -> RelationFormat.PHONE
-    ColumnView.Format.EMOJI -> RelationFormat.EMOJI
-    ColumnView.Format.OBJECT -> RelationFormat.OBJECT
-    ColumnView.Format.TAG -> RelationFormat.TAG
-    ColumnView.Format.RELATIONS -> RelationFormat.RELATIONS
-    ColumnView.Format.UNDEFINED -> RelationFormat.UNDEFINED
-}
-
 fun ObjectWrapper.Type.toObjectTypeView(
     selectedSources: List<Id> = emptyList()
 ): ObjectTypeView =

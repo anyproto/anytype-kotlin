@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 fun ChooseSpaceTypeScreen(
     onCreateChatClicked: () -> Unit,
     onCreateSpaceClicked: () -> Unit,
+    onJoinViaQrClicked: () -> Unit = {},
     onDismiss: () -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState(
@@ -124,6 +125,31 @@ fun ChooseSpaceTypeScreen(
                         color = colorResource(id = R.color.text_secondary),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .padding(horizontal = 16.dp)
+                    .noRippleThrottledClickable {
+                        onJoinViaQrClicked()
+                    },
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
+                    contentDescription = "Join via QR Code",
+                    modifier = Modifier.size(56.dp)
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Column {
+                    Text(
+                        text = stringResource(id = R.string.vault_join_via_qr),
+                        style = Title1,
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
             }

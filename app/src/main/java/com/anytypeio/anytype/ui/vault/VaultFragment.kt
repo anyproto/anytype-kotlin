@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
+import com.google.zxing.integration.android.IntentIntegrator
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
@@ -56,6 +58,22 @@ class VaultFragment : BaseComposeFragment() {
     lateinit var factory: VaultViewModelFactory
 
     private val vm by viewModels<VaultViewModel> { factory }
+
+    private val qrCodeLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
+        if (r != null && r.contents != null) {
+            vm.onQrCodeScanned(qrCode = r.contents)
+        } else {
+            if (r == null) {
+                Timber.w("QR code scan cancelled by user")
+            } else {
+                Timber.w("QR code scan failed: no contents found")
+            }
+            vm.onQrScannerError()
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -115,6 +133,26 @@ class VaultFragment : BaseComposeFragment() {
                     VaultErrors.Hidden -> {
                         //do nothing
                     }
+
+                    VaultErrors.QrCodeIsNotValid -> {
+                        VaultAlertScreenModals(
+                            title = getString(R.string.vault_qr_invalid_title),
+                            description = getString(R.string.vault_qr_invalid_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
+                        )
+                    }
+
+                    VaultErrors.QrScannerError -> {
+                        VaultAlertScreenModals(
+                            title = getString(R.string.vault_qr_scan_error_title),
+                            description = getString(R.string.vault_qr_scan_error_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
+                        )
+                    }
                 }
 
                 if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
@@ -124,6 +162,9 @@ class VaultFragment : BaseComposeFragment() {
                         },
                         onCreateSpaceClicked = {
                             vm.onCreateSpaceClicked()
+                        },
+                        onJoinViaQrClicked = {
+                            vm.onJoinViaQrClicked()
                         },
                         onDismiss = {
                             vm.onChooseSpaceTypeDismissed()
@@ -272,6 +313,26 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening space settings")
+                }
+            }
+            
+            VaultCommand.ScanQrCode -> {
+                qrCodeLauncher.launch(
+                    IntentIntegrator
+                        .forSupportFragment(this)
+                        .setBeepEnabled(false)
+                        .createScanIntent()
+                )
+            }
+            
+            is VaultCommand.NavigateToRequestJoinSpace -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.requestJoinSpaceScreen,
+                        RequestJoinSpaceFragment.args(link = command.link)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to request join space")
                 }
             }
         }

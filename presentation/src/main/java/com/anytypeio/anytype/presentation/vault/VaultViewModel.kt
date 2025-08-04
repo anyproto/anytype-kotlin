@@ -107,7 +107,7 @@ class VaultViewModel(
     val showChooseSpaceType = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
     val vaultErrors = MutableStateFlow<VaultErrors>(VaultErrors.Hidden)
-    
+
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
 
@@ -539,6 +539,57 @@ class VaultViewModel(
         viewModelScope.launch {
             showChooseSpaceType.value = false
         }
+    }
+    
+    fun onJoinViaQrClicked() {
+        viewModelScope.launch {
+            showChooseSpaceType.value = false
+            commands.emit(VaultCommand.ScanQrCode)
+        }
+    }
+    
+    fun onQrCodeScanned(qrCode: String) {
+        Timber.d("onQrCodeScanned: $qrCode")
+        if (qrCode.isBlank()) {
+            Timber.e("QR code is empty or blank")
+            vaultErrors.value = VaultErrors.QrCodeIsNotValid
+            return
+        }
+        vaultErrors.value = VaultErrors.Hidden
+        viewModelScope.launch {
+            try {
+                val fileKey = spaceInviteResolver.parseFileKey(qrCode)
+                val contentId = spaceInviteResolver.parseContentId(qrCode)
+
+                if (fileKey != null && contentId != null) {
+                    commands.emit(
+                        VaultCommand.NavigateToRequestJoinSpace(link = qrCode)
+                    )
+                } else {
+                    Timber.e("Failed to parse QR code: invalid format")
+                    vaultErrors.value = VaultErrors.QrCodeIsNotValid
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error processing QR code")
+                vaultErrors.value = VaultErrors.QrCodeIsNotValid
+            }
+        }
+    }
+
+    fun onQrScannerError() {
+        Timber.e("QR scanner error")
+        vaultErrors.value = VaultErrors.QrScannerError
+    }
+    
+    fun onModalTryAgainClicked() {
+        vaultErrors.value = VaultErrors.Hidden
+        viewModelScope.launch {
+            commands.emit(VaultCommand.ScanQrCode)
+        }
+    }
+    
+    fun onModalCancelClicked() {
+        vaultErrors.value = VaultErrors.Hidden
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {

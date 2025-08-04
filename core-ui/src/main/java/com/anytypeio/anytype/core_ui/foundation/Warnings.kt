@@ -287,8 +287,10 @@ private fun AlertButtons(
 
 @Composable
 fun Prompt(
+    showDragger: Boolean = true,
     title: String,
     description: String,
+    icon: Int? = null,
     primaryButtonText: String,
     secondaryButtonText: String,
     onPrimaryButtonClicked: () -> Unit,
@@ -297,12 +299,20 @@ fun Prompt(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Dragger(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+        if (showDragger) {
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 6.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        } else {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        if (icon != null) {
+            AlertIcon(icon)
+            Spacer(modifier = Modifier.height(15.dp))
+        }
         Text(
             text = title,
             style = HeadlineHeading,
@@ -352,6 +362,7 @@ fun Prompt(
 @Composable
 fun PromptPreview() {
     Prompt(
+        icon = R.drawable.ic_popup_alert_56,
         title = "Get notified",
         description = "Please enable notifications to stay informed about any requests to join or leave spaces.",
         primaryButtonText = "Enable",

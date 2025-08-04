@@ -550,6 +550,11 @@ class VaultViewModel(
     
     fun onQrCodeScanned(qrCode: String) {
         Timber.d("onQrCodeScanned: $qrCode")
+        if (qrCode.isBlank()) {
+            Timber.e("QR code is empty or blank")
+            vaultErrors.value = VaultErrors.QrCodeIsNotValid
+            return
+        }
         vaultErrors.value = VaultErrors.Hidden
         viewModelScope.launch {
             try {

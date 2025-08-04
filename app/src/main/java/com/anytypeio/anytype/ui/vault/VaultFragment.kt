@@ -66,7 +66,11 @@ class VaultFragment : BaseComposeFragment() {
         if (r != null && r.contents != null) {
             vm.onQrCodeScanned(qrCode = r.contents)
         } else {
-            Timber.w("QR code scan failed or cancelled")
+            if (r == null) {
+                Timber.w("QR code scan cancelled by user")
+            } else {
+                Timber.w("QR code scan failed: no contents found")
+            }
             vm.onQrScannerError()
         }
     }

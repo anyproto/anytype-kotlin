@@ -815,6 +815,10 @@ class VaultViewModel(
     fun clearVaultError() {
         vaultErrors.value = VaultErrors.Hidden
     }
+    
+    fun onShowCameraPermissionSettingsDialog() {
+        vaultErrors.value = VaultErrors.CameraPermissionDenied
+    }
 
     fun onPinSpaceClicked(spaceId: Id) {
         val state = uiState.value

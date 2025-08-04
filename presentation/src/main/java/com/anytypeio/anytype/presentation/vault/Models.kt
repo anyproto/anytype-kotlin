@@ -110,4 +110,5 @@ sealed class VaultErrors {
     data object MaxPinnedSpacesReached : VaultErrors()
     data object QrScannerError : VaultErrors()
     data object QrCodeIsNotValid : VaultErrors()
+    data object CameraPermissionDenied : VaultErrors()
 }

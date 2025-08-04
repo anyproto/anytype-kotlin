@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,10 +11,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
-import com.google.zxing.integration.android.IntentIntegrator
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -22,6 +24,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
@@ -47,6 +50,7 @@ import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_T
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
+import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -72,6 +76,16 @@ class VaultFragment : BaseComposeFragment() {
                 Timber.w("QR code scan failed: no contents found")
             }
             vm.onQrScannerError()
+        }
+    }
+    
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            launchQrScanner()
+        } else {
+            vm.onShowCameraPermissionSettingsDialog()
         }
     }
 
@@ -135,7 +149,7 @@ class VaultFragment : BaseComposeFragment() {
                     }
 
                     VaultErrors.QrCodeIsNotValid -> {
-                        VaultAlertScreenModals(
+                        AlertScreenModals(
                             title = getString(R.string.vault_qr_invalid_title),
                             description = getString(R.string.vault_qr_invalid_description),
                             firstButtonText = getString(R.string.vault_qr_try_again),
@@ -145,12 +159,26 @@ class VaultFragment : BaseComposeFragment() {
                     }
 
                     VaultErrors.QrScannerError -> {
-                        VaultAlertScreenModals(
+                        AlertScreenModals(
                             title = getString(R.string.vault_qr_scan_error_title),
                             description = getString(R.string.vault_qr_scan_error_description),
                             firstButtonText = getString(R.string.vault_qr_try_again),
                             onAction = vm::onModalTryAgainClicked,
                             onDismiss = vm::onModalCancelClicked
+                        )
+                    }
+                    
+                    VaultErrors.CameraPermissionDenied -> {
+                        AlertScreenModals(
+                            title = getString(R.string.camera_permission_required_title),
+                            description = getString(R.string.camera_permission_settings_message),
+                            firstButtonText = getString(R.string.open_settings),
+                            secondButtonText = getString(R.string.cancel),
+                            onAction = {
+                                requireContext().openAppSettings()
+                                vm.clearVaultError()
+                            },
+                            onDismiss = vm::clearVaultError
                         )
                     }
                 }
@@ -317,12 +345,7 @@ class VaultFragment : BaseComposeFragment() {
             }
             
             VaultCommand.ScanQrCode -> {
-                qrCodeLauncher.launch(
-                    IntentIntegrator
-                        .forSupportFragment(this)
-                        .setBeepEnabled(false)
-                        .createScanIntent()
-                )
+                handleCameraPermissionAndScan()
             }
             
             is VaultCommand.NavigateToRequestJoinSpace -> {
@@ -476,6 +499,29 @@ class VaultFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().vaultComponent.release()
+    }
+
+    private fun handleCameraPermissionAndScan() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                launchQrScanner()
+            }
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+    
+    private fun launchQrScanner() {
+        qrCodeLauncher.launch(
+            IntentIntegrator
+                .forSupportFragment(this)
+                .setBeepEnabled(false)
+                .createScanIntent()
+        )
     }
 
     companion object {

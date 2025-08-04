@@ -1606,6 +1606,10 @@ class ChatViewModel @Inject constructor(
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
+    
+    fun onCameraPermissionDenied() {
+        errorState.value = UiErrorState.CameraPermissionDenied
+    }
 
     private fun proceedWithSpaceSubscription() {
         viewModelScope.launch {
@@ -1711,6 +1715,7 @@ class ChatViewModel @Inject constructor(
     sealed class UiErrorState {
         data object Hidden : UiErrorState()
         data class Show(val msg: String) : UiErrorState()
+        data object CameraPermissionDenied : UiErrorState()
     }
 
     sealed class Params {

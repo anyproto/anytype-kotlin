@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
@@ -69,6 +70,7 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.vault.AlertScreenModals
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -502,6 +504,19 @@ class ChatFragment : BaseComposeFragment() {
                     buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
                     onButtonClick = vm::hideError,
                     onDismissRequest = vm::hideError
+                )
+            }
+            ChatViewModel.UiErrorState.CameraPermissionDenied -> {
+                AlertScreenModals(
+                    title = getString(R.string.camera_permission_required_title),
+                    description = getString(R.string.camera_permission_settings_message),
+                    firstButtonText = getString(R.string.open_settings),
+                    secondButtonText = getString(R.string.cancel),
+                    onAction = {
+                        requireContext().openAppSettings()
+                        vm.hideError()
+                    },
+                    onDismiss = vm::hideError
                 )
             }
         }

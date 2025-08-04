@@ -16,7 +16,7 @@ import com.anytypeio.anytype.core_ui.foundation.Prompt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VaultAlertScreenModals(
+fun AlertScreenModals(
     title: String,
     description: String,
     firstButtonText: String,

@@ -1125,6 +1125,19 @@
     <string name="date_type_older">Older</string>
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="number_days_from">Кількість днів з цього моменту</string>
+    <string name="number_days_ago">Кількість днів тому</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Точний день</string>
+    <string name="dates_filter_last_week">Минулого тижня</string>
+    <string name="dates_filter_current_week">Поточного тижня</string>
+    <string name="dates_filter_next_week">Наступного тижня</string>
+    <string name="dates_filter_last_month">Минулого місяця</string>
+    <string name="dates_filter_current_month">Поточного місяця</string>
+    <string name="dates_filter_next_month">Наступний місяць</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->

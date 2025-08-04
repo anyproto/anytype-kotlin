@@ -1117,6 +1117,19 @@
     <string name="date_type_older">Daha eski</string>
     <string name="dates_days_ago">%1$s gün önce</string>
     <string name="dates_days_from">Şu andan itibaren %1$s gün</string>
+    <string name="number_days_from">gün sonra</string>
+    <string name="number_days_ago">gün önce</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Tam tarih</string>
+    <string name="dates_filter_last_week">Geçen hafta</string>
+    <string name="dates_filter_current_week">Bu hafta</string>
+    <string name="dates_filter_next_week">Gelecek hafta</string>
+    <string name="dates_filter_last_month">Geçen ay</string>
+    <string name="dates_filter_current_month">Bu ay</string>
+    <string name="dates_filter_next_month">Gelecek ay</string>
+    <string name="dates_filter_last_year">Geçen yıl</string>
+    <string name="dates_filter_current_year">Bu yıl</string>
+    <string name="dates_filter_next_year">Gelecek yıl</string>
     <string name="settings_use_yamux">QUIC kullan</string>
     <string name="settings_share_local_logs">Yerel günlükleri paylaş</string>
     <!--endregion-->

@@ -1125,6 +1125,19 @@
     <string name="date_type_older">Раней</string>
     <string name="dates_days_ago">%1$s дзён таму</string>
     <string name="dates_days_from">%1$s дзён праз</string>
+    <string name="number_days_from">Колькасць дзён з гэтага моманту</string>
+    <string name="number_days_ago">Колькасць дзён таму</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Дакладны дзень</string>
+    <string name="dates_filter_last_week">Апошні тыдзень</string>
+    <string name="dates_filter_current_week">Бягучы тыдзень</string>
+    <string name="dates_filter_next_week">Наступны тыдзень</string>
+    <string name="dates_filter_last_month">За апошні месяц</string>
+    <string name="dates_filter_current_month">Гэты месяц</string>
+    <string name="dates_filter_next_month">Наступны месяц</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->

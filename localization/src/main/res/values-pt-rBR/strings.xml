@@ -1117,6 +1117,19 @@
     <string name="date_type_older">Mais antigo</string>
     <string name="dates_days_ago">Há %1$s dias</string>
     <string name="dates_days_from">Daqui a %1$s dias</string>
+    <string name="number_days_from">Número de dias a partir de agora</string>
+    <string name="number_days_ago">Número de dias atrás</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Dia exato</string>
+    <string name="dates_filter_last_week">Semana passada</string>
+    <string name="dates_filter_current_week">Semana atual</string>
+    <string name="dates_filter_next_week">Próxima semana</string>
+    <string name="dates_filter_last_month">Mês passado</string>
+    <string name="dates_filter_current_month">Mês atual</string>
+    <string name="dates_filter_next_month">Mês seguinte</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
     <!--endregion-->

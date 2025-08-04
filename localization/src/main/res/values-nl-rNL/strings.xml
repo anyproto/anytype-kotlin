@@ -1117,6 +1117,19 @@
     <string name="date_type_older">Ouder</string>
     <string name="dates_days_ago">%1$s dagen geleden</string>
     <string name="dates_days_from">%1$s dagen vanaf nu</string>
+    <string name="number_days_from">Aantal dagen vanaf nu</string>
+    <string name="number_days_ago">Aantal dagen geleden</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Exacte dag</string>
+    <string name="dates_filter_last_week">Afgelopen week</string>
+    <string name="dates_filter_current_week">Deze week</string>
+    <string name="dates_filter_next_week">Volgende week</string>
+    <string name="dates_filter_last_month">Afgelopen maand</string>
+    <string name="dates_filter_current_month">Deze maand</string>
+    <string name="dates_filter_next_month">Volgende maand</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Deel lokale logbestanden</string>
     <!--endregion-->

@@ -1823,9 +1823,9 @@ En concreto,
     <string name="notifications_modal_description">Recibe notificaciones al instante cuando te envíen un mensaje o te mencionen en tus espacios.</string>
     <string name="notifications_modal_success_button">Activar notificaciones</string>
     <string name="notifications_modal_cancel_button">Ahora no</string>
-    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
-    <string name="vault_create_space">Espacio</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
     <string name="vault_empty_search_state_text">No hay coincidencias</string>
@@ -1854,4 +1854,11 @@ En concreto,
     <string name="notification_settings_state_enabled">Activado</string>
     <string name="content_desc_muted">Silenciado</string>
     <string name="failed_to_load_image">Error al cargar la imagen</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Unirse con código QR</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Inténtalo de nuevo</string>
 </resources>

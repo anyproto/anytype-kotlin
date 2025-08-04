@@ -12,18 +12,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
-import com.anytypeio.anytype.core_utils.ext.CURRENT_MONTH
-import com.anytypeio.anytype.core_utils.ext.CURRENT_WEEK
-import com.anytypeio.anytype.core_utils.ext.EXACT_DAY
-import com.anytypeio.anytype.core_utils.ext.LAST_WEEK
-import com.anytypeio.anytype.core_utils.ext.MONTH_AGO
-import com.anytypeio.anytype.core_utils.ext.MONTH_AHEAD
-import com.anytypeio.anytype.core_utils.ext.NEXT_WEEK
-import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_AGO
-import com.anytypeio.anytype.core_utils.ext.NUMBER_OF_DAYS_FROM_NOW
-import com.anytypeio.anytype.core_utils.ext.TODAY
-import com.anytypeio.anytype.core_utils.ext.TOMORROW
-import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -262,7 +250,7 @@ fun DVViewer.toViewRelation(relation: ObjectWrapper.Relation): SimpleRelationVie
         isHidden = relation.isHidden ?: false,
         isVisible = viewerRelation?.isVisible ?: false,
         title = relation.name.orEmpty(),
-        format = relation.format.toView()
+        format = relation.format
     )
 }
 
@@ -312,12 +300,12 @@ fun ObjectWrapper.Relation.toCreateFilterDateView(
         val fieldDate = fieldParser.toDate(any = value)
         CreateFilterView.Date(
             id = key,
-            description = it.toName(),
             type = it,
             condition = condition,
             value = if (isSelected) value else CreateFilterView.Date.NO_VALUE,
             isSelected = isSelected,
-            relativeDate = fieldDate?.relativeDate
+            relativeDate = fieldDate?.relativeDate,
+            description = ""
         )
     }
 
@@ -338,8 +326,8 @@ private fun DVFilterQuickOption?.isSelected(
 private val quickOptionDefaultOrder by lazy {
     listOf(
         DVFilterQuickOption.TODAY,
-        DVFilterQuickOption.TOMORROW,
         DVFilterQuickOption.YESTERDAY,
+        DVFilterQuickOption.TOMORROW,
         DVFilterQuickOption.CURRENT_WEEK,
         DVFilterQuickOption.LAST_WEEK,
         DVFilterQuickOption.NEXT_WEEK,
@@ -357,8 +345,8 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
         put(
             DVFilterCondition.EQUAL, listOf(
                 DVFilterQuickOption.TODAY,
-                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.YESTERDAY,
+                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.DAYS_AGO,
                 DVFilterQuickOption.DAYS_AHEAD,
                 DVFilterQuickOption.EXACT_DATE,
@@ -368,14 +356,17 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
         put(
             DVFilterCondition.IN, listOf(
                 DVFilterQuickOption.TODAY,
-                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.YESTERDAY,
-                DVFilterQuickOption.LAST_WEEK,
+                DVFilterQuickOption.TOMORROW,
                 DVFilterQuickOption.CURRENT_WEEK,
+                DVFilterQuickOption.LAST_WEEK,
                 DVFilterQuickOption.NEXT_WEEK,
-                DVFilterQuickOption.LAST_MONTH,
                 DVFilterQuickOption.CURRENT_MONTH,
+                DVFilterQuickOption.LAST_MONTH,
                 DVFilterQuickOption.NEXT_MONTH,
+                DVFilterQuickOption.CURRENT_YEAR,
+                DVFilterQuickOption.LAST_YEAR,
+                DVFilterQuickOption.NEXT_YEAR,
             )
         )
 
@@ -384,24 +375,6 @@ private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption
     }
 }
 
-private val quickOptionToNameMapping: Map<DVFilterQuickOption, String> by lazy {
-    buildMap {
-        put(DVFilterQuickOption.EXACT_DATE, EXACT_DAY)
-        put(DVFilterQuickOption.YESTERDAY, YESTERDAY)
-        put(DVFilterQuickOption.TODAY, TODAY)
-        put(DVFilterQuickOption.TOMORROW, TOMORROW)
-        put(DVFilterQuickOption.LAST_WEEK, LAST_WEEK)
-        put(DVFilterQuickOption.CURRENT_WEEK, CURRENT_WEEK)
-        put(DVFilterQuickOption.NEXT_WEEK, NEXT_WEEK)
-        put(DVFilterQuickOption.LAST_MONTH, MONTH_AGO)
-        put(DVFilterQuickOption.CURRENT_MONTH, CURRENT_MONTH)
-        put(DVFilterQuickOption.NEXT_MONTH, MONTH_AHEAD)
-        put(DVFilterQuickOption.DAYS_AGO, NUMBER_OF_DAYS_AGO)
-        put(DVFilterQuickOption.DAYS_AHEAD, NUMBER_OF_DAYS_FROM_NOW)
-    }
-}
-
-fun DVFilterQuickOption.toName() = quickOptionToNameMapping.getOrDefault(this, "Error")
 
 fun ObjectState.DataView.filterExpression(viewerId: Id?): List<DVFilter> {
     val viewer =
@@ -505,7 +478,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.TextShort(relation.toText(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -519,7 +492,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Text(relation.toText(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -533,7 +506,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Url(relation.toUrl(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -547,7 +520,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Email(relation.toEmail(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -561,7 +534,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toTextView(),
             filterValue = FilterValue.Phone(relation.toPhone(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -575,7 +548,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toNumberView(),
             filterValue = FilterValue.Number(NumberParser.parse(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = true,
             isInEditMode = isInEditMode
         )
@@ -591,7 +564,7 @@ suspend fun DVFilter.toView(
             condition = condition.toDateView(),
             quickOption = quickOption,
             filterValue = FilterValue.Date(fieldDate?.timestamp?.time),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode,
             relativeDate = fieldDate?.relativeDate
@@ -610,7 +583,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toSelectedView(),
             filterValue = FilterValue.Status(value = updatedFilterValue),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -629,7 +602,7 @@ suspend fun DVFilter.toView(
                     store = store
                 )
             ),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -651,7 +624,7 @@ suspend fun DVFilter.toView(
                     storeOfObjectTypes = storeOfObjectTypes
                 )
             ),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )
@@ -665,7 +638,7 @@ suspend fun DVFilter.toView(
             operator = operator.toView(),
             condition = condition.toCheckboxView(),
             filterValue = FilterValue.Check(relation.toCheckbox(value)),
-            format = relation.format.toView(),
+            format = relation.format,
             isValueRequired = condition.isValueRequired(),
             isInEditMode = isInEditMode
         )

@@ -130,7 +130,7 @@ class ObjectSetSettingsViewModelTest {
                 SimpleRelationView(
                     key = relationKey,
                     title = relationName,
-                    format = ColumnView.Format.LONG_TEXT,
+                    format = RelationFormat.LONG_TEXT,
                     isVisible = true,
                     isHidden = true,
                     isReadonly = false,
@@ -273,7 +273,7 @@ class ObjectSetSettingsViewModelTest {
                 SimpleRelationView(
                     key = relationKey,
                     title = relationName,
-                    format = ColumnView.Format.NUMBER,
+                    format = RelationFormat.NUMBER,
                     isVisible = true,
                     isHidden = false,
                     isReadonly = false,

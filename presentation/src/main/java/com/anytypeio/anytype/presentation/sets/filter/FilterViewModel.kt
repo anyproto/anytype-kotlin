@@ -553,7 +553,7 @@ open class FilterViewModel(
                 relationKey = relation,
                 value = value,
                 condition = condition.toDomain(),
-                relationFormat = if (format == ColumnView.Format.DATE)
+                relationFormat = if (format == RelationFormat.DATE)
                     RelationFormat.DATE
                 else
                     null
@@ -593,7 +593,7 @@ open class FilterViewModel(
             val format = relationState.value?.format
             if (format != null) {
                 when (format) {
-                    ColumnView.Format.TAG -> {
+                    RelationFormat.TAG -> {
                         val tags =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Tag>()
                         val selected = tags.filter { it.isSelected }.map { tag -> tag.id }
@@ -605,7 +605,7 @@ open class FilterViewModel(
                             condition = condition.toDomain(),
                         )
                     }
-                    ColumnView.Format.STATUS -> {
+                    RelationFormat.STATUS -> {
                         val statuses =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Status>()
                         val selected = statuses.filter { it.isSelected }.map { status -> status.id }
@@ -617,7 +617,7 @@ open class FilterViewModel(
                             condition = condition.toDomain()
                         )
                     }
-                    ColumnView.Format.DATE -> {
+                    RelationFormat.DATE -> {
                         val dates =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Date>()
                         val selected = dates.firstOrNull { it.isSelected }
@@ -630,7 +630,7 @@ open class FilterViewModel(
                             condition = condition.toDomain()
                         )
                     }
-                    ColumnView.Format.OBJECT, ColumnView.Format.FILE -> {
+                    RelationFormat.OBJECT, RelationFormat.FILE -> {
                         val objects =
                             filterValueListState.value.filterIsInstance<CreateFilterView.Object>()
                         val selected = objects
@@ -644,7 +644,7 @@ open class FilterViewModel(
                             condition = condition.toDomain(),
                         )
                     }
-                    ColumnView.Format.CHECKBOX -> {
+                    RelationFormat.CHECKBOX -> {
                         val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithCreatingFilter(
                             ctx = ctx,
@@ -718,7 +718,7 @@ open class FilterViewModel(
             val format = relationState.value?.format
             if (format != null) {
                 when (format) {
-                    ColumnView.Format.TAG -> {
+                    RelationFormat.TAG -> {
                         val value = filterValueListState.value.mapNotNull { view ->
                             if (view is CreateFilterView.Tag && view.isSelected)
                                 view.id
@@ -737,7 +737,7 @@ open class FilterViewModel(
                             )
                         )
                     }
-                    ColumnView.Format.STATUS -> {
+                    RelationFormat.STATUS -> {
                         val value = filterValueListState.value.mapNotNull { view ->
                             if (view is CreateFilterView.Status && view.isSelected)
                                 view.id
@@ -756,7 +756,7 @@ open class FilterViewModel(
                             )
                         )
                     }
-                    ColumnView.Format.DATE -> {
+                    RelationFormat.DATE -> {
                         val date = filterValueListState.value
                             .filterIsInstance<CreateFilterView.Date>()
                             .firstOrNull { it.isSelected }
@@ -773,7 +773,8 @@ open class FilterViewModel(
                             )
                         )
                     }
-                    ColumnView.Format.OBJECT, ColumnView.Format.FILE -> {
+                    RelationFormat.OBJECT,
+                    RelationFormat.FILE -> {
                         val value = filterValueListState.value.mapNotNull { view ->
                             if (view is CreateFilterView.Object && view.isSelected)
                                 view.id
@@ -792,7 +793,7 @@ open class FilterViewModel(
                             )
                         )
                     }
-                    ColumnView.Format.CHECKBOX -> {
+                    RelationFormat.CHECKBOX -> {
                         val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithUpdatingFilter(
                             ctx = ctx,

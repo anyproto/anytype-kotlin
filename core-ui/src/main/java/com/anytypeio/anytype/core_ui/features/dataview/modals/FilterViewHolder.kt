@@ -4,10 +4,12 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 
 abstract class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -17,7 +19,13 @@ abstract class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     abstract val iconArrow: ImageView
     abstract val iconRemove: ImageView
 
-    fun setup(isEditMode: Boolean, title: String, condition: String, format: ColumnView.Format) {
+    fun setup(
+        relationKey: Key,
+        isEditMode: Boolean,
+        title: String,
+        condition: String,
+        format: RelationFormat
+    ) {
         if (isEditMode) {
             iconRemove.visible()
             iconArrow.gone()
@@ -27,6 +35,6 @@ abstract class FilterViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
         textTitle.text = title
         textCondition.text = condition
-        iconFormat.bind(format)
+        iconFormat.bind(isName = relationKey == Relations.NAME, format = format)
     }
 }

@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -27,12 +27,12 @@
             android:layout_height="96dp"
             android:layout_marginStart="16dp"
             android:transitionName="@string/logo_transition"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:emojiContainerBackground="true"
             app:emojiSize="48dp"
+            app:imageCornerRadius="12dp"
             app:imageSize="96dp"
-            app:imageCornerRadius="12dp" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </FrameLayout>
 
@@ -41,19 +41,11 @@
         style="@style/BlockTitleContentStyle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:hint="@string/untitled"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:ignoreDragAndDrop="true"
-        android:layout_marginTop="12dp"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
-
-<!--    <androidx.constraintlayout.widget.Barrier-->
-<!--        android:id="@+id/barrier"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        app:barrierDirection="bottom"-->
-<!--        app:constraint_referenced_ids="objectIconWidget,cover,root" />-->
-
 </LinearLayout>

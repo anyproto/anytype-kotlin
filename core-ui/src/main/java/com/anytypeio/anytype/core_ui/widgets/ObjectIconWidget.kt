@@ -30,7 +30,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import coil3.load
-import coil3.request.CachePolicy
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -49,7 +48,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private var imageCornerRadius: Float = 0F
     private var isImageWithCorners: Boolean = false
     private val density = context.resources.displayMetrics.density
-    private var emojiContainerBackground: Boolean = false
+    private var withBackgrounds: Boolean = false
 
     init {
         setupAttributeValues(attrs)
@@ -64,7 +63,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         val emojiSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_emojiSize, DEFAULT_SIZE)
-        emojiContainerBackground = attrs.getBoolean(R.styleable.ObjectIconWidget_emojiContainerBackground, false)
+        withBackgrounds = attrs.getBoolean(R.styleable.ObjectIconWidget_emojiContainerBackground, false)
         val imageSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageSize, DEFAULT_SIZE)
         val checkboxSize =
@@ -108,10 +107,11 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setIcon(icon: ObjectIcon) {
         // Reset backgrounds
-        if (emojiContainerBackground) {
+        if (withBackgrounds) {
             binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
             binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
         } else {
+            binding.root.background = null
             binding.emojiContainer.background = null
         }
         binding.ivImage.background = null
@@ -220,10 +220,11 @@ class ObjectIconWidget @JvmOverloads constructor(
         emoji: String?,
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
-        if (emojiContainerBackground) {
+        if (withBackgrounds) {
             binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
             binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
         } else {
+            binding.root.background = null
             binding.emojiContainer.background = null
         }
         if (!emoji.isNullOrBlank()) {

@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
@@ -280,7 +279,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
-            //setupIconVisibility(item)
         }
 
         private fun setIcon(item: BlockView.Title.Basic) {
@@ -292,14 +290,14 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_88)
                         height = dimen(R.dimen.dp_88)
-                        topMargin = dimen(R.dimen.dp_164)
+                        topMargin = if (item.hasCover) dimen(R.dimen.dp_164) else dimen(R.dimen.dp_120)
                     }
                 }
                 is ObjectIcon.Basic.Image -> {
                     icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_104)
                         height = dimen(R.dimen.dp_104)
-                        topMargin = dimen(R.dimen.dp_148)
+                        topMargin = if (item.hasCover) dimen(R.dimen.dp_148) else dimen(R.dimen.dp_120)
                     }
                 }
                 is ObjectIcon.Profile.Avatar -> {
@@ -326,33 +324,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_96)
                         height = dimen(R.dimen.dp_96)
-                    }
-                }
-            }
-        }
-
-        private fun setupIconVisibility(item: BlockView.Title.Basic) {
-            when {
-                item.icon !is ObjectIcon.None -> {
-                    icon.visible()
-                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin = dimen(R.dimen.dp_10)
-                    }
-                    icon.updateLayoutParams<LinearLayout.LayoutParams> {
-                        topMargin =
-                            if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
-                    }
-                }
-                else -> {
-                    icon.gone()
-                    if (!item.hasCover) {
-                        content.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_80)
-                        }
-                    } else {
-                        content.updateLayoutParams<LinearLayout.LayoutParams> {
-                            topMargin = dimen(R.dimen.dp_16)
-                        }
                     }
                 }
             }

@@ -98,6 +98,7 @@ android {
             minifyEnabled true
             shrinkResources true
             debuggable false
+            buildConfigField "boolean", "SHOW_CHATS", "false"
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.release'])
             if (useReleaseKeystore) {
@@ -110,6 +111,7 @@ android {
         debug {
             applicationIdSuffix ".dev"
             debuggable true
+            buildConfigField "boolean", "SHOW_CHATS", "true"
             buildConfigField("String", "AMPLITUDE_KEY", apikeyProperties['amplitude.debug'])
             //signingConfig signingConfigs.debug
             firebaseAppDistribution {
@@ -117,7 +119,6 @@ android {
                 groups = "anytype-q&a, android-team, product-review, nightly-ops"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
-            buildConfigField "boolean", "SHOW_CHATS", "true"
         }
 
         applicationVariants.all {

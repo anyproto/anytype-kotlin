@@ -47,6 +47,7 @@ android {
         buildConfigField "boolean", "USE_NEW_WINDOW_INSET_API", "true"
         buildConfigField "boolean", "USE_EDGE_TO_EDGE", "true"
         buildConfigField "boolean", "MANDATORY_EMAIL_COLLECTION", "true"
+        buildConfigField "boolean", "SHOW_CHATS", "false"
         buildConfigField "boolean", "LOG_FROM_MW_LIBRARY", localProperties.getProperty("LOG_FROM_MW_LIBRARY", "false")
         buildConfigField "boolean", "LOG_MW_INTERACTION", localProperties.getProperty("LOG_MW_INTERACTION", "true")
         buildConfigField "boolean", "LOG_DASHBOARD_REDUCER", localProperties.getProperty("LOG_DASHBOARD_REDUCER", "false")

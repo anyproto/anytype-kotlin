@@ -10,11 +10,13 @@ import android.graphics.Point
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.LinearInterpolator
 import android.view.animation.OvershootInterpolator
@@ -44,6 +46,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.view.setPadding
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -431,6 +434,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             threshold = dimen(R.dimen.default_toolbar_height),
             thresholdPadding = dimen(R.dimen.dp_8)
         ) { isHeaderOverlaid ->
+            Log.d("Test1983", "Header overlaid: $isHeaderOverlaid")
+            updateStatusBarForHeaderOverlay(isHeaderOverlaid)
             if (isHeaderOverlaid) {
                 binding.topToolbar.setBackgroundColor(0)
                 binding.topToolbar.container.animate().alpha(0f)
@@ -445,7 +450,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
             } else {
-                binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
+                binding.topToolbar.setBackgroundColor(requireContext().color(R.color.background_primary))
                 binding.topToolbar.container.animate().alpha(1f)
                     .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
                     .start()
@@ -555,6 +560,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupEdgeToEdge()
         setupWindowInsetAnimation()
 
         dndDelegate.init(blockAdapter, vm, this)
@@ -862,8 +868,147 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    private fun setupEdgeToEdge() {
+        // Start with transparent status bar for edge-to-edge experience
+        requireActivity().window.apply {
+            statusBarColor = android.graphics.Color.TRANSPARENT
+        }
+        
+        // Apply window insets to handle edge-to-edge display
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
+            
+            // Apply top padding to top toolbar for status bar
+            binding.topToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topMargin = systemBars.top
+            }
+//
+//            // Apply top padding to search toolbar for status bar
+//            binding.searchToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+//                topMargin = systemBars.top
+//            }
+//
+//            // Apply top padding to multi-select toolbar for status bar
+//            binding.multiSelectTopToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+//                topMargin = systemBars.top
+//            }
+//
+//            // Apply top padding to scroll and move hint for status bar
+//            binding.scrollAndMoveHint.updateLayoutParams<ConstraintLayout.LayoutParams> {
+//                topMargin = systemBars.top
+//            }
+//
+//            // Apply padding to recycler view for navigation bar
+//            binding.recycler.setPadding(
+//                binding.recycler.paddingLeft,
+//                binding.recycler.paddingTop,
+//                binding.recycler.paddingRight,
+//                systemBars.bottom + dimen(R.dimen.editor_recycler_bottom_padding)
+//            )
+//
+//            // Apply bottom margin to bottom navigation panel
+//            binding.bottomToolbarContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+//                bottomMargin = systemBars.bottom + dimen(R.dimen.dp_20)
+//            }
+//
+//            // Apply bottom padding to toolbars
+//            val bottomPadding = if (ime.bottom > 0) ime.bottom else systemBars.bottom
+//            binding.toolbar.setPadding(
+//                binding.toolbar.paddingLeft,
+//                binding.toolbar.paddingTop,
+//                binding.toolbar.paddingRight,
+//                bottomPadding
+//            )
+//            binding.markupToolbar.setPadding(
+//                binding.markupToolbar.paddingLeft,
+//                binding.markupToolbar.paddingTop,
+//                binding.markupToolbar.paddingRight,
+//                bottomPadding
+//            )
+//
+//            // Handle Compose views at the bottom
+//            binding.chooseTypeWidget.updateLayoutParams<FrameLayout.LayoutParams> {
+//                bottomMargin = bottomPadding
+//            }
+//            binding.syncStatusWidget.updateLayoutParams<FrameLayout.LayoutParams> {
+//                bottomMargin = if (ime.bottom > 0) 0 else systemBars.bottom
+//            }
+//            binding.editorDatePicker.updateLayoutParams<FrameLayout.LayoutParams> {
+//                bottomMargin = bottomPadding
+//            }
+//            binding.attachToChatPanel.updateLayoutParams<FrameLayout.LayoutParams> {
+//                bottomMargin = bottomPadding
+//            }
+//
+//            // Apply bottom padding to other bottom toolbars
+//            binding.mentionSuggesterToolbar.setPadding(
+//                binding.mentionSuggesterToolbar.paddingLeft,
+//                binding.mentionSuggesterToolbar.paddingTop,
+//                binding.mentionSuggesterToolbar.paddingRight,
+//                bottomPadding
+//            )
+//            binding.slashWidget.setPadding(
+//                binding.slashWidget.paddingLeft,
+//                binding.slashWidget.paddingTop,
+//                binding.slashWidget.paddingRight,
+//                bottomPadding
+//            )
+//            binding.scrollAndMoveBottomAction.setPadding(
+//                binding.scrollAndMoveBottomAction.paddingLeft,
+//                binding.scrollAndMoveBottomAction.paddingTop,
+//                binding.scrollAndMoveBottomAction.paddingRight,
+//                systemBars.bottom
+//            )
+//
+//            // Apply bottom margin to the bottom sheets container
+//            binding.panels.setPadding(
+//                binding.panels.paddingLeft,
+//                binding.panels.paddingTop,
+//                binding.panels.paddingRight,
+//                systemBars.bottom
+//            )
+            
+            //insets
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
+    private fun updateStatusBarForHeaderOverlay(isHeaderOverlaid: Boolean) {
+        requireActivity().window.apply {
+            if (isHeaderOverlaid) {
+                // When header is not overlaid (scrolled up), show transparent status bar
+                statusBarColor = android.graphics.Color.TRANSPARENT
+            } else {
+                // When header is overlaid (visible), show status bar with background
+                statusBarColor = requireContext().color(R.color.background_primary)
+            }
+        }
+        
+        // Update status bar icon color based on current state and theme
+        val windowInsetsController = ViewCompat.getWindowInsetsController(requireActivity().window.decorView)
+        val uiMode = requireContext().resources.configuration.uiMode
+        val isDarkMode = (uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
+        
+        if (isHeaderOverlaid) {
+            // When showing transparent status bar, adjust icons based on content
+            val firstView = blockAdapter.views.firstOrNull()
+            val hasCover = firstView is BlockView.Title && firstView.hasCover
+            windowInsetsController?.isAppearanceLightStatusBars = if (hasCover) {
+                // For covers, usually need light icons
+                false
+            } else {
+                // For regular content, follow theme
+                !isDarkMode
+            }
+        } else {
+            // When showing colored status bar, follow theme
+            windowInsetsController?.isAppearanceLightStatusBars = !isDarkMode
+        }
+    }
+
     open fun setupWindowInsetAnimation() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             binding.toolbar.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP
             )

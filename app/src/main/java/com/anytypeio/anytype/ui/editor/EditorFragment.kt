@@ -44,6 +44,8 @@ import androidx.core.animation.doOnStart
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
+import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_CONTINUE_ON_SUBTREE
+import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
@@ -560,7 +562,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupEdgeToEdge()
+        setupEdgeToEdge(view)
         setupWindowInsetAnimation()
 
         dndDelegate.init(blockAdapter, vm, this)
@@ -868,10 +870,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun setupEdgeToEdge() {
+    private fun setupEdgeToEdge(view: View) {
 
         // Apply window insets to handle edge-to-edge display
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
@@ -888,48 +890,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.topToolbar.paddingBottom
             )
             
-//            // Apply top padding to search toolbar for status bar
-//            binding.searchToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
-//                topMargin = systemBars.top
-//            }
-//
-//            // Apply top padding to multi-select toolbar for status bar
-//            binding.multiSelectTopToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
-//                topMargin = systemBars.top
-//            }
-//
-//            // Apply top padding to scroll and move hint for status bar
-//            binding.scrollAndMoveHint.updateLayoutParams<ConstraintLayout.LayoutParams> {
-//                topMargin = systemBars.top
-//            }
-//
-//            // Apply padding to recycler view for navigation bar
-//            binding.recycler.setPadding(
-//                binding.recycler.paddingLeft,
-//                binding.recycler.paddingTop,
-//                binding.recycler.paddingRight,
-//                systemBars.bottom + dimen(R.dimen.editor_recycler_bottom_padding)
-//            )
-//
-//            // Apply bottom margin to bottom navigation panel
-//            binding.bottomToolbarContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-//                bottomMargin = systemBars.bottom + dimen(R.dimen.dp_20)
-//            }
-//
-//            // Apply bottom padding to toolbars
-//            val bottomPadding = if (ime.bottom > 0) ime.bottom else systemBars.bottom
-//            binding.toolbar.setPadding(
-//                binding.toolbar.paddingLeft,
-//                binding.toolbar.paddingTop,
-//                binding.toolbar.paddingRight,
-//                bottomPadding
-//            )
-//            binding.markupToolbar.setPadding(
-//                binding.markupToolbar.paddingLeft,
-//                binding.markupToolbar.paddingTop,
-//                binding.markupToolbar.paddingRight,
-//                bottomPadding
-//            )
+            // Apply top padding to search toolbar for status bar
+            binding.searchToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topMargin = systemBars.top
+            }
+
+            // Apply top padding to multi-select toolbar for status bar
+            binding.multiSelectTopToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                topMargin = systemBars.top
+            }
+
+            // Handle BlockToolbarWidget positioning with IME
+            val imeHeight = ime.bottom
+            if (imeHeight > 0) {
+                // IME is visible, position toolbar above it
+                binding.toolbar.visibility = View.VISIBLE
+                binding.toolbar.translationY = -imeHeight.toFloat()
+            } else {
+                // IME is hidden, hide toolbar or position at bottom
+                binding.toolbar.translationY = 0f
+            }
+            
+            // Handle other bottom toolbars
+            val bottomPadding = if (ime.bottom > 0) ime.bottom else systemBars.bottom
+            binding.markupToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                bottomMargin = bottomPadding
+            }
 //
 //            // Handle Compose views at the bottom
 //            binding.chooseTypeWidget.updateLayoutParams<FrameLayout.LayoutParams> {
@@ -976,6 +962,46 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             //insets
             WindowInsetsCompat.CONSUMED
         }
+
+        // Animate toolbar in sync with IME
+        ViewCompat.setWindowInsetsAnimationCallback(
+            view,
+            object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
+                
+                override fun onPrepare(animation: WindowInsetsAnimationCompat) {
+                    super.onPrepare(animation)
+                    // Ensure toolbar is visible when IME animation starts
+                    if (animation.typeMask and WindowInsetsCompat.Type.ime() != 0) {
+                        binding.toolbar.visibility = View.VISIBLE
+                    }
+                }
+                
+                override fun onProgress(
+                    insets: WindowInsetsCompat,
+                    runningAnimations: MutableList<WindowInsetsAnimationCompat>
+                ): WindowInsetsCompat {
+                    val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                    
+                    // Always keep toolbar visible during animation
+                    // Only animate the translation
+                    binding.toolbar.translationY = if (imeHeight > 0) -imeHeight.toFloat() else 0f
+                    
+                    return insets
+                }
+                
+                override fun onEnd(animation: WindowInsetsAnimationCompat) {
+                    super.onEnd(animation)
+                    // Only hide toolbar after animation completely ends and IME is hidden
+                    if (animation.typeMask and WindowInsetsCompat.Type.ime() != 0) {
+                        val currentImeHeight = ViewCompat.getRootWindowInsets(view)
+                            ?.getInsets(WindowInsetsCompat.Type.ime())?.bottom ?: 0
+                        if (currentImeHeight == 0) {
+                            binding.toolbar.visibility = View.INVISIBLE
+                        }
+                    }
+                }
+            }
+        )
     }
 
     private fun updateStatusBarForHeaderOverlay(isHeaderOverlaid: Boolean) {
@@ -1012,9 +1038,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     open fun setupWindowInsetAnimation() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            binding.toolbar.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
+//            binding.toolbar.syncTranslationWithImeVisibility(
+//                dispatchMode = DISPATCH_MODE_STOP
+//            )
             binding.chooseTypeWidget.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP
             )
@@ -1757,7 +1783,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 Main.TargetBlockType.Description -> BlockToolbarWidget.State.Description
             }
         } else {
-            binding.toolbar.invisible()
+            //binding.toolbar.invisible()
         }
 
         setMainMarkupToolbarState(state)

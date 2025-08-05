@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets.toolbar
 
 import android.content.Context
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -40,16 +38,10 @@ class ObjectTopToolbar @JvmOverloads constructor(
         overCover: Boolean
     ) = with(binding) {
         if (overCover) {
-            //ivThreeDots.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            //topBackButton.setBackgroundResource(R.drawable.rect_object_menu_button_default)
             statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            //ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
-            ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)
         } else {
             menu.background = null
             topBackButton.background = null
-            ivTopBackButton.imageTintList = null
-            ivThreeDots.imageTintList = null
             statusBadge.background = null
         }
     }

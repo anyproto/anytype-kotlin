@@ -347,7 +347,7 @@ class BlockAdapter(
                                     val text = editable.toString()
                                     view.text = text
                                     onTitleBlockTextChanged(view.id, text)
-                                    onTitleTextChanged(text)
+                                    onTitleTextChanged(view, text)
                                 }
                             }
                         )

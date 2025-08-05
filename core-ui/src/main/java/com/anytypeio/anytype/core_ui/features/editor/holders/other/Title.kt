@@ -339,8 +339,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
         override val selectionView: View = itemView
 
-        private var hasImage = false
-
         init {
             content.setSpannableFactory(DefaultSpannableFactory())
         }
@@ -357,7 +355,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 click = click
             )
             setIcon(item)
-            setupMargins(item)
             applySearchHighlights(item)
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onProfileIconClicked(ListenerType.ProfileImageIcon) }
@@ -365,26 +362,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         private fun setIcon(item: BlockView.Title.Profile) {
-            when {
-                !item.image.isNullOrBlank() -> {
-                    hasImage = true
-                    icon.setIcon(ObjectIcon.Profile.Image(item.image!!, item.text.orEmpty()))
-                }
-                else -> {
-                    hasImage = false
-                    icon.setIcon(ObjectIcon.Profile.Avatar(item.text.orEmpty()))
-                }
-            }
+            icon.setIcon(item.icon)
         }
 
-        override fun setImage(item: BlockView.Title) {
-            if (item is BlockView.Title.Profile) {
-                setIcon(item)
-            }
-        }
-
-        fun onTitleTextChanged(text: String) {
-            if (!hasImage) {
+        fun onTitleTextChanged(item: BlockView, text: String) {
+            if (item is BlockView.Title.Profile && item.icon is ObjectIcon.Profile.Avatar) {
                 icon.setIcon(ObjectIcon.Profile.Avatar(text))
             }
         }
@@ -402,9 +384,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
                     }
-                    if (payload.isCoverChanged) {
-                        setupMargins(item)
-                    }
                 }
             }
         }
@@ -415,12 +394,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         override fun applyBackground(item: BlockView.Title) {
             binding.title.setBlockBackgroundColor(item.background)
-        }
-
-        private fun setupMargins(item: BlockView.Title.Profile) {
-            icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                topMargin = if (!item.hasCover) dimen(R.dimen.dp_46) else dimen(R.dimen.dp_92)
-            }
         }
     }
 

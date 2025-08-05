@@ -11,32 +11,40 @@
         android:layout_width="0dp"
         android:layout_height="@dimen/default_cover_height"
         android:contentDescription="@string/content_description_document_cover"
+        android:scaleType="centerCrop"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-        android:id="@+id/objectIconWidget"
-        android:layout_width="112dp"
-        android:layout_height="112dp"
-        android:layout_marginTop="92dp"
-        android:transitionName="@string/logo_transition"
+    <FrameLayout
+        android:id="@+id/objectIconContainer"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="132dp"
+        android:background="@drawable/bg_object_header_icon_profile_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:emojiSize="64dp"
-        app:imageSize="112dp"
-        app:initialTextSize="64sp"
-        tools:visibility="visible" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/objectIconWidget"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_gravity="center"
+            android:transitionName="@string/logo_transition"
+            app:imageSize="112dp"
+            app:initialTextSize="64sp"
+            tools:visibility="visible" />
+    </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:background="@null"
         android:hint="@string/untitled"
         android:paddingStart="20dp"
@@ -45,7 +53,7 @@
         app:ignoreDragAndDrop="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/objectIconWidget"
+        app:layout_constraintTop_toBottomOf="@+id/objectIconContainer"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 

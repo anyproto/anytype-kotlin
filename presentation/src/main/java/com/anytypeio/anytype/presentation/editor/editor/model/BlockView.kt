@@ -765,6 +765,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val hint: String? = null,
+            val icon: ObjectIcon
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }

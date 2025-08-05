@@ -1506,7 +1506,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.VIDEO -> {

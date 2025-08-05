@@ -283,6 +283,48 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         private fun setIcon(item: BlockView.Title.Basic) {
             icon.setIcon(item.icon)
+            
+            // Adjust ObjectIconWidget size based on icon type
+            when (item.icon) {
+                is ObjectIcon.Basic.Emoji -> {
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_88)
+                        height = dimen(R.dimen.dp_88)
+                    }
+                }
+                is ObjectIcon.Basic.Image -> {
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_104)
+                        height = dimen(R.dimen.dp_104)
+                    }
+                }
+                is ObjectIcon.Profile.Avatar -> {
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_120)
+                        height = dimen(R.dimen.dp_120)
+                    }
+                }
+                is ObjectIcon.Profile.Image -> {
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_120)
+                        height = dimen(R.dimen.dp_120)
+                    }
+                }
+                is ObjectIcon.Task -> {
+                    // Task icon uses default size from layout
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_96)
+                        height = dimen(R.dimen.dp_96)
+                    }
+                }
+                else -> {
+                    // Default size for other icon types
+                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        width = dimen(R.dimen.dp_96)
+                        height = dimen(R.dimen.dp_96)
+                    }
+                }
+            }
         }
 
         private fun setupIconVisibility(item: BlockView.Title.Basic) {

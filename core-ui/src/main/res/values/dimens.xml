@@ -40,7 +40,9 @@
     <dimen name="dp_80">80dp</dimen>
     <dimen name="dp_51">51dp</dimen>
     <dimen name="dp_60">60dp</dimen>
+    <dimen name="dp_88">88dp</dimen>
     <dimen name="dp_92">92dp</dimen>
+    <dimen name="dp_96">96dp</dimen>
     <dimen name="dp_102">102dp</dimen>
     <dimen name="dp_120">120dp</dimen>
     <dimen name="dp_203">203dp</dimen>

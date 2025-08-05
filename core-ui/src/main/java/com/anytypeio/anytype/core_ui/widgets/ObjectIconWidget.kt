@@ -109,6 +109,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     fun setIcon(icon: ObjectIcon) {
         // Reset backgrounds
         if (emojiContainerBackground) {
+            binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
             binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
         } else {
             binding.emojiContainer.background = null
@@ -220,6 +221,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
         if (emojiContainerBackground) {
+            binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
             binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
         } else {
             binding.emojiContainer.background = null

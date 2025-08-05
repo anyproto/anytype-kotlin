@@ -4,8 +4,10 @@ import android.content.Context
 import android.text.Spannable
 import android.util.TypedValue
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
@@ -278,7 +280,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (item.mode == BlockView.Mode.EDIT) {
                 icon.setOnClickListener { onPageIconClicked() }
             }
-            setupIconVisibility(item)
+            //setupIconVisibility(item)
         }
 
         private fun setIcon(item: BlockView.Title.Basic) {
@@ -287,39 +289,41 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             // Adjust ObjectIconWidget size based on icon type
             when (item.icon) {
                 is ObjectIcon.Basic.Emoji -> {
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_88)
                         height = dimen(R.dimen.dp_88)
+                        topMargin = dimen(R.dimen.dp_164)
                     }
                 }
                 is ObjectIcon.Basic.Image -> {
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_104)
                         height = dimen(R.dimen.dp_104)
+                        topMargin = dimen(R.dimen.dp_148)
                     }
                 }
                 is ObjectIcon.Profile.Avatar -> {
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_120)
                         height = dimen(R.dimen.dp_120)
                     }
                 }
                 is ObjectIcon.Profile.Image -> {
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_120)
                         height = dimen(R.dimen.dp_120)
                     }
                 }
                 is ObjectIcon.Task -> {
                     // Task icon uses default size from layout
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_96)
                         height = dimen(R.dimen.dp_96)
                     }
                 }
                 else -> {
                     // Default size for other icon types
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
                         width = dimen(R.dimen.dp_96)
                         height = dimen(R.dimen.dp_96)
                     }
@@ -331,10 +335,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             when {
                 item.icon !is ObjectIcon.None -> {
                     icon.visible()
-                    binding.title.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    binding.title.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin = dimen(R.dimen.dp_10)
                     }
-                    icon.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    icon.updateLayoutParams<LinearLayout.LayoutParams> {
                         topMargin =
                             if (!item.hasCover) dimen(R.dimen.dp_51) else dimen(R.dimen.dp_102)
                     }
@@ -342,11 +346,11 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 else -> {
                     icon.gone()
                     if (!item.hasCover) {
-                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        content.updateLayoutParams<LinearLayout.LayoutParams> {
                             topMargin = dimen(R.dimen.dp_80)
                         }
                     } else {
-                        content.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                        content.updateLayoutParams<LinearLayout.LayoutParams> {
                             topMargin = dimen(R.dimen.dp_16)
                         }
                     }
@@ -361,12 +365,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             super.processPayloads(payloads, item)
             if (item is BlockView.Title.Basic) {
                 payloads.forEach { payload ->
-                    if (payload.isTitleIconChanged) {
+                    if (payload.isTitleIconChanged || payload.isCoverChanged) {
                         setIcon(item)
-                        setupIconVisibility(item)
-                    }
-                    if (payload.isCoverChanged) {
-                        setupIconVisibility(item)
                     }
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)

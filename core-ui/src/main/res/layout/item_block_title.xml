@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/cover"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/default_cover_height"
-        android:adjustViewBounds="true"
-        android:contentDescription="@string/content_description_document_cover"
-        android:scaleType="fitXY"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:background="@color/orange"
-        tools:visibility="gone" />
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-        android:id="@+id/objectIconWidget"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="51dp"
-        android:transitionName="@string/logo_transition"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:emojiContainerBackground="true"
-        app:emojiSize="48dp"
-        app:imageSize="96dp"
-        app:imageCornerRadius="12dp" />
+        <ImageView
+            android:id="@+id/cover"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/default_cover_height"
+            android:contentDescription="@string/content_description_document_cover"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            tools:background="@color/orange"
+            tools:visibility="gone" />
+
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/objectIconWidget"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginStart="16dp"
+            android:transitionName="@string/logo_transition"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:emojiContainerBackground="true"
+            app:emojiSize="48dp"
+            app:imageSize="96dp"
+            app:imageCornerRadius="12dp" />
+
+    </FrameLayout>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
         android:id="@+id/title"
         style="@style/BlockTitleContentStyle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:hint="@string/untitled"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         app:ignoreDragAndDrop="true"
-        android:layout_marginTop="@dimen/dp_32"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barrier"
+        android:layout_marginTop="12dp"
         app:onlyPasteAsPlaneText="true"
         tools:text="Title" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/barrier"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:barrierDirection="bottom"
-        app:constraint_referenced_ids="objectIconWidget,cover,root" />
+<!--    <androidx.constraintlayout.widget.Barrier-->
+<!--        android:id="@+id/barrier"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        app:barrierDirection="bottom"-->
+<!--        app:constraint_referenced_ids="objectIconWidget,cover,root" />-->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

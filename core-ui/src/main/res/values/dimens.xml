@@ -45,6 +45,8 @@
     <dimen name="dp_96">96dp</dimen>
     <dimen name="dp_102">102dp</dimen>
     <dimen name="dp_120">120dp</dimen>
+    <dimen name="dp_148">148dp</dimen>
+    <dimen name="dp_164">164dp</dimen>
     <dimen name="dp_203">203dp</dimen>
     <dimen name="dp_443">443dp</dimen>
 
@@ -139,7 +141,7 @@
     <dimen name="list_item_object_half_emoji_size">24dp</dimen>
     <dimen name="list_item_object_half_checkbox_size">22dp</dimen>
     <dimen name="list_item_object_half_initials_size">24sp</dimen>
-    <dimen name="default_cover_height">188dp</dimen>
+    <dimen name="default_cover_height">232dp</dimen>
     <dimen name="dp_14">14dp</dimen>
     <dimen name="defaultGalleryViewTextSize">12sp</dimen>
     <dimen name="defaultGalleryViewAvatarTextSize">11sp</dimen>

@@ -2206,7 +2206,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             showTargeterWithAnimation()
 
             binding.recycler.addOnScrollListener(scrollAndMoveStateListener)
-            binding.multiSelectTopToolbar.invisible()
+            binding.multiSelectTopToolbar.gone()
 
             showTopScrollAndMoveToolbar()
             binding.scrollAndMoveBottomAction.show()
@@ -2249,26 +2249,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun hideSelectButton() {
-        if (binding.multiSelectTopToolbar.translationY >= 0) {
+        if (binding.multiSelectTopToolbar.alpha > 0f) {
             ObjectAnimator.ofFloat(
                 binding.multiSelectTopToolbar,
-                SELECT_BUTTON_ANIMATION_PROPERTY,
-                -requireContext().dimen(R.dimen.dp_48)
+                "alpha",
+                0f
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
-                doOnEnd { if (hasBinding) binding.topToolbar.visible() }
+                doOnEnd { 
+                    if (hasBinding) {
+                        binding.multiSelectTopToolbar.gone()
+                        binding.topToolbar.visible()
+                    }
+                }
                 start()
             }
         }
     }
 
     private fun showSelectButton() {
-        if (binding.multiSelectTopToolbar.translationY < 0) {
+        if (binding.multiSelectTopToolbar.alpha < 1f) {
+            binding.multiSelectTopToolbar.visible()
             ObjectAnimator.ofFloat(
                 binding.multiSelectTopToolbar,
-                SELECT_BUTTON_ANIMATION_PROPERTY,
-                0f
+                "alpha",
+                1f
             ).apply {
                 duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()

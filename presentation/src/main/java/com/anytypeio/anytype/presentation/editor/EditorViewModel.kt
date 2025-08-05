@@ -473,7 +473,9 @@ class EditorViewModel(
                         target = action.target
                     )
                     Action.SearchOnPage -> onEnterSearchModeClicked()
-                    Action.UndoRedo -> onUndoRedoActionClicked()
+                    Action.UndoRedo -> {
+                        onUndoRedoActionClicked()
+                    }
                     is Action.OpenObject -> proceedWithOpeningObject(
                         target = action.target
                     )
@@ -6231,8 +6233,15 @@ class EditorViewModel(
     private var jobMentionFilter: Job? = null
 
     fun onStartMentionWidgetClicked() {
-        dispatch(Command.AddMentionWidgetTriggerToFocusedBlock)
-        viewModelScope.sendAnalyticsMentionMenuEvent(analytics)
+        val focus = orchestrator.stores.focus.current().targetOrNull()
+        val targetId = focus.orEmpty()
+        if (targetId.isNotEmpty()) {
+            views.singleOrNull { it.id == targetId }?.let {
+                onUndoRedoActionClicked(target = it)
+            }
+        } else {
+            Timber.w("Failed to handle toolbar style click. Unknown focus for style toolbar: $focus")
+        }
     }
 
     fun onMentionEvent(mentionEvent: MentionEvent) {
@@ -6855,8 +6864,26 @@ class EditorViewModel(
         }
     }
 
-    fun onUndoRedoActionClicked() {
-        isUndoRedoToolbarIsVisible.value = true
+    fun onUndoRedoActionClicked(target: BlockView? = null) {
+        val targetId = target?.id
+        val targetBlock = blocks.find { it.id == targetId }
+        if (targetBlock != null) {
+            when (val content = targetBlock.content) {
+                is Content.Text -> {
+                    viewModelScope.launch {
+                        orchestrator.stores.focus.update(Editor.Focus.empty())
+                        renderCommand.send(Unit)
+                    }
+                }
+                else -> {
+                    Timber.e("Unsupported content type for undo/redo action: ${content::class.java.simpleName}")
+                    sendToast("Unsupported content type for undo/redo action")
+                }
+            }
+            isUndoRedoToolbarIsVisible.value = true
+        } else {
+            isUndoRedoToolbarIsVisible.value = true
+        }
     }
 
     fun onUndoRedoToolbarIsHidden() {

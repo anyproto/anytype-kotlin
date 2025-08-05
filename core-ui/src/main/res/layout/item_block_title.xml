@@ -29,6 +29,7 @@
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:emojiContainerBackground="true"
         app:emojiSize="48dp"
         app:imageSize="96dp"
         app:imageCornerRadius="12dp" />

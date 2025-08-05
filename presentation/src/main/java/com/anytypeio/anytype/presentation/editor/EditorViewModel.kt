@@ -248,6 +248,8 @@ import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
@@ -356,7 +358,8 @@ class EditorViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -441,7 +444,12 @@ class EditorViewModel(
      */
     val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
-    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
+    val navPanelState = permission.map { permission ->
+        NavPanelState.fromPermission(
+            permission = permission,
+            spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
+        )
+    }
 
     init {
         Timber.i("EditorViewModel, init")
@@ -1877,7 +1885,7 @@ class EditorViewModel(
             if (view is BlockView.Selectable) {
                 select(view.id)
             } else {
-                Timber.w("SelectAll", "Block with id ${view.id} cannot be selected.")
+                Timber.w("SelectAll, Block with id ${view.id} cannot be selected.")
             }
         }
 
@@ -2463,7 +2471,14 @@ class EditorViewModel(
                     context = context,
                     target = id,
                     position = position,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
         }
@@ -2479,9 +2494,45 @@ class EditorViewModel(
                 Intent.CRUD.Replace(
                     context = context,
                     target = id,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
+        }
+    }
+
+    private fun proceedWithOpeningMediaPicker(
+        blockId: String,
+        type: Block.Content.File.Type
+    ) {
+        when (type) {
+            Content.File.Type.IMAGE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
+                dispatch(Command.OpenPhotoPicker)
+            }
+
+            Content.File.Type.VIDEO -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
+                dispatch(Command.OpenVideoPicker)
+            }
+
+            Content.File.Type.FILE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
+                dispatch(Command.OpenFilePicker)
+            }
+
+            else -> {
+                // No action for other types
+            }
         }
     }
 
@@ -3892,10 +3943,7 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         if (!clicked.item.image.isNullOrEmpty()){
                             dispatch(
-                                Command.OpenFullScreenImage(
-                                    target = "",
-                                    url = clicked.item.image
-                                )
+                                Command.OpenFullScreenImage(url = clicked.item.image)
                             )
                         } else {
                             Timber.e("Can't proceed with opening full screen image")
@@ -3952,7 +4000,11 @@ class EditorViewModel(
             }
             is ListenerType.Video.View -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit, EditorMode.Read, EditorMode.Locked -> {
+                        dispatch(
+                            Command.PlayVideo(url = clicked.url)
+                        )
+                    }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4259,7 +4311,15 @@ class EditorViewModel(
                     }
                 }
             }
-            else -> {}
+            ListenerType.Header.Video -> {
+                dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+            }
+            ListenerType.Header.Image -> {
+                dispatch(Command.OpenFullScreenImage(url = urlBuilder.original(context)))
+            }
+            else -> {
+                Timber.w("Ignoring listener type: $clicked")
+            }
         }
     }
 
@@ -4286,7 +4346,7 @@ class EditorViewModel(
             if (type != null) {
                 navigate(
                     EventWrapper(
-                        AppNavigation.Command.OpenTypeObject(
+                        OpenTypeObject(
                             target = type.id,
                             space = vmParams.space.id
                         )
@@ -4353,11 +4413,40 @@ class EditorViewModel(
     }
 
     private fun onFileBlockClicked(blockId: String) {
-        dispatch(
-            Command.OpenFileByDefaultApp(
-                id = blockId
+        val fileDetails = blocks.getFileDetailsForBlock(blockId, orchestrator, fieldParser)
+        if (fileDetails != null) {
+            val target = orchestrator.stores.details.current().getObject(fileDetails.targetObjectId)
+            when(target?.layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        Command.PlayVideo(
+                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        )
+                    )
+                }
+                ObjectType.Layout.AUDIO-> {
+                    dispatch(
+                        Command.PlayAudio(
+                            url = urlBuilder.original(fileDetails.targetObjectId),
+                            name = target.name
+                        )
+                    )
+                }
+                else -> {
+                    dispatch(
+                        Command.OpenFileByDefaultApp(
+                            id = blockId
+                        )
+                    )
+                }
+            }
+        } else {
+            dispatch(
+                Command.OpenFileByDefaultApp(
+                    id = blockId
+                )
             )
-        )
+        }
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {

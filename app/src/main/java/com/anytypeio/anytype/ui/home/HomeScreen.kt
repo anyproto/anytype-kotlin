@@ -166,9 +166,9 @@ fun HomeScreen(
             BottomNavigationMenu(
                 state = navPanelState,
                 modifier = Modifier,
-                searchClick = onSearchClicked,
-                addDocClick = onCreateNewObjectClicked,
-                addDocLongClick = onCreateNewObjectLongClicked,
+                onSearchClick = onSearchClicked,
+                onAddDocClick = onCreateNewObjectClicked,
+                onAddDocLongClick = onCreateNewObjectLongClicked,
                 onShareButtonClicked = onNavBarShareButtonClicked,
                 onHomeButtonClicked = onHomeButtonClicked
             )
@@ -501,6 +501,7 @@ private fun WidgetList(
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
+                        isMuted = item.isMuted,
                         onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)

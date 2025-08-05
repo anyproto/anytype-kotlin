@@ -4,6 +4,8 @@ import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.core_utils.ext.isAppInForeground
 import com.anytypeio.anytype.core_utils.ext.runSafely
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -29,6 +31,9 @@ class AnytypePushService : FirebaseMessagingService() {
     @Inject
     lateinit var dispatchers: AppCoroutineDispatchers
 
+    @Inject
+    lateinit var checkAuthorizationStatus: CheckAuthorizationStatus
+
     override fun onCreate() {
         super.onCreate()
         (application as AndroidApplication).componentManager.pushContentComponent.get().inject(this)
@@ -52,10 +57,28 @@ class AnytypePushService : FirebaseMessagingService() {
             Timber.d("App is in foreground, skipping notification")
             return
         }
-        scope.launch((dispatchers.io)) {
-            runSafely("processing push message") {
-                processor.process(message.data)
-            }
+        checkAuthorizationStatus(message)
+    }
+
+    private fun checkAuthorizationStatus(message: RemoteMessage) {
+        scope.launch(dispatchers.io) {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.UNAUTHORIZED) {
+                        Timber.w("User is unauthorized, skipping push message processing")
+                        // If the user is unauthorized, we do not process push messages
+                    } else {
+                        proceedWithPushMessage(message)
+                    }
+                }
+            )
+        }
+    }
+
+    private fun proceedWithPushMessage(message: RemoteMessage) {
+        runSafely("processing push message") {
+            processor.process(message.data)
         }
     }
 

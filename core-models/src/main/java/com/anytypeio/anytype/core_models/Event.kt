@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Block.Content.Text
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 
@@ -327,9 +328,11 @@ sealed class Event {
              */
             data class Add(
                 override val context: Id,
+                val spaceId: SpaceId,
                 val id: Id,
                 val order: Id,
-                val message: Chat.Message
+                val message: Chat.Message,
+                val dependencies: List<ObjectWrapper.Basic> = emptyList()
             ) : Chats()
 
             /**
@@ -371,6 +374,16 @@ sealed class Event {
                 override val context: Id,
                 val messages: List<Id>,
                 val isRead: Boolean
+            ) : Chats()
+
+            /**
+             * @property [messages] message ids
+             */
+            data class UpdateMessageSyncStatus(
+                override val context: Id,
+                val messages: List<Id>,
+                val isSynced: Boolean,
+                val subscriptions: List<Id>
             ) : Chats()
         }
     }

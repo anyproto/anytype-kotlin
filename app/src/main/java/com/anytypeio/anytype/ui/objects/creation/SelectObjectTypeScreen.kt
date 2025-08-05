@@ -161,10 +161,7 @@ private fun ScreenContent(
                         modifier = Modifier.align(Alignment.Center),
                         title = stringResource(id = R.string.nothing_found),
                         description = stringResource(id = R.string.nothing_found_object_types),
-                        icon = AlertConfig.Icon(
-                            gradient = GRADIENT_TYPE_RED,
-                            icon = R.drawable.ic_alert_error
-                        )
+                        icon = R.drawable.ic_popup_duck_56
                     )
                 }
             }

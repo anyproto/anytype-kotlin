@@ -33,13 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertDescription
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.AlertTitle
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -234,10 +232,7 @@ fun RelationsViewEmpty(
     state: TagStatusViewState.Empty,
     action: (TagStatusAction) -> Unit
 ) {
-    val icon = AlertConfig.Icon(
-        GRADIENT_TYPE_RED,
-        icon = R.drawable.ic_alert_error
-    )
+    val icon = R.drawable.ic_popup_duck_56
     if (state.isRelationEditable) {
         Column(
             modifier = Modifier

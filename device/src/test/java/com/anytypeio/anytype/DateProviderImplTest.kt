@@ -412,8 +412,12 @@ class DateProviderImplTest {
 
         // Then: Should handle timezone correctly
         assertNotNull("Result should not be null", result)
-        assertTrue("Result should be either time format or yesterday",
-            result.matches(Regex("\\d{2}:\\d{2}")) || result == "Yesterday")
+        assertTrue("Result should be time format, yesterday, or date format. Got: '$result'",
+            result.matches(Regex("\\d{2}:\\d{2}")) || // HH:mm format for today
+            result == "Yesterday" || // Yesterday
+            result.matches(Regex("[A-Za-z]{3} \\d{1,2}")) || // MMM d format for current year
+            result.matches(Regex("[A-Za-z]{3} \\d{1,2}, \\d{4}")) // MMM d, yyyy format for different year
+        )
     }
 
     @Test

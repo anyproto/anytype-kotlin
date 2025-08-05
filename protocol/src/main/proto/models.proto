@@ -498,6 +498,9 @@ message Block {
                     NextMonth = 9;
                     NumberOfDaysAgo = 10;
                     NumberOfDaysNow = 11;
+                    LastYear = 12;
+                    CurrentYear = 13;
+                    NextYear = 14;
                 }
             }
 
@@ -577,6 +580,8 @@ message Block {
                 Graphviz = 20;
                 Sketchfab = 21;
                 Image = 22;
+                Drawio = 23;
+                Spotify = 24;
             }
         }
 
@@ -1268,7 +1273,7 @@ enum SpaceShareableStatus {
 }
 
 message ManifestInfo {
-    string schema = 1;
+    string schema = 1 [json_name="$schema"];
     string id = 2;
     string name = 3;
     string author = 4;
@@ -1437,6 +1442,7 @@ message ChatMessage {
     Reactions reactions = 8;  // Reactions to the message
     bool read = 10; // Message read status
     bool mentionRead = 12;
+    bool synced = 13;
     message MessageContent {
         string text = 1;      // The text content of the message part
         Block.Content.Text.Style style = 2;    // The style/type of the message part

@@ -46,6 +46,10 @@ suspend fun DVViewer.buildGalleryViews(
         }
     }
 
+    // Check if the NAME relation is visible to determine if names should be hidden
+    val nameRelationSetting = viewerRelations.find { it.key == Relations.NAME }
+    val hideName = nameRelationSetting?.isVisible != true
+
     val hasCover = !coverRelationKey.isNullOrEmpty()
 
     val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
@@ -64,7 +68,8 @@ suspend fun DVViewer.buildGalleryViews(
                     isLargeSize = true,
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    hideName = hideName
                 )
             } else {
                 obj.mapToDefaultItem(
@@ -74,7 +79,8 @@ suspend fun DVViewer.buildGalleryViews(
                     store = objectStore,
                     filteredRelations = filteredRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    hideName = hideName
                 )
             }
         }
@@ -88,7 +94,8 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     store: ObjectStore,
     filteredRelations: List<ObjectWrapper.Relation>,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    hideName: Boolean
 ): Viewer.GalleryView.Item {
     val obj = this
     return Viewer.GalleryView.Item.Default(
@@ -102,6 +109,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             storeOfObjectTypes = storeOfObjectTypes
         ).setTypeRelationIconsAsNone(),
         hideIcon = hideIcon,
+        hideName = hideName,
         name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(
             builder = urlBuilder,
@@ -119,7 +127,8 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     isLargeSize: Boolean,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    hideName: Boolean
 ): Viewer.GalleryView.Item {
     val obj = this
 
@@ -145,6 +154,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
             storeOfObjectTypes = storeOfObjectTypes
         ).setTypeRelationIconsAsNone(),
         hideIcon = dvViewer.hideIcon,
+        hideName = hideName,
         name = fieldParser.getObjectName(obj),
         icon = obj.objectIcon(
             builder = urlBuilder,

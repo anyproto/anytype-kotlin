@@ -8,6 +8,11 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
 sealed interface ListenerType {
 
+    sealed class Header : ListenerType {
+        data object Video : Header()
+        data object Image : Header()
+    }
+
     sealed class Bookmark : ListenerType {
         data class View(val item: BlockView.Media.Bookmark) : Bookmark()
         data class Placeholder(val target: String) : Bookmark()
@@ -31,7 +36,7 @@ sealed interface ListenerType {
     }
 
     sealed class Video : ListenerType {
-        data class View(val target: String) : Video()
+        data class View(val target: String, val url: String) : Video()
         data class Placeholder(val target: String) : Video()
         data class Upload(val target: String) : Video()
         data class Error(val target: String) : Video()
@@ -50,8 +55,8 @@ sealed interface ListenerType {
 
     data class EditableBlock(val target: String) : ListenerType
 
-    object TitleBlock : ListenerType
-    object ProfileImageIcon : ListenerType
+    data object TitleBlock : ListenerType
+    data object ProfileImageIcon : ListenerType
 
     data class LinkToObject(val target: String) : ListenerType
     data class LinkToObjectArchived(val target: String) : ListenerType

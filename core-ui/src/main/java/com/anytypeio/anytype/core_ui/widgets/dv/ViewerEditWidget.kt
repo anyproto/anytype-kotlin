@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
-import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
@@ -310,6 +308,16 @@ fun NameTextField(
                     } else {
                         strokeColor.value = strokeColorInactive
                         strokeWidth.value = strokeWidthInactive
+                        // Save current text when focus is lost only if the name has changed
+                        // to avoid unnecessary updates
+                        if (innerValue != state.name) {
+                            action.invoke(
+                                ViewEditAction.UpdateName(
+                                    id = state.id,
+                                    name = innerValue
+                                )
+                            )
+                        }
                     }
                 },
             keyboardOptions = KeyboardOptions(

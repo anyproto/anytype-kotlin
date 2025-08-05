@@ -59,7 +59,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,
                         onViewRequestClicked = vm::onViewRequestClicked,
-                        onApproveLeaveRequestClicked = vm::onApproveLeaveRequestClicked,
                         onCanEditClicked = vm::onCanEditClicked,
                         onCanViewClicked = vm::onCanViewClicked,
                         onRemoveMemberClicked = vm::onRemoveMemberClicked,

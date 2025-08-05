@@ -36,7 +36,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.ApproveLeaveSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -70,7 +69,6 @@ class ShareSpaceViewModel(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
-    private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
@@ -161,7 +159,7 @@ class ShareSpaceViewModel(
                 isLoadingInProgress.value = false
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
-                    .sortedByDescending { it.status == ParticipantStatus.JOINING || it.status == ParticipantStatus.REMOVING}
+                    .sortedByDescending { it.status == ParticipantStatus.JOINING }
                 spaceAccessType.value = spaceView?.spaceAccessType
                 setShareLinkViewState(spaceView, result.isCurrentUserOwner)
                 members.value = spaceMembers.toView(
@@ -303,25 +301,6 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onApproveLeaveRequestClicked(view: ShareSpaceMemberView) {
-        viewModelScope.launch {
-            approveLeaveSpaceRequest.async(
-                ApproveLeaveSpaceRequest.Params(
-                    space = vmParams.space,
-                    identities = listOf(view.obj.identity)
-                )
-            ).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while approving leave request")
-                    proceedWithMultiplayerError(e)
-                },
-                onSuccess = {
-                    analytics.sendEvent(eventName = EventsDictionary.approveLeaveRequest)
-                    Timber.d("Successfully removed space member")
-                }
-            )
-        }
-    }
 
     fun onCanEditClicked(
         view: ShareSpaceMemberView
@@ -596,7 +575,6 @@ class ShareSpaceViewModel(
         private val stopSharingSpace: StopSharingSpace,
         private val getAccount: GetAccount,
         private val removeSpaceMembers: RemoveSpaceMembers,
-        private val approveLeaveSpaceRequest: ApproveLeaveSpaceRequest,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val getSpaceInviteLink: GetSpaceInviteLink,
@@ -617,7 +595,6 @@ class ShareSpaceViewModel(
             urlBuilder = urlBuilder,
             getAccount = getAccount,
             getSpaceInviteLink = getSpaceInviteLink,
-            approveLeaveSpaceRequest = approveLeaveSpaceRequest,
             permissions = permissions,
             makeSpaceShareable = makeSpaceShareable,
             analytics = analytics,
@@ -766,15 +743,8 @@ data class ShareSpaceMemberView(
                         null
                 }
                 ParticipantStatus.REMOVING -> {
-                    if (includeRequests)
-                        ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Request.Leave,
-                            icon = icon,
-                            isUser = isUser
-                        )
-                    else
-                        null
+                    // Always filter out participants with REMOVING status
+                    null
                 }
                 else -> null
             }

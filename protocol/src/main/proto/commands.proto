@@ -561,6 +561,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                repeated string spaceViewOrder = 2; // final order of space view ids with their lexids
 
                 message Error {
                     Code code = 1;
@@ -3006,7 +3007,8 @@ message Rpc {
                 StateFilters linksStateFilters = 12;
                 bool includeBacklinks = 13;
                 bool includeSpace = 14;
-                bool includeJsonSchema = 15;
+                // include properties frontmatter and schema in directory for markdown export
+                bool mdIncludePropertiesAndSchema = 15;
             }
             message StateFilters {
                 repeated RelationsWhiteList relationsWhiteList = 1;

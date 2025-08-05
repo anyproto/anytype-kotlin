@@ -2,13 +2,13 @@ package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlinx.coroutines.Job
@@ -32,9 +32,9 @@ abstract class SearchRelationViewModel(
 
     private val query = Channel<String>()
     private val notAllowedRelationFormats = listOf(
-        ColumnView.Format.RELATIONS,
-        ColumnView.Format.EMOJI,
-        ColumnView.Format.UNDEFINED
+        RelationFormat.RELATIONS,
+        RelationFormat.EMOJI,
+        RelationFormat.UNDEFINED
     )
     private val jobs = mutableListOf<Job>()
 

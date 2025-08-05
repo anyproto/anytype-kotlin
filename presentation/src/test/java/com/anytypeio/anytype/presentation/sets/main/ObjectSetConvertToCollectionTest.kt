@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.turbineScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -54,7 +57,6 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(mockObjectSet.setOf),
                 dvFilters = mockObjectSet.filters,
@@ -110,21 +112,29 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
+            // Verify that the collection subscription was called (may be among multiple calls)
             verifyBlocking(repo, times(1)) {
                 searchObjectsWithSubscription(
                     SpaceId(mockObjectSet.space),
                     mockObjectSet.subscriptionId,
-                    listOf(),
+                    listOf(
+                        Block.Content.DataView.Sort(
+                            relationKey = Relations.CREATED_DATE,
+                            type = Block.Content.DataView.Sort.Type.DESC,
+                            relationFormat = RelationFormat.DATE,
+                            includeTime = true
+                        )
+                    ),
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(),
-                    ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys,
-                    listOf(),
+                    ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys, // collections should not include CREATED_DATE
+                    listOf(), // collections should have empty sources
                     0L,
                     ObjectSetConfig.DEFAULT_LIMIT,
                     null,
                     null,
                     null,
                     null,
-                    collection = mockObjectSet.root
+                    collection = mockObjectSet.root // collection parameter should be set
                 )
             }
         }

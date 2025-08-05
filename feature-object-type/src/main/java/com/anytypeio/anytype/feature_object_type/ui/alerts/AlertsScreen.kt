@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
@@ -53,10 +52,7 @@ fun DeleteAlertScreen(
                     description = stringResource(R.string.delete_irrevocably_one_object),
                     firstButtonText = stringResource(R.string.cancel),
                     secondButtonText = stringResource(R.string.delete),
-                    icon = AlertConfig.Icon(
-                        GRADIENT_TYPE_RED,
-                        icon = R.drawable.ic_alert_error
-                    ),
+                    icon = R.drawable.ic_popup_question_56,
                     firstButtonType = BUTTON_SECONDARY,
                     secondButtonType = BUTTON_PRIMARY,
                 ),

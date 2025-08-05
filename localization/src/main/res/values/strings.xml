@@ -144,6 +144,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
+    <string name="alert_icon_description">Alert icon</string>
 
     <string name="modal_tap_to_type">Tap to type</string>
     <string name="modal_gallery">Gallery</string>
@@ -432,6 +433,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Unsupported block</string>
@@ -1291,6 +1293,20 @@
 
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="number_days_from">Number of days from now</string>
+    <string name="number_days_ago">Number of days ago</string>
+    
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Exact day</string>
+    <string name="dates_filter_last_week">Last week</string>
+    <string name="dates_filter_current_week">Current week</string>
+    <string name="dates_filter_next_week">Next week</string>
+    <string name="dates_filter_last_month">Last month</string>
+    <string name="dates_filter_current_month">Current month</string>
+    <string name="dates_filter_next_month">Next month</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
 
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
@@ -1482,8 +1498,11 @@
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
 
-    <string name="multiplayer_error_invite_not_found">The invitation does not exist. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
+    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
     <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
     <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
@@ -1799,6 +1818,10 @@ Please provide specific details of your needs here.</string>
     <string name="vault_my_spaces">My Spaces</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">All</string>
+    <string name="vault_pinned_section_title">Pinned</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Unpin</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
 
     <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
@@ -1860,6 +1883,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
 
@@ -2092,12 +2116,13 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">Not now</string>
 
-    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
-    <string name="vault_create_space">Space</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
     <string name="vault_empty_state_text">There are no spaces yet</string>
+    <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
     <string name="chat_box_take_photo">Take Photo</string>
@@ -2114,6 +2139,8 @@ Please provide specific details of your needs here.</string>
 
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
 
     <string name="notification_settings_title">Notifications</string>
     <string name="notification_settings_disabled">Notifications are disabled</string>
@@ -2122,5 +2149,20 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_title">Message Notifications</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
+    <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
+    
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Try again</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="allow">Allow</string>
 
 </resources>

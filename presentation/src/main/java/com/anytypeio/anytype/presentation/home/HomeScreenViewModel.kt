@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -102,6 +103,7 @@ import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companio
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -236,7 +238,8 @@ class HomeScreenViewModel(
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
-    private val chatPreviews: ChatPreviewContainer
+    private val chatPreviews: ChatPreviewContainer,
+    private val notificationPermissionManager: NotificationPermissionManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -408,10 +411,15 @@ class HomeScreenViewModel(
                 spaceAccessType,
                 userPermissions
             ) { type, permission ->
+                val spaceId = spaceManager.get()
+                val spaceUxType =
+                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
+                        ?: SpaceUxType.DATA
                 NavPanelState.fromPermission(
                     permission = permission,
                     forceHome = false,
-                    spaceAccessType = type
+                    spaceAccess = type,
+                    spaceUxType = spaceUxType
                 )
             }.collect {
                 navPanelState.value = it
@@ -512,7 +520,9 @@ class HomeScreenViewModel(
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(
                             widget = widget,
-                            container = chatPreviews
+                            container = chatPreviews,
+                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                            notificationPermissionManager = notificationPermissionManager
                         )
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget,
@@ -1945,8 +1955,12 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(isSpaceRoot: Boolean) {
-        proceedWithExiting(isSpaceRoot)
+    fun onBackClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.HandleChatSpaceBackNavigation
+            )
+        }
     }
 
     private fun proceedWithExiting(isSpaceRoot: Boolean) {
@@ -2688,7 +2702,6 @@ class HomeScreenViewModel(
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
-        private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
@@ -2719,7 +2732,8 @@ class HomeScreenViewModel(
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val chatPreviews: ChatPreviewContainer
+        private val chatPreviews: ChatPreviewContainer,
+        private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2778,7 +2792,8 @@ class HomeScreenViewModel(
             deleteSpace = this@Factory.deleteSpace,
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
-            chatPreviews = chatPreviews
+            chatPreviews = chatPreviews,
+            notificationPermissionManager = notificationPermissionManager
         ) as T
     }
 
@@ -2892,6 +2907,8 @@ sealed class Command {
     data class ShowInviteLinkQrCode(val link: String) : Command()
 
     data object ShowLeaveSpaceWarning : Command()
+
+    data object HandleChatSpaceBackNavigation : Command()
 }
 
 /**

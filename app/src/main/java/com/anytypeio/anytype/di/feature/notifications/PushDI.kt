@@ -6,6 +6,7 @@ import com.anytypeio.anytype.device.DefaultPushMessageProcessor
 import com.anytypeio.anytype.device.PushMessageProcessor
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -14,6 +15,8 @@ import com.anytypeio.anytype.presentation.notifications.CryptoService
 import com.anytypeio.anytype.presentation.notifications.CryptoServiceImpl
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentServiceImpl
+import com.anytypeio.anytype.presentation.notifications.SignatureVerificationService
+import com.anytypeio.anytype.presentation.notifications.SignatureVerificationServiceImpl
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import dagger.Component
 import dagger.Module
@@ -59,13 +62,20 @@ object PushContentModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideSignatureVerificationService(): SignatureVerificationService = SignatureVerificationServiceImpl()
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun provideDecryptionPushContentService(
         pushKeyProvider: PushKeyProvider,
         cryptoService: CryptoService,
+        signatureVerificationService: SignatureVerificationService,
         json: Json
     ): DecryptionPushContentService = DecryptionPushContentServiceImpl(
         pushKeyProvider = pushKeyProvider,
         cryptoService = cryptoService,
+        signatureVerificationService = signatureVerificationService,
         json = json
     )
 }
@@ -79,4 +89,5 @@ interface PushContentDependencies : ComponentDependencies {
     fun provider(): StringResourceProvider
     fun notificationBuilder(): NotificationBuilder
     fun json(): Json
+    fun authRepository(): AuthRepository
 }

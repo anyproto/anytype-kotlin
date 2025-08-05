@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.sets.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Block.Content.DataView.Sort
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -68,6 +70,11 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -209,6 +216,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var dateProvider: DateProvider
 
+    @Mock
+    lateinit var spacedViews: SpaceViewSubscriptionContainer
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -271,6 +281,13 @@ open class ObjectSetViewModelTestSetup {
         stubNetworkMode()
         givenNetworkNodeMocked()
         stubInterceptThreadStatus()
+        val spaceView = StubSpaceView(
+            id = defaultSpace,
+            spaceUxType = SpaceUxType.DATA
+        )
+        spacedViews.stub {
+            onBlocking { get(space = SpaceId(defaultSpace)) } doReturn spaceView
+        }
     }
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -316,7 +333,8 @@ open class ObjectSetViewModelTestSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spacedViews
         )
     }
 
@@ -395,13 +413,19 @@ open class ObjectSetViewModelTestSetup {
         objects: List<ObjectWrapper.Basic> = emptyList(),
         dependencies: List<ObjectWrapper.Basic> = listOf(),
         dvFilters: List<Block.Content.DataView.Filter> = emptyList(),
-        dvSorts: List<Block.Content.DataView.Sort> = emptyList(),
-        storeOfRelations: StoreOfRelations,
+        dvSorts: List<Sort> = listOf(
+            DVSort(
+                relationKey = Relations.CREATED_DATE,
+                type = Sort.Type.DESC,
+                relationFormat = RelationFormat.DATE,
+                includeTime = true
+            )
+        ),
         keys: List<Key> = emptyList(),
         sources: List<Id> = emptyList(),
         dvRelationLinks: List<RelationLink> = emptyList()
     ) {
-        val dvKeys = ObjectSearchConstants.defaultDataViewKeys + keys
+        val dvKeys = (ObjectSearchConstants.defaultDataViewKeys + keys).toSet().toList()
         doReturn(
             SearchResult(
                 results = objects,
@@ -439,7 +463,8 @@ open class ObjectSetViewModelTestSetup {
                 mockObjectCollection.relationObject3,
                 mockObjectCollection.relationObject4,
                 mockObjectCollection.relationObject5,
-                mockObjectCollection.relationObject6
+                mockObjectCollection.relationObject6,
+                mockObjectCollection.createdDateRelation
             )
         )
     }
@@ -451,7 +476,8 @@ open class ObjectSetViewModelTestSetup {
                 mockObjectSet.relationObject2,
                 mockObjectSet.relationObject3,
                 mockObjectSet.relationObject4,
-                mockObjectSet.relationObject5
+                mockObjectSet.relationObject5,
+                mockObjectSet.createdDateRelation
             )
         )
     }

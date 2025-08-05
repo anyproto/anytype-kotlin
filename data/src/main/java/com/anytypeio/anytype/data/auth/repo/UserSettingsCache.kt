@@ -15,8 +15,6 @@ interface UserSettingsCache {
 
     suspend fun getVaultSettings(account: Account): VaultSettings
     suspend fun observeVaultSettings(account: Account): Flow<VaultSettings>
-    suspend fun setVaultSpaceOrder(account: Account, order: List<Id>)
-    suspend fun setVaultSettings(account: Account, settings: VaultSettings)
 
     suspend fun setCurrentSpace(space: SpaceId)
     suspend fun getCurrentSpace(): SpaceId?

@@ -6,20 +6,46 @@
     android:layout_width="match_parent"
     android:background="@drawable/item_block_multi_select_mode_selector">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/videoContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="200dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:strokeColor="@color/shape_tertiary"
+        app:strokeWidth="1dp">
 
-        <com.google.android.exoplayer2.ui.StyledPlayerView
-            android:id="@+id/playerView"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent"
+            android:padding="1dp">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/videoThumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:contentDescription="Video thumbnail" />
+
+            <ImageView
+                android:id="@+id/playButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:src="@drawable/play"
+                android:visibility="gone" />
+
+            <androidx.core.widget.ContentLoadingProgressBar
+                android:layout_gravity="center"
+                android:id="@+id/progress"
+                style="?android:attr/progressBarStyleSmall"
+                android:theme="@style/GreyProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"/>
+
+        </FrameLayout>
+
+    </com.google.android.material.card.MaterialCardView>
 
 </FrameLayout>

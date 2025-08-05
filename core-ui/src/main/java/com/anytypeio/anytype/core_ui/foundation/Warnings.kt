@@ -1,33 +1,28 @@
 package com.anytypeio.anytype.core_ui.foundation
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,15 +32,16 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.UxSmallTextRegular
 
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun AlertWithTwoButtons() {
     GenericAlert(
@@ -54,10 +50,7 @@ private fun AlertWithTwoButtons() {
         config = AlertConfig.WithTwoButtons(
             firstButtonType = BUTTON_SECONDARY,
             secondButtonType = BUTTON_PRIMARY,
-            icon = AlertConfig.Icon(
-                icon = R.drawable.ic_alert_update,
-                gradient = GRADIENT_TYPE_GREEN
-            ),
+            icon = R.drawable.ic_popup_update_56,
             firstButtonText = "Cancel",
             secondButtonText = "Update",
             title = "It's time to update",
@@ -66,7 +59,7 @@ private fun AlertWithTwoButtons() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun AlertWithWarningAndTwoButtons() {
     GenericAlert(
@@ -75,10 +68,7 @@ private fun AlertWithWarningAndTwoButtons() {
         config = AlertConfig.WithTwoButtons(
             firstButtonType = BUTTON_SECONDARY,
             secondButtonType = BUTTON_PRIMARY,
-            icon = AlertConfig.Icon(
-                icon = R.drawable.ic_alert_error,
-                gradient = GRADIENT_TYPE_RED
-            ),
+            icon = R.drawable.ic_popup_duck_56,
             firstButtonText = "Later",
             secondButtonText = "Retry",
             title = "It's time to update",
@@ -87,8 +77,8 @@ private fun AlertWithWarningAndTwoButtons() {
     )
 }
 
-@Preview
-@Composable 
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
 private fun AlertWithWarningButton() {
     GenericAlert(
         onFirstButtonClicked = {},
@@ -96,10 +86,7 @@ private fun AlertWithWarningButton() {
         config = AlertConfig.WithTwoButtons(
             firstButtonType = BUTTON_SECONDARY,
             secondButtonType = BUTTON_WARNING,
-            icon = AlertConfig.Icon(
-                icon = R.drawable.ic_alert_question_warning,
-                gradient = GRADIENT_TYPE_RED
-            ),
+            icon = R.drawable.ic_popup_question_56,
             firstButtonText = "Later",
             secondButtonText = "Retry",
             title = "It's time to update",
@@ -108,7 +95,7 @@ private fun AlertWithWarningButton() {
     )
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 private fun AlertWithMessageButton() {
     GenericAlert(
@@ -117,10 +104,7 @@ private fun AlertWithMessageButton() {
         config = AlertConfig.WithTwoButtons(
             firstButtonType = BUTTON_SECONDARY,
             secondButtonType = BUTTON_WARNING,
-            icon = AlertConfig.Icon(
-                icon = R.drawable.ic_alert_message,
-                gradient = GRADIENT_TYPE_BLUE
-            ),
+            icon = R.drawable.ic_popup_alert_56,
             firstButtonText = "Later",
             secondButtonText = "Retry",
             title = "It's time to update",
@@ -137,25 +121,26 @@ fun GenericAlert(
 ) {
     val icon = config.icon
     Column {
-        Spacer(modifier = Modifier.height(20.dp))
-        if (icon != null) { AlertIcon(icon) }
+        Spacer(modifier = Modifier.height(24.dp))
+        AlertIcon(icon)
         Spacer(modifier = Modifier.height(16.dp))
         AlertTitle(config.title)
         if (config.withDescription) {
             Spacer(modifier = Modifier.height(8.dp))
             AlertDescription(config.description)
         }
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(19.dp))
         AlertButtons(
             config = config,
             onLeftButtonClicked = onFirstButtonClicked,
             onRightButtonClicked = onSecondButtonClicked
         )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
-fun AlertDescription(description: String, style : TextStyle = BodyRegular) {
+fun AlertDescription(description: String, style : TextStyle = UxSmallTextRegular) {
     Text(
         text = description,
         style = style,
@@ -168,7 +153,7 @@ fun AlertDescription(description: String, style : TextStyle = BodyRegular) {
 }
 
 @Composable
-fun AlertTitle(title: String, style: TextStyle = HeadlineHeading) {
+fun AlertTitle(title: String, style: TextStyle = HeadlineSubheading) {
     Text(
         text = title,
         style = style,
@@ -181,45 +166,16 @@ fun AlertTitle(title: String, style: TextStyle = HeadlineHeading) {
 }
 
 @Composable
-fun AlertIcon(icon: AlertConfig.Icon) {
-    val gradientColors = when(icon.gradient) {
-        GRADIENT_TYPE_GREEN -> listOf(GREEN_FROM, GREEN_TO)
-        GRADIENT_TYPE_RED -> listOf(RED_FROM, RED_TO)
-        GRADIENT_TYPE_BLUE -> listOf(BLUE_FROM, BLUE_TO)
-        else -> emptyList()
-    }
+fun AlertIcon(icon: Int) {
     Box(
-        modifier = Modifier
-            .padding(horizontal = 28.dp)
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
     ) {
-        if (!isSystemInDarkTheme()) {
-            BoxWithConstraints(
-                Modifier
-                    .fillMaxWidth()
-                    .height(104.dp)
-            ) {
-                val aspectRatio = maxWidth / maxHeight
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
-                        .background(Brush.radialGradient(gradientColors))
-                        .fillMaxWidth()
-                )
-            }
-        }
-        Box(
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .height(72.dp)
-                .align(Alignment.Center)
-        ) {
-            Image(
-                painter = painterResource(id = icon.icon),
-                contentDescription = "Alert icon"
-            )
-        }
+        Image(
+            modifier = Modifier.size(56.dp),
+            painter = painterResource(id = icon),
+            contentDescription = stringResource(id = R.string.alert_icon_description)
+        )
     }
 }
 
@@ -231,8 +187,7 @@ private fun AlertButtons(
 ) {
     Row(
         modifier = Modifier
-            .height(68.dp)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (config) {
@@ -332,8 +287,10 @@ private fun AlertButtons(
 
 @Composable
 fun Prompt(
+    showDragger: Boolean = true,
     title: String,
     description: String,
+    icon: Int? = null,
     primaryButtonText: String,
     secondaryButtonText: String,
     onPrimaryButtonClicked: () -> Unit,
@@ -342,12 +299,20 @@ fun Prompt(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Dragger(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+        if (showDragger) {
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 6.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        } else {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        if (icon != null) {
+            AlertIcon(icon)
+            Spacer(modifier = Modifier.height(15.dp))
+        }
         Text(
             text = title,
             style = HeadlineHeading,
@@ -393,10 +358,11 @@ fun Prompt(
     }
 }
 
-@Preview
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
 @Composable
 fun PromptPreview() {
     Prompt(
+        icon = R.drawable.ic_popup_alert_56,
         title = "Get notified",
         description = "Please enable notifications to stay informed about any requests to join or leave spaces.",
         primaryButtonText = "Enable",
@@ -410,12 +376,12 @@ sealed class AlertConfig {
 
     abstract val title: String
     abstract val description: String
-    abstract val icon: Icon?
+    abstract val icon: Int
 
     val withDescription get() = description.isNotEmpty()
 
     data class WithTwoButtons(
-        override val icon: Icon?,
+        override val icon: Int,
         override val title: String,
         override val description: String,
         val firstButtonText: String,
@@ -425,17 +391,12 @@ sealed class AlertConfig {
     ) : AlertConfig()
 
     data class WithOneButton(
-        override val icon: Icon?,
+        override val icon: Int,
         override val title: String,
         override val description: String,
         val firstButtonText: String,
         val firstButtonType: ButtonType
     ) : AlertConfig()
-
-    data class Icon(
-        val gradient: GradientType,
-        @DrawableRes val icon: Int,
-    )
 }
 
 object OvalCornerShape : Shape {

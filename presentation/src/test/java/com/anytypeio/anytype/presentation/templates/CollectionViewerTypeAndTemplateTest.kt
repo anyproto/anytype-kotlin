@@ -1,7 +1,11 @@
 package com.anytypeio.anytype.presentation.templates
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
@@ -12,7 +16,6 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -101,6 +104,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = null,
@@ -108,7 +112,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -143,14 +147,42 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             type = pageTypeId.id, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
+        // Stub both subscription calls - one without CREATED_DATE and one with it
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
-            keys = dvKeys,
+            keys = dvKeys, // without createdDate
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1, createdDateRelationLink)
         )
+        
+        // Also stub the call with CREATED_DATE key included
+        stubSubscriptionResults(
+            subscription = subscriptionId,
+            spaceId = spaceId,
+            keys = dvKeys + Relations.CREATED_DATE, // with createdDate
+            objects = listOf(),
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
+        )
+        
         stubCreateDataViewObject()
 
         //TESTING
@@ -193,6 +225,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = null,
@@ -200,7 +233,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -238,10 +271,18 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
         )
         stubCreateDataViewObject()
 
@@ -285,6 +326,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = null,
@@ -292,7 +334,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -330,10 +372,18 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
         )
         stubCreateDataViewObject()
 
@@ -377,6 +427,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = customType1Id,
@@ -384,7 +435,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -422,10 +473,18 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
         )
         stubCreateDataViewObject()
 
@@ -469,6 +528,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = customType1Id,
@@ -476,7 +536,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -514,10 +574,18 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
         )
         stubCreateDataViewObject()
 
@@ -561,6 +629,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val dvViewerRelation1 =
             StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
         val relationLink1 = StubRelationLink(relationObject1.key)
+        val createdDateRelationLink = StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = customType1Id,
@@ -568,7 +637,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
         val dv = StubDataView(
             views = listOf(viewer),
-            relationLinks = listOf(relationLink1),
+            relationLinks = listOf(relationLink1, createdDateRelationLink),
             isCollection = true
         )
         val dvKeys = listOf(relationObject1.key)
@@ -606,10 +675,18 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = subscriptionId,
             spaceId = spaceId,
-            storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
-            collection = root
+            collection = root,
+            dvSorts = listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = Block.Content.DataView.Sort.Type.DESC,
+                    relationFormat = RelationFormat.DATE,
+                    includeTime = true
+                )
+            ),
+            dvRelationLinks = listOf(relationLink1)
         )
         stubCreateDataViewObject()
 

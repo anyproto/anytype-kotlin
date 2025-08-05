@@ -63,6 +63,7 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -179,13 +180,15 @@ class ChatViewModel @Inject constructor(
                 .observe(
                     vmParams.space
                 ).map { view ->
+                    val isMuted = NotificationStateCalculator.calculateMutedState(view, notificationPermissionManager)
                     HeaderView.Default(
                         title = view.name.orEmpty(),
                         icon = view.spaceIcon(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
                         ),
-                        showIcon = true
+                        showIcon = true,
+                        isMuted = isMuted
                     )
                 }.collect {
                     header.value = it
@@ -360,6 +363,7 @@ class ChatViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
+                        isSynced = msg.synced,
                         reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (emoji, ids) -> ids.size }
@@ -547,6 +551,7 @@ class ChatViewModel @Inject constructor(
     }
 
     private fun getMentionedMembers(query: MentionPanelState.Query?): List<MentionPanelState.Member> {
+        Timber.d("getMentionedMembers, query: $query")
         val results = members.get().let { store ->
             when (store) {
                 is Store.Data -> {
@@ -554,7 +559,7 @@ class ChatViewModel @Inject constructor(
                         .filter { member -> member.permissions?.isAtLeastReader() == true }
                         .map { member ->
                             MentionPanelState.Member(
-                                member.id,
+                                id = member.id,
                                 name = member.name.orEmpty(),
                                 icon = SpaceMemberIconView.icon(
                                     obj = member,
@@ -824,7 +829,8 @@ class ChatViewModel @Inject constructor(
                                 id = mode.msg,
                                 text = msg.trim(),
                                 attachments = attachments,
-                                marks = normalizedMarkup
+                                marks = normalizedMarkup,
+                                synced = false
                             )
                         )
                     ).onSuccess {
@@ -1068,7 +1074,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onDeleteMessage(msg: ChatView.Message) {
-        Timber.d("onDeleteMessageClicked")
+        Timber.d("onDeleteMessageClicked msg: ${msg.id}")
         viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
@@ -1113,6 +1119,14 @@ class ChatViewModel @Inject constructor(
                                 // If url not found, open bookmark object instead of browsing.
                                 navigation.emit(wrapper.navigation())
                             }
+                        } else if (wrapper.layout == ObjectType.Layout.AUDIO) {
+                            val hash = urlBuilder.original(wrapper.id)
+                            commands.emit(
+                                ViewModelCommand.PlayAudio(
+                                    url = hash,
+                                    name = wrapper.name.orEmpty()
+                                )
+                            )
                         } else {
                             navigation.emit(wrapper.navigation())
                         }
@@ -1147,12 +1161,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onExitEditMessageMode() {
+        Timber.d("onExitEditMessageMode")
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Default()
         }
     }
 
-    fun onBackButtonPressed(isSpaceRoot: Boolean) {
+    fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
@@ -1166,25 +1182,25 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            if (isSpaceRoot) {
-                Timber.d("Root space screen. Releasing resources...")
-                proceedWithClearingSpaceBeforeExitingToVault()
-            }
+            proceedWithClearingSpaceBeforeExitingToVault()
             commands.emit(ViewModelCommand.Exit)
         }
     }
 
-    fun onSpaceNameClicked(isSpaceRoot: Boolean) {
-        onBackButtonPressed(isSpaceRoot = isSpaceRoot)
+    fun onSpaceNameClicked() {
+        Timber.d("onSpaceNameClicked")
+        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {
+        Timber.d("onSpaceIconClicked")
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenWidgets)
         }
     }
 
     fun onMediaPreview(url: String) {
+        Timber.d("onMediaPreview, url: $url")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.MediaPreview(url = url)
@@ -1193,6 +1209,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onSelectChatReaction(msg: Id) {
+        Timber.d("onSelectChatReaction, msg: $msg")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.SelectChatReaction(
@@ -1206,6 +1223,7 @@ class ChatViewModel @Inject constructor(
         msg: Id,
         emoji: String
     ) {
+        Timber.d("onViewChatReaction, msg: $msg, emoji: $emoji")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.ViewChatReaction(
@@ -1217,6 +1235,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMemberIconClicked(member: Id?) {
+        Timber.d("onMemberIconClicked: $member")
         viewModelScope.launch {
             if (member != null) {
                 commands.emit(
@@ -1232,10 +1251,12 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onInviteModalDismissed() {
+        Timber.d("onInviteModalDismissed")
         inviteModalState.value = InviteModalState.Hidden
     }
 
     fun onGenerateInviteLinkClicked() {
+        Timber.d("onGenerateInviteLinkClicked")
         viewModelScope.launch {
             isGeneratingInviteLink.value = true
             proceedWithGeneratingInviteLink()
@@ -1385,6 +1406,7 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onMentionClicked(member: Id) {
+        Timber.d("onMentionClicked: $member")
         viewModelScope.launch {
             commands.emit(
                 ViewModelCommand.ViewMemberCard(
@@ -1584,6 +1606,10 @@ class ChatViewModel @Inject constructor(
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
+    
+    fun onCameraPermissionDenied() {
+        errorState.value = UiErrorState.CameraPermissionDenied
+    }
 
     private fun proceedWithSpaceSubscription() {
         viewModelScope.launch {
@@ -1611,6 +1637,7 @@ class ChatViewModel @Inject constructor(
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
+        data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
@@ -1680,13 +1707,15 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val showIcon: Boolean
+            val showIcon: Boolean,
+            val isMuted: Boolean = false
         ) : HeaderView()
     }
 
     sealed class UiErrorState {
         data object Hidden : UiErrorState()
         data class Show(val msg: String) : UiErrorState()
+        data object CameraPermissionDenied : UiErrorState()
     }
 
     sealed class Params {

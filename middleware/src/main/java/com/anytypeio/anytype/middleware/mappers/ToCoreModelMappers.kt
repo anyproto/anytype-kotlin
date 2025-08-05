@@ -638,6 +638,9 @@ fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
     MDVFilterQuickOption.NextMonth -> DVFilterQuickOption.NEXT_MONTH
     MDVFilterQuickOption.NumberOfDaysAgo -> DVFilterQuickOption.DAYS_AGO
     MDVFilterQuickOption.NumberOfDaysNow -> DVFilterQuickOption.DAYS_AHEAD
+    MDVFilterQuickOption.LastYear -> DVFilterQuickOption.LAST_YEAR
+    MDVFilterQuickOption.CurrentYear -> DVFilterQuickOption.CURRENT_YEAR
+    MDVFilterQuickOption.NextYear -> DVFilterQuickOption.NEXT_YEAR
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
@@ -1154,7 +1157,8 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
         identities.ids
     } ?: emptyMap(),
     read = read,
-    mentionRead = mentionRead
+    mentionRead = mentionRead,
+    synced = synced
 )
 
 fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
@@ -1176,7 +1180,8 @@ fun MChatState.core(): Chat.State = Chat.State(
             olderOrderId = unread.oldestOrderId
         )
     },
-    lastStateId = lastStateId
+    lastStateId = lastStateId,
+    order = order
 )
 
 fun Rpc.Chat.SubscribeToMessagePreviews.Response.ChatPreview.core(): Chat.Preview {

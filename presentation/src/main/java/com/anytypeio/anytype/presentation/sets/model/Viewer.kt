@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
+import com.anytypeio.anytype.presentation.sets.model.Viewer.Filter.Condition.Checkbox.None
 import kotlinx.parcelize.Parcelize
 import kotlinx.parcelize.RawValue
 
@@ -73,12 +74,14 @@ sealed class Viewer {
             abstract val icon: ObjectIcon
             abstract val relations: List<DefaultObjectRelationValueView>
             abstract val hideIcon: Boolean
+            abstract val hideName: Boolean
             data class Default(
                 override val objectId: Id,
                 override val name: String,
                 override val icon: ObjectIcon,
                 override val relations: List<DefaultObjectRelationValueView>,
-                override val hideIcon: Boolean
+                override val hideIcon: Boolean,
+                override val hideName: Boolean
             ) : Item()
             data class Cover(
                 override val objectId: Id,
@@ -86,6 +89,7 @@ sealed class Viewer {
                 override val icon: ObjectIcon,
                 override val relations: List<DefaultObjectRelationValueView>,
                 override val hideIcon: Boolean,
+                override val hideName: Boolean,
                 val fitImage: Boolean,
                 val cover: CoverView? = null,
                 val isLargeSize: Boolean
@@ -179,13 +183,13 @@ sealed class Viewer {
 
                 companion object {
                     fun textConditions() = listOf(
+                        None(),
                         Equal(),
                         NotEqual(),
                         Like(),
                         NotLike(),
                         Empty(),
-                        NotEmpty(),
-                        None()
+                        NotEmpty()
                     )
                 }
             }
@@ -240,6 +244,7 @@ sealed class Viewer {
                 companion object {
                     fun numberConditions() =
                         listOf(
+                            None(),
                             Equal(),
                             NotEqual(),
                             Greater(),
@@ -247,8 +252,7 @@ sealed class Viewer {
                             GreaterOrEqual(),
                             LessOrEqual(),
                             Empty(),
-                            NotEmpty(),
-                            None()
+                            NotEmpty()
                         )
                 }
 
@@ -356,12 +360,12 @@ sealed class Viewer {
 
                 companion object {
                     fun selectConditions() = listOf(
+                        None(),
                         In(),
                         AllIn(),
                         NotIn(),
                         Empty(),
-                        NotEmpty(),
-                        None()
+                        NotEmpty()
                     )
                 }
             }
@@ -384,9 +388,9 @@ sealed class Viewer {
 
                 companion object {
                     fun checkboxConditions() = listOf(
+                        None(),
                         Equal(),
-                        NotEqual(),
-                        None()
+                        NotEqual()
                     )
                 }
             }

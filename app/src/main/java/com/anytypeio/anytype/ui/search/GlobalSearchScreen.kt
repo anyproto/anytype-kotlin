@@ -80,11 +80,9 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -342,12 +340,7 @@ fun GlobalSearchScreen(
                                 modifier = Modifier.align(Alignment.Center),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                AlertIcon(
-                                    AlertConfig.Icon(
-                                        icon = R.drawable.ic_alert_error,
-                                        gradient = GRADIENT_TYPE_RED
-                                    )
-                                )
+                                AlertIcon(R.drawable.ic_popup_duck_56)
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
                                     text = stringResource(id = R.string.nothing_found),

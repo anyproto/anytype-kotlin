@@ -101,7 +101,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.Relation.*
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -180,8 +179,8 @@ open class ObjectSetFragment :
     private val topToolbarThreeDotsButton: ViewGroup
         get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
 
-    private val topToolbarStatusContainer: ViewGroup
-        get() = binding.topToolbar.root.findViewById(R.id.statusContainer)
+    private val topToolbarStatusContainer: View
+        get() = binding.topToolbar.root.findViewById(R.id.statusBadge)
 
     private val topToolbarThreeDotsIcon: ImageView
         get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
@@ -324,6 +323,10 @@ open class ObjectSetFragment :
 
             subscribe(
                 binding.bottomToolbar.homeClicks().throttleFirst()
+            ) { vm.onHomeButtonClicked() }
+
+            subscribe(
+                binding.bottomToolbar.chatClicks().throttleFirst()
             ) { vm.onHomeButtonClicked() }
 
             subscribe(

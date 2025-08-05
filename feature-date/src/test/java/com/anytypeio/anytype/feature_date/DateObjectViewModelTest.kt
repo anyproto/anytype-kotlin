@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -69,6 +70,7 @@ class DateObjectViewModelTest {
     @Mock lateinit var setObjectListIsArchived: SetObjectListIsArchived
     @Mock lateinit var fieldParser: FieldParser
     @Mock lateinit var getDateObjectByTimestamp: GetDateObjectByTimestamp
+    @Mock lateinit var spacedViews: SpaceViewSubscriptionContainer
     private lateinit var storeOfRelations: StoreOfRelations
 
     private val spaceId = SpaceId("testSpaceId")
@@ -943,7 +945,8 @@ class DateObjectViewModelTest {
             dateProvider = dateProvider,
             createObject = createObject,
             setObjectListIsArchived = setObjectListIsArchived,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
+            getDateObjectByTimestamp = getDateObjectByTimestamp,
+            spaceViews = spacedViews
         )
     }
 }

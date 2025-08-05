@@ -343,6 +343,8 @@ interface BlockRemote {
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
     suspend fun deleteSpace(space: SpaceId)
+    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
+    suspend fun spaceUnsetOrder(spaceViewId: Id)
     suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
 
     suspend fun getSpaceConfig(space: Id): Config

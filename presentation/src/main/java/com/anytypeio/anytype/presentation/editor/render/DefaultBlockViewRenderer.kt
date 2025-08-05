@@ -29,7 +29,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.mapper.getFileUrl
 import com.anytypeio.anytype.presentation.mapper.marks
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toFileView
@@ -1514,7 +1513,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = Mode.READ,
                     id = block.id,
                     text = fieldParser.getObjectName(currentObject),
-                    videoUrl = currentObject.getFileUrl(urlBuilder),
+                    videoUrl = urlBuilder.video(
+                        currentObject.id
+                    ),
                     icon = currentObject.objectIcon(builder = urlBuilder, objType = objType),
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,

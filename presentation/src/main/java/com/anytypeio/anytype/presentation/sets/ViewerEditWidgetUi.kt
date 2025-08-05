@@ -52,15 +52,20 @@ suspend fun <T> List<T>.toView(
     }
 
 suspend fun List<DVViewerRelation>.toAppliedRelations(
+    isGalleryViewer: Boolean = false,
     storeOfRelations: StoreOfRelations,
     mapper: (DVViewerRelation) -> Key
 ): List<String> =
     mapNotNull {
         val relation = storeOfRelations.getByKey(mapper(it))
-        val isRelationDoneOrName = relation?.key == Relations.DONE || relation?.key == Relations.NAME
+        val filterByRelationKeys = if (!isGalleryViewer){
+            relation?.key == Relations.DONE || relation?.key == Relations.NAME
+        } else {
+            relation?.key == Relations.DONE
+        }
         relation?.name.orEmpty()
             .takeIf { _ ->
-                relation != null && relation.isValid && (!isRelationDoneOrName || relation.isHidden != true)
+                relation != null && relation.isValid && (!filterByRelationKeys || relation.isHidden != true)
             }
     }
 
@@ -79,6 +84,7 @@ suspend fun DVViewer.toViewerEditWidgetState(
         sorts = dvViewer.sorts.toView(storeOfRelations) { it.relationKey },
         filters = dvViewer.filters.toView(storeOfRelations) { it.relation },
         relations = dvViewer.viewerRelations.filter { it.isVisible }.toAppliedRelations(
+            isGalleryViewer = dvViewer.type == DVViewerType.GALLERY,
             storeOfRelations = storeOfRelations,
             mapper = { relation -> relation.key }
         ),

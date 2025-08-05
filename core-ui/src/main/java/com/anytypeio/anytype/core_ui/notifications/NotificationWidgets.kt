@@ -31,10 +31,7 @@ import com.anytypeio.anytype.core_models.ImportErrorCode.NULL
 import com.anytypeio.anytype.core_models.ImportErrorCode.UNKNOWN_ERROR
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_GREEN
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -56,10 +53,7 @@ fun NotificationsScreen(
     when (state) {
         is NotificationsScreenState.GalleryInstalled -> {
             NotificationGalleryInstall(
-                icon = AlertConfig.Icon(
-                    gradient = GRADIENT_TYPE_GREEN,
-                    icon = R.drawable.ic_alert_install_gallery
-                ),
+                icon = R.drawable.ic_popup_updated_56,
                 title = stringResource(id = R.string.gallery_experience_alert_title_success),
                 subtitle = stringResource(
                     id = R.string.gallery_experience_alert_subtitle_success,
@@ -72,10 +66,7 @@ fun NotificationsScreen(
 
         is NotificationsScreenState.GalleryInstalledError -> {
             NotificationGalleryInstallError(
-                icon = AlertConfig.Icon(
-                    gradient = GRADIENT_TYPE_RED,
-                    icon = R.drawable.ic_alert_error
-                ),
+                icon = R.drawable.ic_popup_duck_56,
                 title = stringResource(id = R.string.gallery_experience_alert_title_error),
                 subtitle = ImportErrorText(state.errorCode),
                 actionButtonText = stringResource(id = R.string.gallery_experience_alert_button_error),
@@ -153,7 +144,7 @@ private fun ImportErrorText(error: ImportErrorCode): String {
 
 @Composable
 private fun NotificationGalleryInstall(
-    icon: AlertConfig.Icon,
+    icon: Int,
     title: String,
     subtitle: String,
     actionButtonText: String,
@@ -201,7 +192,7 @@ private fun NotificationGalleryInstall(
 
 @Composable
 private fun NotificationGalleryInstallError(
-    icon: AlertConfig.Icon,
+    icon: Int,
     title: String,
     subtitle: String,
     actionButtonText: String,

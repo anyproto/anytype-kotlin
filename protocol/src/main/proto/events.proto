@@ -6,1234 +6,1100 @@ import "models.proto";
 import "google/protobuf/struct.proto";
 
 /*
- * Event – type of message, that could be sent from a middleware to the corresponding front-end.
-*/
+ * Event – type of message, that could be sent from a middleware to the
+ * corresponding front-end.
+ */
 message Event {
-    repeated Message messages = 1;
-    string contextId = 2;
-    anytype.model.Account initiator = 3;
-    string traceId = 4;
+  repeated Message messages = 1;
+  string contextId = 2;
+  anytype.model.Account initiator = 3;
+  string traceId = 4;
 
-    message Message {
-        string spaceId = 132;
-        oneof value {
-            Account.Show accountShow = 1;
-            Account.Details accountDetails = 201;
-            Account.Config.Update accountConfigUpdate = 202;
-            Account.Update accountUpdate = 203;
-            Account.LinkChallenge accountLinkChallenge = 204;
-            Account.LinkChallengeHide accountLinkChallengeHide = 205;
+  message Message {
+    string spaceId = 132;
+    oneof value {
+      Account.Show accountShow = 1;
+      Account.Details accountDetails = 201;
+      Account.Config.Update accountConfigUpdate = 202;
+      Account.Update accountUpdate = 203;
+      Account.LinkChallenge accountLinkChallenge = 204;
+      Account.LinkChallengeHide accountLinkChallengeHide = 205;
 
-            Object.Details.Set objectDetailsSet = 16;
-            Object.Details.Amend objectDetailsAmend = 50;
-            Object.Details.Unset objectDetailsUnset = 51;
-            Object.Relations.Amend objectRelationsAmend = 52;
-            Object.Relations.Remove objectRelationsRemove = 53;
+      Object.Details.Set objectDetailsSet = 16;
+      Object.Details.Amend objectDetailsAmend = 50;
+      Object.Details.Unset objectDetailsUnset = 51;
+      Object.Relations.Amend objectRelationsAmend = 52;
+      Object.Relations.Remove objectRelationsRemove = 53;
 
-            Object.Remove objectRemove = 54;
-            Object.Close objectClose = 65;
+      Object.Remove objectRemove = 54;
+      Object.Close objectClose = 65;
 
-            Object.Restrictions.Set objectRestrictionsSet = 55;
+      Object.Restrictions.Set objectRestrictionsSet = 55;
 
-            Object.Subscription.Add subscriptionAdd = 60;
-            Object.Subscription.Remove subscriptionRemove = 61;
-            Object.Subscription.Position subscriptionPosition = 62;
-            Object.Subscription.Counters subscriptionCounters = 63;
-            Object.Subscription.Groups subscriptionGroups = 64;
+      Object.Subscription.Add subscriptionAdd = 60;
+      Object.Subscription.Remove subscriptionRemove = 61;
+      Object.Subscription.Position subscriptionPosition = 62;
+      Object.Subscription.Counters subscriptionCounters = 63;
+      Object.Subscription.Groups subscriptionGroups = 64;
 
-            Block.Add blockAdd = 2;
-            Block.Delete blockDelete = 3;
-            Block.FilesUpload filesUpload = 4;
-            Block.MarksInfo marksInfo = 5;
+      Block.Add blockAdd = 2;
+      Block.Delete blockDelete = 3;
+      Block.FilesUpload filesUpload = 4;
+      Block.MarksInfo marksInfo = 5;
 
-            Block.Set.Fields blockSetFields = 6;
-            Block.Set.ChildrenIds blockSetChildrenIds = 7;
-            Block.Set.Restrictions blockSetRestrictions = 8;
-            Block.Set.BackgroundColor blockSetBackgroundColor = 9;
+      Block.Set.Fields blockSetFields = 6;
+      Block.Set.ChildrenIds blockSetChildrenIds = 7;
+      Block.Set.Restrictions blockSetRestrictions = 8;
+      Block.Set.BackgroundColor blockSetBackgroundColor = 9;
 
-            Block.Set.Text blockSetText = 10;
-            Block.Set.File blockSetFile = 11;
-            Block.Set.Link blockSetLink = 13;
-            Block.Set.Bookmark blockSetBookmark = 14;
-            Block.Set.Align blockSetAlign = 15;
-            Block.Set.Div blockSetDiv = 17;
-            Block.Set.Relation blockSetRelation = 21;
-            Block.Set.Latex blockSetLatex = 25;
-            Block.Set.VerticalAlign blockSetVerticalAlign = 36;
-            Block.Set.TableRow blockSetTableRow = 37;
-            Block.Set.Widget blockSetWidget = 40;
+      Block.Set.Text blockSetText = 10;
+      Block.Set.File blockSetFile = 11;
+      Block.Set.Link blockSetLink = 13;
+      Block.Set.Bookmark blockSetBookmark = 14;
+      Block.Set.Align blockSetAlign = 15;
+      Block.Set.Div blockSetDiv = 17;
+      Block.Set.Relation blockSetRelation = 21;
+      Block.Set.Latex blockSetLatex = 25;
+      Block.Set.VerticalAlign blockSetVerticalAlign = 36;
+      Block.Set.TableRow blockSetTableRow = 37;
+      Block.Set.Widget blockSetWidget = 40;
 
-            Block.Dataview.ViewSet blockDataviewViewSet = 19;
-            Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
-            Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
-            Block.Dataview.SourceSet blockDataviewSourceSet = 35; // deprecated, source is no longer used
-            Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
-            Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
-            Block.Dataview.RelationDelete blockDataviewRelationDelete = 124;
-            Block.Dataview.RelationSet blockDataviewRelationSet = 123;
-            Block.Dataview.ViewUpdate blockDataviewViewUpdate = 125;
-            Block.Dataview.TargetObjectIdSet blockDataviewTargetObjectIdSet = 126;
-            Block.Dataview.IsCollectionSet blockDataviewIsCollectionSet = 127;
+      Block.Dataview.ViewSet blockDataviewViewSet = 19;
+      Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
+      Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
+      Block.Dataview.SourceSet blockDataviewSourceSet =
+          35; // deprecated, source is no longer used
+      Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
+      Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
+      Block.Dataview.RelationDelete blockDataviewRelationDelete = 124;
+      Block.Dataview.RelationSet blockDataviewRelationSet = 123;
+      Block.Dataview.ViewUpdate blockDataviewViewUpdate = 125;
+      Block.Dataview.TargetObjectIdSet blockDataviewTargetObjectIdSet = 126;
+      Block.Dataview.IsCollectionSet blockDataviewIsCollectionSet = 127;
 
-            // deprecated
-            Block.Dataview.OldRelationDelete blockDataviewOldRelationDelete = 24;
-            // deprecated
-            Block.Dataview.OldRelationSet blockDataviewOldRelationSet = 23;
+      // deprecated
+      Block.Dataview.OldRelationDelete blockDataviewOldRelationDelete = 24;
+      // deprecated
+      Block.Dataview.OldRelationSet blockDataviewOldRelationSet = 23;
 
+      User.Block.Join userBlockJoin = 31;
+      User.Block.Left userBlockLeft = 32;
+      User.Block.SelectRange userBlockSelectRange = 33;
+      User.Block.TextRange userBlockTextRange = 34;
 
+      Ping ping = 100;
 
-            User.Block.Join userBlockJoin = 31;
-            User.Block.Left userBlockLeft = 32;
-            User.Block.SelectRange userBlockSelectRange = 33;
-            User.Block.TextRange userBlockTextRange = 34;
+      Process.New processNew = 101;
+      Process.Update processUpdate = 102;
+      Process.Done processDone = 103;
 
-            Ping ping = 100;
+      Status.Thread threadStatus = 110;
 
-            Process.New processNew = 101;
-            Process.Update processUpdate = 102;
-            Process.Done processDone = 103;
+      File.LimitReached fileLimitReached = 111;
+      File.SpaceUsage fileSpaceUsage = 112;
+      File.LocalUsage fileLocalUsage = 113;
+      File.LimitUpdated fileLimitUpdated = 118;
 
-            Status.Thread threadStatus = 110;
+      Notification.Send notificationSend = 114;
+      Notification.Update notificationUpdate = 115;
 
-            File.LimitReached fileLimitReached = 111;
-            File.SpaceUsage fileSpaceUsage = 112;
-            File.LocalUsage fileLocalUsage = 113;
-            File.LimitUpdated fileLimitUpdated = 118;
+      Payload.Broadcast payloadBroadcast = 116;
 
-            Notification.Send notificationSend = 114;
-            Notification.Update notificationUpdate = 115;
+      Membership.Update membershipUpdate = 117;
 
-            Payload.Broadcast payloadBroadcast = 116;
+      Space.SyncStatus.Update spaceSyncStatusUpdate = 119;
+      Space.AutoWidgetAdded spaceAutoWidgetAdded = 122;
 
-            Membership.Update membershipUpdate = 117;
+      P2PStatus.Update p2pStatusUpdate = 120;
 
-            Space.SyncStatus.Update spaceSyncStatusUpdate = 119;
-            Space.AutoWidgetAdded spaceAutoWidgetAdded = 122;
+      Import.Finish importFinish = 121;
 
-            P2PStatus.Update p2pStatusUpdate = 120;
+      Chat.Add chatAdd = 128;
+      Chat.Update chatUpdate = 129;
+      Chat.UpdateReactions chatUpdateReactions = 130;
+      Chat.UpdateMessageReadStatus chatUpdateMessageReadStatus =
+          134; // received to update per-message read status (if needed to
+               // highlight the unread messages in the UI)
+      Chat.UpdateMentionReadStatus chatUpdateMentionReadStatus =
+          135; // received to update per-message mention read status (if needed
+               // to highlight the unread mentions in the UI)
+      Chat.UpdateMessageSyncStatus chatUpdateMessageSyncStatus = 136;
 
-            Import.Finish importFinish = 121;
+      Chat.Delete chatDelete = 131;
+      Chat.UpdateState chatStateUpdate =
+          133; // in case new unread messages received or chat state changed
+               // (e.g. message read on another device)
+    }
+  }
 
-            Chat.Add chatAdd = 128;
-            Chat.Update chatUpdate = 129;
-            Chat.UpdateReactions chatUpdateReactions = 130;
-            Chat.UpdateMessageReadStatus chatUpdateMessageReadStatus = 134; // received to update per-message read status (if needed to highlight the unread messages in the UI)
-            Chat.UpdateMentionReadStatus chatUpdateMentionReadStatus = 135; // received to update per-message mention read status (if needed to highlight the unread mentions in the UI)
-
-            Chat.Delete chatDelete = 131;
-            Chat.UpdateState chatStateUpdate = 133; // in case new unread messages received or chat state changed (e.g. message read on another device)
-        }
+  message Chat {
+    message Add {
+      string id = 1;
+      string orderId = 2;
+      string afterOrderId = 6;
+      model.ChatMessage message = 3;
+      repeated string subIds = 4;
+      repeated google.protobuf.Struct dependencies = 5;
+    }
+    message Delete {
+      string id = 1;
+      repeated string subIds = 2;
+    }
+    message Update {
+      string id = 1;
+      model.ChatMessage message = 2;
+      repeated string subIds = 3;
+    }
+    message UpdateReactions {
+      string id = 1;
+      model.ChatMessage.Reactions reactions = 2;
+      repeated string subIds = 3;
     }
 
-    message Chat {
-        message Add {
-            string id = 1;
-            string orderId = 2;
-            string afterOrderId = 6;
-            model.ChatMessage message = 3;
-            repeated string subIds = 4;
-            repeated google.protobuf.Struct dependencies = 5;
-        }
-        message Delete {
-            string id = 1;
-            repeated string subIds = 2;
-        }
-        message Update {
-            string id = 1;
-            model.ChatMessage message = 2;
-            repeated string subIds = 3;
-        }
-        message UpdateReactions {
-            string id = 1;
-            model.ChatMessage.Reactions reactions = 2;
-            repeated string subIds = 3;
-        }
-
-        message UpdateMessageReadStatus {
-            repeated string ids = 1;
-            bool isRead = 2;
-            repeated string subIds = 3;
-        }
-        message UpdateMentionReadStatus {
-            repeated string ids = 1;
-            bool isRead = 2;
-            repeated string subIds = 3;
-        }
-
-        message UpdateState {
-            model.ChatState state = 1;
-            repeated string subIds = 2;
-        }
+    message UpdateMessageReadStatus {
+      repeated string ids = 1;
+      bool isRead = 2;
+      repeated string subIds = 3;
+    }
+    message UpdateMentionReadStatus {
+      repeated string ids = 1;
+      bool isRead = 2;
+      repeated string subIds = 3;
+    }
+    message UpdateMessageSyncStatus {
+      repeated string ids = 1;
+      bool isSynced = 2;
+      repeated string subIds = 3;
     }
 
-    message Account {
-        /**
-        * Message, that will be sent to the front on each account found after an AccountRecoverRequest
-        */
-        message Show {
-            int32 index = 1; // Number of an account in an all found accounts list
-            anytype.model.Account account = 2; // An Account, that has been found for the mnemonic
-        }
+    message UpdateState {
+      model.ChatState state = 1;
+      repeated string subIds = 2;
+    }
+  }
 
-        message Details {
-            string profileId = 1;
-            google.protobuf.Struct details = 2;
-        }
-
-        message Config {
-            message Update {
-                anytype.model.Account.Config config = 1;
-                anytype.model.Account.Status status = 2;
-            }
-        }
-
-        message Update {
-            anytype.model.Account.Config config = 1;
-            anytype.model.Account.Status status = 2;
-        }
-
-        message LinkChallenge {
-            message ClientInfo {
-                string processName = 1;
-                string processPath = 2;
-                string name = 4;
-                bool signatureVerified = 3;
-            }
-            string challenge = 1;
-            ClientInfo clientInfo = 2;
-            model.Account.Auth.LocalApiScope scope = 3;
-        }
-
-        message LinkChallengeHide {
-            string challenge = 1; // verify code before hiding to protect from MITM attacks
-        }
+  message Account {
+    /**
+     * Message, that will be sent to the front on each account found after an
+     * AccountRecoverRequest
+     */
+    message Show {
+      int32 index = 1; // Number of an account in an all found accounts list
+      anytype.model.Account account =
+          2; // An Account, that has been found for the mnemonic
     }
 
-    message Object {
-        message Details {
-            // Amend (i.e. add a new key-value pair or update an existing key-value pair) existing state
-            message Amend {
-                message KeyValue {
-                    string key = 1;
-                    google.protobuf.Value value = 2; // should not be null
-                }
-                string id = 1; // context objectId
-                repeated KeyValue details = 2; // slice of changed key-values
-                repeated string subIds = 3;
-            }
+    message Details {
+      string profileId = 1;
+      google.protobuf.Struct details = 2;
+    }
 
-            // Overwrite current state
-            message Set {
-                string id = 1; // context objectId
-                google.protobuf.Struct details = 2; // can not be a partial state. Should replace client details state
-                repeated string subIds = 3;
-            }
+    message Config {
+      message Update {
+        anytype.model.Account.Config config = 1;
+        anytype.model.Account.Status status = 2;
+      }
+    }
 
-            // Unset existing detail keys
-            message Unset {
-                string id = 1; // context objectId
-                repeated string keys = 2;
-                repeated string subIds = 3;
-            }
+    message Update {
+      anytype.model.Account.Config config = 1;
+      anytype.model.Account.Status status = 2;
+    }
+
+    message LinkChallenge {
+      message ClientInfo {
+        string processName = 1;
+        string processPath = 2;
+        string name = 4;
+        bool signatureVerified = 3;
+      }
+      string challenge = 1;
+      ClientInfo clientInfo = 2;
+      model.Account.Auth.LocalApiScope scope = 3;
+    }
+
+    message LinkChallengeHide {
+      string challenge =
+          1; // verify code before hiding to protect from MITM attacks
+    }
+  }
+
+  message Object {
+    message Details {
+      // Amend (i.e. add a new key-value pair or update an existing key-value
+      // pair) existing state
+      message Amend {
+        message KeyValue {
+          string key = 1;
+          google.protobuf.Value value = 2; // should not be null
+        }
+        string id = 1;                 // context objectId
+        repeated KeyValue details = 2; // slice of changed key-values
+        repeated string subIds = 3;
+      }
+
+      // Overwrite current state
+      message Set {
+        string id = 1; // context objectId
+        google.protobuf.Struct details =
+            2; // can not be a partial state. Should replace client details
+               // state
+        repeated string subIds = 3;
+      }
+
+      // Unset existing detail keys
+      message Unset {
+        string id = 1; // context objectId
+        repeated string keys = 2;
+        repeated string subIds = 3;
+      }
+    }
+
+    message Subscription {
+
+      // Adds new document to subscriptions
+      message Add {
+        string id = 1;      // object id
+        string afterId = 2; // id of previous doc in order, empty means first
+        string subId = 3;   // subscription id
+      }
+
+      // Removes document from subscription
+      message Remove {
+        string id = 1;    // object id
+        string subId = 2; // subscription id
+      }
+
+      // Indicates new position of document
+      message Position {
+        string id = 1;      // object id
+        string afterId = 2; // id of previous doc in order, empty means first
+        string subId = 3;   // subscription id
+      }
+
+      message Counters {
+        // total available records
+        int64 total = 1;
+        // how many records available after
+        int64 nextCount = 2;
+        // how many records available before
+        int64 prevCount = 3;
+
+        string subId = 4; // subscription id
+      }
+
+      message Groups {
+        string subId = 1;
+        anytype.model.Block.Content.Dataview.Group group = 2;
+        bool remove = 3;
+      }
+    }
+
+    message Relations {
+
+      message Amend {
+        string id = 1; // context objectId
+        repeated anytype.model.RelationLink relationLinks = 2;
+      }
+
+      message Remove {
+        string id = 1; // context objectId
+        repeated string relationKeys = 2;
+      }
+    }
+
+    message Remove {
+      // notifies that objects were removed
+      repeated string ids = 1;
+    }
+
+    message Restrictions {
+      message Set {
+        string id = 1;
+        anytype.model.Restrictions restrictions = 2;
+      }
+    }
+
+    message Close { string id = 1; }
+  }
+  message Block {
+    /*
+     * Event to show internal blocks on a client.
+     * Example Scenarios
+     * A. Block Creation
+     * 1. Block A have been created on a client C1
+     * 2. Client C2 receives Event.Block.Add(Block A),
+     * Event.Block.Update(Page.children) B. Partial block load
+     * 1. Client C1 opens Page1, that contains, for example, 133 blocks.
+     * 2. M -> F: ShowFullScreen(Root, blocks1-50)
+     * 3. M -> F: Block.Add(blocks51-100)
+     * 3. M -> F: Block.Add(blocks101-133)
+     */
+    message Add {
+      repeated anytype.model.Block blocks = 1; // id -> block
+    }
+
+    /**
+     * Middleware to front end event message, that will be sent on one of this
+     * scenarios: Precondition: user A opened a block
+     * 1. User A drops a set of files/pictures/videos
+     * 2. User A creates a MediaBlock and drops a single media, that corresponds
+     * to its type.
+     */
+    message FilesUpload {
+      string blockId = 1;           // if empty => create new blocks
+      repeated string filePath = 2; // filepaths to the files
+    }
+
+    /*
+     *
+     */
+    message Delete { repeated string blockIds = 1; }
+
+    message MarksInfo {
+      repeated anytype.model.Block.Content.Text.Mark.Type marksInRange = 1;
+    }
+
+    message Set {
+
+      message Relation {
+        string id = 1;
+        Key key = 2;
+        message Key { string value = 1; }
+      }
+
+      message Fields {
+        string id = 1;
+        google.protobuf.Struct fields = 2;
+      }
+
+      message ChildrenIds {
+        string id = 1;
+        repeated string childrenIds = 2;
+      }
+
+      message Restrictions {
+        string id = 1;
+        anytype.model.Block.Restrictions restrictions = 2;
+      }
+
+      message BackgroundColor {
+        string id = 1;
+        string backgroundColor = 2;
+      }
+
+      message Align {
+        string id = 1;
+        anytype.model.Block.Align align = 2;
+      }
+
+      message VerticalAlign {
+        string id = 1;
+        anytype.model.Block.VerticalAlign verticalAlign = 2;
+      }
+
+      message Text {
+        string id = 1;
+        Text text = 2;
+        Style style = 3;
+        Marks marks = 4;
+        Checked checked = 5;
+        Color color = 6;
+        IconEmoji iconEmoji = 7;
+        IconImage iconImage = 8;
+
+        message Text { string value = 1; }
+
+        message Style { anytype.model.Block.Content.Text.Style value = 1; }
+
+        message Marks { anytype.model.Block.Content.Text.Marks value = 1; }
+
+        message Checked { bool value = 1; }
+
+        message Color { string value = 1; }
+
+        message IconEmoji { string value = 1; }
+
+        message IconImage { string value = 1; }
+      }
+      message Latex {
+        string id = 1;
+        Text text = 2;
+        message Text { string value = 1; }
+        Processor processor = 3;
+        message Processor {
+          anytype.model.Block.Content.Latex.Processor value = 1;
+        }
+      }
+
+      message Div {
+        string id = 1;
+        Style style = 2;
+
+        message Style { anytype.model.Block.Content.Div.Style value = 1; }
+      }
+
+      message File {
+        string id = 1;
+        Type type = 2;
+        State state = 3;
+        Mime mime = 4;
+        Hash hash = 5;
+        Name name = 6;
+        Size size = 7;
+        Style style = 8;
+        TargetObjectId targetObjectId = 9;
+
+        message Name { string value = 1; }
+
+        message Width { int32 value = 1; }
+
+        message State { anytype.model.Block.Content.File.State value = 1; }
+
+        message Type { anytype.model.Block.Content.File.Type value = 1; }
+
+        message Style { anytype.model.Block.Content.File.Style value = 1; }
+
+        message Hash { string value = 1; }
+
+        message Mime { string value = 1; }
+
+        message Size { int64 value = 1; }
+
+        message TargetObjectId { string value = 1; }
+      }
+
+      message Link {
+        string id = 1;
+        TargetBlockId targetBlockId = 2;
+        Style style = 3;
+        Fields fields = 4;
+        IconSize iconSize = 5;
+        CardStyle cardStyle = 6;
+        Description description = 7;
+        Relations relations = 8;
+
+        message TargetBlockId { string value = 1; }
+
+        message Style { anytype.model.Block.Content.Link.Style value = 1; }
+
+        message Fields { google.protobuf.Struct value = 1; }
+
+        message IconSize {
+          anytype.model.Block.Content.Link.IconSize value = 1;
         }
 
-        message Subscription {
-
-            // Adds new document to subscriptions
-            message Add {
-                string id = 1; // object id
-                string afterId = 2; // id of previous doc in order, empty means first
-                string subId = 3; // subscription id
-            }
-
-            // Removes document from subscription
-            message Remove {
-                string id = 1; // object id
-                string subId = 2; // subscription id
-            }
-
-            // Indicates new position of document
-            message Position {
-                string id = 1; // object id
-                string afterId = 2;  // id of previous doc in order, empty means first
-                string subId = 3; // subscription id
-            }
-
-            message Counters {
-                // total available records
-                int64 total = 1;
-                // how many records available after
-                int64 nextCount = 2;
-                // how many records available before
-                int64 prevCount = 3;
-
-                string subId = 4; // subscription id
-            }
-
-            message Groups {
-                string subId = 1;
-                anytype.model.Block.Content.Dataview.Group group = 2;
-                bool remove = 3;
-            }
+        message CardStyle {
+          anytype.model.Block.Content.Link.CardStyle value = 1;
         }
 
-        message Relations {
-
-            message Amend {
-                string id = 1; // context objectId
-                repeated anytype.model.RelationLink relationLinks = 2;
-            }
-
-            message Remove {
-                string id = 1; // context objectId
-                repeated string relationKeys = 2;
-            }
+        message Description {
+          anytype.model.Block.Content.Link.Description value = 1;
         }
 
+        message Relations { repeated string value = 1; }
+      }
 
-        message Remove {
-            // notifies that objects were removed
-            repeated string ids = 1;
+      message Bookmark {
+        string id = 1;
+        Url url = 2;
+        Title title = 3;
+        Description description = 4;
+        ImageHash imageHash = 5;
+        FaviconHash faviconHash = 6;
+        Type type = 7;
+        TargetObjectId targetObjectId = 8;
+        State state = 9;
+
+        message Url { string value = 1; }
+
+        message Title { string value = 1; }
+
+        message Description { string value = 1; }
+
+        message ImageHash { string value = 1; }
+
+        message FaviconHash { string value = 1; }
+
+        message Type { anytype.model.LinkPreview.Type value = 1; }
+
+        message TargetObjectId { string value = 1; }
+
+        message State { anytype.model.Block.Content.Bookmark.State value = 1; }
+      }
+
+      message TableRow {
+        string id = 1;
+        IsHeader isHeader = 2;
+
+        message IsHeader { bool value = 1; }
+      }
+
+      message Widget {
+        string id = 1;
+        Layout layout = 2;
+        Limit limit = 3;
+        ViewId viewId = 4;
+
+        message Layout { anytype.model.Block.Content.Widget.Layout value = 1; }
+
+        message Limit { int32 value = 1; }
+
+        message ViewId { string value = 1; }
+      }
+    }
+
+    message Fill {
+
+      message Details {
+        string id = 1;
+        google.protobuf.Struct details = 2;
+      }
+
+      message DatabaseRecords {
+        string id = 1;
+        repeated google.protobuf.Struct records = 2;
+      }
+
+      message Fields {
+        string id = 1;
+        google.protobuf.Struct fields = 2;
+      }
+
+      message ChildrenIds {
+        string id = 1;
+        repeated string childrenIds = 2;
+      }
+
+      message Restrictions {
+        string id = 1;
+        anytype.model.Block.Restrictions restrictions = 2;
+      }
+
+      message BackgroundColor {
+        string id = 1;
+        string backgroundColor = 2;
+      }
+
+      message Align {
+        string id = 1;
+        anytype.model.Block.Align align = 2;
+      }
+
+      message Text {
+        string id = 1;
+        Text text = 2;
+        Style style = 3;
+        Marks marks = 4;
+        Checked checked = 5;
+        Color color = 6;
+
+        message Text { string value = 1; }
+
+        message Style { anytype.model.Block.Content.Text.Style value = 1; }
+
+        message Marks { anytype.model.Block.Content.Text.Marks value = 1; }
+
+        message Checked { bool value = 1; }
+
+        message Color { string value = 1; }
+      }
+
+      message Div {
+        string id = 1;
+        Style style = 2;
+
+        message Style { anytype.model.Block.Content.Div.Style value = 1; }
+      }
+
+      message File {
+        string id = 1;
+        Type type = 2;
+        State state = 3;
+        Mime mime = 4;
+        Hash hash = 5;
+        Name name = 6;
+        Size size = 7;
+        Style style = 8;
+
+        message Name { string value = 1; }
+
+        message Width { int32 value = 1; }
+
+        message State { anytype.model.Block.Content.File.State value = 1; }
+
+        message Type { anytype.model.Block.Content.File.Type value = 1; }
+
+        message Style { anytype.model.Block.Content.File.Style value = 1; }
+
+        message Hash { string value = 1; }
+
+        message Mime { string value = 1; }
+
+        message Size { int64 value = 1; }
+      }
+
+      message Link {
+        string id = 1;
+        TargetBlockId targetBlockId = 2;
+        Style style = 3;
+        Fields fields = 4;
+
+        message TargetBlockId { string value = 1; }
+
+        message Style { anytype.model.Block.Content.Link.Style value = 1; }
+
+        message Fields { google.protobuf.Struct value = 1; }
+      }
+
+      message Bookmark {
+        string id = 1;
+        Url url = 2;
+        Title title = 3;
+        Description description = 4;
+        ImageHash imageHash = 5;
+        FaviconHash faviconHash = 6;
+        Type type = 7;
+        TargetObjectId targetObjectId = 8;
+
+        message Url { string value = 1; }
+
+        message Title { string value = 1; }
+
+        message Description { string value = 1; }
+
+        message ImageHash { string value = 1; }
+
+        message FaviconHash { string value = 1; }
+
+        message Type { anytype.model.LinkPreview.Type value = 1; }
+
+        message TargetObjectId { string value = 1; }
+      }
+    }
+
+    message Dataview {
+      // sent when the view have been changed or added
+      message ViewSet {
+        string id = 1; // dataview block's id
+        string viewId =
+            2; // view id, client should double check this to make sure client
+               // doesn't switch the active view in the middle
+        anytype.model.Block.Content.Dataview.View view = 3;
+      }
+
+      message ViewUpdate {
+        string id = 1;
+        string viewId = 2;
+        repeated Filter filter = 3;
+        repeated Relation relation = 4;
+        repeated Sort sort = 5;
+        Fields fields = 6;
+
+        message Fields {
+          anytype.model.Block.Content.Dataview.View.Type type = 1;
+          string name = 2;
+          string coverRelationKey = 3; // Relation used for cover in gallery
+          bool hideIcon = 4;           // Hide icon near name
+          anytype.model.Block.Content.Dataview.View.Size cardSize =
+              5;                       // Gallery card size
+          bool coverFit = 6;           // Image fits container
+          string groupRelationKey = 7; // Group view by this relationKey
+          string endRelationKey = 16;
+          bool groupBackgroundColors = 8; // Enable backgrounds in groups
+          int32 pageLimit = 9;            // Limit of objects shown in widget
+          string defaultTemplateId =
+              10; // Id of template object set default for the view
+          string defaultObjectTypeId =
+              15; // Default object type that is chosen for new object created
+                  // within the view
         }
 
-        message Restrictions {
-            message Set {
-                string id = 1;
-                anytype.model.Restrictions restrictions = 2;
-            }
-        }
+        message Filter {
+          oneof operation {
+            Add add = 1;
+            Remove remove = 2;
+            Update update = 3;
+            Move move = 4;
+          }
 
-        message Close {
+          message Add {
+            string afterId = 1;
+            repeated anytype.model.Block.Content.Dataview.Filter items = 2;
+          }
+          message Remove { repeated string ids = 1; }
+          message Update {
             string id = 1;
+            anytype.model.Block.Content.Dataview.Filter item = 2;
+          }
+          message Move {
+            string afterId = 1;
+            repeated string ids = 2;
+          }
         }
+
+        message Relation {
+          oneof operation {
+            Add add = 1;
+            Remove remove = 2;
+            Update update = 3;
+            Move move = 4;
+          }
+
+          message Add {
+            string afterId = 1;
+            repeated anytype.model.Block.Content.Dataview.Relation items = 2;
+          }
+          message Remove { repeated string ids = 1; }
+          message Update {
+            string id = 1;
+            anytype.model.Block.Content.Dataview.Relation item = 2;
+          }
+          message Move {
+            string afterId = 1;
+            repeated string ids = 2;
+          }
+        }
+
+        message Sort {
+          oneof operation {
+            Add add = 1;
+            Remove remove = 2;
+            Update update = 3;
+            Move move = 4;
+          }
+
+          message Add {
+            string afterId = 1;
+            repeated anytype.model.Block.Content.Dataview.Sort items = 2;
+          }
+          message Remove { repeated string ids = 1; }
+          message Update {
+            string id = 1;
+            anytype.model.Block.Content.Dataview.Sort item = 2;
+          }
+          message Move {
+            string afterId = 1;
+            repeated string ids = 2;
+          }
+        }
+      }
+
+      message ViewDelete {
+        string id = 1;     // dataview block's id
+        string viewId = 2; // view id to remove
+      }
+
+      message ViewOrder {
+        string id = 1;               // dataview block's id
+        repeated string viewIds = 2; // view ids in new order
+      }
+
+      message SourceSet {
+        string id = 1; // dataview block's id
+        repeated string source = 2;
+      }
+
+      message OldRelationDelete {
+        string id = 1;          // dataview block's id
+        string relationKey = 2; // relation key to remove
+      }
+
+      // sent when the dataview relation has been changed or added
+      message OldRelationSet {
+        string id = 1;          // dataview block's id
+        string relationKey = 2; // relation key to update
+        anytype.model.Relation relation = 3;
+      }
+
+      message RelationDelete {
+        string id = 1;                    // dataview block's id
+        repeated string relationKeys = 2; // relation key to remove
+      }
+
+      // sent when the dataview relation has been changed or added
+      message RelationSet {
+        string id = 1; // dataview block's id
+        repeated anytype.model.RelationLink relationLinks =
+            2; // relation id to update
+      }
+
+      message GroupOrderUpdate {
+        string id = 1; // dataview block's id
+        anytype.model.Block.Content.Dataview.GroupOrder groupOrder = 2;
+      }
+
+      message ObjectOrderUpdate {
+        string id = 1; // dataview block's id
+        string viewId = 2;
+        string groupId = 3;
+        repeated SliceChange sliceChanges = 4;
+      }
+
+      message SliceChange {
+        SliceOperation op = 1;
+        repeated string ids = 2;
+        string afterId = 3;
+      }
+
+      enum SliceOperation {
+        SliceOperationNone = 0; // not used
+        SliceOperationAdd = 1;
+        SliceOperationMove = 2;
+        SliceOperationRemove = 3;
+        SliceOperationReplace = 4;
+      }
+
+      message TargetObjectIdSet {
+        string id = 1; // dataview block's id
+        string targetObjectId = 2;
+      }
+
+      message IsCollectionSet {
+        string id = 1; // dataview block's id
+        bool value = 2;
+      }
     }
+  }
+
+  message User {
     message Block {
-        /*
-        * Event to show internal blocks on a client.
-         * Example Scenarios
-         * A. Block Creation
-         * 1. Block A have been created on a client C1
-         * 2. Client C2 receives Event.Block.Add(Block A), Event.Block.Update(Page.children)
-         * B. Partial block load
-         * 1. Client C1 opens Page1, that contains, for example, 133 blocks.
-         * 2. M -> F: ShowFullScreen(Root, blocks1-50)
-         * 3. M -> F: Block.Add(blocks51-100)
-         * 3. M -> F: Block.Add(blocks101-133)
-        */
-        message Add {
-            repeated anytype.model.Block blocks = 1; // id -> block
+
+      /**
+       *  Middleware to front end event message, that will be sent in this
+       * scenario: Precondition: user A opened a block
+       * 1. User B opens the same block
+       * 2. User A receives a message about p.1
+       */
+      message Join {
+        Account account = 1; // Account of the user, that opened a block
+      }
+
+      /**
+       *  Middleware to front end event message, that will be sent in this
+       * scenario: Precondition: user A and user B opened the same block
+       * 1. User B closes the block
+       * 2. User A receives a message about p.1
+       */
+      message Left {
+        Account account = 1; // Account of the user, that left the block
+      }
+
+      /**
+       * Middleware to front end event message, that will be sent in this
+       * scenario: Precondition: user A and user B opened the same block
+       * 1. User B sets cursor or selects a text region into a text block
+       * 2. User A receives a message about p.1
+       */
+      message TextRange {
+        Account account = 1; // Account of the user, that selected a text
+        string blockId = 2;  // Id of the text block, that have a selection
+        anytype.model.Range range = 3; // Range of the selection
+      }
+
+      /**
+       * Middleware to front end event message, that will be sent in this
+       * scenario: Precondition: user A and user B opened the same block
+       * 1. User B selects some inner blocks
+       * 2. User A receives a message about p.1
+       */
+      message SelectRange {
+        Account account = 1; // Account of the user, that selected blocks
+        repeated string blockIdsArray = 2; // Ids of selected blocks.
+      }
+    }
+  }
+
+  message Ping { int32 index = 1; }
+
+  message Process {
+    message New { Model.Process process = 1; }
+    message Update { Model.Process process = 1; }
+    message Done { Model.Process process = 1; }
+  }
+
+  message Status {
+    message Thread {
+      Summary summary = 1;
+      Cafe cafe = 2;
+      repeated Account accounts = 3;
+
+      message Summary { SyncStatus status = 1; }
+
+      message Cafe {
+        SyncStatus status = 1;
+        int64 lastPulled = 2;
+        bool lastPushSucceed = 3;
+        PinStatus files = 4;
+
+        message PinStatus {
+          int32 pinning = 1;
+          int32 pinned = 2;
+          int32 failed = 3;
+          int64 updated = 4;
         }
-
-        /**
-        * Middleware to front end event message, that will be sent on one of this scenarios:
-        * Precondition: user A opened a block
-        * 1. User A drops a set of files/pictures/videos
-        * 2. User A creates a MediaBlock and drops a single media, that corresponds to its type.
-        */
-        message FilesUpload {
-            string blockId = 1; // if empty => create new blocks
-            repeated string filePath = 2; // filepaths to the files
-        }
-
-        /*
-         *
-        */
-        message Delete {
-            repeated string blockIds = 1;
-        }
-
-        message MarksInfo {
-            repeated anytype.model.Block.Content.Text.Mark.Type marksInRange = 1;
-        }
-
-        message Set {
-
-            message Relation {
-                string id = 1;
-                Key key = 2;
-                message Key {
-                    string value = 1;
-                }
-            }
-
-            message Fields {
-                string id = 1;
-                google.protobuf.Struct fields = 2;
-            }
-
-            message ChildrenIds {
-                string id = 1;
-                repeated string childrenIds = 2;
-            }
-
-            message Restrictions {
-                string id = 1;
-                anytype.model.Block.Restrictions restrictions = 2;
-            }
-
-            message BackgroundColor {
-                string id = 1;
-                string backgroundColor = 2;
-            }
-
-            message Align {
-                string id = 1;
-                anytype.model.Block.Align align = 2;
-            }
-
-            message VerticalAlign {
-                string id = 1;
-                anytype.model.Block.VerticalAlign verticalAlign = 2;
-            }
-
-
-            message Text {
-                string id = 1;
-                Text text = 2;
-                Style style = 3;
-                Marks marks = 4;
-                Checked checked = 5;
-                Color color = 6;
-                IconEmoji iconEmoji = 7;
-                IconImage iconImage = 8;
-
-                message Text {
-                    string value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.Text.Style value = 1;
-                }
-
-                message Marks {
-                    anytype.model.Block.Content.Text.Marks value = 1;
-                }
-
-                message Checked {
-                    bool value = 1;
-                }
-
-                message Color {
-                    string value = 1;
-                }
-
-                message IconEmoji {
-                    string value = 1;
-                }
-
-                message IconImage {
-                    string value = 1;
-                }
-            }
-            message Latex {
-                string id = 1;
-                Text text = 2;
-                message Text {
-                    string value = 1;
-                }
-                Processor processor = 3;
-                message Processor {
-                    anytype.model.Block.Content.Latex.Processor value = 1;
-                }
-            }
-
-            message Div {
-                string id = 1;
-                Style style = 2;
-
-                message Style {
-                    anytype.model.Block.Content.Div.Style value = 1;
-                }
-            }
-
-
-            message File {
-                string id = 1;
-                Type type = 2;
-                State state = 3;
-                Mime mime = 4;
-                Hash hash = 5;
-                Name name = 6;
-                Size size = 7;
-                Style style = 8;
-                TargetObjectId targetObjectId = 9;
-
-                message Name {
-                    string value = 1;
-                }
-
-                message Width {
-                    int32 value = 1;
-                }
-
-                message State {
-                    anytype.model.Block.Content.File.State value = 1;
-                }
-
-                message Type {
-                    anytype.model.Block.Content.File.Type value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.File.Style value = 1;
-                }
-
-                message Hash {
-                    string value = 1;
-                }
-
-                message Mime {
-                    string value = 1;
-                }
-
-                message Size {
-                    int64 value = 1;
-                }
-
-                message TargetObjectId {
-                    string value = 1;
-                }
-            }
-
-
-            message Link {
-                string id = 1;
-                TargetBlockId targetBlockId = 2;
-                Style style = 3;
-                Fields fields = 4;
-                IconSize iconSize = 5;
-                CardStyle cardStyle = 6;
-                Description description = 7;
-                Relations relations = 8;
-
-                message TargetBlockId {
-                    string value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.Link.Style value = 1;
-                }
-
-                message Fields {
-                    google.protobuf.Struct value = 1;
-                }
-
-                message IconSize {
-                    anytype.model.Block.Content.Link.IconSize value = 1;
-                }
-
-                message CardStyle {
-                    anytype.model.Block.Content.Link.CardStyle value = 1;
-                }
-
-                message Description {
-                    anytype.model.Block.Content.Link.Description value = 1;
-                }
-
-                message Relations {
-                    repeated string value = 1;
-                }
-            }
-
-            message Bookmark {
-                string id = 1;
-                Url url = 2;
-                Title title = 3;
-                Description description = 4;
-                ImageHash imageHash = 5;
-                FaviconHash faviconHash = 6;
-                Type type = 7;
-                TargetObjectId targetObjectId = 8;
-                State state = 9;
-
-                message Url {
-                    string value = 1;
-                }
-
-                message Title {
-                    string value = 1;
-                }
-
-                message Description {
-                    string value = 1;
-                }
-
-                message ImageHash {
-                    string value = 1;
-                }
-
-                message FaviconHash {
-                    string value = 1;
-                }
-
-                message Type {
-                    anytype.model.LinkPreview.Type value = 1;
-                }
-
-                message TargetObjectId {
-                    string value = 1;
-                }
-
-                message State {
-                    anytype.model.Block.Content.Bookmark.State value = 1;
-                }
-            }
-
-            message TableRow {
-                string id = 1;
-                IsHeader isHeader = 2;
-
-                message IsHeader {
-                    bool value = 1;
-                }
-            }
-
-            message Widget {
-                string id = 1;
-                Layout layout = 2;
-                Limit limit = 3;
-                ViewId viewId = 4;
-
-                message Layout {
-                    anytype.model.Block.Content.Widget.Layout value = 1;
-                }
-
-                message Limit {
-                    int32 value = 1;
-                }
-
-                message ViewId {
-                    string value = 1;
-                }
-            }
-        }
-
-        message Fill {
-
-            message Details {
-                string id = 1;
-                google.protobuf.Struct details = 2;
-            }
-
-            message DatabaseRecords {
-                string id = 1;
-                repeated google.protobuf.Struct records = 2;
-            }
-
-            message Fields {
-                string id = 1;
-                google.protobuf.Struct fields = 2;
-            }
-
-            message ChildrenIds {
-                string id = 1;
-                repeated string childrenIds = 2;
-            }
-
-            message Restrictions {
-                string id = 1;
-                anytype.model.Block.Restrictions restrictions = 2;
-            }
-
-            message BackgroundColor {
-                string id = 1;
-                string backgroundColor = 2;
-            }
-
-            message Align {
-                string id = 1;
-                anytype.model.Block.Align align = 2;
-            }
-
-
-            message Text {
-                string id = 1;
-                Text text = 2;
-                Style style = 3;
-                Marks marks = 4;
-                Checked checked = 5;
-                Color color = 6;
-
-                message Text {
-                    string value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.Text.Style value = 1;
-                }
-
-                message Marks {
-                    anytype.model.Block.Content.Text.Marks value = 1;
-                }
-
-                message Checked {
-                    bool value = 1;
-                }
-
-                message Color {
-                    string value = 1;
-                }
-
-            }
-
-            message Div {
-                string id = 1;
-                Style style = 2;
-
-                message Style {
-                    anytype.model.Block.Content.Div.Style value = 1;
-                }
-            }
-
-
-            message File {
-                string id = 1;
-                Type type = 2;
-                State state = 3;
-                Mime mime = 4;
-                Hash hash = 5;
-                Name name = 6;
-                Size size = 7;
-                Style style = 8;
-
-                message Name {
-                    string value = 1;
-                }
-
-                message Width {
-                    int32 value = 1;
-                }
-
-                message State {
-                    anytype.model.Block.Content.File.State value = 1;
-                }
-
-                message Type {
-                    anytype.model.Block.Content.File.Type value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.File.Style value = 1;
-                }
-
-                message Hash {
-                    string value = 1;
-                }
-
-                message Mime {
-                    string value = 1;
-                }
-
-                message Size {
-                    int64 value = 1;
-                }
-
-            }
-
-
-            message Link {
-                string id = 1;
-                TargetBlockId targetBlockId = 2;
-                Style style = 3;
-                Fields fields = 4;
-
-                message TargetBlockId {
-                    string value = 1;
-                }
-
-                message Style {
-                    anytype.model.Block.Content.Link.Style value = 1;
-                }
-
-                message Fields {
-                    google.protobuf.Struct value = 1;
-                }
-
-            }
-
-            message Bookmark {
-                string id = 1;
-                Url url = 2;
-                Title title = 3;
-                Description description = 4;
-                ImageHash imageHash = 5;
-                FaviconHash faviconHash = 6;
-                Type type = 7;
-                TargetObjectId targetObjectId = 8;
-
-
-                message Url {
-                    string value = 1;
-                }
-
-                message Title {
-                    string value = 1;
-                }
-
-                message Description {
-                    string value = 1;
-                }
-
-                message ImageHash {
-                    string value = 1;
-                }
-
-                message FaviconHash {
-                    string value = 1;
-                }
-
-                message Type {
-                    anytype.model.LinkPreview.Type value = 1;
-                }
-
-                message TargetObjectId {
-                    string value = 1;
-                }
-            }
-        }
-
-        message Dataview {
-            // sent when the view have been changed or added
-            message ViewSet {
-                string id = 1; // dataview block's id
-                string viewId = 2; // view id, client should double check this to make sure client doesn't switch the active view in the middle
-                anytype.model.Block.Content.Dataview.View view = 3;
-            }
-
-            message ViewUpdate {
-                string id = 1;
-                string viewId = 2;
-                repeated Filter filter = 3;
-                repeated Relation relation = 4;
-                repeated Sort sort = 5;
-                Fields fields = 6;
-
-                message Fields {
-                    anytype.model.Block.Content.Dataview.View.Type type = 1;
-                    string name = 2;
-                    string coverRelationKey = 3; // Relation used for cover in gallery
-                    bool hideIcon = 4; // Hide icon near name
-                    anytype.model.Block.Content.Dataview.View.Size cardSize = 5; // Gallery card size
-                    bool coverFit = 6; // Image fits container
-                    string groupRelationKey = 7; // Group view by this relationKey
-                    string endRelationKey = 16;
-                    bool groupBackgroundColors = 8; // Enable backgrounds in groups
-                    int32 pageLimit = 9; // Limit of objects shown in widget
-                    string defaultTemplateId = 10; // Id of template object set default for the view
-                    string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
-                }
-
-                message Filter {
-                    oneof operation {
-                        Add add = 1;
-                        Remove remove = 2;
-                        Update update = 3;
-                        Move move = 4;
-                    }
-
-                    message Add {
-                        string afterId = 1;
-                        repeated anytype.model.Block.Content.Dataview.Filter items = 2;
-                    }
-                    message Remove {
-                        repeated string ids = 1;
-                    }
-                    message Update {
-                        string id = 1;
-                        anytype.model.Block.Content.Dataview.Filter item = 2;
-                    }
-                    message Move {
-                        string afterId = 1;
-                        repeated string ids = 2;
-                    }
-                }
-
-                message Relation {
-                    oneof operation {
-                        Add add = 1;
-                        Remove remove = 2;
-                        Update update = 3;
-                        Move move = 4;
-                    }
-
-                    message Add {
-                        string afterId = 1;
-                        repeated anytype.model.Block.Content.Dataview.Relation items = 2;
-                    }
-                    message Remove {
-                        repeated string ids = 1;
-                    }
-                    message Update {
-                        string id = 1;
-                        anytype.model.Block.Content.Dataview.Relation item = 2;
-                    }
-                    message Move {
-                        string afterId = 1;
-                        repeated string ids = 2;
-                    }
-                }
-
-                message Sort {
-                    oneof operation {
-                        Add add = 1;
-                        Remove remove = 2;
-                        Update update = 3;
-                        Move move = 4;
-                    }
-
-                    message Add {
-                        string afterId = 1;
-                        repeated anytype.model.Block.Content.Dataview.Sort items = 2;
-                    }
-                    message Remove {
-                        repeated string ids = 1;
-                    }
-                    message Update {
-                        string id = 1;
-                        anytype.model.Block.Content.Dataview.Sort item = 2;
-                    }
-                    message Move {
-                        string afterId = 1;
-                        repeated string ids = 2;
-                    }
-                }
-            }
-
-            message ViewDelete {
-                string id = 1; // dataview block's id
-                string viewId = 2; // view id to remove
-            }
-
-
-            message ViewOrder {
-                string id = 1; // dataview block's id
-                repeated string viewIds = 2; // view ids in new order
-            }
-
-            message SourceSet {
-                string id = 1; // dataview block's id
-                repeated string source = 2;
-            }
-
-            message OldRelationDelete {
-                string id = 1; // dataview block's id
-                string relationKey = 2; // relation key to remove
-            }
-
-            // sent when the dataview relation has been changed or added
-            message OldRelationSet {
-                string id = 1; // dataview block's id
-                string relationKey = 2; // relation key to update
-                anytype.model.Relation relation = 3;
-            }
-
-            message RelationDelete {
-                string id = 1; // dataview block's id
-                repeated string relationKeys = 2; // relation key to remove
-            }
-
-            // sent when the dataview relation has been changed or added
-            message RelationSet {
-                string id = 1; // dataview block's id
-                repeated anytype.model.RelationLink relationLinks = 2; // relation id to update
-            }
-
-            message GroupOrderUpdate {
-                string id = 1; // dataview block's id
-                anytype.model.Block.Content.Dataview.GroupOrder groupOrder = 2;
-            }
-
-            message ObjectOrderUpdate {
-                string id = 1; // dataview block's id
-                string viewId = 2;
-                string groupId = 3;
-                repeated SliceChange sliceChanges = 4;
-            }
-
-            message SliceChange {
-                SliceOperation op = 1;
-                repeated string ids = 2;
-                string afterId = 3;
-            }
-
-            enum SliceOperation {
-                SliceOperationNone = 0; // not used
-                SliceOperationAdd = 1;
-                SliceOperationMove = 2;
-                SliceOperationRemove = 3;
-                SliceOperationReplace = 4;
-            }
-
-            message TargetObjectIdSet {
-                string id = 1; // dataview block's id
-                string targetObjectId = 2;
-            }
-
-            message IsCollectionSet {
-                string id = 1; // dataview block's id
-                bool value = 2;
-            }
-        }
+      }
+
+      message Account {
+        string id = 1;
+        string name = 2;
+        string imageHash = 3;
+        bool online = 4;
+        int64 lastPulled = 5;
+        int64 lastEdited = 6;
+        repeated Device devices = 7;
+      }
+
+      message Device {
+        string name = 1;
+        bool online = 2;
+        int64 lastPulled = 3;
+        int64 lastEdited = 4;
+      }
+
+      enum SyncStatus {
+        Unknown = 0;
+        Offline = 1;
+        Syncing = 2;
+        Synced = 3;
+        Failed = 4;
+        IncompatibleVersion = 5;
+        NetworkNeedsUpdate = 6;
+      }
+    }
+  }
+
+  message File {
+    message LimitReached {
+      string spaceId = 1;
+      string fileId = 2;
     }
 
-    message User {
-        message Block {
-
-            /**
-            *  Middleware to front end event message, that will be sent in this scenario:
-            * Precondition: user A opened a block
-            * 1. User B opens the same block
-            * 2. User A receives a message about p.1
-            */
-            message Join {
-                Account account = 1; // Account of the user, that opened a block
-            }
-
-            /**
-            *  Middleware to front end event message, that will be sent in this scenario:
-            * Precondition: user A and user B opened the same block
-            * 1. User B closes the block
-            * 2. User A receives a message about p.1
-            */
-            message Left {
-                Account account = 1; // Account of the user, that left the block
-            }
-
-            /**
-            * Middleware to front end event message, that will be sent in this scenario:
-            * Precondition: user A and user B opened the same block
-            * 1. User B sets cursor or selects a text region into a text block
-            * 2. User A receives a message about p.1
-            */
-            message TextRange {
-                Account account = 1; // Account of the user, that selected a text
-                string blockId = 2; // Id of the text block, that have a selection
-                anytype.model.Range range = 3; // Range of the selection
-            }
-
-            /**
-            * Middleware to front end event message, that will be sent in this scenario:
-            * Precondition: user A and user B opened the same block
-            * 1. User B selects some inner blocks
-            * 2. User A receives a message about p.1
-            */
-            message SelectRange {
-                Account account = 1; // Account of the user, that selected blocks
-                repeated string blockIdsArray = 2; // Ids of selected blocks.
-            }
-        }
+    message SpaceUsage {
+      uint64 bytesUsage = 1;
+      string spaceId = 2;
     }
 
-    message Ping {
-        int32 index = 1;
+    message LocalUsage { uint64 localBytesUsage = 1; }
+
+    message LimitUpdated { uint64 bytesLimit = 1; }
+  }
+
+  message Membership {
+    message Update { anytype.model.Membership data = 1; }
+  }
+
+  message Notification {
+    message Send { anytype.model.Notification notification = 1; }
+    message Update { anytype.model.Notification notification = 1; }
+  }
+
+  message Payload {
+    message Broadcast { string payload = 1; }
+  }
+
+  message Space {
+    message SyncStatus {
+      message Update {
+        string id = 1;
+        Status status = 2;
+        Network network = 3;
+        SyncError error = 4;
+        int64 syncingObjectsCounter = 5;
+        int64 notSyncedFilesCounter = 6;
+      }
+    }
+    enum Status {
+      Synced = 0;
+      Syncing = 1;
+      Error = 2;
+      Offline = 3;
+      NetworkNeedsUpdate = 4;
+    }
+    enum Network {
+      Anytype = 0;
+      SelfHost = 1;
+      LocalOnly = 2;
+    }
+    enum SyncError {
+      Null = 0;
+      StorageLimitExceed = 1;
+      IncompatibleVersion = 2;
+      NetworkError = 3;
     }
 
-    message Process {
-        message New {
-            Model.Process process = 1;
-        }
-        message Update {
-            Model.Process process = 1;
-        }
-        message Done {
-            Model.Process process = 1;
-        }
+    message AutoWidgetAdded {
+      string targetId = 1;
+      string targetName = 2; // pluralName (if exists) for types, fallback to
+                             // name. Special cases for "bin" and "favorites"
+      string widgetBlockId = 3;
+    }
+  }
+  message P2PStatus {
+    message Update {
+      string spaceId = 1;
+      Status status = 2;
+      int64 devicesCounter = 3;
     }
 
-    message Status {
-        message Thread {
-            Summary summary = 1;
-            Cafe cafe = 2;
-            repeated Account accounts = 3;
-
-            message Summary {
-                SyncStatus status = 1;
-            }
-
-            message Cafe {
-                SyncStatus status = 1;
-                int64 lastPulled = 2;
-                bool lastPushSucceed = 3;
-                PinStatus files = 4;
-
-                message PinStatus {
-                    int32 pinning = 1;
-                    int32 pinned = 2;
-                    int32 failed = 3;
-                    int64 updated = 4;
-                }
-            }
-
-            message Account {
-                string id = 1;
-                string name = 2;
-                string imageHash = 3;
-                bool online = 4;
-                int64 lastPulled = 5;
-                int64 lastEdited = 6;
-                repeated Device devices = 7;
-            }
-
-            message Device {
-                string name = 1;
-                bool online = 2;
-                int64 lastPulled = 3;
-                int64 lastEdited = 4;
-            }
-
-            enum SyncStatus {
-                Unknown = 0;
-                Offline = 1;
-                Syncing = 2;
-                Synced = 3;
-                Failed = 4;
-                IncompatibleVersion = 5;
-                NetworkNeedsUpdate = 6;
-            }
-        }
+    enum Status {
+      NotConnected = 0;
+      NotPossible = 1;
+      Connected = 2;
+      Restricted = 3; // only for ios for now, fallback to NotPossible if not
+                      // implemented on client
     }
+  }
 
-    message File {
-        message LimitReached {
-            string spaceId = 1;
-            string fileId = 2;
-        }
-
-        message SpaceUsage {
-            uint64 bytesUsage = 1;
-            string spaceId = 2;
-        }
-
-        message LocalUsage {
-            uint64 localBytesUsage = 1;
-        }
-
-        message LimitUpdated {
-            uint64 bytesLimit = 1;
-        }
+  message Import {
+    message Finish {
+      string rootCollectionID = 1;
+      int64 objectsCount = 2;
+      model.Import.Type importType = 3;
     }
-
-    message Membership {
-        message Update {
-            anytype.model.Membership data = 1;
-        }
-    }
-
-    message Notification {
-        message Send {
-           anytype.model.Notification notification = 1;
-        }
-        message Update {
-            anytype.model.Notification notification = 1;
-        }
-    }
-
-    message Payload {
-        message Broadcast {
-            string payload = 1;
-        }
-    }
-
-    message Space {
-        message SyncStatus {
-            message Update {
-                string id = 1;
-                Status status = 2;
-                Network network = 3;
-                SyncError error = 4;
-                int64 syncingObjectsCounter = 5;
-            }
-        }
-        enum Status {
-            Synced = 0;
-            Syncing = 1;
-            Error = 2;
-            Offline = 3;
-            NetworkNeedsUpdate = 4;
-        }
-        enum Network {
-            Anytype = 0;
-            SelfHost = 1;
-            LocalOnly = 2;
-        }
-        enum SyncError {
-            Null = 0;
-            StorageLimitExceed = 1;
-            IncompatibleVersion = 2;
-            NetworkError = 3;
-        }
-
-        message AutoWidgetAdded {
-            string targetId = 1;
-            string targetName = 2; // pluralName (if exists) for types, fallback to name. Special cases for "bin" and "favorites"
-            string widgetBlockId = 3;
-        }
-    }
-    message P2PStatus {
-        message Update {
-            string spaceId = 1;
-            Status status = 2;
-            int64 devicesCounter = 3;
-        }
-
-        enum Status {
-            NotConnected = 0;
-            NotPossible = 1;
-            Connected = 2;
-            Restricted = 3; // only for ios for now, fallback to NotPossible if not implemented on client
-        }
-    }
-
-    message Import {
-        message Finish {
-            string rootCollectionID = 1;
-            int64 objectsCount = 2;
-            model.Import.Type importType = 3;
-        }
-    }
-
+  }
 }
 
 message ResponseEvent {
-    repeated Event.Message messages = 1;
-    string contextId = 2;
-    string traceId = 4;
+  repeated Event.Message messages = 1;
+  string contextId = 2;
+  string traceId = 4;
 }
 
 message Model {
-    message Process {
-        string id = 1;
-        State state = 3;
-        Progress progress = 4;
-        string spaceId = 5;
+  message Process {
+    string id = 1;
+    State state = 3;
+    Progress progress = 4;
+    string spaceId = 5;
 
-        oneof message {
-            DropFiles dropFiles = 6;
-            Import import= 7;
-            Export export= 8;
-            SaveFile saveFile = 9;
-            Migration migration = 10;
-        }
-
-        string error = 11;
-        message DropFiles {}
-        message Import {}
-        message Export {}
-        message SaveFile {}
-        message Migration {}
-
-        enum State {
-            None = 0;
-            Running = 1;
-            Done = 2;
-            Canceled = 3;
-            Error = 4;
-        }
-
-        message Progress {
-            int64 total = 1;
-            int64 done = 2;
-            string message = 3;
-        }
+    oneof message {
+      DropFiles dropFiles = 6;
+      Import import = 7;
+      Export export = 8;
+      SaveFile saveFile = 9;
+      Migration migration = 10;
     }
+
+    string error = 11;
+    message DropFiles {}
+    message Import {}
+    message Export {}
+    message SaveFile {}
+    message Migration {}
+
+    enum State {
+      None = 0;
+      Running = 1;
+      Done = 2;
+      Canceled = 3;
+      Error = 4;
+    }
+
+    message Progress {
+      int64 total = 1;
+      int64 done = 2;
+      string message = 3;
+    }
+  }
 }

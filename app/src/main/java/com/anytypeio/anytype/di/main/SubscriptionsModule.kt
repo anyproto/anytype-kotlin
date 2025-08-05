@@ -14,8 +14,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
-import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
+import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -177,6 +177,27 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideChatPreviewContainer(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        dispatchers: AppCoroutineDispatchers,
+        repo: BlockRepository,
+        logger: Logger,
+        events: ChatEventChannel,
+        subscription: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ): ChatPreviewContainer = ChatPreviewContainer.Default(
+        repo = repo,
+        dispatchers = dispatchers,
+        scope = scope,
+        logger = logger,
+        events = events,
+        subscription = subscription,
+        awaitAccountStart = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun profileSubscriptionManager(
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
@@ -234,8 +255,8 @@ object SubscriptionsModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
-        chatPreviewContainer: ChatPreviewContainer,
-        pushKeyProvider: PushKeyProvider
+        pushKeyProvider: PushKeyProvider,
+        logger: Logger
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -244,25 +265,8 @@ object SubscriptionsModule {
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
-        chatPreviewContainer = chatPreviewContainer,
-        pushKeyProvider = pushKeyProvider
-    )
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideChatPreviewContainer(
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
-        dispatchers: AppCoroutineDispatchers,
-        repo: BlockRepository,
-        logger: Logger,
-        events: ChatEventChannel
-    ): ChatPreviewContainer = ChatPreviewContainer.Default(
-        repo = repo,
-        dispatchers = dispatchers,
-        scope = scope,
-        logger = logger,
-        events = events
+        pushKeyProvider = pushKeyProvider,
+        logger = logger
     )
 
     @JvmStatic

@@ -26,6 +26,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 @Composable
 fun VaultEmptyState(
     modifier: Modifier = Modifier,
+    textRes: Int = R.string.vault_empty_state_text,
+    showButton: Boolean = true,
     onCreateSpaceClicked: () -> Unit
 ) {
     Column(
@@ -44,7 +46,7 @@ fun VaultEmptyState(
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = stringResource(id = R.string.vault_empty_state_text),
+            text = stringResource(id = textRes),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
@@ -52,12 +54,14 @@ fun VaultEmptyState(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        ButtonSecondary(
-            onClick = onCreateSpaceClicked,
-            modifier = Modifier,
-            size = ButtonSize.Small,
-            text = stringResource(id = R.string.create_space),
-        )
+        if (showButton) {
+            ButtonSecondary(
+                onClick = onCreateSpaceClicked,
+                modifier = Modifier,
+                size = ButtonSize.Small,
+                text = stringResource(id = R.string.create_space),
+            )
+        }
     }
 }
 

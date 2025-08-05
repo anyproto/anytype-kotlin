@@ -665,7 +665,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onDocumentMenuClicked() }
             .launchIn(lifecycleScope)
 
-        binding.topToolbar.back
+        binding.topToolbar.backContainer
             .clicks()
             .throttleFirst()
             .onEach { vm.onBackButtonPressed() }

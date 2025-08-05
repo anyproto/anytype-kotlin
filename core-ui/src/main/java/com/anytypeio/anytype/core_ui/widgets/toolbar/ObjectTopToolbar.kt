@@ -13,8 +13,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTopToolbarBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.visible
 
 class ObjectTopToolbar @JvmOverloads constructor(
     context: Context,
@@ -26,6 +24,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
     )
 
     val status: StatusBadgeWidget get() = binding.statusBadge
+    val backContainer: View get() = binding.topBackButton
     val back: View get() = binding.ivTopBackButton
     val menu: View get() = binding.threeDotsButton
     val container: ViewGroup get() = binding.titleContainer

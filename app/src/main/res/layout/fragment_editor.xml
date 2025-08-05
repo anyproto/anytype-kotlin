@@ -53,7 +53,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -98,16 +98,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:visibility="visible" />
-
-        <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveHintWidget
-            android:id="@+id/scrollAndMoveHint"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
 
         <com.anytypeio.anytype.core_ui.widgets.ScrollAndMoveActionWidget
             android:id="@+id/scrollAndMoveBottomAction"

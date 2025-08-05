@@ -2208,7 +2208,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             binding.recycler.addOnScrollListener(scrollAndMoveStateListener)
             binding.multiSelectTopToolbar.gone()
 
-            showTopScrollAndMoveToolbar()
             binding.scrollAndMoveBottomAction.show()
 
             hideBlockActionPanel()
@@ -2242,7 +2241,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             removeItemDecoration(scrollAndMoveTargetHighlighter)
             removeOnScrollListener(scrollAndMoveStateListener)
         }
-        hideTopScrollAndMoveToolbar()
         binding.scrollAndMoveBottomAction.hide()
         binding.targeter.invisible()
         scrollAndMoveTargetDescriptor.clear()
@@ -2280,30 +2278,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 interpolator = DecelerateInterpolator()
                 start()
             }
-        }
-    }
-
-    private fun hideTopScrollAndMoveToolbar() {
-        ObjectAnimator.ofFloat(
-            binding.scrollAndMoveHint,
-            SELECT_BUTTON_ANIMATION_PROPERTY,
-            -requireContext().dimen(R.dimen.dp_48)
-        ).apply {
-            duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
-            interpolator = DecelerateInterpolator()
-            start()
-        }
-    }
-
-    private fun showTopScrollAndMoveToolbar() {
-        ObjectAnimator.ofFloat(
-            binding.scrollAndMoveHint,
-            SELECT_BUTTON_ANIMATION_PROPERTY,
-            0f
-        ).apply {
-            duration = SELECT_BUTTON_SHOW_ANIMATION_DURATION
-            interpolator = DecelerateInterpolator()
-            start()
         }
     }
 

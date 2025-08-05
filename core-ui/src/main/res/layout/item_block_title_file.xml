@@ -17,16 +17,16 @@
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/objectIconWidget"
-        android:layout_width="64dp"
+        android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_gravity="bottom"
-        android:layout_marginStart="28dp"
-        android:layout_marginTop="80dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="124dp"
         app:imageSize="80dp"
+        app:imageCornerRadius="@dimen/dp_8"
         android:clickable="true"
         android:focusable="true"
         tools:src="@drawable/ic_mime_pdf"
-        android:background="@drawable/bg_title_file_icon"
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

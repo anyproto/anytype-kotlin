@@ -473,13 +473,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
 
-        init {
-            icon.binding.ivImage.updateLayoutParams<LayoutParams> {
-                height = itemView.resources.getDimension(R.dimen.dp_80).toInt()
-                width = itemView.resources.getDimension(R.dimen.dp_64).toInt()
-            }
-        }
-
         fun bind(
             item: BlockView.Title.File,
         ) {

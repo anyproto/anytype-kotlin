@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -399,7 +400,10 @@ class ObjectIconWidget @JvmOverloads constructor(
                 val backgroundDrawable = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(context.color(R.color.shape_transparent_secondary))
-                    cornerRadius = getCornerRadiusInPx()
+                    cornerRadius = if (imageCornerRadius > 2)
+                        imageCornerRadius
+                    else
+                        getCornerRadiusInPx()
                 }
 
                 val layers = arrayOf(backgroundDrawable, iconDrawable)

@@ -1488,7 +1488,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     isChecked = content.isChecked == true,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = currentObject.objectIcon(builder = urlBuilder, objType = objType)
                 )
             }
             ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {

@@ -305,7 +305,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private fun setTask(isChecked: Boolean?) {
         with(binding) {
             ivCheckbox.visible()
-            ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)
+            ivCheckbox.background = context.drawable(R.drawable.ic_object_icon_task_selector)
             ivCheckbox.isActivated = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()

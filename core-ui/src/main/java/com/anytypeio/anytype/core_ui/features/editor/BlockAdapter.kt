@@ -1384,7 +1384,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Todo,
-                        onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked,
                         click = onClickListener
                     )

@@ -300,31 +300,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                         topMargin = if (item.hasCover) dimen(R.dimen.dp_148) else dimen(R.dimen.dp_120)
                     }
                 }
-                is ObjectIcon.Profile.Avatar -> {
-                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
-                        width = dimen(R.dimen.dp_120)
-                        height = dimen(R.dimen.dp_120)
-                    }
-                }
-                is ObjectIcon.Profile.Image -> {
-                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
-                        width = dimen(R.dimen.dp_120)
-                        height = dimen(R.dimen.dp_120)
-                    }
-                }
-                is ObjectIcon.Task -> {
-                    // Task icon uses default size from layout
-                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
-                        width = dimen(R.dimen.dp_96)
-                        height = dimen(R.dimen.dp_96)
-                    }
-                }
                 else -> {
-                    // Default size for other icon types
-                    icon.updateLayoutParams<FrameLayout.LayoutParams> {
-                        width = dimen(R.dimen.dp_96)
-                        height = dimen(R.dimen.dp_96)
-                    }
+                    //do nothing for other icon types
                 }
             }
         }
@@ -465,7 +442,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         fun bind(
             item: BlockView.Title.Todo,
-            onPageIconClicked: () -> Unit,
             onCoverClicked: () -> Unit,
             click: (ListenerType) -> Unit
         ) {
@@ -475,12 +451,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 click = click
             )
             setLocked(item.mode)
-            setTaskIcon(item.isChecked)
+            setIcon(item)
             applySearchHighlights(item)
-        }
-
-        private fun setTaskIcon(isChecked: Boolean) {
-            icon.setIcon(ObjectIcon.Task(isChecked))
         }
 
         private fun setLocked(mode: BlockView.Mode) {
@@ -500,11 +472,15 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     if (payload.isSearchHighlightChanged) {
                         applySearchHighlights(item)
                     }
-                    if (payload.isTitleCheckboxChanged) {
-                        setTaskIcon(item.isChecked)
+                    if (payload.isTitleCheckboxChanged || payload.isCoverChanged) {
+                        setIcon(item)
                     }
                 }
             }
+        }
+
+        private fun setIcon(item: BlockView.Title.Todo) {
+            icon.setIcon(item.icon)
         }
 
         override fun applyTextColor(item: BlockView.Title) {

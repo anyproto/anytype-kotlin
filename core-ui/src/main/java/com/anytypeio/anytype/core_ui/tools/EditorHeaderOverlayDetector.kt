@@ -32,18 +32,12 @@ class EditorHeaderOverlayDetector(
                         val root = holder.binding.root
                         val title = holder.binding.title
                         val cover = holder.binding.cover
-                        val iconWidget = holder.binding.objectIconWidget
-                        onHeaderOverlaid = when {
-                            iconWidget.isVisible -> {
-                                if (cover.isVisible) {
-                                    (iconWidget.top + root.top >= threshold + thresholdPadding)
-                                } else {
-                                    (iconWidget.top + root.top >= (threshold / 2) + thresholdPadding)
-                                }
-                            }
-                            else -> {
-                                root.top + title.top >= threshold + thresholdPadding
-                            }
+                        onHeaderOverlaid = if (cover.isVisible) {
+                            // When cover is visible, check if title top is below threshold
+                            (root.top + title.top >= threshold + thresholdPadding)
+                        } else {
+                            // When cover is not visible, check if title top is below half threshold
+                            (root.top + title.top >= (threshold / 2) + thresholdPadding)
                         }
                     }
                     is Title.Todo -> {

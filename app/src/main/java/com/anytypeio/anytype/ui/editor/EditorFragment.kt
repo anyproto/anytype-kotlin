@@ -869,7 +869,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun setupEdgeToEdge() {
-        // Start with transparent status bar for edge-to-edge experience
+        // Enable edge-to-edge display with transparent status bar
         requireActivity().window.apply {
             statusBarColor = android.graphics.Color.TRANSPARENT
         }
@@ -877,13 +877,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         // Apply window insets to handle edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
             
-            // Apply top padding to top toolbar for status bar
+            // Extend topToolbar to include status bar area
             binding.topToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                topMargin = systemBars.top
+                height = dimen(R.dimen.default_toolbar_height) + statusBars.top
             }
-//
+            // Add top padding to topToolbar content to push it below status bar
+            binding.topToolbar.setPadding(
+                binding.topToolbar.paddingLeft,
+                statusBars.top,
+                binding.topToolbar.paddingRight,
+                binding.topToolbar.paddingBottom
+            )
+            
 //            // Apply top padding to search toolbar for status bar
 //            binding.searchToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
 //                topMargin = systemBars.top

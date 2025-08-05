@@ -52,7 +52,6 @@
                 app:emojiSize="18dp"
                 app:checkboxSize="18dp"
                 app:initialTextSize="11sp"
-                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView

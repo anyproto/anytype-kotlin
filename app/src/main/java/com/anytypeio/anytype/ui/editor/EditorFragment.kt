@@ -869,11 +869,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun setupEdgeToEdge() {
-        // Enable edge-to-edge display with transparent status bar
-        requireActivity().window.apply {
-            statusBarColor = android.graphics.Color.TRANSPARENT
-        }
-        
+
         // Apply window insets to handle edge-to-edge display
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -1683,10 +1679,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (title != null) {
             when (title) {
                 is BlockView.Title.Basic -> {
-//                    resetTopToolbarTitle(
-//                        text = title.text,
-//                        icon = title.icon,
-//                    )
+                    resetTopToolbarTitle(
+                        text = title.text,
+                        icon = title.icon
+                    )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
                         val pos = mng.findFirstVisibleItemPosition()
@@ -1700,8 +1696,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Profile -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1716,8 +1711,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1735,27 +1729,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
+    private fun resetTopToolbarTitle(text: String?, icon: ObjectIcon) {
         binding.topToolbar.title.text = text
-        val iconView = binding.topToolbar.icon
-        when {
-            text.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-            !emoji.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Emoji(emoji))
-                iconView.visible()
-            }
-            !image.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Image(image))
-                iconView.visible()
-            }
-            else -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-        }
+        binding.topToolbar.icon.setIcon(icon)
     }
 
     open fun render(state: ControlPanelState) {

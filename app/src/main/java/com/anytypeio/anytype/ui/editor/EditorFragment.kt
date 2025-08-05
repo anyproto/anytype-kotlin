@@ -975,14 +975,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun updateStatusBarForHeaderOverlay(isHeaderOverlaid: Boolean) {
-        requireActivity().window.apply {
-            if (isHeaderOverlaid) {
-                // When header is not overlaid (scrolled up), show transparent status bar
-                statusBarColor = android.graphics.Color.TRANSPARENT
-            } else {
-                // When header is overlaid (visible), show status bar with background
-                statusBarColor = requireContext().color(R.color.background_primary)
-            }
+        // Control topToolbar background visibility based on header overlay state
+        if (isHeaderOverlaid) {
+            // When header is not overlaid (scrolled up), make topToolbar transparent
+            binding.topToolbar.setBackgroundColor(android.graphics.Color.TRANSPARENT)
+        } else {
+            // When header is overlaid (visible), show topToolbar with background
+            binding.topToolbar.setBackgroundColor(requireContext().color(R.color.background_primary))
         }
         
         // Update status bar icon color based on current state and theme

@@ -7,20 +7,14 @@ import android.view.View
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import android.widget.TextView
-
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import coil3.ImageLoader
 import coil3.imageLoader
 import coil3.load
 import coil3.request.ImageRequest
-
 import coil3.request.crossfade
-import coil3.request.transformations
 import coil3.target.Target
 import coil3.video.VideoFrameDecoder
 import coil3.video.videoFrameMillis
@@ -44,17 +38,12 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
-
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.StyledPlayerView
 import timber.log.Timber
 
 sealed class Title(view: View) : BlockViewHolder(view), TextHolder {

@@ -66,7 +66,7 @@ fun ChooseSpaceTypeScreen(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 8.dp))
 
-            if(BuildConfig.SHOW_CHATS) {
+            if (BuildConfig.SHOW_CHATS) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

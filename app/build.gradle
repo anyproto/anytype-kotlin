@@ -117,6 +117,7 @@ android {
                 groups = "anytype-q&a, android-team, product-review, nightly-ops"
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
+            buildConfigField "boolean", "SHOW_CHATS", "true"
         }
 
         applicationVariants.all {

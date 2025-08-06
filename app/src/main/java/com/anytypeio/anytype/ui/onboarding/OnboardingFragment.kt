@@ -60,7 +60,6 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -110,7 +109,6 @@ import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import timber.log.Timber
-import androidx.lifecycle.compose.currentStateAsState
 
 class OnboardingFragment : Fragment() {
 

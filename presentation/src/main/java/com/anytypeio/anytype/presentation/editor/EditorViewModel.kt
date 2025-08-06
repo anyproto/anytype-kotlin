@@ -6233,15 +6233,7 @@ class EditorViewModel(
     private var jobMentionFilter: Job? = null
 
     fun onStartMentionWidgetClicked() {
-        val focus = orchestrator.stores.focus.current().targetOrNull()
-        val targetId = focus.orEmpty()
-        if (targetId.isNotEmpty()) {
-            views.singleOrNull { it.id == targetId }?.let {
-                onUndoRedoActionClicked(target = it)
-            }
-        } else {
-            Timber.w("Failed to handle toolbar style click. Unknown focus for style toolbar: $focus")
-        }
+        onUndoRedoActionClicked()
     }
 
     fun onMentionEvent(mentionEvent: MentionEvent) {
@@ -6864,24 +6856,14 @@ class EditorViewModel(
         }
     }
 
-    fun onUndoRedoActionClicked(target: BlockView? = null) {
-        val targetId = target?.id
-        val targetBlock = blocks.find { it.id == targetId }
-        if (targetBlock != null) {
-            when (val content = targetBlock.content) {
-                is Content.Text -> {
-                    viewModelScope.launch {
-                        orchestrator.stores.focus.update(Editor.Focus.empty())
-                        renderCommand.send(Unit)
-                    }
-                }
-                else -> {
-                    Timber.e("Unsupported content type for undo/redo action: ${content::class.java.simpleName}")
-                    sendToast("Unsupported content type for undo/redo action")
-                }
-            }
-            isUndoRedoToolbarIsVisible.value = true
-        } else {
+    fun onUndoRedoActionClicked() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
+        dispatch(Command.CloseKeyboard)
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            views.onEach { if (it is Focusable) it.isFocused = false }
+            renderCommand.send(Unit)
+            delay(300L)
             isUndoRedoToolbarIsVisible.value = true
         }
     }

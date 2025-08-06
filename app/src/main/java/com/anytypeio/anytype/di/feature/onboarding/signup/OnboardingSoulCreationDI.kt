@@ -53,49 +53,51 @@ interface OnboardingSoulCreationComponent {
 @Module
 object OnboardingSoulCreationModule {
 
-    @JvmStatic
-    @Provides
-    @SoulCreationScreenScope
-    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @SoulCreationScreenScope
-    fun provideCreateAccountUseCase(
-        authRepository: AuthRepository,
-        configStorage: ConfigStorage,
-        initialParamsProvider: InitialParamsProvider,
-        awaitAccountStartManager: AwaitAccountStartManager,
-        spaceManager: SpaceManager,
-        dispatchers: AppCoroutineDispatchers
-    ): CreateAccount = CreateAccount(
-        repository = authRepository,
-        configStorage = configStorage,
-        initialParamsProvider = initialParamsProvider,
-        dispatcher = dispatchers,
-        awaitAccountStartManager = awaitAccountStartManager,
-        spaceManager = spaceManager
-    )
-
-    @JvmStatic
-    @Provides
-    @SoulCreationScreenScope
-    fun provideSetupWalletUseCase(
-        authRepository: AuthRepository
-    ): SetupWallet = SetupWallet(
-        repository = authRepository
-    )
-
-    @JvmStatic
-    @Provides
-    @SoulCreationScreenScope
-    fun provideSetupSkipUseCase(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ) = ImportGetStartedUseCase(
-        repo = repository,
-        dispatchers = dispatchers
-    )
+//    @JvmStatic
+//    @Provides
+//    @SoulCreationScreenScope
+//    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+//
+//    @JvmStatic
+//    @Provides
+//    @SoulCreationScreenScope
+//    fun provideCreateAccountUseCase(
+//        authRepository: AuthRepository,
+//        configStorage: ConfigStorage,
+//        initialParamsProvider: InitialParamsProvider,
+//        awaitAccountStartManager: AwaitAccountStartManager,
+//        spaceManager: SpaceManager,
+//        dispatchers: AppCoroutineDispatchers
+//    ): CreateAccount = CreateAccount(
+//        repository = authRepository,
+//        configStorage = configStorage,
+//        initialParamsProvider = initialParamsProvider,
+//        dispatcher = dispatchers,
+//        awaitAccountStartManager = awaitAccountStartManager,
+//        spaceManager = spaceManager
+//    )
+//
+//    @JvmStatic
+//    @Provides
+//    @SoulCreationScreenScope
+//    fun provideSetupWalletUseCase(
+//        authRepository: AuthRepository,
+//        dispatchers: AppCoroutineDispatchers
+//    ): SetupWallet = SetupWallet(
+//        repository = authRepository,
+//        dispatchers = dispatchers
+//    )
+//
+//    @JvmStatic
+//    @Provides
+//    @SoulCreationScreenScope
+//    fun provideSetupSkipUseCase(
+//        repository: BlockRepository,
+//        dispatchers: AppCoroutineDispatchers
+//    ) = ImportGetStartedUseCase(
+//        repo = repository,
+//        dispatchers = dispatchers
+//    )
 
     @JvmStatic
     @Provides

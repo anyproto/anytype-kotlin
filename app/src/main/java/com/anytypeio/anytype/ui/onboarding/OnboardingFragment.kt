@@ -61,6 +61,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -68,7 +69,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navArgument
-import com.anytypeio.anytype.BuildConfig.USE_EDGE_TO_EDGE
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -91,7 +91,7 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicVi
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
@@ -110,6 +110,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import timber.log.Timber
+import androidx.lifecycle.compose.currentStateAsState
 
 class OnboardingFragment : Fragment() {
 
@@ -136,7 +137,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -152,7 +153,7 @@ class OnboardingFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)  {
+        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)  {
             runCatching {
                 WindowCompat
                     .getInsetsController(
@@ -196,7 +197,7 @@ class OnboardingFragment : Fragment() {
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                            if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                                 Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
                             else
                                 Modifier
@@ -210,7 +211,7 @@ class OnboardingFragment : Fragment() {
                         backButtonCallback = signUpBackButtonCallback
                     )
                     PagerIndicator(
-                        pageCount = OnboardingPage.values().filter { it.visible }.size,
+                        pageCount = OnboardingPage.entries.filter { it.visible }.size,
                         page = currentPage,
                         onBackClick = {
                             signUpBackButtonCallback.value?.invoke()
@@ -224,7 +225,7 @@ class OnboardingFragment : Fragment() {
                 }
             }
             DisposableEffect(
-                viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.DESTROYED)
+                viewLifecycleOwner.lifecycle.currentStateAsState().value.isAtLeast(Lifecycle.State.DESTROYED)
             ) {
                 onDispose {
                     signUpBackButtonCallback.value = null
@@ -247,7 +248,7 @@ class OnboardingFragment : Fragment() {
     }
 
     private fun onApplyWindowRootInsets(view: View) {
-        if ( USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+        if ( Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
             return
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -720,7 +721,8 @@ class OnboardingFragment : Fragment() {
     private fun Auth(navController: NavHostController) {
         val component = componentManager().onboardingStartComponent
         val vm = daggerViewModel { component.get().getViewModel() }
-        AuthScreenWrapper(vm = vm)
+        AuthScreen(vm = vm)
+        ErrorScreen(vm = vm)
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
                 when (effect) {
@@ -769,6 +771,48 @@ class OnboardingFragment : Fragment() {
         }
         DisposableEffect(Unit) {
             onDispose { component.release() }
+        }
+    }
+
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun ErrorScreen(vm: OnboardingStartViewModel) {
+        when (val errorState = vm.errorState.collectAsStateWithLifecycle().value) {
+            OnboardingStartViewModel.ErrorState.Hidden -> {
+                // No dialog to show
+            }
+            is OnboardingStartViewModel.ErrorState.Generic -> {
+                BaseAlertDialog(
+                    dialogText = errorState.message,
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            is OnboardingStartViewModel.ErrorState.NetworkError -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.error_network_error),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            is OnboardingStartViewModel.ErrorState.OfflineDevice -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.error_offline_device),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            is OnboardingStartViewModel.ErrorState.WalletSetupError -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.error_wallet_setup),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
         }
     }
 

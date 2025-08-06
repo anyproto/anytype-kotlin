@@ -1127,7 +1127,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
     <string name="onboarding_enter_my_vault">Next</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">I already have the key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1766,6 +1766,9 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
     <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
 

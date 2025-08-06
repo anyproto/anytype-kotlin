@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -65,35 +66,37 @@ fun ChooseSpaceTypeScreen(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 8.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-                    .noRippleThrottledClickable {
-                        onCreateChatClicked()
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_space_type_chat),
-                    contentDescription = "Create Chat",
-                    modifier = Modifier.size(56.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = stringResource(id = R.string.vault_create_chat),
-                        style = Title1,
-                        color = colorResource(id = R.color.text_primary)
+            if (BuildConfig.SHOW_CHATS) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp)
+                        .padding(horizontal = 16.dp)
+                        .noRippleThrottledClickable {
+                            onCreateChatClicked()
+                        },
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_space_type_chat),
+                        contentDescription = "Create Chat",
+                        modifier = Modifier.size(56.dp)
                     )
-                    Text(
-                        text = stringResource(id = R.string.vault_create_chat_description),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_secondary),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Column {
+                        Text(
+                            text = stringResource(id = R.string.vault_create_chat),
+                            style = Title1,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Text(
+                            text = stringResource(id = R.string.vault_create_chat_description),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_secondary),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
 

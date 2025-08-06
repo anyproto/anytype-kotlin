@@ -13,6 +13,7 @@
         android:contentDescription="@string/content_description_document_cover"
         android:scaleType="centerCrop"
         android:visibility="gone"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

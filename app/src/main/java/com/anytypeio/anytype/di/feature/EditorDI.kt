@@ -701,24 +701,6 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideUndoUseCase(
-        repo: BlockRepository
-    ): Undo = Undo(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideRedoUseCase(
-        repo: BlockRepository
-    ): Redo = Redo(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideCreateObjectUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers

@@ -45,7 +45,7 @@ class BlockToolbarWidget @JvmOverloads constructor(
     )
     private val done = binding.done
     private val blockActions = binding.btnBlockActions
-    private val blockMentionButton = binding.blockMentionButton
+    private val blockUndoRedoButton = binding.blockMentionButton
     private val slashWidgetButton = binding.slashWidgetButton
     private val changeStyleButton = binding.changeStyleButton
 
@@ -57,7 +57,7 @@ class BlockToolbarWidget @JvmOverloads constructor(
                 State.Any -> {
                     done.visible()
                     blockActions.visible()
-                    blockMentionButton.visible()
+                    blockUndoRedoButton.visible()
                     slashWidgetButton.visible()
                     changeStyleButton.visible()
                 }
@@ -65,13 +65,13 @@ class BlockToolbarWidget @JvmOverloads constructor(
                     done.visible()
                     changeStyleButton.visible()
                     blockActions.gone()
-                    blockMentionButton.gone()
+                    blockUndoRedoButton.gone()
                     slashWidgetButton.gone()
                 }
                 State.Cell -> {
                     done.visible()
                     blockActions.visible()
-                    blockMentionButton.visible()
+                    blockUndoRedoButton.visible()
                     slashWidgetButton.gone()
                     changeStyleButton.gone()
                 }
@@ -79,7 +79,7 @@ class BlockToolbarWidget @JvmOverloads constructor(
                     done.visible()
                     changeStyleButton.invisible()
                     blockActions.invisible()
-                    blockMentionButton.invisible()
+                    blockUndoRedoButton.invisible()
                     slashWidgetButton.invisible()
                 }
             }
@@ -93,5 +93,5 @@ class BlockToolbarWidget @JvmOverloads constructor(
     fun blockActionsClick() = blockActions.clicks().throttleFirst()
     fun openSlashWidgetClicks() = slashWidgetButton.clicks().throttleFirst()
     fun changeStyleClicks() = changeStyleButton.clicks().throttleFirst()
-    fun mentionClicks() = blockMentionButton.clicks().throttleFirst()
+    fun undoRedoClicks() = blockUndoRedoButton.clicks().throttleFirst()
 }

@@ -10,16 +10,20 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -66,6 +70,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -104,11 +109,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.StubObjectType
-import com.anytypeio.anytype.core_models.primitives.ParsedProperties
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
@@ -2535,7 +2535,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
         undo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Undo.Result.Success(
                     Payload(
                         context = root,
@@ -2554,7 +2554,7 @@ open class EditorViewModelTest {
         vm.onActionUndoClicked()
 
         runBlockingTest {
-            verify(undo, times(1)).invoke(
+            verify(undo, times(1)).async(
                 params = eq(
                     Undo.Params(context = root)
                 )
@@ -2592,7 +2592,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
         redo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Redo.Result.Success(
                     Payload(
                         context = root,
@@ -2611,7 +2611,7 @@ open class EditorViewModelTest {
         vm.onActionRedoClicked()
 
         runBlockingTest {
-            verify(redo, times(1)).invoke(
+            verify(redo, times(1)).async(
                 params = eq(
                     Redo.Params(context = root)
                 )

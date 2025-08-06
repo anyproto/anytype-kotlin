@@ -12,6 +12,7 @@
         android:layout_height="@dimen/default_cover_height"
         android:contentDescription="@string/content_description_document_cover"
         android:visibility="gone"
+        android:scaleType="centerCrop"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

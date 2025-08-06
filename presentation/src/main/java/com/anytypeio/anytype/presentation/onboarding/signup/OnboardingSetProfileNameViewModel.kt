@@ -97,7 +97,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             } else {
                 setObjectDetails.async(
                     SetObjectDetails.Params(
-                        ctx = profileId, details = mapOf(Relations.NAME to name)
+                        ctx = profileId, details = mapOf(Relations.NAME to name.trim())
                     )
                 ).fold(
                     onFailure = {

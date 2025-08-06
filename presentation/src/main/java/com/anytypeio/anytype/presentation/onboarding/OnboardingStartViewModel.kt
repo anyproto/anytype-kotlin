@@ -87,7 +87,7 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     private fun proceedWithCreatingWallet() {
-        walletSetupJob?.cancel()
+        if (walletSetupJob?.isActive == true) walletSetupJob?.cancel()
         walletSetupJob = viewModelScope.launch {
             isLoadingState.value = true
             val params = SetupWallet.Params(
@@ -112,7 +112,7 @@ class OnboardingStartViewModel @Inject constructor(
         Timber.d("Proceeding with creating account")
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(
-            name = "",
+            name = DEFAULT_ACCOUNT_NAME,
             iconGradientValue = spaceGradientProvider.randomId()
         )
         createAccount.async(params = params).fold(
@@ -255,6 +255,10 @@ class OnboardingStartViewModel @Inject constructor(
         data object ConfigFileNotFound : ErrorState()
         data object ConfigFileInvalid : ErrorState()
         data object ConfigFileNetworkIdMismatch : ErrorState()
+    }
+
+    companion object {
+        const val DEFAULT_ACCOUNT_NAME = ""
     }
 
     class Factory @Inject constructor(

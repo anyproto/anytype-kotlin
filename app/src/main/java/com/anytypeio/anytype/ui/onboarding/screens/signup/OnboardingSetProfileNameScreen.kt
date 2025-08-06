@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -104,7 +103,7 @@ private fun SetProfileNameScreen(
         focusRequester.requestFocus()
     }
 
-    fun validateAndSubmit() {
+    fun submit() {
         isError = false
         focusManager.clearFocus()
         keyboardController?.hide()
@@ -167,7 +166,7 @@ private fun SetProfileNameScreen(
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {
-                    validateAndSubmit()
+                    submit()
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -186,7 +185,7 @@ private fun SetProfileNameScreen(
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_button_continue),
             onClick = {
-                validateAndSubmit()
+                submit()
             },
             size = ButtonSize.Large,
             modifier = Modifier

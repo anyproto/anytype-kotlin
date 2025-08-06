@@ -789,17 +789,17 @@ class OnboardingFragment : Fragment() {
                     onDismissRequest = vm::onErrorDismissed
                 )
             }
-            is OnboardingStartViewModel.ErrorState.NetworkError -> {
+            OnboardingStartViewModel.ErrorState.NetworkError -> {
                 BaseAlertDialog(
-                    dialogText = stringResource(id = R.string.error_network_error),
+                    dialogText = stringResource(id = R.string.onboarding_error_network_error),
                     buttonText = stringResource(id = R.string.button_ok),
                     onButtonClick = vm::onErrorDismissed,
                     onDismissRequest = vm::onErrorDismissed
                 )
             }
-            is OnboardingStartViewModel.ErrorState.OfflineDevice -> {
+            OnboardingStartViewModel.ErrorState.OfflineDevice -> {
                 BaseAlertDialog(
-                    dialogText = stringResource(id = R.string.error_offline_device),
+                    dialogText = stringResource(id = R.string.onboarding_error_offline_device),
                     buttonText = stringResource(id = R.string.button_ok),
                     onButtonClick = vm::onErrorDismissed,
                     onDismissRequest = vm::onErrorDismissed
@@ -808,6 +808,78 @@ class OnboardingFragment : Fragment() {
             is OnboardingStartViewModel.ErrorState.WalletSetupError -> {
                 BaseAlertDialog(
                     dialogText = stringResource(id = R.string.error_wallet_setup),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.AccountCreatedButFailedToStartNode -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_account_created_but_failed_to_start_node),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.AccountCreatedButFailedToSetName -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_account_created_but_failed_to_set_name),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.FailedToStopRunningNode -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_failed_to_stop_running_node),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.FailedToWriteConfig -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_failed_to_write_config),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.FailedToCreateLocalRepo -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_failed_to_create_local_repo),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.AccountCreationCanceled -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_account_creation_canceled),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.ConfigFileNotFound -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_config_file_not_found),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.ConfigFileInvalid -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_config_file_invalid),
+                    buttonText = stringResource(id = R.string.button_ok),
+                    onButtonClick = vm::onErrorDismissed,
+                    onDismissRequest = vm::onErrorDismissed
+                )
+            }
+            OnboardingStartViewModel.ErrorState.ConfigFileNetworkIdMismatch -> {
+                BaseAlertDialog(
+                    dialogText = stringResource(id = R.string.onboarding_error_config_file_network_id_mismatch),
                     buttonText = stringResource(id = R.string.button_ok),
                     onButtonClick = vm::onErrorDismissed,
                     onDismissRequest = vm::onErrorDismissed

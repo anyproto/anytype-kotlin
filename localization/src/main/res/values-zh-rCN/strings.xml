@@ -1006,7 +1006,7 @@
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
     <string name="onboarding_new_vault_button_text">我是新手</string>
     <string name="onboarding_enter_my_vault">下一步</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">我有密钥</string>
     <string name="onboarding_get_my_key_button_text">获得我的密钥</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
@@ -1503,6 +1503,9 @@
     <string name="error_login_select_vault_error">选择库时出错</string>
     <string name="error_login_account_deleted_error">此账号已被删除。请尝试使用另一个账号或者创建一个新的。</string>
     <string name="error_login_account_need_update_error">无法获取账户信息。请将 Anytype 更新至最新版本。</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
     <string name="sort_empty_values_desc">显示空白值</string>
@@ -1793,6 +1796,18 @@
     <string name="space_properties_screen_section_system_types">系统属性</string>
     <string name="space_properties_screen_menu_move_to_bin">移到回收站</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">创建账户出错：缺少空间</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>

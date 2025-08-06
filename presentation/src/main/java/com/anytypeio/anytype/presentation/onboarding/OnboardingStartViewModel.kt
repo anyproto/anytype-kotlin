@@ -102,9 +102,7 @@ class OnboardingStartViewModel @Inject constructor(
                 onFailure = {
                     Timber.e(it, "Error while setting up wallet")
                     isLoadingState.value = false
-                    errorState.value = ErrorState.WalletSetupError(
-                        message = it.message ?: "Unknown error while setting up wallet"
-                    )
+                    errorState.value = ErrorState.WalletSetupError
                 }
             )
         }
@@ -160,14 +158,19 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithUpdatingSpaceName(spaceId: Id) {
+        val defaultFirstSpaceName = stringResourceProvider.getInitialSpaceName()
         setSpaceDetails.async(
             SetSpaceDetails.Params(
                 space = SpaceId(spaceId),
-                details = mapOf(Relations.NAME to stringResourceProvider.getInitialSpaceName())
+                details = mapOf(Relations.NAME to defaultFirstSpaceName)
             )
         ).fold(
             onFailure = {
                 Timber.e(it, "Error while setting space details")
+                isLoadingState.value = false
+                errorState.value = ErrorState.Generic(
+                    message = it.message ?: "Unknown error while setting space details"
+                )
             }
         )
     }
@@ -239,7 +242,7 @@ class OnboardingStartViewModel @Inject constructor(
 
     sealed class ErrorState {
         data object Hidden : ErrorState()
-        data class WalletSetupError(val message: String) : ErrorState()
+        data object WalletSetupError : ErrorState()
         data class Generic(val message: String) : ErrorState()
         data object NetworkError : ErrorState()
         data object OfflineDevice : ErrorState()

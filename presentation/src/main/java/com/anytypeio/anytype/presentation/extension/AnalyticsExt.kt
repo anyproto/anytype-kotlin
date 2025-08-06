@@ -762,7 +762,7 @@ suspend fun Analytics.sendAnalyticsUndoEvent(type: Boolean) {
         name = EventsDictionary.objectUndo,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to if (type) "true" else "false"
+                EventsPropertiesKey.type to type
             )
         )
     )
@@ -774,7 +774,7 @@ suspend fun Analytics.sendAnalyticsRedoEvent(type: Boolean) {
         name = EventsDictionary.objectRedo,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to if (type) "true" else "false"
+                EventsPropertiesKey.type to type
             )
         )
     )

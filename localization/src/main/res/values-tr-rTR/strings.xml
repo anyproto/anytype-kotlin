@@ -1008,7 +1008,7 @@
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Burada yeniyim</string>
     <string name="onboarding_enter_my_vault">Sonraki</string>
-    <string name="onboarding_have_key_button_text">Zaten bir anahtarım var</string>
+    <string name="onboarding_have_key_button_text">Anahtara zaten sahibim</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
     <string name="onboarding_invite_code_description">Eğer sahip değilseniz anytype.io adresine gidin\n ve bekleme listesine kaydolun.</string>
@@ -1517,6 +1517,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="error_login_select_vault_error">Kasa hatasını seçin.</string>
     <string name="error_login_account_deleted_error">Bu hesap silinmiştir. Başka bir hesap kullanmayı deneyin veya yeni bir hesap oluşturun.</string>
     <string name="error_login_account_need_update_error">Hesap bilgileri alınamadı. Lütfen Anytype\'ı en son sürüme güncelleyin.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Şununla ilgili: "</string>
     <string name="global_search_no_related_objects_found">İlgili nesne bulunamadı</string>
     <string name="sort_empty_values_desc">Boş değerleri göster</string>
@@ -1810,6 +1813,18 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_properties_screen_section_system_types">Sistem Özellikleri</string>
     <string name="space_properties_screen_menu_move_to_bin">Çöpe taşı</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Hesap oluşturulurken hata oluştu: alan eksik</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Adınızı Ekleyin</string>
     <string name="onboarding_soul_creation_description">Sadece bir şeyler paylaştığın kişiler tarafından görülür. Bu isimler için merkezi bir kayıt defteri yoktur.</string>
     <string name="onboarding_email_add_title">Gelişmelerden haberdar olun</string>

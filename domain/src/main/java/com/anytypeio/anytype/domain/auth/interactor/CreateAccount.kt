@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -22,9 +23,9 @@ open class CreateAccount @Inject constructor(
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val spaceManager: SpaceManager,
     dispatcher: AppCoroutineDispatchers
-) : ResultInteractor<CreateAccount.Params, Account>(dispatcher.io) {
+) : ResultInteractor<CreateAccount.Params, CreateAccount.Result>(dispatcher.io) {
 
-    override suspend fun doWork(params: Params): Account {
+    override suspend fun doWork(params: Params): CreateAccount.Result {
         repository.setInitialParams(initialParamsProvider.toCommand())
 
         val networkMode = repository.getNetworkMode()
@@ -44,7 +45,7 @@ open class CreateAccount @Inject constructor(
         configStorage.set(setup.config)
         spaceManager.set(setup.config.space)
         awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
-        return setup.account
+        return Result(account = setup.account, config = setup.config)
     }
 
     /**
@@ -56,5 +57,10 @@ open class CreateAccount @Inject constructor(
         val name: String,
         val avatarPath: String? = null,
         val iconGradientValue: Int
+    )
+
+    data class Result(
+        val account: Account,
+        val config: Config
     )
 }

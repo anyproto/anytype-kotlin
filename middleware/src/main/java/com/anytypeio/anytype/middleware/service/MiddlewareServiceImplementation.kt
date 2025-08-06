@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.service
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationFailedException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
@@ -26,6 +27,33 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Account.Create.Response.Error.Code.NULL) {
             when (error.code) {
+                Rpc.Account.Create.Response.Error.Code.ACCOUNT_CREATED_BUT_FAILED_TO_START_NODE -> {
+                    throw CreateAccountException.AccountCreatedButFailedToStartNode
+                }
+                Rpc.Account.Create.Response.Error.Code.ACCOUNT_CREATED_BUT_FAILED_TO_SET_NAME -> {
+                    throw CreateAccountException.AccountCreatedButFailedToSetName
+                }
+                Rpc.Account.Create.Response.Error.Code.FAILED_TO_STOP_RUNNING_NODE -> {
+                    throw CreateAccountException.FailedToStopRunningNode
+                }
+                Rpc.Account.Create.Response.Error.Code.FAILED_TO_WRITE_CONFIG -> {
+                    throw CreateAccountException.FailedToWriteConfig
+                }
+                Rpc.Account.Create.Response.Error.Code.FAILED_TO_CREATE_LOCAL_REPO -> {
+                    throw CreateAccountException.FailedToCreateLocalRepo
+                }
+                Rpc.Account.Create.Response.Error.Code.ACCOUNT_CREATION_IS_CANCELED -> {
+                    throw CreateAccountException.AccountCreationCanceled
+                }
+                Rpc.Account.Create.Response.Error.Code.CONFIG_FILE_NOT_FOUND -> {
+                    throw CreateAccountException.ConfigFileNotFound
+                }
+                Rpc.Account.Create.Response.Error.Code.CONFIG_FILE_INVALID -> {
+                    throw CreateAccountException.ConfigFileInvalid
+                }
+                Rpc.Account.Create.Response.Error.Code.CONFIG_FILE_NETWORK_ID_MISMATCH -> {
+                    throw CreateAccountException.ConfigFileNetworkIdMismatch
+                }
                 else -> throw Exception(error.description)
             }
         } else {

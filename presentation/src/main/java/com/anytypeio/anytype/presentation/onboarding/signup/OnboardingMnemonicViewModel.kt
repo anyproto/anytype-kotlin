@@ -51,39 +51,27 @@ class OnboardingMnemonicViewModel @Inject constructor(
         sendClickAnalytics(ClickOnboardingButton.SHOW_AND_COPY)
     }
 
-    fun onCheckLaterClicked(space: Id, startingObject: Id?) {
+    fun onCheckLaterClicked(space: Id, startingObject: Id?, profileId: Id) {
         sendClickAnalytics(ClickOnboardingButton.CHECK_LATER)
         viewModelScope.launch {
-            navigateNextStep(space, startingObject)
+            navigateNextStep(space, startingObject, profileId)
         }
     }
 
-    fun handleAppEntryClick(space: Id, startingObject: Id?) {
+    fun handleAppEntryClick(space: Id, startingObject: Id?, profileId: Id) {
         viewModelScope.launch {
-            navigateNextStep(space, startingObject)
+            navigateNextStep(space, startingObject, profileId)
         }
     }
 
-    private suspend fun navigateNextStep(space: Id, startingObject: Id?) {
-        if (shouldShowEmail()) {
-            emitNavigateToAddEmail(space, startingObject)
-            return
-        }
-
-        logOpenAccountIfAvailable()
-
-        val deeplink = pendingIntentStore.getDeepLinkInvite()
-        when {
-            !deeplink.isNullOrEmpty() -> emitCommand(Command.OpenVault)
-            !startingObject.isNullOrEmpty() -> emitCommand(
-                Command.OpenStartingObject(
-                    space = SpaceId(space),
-                    startingObject = startingObject
-                )
+    private suspend fun navigateNextStep(space: Id, startingObject: Id?, profileId: Id) {
+        emitCommand(
+            Command.NavigateToSetProfileName(
+                space = space,
+                startingObject = startingObject,
+                profileId = profileId
             )
-
-            else -> emitCommand(Command.OpenVault)
-        }
+        )
     }
 
     private suspend fun emitNavigateToAddEmail(space: Id, startingObject: Id?) {
@@ -177,6 +165,12 @@ class OnboardingMnemonicViewModel @Inject constructor(
         data class OpenStartingObject(
             val space: SpaceId,
             val startingObject: Id
+        ) : Command()
+
+        data class NavigateToSetProfileName(
+            val space: String,
+            val startingObject: String?,
+            val profileId: String
         ) : Command()
 
         data class NavigateToAddEmailScreen(

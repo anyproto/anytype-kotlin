@@ -25,15 +25,15 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Devices.PIXEL_7
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonInversion
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.OnboardingSubtitleColor
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
@@ -42,43 +42,9 @@ import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    showSystemUi = true,
-    device = PIXEL_7
-)
-@Composable
-fun AuthScreenPreview() {
-    AuthScreen(
-        onLoginClicked = {},
-        onJoinClicked = {},
-        onPrivacyPolicyClicked = {},
-        onTermsOfUseClicked = {},
-        onSettingsClicked = {}
-    )
-}
-
-@Composable
-fun AuthScreenWrapper(
-    vm: OnboardingStartViewModel
-) {
-    AuthScreen(
-        onJoinClicked = vm::onJoinClicked,
-        onLoginClicked = vm::onLoginClicked,
-        onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
-        onTermsOfUseClicked = vm::onTermsOfUseClicked,
-        onSettingsClicked = vm::onSettingsClicked
-    )
-}
-
 @Composable
 fun AuthScreen(
-    onJoinClicked: () -> Unit,
-    onLoginClicked: () -> Unit,
-    onPrivacyPolicyClicked: () -> Unit,
-    onTermsOfUseClicked: () -> Unit,
-    onSettingsClicked: () -> Unit
+    vm: OnboardingStartViewModel
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -94,13 +60,14 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Bottom
         ) {
             SignButtons(
-                onJoinClicked = onJoinClicked,
-                onLoginClicked = onLoginClicked
+                isLoading = vm.isLoadingState.collectAsStateWithLifecycle().value,
+                onJoinClicked = vm::onJoinClicked,
+                onLoginClicked = vm::onLoginClicked
             )
             TermsAndPolicy(
                 modifier = Modifier,
-                onPrivacyPolicyClicked = onPrivacyPolicyClicked,
-                onTermsOfUseClicked = onTermsOfUseClicked
+                onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
+                onTermsOfUseClicked = vm::onTermsOfUseClicked
             )
         }
         Image(
@@ -109,7 +76,7 @@ fun AuthScreen(
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 8.dp, end = 16.dp)
-                .clickable { onSettingsClicked() }
+                .clickable { vm.onSettingsClicked() }
         )
     }
 }
@@ -167,6 +134,7 @@ fun Description(modifier: Modifier = Modifier) {
 
 @Composable
 fun SignButtons(
+    isLoading: Boolean,
     onJoinClicked: () -> Unit,
     onLoginClicked: () -> Unit,
 ) {
@@ -175,6 +143,7 @@ fun SignButtons(
             text = stringResource(id = R.string.onboarding_new_vault_button_text),
             onClick = onJoinClicked,
             enabled = true,
+            isLoading = isLoading,
             size = ButtonSize.Large,
             modifier = Modifier
                 .fillMaxWidth()
@@ -184,6 +153,8 @@ fun SignButtons(
             text = stringResource(id = R.string.onboarding_have_key_button_text),
             onClick = onLoginClicked,
             size = ButtonSize.Large,
+            enabled = isLoading.not(),
+            disabledBackgroundColor = Color.Transparent,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp, start = 20.dp, end = 20.dp),
@@ -243,6 +214,16 @@ fun TermsAndPolicy(
                     onPrivacyPolicyClicked()
                 }
         }
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun PreviewSignButtons() {
+    SignButtons(
+        isLoading = true,
+        onJoinClicked = {},
+        onLoginClicked = {}
     )
 }
 

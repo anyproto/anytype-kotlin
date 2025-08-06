@@ -1508,6 +1508,9 @@
     <string name="error_login_select_vault_error">保管庫選択エラーです。</string>
     <string name="error_login_account_deleted_error">このアカウントは削除されました。別のアカウントを使用するか、新しいアカウントを作成してください。</string>
     <string name="error_login_account_need_update_error">アカウントを取得できません。Anytypeアプリを最新版に更新してください。</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"関連："</string>
     <string name="global_search_no_related_objects_found">関連するオブジェクトが見つかりません</string>
     <string name="sort_empty_values_desc">未入力の値を表示</string>
@@ -1798,6 +1801,18 @@
     <string name="space_properties_screen_section_system_types">標準プロパティ</string>
     <string name="space_properties_screen_menu_move_to_bin">ゴミ箱に移動</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">アカウント作成中にエラーが発生しました：スペースがありません</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">名前を設定しましょう</string>
     <string name="onboarding_soul_creation_description">何かを共有した相手にのみ表示されます。入力された名前が一元管理されることはありません。</string>
     <string name="onboarding_email_add_title">最新情報を受け取る</string>

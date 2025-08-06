@@ -760,7 +760,13 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        navController.navigate(OnboardingNavigation.setProfileName)
+                        val route = buildString {
+                            append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${navigation.spaceId}")
+                            navigation.startingObjectId?.let { 
+                                append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") 
+                            }
+                        }
+                        navController.navigate(route)
                     }
 
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignIn -> {

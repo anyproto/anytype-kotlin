@@ -55,7 +55,6 @@ class OnboardingStartViewModel @Inject constructor(
 
     fun onJoinClicked() {
         proceedWithCreatingWallet()
-        //navigateTo(AuthNavigation.ProceedWithSignUp)
     }
 
     fun onLoginClicked() {
@@ -151,11 +150,11 @@ class OnboardingStartViewModel @Inject constructor(
         importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space = space)).fold(
             onFailure = {
                 Timber.e(it, "Error while setting up mobile use case")
-                navigateTo(AuthNavigation.ProceedWithSignUp)
+                navigateTo(AuthNavigation.ProceedWithSignUp(spaceId = space, startingObjectId = null))
             },
             onSuccess = { result ->
                 Timber.d("Mobile use case setup successful: $result")
-                navigateTo(AuthNavigation.ProceedWithSignUp)
+                navigateTo(AuthNavigation.ProceedWithSignUp(spaceId = space, startingObjectId = result.startingObject))
             }
         )
     }
@@ -178,7 +177,7 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     interface AuthNavigation {
-        object ProceedWithSignUp : AuthNavigation
+        data class ProceedWithSignUp(val spaceId: String, val startingObjectId: String?) : AuthNavigation
         object ProceedWithSignIn : AuthNavigation
     }
 

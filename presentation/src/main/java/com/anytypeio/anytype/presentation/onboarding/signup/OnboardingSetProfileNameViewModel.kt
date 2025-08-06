@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -49,17 +48,18 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
 
+    val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
+    val navigation = MutableSharedFlow<Navigation>()
+
     init {
         Timber.i("OnboardingSetProfileNameViewModel, init")
         viewModelScope.launch {
-            sendAnalyticsOnboardingScreenEvent(analytics,
+            sendAnalyticsOnboardingScreenEvent(
+                analytics,
                 EventsDictionary.ScreenOnboardingStep.SOUL
             )
         }
     }
-
-    val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
-    val navigation = MutableSharedFlow<Navigation>()
 
     fun onNextClicked(
         name: String,

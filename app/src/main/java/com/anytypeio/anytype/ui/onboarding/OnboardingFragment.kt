@@ -295,16 +295,8 @@ class OnboardingFragment : Fragment() {
                 Recovery(navController)
             }
             composable(
-                route = "${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}&$ONBOARDING_PROFILE_PARAM={$ONBOARDING_PROFILE_PARAM}",
-                arguments = listOf(
-                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
-                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    },
-                    navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
-                ),
+                route = buildOnboardingRoute(OnboardingNavigation.mnemonic),
+                arguments = onboardingArguments(),
                 enterTransition = {
                     when (initialState.destination.route) {
                         OnboardingNavigation.setProfileName -> {
@@ -330,9 +322,7 @@ class OnboardingFragment : Fragment() {
                 backButtonCallback.value = {
                     // Do nothing
                 }
-                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
-                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
-                val profileId = it.arguments?.getString(ONBOARDING_PROFILE_PARAM)
+                val (spaceId, startingObjectId, profileId) = it.arguments.extractOnboardingParams()
                 if (!spaceId.isNullOrEmpty() && !profileId.isNullOrEmpty()) {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
@@ -357,16 +347,8 @@ class OnboardingFragment : Fragment() {
                 }
             }
             composable(
-                route = "${OnboardingNavigation.setProfileName}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}&$ONBOARDING_PROFILE_PARAM={$ONBOARDING_PROFILE_PARAM}",
-                arguments = listOf(
-                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
-                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    },
-                    navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
-                ),
+                route = buildOnboardingRoute(OnboardingNavigation.setProfileName),
+                arguments = onboardingArguments(),
                 enterTransition = {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 },
@@ -375,9 +357,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
-                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
-                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
-                val profileId = it.arguments?.getString(ONBOARDING_PROFILE_PARAM)
+                val (spaceId, startingObjectId, profileId) = it.arguments.extractOnboardingParams()
                 val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
                     if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setProfileName) == true) {
@@ -411,15 +391,8 @@ class OnboardingFragment : Fragment() {
                 BackHandler { onBackClicked() }
             }
             composable(
-                route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
-                arguments = listOf(
-                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
-                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                ),
+                route = buildOnboardingRoute(OnboardingNavigation.setEmail),
+                arguments = onboardingArguments(),
                 enterTransition = {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 },
@@ -428,8 +401,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
-                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
-                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
+                val (spaceId, startingObjectId, profileId) = it.arguments.extractOnboardingParams()
                 val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
                     if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setEmail) == true) {
@@ -989,9 +961,6 @@ class OnboardingFragment : Fragment() {
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->
                 when (command) {
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
-                        //do nothing
-                    }
                     is OnboardingSetProfileNameViewModel.Navigation.NavigateToSetEmail -> {
                         //do nothing
                     }
@@ -1109,15 +1078,45 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    private fun onboardingArguments() = listOf(
+        navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
+        navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
+            type = NavType.StringType
+            nullable = true
+            defaultValue = null
+        },
+        navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
+    )
+    
+    private fun buildOnboardingRoute(baseRoute: String): String {
+        return "$baseRoute?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}" +
+            "&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}" +
+            "&$ONBOARDING_PROFILE_PARAM={$ONBOARDING_PROFILE_PARAM}"
+    }
+    
+    private data class OnboardingParams(
+        val spaceId: String?,
+        val startingObjectId: String?,
+        val profileId: String?
+    )
+    
+    private fun Bundle?.extractOnboardingParams(): OnboardingParams {
+        return OnboardingParams(
+            spaceId = this?.getString(ONBOARDING_SPACE_PARAM),
+            startingObjectId = this?.getString(ONBOARDING_STARTING_OBJECT_PARAM),
+            profileId = this?.getString(ONBOARDING_PROFILE_PARAM)
+        )
+    }
+
     companion object {
         fun args(deepLink: String?) = bundleOf(
             ONBOARDING_DEEP_LINK_KEY to deepLink
         )
         private const val ONBOARDING_DEEP_LINK_KEY = "arg.onboarding.deep-link-key"
 
-        private const val ONBOARDING_SPACE_PARAM = "space"
-        private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
-        private const val ONBOARDING_PROFILE_PARAM = "profile"
+        const val ONBOARDING_SPACE_PARAM = "space"
+        const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
+        const val ONBOARDING_PROFILE_PARAM = "profile"
     }
 }
 

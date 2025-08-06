@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -50,6 +51,8 @@ class OnboardingStartViewModel @Inject constructor(
     val errorState: MutableStateFlow<ErrorState> = MutableStateFlow(ErrorState.Hidden)
     val sideEffects = MutableSharedFlow<SideEffect>()
     val navigation: MutableSharedFlow<AuthNavigation> = MutableSharedFlow()
+    
+    private var walletSetupJob: Job? = null
 
     init {
         Timber.i("OnboardingStartViewModel, init")
@@ -84,7 +87,8 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     private fun proceedWithCreatingWallet() {
-        viewModelScope.launch {
+        walletSetupJob?.cancel()
+        walletSetupJob = viewModelScope.launch {
             isLoadingState.value = true
             val params = SetupWallet.Params(
                 path = pathProvider.providePath()
@@ -211,10 +215,18 @@ class OnboardingStartViewModel @Inject constructor(
     private suspend fun navigateTo(destination: AuthNavigation) {
         navigation.emit(destination)
     }
+    
+    override fun onCleared() {
+        super.onCleared()
+        walletSetupJob?.cancel()
+    }
 
     interface AuthNavigation {
-        data class ProceedWithSignUp(val spaceId: String, val startingObjectId: String?, val profileId: String) :
-            AuthNavigation
+        data class ProceedWithSignUp(
+            val spaceId: String,
+            val startingObjectId: String?,
+            val profileId: String
+        ) : AuthNavigation
 
         object ProceedWithSignIn : AuthNavigation
     }

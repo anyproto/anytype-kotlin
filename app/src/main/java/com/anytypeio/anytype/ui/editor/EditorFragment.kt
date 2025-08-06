@@ -55,7 +55,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
-import androidx.transition.Fade
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
@@ -586,8 +585,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             changeStyleClicks()
                 .onEach { vm.onBlockToolbarStyleClicked() }
                 .launchIn(lifecycleScope)
-            mentionClicks()
-                .onEach { vm.onStartMentionWidgetClicked() }
+            undoRedoClicks()
+                .onEach { vm.onUndoRedoActionClicked() }
                 .launchIn(lifecycleScope)
         }
 

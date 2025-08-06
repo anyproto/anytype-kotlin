@@ -757,16 +757,26 @@ suspend fun Analytics.sendAnalyticsDownloadMediaEvent(type: Block.Content.File.T
     registerEvent(event)
 }
 
-suspend fun Analytics.sendAnalyticsUndoEvent() {
+suspend fun Analytics.sendAnalyticsUndoEvent(type: Boolean) {
     val event = EventAnalytics.Anytype(
-        name = EventsDictionary.objectUndo
+        name = EventsDictionary.objectUndo,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to if (type) "true" else "false"
+            )
+        )
     )
     registerEvent(event)
 }
 
-suspend fun Analytics.sendAnalyticsRedoEvent() {
+suspend fun Analytics.sendAnalyticsRedoEvent(type: Boolean) {
     val event = EventAnalytics.Anytype(
-        name = EventsDictionary.objectRedo
+        name = EventsDictionary.objectRedo,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to if (type) "true" else "false"
+            )
+        )
     )
     registerEvent(event)
 }

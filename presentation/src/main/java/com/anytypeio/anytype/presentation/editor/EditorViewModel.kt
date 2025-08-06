@@ -2273,7 +2273,9 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
                     context = context,
-                    onRedoExhausted = { sendSnack(Snack.UndoRedo("Nothing to redo.")) }
+                    onRedoExhausted = {
+                        sendSnack(Snack.UndoRedo("Nothing to redo."))
+                    }
                 )
             )
         }

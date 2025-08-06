@@ -1,20 +1,23 @@
 package com.anytypeio.anytype.domain.page
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
+import javax.inject.Inject
 
 /**
  * Use-case for un-doing latest changes in document.
  */
-class Undo(
-    private val repo: BlockRepository
-) : BaseUseCase<Undo.Result, Undo.Params>() {
+class Undo @Inject constructor(
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Undo.Params, Undo.Result>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.undo(
+    override suspend fun doWork(params: Undo.Params): Undo.Result {
+        return repo.undo(
             command = Command.Undo(
                 context = params.context
             )

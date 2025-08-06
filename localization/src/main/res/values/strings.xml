@@ -2103,6 +2103,19 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
 
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>

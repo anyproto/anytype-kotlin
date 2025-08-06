@@ -224,9 +224,7 @@ class OnboardingFragment : Fragment() {
                     toast(it)
                 }
             }
-            DisposableEffect(
-                viewLifecycleOwner.lifecycle.currentStateAsState().value.isAtLeast(Lifecycle.State.DESTROYED)
-            ) {
+            DisposableEffect(Unit) {
                 onDispose {
                     signUpBackButtonCallback.value = null
                 }
@@ -648,7 +646,6 @@ class OnboardingFragment : Fragment() {
             space = space,
             startingObject = startingObject,
             profileId = profileId,
-            viewModel = vm,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette
@@ -963,7 +960,6 @@ class OnboardingFragment : Fragment() {
             onboardingMnemonicLoginComponent.release()
             onboardingStartComponent.release()
         }
-        componentManager().onboardingComponent.release()
     }
 
     private fun buildMnemonicRoute(spaceId: Id, startingObjectId: Id?, profileId: Id): String {

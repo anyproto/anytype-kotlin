@@ -8,7 +8,9 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.base.fold
@@ -16,6 +18,8 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
@@ -37,7 +41,9 @@ class OnboardingStartViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val localeProvider: LocaleProvider,
     private val globalSubscriptionManager: GlobalSubscriptionManager,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val setSpaceDetails: SetSpaceDetails,
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModel() {
 
     val isLoadingState = MutableStateFlow(false)
@@ -136,6 +142,8 @@ class OnboardingStartViewModel @Inject constructor(
 
     private suspend fun handleCreateAccountSuccess(startTime: Long, result: CreateAccount.Result) {
         Timber.d("handleCreateAccountSuccess, Account created successfully: $result")
+        analytics.sendEvent(eventName = EventsDictionary.createSpace)
+        val profileId = result.config.profile
         val spaceId = result.config.space
         createAccountAnalytics(startTime)
         crashReporter.setUser(result.config.analytics)
@@ -143,18 +151,46 @@ class OnboardingStartViewModel @Inject constructor(
             Timber.e(it, "Error while setting current space during sign-up onboarding")
         }
         setupGlobalSubscriptions()
-        proceedWithSettingUpMobileUseCase(space = spaceId)
+        proceedWithUpdatingSpaceName(spaceId = spaceId)
+        proceedWithSettingUpMobileUseCase(space = spaceId, profileId = profileId)
     }
 
-    private suspend fun proceedWithSettingUpMobileUseCase(space: Id) {
+    private suspend fun proceedWithUpdatingSpaceName(spaceId: Id) {
+        setSpaceDetails.async(
+            SetSpaceDetails.Params(
+                space = SpaceId(spaceId),
+                details = mapOf(Relations.NAME to stringResourceProvider.getInitialSpaceName())
+            )
+        ).fold(
+            onFailure = {
+                Timber.e(it, "Error while setting space details")
+            }
+        )
+    }
+
+    private suspend fun proceedWithSettingUpMobileUseCase(space: Id, profileId: Id) {
         importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space = space)).fold(
             onFailure = {
                 Timber.e(it, "Error while setting up mobile use case")
-                navigateTo(AuthNavigation.ProceedWithSignUp(spaceId = space, startingObjectId = null))
+                isLoadingState.value = false
+                navigateTo(
+                    AuthNavigation.ProceedWithSignUp(
+                        spaceId = space,
+                        startingObjectId = null,
+                        profileId = profileId
+                    )
+                )
             },
             onSuccess = { result ->
                 Timber.d("Mobile use case setup successful: $result")
-                navigateTo(AuthNavigation.ProceedWithSignUp(spaceId = space, startingObjectId = result.startingObject))
+                isLoadingState.value = false
+                navigateTo(
+                    AuthNavigation.ProceedWithSignUp(
+                        spaceId = space,
+                        startingObjectId = result.startingObject,
+                        profileId = profileId
+                    )
+                )
             }
         )
     }
@@ -177,7 +213,9 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     interface AuthNavigation {
-        data class ProceedWithSignUp(val spaceId: String, val startingObjectId: String?) : AuthNavigation
+        data class ProceedWithSignUp(val spaceId: String, val startingObjectId: String?, val profileId: String) :
+            AuthNavigation
+
         object ProceedWithSignIn : AuthNavigation
     }
 
@@ -215,7 +253,9 @@ class OnboardingStartViewModel @Inject constructor(
         private val crashReporter: CrashReporter,
         private val localeProvider: LocaleProvider,
         private val globalSubscriptionManager: GlobalSubscriptionManager,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val setSpaceDetails: SetSpaceDetails,
+        private val stringResourceProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -230,7 +270,9 @@ class OnboardingStartViewModel @Inject constructor(
                 crashReporter = crashReporter,
                 localeProvider = localeProvider,
                 globalSubscriptionManager = globalSubscriptionManager,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                setSpaceDetails = setSpaceDetails,
+                stringResourceProvider = stringResourceProvider
             ) as T
         }
     }

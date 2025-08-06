@@ -60,6 +60,7 @@ import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 fun MnemonicPhraseScreenWrapper(
     space: Id,
     startingObject: Id?,
+    profileId: Id,
     viewModel: OnboardingMnemonicViewModel,
     copyMnemonicToClipboard: (String) -> Unit,
     vm: OnboardingMnemonicViewModel,
@@ -72,7 +73,8 @@ fun MnemonicPhraseScreenWrapper(
         onCheckLaterClicked = {
             vm.onCheckLaterClicked(
                 space = space,
-                startingObject = startingObject
+                startingObject = startingObject,
+                profileId = profileId
             )
         },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
@@ -80,7 +82,8 @@ fun MnemonicPhraseScreenWrapper(
         onGoToAppClicked = {
             vm.handleAppEntryClick(
                 space = space,
-                startingObject = startingObject
+                startingObject = startingObject,
+                profileId = profileId
             )
         }
     )

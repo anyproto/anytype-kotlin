@@ -35,7 +35,6 @@ import timber.log.Timber
 
 class OnboardingSetProfileNameViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
-    private val setSpaceDetails: SetSpaceDetails,
     private val configStorage: ConfigStorage,
     private val analytics: Analytics,
     private val setMembershipEmail: SetMembershipEmail,
@@ -63,41 +62,51 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     val navigation = MutableSharedFlow<Navigation>()
 
     fun onNextClicked(
-        name: String
+        name: String,
+        spaceId: String,
+        startingObjectId: String?,
+        profileId: String
     ) {
-
+        state.value = ScreenState.Loading
+        proceedWithSettingAccountName(
+            name = name,
+            spaceId = spaceId,
+            startingObjectId = startingObjectId,
+            profileId = profileId
+        )
     }
 
     private fun proceedWithSettingAccountName(
         name: String,
-        spaceName: String,
-        startingObjectId: Id?
+        spaceId: Id,
+        startingObjectId: Id?,
+        profileId: Id
     ) {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            viewModelScope.launch {
-                analytics.sendEvent(eventName = EventsDictionary.createSpace)
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
-                        details = mapOf(Relations.NAME to spaceName)
+        viewModelScope.launch {
+            if (name.isBlank()) {
+                navigation.emit(
+                    Navigation.NavigateToSetEmail(
+                        spaceId = spaceId,
+                        startingObjectId = startingObjectId,
+                        profileId = profileId
                     )
-                ).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while setting space details")
-                    }
                 )
+                // Workaround for leaving screen in loading state to wait screen transition
+                delay(LOADING_AFTER_SUCCESS_DELAY)
+                state.value = ScreenState.Success
+            } else {
                 setObjectDetails.async(
                     SetObjectDetails.Params(
-                        ctx = config.profile, details = mapOf(Relations.NAME to name)
+                        ctx = profileId, details = mapOf(Relations.NAME to name)
                     )
                 ).fold(
                     onFailure = {
                         Timber.e(it, "Error while setting profile name details")
                         navigation.emit(
-                            Navigation.NavigateToMnemonic(
-                                space = SpaceId(config.space),
-                                startingObject = startingObjectId
+                            Navigation.NavigateToSetEmail(
+                                spaceId = spaceId,
+                                startingObjectId = startingObjectId,
+                                profileId = profileId
                             )
                         )
                         // Workaround for leaving screen in loading state to wait screen transition
@@ -106,9 +115,10 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     },
                     onSuccess = {
                         navigation.emit(
-                            Navigation.NavigateToMnemonic(
-                                space = SpaceId(config.space),
-                                startingObject = startingObjectId
+                            Navigation.NavigateToSetEmail(
+                                spaceId = spaceId,
+                                startingObjectId = startingObjectId,
+                                profileId = profileId
                             )
                         )
                         // Workaround for leaving screen in loading state to wait screen transition
@@ -116,10 +126,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         state.value = ScreenState.Success
                     }
                 )
-            }
-        } else {
-            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
-                sendToast(CONFIG_NOT_FOUND_ERROR)
             }
         }
     }
@@ -229,7 +235,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
-        private val setSpaceDetails: SetSpaceDetails,
         private val configStorage: ConfigStorage,
         private val analytics: Analytics,
         private val setMembershipEmail: SetMembershipEmail,
@@ -240,7 +245,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingSetProfileNameViewModel(
                 setObjectDetails = setObjectDetails,
-                setSpaceDetails = setSpaceDetails,
                 configStorage = configStorage,
                 analytics = analytics,
                 setMembershipEmail = setMembershipEmail,
@@ -251,19 +255,23 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     }
 
     companion object {
-        const val CONFIG_NOT_FOUND_ERROR = "Something went wrong: config not found"
         const val LOADING_MSG = "Loading, please wait."
-        const val EXITING_MSG = "Clearing resources, please wait."
         const val LOADING_AFTER_SUCCESS_DELAY = 600L
     }
 
     sealed class Navigation {
-        data class NavigateToMnemonic(val space: SpaceId, val startingObject: Id?): Navigation()
-        data object GoBack: Navigation()
+        data class NavigateToSetEmail(
+            val spaceId: String,
+            val startingObjectId: String?,
+            val profileId: String
+        ) : Navigation()
+
+        data object GoBack : Navigation()
         data class OpenStartingObject(
             val space: SpaceId,
             val startingObject: Id
         ) : Navigation()
+
         data object OpenVault : Navigation()
     }
 

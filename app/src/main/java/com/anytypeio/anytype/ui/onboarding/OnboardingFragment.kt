@@ -295,14 +295,15 @@ class OnboardingFragment : Fragment() {
                 Recovery(navController)
             }
             composable(
-                route = "${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}",
+                route = "${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}&$ONBOARDING_PROFILE_PARAM={$ONBOARDING_PROFILE_PARAM}",
                 arguments = listOf(
                     navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
                     navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
                         type = NavType.StringType
                         nullable = true
                         defaultValue = null
-                    }
+                    },
+                    navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
                 ),
                 enterTransition = {
                     when (initialState.destination.route) {
@@ -331,11 +332,13 @@ class OnboardingFragment : Fragment() {
                 }
                 val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
                 val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
-                if (!spaceId.isNullOrEmpty()) {
+                val profileId = it.arguments?.getString(ONBOARDING_PROFILE_PARAM)
+                if (!spaceId.isNullOrEmpty() && !profileId.isNullOrEmpty()) {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
                         space = spaceId,
                         startingObject = startingObjectId,
+                        profileId = profileId,
                         navController = navController
                     )
                 } else {
@@ -354,7 +357,16 @@ class OnboardingFragment : Fragment() {
                 }
             }
             composable(
-                route = OnboardingNavigation.setProfileName,
+                route = "${OnboardingNavigation.setProfileName}?$ONBOARDING_SPACE_PARAM={$ONBOARDING_SPACE_PARAM}&$ONBOARDING_STARTING_OBJECT_PARAM={$ONBOARDING_STARTING_OBJECT_PARAM}&$ONBOARDING_PROFILE_PARAM={$ONBOARDING_PROFILE_PARAM}",
+                arguments = listOf(
+                    navArgument(ONBOARDING_SPACE_PARAM) { type = NavType.StringType },
+                    navArgument(ONBOARDING_STARTING_OBJECT_PARAM) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                    navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
+                ),
                 enterTransition = {
                     fadeIn(tween(ANIMATION_LENGTH_FADE))
                 },
@@ -363,9 +375,12 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
+                val spaceId = it.arguments?.getString(ONBOARDING_SPACE_PARAM)
+                val startingObjectId = it.arguments?.getString(ONBOARDING_STARTING_OBJECT_PARAM)
+                val profileId = it.arguments?.getString(ONBOARDING_PROFILE_PARAM)
                 val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
-                    if (lastDestination?.destination?.route == OnboardingNavigation.setProfileName) {
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.setProfileName) == true) {
                         focus.clearFocus(true)
                         navController.popBackStack()
                     }  else {
@@ -374,10 +389,25 @@ class OnboardingFragment : Fragment() {
                 }
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME
                 backButtonCallback.value = onBackClicked
-                SetProfileName(
-                    navController = navController,
-                    onBackClicked = onBackClicked
-                )
+                if (!spaceId.isNullOrEmpty() && !profileId.isNullOrEmpty()) {
+                    SetProfileName(
+                        navController = navController,
+                        spaceId = spaceId,
+                        startingObjectId = startingObjectId,
+                        profileId = profileId,
+                        onBackClicked = onBackClicked
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
                 BackHandler { onBackClicked() }
             }
             composable(
@@ -574,6 +604,9 @@ class OnboardingFragment : Fragment() {
     @Composable
     private fun SetProfileName(
         navController: NavHostController,
+        spaceId: String,
+        startingObjectId: String?,
+        profileId: String,
         onBackClicked: () -> Unit
     ) {
         val component = componentManager().onboardingSoulCreationComponent
@@ -585,25 +618,26 @@ class OnboardingFragment : Fragment() {
 
         SetProfileNameWrapper(
             viewModel = vm,
+            spaceId = spaceId,
+            startingObjectId = startingObjectId,
+            profileId = profileId,
             onBackClicked = onBackClicked
         )
 
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->
                 when (command) {
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToSetEmail -> {
                         if (keyboardInsets.getBottom(density) > 0) {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
-                        val space = command.space
-                        val startingObject = command.startingObject
-                        navController.navigate(
-                            route = buildString {
-                                append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${space.id}")
-                                startingObject?.let { append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") }
-                            }
+                        val route = buildSetEmailRoute(
+                            spaceId = command.spaceId,
+                            startingObjectId = command.startingObjectId,
+                            profileId = command.profileId
                         )
+                        navController.navigate(route)
                     }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
                         // do nothing
@@ -633,6 +667,7 @@ class OnboardingFragment : Fragment() {
         mnemonicColorPalette: List<Color>,
         space: Id,
         startingObject: Id?,
+        profileId: Id,
         navController: NavHostController
     ) {
         val component = componentManager().onboardingMnemonicComponent
@@ -640,6 +675,7 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             space = space,
             startingObject = startingObject,
+            profileId = profileId,
             viewModel = vm,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
@@ -684,6 +720,14 @@ class OnboardingFragment : Fragment() {
                         }.onFailure {
                             Timber.e(it, "Error while navigation to vault")
                         }
+                    }
+                    is OnboardingMnemonicViewModel.Command.NavigateToSetProfileName -> {
+                        val route = buildSetProfileNameRoute(
+                            spaceId = command.space,
+                            startingObjectId = command.startingObject,
+                            profileId = command.profileId
+                        )
+                        navController.navigate(route)
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
                         val startingObject = command.startingObject
@@ -760,12 +804,11 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        val route = buildString {
-                            append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=${navigation.spaceId}")
-                            navigation.startingObjectId?.let { 
-                                append("&$ONBOARDING_STARTING_OBJECT_PARAM=${it}") 
-                            }
-                        }
+                        val route = buildMnemonicRoute(
+                            spaceId = navigation.spaceId,
+                            startingObjectId = navigation.startingObjectId,
+                            profileId = navigation.profileId
+                        )
                         navController.navigate(route)
                     }
 
@@ -949,6 +992,9 @@ class OnboardingFragment : Fragment() {
                     is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
                         //do nothing
                     }
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToSetEmail -> {
+                        //do nothing
+                    }
                     is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
                         //
                     }
@@ -1033,6 +1079,36 @@ class OnboardingFragment : Fragment() {
         componentManager().onboardingComponent.release()
     }
 
+    private fun buildMnemonicRoute(spaceId: String, startingObjectId: String?, profileId: String): String {
+        return buildString {
+            append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=$spaceId")
+            startingObjectId?.let { 
+                append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
+            }
+            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
+        }
+    }
+
+    private fun buildSetProfileNameRoute(spaceId: String, startingObjectId: String?, profileId: String): String {
+        return buildString {
+            append("${OnboardingNavigation.setProfileName}?$ONBOARDING_SPACE_PARAM=$spaceId")
+            startingObjectId?.let { 
+                append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
+            }
+            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
+        }
+    }
+
+    private fun buildSetEmailRoute(spaceId: String, startingObjectId: String?, profileId: String): String {
+        return buildString {
+            append("${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM=$spaceId")
+            startingObjectId?.let { 
+                append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
+            }
+            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
+        }
+    }
+
     companion object {
         fun args(deepLink: String?) = bundleOf(
             ONBOARDING_DEEP_LINK_KEY to deepLink
@@ -1041,8 +1117,7 @@ class OnboardingFragment : Fragment() {
 
         private const val ONBOARDING_SPACE_PARAM = "space"
         private const val ONBOARDING_STARTING_OBJECT_PARAM = "startingObject"
-
-        private const val ONBOARDING_NAME_PARAM = "startingObject"
+        private const val ONBOARDING_PROFILE_PARAM = "profile"
     }
 }
 

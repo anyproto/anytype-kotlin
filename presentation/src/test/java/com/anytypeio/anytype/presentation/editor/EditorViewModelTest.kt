@@ -2535,7 +2535,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
         undo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Undo.Result.Success(
                     Payload(
                         context = root,
@@ -2554,7 +2554,7 @@ open class EditorViewModelTest {
         vm.onActionUndoClicked()
 
         runBlockingTest {
-            verify(undo, times(1)).invoke(
+            verify(undo, times(1)).async(
                 params = eq(
                     Undo.Params(context = root)
                 )
@@ -2592,7 +2592,7 @@ open class EditorViewModelTest {
         givenViewModel()
 
         redo.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.Success(
                 Redo.Result.Success(
                     Payload(
                         context = root,
@@ -2611,7 +2611,7 @@ open class EditorViewModelTest {
         vm.onActionRedoClicked()
 
         runBlockingTest {
-            verify(redo, times(1)).invoke(
+            verify(redo, times(1)).async(
                 params = eq(
                     Redo.Params(context = root)
                 )

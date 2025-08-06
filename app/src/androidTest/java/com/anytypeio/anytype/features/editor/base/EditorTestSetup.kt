@@ -341,8 +341,8 @@ open class EditorTestSetup {
         )
 
         splitBlock = SplitBlock(repo)
-        undo = Undo(repo)
-        redo = Redo(repo)
+        undo = Undo(repo, dispatchers)
+        redo = Redo(repo, dispatchers)
         objectToSet = ConvertObjectToSet(repo, dispatchers)
         replaceBlock = ReplaceBlock(repo)
         setupBookmark = SetupBookmark(repo)

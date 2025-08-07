@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,15 +24,16 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BubbleGalleryRowLayout(
     images: List<ChatView.Message.Attachment.Image>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
-    onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit
+    onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
+    isUserAuthor: Boolean = false
 ) {
     Row(
         modifier = Modifier
@@ -77,6 +79,48 @@ fun BubbleGalleryRowLayout(
                             }
                         )
                 )
+                when(image.status) {
+                    ChatView.Message.Attachment.SyncStatus.Failed -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = colorResource(R.color.transparent_active),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        )
+                        Image(
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center),
+                            painter = painterResource(R.drawable.ic_sync_status_failed_52),
+                            contentDescription = "Sync status failed"
+                        )
+                    }
+                    ChatView.Message.Attachment.SyncStatus.Syncing -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    color = colorResource(R.color.transparent_active),
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                        )
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center)
+                                .size(48.dp),
+                            color = colorResource(R.color.glyph_active),
+                            trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                            strokeWidth = 4.dp
+                        )
+                    }
+                    ChatView.Message.Attachment.SyncStatus.Unknown -> {
+                        // Do nothing.
+                    }
+                    ChatView.Message.Attachment.SyncStatus.Synced -> {
+                        // Do nothing.
+                    }
+                }
             }
         }
     }

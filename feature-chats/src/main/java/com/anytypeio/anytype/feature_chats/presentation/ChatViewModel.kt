@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
+import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -384,7 +385,10 @@ class ChatViewModel @Inject constructor(
                                         target = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
-                                        ext = wrapper?.fileExt.orEmpty()
+                                        ext = wrapper?.fileExt.orEmpty(),
+                                        status = wrapper
+                                            ?.syncStatus()
+                                            ?: ChatView.Message.Attachment.SyncStatus.Unknown
                                     )
                                 }
                                 else -> {
@@ -395,7 +399,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.VIDEO -> {
@@ -403,7 +408,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.BOOKMARK -> {

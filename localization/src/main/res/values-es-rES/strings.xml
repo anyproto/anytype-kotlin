@@ -1882,4 +1882,5 @@ En concreto,
     <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
+    <string name="attachment_image">Attachment image</string>
 </resources>

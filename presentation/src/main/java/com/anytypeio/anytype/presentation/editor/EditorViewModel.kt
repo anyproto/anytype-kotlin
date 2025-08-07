@@ -1628,8 +1628,8 @@ class EditorViewModel(
                     command = Command.OpenDocumentMenu(
                         ctx = context,
                         space = vmParams.space.id,
-                        isArchived = wrapper?.isArchived == true,
-                        isFavorite = wrapper?.isFavorite == true,
+                        isArchived = wrapper.isArchived == true,
+                        isFavorite = wrapper.isFavorite == true,
                         isLocked = mode == EditorMode.Locked,
                         isReadOnly = isReadOnly,
                         isTemplate = isObjectTemplate()

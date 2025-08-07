@@ -1109,29 +1109,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
-                    runCatching {
-                        findNavController().navigate(
-                            resId = R.id.objectMenuScreen,
-                            args = ObjectMenuFragment.args(
-                                ctx = command.ctx,
-                                space = command.space,
-                                isArchived = command.isArchived,
-                                isFavorite = command.isFavorite,
-                                isLocked = command.isLocked,
-                                isReadOnly = command.isReadOnly,
-                                fromName = getFrom(),
-                                isTemplate = command.isTemplate
-                            )
-                        )
-                    }.onFailure {
-                        Timber.e("Error while opening document menu: $it")
-                    }
+                    findNavController().safeNavigate(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.objectMenuScreen,
+                        args = ObjectMenuFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            isArchived = command.isArchived,
+                            isFavorite = command.isFavorite,
+                            isLocked = command.isLocked,
+                            isReadOnly = command.isReadOnly,
+                            fromName = getFrom(),
+                            isTemplate = command.isTemplate
+                        ),
+                        errorMessage = "Error while opening document menu"
+                    )
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.action_pageScreen_to_objectCoverScreen,
-                        SelectCoverObjectFragment.args(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.action_pageScreen_to_objectCoverScreen,
+                        args = SelectCoverObjectFragment.args(
                             ctx = command.ctx,
                             space = space
                         )
@@ -1421,14 +1419,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     )
                 }
                 is Command.OpenShareScreen -> {
-                    runCatching {
-                        findNavController().navigate(
-                            R.id.shareSpaceScreen,
-                            args = ShareSpaceFragment.args(command.space)
-                        )
-                    }.onFailure {
-                        Timber.e(it, "Error while opening share screen")
-                    }
+                    findNavController().safeNavigate(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.shareSpaceScreen,
+                        args = ShareSpaceFragment.args(command.space),
+                        errorMessage = "Error while opening share screen"
+                    )
                 }
             }
         }

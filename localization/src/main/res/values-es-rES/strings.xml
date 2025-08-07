@@ -1588,6 +1588,7 @@ En concreto,
     <string name="all_content_sort_date_created">Fecha de creación</string>
     <string name="all_content_sort_date_used">Fecha de último uso</string>
     <string name="all_content_sort_name">Nombre</string>
+    <string name="all_content_item_menu_open">Abrir como objeto</string>
     <string name="all_content">Todos los objetos</string>
     <string name="allContent_group_today">Hoy</string>
     <string name="allContent_group_yesterday">Ayer</string>

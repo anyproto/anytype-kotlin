@@ -1588,6 +1588,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="all_content_sort_date_created">Oluşturulma tarihi</string>
     <string name="all_content_sort_date_used">Kullanılan son tarih</string>
     <string name="all_content_sort_name">İsim</string>
+    <string name="all_content_item_menu_open">Nesne olarak Aç</string>
     <string name="all_content">Tüm Nesneler</string>
     <string name="allContent_group_today">Bugün</string>
     <string name="allContent_group_yesterday">Dün</string>

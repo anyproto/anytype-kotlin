@@ -1508,8 +1508,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="error_login_account_deleted_error">Akun ini sudah dihapus. Coba gunakan akun lain atau buat yang baru.</string>
     <string name="error_login_account_need_update_error">Tidak dapat mengambil data akun. Silakan perbarui Anytype ke versi terbaru.</string>
     <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
-    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
-    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
+    <string name="error_network_error">Galat jaringan. Silakan cek sambungan internetmu lalu coba lagi.</string>
+    <string name="error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan sambung ulang kembali ke internet lalu coba lagi.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
     <string name="global_search_no_related_objects_found">Tidak ada objek terkait ditemukan</string>
     <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
@@ -1802,17 +1802,17 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_properties_screen_menu_move_to_bin">Pindah ke bak sampah</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Terjadi kesalahan saat membuat akun: tidak ada ruang</string>
     <!-- Account creation error messages -->
-    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
-    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
-    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
-    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
-    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
-    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
-    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
+    <string name="onboarding_error_network_error">Gagal membuat akun karena galat jaringan. Silakan cek koneksimu.</string>
+    <string name="onboarding_error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan cek sambunganmu lalu coba lagi.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Akun dibuat tetapi gagal memulai simpul. Silakan coba masuk lagi.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Akun dibuat tetapi gagal mengatur nama. Kamu bisa mengaturnya nanti di Setelan.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Gagal menghentikan simpul yang sedang berjalan. Silakan mulai ulang aplikasi lalu coba lagi.</string>
+    <string name="onboarding_error_failed_to_write_config">Gagal menyimpan konfigurasi. Silakan cek izin penyimpanan perangkatmu.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Gagal membuat repositori lokal. Silakan cek ruang penyimpanan yang tersedia.</string>
+    <string name="onboarding_error_account_creation_canceled">Pembuatan akun dibatalkan.</string>
+    <string name="onboarding_error_config_file_not_found">Berkas konfigurasi tidak ditemukan. Silakan pasang ulang aplikasi.</string>
+    <string name="onboarding_error_config_file_invalid">Berkas konfigurasi tidak valid. Silakan pasang ulang aplikasi.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Konfigurasi jaringan tidak sesuai. Silakan cek pengaturan jaringanmu.</string>
     <string name="onboarding_set_your_name_title">Tambahkan Namamu</string>
     <string name="onboarding_soul_creation_description">Hanya dapat dilihat oleh orang yang saling berbgi denganmu. Nama ini tidak disimpan secara sentral.</string>
     <string name="onboarding_email_add_title">Tetap terinformasi</string>
@@ -1826,9 +1826,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_modal_description">Dapatkan pemberitahuan segera ketika seseorang mengirim pesan atau menyebutmu di ruangmu.</string>
     <string name="notifications_modal_success_button">Nyalakan Pemberitahuan</string>
     <string name="notifications_modal_cancel_button">Tidak dulu</string>
-    <string name="vault_create_chat">New Chat</string>
+    <string name="vault_create_chat">Obrolan Baru</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
-    <string name="vault_create_space">New Space</string>
+    <string name="vault_create_space">Ruang Baru</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1859,15 +1859,15 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="failed_to_load_image">Gagal memuat gambar</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Gabung via kode QR</string>
-    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
-    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
-    <string name="vault_qr_invalid_title">Invalid QR code</string>
-    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_scan_error_title">Tidak bisa memindai kode QR</string>
+    <string name="vault_qr_scan_error_description">Pastikan kodenya terlihat jelas lalu coba lagi.</string>
+    <string name="vault_qr_invalid_title">Kode QR tidak valid</string>
+    <string name="vault_qr_invalid_description">Kode yang terpindai tidak sesuai dengan undangan mana pun. Silakan cek lalu coba lagi.</string>
     <string name="vault_qr_try_again">Coba lagi</string>
-    <string name="camera_permission_required_title">Camera permission required</string>
-    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
-    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="camera_permission_required_title">Izin kamera diperlukan</string>
+    <string name="camera_permission_rationale_message">Untuk memindai kode QR, Anytype memerlukan akses kameramu. Izin ini hanya digunakan untuk memindai kode QR.</string>
+    <string name="camera_permission_settings_message">Untuk memindai kode QR, kamu harus mengizinkan akses kamera di setelan perangkatmu.</string>
     <string name="open_settings">Buka Setelan</string>
     <string name="allow">Izinkan</string>
-    <string name="attachment_image">Attachment image</string>
+    <string name="attachment_image">Lampiran gambar</string>
 </resources>

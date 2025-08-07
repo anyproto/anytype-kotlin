@@ -1181,7 +1181,7 @@ class BlockDataRepository(
         return remote.debugStats()
     }
 
-    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State {
+    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
         return remote.publishingGetStatus(command)
     }
 

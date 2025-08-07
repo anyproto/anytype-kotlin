@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_models.publishing
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.primitives.Id
 import com.anytypeio.anytype.core_models.primitives.Space
 
 object Publishing {

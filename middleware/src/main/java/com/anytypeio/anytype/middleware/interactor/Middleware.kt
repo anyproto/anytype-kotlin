@@ -74,6 +74,7 @@ import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toCorePublishStatus
 import com.anytypeio.anytype.middleware.mappers.toMiddleware
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toMw
@@ -3104,7 +3105,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State {
+    fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
         val request = Rpc.Publishing.GetStatus.Request(
             objectId = command.objectId,
             spaceId = command.space.id
@@ -3112,7 +3113,7 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.publishingGetStatus(request) }
         logResponseIfDebug(response, time)
-        return response.publishingStatus.toCoreModel()
+        return response.publish?.toCorePublishStatus()
     }
 
     @Throws(Exception::class)

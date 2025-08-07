@@ -1153,7 +1153,7 @@ class BlockMiddleware(
         return middleware.debugStats()
     }
 
-    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State {
+    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
         return middleware.publishingGetStatus(command)
     }
 

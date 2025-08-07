@@ -25,6 +25,16 @@ android {
     testOptions {
         unitTests.returnDefaultValues = true
     }
+
+    buildTypes {
+        release {
+            buildConfigField "boolean", "SHOW_CHATS", "false"
+        }
+
+        debug {
+            buildConfigField "boolean", "SHOW_CHATS", "true"
+        }
+    }
 }
 
 dependencies {

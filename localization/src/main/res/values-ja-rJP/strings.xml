@@ -1803,16 +1803,16 @@
     <string name="onboarding_error_while_creating_account_space_is_missing">アカウント作成中にエラーが発生しました：スペースがありません</string>
     <!-- Account creation error messages -->
     <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
-    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
-    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
-    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
-    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
-    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
-    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
+    <string name="onboarding_error_offline_device">デバイスがオフラインのようです。接続を確認して、もう一度お試しください。</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">アカウントが作成されましたが、ノードを開始できませんでした。ログインしてみてください。</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">アカウントが作成されましたが、名前の設定に失敗しました。あとで設定から変更できます。</string>
+    <string name="onboarding_error_failed_to_stop_running_node">実行中のノードを停止できませんでした。アプリを再起動してもう一度お試しください。</string>
+    <string name="onboarding_error_failed_to_write_config">設定を保存できませんでした。ストレージのアクセス許可を確認してください。</string>
+    <string name="onboarding_error_failed_to_create_local_repo">ローカルリポジトリの作成に失敗しました。利用可能なストレージ容量を確認してください。</string>
+    <string name="onboarding_error_account_creation_canceled">アカウントの作成が中断されました。</string>
+    <string name="onboarding_error_config_file_not_found">設定ファイルが見つかりません。アプリを再インストールしてください。</string>
+    <string name="onboarding_error_config_file_invalid">無効な設定ファイルです。アプリを再インストールしてください。</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">ネットワーク設定が一致しません。ネットワーク設定を確認してください。</string>
     <string name="onboarding_set_your_name_title">名前を設定しましょう</string>
     <string name="onboarding_soul_creation_description">何かを共有した相手にのみ表示されます。入力された名前が一元管理されることはありません。</string>
     <string name="onboarding_email_add_title">最新情報を受け取る</string>
@@ -1826,9 +1826,9 @@
     <string name="notifications_modal_description">スペースでメッセージやメンションがあった場合にすぐに通知を受け取ります。</string>
     <string name="notifications_modal_success_button">通知を有効化</string>
     <string name="notifications_modal_cancel_button">あとで</string>
-    <string name="vault_create_chat">New Chat</string>
+    <string name="vault_create_chat">新しいチャット</string>
     <string name="vault_create_chat_description">チームでの会話や共同作業に</string>
-    <string name="vault_create_space">New Space</string>
+    <string name="vault_create_space">新しいスペース</string>
     <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
     <string name="vault_empty_search_state_text">一致するものが見つかりませんでした</string>
@@ -1856,17 +1856,17 @@
     <string name="notification_settings_state_disabled">無効</string>
     <string name="notification_settings_state_enabled">有効</string>
     <string name="content_desc_muted">ミュート</string>
-    <string name="failed_to_load_image">Failed to load image</string>
+    <string name="failed_to_load_image">画像を読み込めませんでした</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">QRコードで参加</string>
-    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
-    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
-    <string name="vault_qr_invalid_title">Invalid QR code</string>
-    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_scan_error_title">QRコードをスキャンできませんでした</string>
+    <string name="vault_qr_scan_error_description">はっきり見えることを確認し、もう一度お試しください。</string>
+    <string name="vault_qr_invalid_title">無効なQRコード</string>
+    <string name="vault_qr_invalid_description">スキャンされたQRコードから有効な招待コードが見つかりませんでした。確認してもう一度お試しください。</string>
     <string name="vault_qr_try_again">もう一度実行</string>
-    <string name="camera_permission_required_title">Camera permission required</string>
-    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
-    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="camera_permission_required_title">カメラへのアクセスが必要です</string>
+    <string name="camera_permission_rationale_message">QRコードをスキャンするには、Anytypeがカメラにアクセスする必要があります。この許可はQRコードのスキャンにのみ使用されます。</string>
+    <string name="camera_permission_settings_message">QRコードをスキャンするには、デバイス設定でカメラへのアクセスを許可する必要があります。</string>
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
 </resources>

@@ -9,7 +9,7 @@ fun ObjectWrapper.Basic.syncStatus(): ChatView.Message.Attachment.SyncStatus {
     val code = getSingleValue<Double>(Relations.SYNC_STATUS)
     return if (code != null) {
         val status = SyncStatus.fromCode(code.toInt())
-        return when(status) {
+        when(status) {
             SyncStatus.Syncing -> ChatView.Message.Attachment.SyncStatus.Syncing
             SyncStatus.Synced -> ChatView.Message.Attachment.SyncStatus.Synced
             SyncStatus.Error -> ChatView.Message.Attachment.SyncStatus.Failed

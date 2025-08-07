@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.publishing.Publishing
 
 interface BlockRemote {
 
@@ -497,4 +498,12 @@ interface BlockRemote {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState)
 
     suspend fun debugStats(): String
+
+    //region PUBLISHING
+
+    suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State
+    suspend fun publishingCreate(command: Command.Publishing.Create): String
+    suspend fun publishingRemove(command: Command.Publishing.Remove)
+
+    //endregion
 }

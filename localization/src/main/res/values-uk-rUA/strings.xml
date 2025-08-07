@@ -1614,6 +1614,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Назва</string>
+    <string name="all_content_item_menu_open">Open as Object</string>
     <string name="all_content">All Objects</string>
     <string name="allContent_group_today">Сьогодні</string>
     <string name="allContent_group_yesterday">Вчора</string>

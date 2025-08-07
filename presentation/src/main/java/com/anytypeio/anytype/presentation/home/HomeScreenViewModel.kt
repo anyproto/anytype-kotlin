@@ -2942,19 +2942,30 @@ sealed class OpenObjectNavigation {
 /**
  * @param [attachmentTarget] optional target, to which the object will be attached
  */
-fun ObjectWrapper.Basic.navigation(effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None) : OpenObjectNavigation {
+fun ObjectWrapper.Basic.navigation(
+    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
+    openBookmarkAsObject: Boolean = false,
+) : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BOOKMARK -> {
-            val url = getValue<String>(Relations.SOURCE)
-            if (url.isNullOrEmpty()) {
+            if (openBookmarkAsObject) {
                 OpenObjectNavigation.OpenEditor(
                     target = id,
                     space = requireNotNull(spaceId),
                     effect = effect
                 )
             } else {
-                OpenObjectNavigation.OpenBookmarkUrl(url)
+                val url = getValue<String>(Relations.SOURCE)
+                if (url.isNullOrEmpty()) {
+                    OpenObjectNavigation.OpenEditor(
+                        target = id,
+                        space = requireNotNull(spaceId),
+                        effect = effect
+                    )
+                } else {
+                    OpenObjectNavigation.OpenBookmarkUrl(url)
+                }
             }
         }
         ObjectType.Layout.BASIC,

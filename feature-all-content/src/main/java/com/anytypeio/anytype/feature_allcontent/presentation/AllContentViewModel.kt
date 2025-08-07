@@ -627,6 +627,16 @@ class AllContentViewModel(
         }
     }
 
+    fun onOpenAsObject(item: UiContentItem.Item) {
+        Timber.d("onOpenAsObject: $item")
+        proceedWithNavigation(
+            navigation = item.obj.navigation(openBookmarkAsObject = true)
+        )
+        viewModelScope.launch {
+            sendAnalyticsAllContentResult(analytics = analytics)
+        }
+    }
+
     private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
         viewModelScope.launch {
             when (navigation) {

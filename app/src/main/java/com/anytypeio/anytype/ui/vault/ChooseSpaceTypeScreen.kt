@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,9 +64,11 @@ fun ChooseSpaceTypeScreen(
                     color = colorResource(id = R.color.background_secondary)
                 )
         ) {
-            Dragger(modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 8.dp))
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp)
+            )
 
             if (BuildConfig.SHOW_CHATS) {
                 Row(
@@ -145,7 +149,13 @@ fun ChooseSpaceTypeScreen(
                 Image(
                     painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
                     contentDescription = "Join via QR Code",
-                    modifier = Modifier.size(56.dp)
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            shape = CircleShape, color =
+                                colorResource(id = R.color.shape_transparent_secondary)
+                        ),
+                    contentScale = ContentScale.Inside
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {

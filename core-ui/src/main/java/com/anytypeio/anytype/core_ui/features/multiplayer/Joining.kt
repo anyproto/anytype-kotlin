@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.Title3
 
 @Composable
 fun JoinSpaceScreen(
@@ -148,7 +149,7 @@ fun JoinSpaceWithoutApproveScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            style = Title2,
+            style = Title3,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier
                 .fillMaxWidth()

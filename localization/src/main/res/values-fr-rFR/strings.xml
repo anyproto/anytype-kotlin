@@ -1585,6 +1585,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date de dernière utilisation</string>
     <string name="all_content_sort_name">Nom</string>
+    <string name="all_content_item_menu_open">Ouvrir en tant qu\'objet</string>
     <string name="all_content">Tous les objets</string>
     <string name="allContent_group_today">Aujourd\'hui</string>
     <string name="allContent_group_yesterday">Hier</string>

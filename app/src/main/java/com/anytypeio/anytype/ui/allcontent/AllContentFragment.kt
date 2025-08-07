@@ -279,6 +279,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
+                    onOpenAsObject = vm::onOpenAsObject,
                     onBinClick = vm::onViewBinClicked,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,

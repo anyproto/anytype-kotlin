@@ -105,16 +105,14 @@ fun BubbleGalleryRowLayout(
                                     shape = RoundedCornerShape(12.dp)
                                 )
                         )
-                        if (!isUserAuthor) {
-                            CircularProgressIndicator(
-                                modifier = Modifier
-                                    .align(alignment = Alignment.Center)
-                                    .size(48.dp),
-                                color = colorResource(R.color.glyph_active),
-                                trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                                strokeWidth = 4.dp
-                            )
-                        }
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .align(alignment = Alignment.Center)
+                                .size(48.dp),
+                            color = colorResource(R.color.glyph_active),
+                            trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                            strokeWidth = 4.dp
+                        )
                     }
                     ChatView.Message.Attachment.SyncStatus.Unknown -> {
                         // Do nothing.

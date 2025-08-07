@@ -63,7 +63,6 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId

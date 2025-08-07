@@ -2183,4 +2183,6 @@ Please provide specific details of your needs here.</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
 
+    <string name="publish_to_web">Publish to Web</string>
+
 </resources>

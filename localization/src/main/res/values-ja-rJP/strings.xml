@@ -1576,6 +1576,7 @@
     <string name="all_content_sort_date_created">作成日時順</string>
     <string name="all_content_sort_date_used">最後に使用した日時順</string>
     <string name="all_content_sort_name">名前</string>
+    <string name="all_content_item_menu_open">オブジェクトとして開く</string>
     <string name="all_content">すべてのオブジェクト</string>
     <string name="allContent_group_today">今日</string>
     <string name="allContent_group_yesterday">昨日</string>

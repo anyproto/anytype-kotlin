@@ -17,10 +17,10 @@
 
         <ImageView
             android:id="@+id/addBlockIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_slash_widget" />
+            android:src="@drawable/ic_block_toolbar_slash_32" />
 
     </FrameLayout>
 
@@ -39,10 +39,10 @@
 
         <ImageView
             android:id="@+id/changeStyleIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_block_style" />
+            android:src="@drawable/ic_block_toolbar_block_style_32" />
 
     </FrameLayout>
 
@@ -61,16 +61,16 @@
 
         <ImageView
             android:id="@+id/multiSelectModeIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_actions" />
+            android:src="@drawable/ic_block_toolbar_actions_32" />
 
     </FrameLayout>
 
     <FrameLayout
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:id="@+id/blockMentionButton"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent"
@@ -83,10 +83,10 @@
 
         <ImageView
             android:id="@+id/blockActionsIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
             android:layout_gravity="center"
-            android:src="@drawable/ic_block_toolbar_mention" />
+            android:src="@drawable/ic_block_toolbar_undoredo_32" />
 
     </FrameLayout>
 
@@ -102,14 +102,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <TextView
-            style="@style/TextView.UXStyle.Body"
-            android:textColor="@color/glyph_accent"
-            android:text="@string/done"
+        <ImageView
             android:id="@+id/hideKeyboardIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center" />
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_block_toolbar_done_32" />
 
     </FrameLayout>
 

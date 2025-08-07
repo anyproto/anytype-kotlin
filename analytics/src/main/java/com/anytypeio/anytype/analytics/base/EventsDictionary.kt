@@ -298,7 +298,6 @@ object EventsDictionary {
     }
 
     enum class ScreenOnboardingStep(val value: String) {
-        VAULT("Vault"),
         SOUL("Soul"),
         PHRASE("Phrase"),
         EMAIL("Email")

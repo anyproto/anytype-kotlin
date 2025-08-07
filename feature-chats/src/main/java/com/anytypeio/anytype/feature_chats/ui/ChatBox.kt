@@ -82,7 +82,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -110,6 +109,7 @@ fun ChatBox(
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
     onChatBoxFilePicked: (List<Uri>) -> Unit,
+    onCameraPermissionDenied: () -> Unit = {},
     onExitEditMessageMode: () -> Unit,
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
@@ -168,7 +168,7 @@ fun ChatBox(
                 onUriReceived = { capturedImageUri = it.toString() }
             )
         } else {
-            context.toast(context.getString(R.string.chat_camera_permission_denied))
+            onCameraPermissionDenied()
         }
     }
 
@@ -182,7 +182,7 @@ fun ChatBox(
                 onUriReceived = { capturedVideoUri = it.toString() }
             )
         } else {
-            context.toast(context.getString(R.string.chat_camera_permission_denied))
+            onCameraPermissionDenied()
         }
     }
 

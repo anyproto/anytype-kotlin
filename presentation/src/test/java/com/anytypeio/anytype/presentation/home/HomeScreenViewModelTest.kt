@@ -37,7 +37,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.chats.SpaceChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
@@ -287,7 +287,7 @@ class HomeScreenViewModelTest {
     lateinit var setObjectListIsFavorite: SetObjectListIsFavorite
 
     @Mock
-    lateinit var chacPreviewContainer: SpaceChatPreviewContainer
+    lateinit var chacPreviewContainer: ChatPreviewContainer
 
     @Mock
     lateinit var notificationPermissionManager: NotificationPermissionManager

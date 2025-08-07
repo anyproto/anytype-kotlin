@@ -104,7 +104,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spacedViews
         )
     }
 

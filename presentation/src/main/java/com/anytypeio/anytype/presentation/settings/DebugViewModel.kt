@@ -69,8 +69,8 @@ class DebugViewModel @Inject constructor(
                     commands.emit(Command.Toast("readAllMessages success"))
                 }
                 .onFailure {
-                    Timber.e(it, "readAllMessages failure")
-                    messages.value = "readAllMessages failure: ${it.message}"
+                    Timber.w(it, "readAllMessages failure")
+                    //messages.value = "readAllMessages failure: ${it.message}"
                 }
         }
     }

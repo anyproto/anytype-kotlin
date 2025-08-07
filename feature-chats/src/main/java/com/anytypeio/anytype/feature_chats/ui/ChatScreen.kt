@@ -259,7 +259,8 @@ fun ChatScreenWrapper(
                 )
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
-            onCreateAndAttachObject = vm::onCreateAndAttachObject
+            onCreateAndAttachObject = vm::onCreateAndAttachObject,
+            onCameraPermissionDenied = vm::onCameraPermissionDenied
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -395,7 +396,8 @@ fun ChatScreen(
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    onCreateAndAttachObject: () -> Unit
+    onCreateAndAttachObject: () -> Unit,
+    onCameraPermissionDenied: () -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -888,7 +890,8 @@ fun ChatScreen(
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
-                onCreateAndAttachObject = onCreateAndAttachObject
+                onCreateAndAttachObject = onCreateAndAttachObject,
+                onCameraPermissionDenied = onCameraPermissionDenied
             )
         }
     }

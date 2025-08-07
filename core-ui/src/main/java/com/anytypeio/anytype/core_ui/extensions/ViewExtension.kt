@@ -9,13 +9,13 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.PopupExtensions.calculateRectInWindow
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.google.android.material.imageview.ShapeableImageView
 import com.google.android.material.shape.ShapeAppearanceModel
 
@@ -85,26 +85,26 @@ fun View.dimensions(): BlockDimensions {
     )
 }
 
-fun EditText.setInputTypeBaseOnFormat(format: ColumnView.Format) = when (format) {
-    ColumnView.Format.SHORT_TEXT -> {
+fun EditText.setInputTypeBaseOnFormat(format: RelationFormat) = when (format) {
+    RelationFormat.SHORT_TEXT -> {
         inputType = InputType.TYPE_CLASS_TEXT
         isSingleLine = true
     }
-    ColumnView.Format.LONG_TEXT -> {
+    RelationFormat.LONG_TEXT -> {
         inputType = InputType.TYPE_TEXT_FLAG_MULTI_LINE
         isSingleLine = false
     }
-    ColumnView.Format.NUMBER -> {
+    RelationFormat.NUMBER -> {
         inputType =
             InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL or InputType.TYPE_NUMBER_FLAG_SIGNED
     }
-    ColumnView.Format.URL -> {
+    RelationFormat.URL -> {
         inputType = InputType.TYPE_TEXT_VARIATION_URI
     }
-    ColumnView.Format.EMAIL -> {
+    RelationFormat.EMAIL -> {
         inputType = InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS
     }
-    ColumnView.Format.PHONE -> {
+    RelationFormat.PHONE -> {
         inputType = InputType.TYPE_CLASS_PHONE
     }
     else -> {

@@ -806,6 +806,7 @@ class ChatContainer @Inject constructor(
             Relations.SIZE_IN_BYTES,
             Relations.FILE_MIME_TYPE,
             Relations.FILE_EXT,
+            Relations.SYNC_STATUS
         )
     }
 

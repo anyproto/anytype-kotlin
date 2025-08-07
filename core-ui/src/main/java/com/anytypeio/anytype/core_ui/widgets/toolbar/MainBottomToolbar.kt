@@ -5,13 +5,13 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.databinding.WidgetMainBottomToolbarBinding
-import com.anytypeio.anytype.core_ui.reactive.clicks
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DEFAULT_DISABLED_ALPHA
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.reactive.clicks
 
 class MainBottomToolbar @JvmOverloads constructor(
     context: Context,
@@ -31,60 +31,63 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
     fun homeClicks() = binding.btnHome.clicks()
+    fun chatClicks() = binding.btnChat.clicks()
 
     fun setState(state: NavPanelState) {
-        when(state) {
-            is NavPanelState.Default -> {
-                setDefaultState(state)
-            }
-            NavPanelState.Init -> {
-                // Do nothing
-            }
+        updateCreate(state)
+        updateLeft(state)
+    }
+
+    private fun updateCreate(state: NavPanelState) {
+        val enabled = when (state) {
+            is NavPanelState.Default -> state.isCreateEnabled
+            is NavPanelState.Chat -> state.isCreateEnabled
+            NavPanelState.Init -> false
+        }
+        with(binding) {
+            val alpha = if (enabled) FULL_ALPHA else DEFAULT_DISABLED_ALPHA
+            icAddDoc.alpha = alpha
+            btnAddDoc.isEnabled = enabled
         }
     }
 
-    private fun setDefaultState(state: NavPanelState.Default) {
-        setLeftButtonState(state)
-        setCreateButtonState(state)
-    }
+    private fun updateLeft(state: NavPanelState) {
+        with(binding) {
+            // Hide all left items by default
+            btnShare.gone()
+            btnHome.gone()
+            btnChat.gone()
 
-    private fun setCreateButtonState(state: NavPanelState.Default) {
-        if (state.isCreateObjectButtonEnabled) {
-            binding.icAddDoc.alpha = FULL_ALPHA
-            binding.btnAddDoc.isEnabled = true
-        } else {
-            binding.icAddDoc.alpha = DEFAULT_DISABLED_ALPHA
-            binding.btnAddDoc.isEnabled = false
-        }
-    }
+            // Reset share icon to default
+            icShare.setImageResource(R.drawable.ic_nav_panel_add_member)
+            icShare.alpha = FULL_ALPHA
 
-    private fun setLeftButtonState(state: NavPanelState.Default) {
-        when (val left = state.leftButtonState) {
-            is NavPanelState.LeftButtonState.AddMembers -> {
-                binding.btnHome.gone()
-                binding.icShare.setImageResource(
-                    R.drawable.ic_nav_panel_add_member
-                )
-                if (left.isActive) {
-                    binding.icShare.alpha = FULL_ALPHA
-                } else {
-                    binding.icShare.alpha = DEFAULT_DISABLED_ALPHA
+            // Determine leftButtonState
+            val leftState = when (state) {
+                is NavPanelState.Default -> state.left
+                is NavPanelState.Chat -> state.left
+                NavPanelState.Init -> return
+            }
+
+            // Apply visibility & icon based on state
+            when (leftState) {
+                is NavPanelState.LeftButtonState.AddMembers -> {
+                    btnShare.visible()
+                    icShare.alpha = if (leftState.isActive) FULL_ALPHA else DEFAULT_DISABLED_ALPHA
                 }
-                binding.btnShare.visible()
-            }
-            is NavPanelState.LeftButtonState.Home -> {
-                binding.btnShare.gone()
-                binding.btnHome.visible()
-            }
-            is NavPanelState.LeftButtonState.Comment -> {
 
-            }
+                is NavPanelState.LeftButtonState.ViewMembers -> {
+                    // Use default icon and alpha
+                    btnShare.visible()
+                }
 
-            NavPanelState.LeftButtonState.ViewMembers -> {
-                binding.icShare.setImageResource(
-                    R.drawable.ic_nav_panel_add_member
-                )
-                binding.icShare.alpha = FULL_ALPHA
+                NavPanelState.LeftButtonState.Home -> {
+                    btnHome.visible()
+                }
+
+                NavPanelState.LeftButtonState.Chat -> {
+                    btnChat.visible()
+                }
             }
         }
     }

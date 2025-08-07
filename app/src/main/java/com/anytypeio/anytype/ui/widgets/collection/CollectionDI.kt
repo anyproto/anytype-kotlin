@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
@@ -211,4 +212,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun provideUserPermissionProvider(): UserPermissionProvider
     fun fieldParser(): FieldParser
     fun resourceProvider(): ResourceProvider
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

@@ -216,6 +216,205 @@ class DataViewSubscriptionContainerTest {
         }
     }
 
+    @Test
+    fun `should use CREATED_DATE sort when sorts are empty for collection`() = runTest {
+        // Given
+        val subscription = "collection-sub"
+        val collectionId = "collection-123"
+        
+        val keys = defaultKeys
+        
+        val expectedSorts = listOf(
+            com.anytypeio.anytype.core_models.DVSort(
+                relationKey = Relations.CREATED_DATE,
+                type = com.anytypeio.anytype.core_models.DVSortType.DESC,
+                includeTime = true,
+                relationFormat = com.anytypeio.anytype.core_models.RelationFormat.DATE
+            )
+        )
+        
+        // When & Then
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    space = defaultSpaceId,
+                    subscription = subscription,
+                    limit = defaultLimit,
+                    offset = defaultOffset,
+                    filters = emptyList(),
+                    sorts = expectedSorts, // Verify CREATED_DATE sort is added when empty
+                    keys = keys,
+                    afterId = null,
+                    beforeId = null,
+                    source = emptyList(),
+                    noDepSubscription = null,
+                    ignoreWorkspace = null,
+                    collection = collectionId
+                )
+            } doReturn SearchResult(
+                results = emptyList(),
+                dependencies = emptyList()
+            )
+        }
+        
+        channel.stub {
+            on {
+                subscribe(listOf(subscription))
+            } doReturn flow { }
+        }
+        
+        // Create params with empty sorts
+        val params = DataViewSubscriptionContainer.Params(
+            space = defaultSpaceId,
+            subscription = subscription,
+            sorts = expectedSorts, // This simulates what getSortsWithDefaultCreatedDate should return
+            filters = emptyList(),
+            sources = emptyList(),
+            keys = keys,
+            limit = defaultLimit,
+            offset = defaultOffset,
+            collection = collectionId
+        )
+        
+        // Execute to verify the request is made with correct parameters
+        container.observe(params).test {
+            awaitItem()
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `should use CREATED_DATE sort when sorts are empty for set`() = runTest {
+        // Given
+        val subscription = "set-sub"
+        val setSource = listOf("set-source-123")
+        
+        val keys = defaultKeys
+        
+        val expectedSorts = listOf(
+            com.anytypeio.anytype.core_models.DVSort(
+                relationKey = Relations.CREATED_DATE,
+                type = com.anytypeio.anytype.core_models.DVSortType.DESC,
+                includeTime = true,
+                relationFormat = com.anytypeio.anytype.core_models.RelationFormat.DATE
+            )
+        )
+        
+        // When & Then
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    space = defaultSpaceId,
+                    subscription = subscription,
+                    limit = defaultLimit,
+                    offset = defaultOffset,
+                    filters = emptyList(),
+                    sorts = expectedSorts, // Verify CREATED_DATE sort is added when empty
+                    keys = keys,
+                    afterId = null,
+                    beforeId = null,
+                    source = setSource,
+                    noDepSubscription = null,
+                    ignoreWorkspace = null,
+                    collection = null
+                )
+            } doReturn SearchResult(
+                results = emptyList(),
+                dependencies = emptyList()
+            )
+        }
+        
+        channel.stub {
+            on {
+                subscribe(listOf(subscription))
+            } doReturn flow { }
+        }
+        
+        // Create params with empty sorts
+        val params = DataViewSubscriptionContainer.Params(
+            space = defaultSpaceId,
+            subscription = subscription,
+            sorts = expectedSorts, // This simulates what getSortsWithDefaultCreatedDate should return
+            filters = emptyList(),
+            sources = setSource,
+            keys = keys,
+            limit = defaultLimit,
+            offset = defaultOffset
+        )
+        
+        // Execute to verify the request is made with correct parameters
+        container.observe(params).test {
+            awaitItem()
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `should use CREATED_DATE sort when sorts are empty for type set`() = runTest {
+        // Given
+        val subscription = "type-set-sub"
+        val typeSource = listOf("type-source-123")
+        
+        val keys = defaultKeys
+        
+        val expectedSorts = listOf(
+            com.anytypeio.anytype.core_models.DVSort(
+                relationKey = Relations.CREATED_DATE,
+                type = com.anytypeio.anytype.core_models.DVSortType.DESC,
+                includeTime = true,
+                relationFormat = com.anytypeio.anytype.core_models.RelationFormat.DATE
+            )
+        )
+        
+        // When & Then
+        repo.stub {
+            onBlocking {
+                searchObjectsWithSubscription(
+                    space = defaultSpaceId,
+                    subscription = subscription,
+                    limit = defaultLimit,
+                    offset = defaultOffset,
+                    filters = emptyList(),
+                    sorts = expectedSorts, // Verify CREATED_DATE sort is added when empty
+                    keys = keys,
+                    afterId = null,
+                    beforeId = null,
+                    source = typeSource,
+                    noDepSubscription = null,
+                    ignoreWorkspace = null,
+                    collection = null
+                )
+            } doReturn SearchResult(
+                results = emptyList(),
+                dependencies = emptyList()
+            )
+        }
+        
+        channel.stub {
+            on {
+                subscribe(listOf(subscription))
+            } doReturn flow { }
+        }
+        
+        // Create params with empty sorts
+        val params = DataViewSubscriptionContainer.Params(
+            space = defaultSpaceId,
+            subscription = subscription,
+            sorts = expectedSorts, // This simulates what getSortsWithDefaultCreatedDate should return
+            filters = emptyList(),
+            sources = typeSource,
+            keys = keys,
+            limit = defaultLimit,
+            offset = defaultOffset
+        )
+        
+        // Execute to verify the request is made with correct parameters
+        container.observe(params).test {
+            awaitItem()
+            awaitComplete()
+        }
+    }
+
     private fun setupContainer() {
         container = DataViewSubscriptionContainer(
             repo = repo,

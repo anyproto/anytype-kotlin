@@ -211,7 +211,8 @@ fun Bubble(
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                     showDropdownMenu = true
                 },
-                onRequestVideoPlayer = onRequestVideoPlayer
+                onRequestVideoPlayer = onRequestVideoPlayer,
+                isUserAuthor = isUserAuthor
             )
             if (content.msg.isNotEmpty()) {
                 Box(

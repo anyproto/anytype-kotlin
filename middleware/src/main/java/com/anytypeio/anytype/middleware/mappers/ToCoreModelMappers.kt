@@ -638,6 +638,9 @@ fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
     MDVFilterQuickOption.NextMonth -> DVFilterQuickOption.NEXT_MONTH
     MDVFilterQuickOption.NumberOfDaysAgo -> DVFilterQuickOption.DAYS_AGO
     MDVFilterQuickOption.NumberOfDaysNow -> DVFilterQuickOption.DAYS_AHEAD
+    MDVFilterQuickOption.LastYear -> DVFilterQuickOption.LAST_YEAR
+    MDVFilterQuickOption.CurrentYear -> DVFilterQuickOption.CURRENT_YEAR
+    MDVFilterQuickOption.NextYear -> DVFilterQuickOption.NEXT_YEAR
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
@@ -111,7 +113,8 @@ class CollectionViewModel(
     private val dateTypeNameProvider: DateTypeNameProvider,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel(), Reducer<CoreObjectView, Payload>, AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val payloads: Flow<Payload>
@@ -198,7 +201,10 @@ class CollectionViewModel(
         viewModelScope.launch {
             permission
                 .map { permission ->
-                    NavPanelState.fromPermission(permission)
+                    NavPanelState.fromPermission(
+                        permission = permission,
+                        spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA
+                    )
                 }.collect {
                     navPanelState.value = it
                 }
@@ -1068,7 +1074,8 @@ class CollectionViewModel(
         private val dateTypeNameProvider: DateTypeNameProvider,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val userPermissionProvider: UserPermissionProvider,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -1097,7 +1104,8 @@ class CollectionViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 userPermissionProvider = userPermissionProvider,
                 vmParams = vmParams,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                spaceViews = spaceViews
             ) as T
         }
     }

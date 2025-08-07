@@ -1,9 +1,5 @@
 package com.anytypeio.anytype.feature_chats.ui
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,10 +7,12 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.Card
@@ -52,12 +50,12 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import coil3.request.CachePolicy
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 fun BubbleAttachments(
     attachments: List<ChatView.Message.Attachment>,
     onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
     onAttachmentLongClicked: (ChatView.Message.Attachment) -> Unit,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
+    isUserAuthor: Boolean = false
 ) {
     var isVideoPreviewLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -70,7 +68,8 @@ fun BubbleAttachments(
                     BubbleGalleryRowLayout(
                         onAttachmentClicked = onAttachmentClicked,
                         onAttachmentLongClicked = onAttachmentLongClicked,
-                        images = attachment.images.slice(index until index + rowSize)
+                        images = attachment.images.slice(index until index + rowSize),
+                        isUserAuthor = isUserAuthor
                     )
                     if (idx != rowConfig.lastIndex) {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -79,6 +78,7 @@ fun BubbleAttachments(
                 }
             }
             is ChatView.Message.Attachment.Video -> {
+                val isSyncing = attachment.status !is ChatView.Message.Attachment.SyncStatus.Syncing
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -117,12 +117,64 @@ fun BubbleAttachments(
                             isVideoPreviewLoaded = state is AsyncImagePainter.State.Success
                         }
                     )
-                    if (isVideoPreviewLoaded) {
-                        Image(
-                            modifier = Modifier.align(Alignment.Center),
-                            painter = painterResource(id = R.drawable.ic_chat_attachment_play),
-                            contentDescription = "Play button"
-                        )
+                    if (isVideoPreviewLoaded && attachment.isSyncing) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(48.dp)
+                                .background(
+                                    color = colorResource(R.color.transparent_active),
+                                    shape = CircleShape
+                                )
+                        ) {
+                            Image(
+                                modifier = Modifier.align(Alignment.Center).size(24.dp),
+                                painter = painterResource(id = R.drawable.ic_player_play),
+                                contentDescription = "Play button"
+                            )
+                        }
+                    }
+                    when(attachment.status) {
+                        ChatView.Message.Attachment.SyncStatus.Failed -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = colorResource(R.color.transparent_active),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center),
+                                painter = painterResource(R.drawable.ic_sync_status_failed_52),
+                                contentDescription = "Sync status failed"
+                            )
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Syncing -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = colorResource(R.color.transparent_active),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            )
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center)
+                                    .size(48.dp),
+                                color = colorResource(R.color.glyph_active),
+                                trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                                strokeWidth = 4.dp
+                            )
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Unknown -> {
+                            // Do nothing.
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Synced -> {
+                            // Do nothing.
+                        }
                     }
                 }
             }
@@ -145,14 +197,14 @@ fun BubbleAttachments(
                         strokeWidth = 4.dp
                     )
                     AsyncImage(
-                        model = coil3.request.ImageRequest.Builder(context)
+                        model = ImageRequest.Builder(context)
                             .data(attachment.url)
                             .size(1024, 1024)
                             .diskCachePolicy(CachePolicy.ENABLED)
                             .memoryCachePolicy(CachePolicy.ENABLED)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Attachment image",
+                        contentDescription = stringResource(R.string.attachment_image),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .size(292.dp)
@@ -166,6 +218,48 @@ fun BubbleAttachments(
                                 }
                             )
                     )
+                    when(attachment.status) {
+                        ChatView.Message.Attachment.SyncStatus.Failed -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = colorResource(R.color.transparent_active),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center),
+                                painter = painterResource(R.drawable.ic_sync_status_failed_52),
+                                contentDescription = "Sync status failed"
+                            )
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Syncing -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = colorResource(R.color.transparent_active),
+                                        shape = RoundedCornerShape(12.dp)
+                                    )
+                            )
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center)
+                                    .size(48.dp),
+                                color = colorResource(R.color.glyph_active),
+                                trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                                strokeWidth = 4.dp
+                            )
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Unknown -> {
+                            // Do nothing.
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Synced -> {
+                            // Do nothing.
+                        }
+                    }
                 }
             }
             is ChatView.Message.Attachment.Link -> {

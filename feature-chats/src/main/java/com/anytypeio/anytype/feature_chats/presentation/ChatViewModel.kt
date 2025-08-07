@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
+import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -384,7 +385,10 @@ class ChatViewModel @Inject constructor(
                                         target = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
-                                        ext = wrapper?.fileExt.orEmpty()
+                                        ext = wrapper?.fileExt.orEmpty(),
+                                        status = wrapper
+                                            ?.syncStatus()
+                                            ?: ChatView.Message.Attachment.SyncStatus.Unknown
                                     )
                                 }
                                 else -> {
@@ -395,7 +399,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.VIDEO -> {
@@ -403,7 +408,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.BOOKMARK -> {
@@ -1167,8 +1173,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed(isSpaceRoot: Boolean) {
-        Timber.d("onBackButtonPressed, isSpaceRoot: $isSpaceRoot")
+    fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
@@ -1182,17 +1188,14 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            if (isSpaceRoot) {
-                Timber.d("Root space screen. Releasing resources...")
-                proceedWithClearingSpaceBeforeExitingToVault()
-            }
+            proceedWithClearingSpaceBeforeExitingToVault()
             commands.emit(ViewModelCommand.Exit)
         }
     }
 
-    fun onSpaceNameClicked(isSpaceRoot: Boolean) {
-        Timber.d("onSpaceNameClicked, isSpaceRoot: $isSpaceRoot")
-        onBackButtonPressed(isSpaceRoot = isSpaceRoot)
+    fun onSpaceNameClicked() {
+        Timber.d("onSpaceNameClicked")
+        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {
@@ -1609,6 +1612,10 @@ class ChatViewModel @Inject constructor(
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
+    
+    fun onCameraPermissionDenied() {
+        errorState.value = UiErrorState.CameraPermissionDenied
+    }
 
     private fun proceedWithSpaceSubscription() {
         viewModelScope.launch {
@@ -1714,6 +1721,7 @@ class ChatViewModel @Inject constructor(
     sealed class UiErrorState {
         data object Hidden : UiErrorState()
         data class Show(val msg: String) : UiErrorState()
+        data object CameraPermissionDenied : UiErrorState()
     }
 
     sealed class Params {

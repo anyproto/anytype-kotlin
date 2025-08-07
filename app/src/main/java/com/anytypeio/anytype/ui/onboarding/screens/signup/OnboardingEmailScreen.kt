@@ -35,9 +35,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -221,18 +221,20 @@ fun OnboardingEmailScreen(
                 isLoading = isLoading,
                 enabled = innerValue.text.isNotEmpty()
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            OnBoardingButtonSecondary(
-                text = stringResource(id = R.string.onboarding_button_skip),
-                onClick = {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                    onSkipClicked()
-                },
-                textColor = colorResource(id = R.color.text_white),
-                size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            if (!BuildConfig.MANDATORY_EMAIL_COLLECTION) {
+                Spacer(modifier = Modifier.height(8.dp))
+                OnBoardingButtonSecondary(
+                    text = stringResource(id = R.string.onboarding_button_skip),
+                    onClick = {
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
+                        onSkipClicked()
+                    },
+                    textColor = colorResource(id = R.color.text_white),
+                    size = ButtonSize.Large,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
         }
     }
 }

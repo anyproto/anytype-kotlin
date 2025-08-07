@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -175,6 +177,27 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun provideChatPreviewContainer(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        dispatchers: AppCoroutineDispatchers,
+        repo: BlockRepository,
+        logger: Logger,
+        events: ChatEventChannel,
+        subscription: StorelessSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ): ChatPreviewContainer = ChatPreviewContainer.Default(
+        repo = repo,
+        dispatchers = dispatchers,
+        scope = scope,
+        logger = logger,
+        events = events,
+        subscription = subscription,
+        awaitAccountStart = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun profileSubscriptionManager(
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
@@ -232,7 +255,8 @@ object SubscriptionsModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
-        pushKeyProvider: PushKeyProvider
+        pushKeyProvider: PushKeyProvider,
+        logger: Logger
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
@@ -241,7 +265,8 @@ object SubscriptionsModule {
         profile = profileSubscriptionManager,
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
-        pushKeyProvider = pushKeyProvider
+        pushKeyProvider = pushKeyProvider,
+        logger = logger
     )
 
     @JvmStatic

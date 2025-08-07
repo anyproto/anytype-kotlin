@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -47,7 +48,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.chats.SpaceChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -237,7 +238,7 @@ class HomeScreenViewModel(
     private val deleteSpace: DeleteSpace,
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
-    private val chatPreviews: SpaceChatPreviewContainer,
+    private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
@@ -410,10 +411,15 @@ class HomeScreenViewModel(
                 spaceAccessType,
                 userPermissions
             ) { type, permission ->
+                val spaceId = spaceManager.get()
+                val spaceUxType =
+                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
+                        ?: SpaceUxType.DATA
                 NavPanelState.fromPermission(
                     permission = permission,
                     forceHome = false,
-                    spaceAccessType = type
+                    spaceAccess = type,
+                    spaceUxType = spaceUxType
                 )
             }.collect {
                 navPanelState.value = it
@@ -1443,10 +1449,6 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        viewModelScope.launch {
-            val space = spaceManager.get()
-            chatPreviews.start(SpaceId(space))
-        }
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
@@ -1538,7 +1540,6 @@ class HomeScreenViewModel(
                 )
             )
         }
-        chatPreviews.stop()
     }
 
     private fun proceedWithExitingEditMode() {
@@ -1954,8 +1955,12 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onBackClicked(isSpaceRoot: Boolean) {
-        proceedWithExiting(isSpaceRoot)
+    fun onBackClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.HandleChatSpaceBackNavigation
+            )
+        }
     }
 
     private fun proceedWithExiting(isSpaceRoot: Boolean) {
@@ -2697,7 +2702,6 @@ class HomeScreenViewModel(
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
-        private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
@@ -2728,7 +2732,7 @@ class HomeScreenViewModel(
         private val deleteSpace: DeleteSpace,
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
-        private val chatPreviews: SpaceChatPreviewContainer,
+        private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -2903,6 +2907,8 @@ sealed class Command {
     data class ShowInviteLinkQrCode(val link: String) : Command()
 
     data object ShowLeaveSpaceWarning : Command()
+
+    data object HandleChatSpaceBackNavigation : Command()
 }
 
 /**
@@ -2936,19 +2942,30 @@ sealed class OpenObjectNavigation {
 /**
  * @param [attachmentTarget] optional target, to which the object will be attached
  */
-fun ObjectWrapper.Basic.navigation(effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None) : OpenObjectNavigation {
+fun ObjectWrapper.Basic.navigation(
+    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
+    openBookmarkAsObject: Boolean = false,
+) : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BOOKMARK -> {
-            val url = getValue<String>(Relations.SOURCE)
-            if (url.isNullOrEmpty()) {
+            if (openBookmarkAsObject) {
                 OpenObjectNavigation.OpenEditor(
                     target = id,
                     space = requireNotNull(spaceId),
                     effect = effect
                 )
             } else {
-                OpenObjectNavigation.OpenBookmarkUrl(url)
+                val url = getValue<String>(Relations.SOURCE)
+                if (url.isNullOrEmpty()) {
+                    OpenObjectNavigation.OpenEditor(
+                        target = id,
+                        space = requireNotNull(spaceId),
+                        effect = effect
+                    )
+                } else {
+                    OpenObjectNavigation.OpenBookmarkUrl(url)
+                }
             }
         }
         ObjectType.Layout.BASIC,

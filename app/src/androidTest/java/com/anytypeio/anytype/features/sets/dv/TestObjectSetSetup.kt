@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
@@ -194,6 +195,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
+    @Mock
+    lateinit var spacedViews: SpaceViewSubscriptionContainer
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
@@ -333,7 +337,8 @@ abstract class TestObjectSetSetup {
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spacedViews
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

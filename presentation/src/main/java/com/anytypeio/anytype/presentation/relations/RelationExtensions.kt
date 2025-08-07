@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.extension.getOptionObject
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -15,7 +16,6 @@ import com.anytypeio.anytype.presentation.objects.buildRelationValueObjectViews
 import com.anytypeio.anytype.presentation.sets.*
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import java.util.*
 
 suspend fun List<ObjectWrapper.Relation>.views(
     details: ObjectViewDetails,
@@ -180,10 +180,10 @@ suspend fun ObjectWrapper.Relation.view(
 object FilterInputValueParser {
     fun parse(
         value: String?,
-        format: ColumnView.Format,
+        format: RelationFormat,
         condition: Viewer.Filter.Condition
     ): Any? = when (format) {
-        ColumnView.Format.NUMBER -> {
+        RelationFormat.NUMBER -> {
             if (value.isNullOrBlank()) {
                 NUMBER_DEFAULT_VALUE
             } else {

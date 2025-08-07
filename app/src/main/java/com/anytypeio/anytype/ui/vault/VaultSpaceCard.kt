@@ -154,7 +154,6 @@ fun VaultChatCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: SpaceIconView,
-    previewText: String? = null,
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
@@ -186,7 +185,7 @@ fun VaultChatCard(
         )
         ContentChat(
             title = title,
-            subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty(),
+            subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
@@ -636,7 +635,6 @@ fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -674,7 +672,6 @@ fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -711,7 +708,6 @@ fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",

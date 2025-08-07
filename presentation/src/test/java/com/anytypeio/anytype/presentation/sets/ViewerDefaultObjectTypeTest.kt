@@ -1,8 +1,12 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -100,20 +104,37 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                     relationLink2,
                     relationLink3,
                     relationLink4,
-                    relationLink5
+                    relationLink5,
+                    StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
                 )
             )
             stubOpenObject(
                 doc = listOf(header, title, dataViewWith3Views),
                 details = details
             )
+            
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
-                keys = dvKeys,
+                keys = dvKeys, // without createdDate
                 sources = listOf(setOfValue),
-                dvFilters = filters
+                dvSorts = listOf(
+                    DVSort(
+                        relationKey = Relations.CREATED_DATE,
+                        type = Block.Content.DataView.Sort.Type.DESC,
+                        relationFormat = RelationFormat.DATE,
+                        includeTime = true
+                    )
+                ),
+                dvFilters = filters,
+                dvRelationLinks = listOf(
+                    relationLink1,
+                    relationLink2,
+                    relationLink3,
+                    relationLink4,
+                    relationLink5,
+                    StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+                )
             )
             stubTemplatesForTemplatesContainer()
         }
@@ -178,21 +199,39 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                     relationLink2,
                     relationLink3,
                     relationLink4,
-                    relationLink5
+                    relationLink5,
+                    StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
                 )
             )
             stubOpenObject(
                 doc = listOf(header, title, dataViewWith3Views),
                 details = detailsSetByRelation
             )
+            
             stubSubscriptionResults(
                 subscription = subscriptionId,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
-                keys = dvKeys,
+                keys = dvKeys, // without createdDate
                 sources = listOf(relationObject3.id),
-                dvFilters = filters
+                dvSorts = listOf(
+                    DVSort(
+                        relationKey = Relations.CREATED_DATE,
+                        type = Block.Content.DataView.Sort.Type.DESC,
+                        relationFormat = RelationFormat.DATE,
+                        includeTime = true
+                    )
+                ),
+                dvFilters = filters,
+                dvRelationLinks = listOf(
+                    relationLink1,
+                    relationLink2,
+                    relationLink3,
+                    relationLink4,
+                    relationLink5,
+                    StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+                )
             )
+
             stubTemplatesForTemplatesContainer()
         }
 
@@ -268,7 +307,6 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                 subscription = this.subscriptionId,
                 collection = root,
                 spaceId = spaceId,
-                storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 objects = listOf(obj1, obj2),
                 dvSorts = sorts

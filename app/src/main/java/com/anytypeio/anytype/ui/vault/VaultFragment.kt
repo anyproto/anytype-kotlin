@@ -1,16 +1,20 @@
 package com.anytypeio.anytype.ui.vault
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,6 +24,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
@@ -29,7 +34,7 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
 import com.anytypeio.anytype.presentation.vault.VaultErrors
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
-import com.anytypeio.anytype.presentation.vault.VaultSectionView.Companion.MAX_PINNED_SPACES
+import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -45,6 +50,7 @@ import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_T
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
+import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -56,6 +62,32 @@ class VaultFragment : BaseComposeFragment() {
     lateinit var factory: VaultViewModelFactory
 
     private val vm by viewModels<VaultViewModel> { factory }
+
+    private val qrCodeLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
+        if (r != null && r.contents != null) {
+            vm.onQrCodeScanned(qrCode = r.contents)
+        } else {
+            if (r == null) {
+                Timber.w("QR code scan cancelled by user")
+            } else {
+                Timber.w("QR code scan failed: no contents found")
+            }
+            vm.onQrScannerError()
+        }
+    }
+    
+    private val cameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            launchQrScanner()
+        } else {
+            vm.onShowCameraPermissionSettingsDialog()
+        }
+    }
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -73,14 +105,13 @@ class VaultFragment : BaseComposeFragment() {
                     vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
                 }
 
-                VaultScreenWithUnreadSection(
-                    sections = vm.sections.collectAsStateWithLifecycle().value,
+                VaultScreen(
+                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
                     showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                     onSpaceClicked = vm::onSpaceClicked,
                     onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                     onSettingsClicked = vm::onSettingsClicked,
                     profile = vm.profileView.collectAsStateWithLifecycle().value,
-                    isLoading = vm.loadingState.collectAsStateWithLifecycle().value,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
                     onPinSpace = vm::onPinSpaceClicked,
@@ -116,6 +147,40 @@ class VaultFragment : BaseComposeFragment() {
                     VaultErrors.Hidden -> {
                         //do nothing
                     }
+
+                    VaultErrors.QrCodeIsNotValid -> {
+                        AlertScreenModals(
+                            title = getString(R.string.vault_qr_invalid_title),
+                            description = getString(R.string.vault_qr_invalid_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
+                        )
+                    }
+
+                    VaultErrors.QrScannerError -> {
+                        AlertScreenModals(
+                            title = getString(R.string.vault_qr_scan_error_title),
+                            description = getString(R.string.vault_qr_scan_error_description),
+                            firstButtonText = getString(R.string.vault_qr_try_again),
+                            onAction = vm::onModalTryAgainClicked,
+                            onDismiss = vm::onModalCancelClicked
+                        )
+                    }
+                    
+                    VaultErrors.CameraPermissionDenied -> {
+                        AlertScreenModals(
+                            title = getString(R.string.camera_permission_required_title),
+                            description = getString(R.string.camera_permission_settings_message),
+                            firstButtonText = getString(R.string.open_settings),
+                            secondButtonText = getString(R.string.cancel),
+                            onAction = {
+                                requireContext().openAppSettings()
+                                vm.clearVaultError()
+                            },
+                            onDismiss = vm::clearVaultError
+                        )
+                    }
                 }
 
                 if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
@@ -125,6 +190,9 @@ class VaultFragment : BaseComposeFragment() {
                         },
                         onCreateSpaceClicked = {
                             vm.onCreateSpaceClicked()
+                        },
+                        onJoinViaQrClicked = {
+                            vm.onJoinViaQrClicked()
                         },
                         onDismiss = {
                             vm.onChooseSpaceTypeDismissed()
@@ -275,6 +343,21 @@ class VaultFragment : BaseComposeFragment() {
                     Timber.e(e, "Error while opening space settings")
                 }
             }
+            
+            VaultCommand.ScanQrCode -> {
+                handleCameraPermissionAndScan()
+            }
+            
+            is VaultCommand.NavigateToRequestJoinSpace -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.requestJoinSpaceScreen,
+                        RequestJoinSpaceFragment.args(link = command.link)
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to request join space")
+                }
+            }
         }
     }
 
@@ -393,16 +476,6 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        vm.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
-    }
-
     override fun onResume() {
         super.onResume()
         proceedWithDeepLinks()
@@ -426,6 +499,29 @@ class VaultFragment : BaseComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().vaultComponent.release()
+    }
+
+    private fun handleCameraPermissionAndScan() {
+        when {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                launchQrScanner()
+            }
+            else -> {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
+        }
+    }
+    
+    private fun launchQrScanner() {
+        qrCodeLauncher.launch(
+            IntentIntegrator
+                .forSupportFragment(this)
+                .setBeepEnabled(false)
+                .createScanIntent()
+        )
     }
 
     companion object {

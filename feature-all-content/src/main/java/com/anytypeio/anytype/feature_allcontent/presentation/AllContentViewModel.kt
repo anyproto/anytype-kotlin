@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -107,7 +110,8 @@ class AllContentViewModel(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -146,7 +150,12 @@ class AllContentViewModel(
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
-    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
+    val navPanelState = permission.map { permission ->
+        NavPanelState.fromPermission(
+            permission = permission,
+            spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA,
+        )
+    }
 
     init {
         Timber.d("AllContentViewModel init, spaceId:[${vmParams.spaceId.id}]")
@@ -612,6 +621,16 @@ class AllContentViewModel(
         Timber.d("onItemClicked: ${item.id}")
         proceedWithNavigation(
             navigation = item.obj.navigation()
+        )
+        viewModelScope.launch {
+            sendAnalyticsAllContentResult(analytics = analytics)
+        }
+    }
+
+    fun onOpenAsObject(item: UiContentItem.Item) {
+        Timber.d("onOpenAsObject: $item")
+        proceedWithNavigation(
+            navigation = item.obj.navigation(openBookmarkAsObject = true)
         )
         viewModelScope.launch {
             sendAnalyticsAllContentResult(analytics = analytics)

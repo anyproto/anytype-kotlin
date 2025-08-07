@@ -716,7 +716,8 @@ object ObjectSearchConstants {
         Relations.FILE_MIME_TYPE,
         Relations.RESTRICTIONS,
         Relations.TARGET_OBJECT_TYPE,
-        Relations.SOURCE
+        Relations.SOURCE,
+        Relations.CREATED_DATE
     )
 
     val defaultFilesKeys = defaultKeys + listOf(

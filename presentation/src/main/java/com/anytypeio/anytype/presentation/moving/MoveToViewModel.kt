@@ -4,24 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.buildDeletedFilter
+import com.anytypeio.anytype.presentation.search.buildLayoutFilter
+import com.anytypeio.anytype.presentation.search.buildSpaceIdFilter
+import com.anytypeio.anytype.presentation.search.buildTemplateFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -39,7 +40,6 @@ class MoveToViewModel(
     private val vmParams: VmParams,
     urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
-    private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
@@ -56,19 +56,18 @@ class MoveToViewModel(
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
-    val types = MutableStateFlow<Resultat<List<ObjectWrapper.Type>>>(Resultat.Loading())
     val objects = MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
 
     init {
         viewModelScope.launch {
-            combine(objects, types) { listOfObjects, listOfTypes ->
-                if (listOfObjects.isLoading || listOfTypes.isLoading) {
+            combine(objects, storeOfObjectTypes.trackChanges()) { listOfObjects, _ ->
+                if (listOfObjects.isLoading) {
                     Resultat.Loading()
                 } else {
                     Resultat.success(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
-                            objectTypes = listOfTypes.getOrThrow(),
+                            objectTypes = storeOfObjectTypes.getAll(),
                             fieldParser = fieldParser,
                             storeOfObjectTypes = storeOfObjectTypes
                         )
@@ -92,14 +91,14 @@ class MoveToViewModel(
 
     fun onStart(ctx: Id) {
         Timber.d("onStart, ctx:[$ctx]")
-        getObjectTypes(ctx)
+        startProcessingSearchQuery(ctx)
     }
 
     private fun startProcessingSearchQuery(ctx: Id) {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 objects.value = Resultat.Loading()
-                val params = getSearchObjectsParams(ctx).copy(fulltext = query)
+                val params = getSearchObjectsParams().copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects ->
                         setObjects(
@@ -130,37 +129,18 @@ class MoveToViewModel(
         }
     }
 
-    private fun getObjectTypes(ctx: Id) {
-        viewModelScope.launch {
-            val params = GetObjectTypes.Params(
-                space = vmParams.space,
-                sorts = emptyList(),
-                filters = ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorLayouts
-                ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
-            )
-            getObjectTypes.execute(params).fold(
-                onFailure = { Timber.e(it, "Error while getting object types") },
-                onSuccess = {
-                    types.value = Resultat.success(it)
-                    startProcessingSearchQuery(ctx)
-                }
-            )
+    private fun getSearchObjectsParams(): SearchObjects.Params {
+        val filters = buildList {
+            addAll(buildDeletedFilter())
+            add(buildLayoutFilter(layouts = DEFAULT_MOVE_LAYOUTS))
+            add(buildSpaceIdFilter(listOf(vmParams.space.id)))
+            add(buildTemplateFilter())
         }
-    }
-
-    private fun getSearchObjectsParams(ctx: Id): SearchObjects.Params {
-        val filteredTypes = types.value.getOrDefault(emptyList()).map { objectType -> objectType.id }
 
         return SearchObjects.Params(
             space = vmParams.space,
             limit = SEARCH_LIMIT,
-            filters = ObjectSearchConstants.filterMoveTo(
-                ctx = ctx,
-                types = filteredTypes,
-                space = vmParams.space.id
-            ),
+            filters = filters,
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,
             keys = ObjectSearchConstants.defaultKeys
@@ -183,10 +163,8 @@ class MoveToViewModel(
     }
 
     private fun setObjects(ctx: Id, data: List<ObjectWrapper.Basic>) {
-        objects.value = Resultat.success(data
-            .filter {
-                SupportedLayouts.layouts.contains(it.layout) && it.id != ctx
-            })
+        objects.value = Resultat.success(
+            data.filter { it.id != ctx })
     }
 
     data class VmParams(
@@ -203,5 +181,12 @@ class MoveToViewModel(
         const val EMPTY_QUERY = ""
         const val DEBOUNCE_DURATION = 300L
         const val SEARCH_LIMIT = 200
+
+        val DEFAULT_MOVE_LAYOUTS = listOf(
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.NOTE
+        )
     }
 }

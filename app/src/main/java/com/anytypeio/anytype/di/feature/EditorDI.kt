@@ -55,6 +55,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -288,7 +289,8 @@ object EditorSessionModule {
         getNetworkMode: GetNetworkMode,
         clearLastOpenedObject: ClearLastOpenedObject,
         fieldParser: FieldParser,
-        dateProvider: DateProvider
+        dateProvider: DateProvider,
+        spaceViews: SpaceViewSubscriptionContainer
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -336,7 +338,8 @@ object EditorSessionModule {
         clearLastOpenedObject = clearLastOpenedObject,
         syncStatusProvider = syncStatusProvider,
         fieldParser = fieldParser,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        spaceViews = spaceViews
     )
 
     @JvmStatic
@@ -693,24 +696,6 @@ object EditorUseCaseModule {
     ): DownloadFile = DownloadFile(
         downloader = downloader,
         context = Dispatchers.Main
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideUndoUseCase(
-        repo: BlockRepository
-    ): Undo = Undo(
-        repo = repo
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideRedoUseCase(
-        repo: BlockRepository
-    ): Redo = Redo(
-        repo = repo
     )
 
     @JvmStatic

@@ -67,6 +67,7 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -120,11 +121,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                         onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
                         membersCount = view?.membersCount ?: 0,
                         name = view?.space?.name.orEmpty(),
-                        onBackButtonClicked = {
-                            vm.onBackClicked(
-                                isSpaceRoot = isSpaceRootScreen()
-                            )
-                        },
+                        onBackButtonClicked = vm::onBackClicked,
                         onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
                     )
                     PageWithWidgets(
@@ -161,9 +158,7 @@ class HomeScreenFragment : BaseComposeFragment(),
             }
 
             BackHandler {
-                vm.onBackClicked(
-                    isSpaceRoot = isSpaceRootScreen()
-                )
+                vm.onBackClicked()
             }
         }
     }
@@ -442,6 +437,17 @@ class HomeScreenFragment : BaseComposeFragment(),
                     duration = Toast.LENGTH_LONG
                 )
             }
+            is Command.HandleChatSpaceBackNavigation -> {
+                runCatching {
+                    // Back to ChatFragment if that was previous
+                    val result = findNavController().popBackStack(R.id.chatScreen, false)
+                    if (!result) {
+                        findNavController().navigate(R.id.action_back_on_vault)
+                    }
+                }.onFailure {
+                    Timber.e(it, "Error while handling home screen back navigation")
+                }
+            }
         }
     }
 
@@ -583,9 +589,4 @@ class HomeScreenFragment : BaseComposeFragment(),
             SPACE_ID_KEY to space
         )
     }
-}
-
-fun Fragment.isSpaceRootScreen() : Boolean {
-    val previous = findNavController().previousBackStackEntry
-    return previous?.destination?.id == R.id.vaultScreen
 }

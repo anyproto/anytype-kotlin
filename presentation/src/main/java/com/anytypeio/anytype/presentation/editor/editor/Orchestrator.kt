@@ -121,7 +121,7 @@ class Orchestrator(
                             val middlewareTime = System.currentTimeMillis()
                             stores.focus.update(Focus.id(id = id))
                             proxies.payloads.send(payload)
-                            intent.onSuccess?.invoke()
+                            intent.onSuccess?.invoke(id)
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
@@ -147,6 +147,7 @@ class Orchestrator(
                             val middlewareTime = System.currentTimeMillis()
                             stores.focus.update(Focus.id(id = id))
                             proxies.payloads.send(payload)
+                            intent.onSuccess?.invoke(id)
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
@@ -385,35 +386,48 @@ class Orchestrator(
                     )
                 }
                 is Intent.Document.Redo -> {
-                    redo(
-                        params = Redo.Params(
-                            context = intent.context
-                        )
-                    ).proceed(
-                        failure = defaultOnError,
-                        success = { result ->
-                            if (result is Redo.Result.Success) {
-                                proxies.payloads.send(result.payload)
-                                analytics.sendAnalyticsRedoEvent()
-                            } else {
-                                intent.onRedoExhausted()
+                    val params = Redo.Params(
+                        context = intent.context
+                    )
+                    redo.async(
+                        params = params
+                    ).fold(
+                        onFailure = {
+                            Timber.e("Error while redoing: $it")
+                        },
+                        onSuccess = { result ->
+                            when (result) {
+                                Redo.Result.Exhausted -> {
+                                    analytics.sendAnalyticsRedoEvent(false)
+                                    intent.onRedoExhausted()
+                                }
+                                is Redo.Result.Success -> {
+                                    analytics.sendAnalyticsRedoEvent(true)
+                                    proxies.payloads.send(result.payload)
+                                }
                             }
                         }
                     )
                 }
                 is Intent.Document.Undo -> {
-                    undo(
-                        params = Undo.Params(
-                            context = intent.context
-                        )
-                    ).proceed(
-                        failure = defaultOnError,
-                        success = { result ->
-                            if (result is Undo.Result.Success) {
-                                proxies.payloads.send(result.payload)
-                                analytics.sendAnalyticsUndoEvent()
-                            } else {
-                                intent.onUndoExhausted()
+                    val params = Undo.Params(
+                        context = intent.context
+                    )
+                    undo.async(params).fold(
+                        onFailure = {
+                            Timber.e("Error while undoing: $it")
+                        },
+                        onSuccess = { result ->
+                            when (result) {
+                                Undo.Result.Exhausted -> {
+                                    analytics.sendAnalyticsUndoEvent(false)
+                                    intent.onUndoExhausted()
+                                }
+
+                                is Undo.Result.Success -> {
+                                    analytics.sendAnalyticsUndoEvent(true)
+                                    proxies.payloads.send(result.payload)
+                                }
                             }
                         }
                     )

@@ -1882,4 +1882,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarınızda kamera erişimine izin vermeniz gerekir.</string>
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
+    <string name="attachment_image">Attachment image</string>
 </resources>

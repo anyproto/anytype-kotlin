@@ -2375,7 +2375,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     open fun observeSelectingTemplate() {
         val navController = findNavController()
-        val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
+        val navBackStackEntry = try {
+            navController.getBackStackEntry(R.id.pageScreen)
+        } catch (e: IllegalArgumentException) {
+            Timber.w(
+                e,
+                "pageScreen not found in NavController back stack, skipping template observation"
+            )
+            return
+        }
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)

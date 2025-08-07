@@ -1575,6 +1575,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="all_content_sort_date_created">Tanggal dibuat</string>
     <string name="all_content_sort_date_used">Tanggal terakhir dipakai</string>
     <string name="all_content_sort_name">Nama</string>
+    <string name="all_content_item_menu_open">Buka sebagai Objek</string>
     <string name="all_content">Semua Objek</string>
     <string name="allContent_group_today">Hari ini</string>
     <string name="allContent_group_yesterday">Kemarin</string>

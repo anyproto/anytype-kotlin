@@ -56,7 +56,7 @@ import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-class ModifyStatusFilterTest {
+class ModifySyncStatusFilterTest {
 
     @get:Rule
     val animationsRule = DisableAnimationsRule()

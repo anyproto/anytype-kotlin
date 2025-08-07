@@ -64,9 +64,11 @@ fun ChooseSpaceTypeScreen(
                     color = colorResource(id = R.color.background_secondary)
                 )
         ) {
-            Dragger(modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 8.dp))
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 8.dp)
+            )
 
             if (BuildConfig.SHOW_CHATS) {
                 Row(
@@ -147,9 +149,12 @@ fun ChooseSpaceTypeScreen(
                 Image(
                     painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
                     contentDescription = "Join via QR Code",
-                    modifier = Modifier.size(56.dp)
-                        .background(shape = CircleShape, color =
-                            colorResource(id = R.color.shape_transparent_secondary)),
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            shape = CircleShape, color =
+                                colorResource(id = R.color.shape_transparent_secondary)
+                        ),
                     contentScale = ContentScale.Inside
                 )
                 Spacer(modifier = Modifier.width(12.dp))

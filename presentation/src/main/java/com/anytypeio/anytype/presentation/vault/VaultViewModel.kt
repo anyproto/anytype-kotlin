@@ -443,7 +443,8 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = if (space.chatId == null) {
+
+        val isMuted = if (!BuildConfig.SHOW_CHATS || space.chatId == null) {
             null
         } else {
             NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)

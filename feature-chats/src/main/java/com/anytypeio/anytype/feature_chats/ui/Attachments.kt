@@ -116,7 +116,7 @@ fun BubbleAttachments(
                             isVideoPreviewLoaded = state is AsyncImagePainter.State.Success
                         }
                     )
-                    if (isVideoPreviewLoaded) {
+                    if (isVideoPreviewLoaded && attachment.status !is ChatView.Message.Attachment.SyncStatus.Syncing) {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.Center)
@@ -159,16 +159,14 @@ fun BubbleAttachments(
                                         shape = RoundedCornerShape(12.dp)
                                     )
                             )
-                            if ((!isVideoPreviewLoaded && isUserAuthor) || !isUserAuthor) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .align(alignment = Alignment.Center)
-                                        .size(48.dp),
-                                    color = colorResource(R.color.glyph_active),
-                                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
-                                    strokeWidth = 4.dp
-                                )
-                            }
+                            CircularProgressIndicator(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center)
+                                    .size(48.dp),
+                                color = colorResource(R.color.glyph_active),
+                                trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                                strokeWidth = 4.dp
+                            )
                         }
                         ChatView.Message.Attachment.SyncStatus.Unknown -> {
                             // Do nothing.

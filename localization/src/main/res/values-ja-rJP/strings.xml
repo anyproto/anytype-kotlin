@@ -1870,4 +1870,5 @@
     <string name="camera_permission_settings_message">QRコードをスキャンするには、デバイス設定でカメラへのアクセスを許可する必要があります。</string>
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
+    <string name="attachment_image">添付画像</string>
 </resources>

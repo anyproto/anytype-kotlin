@@ -1585,6 +1585,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Nome</string>
+    <string name="all_content_item_menu_open">Abrir como Objeto</string>
     <string name="all_content">Todos os Objetos</string>
     <string name="allContent_group_today">Hoje</string>
     <string name="allContent_group_yesterday">Ontem</string>

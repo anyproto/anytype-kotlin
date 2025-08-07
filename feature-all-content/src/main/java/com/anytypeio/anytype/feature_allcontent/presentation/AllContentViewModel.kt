@@ -63,6 +63,7 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -621,6 +622,16 @@ class AllContentViewModel(
         Timber.d("onItemClicked: ${item.id}")
         proceedWithNavigation(
             navigation = item.obj.navigation()
+        )
+        viewModelScope.launch {
+            sendAnalyticsAllContentResult(analytics = analytics)
+        }
+    }
+
+    fun onOpenAsObject(item: UiContentItem.Item) {
+        Timber.d("onOpenAsObject: $item")
+        proceedWithNavigation(
+            navigation = item.obj.navigation(openBookmarkAsObject = true)
         )
         viewModelScope.launch {
             sendAnalyticsAllContentResult(analytics = analytics)

@@ -234,9 +234,6 @@ fun BubbleAttachments(
                                 contentDescription = "Sync status failed"
                             )
                         }
-                        ChatView.Message.Attachment.SyncStatus.Synced -> {
-                            // Do nothing.
-                        }
                         ChatView.Message.Attachment.SyncStatus.Syncing -> {
                             Box(
                                 modifier = Modifier
@@ -256,6 +253,9 @@ fun BubbleAttachments(
                             )
                         }
                         ChatView.Message.Attachment.SyncStatus.Unknown -> {
+                            // Do nothing.
+                        }
+                        ChatView.Message.Attachment.SyncStatus.Synced -> {
                             // Do nothing.
                         }
                     }

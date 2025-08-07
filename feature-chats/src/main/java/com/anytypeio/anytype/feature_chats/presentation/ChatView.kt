@@ -107,7 +107,9 @@ sealed interface ChatView {
                 val name: String,
                 val ext: String,
                 val status: SyncStatus = SyncStatus.Unknown
-            ): Attachment()
+            ): Attachment() {
+                val isSyncing: Boolean = status is SyncStatus.Syncing
+            }
 
             data class Link(
                 val target: Id,

@@ -78,6 +78,7 @@ fun BubbleAttachments(
                 }
             }
             is ChatView.Message.Attachment.Video -> {
+                val isSyncing = attachment.status !is ChatView.Message.Attachment.SyncStatus.Syncing
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -116,7 +117,7 @@ fun BubbleAttachments(
                             isVideoPreviewLoaded = state is AsyncImagePainter.State.Success
                         }
                     )
-                    if (isVideoPreviewLoaded && attachment.status !is ChatView.Message.Attachment.SyncStatus.Syncing) {
+                    if (isVideoPreviewLoaded && attachment.isSyncing) {
                         Box(
                             modifier = Modifier
                                 .align(Alignment.Center)

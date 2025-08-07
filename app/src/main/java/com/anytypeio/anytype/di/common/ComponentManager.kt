@@ -14,6 +14,7 @@ import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
+import com.anytypeio.anytype.di.feature.DaggerPublishToWebComponent
 import com.anytypeio.anytype.di.feature.DaggerSpacePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerSpaceTypesComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
@@ -1140,6 +1141,12 @@ class ComponentManager(
 
     val pushContentComponent = Component {
         DaggerPushContentComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val publishToWebComponent = Component {
+        DaggerPublishToWebComponent
             .factory()
             .create(findComponentDependencies())
     }

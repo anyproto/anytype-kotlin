@@ -1589,6 +1589,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Data ultimo utilizzo</string>
     <string name="all_content_sort_name">Nome</string>
+    <string name="all_content_item_menu_open">Apri come Oggetto</string>
     <string name="all_content">Tutti gli Oggetti</string>
     <string name="allContent_group_today">Oggi</string>
     <string name="allContent_group_yesterday">Ieri</string>

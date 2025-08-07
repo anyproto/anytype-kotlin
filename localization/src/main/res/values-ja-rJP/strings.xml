@@ -1123,9 +1123,9 @@
     <string name="dates_filter_last_month">先月</string>
     <string name="dates_filter_current_month">今月</string>
     <string name="dates_filter_next_month">来月</string>
-    <string name="dates_filter_last_year">Last year</string>
-    <string name="dates_filter_current_year">Current year</string>
-    <string name="dates_filter_next_year">Next year</string>
+    <string name="dates_filter_last_year">去年</string>
+    <string name="dates_filter_current_year">今年</string>
+    <string name="dates_filter_next_year">来年</string>
     <string name="settings_use_yamux">QUICを使用</string>
     <string name="settings_share_local_logs">ローカルログを共有</string>
     <!--endregion-->

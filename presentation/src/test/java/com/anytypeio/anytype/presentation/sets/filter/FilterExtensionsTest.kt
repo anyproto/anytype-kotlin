@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.relations.toCreateFilterDateView
 import org.junit.Assert
 import org.junit.Test
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
@@ -102,7 +103,7 @@ class FilterExtensionsTest {
         val fieldParser: FieldParser = mock()
         
         val mockDateField = mock<Field.Date>()
-        whenever(fieldParser.toDate(any = value)).thenReturn(mockDateField)
+        whenever(fieldParser.toDate(eq(value))).thenReturn(mockDateField)
 
         // When
         val result = relation.toCreateFilterDateView(
@@ -136,7 +137,7 @@ class FilterExtensionsTest {
         val value = 1640995200000L
         val fieldParser: FieldParser = mock()
 
-        whenever(fieldParser.toDate(any = value)).thenReturn(null)
+        whenever(fieldParser.toDate(eq(value))).thenReturn(null)
 
         // When
         val result = relation.toCreateFilterDateView(
@@ -168,7 +169,7 @@ class FilterExtensionsTest {
         val value = 1640995200000L
         val fieldParser: FieldParser = mock()
 
-        whenever(fieldParser.toDate(any = value)).thenReturn(null)
+        whenever(fieldParser.toDate(eq(value))).thenReturn(null)
 
         // When
         val result = relation.toCreateFilterDateView(
@@ -195,7 +196,7 @@ class FilterExtensionsTest {
         val value = 0L
         val fieldParser: FieldParser = mock()
 
-        whenever(fieldParser.toDate(any = value)).thenReturn(null)
+        whenever(fieldParser.toDate(eq(value))).thenReturn(null)
 
         // When
         val result = relation.toCreateFilterDateView(
@@ -222,7 +223,7 @@ class FilterExtensionsTest {
         val value = 1640995200000L
         val fieldParser: FieldParser = mock()
 
-        whenever(fieldParser.toDate(any = value)).thenReturn(null)
+        whenever(fieldParser.toDate(eq(value))).thenReturn(null)
 
         // When
         val result = relation.toCreateFilterDateView(

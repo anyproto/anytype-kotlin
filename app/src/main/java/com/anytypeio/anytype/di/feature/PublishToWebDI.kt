@@ -5,9 +5,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.ui.publishtoweb.PublishToWebFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
@@ -22,7 +24,10 @@ import dagger.Module
 interface PublishToWebComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependency: PublishToWebDependencies): PublishToWebComponent
+        fun create(
+            @BindsInstance vmParams: PublishToWebViewModel.Params,
+            dependency: PublishToWebDependencies
+        ): PublishToWebComponent
     }
 
     fun inject(fragment: PublishToWebFragment)

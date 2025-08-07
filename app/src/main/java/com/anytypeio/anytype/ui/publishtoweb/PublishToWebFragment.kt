@@ -11,6 +11,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
@@ -23,6 +26,9 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: PublishToWebViewModel.Factory
 
     private val vm by viewModels<PublishToWebViewModel> { factory }
+
+    private val ctx get() = arg<Id>(CTX_KEY)
+    private val space get() = arg<Id>(SPACE_KEY)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,7 +46,15 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().publishToWebComponent.get().inject(this)
+        componentManager()
+            .publishToWebComponent
+            .get(
+                params = PublishToWebViewModel.Params(
+                    ctx = ctx,
+                    space = SpaceId(space)
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

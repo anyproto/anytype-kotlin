@@ -22,6 +22,12 @@ class PublishToWebViewModel(
 
     }
 
+    fun onPublishClicked(
+        uri: String
+    ) {
+        // TODO
+    }
+
     class Factory @Inject constructor(
         private val publish: CreatePublishing,
         private val getStatus: GetPublishingStatus,

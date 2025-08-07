@@ -544,7 +544,7 @@ interface BlockRepository {
 
     suspend fun debugStats(): String
 
-    suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State
+    suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State?
     suspend fun publishingCreate(command: Command.Publishing.Create): String
     suspend fun publishingRemove(command: Command.Publishing.Remove)
 }

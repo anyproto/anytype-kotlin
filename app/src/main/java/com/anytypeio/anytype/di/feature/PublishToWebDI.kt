@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.ui.publishtoweb.PublishToWebFragment
@@ -40,4 +41,5 @@ object PublishToWebModule {
 
 interface PublishToWebDependencies : ComponentDependencies {
     fun repo(): BlockRepository
+    fun dispatchers(): AppCoroutineDispatchers
 }

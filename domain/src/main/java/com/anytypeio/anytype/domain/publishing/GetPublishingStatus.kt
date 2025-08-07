@@ -14,7 +14,7 @@ class GetPublishingStatus @Inject constructor(
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<GetPublishingStatus.Params, Publishing.State?>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Publishing.State {
+    override suspend fun doWork(params: Params): Publishing.State? {
         val command = Command.Publishing.GetStatus(
             space = params.space,
             objectId = params.objectId

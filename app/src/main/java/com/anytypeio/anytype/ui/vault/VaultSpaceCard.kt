@@ -92,16 +92,25 @@ fun VaultSpaceCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
                 currentPinnedCount = currentPinnedCount,
-                onSpaceSettings = onSpaceSettings
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }
@@ -196,16 +205,25 @@ fun VaultChatCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
                 currentPinnedCount = currentPinnedCount,
-                onSpaceSettings = onSpaceSettings
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }

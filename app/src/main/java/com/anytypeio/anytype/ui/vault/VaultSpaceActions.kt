@@ -18,11 +18,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultUiState
 
 @Composable
@@ -153,38 +151,4 @@ fun SpaceActionsDropdownMenu(
             }
         )
     }
-}
-
-@Composable
-fun SpaceActionsDropdownMenuHost(
-    spaceView: VaultSpaceView,
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onMuteSpace: (Id) -> Unit,
-    onUnmuteSpace: (Id) -> Unit,
-    onPinSpace: (Id) -> Unit,
-    onUnpinSpace: (Id) -> Unit,
-    currentPinnedCount: Int,
-    onSpaceSettings: (Id) -> Unit
-) {
-    SpaceActionsDropdownMenu(
-        expanded = expanded,
-        onDismiss = onDismiss,
-        isMuted = spaceView.isMuted,
-        isPinned = spaceView.isPinned,
-        currentPinnedCount = currentPinnedCount,
-        onMuteToggle = {
-            spaceView.space.targetSpaceId?.let {
-                if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-            }
-        },
-        onPinToggle = {
-            spaceView.space.id.let {
-                if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
-            }
-        },
-        onSpaceSettings = {
-            spaceView.space.id.let { onSpaceSettings(it) }
-        }
-    )
 }

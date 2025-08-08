@@ -266,7 +266,7 @@ fun VaultScreenContent(
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
                                     maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-                                    showPinButton = item.showPinButton
+                                    currentPinnedCount = sections.pinnedSpaces.size
                                 )
                             }
 
@@ -306,9 +306,8 @@ fun VaultScreenContent(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
                                     onSpaceSettings = onSpaceSettings,
-                                    showPinButton = item.showPinButton
+                                    currentPinnedCount = sections.pinnedSpaces.size
                                 )
                             }
                         }
@@ -361,7 +360,7 @@ fun VaultScreenContent(
                                 onUnpinSpace = onUnpinSpace,
                                 maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
                                 onSpaceSettings = onSpaceSettings,
-                                showPinButton = item.showPinButton
+                                currentPinnedCount = sections.pinnedSpaces.size
                             )
                         }
 
@@ -387,9 +386,8 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
                                 onSpaceSettings = onSpaceSettings,
-                                showPinButton = item.showPinButton
+                                currentPinnedCount = sections.pinnedSpaces.size
                             )
                         }
                     }

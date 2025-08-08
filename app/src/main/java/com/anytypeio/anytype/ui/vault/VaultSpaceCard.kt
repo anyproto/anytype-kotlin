@@ -69,9 +69,8 @@ fun VaultSpaceCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    maxPinnedSpaces: Int,
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean = false
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -93,17 +92,25 @@ fun VaultSpaceCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
+                currentPinnedCount = currentPinnedCount,
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }
@@ -172,7 +179,7 @@ fun VaultChatCard(
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -198,17 +205,25 @@ fun VaultChatCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
+                currentPinnedCount = currentPinnedCount,
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }
@@ -624,8 +639,7 @@ fun VaultSpaceCardPreview() {
         title = "B&O Museum",
         subtitle = "Private space",
         icon = SpaceIconView.Placeholder(),
-        maxPinnedSpaces = 6,
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -662,7 +676,7 @@ fun ChatWithMentionAndMessage() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -698,7 +712,7 @@ fun ChatWithMention() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -733,7 +747,7 @@ fun ChatPreview() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 

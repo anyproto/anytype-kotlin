@@ -217,12 +217,7 @@ class VaultViewModel(
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
 
-        // Compute pinned count first
-        val pinnedIds = allSpacesRaw.filter { !it.spaceOrder.isNullOrEmpty() }.map { it.id }.toSet()
-        val pinnedCount = pinnedIds.size
-
         val allSpaces = allSpacesRaw.map { space ->
-            val isPinned = !space.spaceOrder.isNullOrEmpty()
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
             }?.takeIf { preview ->
@@ -232,7 +227,7 @@ class VaultViewModel(
                     preview.chat == spaceChatId
                 } == true // If no chatId is set, don't show preview
             }
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -269,17 +264,16 @@ class VaultViewModel(
     private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        isPinned: Boolean,
-        pinnedCount: Int
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView {
-        val showPinButton = isPinned || pinnedCount < VaultUiState.MAX_PINNED_SPACES
-        return when {
-            chatPreview != null -> {
-                createChatView(space, chatPreview, permissions, showPinButton)
+        return when (space.spaceUxType) {
+            SpaceUxType.CHAT -> {
+                // Always create chat view for chat spaces, even without preview
+                createChatView(space, chatPreview, permissions)
             }
             else -> {
-                createStandardSpaceView(space, permissions, showPinButton)
+                // For DATA, STREAM, NONE, or null - treat as data space
+                createStandardSpaceView(space, permissions)
             }
         }
     }
@@ -375,41 +369,43 @@ class VaultViewModel(
 
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        showPinButton: Boolean
+        chatPreview: Chat.Preview?,
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Chat {
-        val creator = chatPreview.message?.creator ?: ""
-        val messageText = chatPreview.message?.content?.text
+        val creatorId = chatPreview?.message?.creator
+        val messageText = chatPreview?.message?.content?.text
 
-        val creatorName = if (creator.isNotEmpty()) {
+        val creatorName = if (!creatorId.isNullOrEmpty()) {
             val creatorObj = chatPreview.dependencies.find {
                 it.getSingleValue<String>(
                     Relations.IDENTITY
-                ) == creator
+                ) == creatorId
             }
-            creatorObj?.name ?: "Unknown"
+            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
         } else {
             null
         }
 
-        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+        val messageTime = chatPreview?.message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
                 dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
             } else null
         }
 
         // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
-            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            val attachmentPreview = mapToAttachmentPreview(
-                attachment = attachment,
-                dependency = dependency
-            )
-            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-            attachmentPreview
-
-        } ?: emptyList()
+        val attachmentPreviews = if (chatPreview != null) {
+            chatPreview.message?.attachments?.map { attachment ->
+                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+                val attachmentPreview = mapToAttachmentPreview(
+                    attachment = attachment,
+                    dependency = dependency
+                )
+                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+                attachmentPreview
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
 
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -426,19 +422,17 @@ class VaultViewModel(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
-            unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
+            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted,
-            showPinButton = showPinButton
+            isMuted = isMuted
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        showPinButton: Boolean
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -462,8 +456,7 @@ class VaultViewModel(
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted,
-            showPinButton = showPinButton
+            isMuted = isMuted
         )
     }
 

@@ -197,9 +197,7 @@ class VaultViewModel(
     }
 
     fun onStart() {
-        if (!spaceManager.isCleared()) {
-            spaceManager.clear()
-        }
+        spaceManager.clear()
         viewModelScope.launch {
             clearLastOpenedSpace.async(Unit).fold(
                 onSuccess = {

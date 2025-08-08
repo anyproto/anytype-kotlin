@@ -29,7 +29,6 @@ interface SpaceManager {
     fun getState(): State
 
     fun clear()
-    fun isCleared(): Boolean
 
     class Impl @Inject constructor(
         private val repo: BlockRepository,
@@ -121,10 +120,6 @@ interface SpaceManager {
         override fun clear() {
             info.clear()
             currentSpace.value = NO_SPACE
-        }
-
-        override fun isCleared(): Boolean {
-            return currentSpace.value == NO_SPACE && info.isEmpty()
         }
 
         companion object {

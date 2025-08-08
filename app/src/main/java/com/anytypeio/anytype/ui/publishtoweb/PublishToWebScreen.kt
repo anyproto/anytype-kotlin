@@ -30,11 +30,14 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 
 @Composable
 fun PublishToWebScreen(
     domain: String,
     initialUri: String,
+    onPublishClicked: (String) -> Unit
 ) {
     val textFieldState = rememberTextFieldState(initialText = initialUri)
 
@@ -133,6 +136,13 @@ fun PublishToWebScreen(
                 }
             )
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        ButtonPrimary(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            onClick = { onPublishClicked(textFieldState.text.toString()) },
+            text = "Publish",
+            size = ButtonSize.Large
+        )
     }
 }
 
@@ -141,6 +151,9 @@ fun PublishToWebScreen(
 fun PublishToWebScreenPreview() {
     PublishToWebScreen(
         domain = "claude.any.org",
-        initialUri = "/test"
+        initialUri = "/test",
+        onPublishClicked = {
+
+        }
     )
 }

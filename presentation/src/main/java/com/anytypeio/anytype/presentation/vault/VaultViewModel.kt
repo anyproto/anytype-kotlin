@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -98,7 +99,8 @@ class VaultViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
-    private val setSpaceOrder: SetSpaceOrder
+    private val setSpaceOrder: SetSpaceOrder,
+    private val clearLastOpenedSpace: ClearLastOpenedSpace
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -191,6 +193,22 @@ class VaultViewModel(
             } catch (e: Exception) {
                 Timber.e(e, "Error initializing notification permission monitoring")
             }
+        }
+    }
+
+    fun onStart() {
+        if (!spaceManager.isCleared()) {
+            spaceManager.clear()
+        }
+        viewModelScope.launch {
+            clearLastOpenedSpace.async(Unit).fold(
+                onSuccess = {
+                    Timber.d("Cleared last opened space")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while clearing last opened space")
+                }
+            )
         }
     }
     

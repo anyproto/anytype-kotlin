@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -45,7 +46,8 @@ object VaultViewModelFabric {
         userPermissionProvider: UserPermissionProvider = mock(),
         notificationPermissionManager: NotificationPermissionManager = mock(),
         unpinSpace: UnpinSpace = mock(),
-        setSpaceOrder: SetSpaceOrder = mock()
+        setSpaceOrder: SetSpaceOrder = mock(),
+        clearLastOpenedSpace: ClearLastOpenedSpace = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -67,6 +69,7 @@ object VaultViewModelFabric {
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
-        setSpaceOrder = setSpaceOrder
+        setSpaceOrder = setSpaceOrder,
+        clearLastOpenedSpace = clearLastOpenedSpace
     )
 } 

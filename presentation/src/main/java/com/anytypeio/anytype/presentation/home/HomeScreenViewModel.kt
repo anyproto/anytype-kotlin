@@ -1956,6 +1956,7 @@ class HomeScreenViewModel(
     }
 
     fun onBackClicked() {
+        proceedWithExiting()
         viewModelScope.launch {
             commands.emit(
                 Command.HandleChatSpaceBackNavigation
@@ -1963,7 +1964,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithExiting(isSpaceRoot: Boolean) {
+    private fun proceedWithExiting() {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1981,10 +1982,6 @@ class HomeScreenViewModel(
                         .onFailure {
                             Timber.e(it, "Error while closing object from history")
                         }
-                }
-                if (isSpaceRoot) {
-                    Timber.d("Root space screen. Releasing resources...")
-                    proceedWithClearingSpaceBeforeExitingToVault()
                 }
             }
             commands.emit(Command.Exit)
@@ -2500,9 +2497,7 @@ class HomeScreenViewModel(
                     .onFailure { Timber.e(it, "Error while leaving space") }
                     .onSuccess {
                         // Forcing return to the vault even if space has chat.
-                        proceedWithExiting(
-                            isSpaceRoot = true
-                        )
+                        proceedWithExiting()
                     }
             } else {
                 Timber.e("Unexpected permission when trying to leave space: $permission")

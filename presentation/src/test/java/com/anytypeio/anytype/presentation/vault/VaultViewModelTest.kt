@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -55,6 +56,146 @@ class VaultViewModelTest {
         setSpaceOrder = mock()
     }
 
+    @Test
+    fun `transformToVaultSpaceViews creates Chat views for CHAT spaceUxType and Space views for other types`() = runTest {
+        turbineScope {
+            // Given - Simple test with one chat space and one data space
+            val dataSpaceId = "data_space"
+            val chatSpaceId = "chat_space"
+            val chatId = "chat_id"
+            
+            val dataSpace = StubSpaceView(
+                id = dataSpaceId,
+                targetSpaceId = dataSpaceId,
+                spaceUxType = SpaceUxType.DATA,
+                chatId = null,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceUxType = SpaceUxType.CHAT,
+                chatId = chatId,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val spaceViews = listOf(dataSpace, chatSpace)
+            val chatPreviews = emptyList<Chat.Preview>()
+            val permissions = emptyMap<String, SpaceMemberPermissions>()
+            
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Unknown")
+            
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
+            
+            // When
+            viewModel.uiState.test {
+                val loading = awaitItem()
+                assertTrue(loading is VaultUiState.Loading)
+                val sections = awaitItem()
+                check(sections is VaultUiState.Sections) {
+                    "Expected Sections state, got $sections"
+                }
+                val allSpaces = sections.pinnedSpaces + sections.mainSpaces
+                
+                // Then - Verify we have two spaces
+                assertEquals("Should have 2 spaces", 2, allSpaces.size)
+                
+                // Find the spaces
+                val dataSpaceView = allSpaces.find { it.space.id == dataSpaceId }
+                val chatSpaceView = allSpaces.find { it.space.id == chatSpaceId }
+                
+                // Verify they exist
+                assertTrue("Data space should exist", dataSpaceView != null)
+                assertTrue("Chat space should exist", chatSpaceView != null)
+                
+                // Verify types - this tests our spaceUxType logic
+                assertTrue("Data space should be VaultSpaceView.Space", dataSpaceView is VaultSpaceView.Space)
+                assertTrue("Chat space should be VaultSpaceView.Chat due to spaceUxType", chatSpaceView is VaultSpaceView.Chat)
+            }
+        }
+    }
+
+    @Test
+    fun `transformToVaultSpaceViews creates Chat view for CHAT spaceUxType even without preview`() = runTest {
+        turbineScope {
+            // Given - Chat space without preview
+            val chatSpaceId = "chat_space_no_preview"
+            val chatId = "chat_id"
+            
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceUxType = SpaceUxType.CHAT,
+                chatId = chatId,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val spaceViews = listOf(chatSpace)
+            val chatPreviews = emptyList<com.anytypeio.anytype.core_models.chats.Chat.Preview>() // No preview
+            val permissions = emptyMap<String, SpaceMemberPermissions>()
+            
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Unknown")
+            
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
+            
+            // When
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val allSpaces = sections.pinnedSpaces + sections.mainSpaces
+                
+                // Then - Verify chat space is still Chat view type even without preview
+                val chatSpaceView = allSpaces.find { it.space.id == chatSpaceId }
+                
+                assertTrue("Chat space should be VaultSpaceView.Chat even without preview", 
+                    chatSpaceView is VaultSpaceView.Chat)
+                
+                // Verify Chat view handles null preview gracefully
+                val chatViewTyped = chatSpaceView as VaultSpaceView.Chat
+                assertEquals("Chat space should have null preview", null, chatViewTyped.chatPreview)
+                assertEquals("Unread message count should be 0", 0, chatViewTyped.unreadMessageCount)
+                assertEquals("Unread mention count should be 0", 0, chatViewTyped.unreadMentionCount)
+                assertEquals("Message text should be null", null, chatViewTyped.messageText)
+                assertEquals("Creator name should be null", null, chatViewTyped.creatorName)
+            }
+        }
+    }
 
     @Test
     fun `init should subscribe to flows and update state`() = runTest {
@@ -801,21 +942,21 @@ class VaultViewModelTest {
                     // Then - pinnedCount should be 2
                     assertEquals(2, sections.pinnedSpaces.size)
 
-                    // All pinned spaces should have canPin = true (they're already pinned)
+                    // All pinned spaces should be marked as pinned
                     sections.pinnedSpaces.forEach { space ->
-                        assertEquals(true, space.showPinButton)
+                        assertEquals(true, space.isPinned)
                     }
 
-                    // Unpinned space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                    // Unpinned spaces should not be marked as pinned
                     sections.mainSpaces.forEach { space ->
-                        assertEquals(true, space.showPinButton)
+                        assertEquals(false, space.isPinned)
                     }
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly when at MAX_PINNED_SPACES limit`() =
+    fun `transformToVaultSpaceViews should correctly separate spaces when at MAX_PINNED_SPACES limit`() =
         runTest {
             // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 1 unpinned space
             val pinnedSpace1Id = "pinned1"
@@ -934,20 +1075,20 @@ class VaultViewModelTest {
                 // Then - pinnedCount should be 6 (at MAX_PINNED_SPACES limit)
                 assertEquals(6, sections.pinnedSpaces.size)
 
-                // All pinned spaces should have canPin = true (they're already pinned)
+                // All pinned spaces should be marked as pinned
                 sections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // Unpinned space should have canPin = false (pinnedCount >= MAX_PINNED_SPACES)
+                // Unpinned spaces should not be marked as pinned
                 sections.mainSpaces.forEach { space ->
-                    assertEquals(false, space.showPinButton)
+                    assertEquals(false, space.isPinned)
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly with no pinned spaces`() =
+    fun `transformToVaultSpaceViews should correctly handle spaces when no spaces are pinned`() =
         runTest {
             turbineScope {
                 // Given - 0 pinned spaces, 2 unpinned spaces
@@ -1000,18 +1141,19 @@ class VaultViewModelTest {
                     val secondState = awaitItem() as VaultUiState.Sections
                     assertTrue(firstState is VaultUiState.Loading)
                     assertEquals(0, secondState.pinnedSpaces.size)
+                    // All unpinned spaces should not be marked as pinned
                     secondState.mainSpaces.forEach { space ->
                         assertEquals(
-                            true,
-                            space.showPinButton
-                        ) // canPin should be true for unpinned spaces
+                            false,
+                            space.isPinned
+                        )
                     }
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly with chat spaces`() = runTest {
+    fun `transformToVaultSpaceViews should correctly identify pinned and unpinned chat spaces`() = runTest {
         // Given - 1 pinned chat space, 1 unpinned chat space
         val pinnedChatSpaceId = "pinnedChat"
         val unpinnedChatSpaceId = "unpinnedChat"
@@ -1081,20 +1223,20 @@ class VaultViewModelTest {
             // Then - pinnedCount should be 1
             assertEquals(1, sections.pinnedSpaces.size)
 
-            // Pinned chat space should have canPin = true (already pinned)
+            // Pinned chat space should be marked as pinned
             sections.pinnedSpaces.forEach { space ->
-                assertEquals(true, space.showPinButton)
+                assertEquals(true, space.isPinned)
             }
 
-            // Unpinned chat space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+            // Unpinned chat space should not be marked as pinned
             sections.mainSpaces.forEach { space ->
-                assertEquals(true, space.showPinButton)
+                assertEquals(false, space.isPinned)
             }
         }
     }
 
     @Test
-    fun `transformToVaultSpaceViews should update canPin dynamically when unpinning space at MAX_PINNED_SPACES limit`() =
+    fun `transformToVaultSpaceViews should correctly update space collections when unpinning space at MAX_PINNED_SPACES limit`() =
         runTest {
             // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 4 unpinned spaces
             val pinnedSpace1Id = "pinned1"
@@ -1230,14 +1372,14 @@ class VaultViewModelTest {
                 assertEquals(6, initialSections.pinnedSpaces.size)
                 assertEquals(4, initialSections.mainSpaces.size)
 
-                // All pinned spaces should have canPin = true (already pinned)
+                // All pinned spaces should be marked as pinned
                 initialSections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
+                // All unpinned spaces should not be marked as pinned
                 initialSections.mainSpaces.forEach { space ->
-                    assertEquals(false, space.showPinButton)
+                    assertEquals(false, space.isPinned)
                 }
 
                 // When - User unpins one space (pinnedSpace6)
@@ -1261,17 +1403,17 @@ class VaultViewModelTest {
                     updatedSections.mainSpaces.size
                 ) // 4 original unpinned + 1 newly unpinned
 
-                // All pinned spaces should have canPin = true (already pinned)
+                // All pinned spaces should be marked as pinned
                 updatedSections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                // All unpinned spaces should not be marked as pinned
                 updatedSections.mainSpaces.forEach { space ->
                     assertEquals(
-                        "Space ${space.space.id} should have canPin = true after unpinning",
-                        true,
-                        space.showPinButton
+                        "Space ${space.space.id} should not be pinned",
+                        false,
+                        space.isPinned
                     )
                 }
             }

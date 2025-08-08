@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Pulsante condivisione</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blocco non supportato</string>
@@ -1116,6 +1117,19 @@
     <string name="date_type_older">Meno recenti</string>
     <string name="dates_days_ago">%1$s giorni fa</string>
     <string name="dates_days_from">%1$s giorni da adesso</string>
+    <string name="number_days_from">Numero di giorni da adesso</string>
+    <string name="number_days_ago">Numero di giorni fa</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Giorno esatto</string>
+    <string name="dates_filter_last_week">Settimana scorsa</string>
+    <string name="dates_filter_current_week">Settimana corrente</string>
+    <string name="dates_filter_next_week">Prossima settimana</string>
+    <string name="dates_filter_last_month">Mese scorso</string>
+    <string name="dates_filter_current_month">Mese corrente</string>
+    <string name="dates_filter_next_month">Mese successivo</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Condividi i log locali</string>
     <!--endregion-->
@@ -1504,6 +1518,9 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Errore nella selezione della cassaforte.</string>
     <string name="error_login_account_deleted_error">Questo account è stato eliminato. Provare ad usare un altro account o crearne uno nuovo.</string>
     <string name="error_login_account_need_update_error">Impossibile recuperare l\'account. Si prega di aggiornare Anytype all\'ultima versione.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
     <string name="sort_empty_values_desc">Mostra valori vuoti</string>
@@ -1572,6 +1589,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Data ultimo utilizzo</string>
     <string name="all_content_sort_name">Nome</string>
+    <string name="all_content_item_menu_open">Apri come Oggetto</string>
     <string name="all_content">Tutti gli Oggetti</string>
     <string name="allContent_group_today">Oggi</string>
     <string name="allContent_group_yesterday">Ieri</string>
@@ -1601,6 +1619,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Condividi e il pulsante membri</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>
@@ -1796,6 +1815,18 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_system_types">Proprietà Di Sistema</string>
     <string name="space_properties_screen_menu_move_to_bin">Sposta nel cestino</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Errore durante la creazione dell\'account: manca lo spazio</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Aggiungi Il Tuo Nome</string>
     <string name="onboarding_soul_creation_description">Visibile solo alle persone con cui condividi qualcosa. Non esiste un registro centrale per questi nomi.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>
@@ -1809,9 +1840,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_description">Ricevi una notifica immediata quando qualcuno ti invia un messaggio o ti menziona nei tuoi spazi.</string>
     <string name="notifications_modal_success_button">Abilita le notifiche</string>
     <string name="notifications_modal_cancel_button">Non ora</string>
-    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
-    <string name="vault_create_space">Spazio</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
     <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1839,4 +1870,18 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Riprova</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Apri Impostazioni</string>
+    <string name="allow">Allow</string>
+    <string name="attachment_image">Attachment image</string>
 </resources>

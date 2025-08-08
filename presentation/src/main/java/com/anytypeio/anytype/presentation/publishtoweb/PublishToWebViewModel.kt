@@ -52,3 +52,8 @@ class PublishToWebViewModel(
         val space: SpaceId
     )
 }
+
+sealed class PublishToWebViewState {
+    data  object Idle : PublishToWebViewState()
+    data object Error : PublishToWebViewState()
+}

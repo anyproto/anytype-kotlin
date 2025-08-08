@@ -2184,5 +2184,8 @@ Please provide specific details of your needs here.</string>
     <string name="attachment_image">Attachment image</string>
 
     <string name="publish_to_web">Publish to Web</string>
+    <string name="preferences">Preferences</string>
+    <string name="web_publishing_customize_url">Customize URL</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
 
 </resources>

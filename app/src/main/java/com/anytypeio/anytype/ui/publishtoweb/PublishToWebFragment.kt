@@ -39,7 +39,9 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    PublishToWebScreen()
+                    PublishToWebScreen(
+                        domain = "Test"
+                    )
                 }
             }
         }
@@ -73,9 +75,4 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
         private const val CTX_KEY = "arg.publish-to-web.ctx"
         private const val SPACE_KEY = "arg.publish-to-web.space"
     }
-}
-
-@Composable
-private fun PublishToWebScreen() {
-    Text("Publish to web")
 }

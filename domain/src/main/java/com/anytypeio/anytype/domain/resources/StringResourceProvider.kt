@@ -15,4 +15,5 @@ interface StringResourceProvider {
     fun getSpaceAccessTypeName(accessType: SpaceAccessType?): String
     fun getYesterday(): String
     fun getInitialSpaceName(): String
+    fun getUntitledCreatorName(): String
 }

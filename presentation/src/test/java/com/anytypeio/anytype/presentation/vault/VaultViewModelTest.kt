@@ -108,8 +108,8 @@ class VaultViewModelTest {
             
             // When
             viewModel.uiState.test {
-                //skipItems(1) // Skip loading state
                 val loading = awaitItem()
+                assertTrue(loading is VaultUiState.Loading)
                 val sections = awaitItem()
                 check(sections is VaultUiState.Sections) {
                     "Expected Sections state, got $sections"

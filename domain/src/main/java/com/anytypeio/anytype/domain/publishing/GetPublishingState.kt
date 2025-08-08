@@ -9,10 +9,10 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class GetPublishingStatus @Inject constructor(
+class GetPublishingState @Inject constructor(
     private val repository: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<GetPublishingStatus.Params, Publishing.State?>(dispatchers.io) {
+) : ResultInteractor<GetPublishingState.Params, Publishing.State?>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Publishing.State? {
         val command = Command.Publishing.GetStatus(

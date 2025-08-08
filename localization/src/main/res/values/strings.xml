@@ -2187,5 +2187,8 @@ Please provide specific details of your needs here.</string>
     <string name="preferences">Preferences</string>
     <string name="web_publishing_customize_url">Customize URL</string>
     <string name="web_publishing_join_space_button">Join Space Button</string>
+    <string name="web_publishing_unpublish">Unpublish</string>
+    <string name="web_publishing_update">Update</string>
+    <string name="web_publishing_publish">Publish</string>
 
 </resources>

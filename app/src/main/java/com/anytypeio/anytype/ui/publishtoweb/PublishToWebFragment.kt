@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -40,9 +42,10 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     PublishToWebScreen(
-                        domain = "Test",
-                        initialUri = "test",
-                        onPublishClicked = vm::onPublishClicked
+                        viewState = vm.viewState.collectAsStateWithLifecycle().value,
+                        onPublishClicked = vm::onPublishClicked,
+                        onUnpublishClicked = vm::onUnpublishClicked,
+                        onUpdateClicked = vm::onUpdateClicked
                     )
                 }
             }

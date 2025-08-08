@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -31,15 +32,20 @@ import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 
 @Composable
 fun PublishToWebScreen(
-    domain: String,
-    initialUri: String,
-    onPublishClicked: (String) -> Unit
+    viewState: PublishToWebViewState,
+    onPublishClicked: (String) -> Unit = {},
+    onUnpublishClicked: (String) -> Unit = {},
+    onUpdateClicked: (String) -> Unit = {},
 ) {
-    val textFieldState = rememberTextFieldState(initialText = initialUri)
+
+    val textFieldState = rememberTextFieldState(initialText = viewState.uri)
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -70,7 +76,7 @@ fun PublishToWebScreen(
                 modifier = Modifier
                     .padding(horizontal = 12.dp)
                     .fillMaxWidth(),
-                text = domain,
+                text = viewState.domain,
                 style = BodyRegular,
                 color = colorResource(R.color.text_primary),
                 maxLines = 1,
@@ -93,8 +99,7 @@ fun PublishToWebScreen(
             BasicTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-                ,
+                    .padding(horizontal = 12.dp),
                 state = textFieldState,
                 textStyle = BodyRegular
             )
@@ -137,12 +142,56 @@ fun PublishToWebScreen(
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
-        ButtonPrimary(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            onClick = { onPublishClicked(textFieldState.text.toString()) },
-            text = "Publish",
-            size = ButtonSize.Large
-        )
+
+        when(viewState) {
+            is PublishToWebViewState.NotPublished -> {
+                ButtonPrimary(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onClick = { onPublishClicked(textFieldState.text.toString()) },
+                    text = stringResource(R.string.web_publishing_publish),
+                    size = ButtonSize.Large
+                )
+            }
+            is PublishToWebViewState.Published -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    ButtonSecondary(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onPublishClicked(textFieldState.text.toString()) },
+                        text = stringResource(R.string.web_publishing_unpublish),
+                        size = ButtonSize.Large
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ButtonPrimary(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                        text = stringResource(R.string.web_publishing_update),
+                        size = ButtonSize.Large
+                    )
+                }
+            }
+            is PublishToWebViewState.Publishing -> {
+                ButtonPrimaryLoading(
+                    modifierButton = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onClick = {
+                        // Do nothing
+                    },
+                    text = stringResource(R.string.web_publishing_update),
+                    size = ButtonSize.Large,
+                    loading = true
+                )
+            }
+            else -> {
+                // Do nothing.
+            }
+        }
     }
 }
 
@@ -150,10 +199,45 @@ fun PublishToWebScreen(
 @Composable
 fun PublishToWebScreenPreview() {
     PublishToWebScreen(
-        domain = "claude.any.org",
-        initialUri = "/test",
+        viewState = PublishToWebViewState.NotPublished(
+            domain = "Test",
+            uri = "test"
+        ),
         onPublishClicked = {
 
         }
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun PublishToWebScreenNotPublishedPreview() {
+    PublishToWebScreen(
+        viewState = PublishToWebViewState.NotPublished(
+            domain = "Test",
+            uri = "test"
+        )
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun PublishToWebScreenPublishedPreview() {
+    PublishToWebScreen(
+        viewState = PublishToWebViewState.Published(
+            domain = "Test",
+            uri = "provence"
+        )
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun PublishToWebScreenPublishingPreview() {
+    PublishToWebScreen(
+        viewState = PublishToWebViewState.Publishing(
+            domain = "Test",
+            uri = "provence"
+        )
     )
 }

@@ -1,10 +1,9 @@
 package com.anytypeio.anytype.presentation.publishtoweb
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.publishing.CreatePublishing
-import com.anytypeio.anytype.domain.publishing.GetPublishingStatus
+import com.anytypeio.anytype.domain.publishing.GetPublishingState
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -15,7 +14,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.stub
 
 class PublishToWebViewModelTest {
 
@@ -29,7 +27,7 @@ class PublishToWebViewModelTest {
     lateinit var createPublishing: CreatePublishing
 
     @Mock
-    lateinit var getPublishingStatus: GetPublishingStatus
+    lateinit var getPublishingState: GetPublishingState
 
     @Mock
     lateinit var removePublishing: RemovePublishing
@@ -53,7 +51,7 @@ class PublishToWebViewModelTest {
         viewModel = PublishToWebViewModel(
             vmParams = vmParams,
             publish = createPublishing,
-            getStatus = getPublishingStatus,
+            getPublishingState = getPublishingState,
             removePublishing = removePublishing,
             searchObjects = searchObjects
         )

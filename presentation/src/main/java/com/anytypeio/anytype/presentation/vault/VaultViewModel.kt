@@ -375,7 +375,7 @@ class VaultViewModel(
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
 
-        val creatorName = if (creatorId != null && creatorId.isNotEmpty()) {
+        val creatorName = if (!creatorId.isNullOrEmpty()) {
             val creatorObj = chatPreview.dependencies.find {
                 it.getSingleValue<String>(
                     Relations.IDENTITY

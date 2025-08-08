@@ -1,10 +1,17 @@
 package com.anytypeio.anytype.ui.vault
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -488,4 +495,40 @@ fun ChatEmpty() {
         currentPinnedCount = 2,
         maxPinnedSpaces = 6
     )
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Muted Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = true,
+            isPinned = false,
+            currentPinnedCount = 3,
+            onMuteToggle = {},
+            onPinToggle = {},
+            onSpaceSettings = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Unmuted Not Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = false,
+            isPinned = false,
+            currentPinnedCount = 6,
+            onMuteToggle = {},
+            onPinToggle = {},
+            onSpaceSettings = {}
+        )
+    }
 }

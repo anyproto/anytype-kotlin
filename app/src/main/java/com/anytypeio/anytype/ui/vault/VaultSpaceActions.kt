@@ -38,8 +38,7 @@ fun SpaceActionsDropdownMenu(
     onDismiss: () -> Unit,
     isMuted: Boolean?,
     isPinned: Boolean,
-    maxPinnedSpaces: Int,
-    showPinButton: Boolean,
+    currentPinnedCount: Int,
     onMuteToggle: () -> Unit,
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
@@ -56,16 +55,20 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        if (!showPinButton && !isPinned) {
-            // Show info message instead of Pin
+        // Show pin/unpin option or limit message
+        val canPin = currentPinnedCount < VaultUiState.MAX_PINNED_SPACES
+        
+        if (!isPinned && !canPin) {
+            // Show info message when limit reached and space is not pinned
             Row(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = stringResource(R.string.vault_pinned_limit_message, maxPinnedSpaces),
+                    text = stringResource(R.string.vault_pinned_limit_message, VaultUiState.MAX_PINNED_SPACES),
                     style = PreviewTitle2Regular,
                     color = colorResource(id = R.color.text_secondary)
                 )
             }
         } else {
+            // Show pin/unpin option when space is pinned or when there's room to pin
             DropdownMenuItem(
                 onClick = {
                     onPinToggle()
@@ -166,8 +169,7 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             onDismiss = { expanded = false },
             isMuted = true,
             isPinned = false,
-            maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-            showPinButton = true,
+            currentPinnedCount = 3,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -185,8 +187,7 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             onDismiss = { expanded = false },
             isMuted = false,
             isPinned = false,
-            maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-            showPinButton = true,
+            currentPinnedCount = 6,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -203,8 +204,7 @@ fun SpaceActionsDropdownMenuHost(
     onUnmuteSpace: (Id) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
-    maxPinnedSpaces: Int,
-    showPinButton: Boolean,
+    currentPinnedCount: Int,
     onSpaceSettings: (Id) -> Unit
 ) {
     SpaceActionsDropdownMenu(
@@ -212,8 +212,7 @@ fun SpaceActionsDropdownMenuHost(
         onDismiss = onDismiss,
         isMuted = spaceView.isMuted,
         isPinned = spaceView.isPinned,
-        showPinButton = showPinButton,
-        maxPinnedSpaces = maxPinnedSpaces,
+        currentPinnedCount = currentPinnedCount,
         onMuteToggle = {
             spaceView.space.targetSpaceId?.let {
                 if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)

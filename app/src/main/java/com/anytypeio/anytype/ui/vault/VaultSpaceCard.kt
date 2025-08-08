@@ -69,9 +69,8 @@ fun VaultSpaceCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    maxPinnedSpaces: Int,
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean = false
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -101,9 +100,8 @@ fun VaultSpaceCard(
                 onUnmuteSpace = onUnmuteSpace,
                 onPinSpace = onPinSpace,
                 onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                currentPinnedCount = currentPinnedCount,
+                onSpaceSettings = onSpaceSettings
             )
         }
     }
@@ -172,7 +170,7 @@ fun VaultChatCard(
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -206,9 +204,8 @@ fun VaultChatCard(
                 onUnmuteSpace = onUnmuteSpace,
                 onPinSpace = onPinSpace,
                 onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                currentPinnedCount = currentPinnedCount,
+                onSpaceSettings = onSpaceSettings
             )
         }
     }
@@ -624,8 +621,7 @@ fun VaultSpaceCardPreview() {
         title = "B&O Museum",
         subtitle = "Private space",
         icon = SpaceIconView.Placeholder(),
-        maxPinnedSpaces = 6,
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -662,7 +658,7 @@ fun ChatWithMentionAndMessage() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -698,7 +694,7 @@ fun ChatWithMention() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -733,7 +729,7 @@ fun ChatPreview() {
                 synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 

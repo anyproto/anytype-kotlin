@@ -217,10 +217,6 @@ class VaultViewModel(
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
 
-        // Compute pinned count first
-        val pinnedIds = allSpacesRaw.filter { !it.spaceOrder.isNullOrEmpty() }.map { it.id }.toSet()
-        val pinnedCount = pinnedIds.size
-
         val allSpaces = allSpacesRaw.map { space ->
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
@@ -231,7 +227,7 @@ class VaultViewModel(
                     preview.chat == spaceChatId
                 } == true // If no chatId is set, don't show preview
             }
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, pinnedCount)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -268,25 +264,16 @@ class VaultViewModel(
     private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        pinnedCount: Int
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView {
-        // Show the unpin button for pinned spaces.
-        // For unpinned spaces, only show pin affordance once at least one space is already pinned
-        // (to avoid confusing users on first launch where everything would otherwise show a pin icon).
-        val showPinButton = if (space.isPinned == true) {
-            true
-        } else {
-            pinnedCount > 0 && pinnedCount < VaultUiState.MAX_PINNED_SPACES
-        }
         return when (space.spaceUxType) {
             SpaceUxType.CHAT -> {
                 // Always create chat view for chat spaces, even without preview
-                createChatView(space, chatPreview, permissions, showPinButton)
+                createChatView(space, chatPreview, permissions)
             }
             else -> {
                 // For DATA, STREAM, NONE, or null - treat as data space
-                createStandardSpaceView(space, permissions, showPinButton)
+                createStandardSpaceView(space, permissions)
             }
         }
     }
@@ -383,8 +370,7 @@ class VaultViewModel(
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        showPinButton: Boolean
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Chat {
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
@@ -440,15 +426,13 @@ class VaultViewModel(
             unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted,
-            showPinButton = showPinButton
+            isMuted = isMuted
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        showPinButton: Boolean
+        permissions: Map<Id, SpaceMemberPermissions>
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -472,8 +456,7 @@ class VaultViewModel(
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted,
-            showPinButton = showPinButton
+            isMuted = isMuted
         )
     }
 

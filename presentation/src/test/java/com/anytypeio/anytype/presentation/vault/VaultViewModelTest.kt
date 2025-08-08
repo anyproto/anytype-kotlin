@@ -942,21 +942,21 @@ class VaultViewModelTest {
                     // Then - pinnedCount should be 2
                     assertEquals(2, sections.pinnedSpaces.size)
 
-                    // All pinned spaces should have canPin = true (they're already pinned)
+                    // All pinned spaces should be marked as pinned
                     sections.pinnedSpaces.forEach { space ->
-                        assertEquals(true, space.showPinButton)
+                        assertEquals(true, space.isPinned)
                     }
 
-                    // Unpinned space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                    // Unpinned spaces should not be marked as pinned
                     sections.mainSpaces.forEach { space ->
-                        assertEquals(true, space.showPinButton)
+                        assertEquals(false, space.isPinned)
                     }
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly when at MAX_PINNED_SPACES limit`() =
+    fun `transformToVaultSpaceViews should correctly separate spaces when at MAX_PINNED_SPACES limit`() =
         runTest {
             // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 1 unpinned space
             val pinnedSpace1Id = "pinned1"
@@ -1075,20 +1075,20 @@ class VaultViewModelTest {
                 // Then - pinnedCount should be 6 (at MAX_PINNED_SPACES limit)
                 assertEquals(6, sections.pinnedSpaces.size)
 
-                // All pinned spaces should have canPin = true (they're already pinned)
+                // All pinned spaces should be marked as pinned
                 sections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // Unpinned space should have canPin = false (pinnedCount >= MAX_PINNED_SPACES)
+                // Unpinned spaces should not be marked as pinned
                 sections.mainSpaces.forEach { space ->
-                    assertEquals(false, space.showPinButton)
+                    assertEquals(false, space.isPinned)
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly with no pinned spaces`() =
+    fun `transformToVaultSpaceViews should correctly handle spaces when no spaces are pinned`() =
         runTest {
             turbineScope {
                 // Given - 0 pinned spaces, 2 unpinned spaces
@@ -1141,18 +1141,19 @@ class VaultViewModelTest {
                     val secondState = awaitItem() as VaultUiState.Sections
                     assertTrue(firstState is VaultUiState.Loading)
                     assertEquals(0, secondState.pinnedSpaces.size)
+                    // All unpinned spaces should not be marked as pinned
                     secondState.mainSpaces.forEach { space ->
                         assertEquals(
-                            true,
-                            space.showPinButton
-                        ) // canPin should be true for unpinned spaces
+                            false,
+                            space.isPinned
+                        )
                     }
                 }
             }
         }
 
     @Test
-    fun `transformToVaultSpaceViews should handle canPin correctly with chat spaces`() = runTest {
+    fun `transformToVaultSpaceViews should correctly identify pinned and unpinned chat spaces`() = runTest {
         // Given - 1 pinned chat space, 1 unpinned chat space
         val pinnedChatSpaceId = "pinnedChat"
         val unpinnedChatSpaceId = "unpinnedChat"
@@ -1222,20 +1223,20 @@ class VaultViewModelTest {
             // Then - pinnedCount should be 1
             assertEquals(1, sections.pinnedSpaces.size)
 
-            // Pinned chat space should have canPin = true (already pinned)
+            // Pinned chat space should be marked as pinned
             sections.pinnedSpaces.forEach { space ->
-                assertEquals(true, space.showPinButton)
+                assertEquals(true, space.isPinned)
             }
 
-            // Unpinned chat space should have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+            // Unpinned chat space should not be marked as pinned
             sections.mainSpaces.forEach { space ->
-                assertEquals(true, space.showPinButton)
+                assertEquals(false, space.isPinned)
             }
         }
     }
 
     @Test
-    fun `transformToVaultSpaceViews should update canPin dynamically when unpinning space at MAX_PINNED_SPACES limit`() =
+    fun `transformToVaultSpaceViews should correctly update space collections when unpinning space at MAX_PINNED_SPACES limit`() =
         runTest {
             // Given - 6 pinned spaces (at MAX_PINNED_SPACES limit), 4 unpinned spaces
             val pinnedSpace1Id = "pinned1"
@@ -1371,14 +1372,14 @@ class VaultViewModelTest {
                 assertEquals(6, initialSections.pinnedSpaces.size)
                 assertEquals(4, initialSections.mainSpaces.size)
 
-                // All pinned spaces should have canPin = true (already pinned)
+                // All pinned spaces should be marked as pinned
                 initialSections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // All unpinned spaces should have canPin = false (at MAX_PINNED_SPACES limit)
+                // All unpinned spaces should not be marked as pinned
                 initialSections.mainSpaces.forEach { space ->
-                    assertEquals(false, space.showPinButton)
+                    assertEquals(false, space.isPinned)
                 }
 
                 // When - User unpins one space (pinnedSpace6)
@@ -1402,17 +1403,17 @@ class VaultViewModelTest {
                     updatedSections.mainSpaces.size
                 ) // 4 original unpinned + 1 newly unpinned
 
-                // All pinned spaces should have canPin = true (already pinned)
+                // All pinned spaces should be marked as pinned
                 updatedSections.pinnedSpaces.forEach { space ->
-                    assertEquals(true, space.showPinButton)
+                    assertEquals(true, space.isPinned)
                 }
 
-                // All unpinned spaces should now have canPin = true (pinnedCount < MAX_PINNED_SPACES)
+                // All unpinned spaces should not be marked as pinned
                 updatedSections.mainSpaces.forEach { space ->
                     assertEquals(
-                        "Space ${space.space.id} should have canPin = true after unpinning",
-                        true,
-                        space.showPinButton
+                        "Space ${space.space.id} should not be pinned",
+                        false,
+                        space.isPinned
                     )
                 }
             }

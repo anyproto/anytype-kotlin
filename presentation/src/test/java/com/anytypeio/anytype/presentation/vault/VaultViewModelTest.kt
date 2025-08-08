@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.vault
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -55,6 +56,146 @@ class VaultViewModelTest {
         setSpaceOrder = mock()
     }
 
+    @Test
+    fun `transformToVaultSpaceViews creates Chat views for CHAT spaceUxType and Space views for other types`() = runTest {
+        turbineScope {
+            // Given - Simple test with one chat space and one data space
+            val dataSpaceId = "data_space"
+            val chatSpaceId = "chat_space"
+            val chatId = "chat_id"
+            
+            val dataSpace = StubSpaceView(
+                id = dataSpaceId,
+                targetSpaceId = dataSpaceId,
+                spaceUxType = SpaceUxType.DATA,
+                chatId = null,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceUxType = SpaceUxType.CHAT,
+                chatId = chatId,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val spaceViews = listOf(dataSpace, chatSpace)
+            val chatPreviews = emptyList<Chat.Preview>()
+            val permissions = emptyMap<String, SpaceMemberPermissions>()
+            
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Unknown")
+            
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
+            
+            // When
+            viewModel.uiState.test {
+                //skipItems(1) // Skip loading state
+                val loading = awaitItem()
+                val sections = awaitItem()
+                check(sections is VaultUiState.Sections) {
+                    "Expected Sections state, got $sections"
+                }
+                val allSpaces = sections.pinnedSpaces + sections.mainSpaces
+                
+                // Then - Verify we have two spaces
+                assertEquals("Should have 2 spaces", 2, allSpaces.size)
+                
+                // Find the spaces
+                val dataSpaceView = allSpaces.find { it.space.id == dataSpaceId }
+                val chatSpaceView = allSpaces.find { it.space.id == chatSpaceId }
+                
+                // Verify they exist
+                assertTrue("Data space should exist", dataSpaceView != null)
+                assertTrue("Chat space should exist", chatSpaceView != null)
+                
+                // Verify types - this tests our spaceUxType logic
+                assertTrue("Data space should be VaultSpaceView.Space", dataSpaceView is VaultSpaceView.Space)
+                assertTrue("Chat space should be VaultSpaceView.Chat due to spaceUxType", chatSpaceView is VaultSpaceView.Chat)
+            }
+        }
+    }
+
+    @Test
+    fun `transformToVaultSpaceViews creates Chat view for CHAT spaceUxType even without preview`() = runTest {
+        turbineScope {
+            // Given - Chat space without preview
+            val chatSpaceId = "chat_space_no_preview"
+            val chatId = "chat_id"
+            
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceUxType = SpaceUxType.CHAT,
+                chatId = chatId,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK
+            )
+            
+            val spaceViews = listOf(chatSpace)
+            val chatPreviews = emptyList<com.anytypeio.anytype.core_models.chats.Chat.Preview>() // No preview
+            val permissions = emptyMap<String, SpaceMemberPermissions>()
+            
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Unknown")
+            
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider
+            )
+            
+            // When
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val allSpaces = sections.pinnedSpaces + sections.mainSpaces
+                
+                // Then - Verify chat space is still Chat view type even without preview
+                val chatSpaceView = allSpaces.find { it.space.id == chatSpaceId }
+                
+                assertTrue("Chat space should be VaultSpaceView.Chat even without preview", 
+                    chatSpaceView is VaultSpaceView.Chat)
+                
+                // Verify Chat view handles null preview gracefully
+                val chatViewTyped = chatSpaceView as VaultSpaceView.Chat
+                assertEquals("Chat space should have null preview", null, chatViewTyped.chatPreview)
+                assertEquals("Unread message count should be 0", 0, chatViewTyped.unreadMessageCount)
+                assertEquals("Unread mention count should be 0", 0, chatViewTyped.unreadMentionCount)
+                assertEquals("Message text should be null", null, chatViewTyped.messageText)
+                assertEquals("Creator name should be null", null, chatViewTyped.creatorName)
+            }
+        }
+    }
 
     @Test
     fun `init should subscribe to flows and update state`() = runTest {

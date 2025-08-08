@@ -274,11 +274,13 @@ class VaultViewModel(
         pinnedCount: Int
     ): VaultSpaceView {
         val showPinButton = isPinned || pinnedCount < VaultUiState.MAX_PINNED_SPACES
-        return when {
-            chatPreview != null -> {
+        return when (space.spaceUxType) {
+            SpaceUxType.CHAT -> {
+                // Always create chat view for chat spaces, even without preview
                 createChatView(space, chatPreview, permissions, showPinButton)
             }
             else -> {
+                // For DATA, STREAM, NONE, or null - treat as data space
                 createStandardSpaceView(space, permissions, showPinButton)
             }
         }
@@ -375,41 +377,44 @@ class VaultViewModel(
 
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview,
+        chatPreview: Chat.Preview?,
         permissions: Map<Id, SpaceMemberPermissions>,
         showPinButton: Boolean
     ): VaultSpaceView.Chat {
-        val creator = chatPreview.message?.creator ?: ""
-        val messageText = chatPreview.message?.content?.text
+        val creatorId = chatPreview?.message?.creator
+        val messageText = chatPreview?.message?.content?.text
 
-        val creatorName = if (creator.isNotEmpty()) {
+        val creatorName = if (creatorId != null && creatorId.isNotEmpty()) {
             val creatorObj = chatPreview.dependencies.find {
                 it.getSingleValue<String>(
                     Relations.IDENTITY
-                ) == creator
+                ) == creatorId
             }
-            creatorObj?.name ?: "Unknown"
+            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
         } else {
             null
         }
 
-        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+        val messageTime = chatPreview?.message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
                 dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
             } else null
         }
 
         // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
-            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            val attachmentPreview = mapToAttachmentPreview(
-                attachment = attachment,
-                dependency = dependency
-            )
-            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-            attachmentPreview
-
-        } ?: emptyList()
+        val attachmentPreviews = if (chatPreview != null) {
+            chatPreview.message?.attachments?.map { attachment ->
+                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+                val attachmentPreview = mapToAttachmentPreview(
+                    attachment = attachment,
+                    dependency = dependency
+                )
+                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+                attachmentPreview
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
 
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -426,8 +431,8 @@ class VaultViewModel(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
-            unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
+            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             isMuted = isMuted,

@@ -41,7 +41,7 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
                 MaterialTheme(typography = typography) {
                     PublishToWebScreen(
                         domain = "Test",
-                        initialUri = "/test",
+                        initialUri = "test",
                         onPublishClicked = vm::onPublishClicked
                     )
                 }

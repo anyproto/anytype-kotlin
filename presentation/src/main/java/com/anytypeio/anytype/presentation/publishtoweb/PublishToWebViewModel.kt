@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
 import com.anytypeio.anytype.domain.publishing.GetPublishingStatus
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,27 +31,19 @@ class PublishToWebViewModel(
     private val getStatus: GetPublishingStatus,
     private val removePublishing: RemovePublishing,
     private val searchObjects: SearchObjects
-    ) : ViewModel() {
-
-
-    private val state = MutableStateFlow<Publishing.State?>(null)
-    private val isPublishing = MutableStateFlow(false)
+) : BaseViewModel() {
 
     init {
 
-
         viewModelScope.launch {
 
-
-            getPublishingDomain.async(
+            val domain = getPublishingDomain.async(
                 params = GetPublishingDomain.Params(
                     space = vmParams.space
                 )
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to get publishing domain")
-            }.onSuccess {
-                Timber.d("DROID-3786 Publishing domain: $it")
-            }
+            }.getOrNull()
 
             getStatus.async(
                 params = GetPublishingStatus.Params(
@@ -65,11 +58,51 @@ class PublishToWebViewModel(
         }
     }
 
-    fun onPublishClicked(
-        uri: String
-    ) {
+
+
+    fun onPublishClicked(uri: String) {
         Timber.d("DROID-3786 onPublishClicked: $uri")
-        // TODO
+        proceedWithPublishing(uri = uri)
+    }
+
+    fun onUpdateClicked(uri: String) {
+        Timber.d("DROID-3786 onUpdateClicked: $uri")
+        proceedWithPublishing(uri = uri)
+    }
+
+    fun onUnpublishClicked() {
+        proceedWithUnpublishing()
+    }
+
+    private fun proceedWithPublishing(uri: String) {
+        viewModelScope.launch {
+            publish.async(
+                params = CreatePublishing.Params(
+                    space = vmParams.space,
+                    objectId = vmParams.ctx,
+                    uri = uri
+                )
+            ).onFailure {
+                Timber.e(it, "DROID-3786 Failed to publish!")
+            }.onSuccess {
+                Timber.d("DROID-3786 Published: $it")
+            }
+        }
+    }
+
+    private fun proceedWithUnpublishing() {
+        viewModelScope.launch {
+            removePublishing.async(
+                params = RemovePublishing.Params(
+                    space = vmParams.space,
+                    objectId = vmParams.ctx
+                )
+            ).onFailure {
+                Timber.e(it, "DROID-3786 Failed to unpublish!")
+            }.onSuccess {
+                Timber.d("DROID-3786 Unpublished object: $vmParams")
+            }
+        }
     }
 
     class Factory @Inject constructor(

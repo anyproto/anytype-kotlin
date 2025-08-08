@@ -3120,7 +3120,8 @@ class Middleware @Inject constructor(
     fun publishingCreate(command: Command.Publishing.Create): String {
         val request = Rpc.Publishing.Create.Request(
             objectId = command.objectId,
-            spaceId = command.space.id
+            spaceId = command.space.id,
+            uri = command.uri
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.publishingCreate(request) }

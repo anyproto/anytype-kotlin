@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
@@ -23,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 
 @Composable
@@ -45,7 +48,10 @@ fun PublishToWebScreen(
     onUpdateClicked: (String) -> Unit = {},
 ) {
 
-    val textFieldState = rememberTextFieldState(initialText = viewState.uri)
+    val textFieldState = if (viewState !is PublishToWebViewState.Init)
+        rememberTextFieldState(initialText = viewState.uri)
+    else
+        TextFieldState()
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -101,7 +107,9 @@ fun PublishToWebScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 12.dp),
                 state = textFieldState,
-                textStyle = BodyRegular
+                textStyle = BodyRegular.copy(
+                    color = colorResource(R.color.text_primary)
+                )
             )
         }
         Section(
@@ -141,6 +149,7 @@ fun PublishToWebScreen(
                 }
             )
         }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         when(viewState) {
@@ -162,7 +171,7 @@ fun PublishToWebScreen(
                 ) {
                     ButtonSecondary(
                         modifier = Modifier.weight(1f),
-                        onClick = { onPublishClicked(textFieldState.text.toString()) },
+                        onClick = { onUnpublishClicked(textFieldState.text.toString()) },
                         text = stringResource(R.string.web_publishing_unpublish),
                         size = ButtonSize.Large
                     )
@@ -188,10 +197,61 @@ fun PublishToWebScreen(
                     loading = true
                 )
             }
+            is PublishToWebViewState.FailedToPublish -> {
+                ButtonPrimary(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    onClick = { onPublishClicked(textFieldState.text.toString()) },
+                    text = stringResource(R.string.web_publishing_publish),
+                    size = ButtonSize.Large
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    text = "Failed to publish: ${viewState.err}",
+                    style = Caption1Regular,
+                    color = colorResource(R.color.palette_system_red),
+                    maxLines = 3,
+                    textAlign = TextAlign.Center
+                )
+            }
+            is PublishToWebViewState.FailedToUpdate -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    ButtonSecondary(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onUnpublishClicked(textFieldState.text.toString()) },
+                        text = stringResource(R.string.web_publishing_unpublish),
+                        size = ButtonSize.Large
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    ButtonPrimary(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                        text = stringResource(R.string.web_publishing_update),
+                        size = ButtonSize.Large
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                    text = "Failed to update: ${viewState.err}",
+                    style = Caption1Regular,
+                    color = colorResource(R.color.palette_system_red),
+                    maxLines = 3,
+                    textAlign = TextAlign.Center
+                )
+            }
             else -> {
                 // Do nothing.
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

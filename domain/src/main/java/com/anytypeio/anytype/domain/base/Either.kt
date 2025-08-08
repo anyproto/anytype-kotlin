@@ -23,6 +23,13 @@ sealed class Either<out L, out R> {
             is Right -> fnR(b)
         }
 
+    fun getOrNull() : R? {
+        return if (this is Right)
+            this.b
+        else
+            null
+    }
+
     suspend fun proceed(
         failure: suspend (L) -> Any,
         success: suspend (R) -> Any

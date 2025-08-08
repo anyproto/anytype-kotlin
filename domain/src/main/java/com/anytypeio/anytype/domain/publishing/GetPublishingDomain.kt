@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.publishing
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -58,9 +59,7 @@ class GetPublishingDomain @Inject constructor(
         }
     }
 
-    data class Params(
-        val space: SpaceId
-    )
+    data class Params(val space: SpaceId)
 
     companion object {
         private const val FREE_DOMAIN = "any.coop"

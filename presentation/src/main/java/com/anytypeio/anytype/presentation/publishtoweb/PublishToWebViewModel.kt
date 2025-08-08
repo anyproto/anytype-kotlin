@@ -3,7 +3,10 @@ package com.anytypeio.anytype.presentation.publishtoweb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
@@ -14,8 +17,10 @@ import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -32,6 +37,10 @@ class PublishToWebViewModel(
     val viewState = _viewState.asStateFlow()
 
     init {
+        proceedWithResolvingInitialState()
+    }
+
+    private fun proceedWithResolvingInitialState() {
         viewModelScope.launch {
             getPublishingState.async(
                 params = GetPublishingState.Params(
@@ -41,16 +50,29 @@ class PublishToWebViewModel(
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to get publishing status")
             }.onSuccess { state ->
+
+                val domain = getPublishingDomain.async(
+                    params = GetPublishingDomain.Params(space = vmParams.space)
+                ).getOrNull()
+
                 if (state != null) {
-                    // TODO
+                    _viewState.value = PublishToWebViewState.NotPublished(
+                        domain = domain.orEmpty(),
+                        uri = state.uri
+                    )
                 } else {
                     val domain = getPublishingDomain.async(
                         params = GetPublishingDomain.Params(space = vmParams.space)
                     ).getOrNull()
+
+                    val uri = resolveSuggestedUri()
+
+                    Timber.d("DROID-3786 Resolved uri: $uri")
+
                     if (domain != null) {
                         _viewState.value = PublishToWebViewState.NotPublished(
                             domain = domain,
-                            uri = "test"
+                            uri = uri.orEmpty()
                         )
                     } else {
                         // TODO
@@ -60,16 +82,24 @@ class PublishToWebViewModel(
         }
     }
 
-
-
     fun onPublishClicked(uri: String) {
         Timber.d("DROID-3786 onPublishClicked")
+        _viewState.value = PublishToWebViewState.Publishing(
+            domain = viewState.value.domain,
+            uri = viewState.value.uri,
+            isUpdating = true
+        )
         proceedWithPublishing(uri = uri)
     }
 
     fun onUpdateClicked(uri: String) {
         Timber.d("DROID-3786 onUpdateClicked")
-        proceedWithPublishing(uri = uri)
+        _viewState.value = PublishToWebViewState.Publishing(
+            domain = viewState.value.domain,
+            uri = viewState.value.uri,
+            isUpdating = true
+        )
+        proceedWithUpdating(uri = uri)
     }
 
     fun onUnpublishClicked(uri: String) {
@@ -87,8 +117,34 @@ class PublishToWebViewModel(
                 )
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to publish!")
+                _viewState.value = PublishToWebViewState.FailedToPublish(
+                    domain = viewState.value.domain,
+                    uri = viewState.value.uri,
+                    err = it.message.orEmpty()
+                )
             }.onSuccess {
-                Timber.d("DROID-3786 Published: $it")
+                proceedWithResolvingInitialState()
+            }
+        }
+    }
+
+    private fun proceedWithUpdating(uri: String) {
+        viewModelScope.launch {
+            publish.async(
+                params = CreatePublishing.Params(
+                    space = vmParams.space,
+                    objectId = vmParams.ctx,
+                    uri = uri
+                )
+            ).onFailure {
+                Timber.e(it, "DROID-3786 Failed to publish!")
+                _viewState.value = PublishToWebViewState.FailedToUpdate(
+                    domain = viewState.value.domain,
+                    uri = viewState.value.uri,
+                    err = it.message.orEmpty()
+                )
+            }.onSuccess {
+                proceedWithResolvingInitialState()
             }
         }
     }
@@ -103,8 +159,26 @@ class PublishToWebViewModel(
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to unpublish!")
             }.onSuccess {
-                Timber.d("DROID-3786 Unpublished object: $vmParams")
+                proceedWithResolvingInitialState()
             }
+        }
+    }
+
+    private suspend fun resolveSuggestedUri() : String? {
+        return searchObjects(
+            SearchObjects.Params(
+                space = vmParams.space,
+                limit = 1,
+                filters = listOf(
+                    DVFilter(
+                        value = vmParams.ctx,
+                        condition = DVFilterCondition.EQUAL,
+                        relation = Relations.ID
+                    )
+                )
+            )
+        ).let { either ->
+            either.getOrNull().orEmpty().firstOrNull()?.name?.toWebSlug()
         }
     }
 
@@ -160,5 +234,27 @@ sealed class PublishToWebViewState {
     data class Publishing(
         override val domain: String,
         override val uri: String,
+        val isUpdating: Boolean = false
     ) : PublishToWebViewState()
+
+    data class FailedToPublish(
+        override val domain: String,
+        override val uri: String,
+        val err: String
+    ) : PublishToWebViewState()
+
+    data class FailedToUpdate(
+        override val domain: String,
+        override val uri: String,
+        val err: String
+    ) : PublishToWebViewState()
+}
+
+fun String.toWebSlug(): String {
+    return trim()
+        .lowercase()
+        .replace(Regex("[^a-z0-9\\s-]"), "") // remove special chars except space and hyphen
+        .replace(Regex("\\s+"), "-")         // replace spaces with hyphen
+        .replace(Regex("-+"), "-")           // collapse multiple hyphens
+        .let { "/$it" }
 }

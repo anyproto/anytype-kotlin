@@ -222,7 +222,6 @@ class VaultViewModel(
         val pinnedCount = pinnedIds.size
 
         val allSpaces = allSpacesRaw.map { space ->
-            val isPinned = !space.spaceOrder.isNullOrEmpty()
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
             }?.takeIf { preview ->
@@ -232,7 +231,7 @@ class VaultViewModel(
                     preview.chat == spaceChatId
                 } == true // If no chatId is set, don't show preview
             }
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, isPinned, pinnedCount)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, pinnedCount)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -270,10 +269,16 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
         permissions: Map<Id, SpaceMemberPermissions>,
-        isPinned: Boolean,
         pinnedCount: Int
     ): VaultSpaceView {
-        val showPinButton = isPinned || pinnedCount < VaultUiState.MAX_PINNED_SPACES
+        // Show the unpin button for pinned spaces.
+        // For unpinned spaces, only show pin affordance once at least one space is already pinned
+        // (to avoid confusing users on first launch where everything would otherwise show a pin icon).
+        val showPinButton = if (space.isPinned == true) {
+            true
+        } else {
+            pinnedCount > 0 && pinnedCount < VaultUiState.MAX_PINNED_SPACES
+        }
         return when (space.spaceUxType) {
             SpaceUxType.CHAT -> {
                 // Always create chat view for chat spaces, even without preview

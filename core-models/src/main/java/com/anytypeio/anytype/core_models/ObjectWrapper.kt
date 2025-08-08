@@ -369,6 +369,8 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus == SpaceStatus.UNKNOWN
             }
 
+        val isPinned: Boolean? get() = getSingleValue<String>(Relations.SPACE_ORDER)?.isNotEmpty()
+
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
                 ?.let { code ->

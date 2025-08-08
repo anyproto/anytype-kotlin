@@ -10,16 +10,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.input.TextFieldLineLimits
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,12 +33,19 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 
 @Composable
 fun PublishToWebScreen(
-    domain: String
+    domain: String,
+    initialUri: String,
 ) {
+    val textFieldState = rememberTextFieldState(initialText = initialUri)
+
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Dragger()
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
         Header(
             text = stringResource(R.string.publish_to_web)
         )
@@ -81,10 +84,15 @@ fun PublishToWebScreen(
                     width = 0.5.dp,
                     color = colorResource(R.color.shape_primary),
                     shape = RoundedCornerShape(12.dp)
-                )
+                ),
+            contentAlignment = Alignment.Center
         ) {
             BasicTextField(
-                state = TextFieldState(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp)
+                ,
+                state = textFieldState,
                 textStyle = BodyRegular
             )
         }
@@ -132,6 +140,7 @@ fun PublishToWebScreen(
 @Composable
 fun PublishToWebScreenPreview() {
     PublishToWebScreen(
-        domain = "claude.any.org"
+        domain = "claude.any.org",
+        initialUri = "/test"
     )
 }

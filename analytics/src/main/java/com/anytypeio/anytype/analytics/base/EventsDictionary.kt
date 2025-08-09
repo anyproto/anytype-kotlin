@@ -275,6 +275,14 @@ object EventsDictionary {
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
 
+    // Push notifications
+    const val screenAllowPush = "ScreenAllowPush"
+    const val clickAllowPush = "ClickAllowPush"
+    const val allowPush = "AllowPush"
+
+    // Message notifications
+    const val changeMessageNotificationState = "ChangeMessageNotificationState"
+
     //Gallery experience
     const val screenGalleryInstall = "ScreenGalleryInstall"
     const val clickGalleryInstall = "ClickGalleryInstall"
@@ -311,6 +319,33 @@ object EventsDictionary {
     enum class ClickLoginButton(val value: String) {
         PHRASE("Phrase"),
         QR("Qr"),
+    }
+
+    enum class ScreenAllowPushType(val value: String) {
+        INITIAL("Initial"),
+        SUBSEQUENT("Subsequent"),
+        SETTINGS("Settings")
+    }
+
+    enum class ClickAllowPushType(val value: String) {
+        ENABLE_NOTIFICATIONS("EnableNotifications"),
+        SETTINGS("Settings")
+    }
+
+    enum class AllowPushRoute(val value: String) {
+        POPUP("Popup"),
+        SETTINGS("Settings")
+    }
+
+    enum class MessageNotificationType(val value: String) {
+        ALL("All"),
+        MENTIONS("Mentions"),
+        NOTHING("Nothing")
+    }
+
+    enum class MessageNotificationRoute(val value: String) {
+        SCREEN_SETTINGS_SPACE_INDEX("ScreenSettingsSpaceIndex"),
+        VAULT("Vault")
     }
 
     // Routes

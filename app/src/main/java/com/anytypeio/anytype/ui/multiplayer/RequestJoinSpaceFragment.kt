@@ -81,6 +81,9 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                     ActivityResultContracts.RequestPermission()
                 ) { isGranted: Boolean ->
                     Timber.d("Permission granted: $isGranted")
+                    if (isGranted) {
+                        vm.onNotificationPermissionGranted()
+                    }
                     activity?.onRequestPermissionsResult(
                         NotificationPermissionPromptDialog.REQUEST_CODE,
                         arrayOf(Manifest.permission.POST_NOTIFICATIONS),
@@ -174,6 +177,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                         primaryButtonText = stringResource(R.string.notifications_prompt_primary_button_text),
                                         secondaryButtonText = stringResource(R.string.notifications_prompt_secondary_button_text),
                                         onPrimaryButtonClicked = {
+                                            vm.onNotificationPermissionRequested()
                                             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                         },
                                         onSecondaryButtonClicked = {

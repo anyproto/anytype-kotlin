@@ -1187,7 +1187,7 @@
     <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte je verzoek goedkeurt, krijg je toegang tot de ruimte met de door de eigenaar bepaalde toegangsrechten.</string>
     <string name="multiplayer_request_to_join_without_approve_title">Neem deel %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">Je bent uitgenodigd om deel te nemen aan  %1$s ruimte, gemaakt door %2$s</string>
-    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Neem deel aan ruimte </string>
     <string name="multiplayer_request_to_join_sent_title">Verzoek verzonden</string>
     <string name="multiplayer_request_to_join_sent_description">Je zult een melding ontvangen wanneer de eigenaar van de ruimte je verzoek zal goedkeuren.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Beheer ruimten</string>
@@ -1562,7 +1562,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="version_history_error_get_members">Fout bij het ophalen van leden</string>
     <string name="new_object">Nieuw object</string>
     <string name="vault_my_spaces">Mijn Ruimtes</string>
-    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_unread_section_title">Ongelezen</string>
     <string name="vault_all_section_title">Alles</string>
     <string name="vault_pinned_section_title">Vastgezet</string>
     <string name="vault_pin_space">Zet vast</string>

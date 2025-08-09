@@ -1851,9 +1851,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_box_record_video">Neem video op</string>
     <string name="chat_camera_permission_denied">Cameratoegang geweigerd</string>
     <string name="notifications_title">Meldingen</string>
-    <string name="notifications_all">All activity</string>
-    <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_all">Alle activiteit</string>
+    <string name="notifications_mentions">Alleen vermeldingen</string>
+    <string name="notifications_disable">Schakel meldingen uit</string>
     <string name="notifications_all_short">Alles</string>
     <string name="notifications_mentions_short">Vermeldingen</string>
     <string name="notifications_disable_short">Schakel uit</string>

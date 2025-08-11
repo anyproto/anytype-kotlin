@@ -82,6 +82,7 @@ class ProfileSettingsViewModel(
     )
 
     init {
+        Timber.d("ProfileSettingsViewModel init")
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingsAccount

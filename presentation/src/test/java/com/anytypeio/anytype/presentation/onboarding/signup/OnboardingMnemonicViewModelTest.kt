@@ -33,9 +33,6 @@ class OnboardingMnemonicViewModelTest {
     private lateinit var analytics: Analytics
 
     @Mock
-    private lateinit var configStorage: ConfigStorage
-
-    @Mock
     private lateinit var networkConnectionStatus: NetworkConnectionStatus
 
     @Mock
@@ -141,10 +138,8 @@ class OnboardingMnemonicViewModelTest {
         return OnboardingMnemonicViewModel(
             getMnemonic = getMnemonic,
             analytics = analytics,
-            configStorage = configStorage,
             networkModeProvider = networkModeProvider,
-            networkConnectionStatus = networkConnectionStatus,
-            pendingIntentStore = pendingIntentStore
+            networkConnectionStatus = networkConnectionStatus
         )
     }
 } 

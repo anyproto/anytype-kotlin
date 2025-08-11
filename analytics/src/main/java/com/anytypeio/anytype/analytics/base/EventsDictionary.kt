@@ -7,6 +7,7 @@ object EventsDictionary {
      */
 
     // Auth events
+    const val startCreateAccount = "StartCreateAccount"
     const val createAccount = "CreateAccount"
     const val openAccount = "OpenAccount"
     const val logout = "LogOut"
@@ -148,6 +149,7 @@ object EventsDictionary {
 
     // Widgets
 
+    const val screenWidget = "ScreenWidget"
     const val addWidget = "AddWidget"
     const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"

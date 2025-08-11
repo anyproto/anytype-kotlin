@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
@@ -22,7 +24,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -111,6 +112,10 @@ class OnboardingStartViewModel @Inject constructor(
     private suspend fun proceedWithCreatingAccount() {
         Timber.d("Proceeding with creating account")
         val startTime = System.currentTimeMillis()
+        
+        // Send StartCreateAccount event before starting account creation
+        analytics.sendEvent(eventName = EventsDictionary.startCreateAccount)
+        
         val params = CreateAccount.Params(
             name = DEFAULT_ACCOUNT_NAME,
             iconGradientValue = spaceGradientProvider.randomId()
@@ -144,7 +149,6 @@ class OnboardingStartViewModel @Inject constructor(
 
     private suspend fun handleCreateAccountSuccess(startTime: Long, result: CreateAccount.Result) {
         Timber.d("handleCreateAccountSuccess, Account created successfully: $result")
-        analytics.sendEvent(eventName = EventsDictionary.createSpace)
         val profileId = result.config.profile
         val spaceId = result.config.space
         createAccountAnalytics(startTime)
@@ -203,12 +207,23 @@ class OnboardingStartViewModel @Inject constructor(
     }
 
     private suspend fun createAccountAnalytics(startTime: Long) {
-        analytics.proceedWithAccountEvent(
-            startTime = startTime,
-            configStorage = configStorage,
-            eventName = EventsDictionary.createAccount,
-            lang = localeProvider.language()
-        )
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            val analyticsId = config.analytics
+            val userProperty = com.anytypeio.anytype.analytics.props.UserProperty.AccountId(analyticsId)
+            analytics.updateUserProperty(userProperty)
+            val lang = localeProvider.language()
+            analytics.updateUserProperty(com.anytypeio.anytype.analytics.props.UserProperty.InterfaceLanguage(lang))
+            
+            // Send CreateAccount event with all required props
+            analytics.sendEvent(
+                startTime = startTime,
+                middleTime = System.currentTimeMillis(),
+                eventName = EventsDictionary.createAccount,
+                props = Props(mapOf("accountId" to analyticsId))
+            )
+            analytics.sendEvent(eventName = EventsDictionary.createSpace)
+        }
     }
 
     private fun setupGlobalSubscriptions() {

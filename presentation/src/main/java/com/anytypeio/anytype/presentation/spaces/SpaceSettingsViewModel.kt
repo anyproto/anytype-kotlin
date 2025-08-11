@@ -291,7 +291,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (!targetSpaceId.isNullOrEmpty()) {
+                    if (BuildConfig.SHOW_CHATS && !targetSpaceId.isNullOrEmpty()) {
                         // Target space is set, show change Notification mode option
                         add(Spacer(height = 8))
                         add(Notifications)

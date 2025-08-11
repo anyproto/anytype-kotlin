@@ -1871,4 +1871,10 @@
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
+    <string name="share_space_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
+    <string name="share_space_error_request_failed">申し訳ありません。リクエストの送信に失敗しました。インターネット接続を確認し、もう一度お試しください。</string>
+    <string name="share_space_error_space_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

@@ -1912,4 +1912,10 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">Разрешить</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
+    <string name="share_space_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="share_space_error_request_failed">Упс! Ошибка запроса. Пожалуйста, проверьте подключение к Интернету и повторите попытку.</string>
+    <string name="share_space_error_space_deleted">Похоже, пространство было удалено. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

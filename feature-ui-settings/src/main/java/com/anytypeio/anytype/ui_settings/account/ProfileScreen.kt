@@ -64,6 +64,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -127,16 +128,18 @@ fun ProfileSettingsScreen(
                 onClick = onAppearanceClicked
             )
         }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            OptionWithBadge(
-                image = R.drawable.ic_notifications_28,
-                text = stringResource(R.string.notifications_title),
-                showBadge = notificationsDisabled,
-                onClick = onOpenNotificationSettings
-            )
+        if (com.anytypeio.anytype.presentation.BuildConfig.SHOW_CHATS) {
+            item {
+                Divider(paddingStart = 60.dp)
+            }
+            item {
+                OptionWithBadge(
+                    image = R.drawable.ic_notifications_28,
+                    text = stringResource(R.string.notifications_title),
+                    showBadge = notificationsDisabled,
+                    onClick = onOpenNotificationSettings
+                )
+            }
         }
         item {
             Divider(paddingStart = 60.dp)

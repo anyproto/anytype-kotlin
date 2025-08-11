@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.toDVSort
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultKeys
+import com.anytypeio.anytype.presentation.search.buildChatsFilter
 import com.anytypeio.anytype.presentation.search.buildDeletedFilter
 import com.anytypeio.anytype.presentation.search.buildLayoutFilter
 import com.anytypeio.anytype.presentation.search.buildLimitedObjectIdsFilter
@@ -86,6 +87,7 @@ fun AllContentTab.filtersForSubscribe(
                 add(buildLayoutFilter(layouts = allContentTabLayouts.getValue(tab)))
                 add(buildSpaceIdFilter(spaces))
                 add(buildTemplateFilter())
+                add(buildChatsFilter())
                 if (limitedObjectIds.isNotEmpty()) {
                     add(buildLimitedObjectIdsFilter(limitedObjectIds = limitedObjectIds))
                 }

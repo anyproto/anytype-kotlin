@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -16,7 +18,7 @@ class SelectAccount @Inject constructor(
     private val configStorage: ConfigStorage,
     private val initialParamsProvider: InitialParamsProvider,
     private val awaitAccountStartManager: AwaitAccountStartManager
-) : BaseUseCase<String, SelectAccount.Params>() {
+) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repository.setInitialParams(initialParamsProvider.toCommand())
@@ -37,7 +39,7 @@ class SelectAccount @Inject constructor(
         }
         configStorage.set(config = setup.config)
         awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
-        setup.config.analytics
+        StartAccountResult(setup.config.analytics, setup.status)
     }
 
     /**
@@ -49,3 +51,5 @@ class SelectAccount @Inject constructor(
         val path: String
     )
 }
+
+typealias StartAccountResult = Pair<Id, AccountStatus>

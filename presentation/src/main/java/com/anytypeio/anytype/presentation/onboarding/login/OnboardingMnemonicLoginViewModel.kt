@@ -295,7 +295,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                     }
                 },
-                success = { analyticsId ->
+                success = { (analyticsId, _) ->
                     analytics.proceedWithAccountEvent(
                         startTime = startTime,
                         eventName = EventsDictionary.openAccount,

@@ -1450,6 +1450,10 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.screenWidget
+        )
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {

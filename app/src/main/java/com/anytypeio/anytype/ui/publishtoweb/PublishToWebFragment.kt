@@ -54,7 +54,7 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->
-                            Timber.d("new command: $command")
+                            Timber.d("DROID-3786 New command: $command")
                             when (command) {
                                 is PublishToWebViewModel.Command.Browse -> {
                                     ActivityCustomTabsHelper.openUrl(

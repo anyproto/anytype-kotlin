@@ -727,7 +727,7 @@ sealed class Command {
             val space: SpaceId,
             val objectId: Id,
             val uri: String,
-            val joinSpace: Boolean = false
+            val showJoinSpaceBanner: Boolean = false
         ) : Publishing()
 
         data class Remove(

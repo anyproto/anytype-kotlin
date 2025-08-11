@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.publishing.CreatePublishing
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
 import com.anytypeio.anytype.domain.publishing.GetPublishingState
@@ -30,7 +32,8 @@ class PublishToWebViewModel(
     private val publish: CreatePublishing,
     private val getPublishingState: GetPublishingState,
     private val removePublishing: RemovePublishing,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val spaces: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow<PublishToWebViewState>(PublishToWebViewState.Init)
@@ -44,6 +47,10 @@ class PublishToWebViewModel(
 
     private fun proceedWithResolvingInitialState() {
         viewModelScope.launch {
+
+            val wrapper = fetchObject()
+            val space = spaces.get(vmParams.space)
+
             getPublishingState.async(
                 params = GetPublishingState.Params(
                     space = vmParams.space,
@@ -60,18 +67,23 @@ class PublishToWebViewModel(
                 if (state == null) {
                     _viewState.value = PublishToWebViewState.NotPublished(
                         domain = domain.orEmpty(),
-                        uri = resolveSuggestedUri().orEmpty()
+                        uri = resolveSuggestedUri().orEmpty(),
+                        objectName = wrapper?.name.orEmpty(),
+                        spaceName = space?.name.orEmpty(),
+                        showJoinSpaceButton = true
                     )
                 } else {
-
-                    val uri = resolveSuggestedUri()
+                    val uri = wrapper?.name?.toWebSlug()
 
                     Timber.d("DROID-3786 Resolved uri: $uri")
 
                     if (domain != null) {
                         _viewState.value = PublishToWebViewState.Published(
                             domain = domain,
-                            uri = state.uri
+                            uri = state.uri,
+                            objectName = wrapper?.name.orEmpty(),
+                            spaceName = space?.name.orEmpty(),
+                            showJoinSpaceButton = state.showJoinSpaceButton
                         )
                     } else {
                         // TODO
@@ -81,25 +93,37 @@ class PublishToWebViewModel(
         }
     }
 
-    fun onPublishClicked(uri: String) {
+    fun onPublishClicked(uri: String, showJoinSpaceButton: Boolean) {
         Timber.d("DROID-3786 onPublishClicked")
         _viewState.value = PublishToWebViewState.Publishing(
             domain = viewState.value.domain,
-            uri = viewState.value.uri
+            uri = viewState.value.uri,
+            objectName = viewState.value.objectName,
+            spaceName = viewState.value.spaceName,
+            showJoinSpaceButton = showJoinSpaceButton
         )
-        proceedWithPublishing(uri = uri)
+        proceedWithPublishing(
+            uri = uri,
+            showJoinSpaceButton = showJoinSpaceButton
+        )
     }
 
-    fun onUpdateClicked(uri: String) {
+    fun onUpdateClicked(uri: String, showJoinSpaceButton: Boolean) {
         Timber.d("DROID-3786 onUpdateClicked")
         _viewState.value = PublishToWebViewState.Publishing(
             domain = viewState.value.domain,
-            uri = viewState.value.uri
+            uri = viewState.value.uri,
+            objectName = viewState.value.objectName,
+            spaceName = viewState.value.spaceName,
+            showJoinSpaceButton = showJoinSpaceButton
         )
-        proceedWithUpdating(uri = uri)
+        proceedWithUpdating(
+            uri = uri,
+            showJoinSpaceButton = showJoinSpaceButton
+        )
     }
 
-    fun onUnpublishClicked(uri: String) {
+    fun onUnpublishClicked(uri: String, showJoinSpaceButton: Boolean) {
         Timber.d("DROID-3786 onUnpublishClicked")
         proceedWithUnpublishing()
     }
@@ -108,63 +132,67 @@ class PublishToWebViewModel(
         Timber.d("DROID-3786 onPreviewClicked")
         viewModelScope.launch {
             when(val state = viewState.value) {
-                is PublishToWebViewState.FailedToPublish -> TODO()
-                is PublishToWebViewState.FailedToUpdate -> TODO()
-                PublishToWebViewState.Init -> TODO()
-                is PublishToWebViewState.NotPublished -> TODO()
-                is PublishToWebViewState.Published -> {
-                    commands.emit(
-                        Command.Browse(
-                            "https://" + state.domain + "/" + state.uri
+                is PublishToWebViewState.Published -> commands.emit(
+                    Command.Browse(
+                        buildUrl(
+                            domain = state.domain,
+                            uri = state.uri
                         )
                     )
-                }
-                is PublishToWebViewState.Publishing -> TODO()
-                else -> {
-                    Timber.w("Unexpected state")
-                }
+                )
+                else -> Timber.w("DROID-3786 Ignoring click on preview")
             }
         }
     }
 
-    private fun proceedWithPublishing(uri: String) {
+    private fun proceedWithPublishing(uri: String, showJoinSpaceButton: Boolean) {
         viewModelScope.launch {
             publish.async(
                 params = CreatePublishing.Params(
                     space = vmParams.space,
                     objectId = vmParams.ctx,
-                    uri = uri
+                    uri = uri.removePrefix("/"),
+                    showJoinSpaceBanner = showJoinSpaceButton
                 )
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to publish!")
                 _viewState.value = PublishToWebViewState.FailedToPublish(
                     domain = viewState.value.domain,
                     uri = viewState.value.uri,
-                    err = it.message.orEmpty()
+                    err = it.message.orEmpty(),
+                    objectName = viewState.value.objectName,
+                    spaceName = viewState.value.spaceName
                 )
-            }.onSuccess { uri ->
-                proceedWithResolvingInitialState()
+            }.onSuccess { url ->
+                proceedWithResolvingInitialState().also {
+                    commands.emit(Command.Browse(url))
+                }
             }
         }
     }
 
-    private fun proceedWithUpdating(uri: String) {
+    private fun proceedWithUpdating(uri: String, showJoinSpaceButton: Boolean) {
         viewModelScope.launch {
             publish.async(
                 params = CreatePublishing.Params(
                     space = vmParams.space,
                     objectId = vmParams.ctx,
-                    uri = uri
+                    uri = uri.removePrefix("/"),
+                    showJoinSpaceBanner = showJoinSpaceButton
                 )
             ).onFailure {
                 Timber.e(it, "DROID-3786 Failed to publish!")
                 _viewState.value = PublishToWebViewState.FailedToUpdate(
                     domain = viewState.value.domain,
                     uri = viewState.value.uri,
-                    err = it.message.orEmpty()
+                    err = it.message.orEmpty(),
+                    objectName = viewState.value.objectName,
+                    spaceName = viewState.value.spaceName
                 )
-            }.onSuccess {
-                proceedWithResolvingInitialState()
+            }.onSuccess { url ->
+                proceedWithResolvingInitialState().also {
+                    commands.emit(Command.Browse(url))
+                }
             }
         }
     }
@@ -202,6 +230,22 @@ class PublishToWebViewModel(
         }
     }
 
+    private suspend fun fetchObject(): ObjectWrapper.Basic? {
+        return searchObjects(
+            SearchObjects.Params(
+                space = vmParams.space,
+                limit = 1,
+                filters = listOf(
+                    DVFilter(
+                        value = vmParams.ctx,
+                        condition = DVFilterCondition.EQUAL,
+                        relation = Relations.ID
+                    )
+                )
+            )
+        ).getOrNull().orEmpty().firstOrNull()
+    }
+
     class Factory @Inject constructor(
         private val publish: CreatePublishing,
         private val getStatus: GetPublishingState,
@@ -209,6 +253,7 @@ class PublishToWebViewModel(
         private val removePublishing: RemovePublishing,
         private val searchObjects: SearchObjects,
         private val params: Params,
+        private val spaces: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -218,7 +263,8 @@ class PublishToWebViewModel(
                 publish = publish,
                 getPublishingState = getStatus,
                 removePublishing = removePublishing,
-                searchObjects = searchObjects
+                searchObjects = searchObjects,
+                spaces = spaces
             ) as T
         }
     }
@@ -237,38 +283,62 @@ sealed class PublishToWebViewState {
 
     abstract val uri: String
     abstract val domain: String
+    abstract val objectName: String
+    abstract val spaceName: String
+    abstract val showJoinSpaceButton: Boolean
 
     data  object Init : PublishToWebViewState() {
         override val uri: String
             get() = ""
         override val domain: String
             get() = ""
+        override val objectName: String
+            get() = ""
+        override val spaceName: String
+            get() = ""
+        override val showJoinSpaceButton: Boolean
+            get() = false
     }
 
     data class NotPublished(
         override val domain: String,
         override val uri: String,
+        override val objectName: String,
+        override val spaceName: String,
+        override val showJoinSpaceButton: Boolean = false
     ) : PublishToWebViewState()
 
     data class Published(
         override val domain: String,
         override val uri: String,
+        override val objectName: String,
+        override val spaceName: String,
+        override val showJoinSpaceButton: Boolean = false
     ) : PublishToWebViewState()
 
     data class Publishing(
         override val domain: String,
-        override val uri: String
+        override val uri: String,
+        override val objectName: String,
+        override val spaceName: String,
+        override val showJoinSpaceButton: Boolean = false
     ) : PublishToWebViewState()
 
     data class FailedToPublish(
         override val domain: String,
         override val uri: String,
+        override val objectName: String,
+        override val spaceName: String,
+        override val showJoinSpaceButton: Boolean = false,
         val err: String
     ) : PublishToWebViewState()
 
     data class FailedToUpdate(
         override val domain: String,
         override val uri: String,
+        override val objectName: String,
+        override val spaceName: String,
+        override val showJoinSpaceButton: Boolean = false,
         val err: String
     ) : PublishToWebViewState()
 }

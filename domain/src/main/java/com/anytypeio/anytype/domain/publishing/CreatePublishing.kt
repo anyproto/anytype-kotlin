@@ -18,7 +18,7 @@ class CreatePublishing @Inject constructor(
             space = params.space,
             objectId = params.objectId,
             uri = params.uri,
-            joinSpace = params.joinSpace
+            showJoinSpaceBanner = params.showJoinSpaceBanner
         )
         return repository.publishingCreate(command)
     }
@@ -27,6 +27,6 @@ class CreatePublishing @Inject constructor(
         val space: SpaceId,
         val objectId: Id,
         val uri: String,
-        val joinSpace: Boolean = false
+        val showJoinSpaceBanner: Boolean = false
     )
 }

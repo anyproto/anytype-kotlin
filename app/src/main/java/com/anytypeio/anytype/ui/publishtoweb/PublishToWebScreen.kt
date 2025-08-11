@@ -20,11 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.Card
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -44,20 +47,24 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 
 @Composable
 fun PublishToWebScreen(
     viewState: PublishToWebViewState,
-    onPublishClicked: (String) -> Unit = {},
-    onUnpublishClicked: (String) -> Unit = {},
-    onUpdateClicked: (String) -> Unit = {},
+    onPublishClicked: (String, Boolean) -> Unit = { _, _ -> },
+    onUnpublishClicked: (String, Boolean) -> Unit = { _, _ -> },
+    onUpdateClicked: (String, Boolean) -> Unit = { _, _ -> },
     onPreviewClicked: () -> Unit = {}
 ) {
 
+
+    var showJoinSpaceBannerChecked by remember { mutableStateOf(true) }
+
     val textFieldState = if (viewState !is PublishToWebViewState.Init)
-        rememberTextFieldState(initialText = viewState.uri)
+        rememberTextFieldState(initialText = "/" + viewState.uri)
     else
         TextFieldState()
 
@@ -147,7 +154,7 @@ fun PublishToWebScreen(
                         .padding(horizontal = 10.dp)
                 )
                 Switch(
-                    checked = true,
+                    checked = showJoinSpaceBannerChecked,
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = colorResource(id = R.color.white),
                         checkedTrackColor = colorResource(id = R.color.color_accent),
@@ -156,7 +163,7 @@ fun PublishToWebScreen(
                         uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
                     ),
                     onCheckedChange = {
-
+                        showJoinSpaceBannerChecked = it
                     }
                 )
             }
@@ -169,12 +176,16 @@ fun PublishToWebScreen(
                 .background(color = colorResource(R.color.shape_transparent_tertiary))
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
                 PreviewCard(
-                    title = "Test",
-                    onPreviewClicked = onPreviewClicked
+                    objectName = viewState.objectName,
+                    spaceName = viewState.spaceName,
+                    onPreviewClicked = onPreviewClicked,
+                    showSpaceHeader = showJoinSpaceBannerChecked
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when(viewState) {
@@ -182,7 +193,12 @@ fun PublishToWebScreen(
                         ButtonPrimary(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            onClick = { onPublishClicked(textFieldState.text.toString()) },
+                            onClick = {
+                                onPublishClicked(
+                                    textFieldState.text.toString(),
+                                    showJoinSpaceBannerChecked
+                                )
+                            },
                             text = stringResource(R.string.web_publishing_publish),
                             size = ButtonSize.Large
                         )
@@ -194,14 +210,23 @@ fun PublishToWebScreen(
                         ) {
                             ButtonSecondary(
                                 modifier = Modifier.weight(1f),
-                                onClick = { onUnpublishClicked(textFieldState.text.toString()) },
+                                onClick = {
+                                    onUnpublishClicked(
+                                        textFieldState.text.toString(),
+                                        showJoinSpaceBannerChecked
+                                    )
+                                },
                                 text = stringResource(R.string.web_publishing_unpublish),
                                 size = ButtonSize.Large
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             ButtonPrimary(
                                 modifier = Modifier.weight(1f),
-                                onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                                onClick = {
+                                    onUpdateClicked(
+                                        textFieldState.text.toString(), showJoinSpaceBannerChecked
+                                    )
+                                },
                                 text = stringResource(R.string.web_publishing_update),
                                 size = ButtonSize.Large
                             )
@@ -223,7 +248,12 @@ fun PublishToWebScreen(
                         ButtonPrimary(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            onClick = { onPublishClicked(textFieldState.text.toString()) },
+                            onClick = {
+                                onPublishClicked(
+                                    textFieldState.text.toString(),
+                                    showJoinSpaceBannerChecked
+                                )
+                            },
                             text = stringResource(R.string.web_publishing_publish),
                             size = ButtonSize.Large
                         )
@@ -244,22 +274,37 @@ fun PublishToWebScreen(
                         ) {
                             ButtonSecondary(
                                 modifier = Modifier.weight(1f),
-                                onClick = { onUnpublishClicked(textFieldState.text.toString()) },
+                                onClick = {
+                                    onUnpublishClicked(
+                                        textFieldState.text.toString(),
+                                        showJoinSpaceBannerChecked
+                                    )
+                                },
                                 text = stringResource(R.string.web_publishing_unpublish),
                                 size = ButtonSize.Large
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             ButtonPrimary(
                                 modifier = Modifier.weight(1f),
-                                onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                                onClick = {
+                                    onUpdateClicked(
+                                        textFieldState.text.toString(),
+                                        showJoinSpaceBannerChecked
+                                    )
+                                },
                                 text = stringResource(R.string.web_publishing_update),
                                 size = ButtonSize.Large
                             )
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                            text = "Failed to update: ${viewState.err}",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                            text = stringResource(
+                                R.string.web_publishing_failed_to_update,
+                                viewState.err
+                            ),
                             style = Caption1Regular,
                             color = colorResource(R.color.palette_system_red),
                             maxLines = 3,
@@ -282,11 +327,10 @@ fun PublishToWebScreenPreview() {
     PublishToWebScreen(
         viewState = PublishToWebViewState.NotPublished(
             domain = "Test",
-            uri = "test"
-        ),
-        onPublishClicked = {
-
-        }
+            uri = "test",
+            objectName = "What I Learned as a Product Designer",
+            spaceName = "Anytype Design"
+        )
     )
 }
 
@@ -296,7 +340,9 @@ fun PublishToWebScreenNotPublishedPreview() {
     PublishToWebScreen(
         viewState = PublishToWebViewState.NotPublished(
             domain = "Test",
-            uri = "test"
+            uri = "test",
+            objectName = "What I Learned as a Product Designer",
+            spaceName = "Anytype Design"
         )
     )
 }
@@ -307,7 +353,9 @@ fun PublishToWebScreenPublishedPreview() {
     PublishToWebScreen(
         viewState = PublishToWebViewState.Published(
             domain = "Test",
-            uri = "provence"
+            uri = "provence",
+            objectName = "What I Learned as a Product Designer",
+            spaceName = "Anytype Design"
         )
     )
 }
@@ -318,14 +366,18 @@ fun PublishToWebScreenPublishingPreview() {
     PublishToWebScreen(
         viewState = PublishToWebViewState.Publishing(
             domain = "Test",
-            uri = "provence"
+            uri = "provence",
+            objectName = "What I Learned as a Product Designer",
+            spaceName = "Anytype Design"
         )
     )
 }
 
 @Composable
 private fun PreviewCard(
-    title: String,
+    objectName: String,
+    spaceName: String,
+    showSpaceHeader: Boolean = false,
     onPreviewClicked: () -> Unit
 ) {
     Column(
@@ -374,11 +426,48 @@ private fun PreviewCard(
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        if (showSpaceHeader) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .padding(end = 8.dp)
+                ,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = spaceName,
+                    style = Caption2Medium,
+                    color = colorResource(R.color.text_primary),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(horizontal = 8.dp)
+                )
+                Box(
+                    modifier = Modifier
+                        .background(
+                            color = colorResource(R.color.glyph_button),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                ) {
+                    Text(
+                        modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp),
+                        text = "Join",
+                        style = Caption2Medium,
+                        color = colorResource(R.color.text_label_inversion)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        } else {
+            Spacer(modifier = Modifier.height(32.dp))
+        }
 
         Text(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
-            text = title,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp),
+            text = objectName,
             style = HeadlineSubheading,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -411,7 +500,9 @@ private fun PreviewCard(
 @Composable
 private fun PreviewCardPreview() {
     PreviewCard(
-        title = "What I Learned as a Product Designersigner What I Learned as a Product Designer",
-        onPreviewClicked = {}
+        objectName = "What I Learned as a Product Designersigner What I Learned as a Product Designer",
+        spaceName = "Anytype Design",
+        onPreviewClicked = {},
+        showSpaceHeader = false
     )
 }

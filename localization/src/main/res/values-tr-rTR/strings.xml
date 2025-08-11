@@ -1888,5 +1888,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
-    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
+    <string name="share_space_error_generic">Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

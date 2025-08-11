@@ -769,7 +769,7 @@ data class ShareSpaceMemberView(
     }
 }
 
-sealed class ShareSpaceErrors{
+sealed class ShareSpaceErrors {
     data object Hidden : ShareSpaceErrors()
     data object LimitReached : ShareSpaceErrors()
     data object NotShareable : ShareSpaceErrors()

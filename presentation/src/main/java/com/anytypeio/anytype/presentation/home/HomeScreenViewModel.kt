@@ -1008,6 +1008,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetMenuTriggered(widget: Id) {
+        Timber.d("onWidgetMenuTriggered: $widget")
         viewModelScope.launch {
             val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
             analytics.sendScreenWidgetMenuEvent(
@@ -2166,7 +2167,7 @@ class HomeScreenViewModel(
         view: ViewId?,
         navigate: Boolean = true
     ) {
-        Timber.d("onCreateDataViewObject")
+        Timber.d("onCreateDataViewObject, widget: $widget, view: $view, navigate: $navigate")
         viewModelScope.launch {
             val target = widgets.value.orEmpty().find { it.id == widget }
             if (target != null) {
@@ -2300,7 +2301,7 @@ class HomeScreenViewModel(
         dv: DV,
         navigate: Boolean = false
     ) {
-        Timber.d("proceedWithCreatingDataViewObject")
+        Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
         val dataViewSourceType = dataViewSourceObj.uniqueKey
         val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,
@@ -2511,6 +2512,7 @@ class HomeScreenViewModel(
     }
 
     fun onCreateWidgetElementClicked(view: WidgetView) {
+        Timber.d("onCreateWidgetElementClicked, widget: $view")
         when(view) {
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {

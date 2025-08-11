@@ -27,6 +27,8 @@ object EventsDictionary {
     const val switchSpace = "SwitchSpace"
     const val reorderSpace = "ReorderSpace"
     const val deleteSpace = "DeleteSpace"
+    const val pinSpace = "PinSpace"
+    const val unpinSpace = "UnpinSpace"
     const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
 
 

@@ -1909,4 +1909,10 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">Дазволіць</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Для гэтай прасторы дасягнуты ліміт. Калі ласка, абнавіце сваё членства або звярніцеся ў службу падтрымкі за дапамогай.</string>
+    <string name="share_space_error_not_shareable">Падобна, што прастора больш не з\'яўляецца агульнай. Калі ласка, пераканайцеся, што вашыя прылады сінхранізаваныя.</string>
+    <string name="share_space_error_request_failed">Ой! Запыт не выкананы. Праверце падключэнне да Інтэрнэту і паўтарыце спробу.</string>
+    <string name="share_space_error_space_deleted">Здаецца, Прастора была выдалена. Калі ласка, пераканайцеся, што вашы прылады сінхранізаваны.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

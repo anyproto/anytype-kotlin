@@ -147,6 +147,8 @@
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#3F51B5</color>
+    <color name="color_accent_80">#699BFF</color>
+
     <color name="snackbar_background">#000000</color>
 
     <color name="widget_divider">#E3E3E3</color>

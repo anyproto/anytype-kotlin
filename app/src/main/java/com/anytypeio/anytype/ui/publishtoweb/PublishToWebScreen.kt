@@ -20,9 +20,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -156,11 +156,7 @@ fun PublishToWebScreen(
                 Switch(
                     checked = showJoinSpaceBannerChecked,
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = colorResource(id = R.color.white),
-                        checkedTrackColor = colorResource(id = R.color.color_accent),
-                        checkedTrackAlpha = 1f,
-                        uncheckedThumbColor = colorResource(id = R.color.white),
-                        uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
+                        checkedTrackColor = colorResource(R.color.color_accent_80)
                     ),
                     onCheckedChange = {
                         showJoinSpaceBannerChecked = it

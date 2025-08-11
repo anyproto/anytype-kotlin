@@ -137,7 +137,7 @@ fun PublishToWebScreen(
                         color = colorResource(R.color.text_primary)
                     ),
                     keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Uri,
+                        keyboardType = KeyboardType.Text,
                         imeAction = ImeAction.Done
                     ),
                     onKeyboardAction = {

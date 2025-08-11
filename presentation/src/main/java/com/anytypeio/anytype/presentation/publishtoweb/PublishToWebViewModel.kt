@@ -67,7 +67,7 @@ class PublishToWebViewModel(
                 if (state == null) {
                     _viewState.value = PublishToWebViewState.NotPublished(
                         domain = domain.orEmpty(),
-                        uri = resolveSuggestedUri().orEmpty(),
+                        uri = wrapper?.name?.toWebSlug().orEmpty(),
                         objectName = wrapper?.name.orEmpty(),
                         spaceName = space?.name.orEmpty(),
                         showJoinSpaceButton = true

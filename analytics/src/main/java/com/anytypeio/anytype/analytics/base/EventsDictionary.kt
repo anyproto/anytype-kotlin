@@ -7,6 +7,7 @@ object EventsDictionary {
      */
 
     // Auth events
+    const val startCreateAccount = "StartCreateAccount"
     const val createAccount = "CreateAccount"
     const val openAccount = "OpenAccount"
     const val logout = "LogOut"

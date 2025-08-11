@@ -85,8 +85,7 @@ class PublishToWebViewModel(
         Timber.d("DROID-3786 onPublishClicked")
         _viewState.value = PublishToWebViewState.Publishing(
             domain = viewState.value.domain,
-            uri = viewState.value.uri,
-            isUpdating = true
+            uri = viewState.value.uri
         )
         proceedWithPublishing(uri = uri)
     }
@@ -95,8 +94,7 @@ class PublishToWebViewModel(
         Timber.d("DROID-3786 onUpdateClicked")
         _viewState.value = PublishToWebViewState.Publishing(
             domain = viewState.value.domain,
-            uri = viewState.value.uri,
-            isUpdating = true
+            uri = viewState.value.uri
         )
         proceedWithUpdating(uri = uri)
     }
@@ -259,8 +257,7 @@ sealed class PublishToWebViewState {
 
     data class Publishing(
         override val domain: String,
-        override val uri: String,
-        val isUpdating: Boolean = false
+        override val uri: String
     ) : PublishToWebViewState()
 
     data class FailedToPublish(
@@ -276,11 +273,16 @@ sealed class PublishToWebViewState {
     ) : PublishToWebViewState()
 }
 
-fun String.toWebSlug(): String {
-    return trim()
+fun String.toWebSlug(): String =
+    trim()
         .lowercase()
-        .replace(Regex("[^a-z0-9\\s-]"), "") // remove special chars except space and hyphen
-        .replace(Regex("\\s+"), "-")         // replace spaces with hyphen
-        .replace(Regex("-+"), "-")           // collapse multiple hyphens
-        .let { "/$it" }
-}
+        .replace(Regex("[^a-z0-9\\s-]"), "")
+        .replace(Regex("\\s+"), "-")
+        .replace(Regex("-+"), "-")
+        .trim('-')
+
+private fun normalizeUri(uri: String): String =
+    uri.trim().removePrefix("/")
+
+private fun buildUrl(domain: String, uri: String): String =
+    "https://$domain/${normalizeUri(uri)}"

@@ -1880,4 +1880,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
+    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_request_failed">Opa! A solicitação falhou. Por favor, verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="share_space_error_space_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

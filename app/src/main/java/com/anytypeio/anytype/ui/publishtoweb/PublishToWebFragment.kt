@@ -23,6 +23,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlin.math.exp
 import timber.log.Timber
 
 class PublishToWebFragment : BaseBottomSheetComposeFragment() {
@@ -75,6 +76,7 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         skipCollapsed()
+        expand()
     }
 
     override fun injectDependencies() {

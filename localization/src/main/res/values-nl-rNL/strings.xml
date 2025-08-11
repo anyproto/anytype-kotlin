@@ -1883,4 +1883,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="open_settings">Open instellingen</string>
     <string name="allow">Sta toe</string>
     <string name="attachment_image">Bijlage afbeelding</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft je lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
+    <string name="share_space_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat je apparaten zijn gesynchroniseerd.</string>
+    <string name="share_space_error_request_failed">Oeps! De aanvraag is mislukt. Controleer jouw internetverbinding en probeer het opnieuw.</string>
+    <string name="share_space_error_space_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

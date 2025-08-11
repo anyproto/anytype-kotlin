@@ -827,9 +827,6 @@ class VaultViewModel(
                 return@launch
             }
             
-            // Send analytics event for pinning space
-            analytics.sendEvent(eventName = EventsDictionary.pinSpace)
-            
             // Filter out the space being pinned if it's already in the list
             val newOrder = pinnedSpaces.filter { it.space.id != spaceId }.map { it.space.id }.toMutableList()
             // Insert the space at the beginning (position 0)
@@ -847,6 +844,7 @@ class VaultViewModel(
                 },
                 onSuccess = { finalOrder ->
                     Timber.d("Successfully pinned space: $spaceId with final order: $finalOrder")
+                    analytics.sendEvent(eventName = EventsDictionary.pinSpace)
                     // The finalOrder contains the actual order from middleware with lexids
                     // Backend has confirmed the order, so we can trust the current state
                     // The space subscription will automatically update with the new order
@@ -857,9 +855,6 @@ class VaultViewModel(
 
     fun onUnpinSpaceClicked(spaceId: Id) {
         viewModelScope.launch {
-            // Send analytics event for unpinning space
-            analytics.sendEvent(eventName = EventsDictionary.unpinSpace)
-            
             unpinSpace.async(
                 UnpinSpace.Params(spaceId = spaceId)
             ).fold(
@@ -869,6 +864,7 @@ class VaultViewModel(
                 },
                 onSuccess = {
                     Timber.d("Successfully unpinned space: $spaceId")
+                    analytics.sendEvent(eventName = EventsDictionary.unpinSpace)
                 }
             )
         }

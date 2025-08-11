@@ -127,16 +127,18 @@ fun ProfileSettingsScreen(
                 onClick = onAppearanceClicked
             )
         }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            OptionWithBadge(
-                image = R.drawable.ic_notifications_28,
-                text = stringResource(R.string.notifications_title),
-                showBadge = notificationsDisabled,
-                onClick = onOpenNotificationSettings
-            )
+        if (com.anytypeio.anytype.presentation.BuildConfig.SHOW_CHATS) {
+            item {
+                Divider(paddingStart = 60.dp)
+            }
+            item {
+                OptionWithBadge(
+                    image = R.drawable.ic_notifications_28,
+                    text = stringResource(R.string.notifications_title),
+                    showBadge = notificationsDisabled,
+                    onClick = onOpenNotificationSettings
+                )
+            }
         }
         item {
             Divider(paddingStart = 60.dp)
@@ -343,12 +345,20 @@ fun ProfileNameBlock(
 
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
+    val hasUserInput = remember { mutableStateOf(false) }
+
+    LaunchedEffect(name) {
+        if (!hasUserInput.value) {
+            nameValue.value = name
+        }
+    }
 
     LaunchedEffect(nameValue.value) {
         snapshotFlow { nameValue.value }
             .debounce(PROFILE_NAME_CHANGE_DELAY)
             .distinctUntilChanged()
             .filter { it.isNotEmpty() }
+            .filter { hasUserInput.value }
             .collect { query ->
                 onNameSet(query)
             }
@@ -363,6 +373,7 @@ fun ProfileNameBlock(
         BasicTextField(
             value = nameValue.value,
             onValueChange = {
+                hasUserInput.value = true
                 nameValue.value = it
             },
             modifier = Modifier

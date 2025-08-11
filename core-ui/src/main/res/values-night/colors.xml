@@ -24,6 +24,7 @@
     <color name="shape_transparent">#24DAD7CA</color>
     <color name="shape_transparent_primary">#3DFFFFFF</color>
     <color name="shape_transparent_secondary">#29FFFFFF</color>
+    <color name="shape_transparent_tertiary">#1FFFFFFF</color>
 
     <color name="transparent_active">#66FFFFFF</color>
     <color name="transparent_tertiary">#1FFFFFF4</color>

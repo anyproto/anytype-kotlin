@@ -30,7 +30,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
@@ -89,6 +88,7 @@ class ShareSpaceViewModel(
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
     val isLoadingInProgress = MutableStateFlow(false)
+    val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
 
     init {
         Timber.i("Share-space init with params: $vmParams")
@@ -546,12 +546,29 @@ class ShareSpaceViewModel(
         }
     }
 
-    private suspend fun proceedWithMultiplayerError(e: Throwable) {
-        if (e is MultiplayerError.Generic) {
-            commands.emit(Command.ShowMultiplayerError(e))
+    private fun proceedWithMultiplayerError(error: Throwable) {
+        if (error is MultiplayerError) {
+            when (error) {
+                is MultiplayerError.Generic.LimitReached -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.LimitReached
+                }
+                is MultiplayerError.Generic.NotShareable -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.NotShareable
+                }
+                is MultiplayerError.Generic.RequestFailed -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.RequestFailed
+                }
+                is MultiplayerError.Generic.SpaceIsDeleted -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.SpaceIsDeleted
+                }
+            }
         } else {
-            sendToast(e.msg())
+            shareSpaceErrors.value = ShareSpaceErrors.Error(error)
         }
+    }
+
+    fun dismissShareSpaceErrors() {
+        shareSpaceErrors.value = ShareSpaceErrors.Hidden
     }
 
     override fun onCleared() {
@@ -750,4 +767,13 @@ data class ShareSpaceMemberView(
             }
         }
     }
+}
+
+sealed class ShareSpaceErrors{
+    data object Hidden : ShareSpaceErrors()
+    data object LimitReached : ShareSpaceErrors()
+    data object NotShareable : ShareSpaceErrors()
+    data object RequestFailed : ShareSpaceErrors()
+    data object SpaceIsDeleted : ShareSpaceErrors()
+    data class Error(val error: Throwable) : ShareSpaceErrors()
 }

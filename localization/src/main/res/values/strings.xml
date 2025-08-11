@@ -2182,4 +2182,11 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
 
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
+    <string name="share_space_error_space_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
+
 </resources>

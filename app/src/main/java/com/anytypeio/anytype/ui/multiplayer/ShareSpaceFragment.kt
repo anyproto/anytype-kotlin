@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -20,10 +22,12 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceErrors
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -40,6 +44,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<ShareSpaceViewModel> { factory }
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -80,6 +85,52 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.toasts.collect { toast(it) }
+                }
+                val errors = vm.shareSpaceErrors.collectAsStateWithLifecycle().value
+                when (errors) {
+                    is ShareSpaceErrors.Error -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_generic),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.Hidden -> {
+                        // Hidden errors should not show a dialog
+                    }
+                    ShareSpaceErrors.LimitReached -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_limit_reached),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.NotShareable -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_not_shareable),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.RequestFailed -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_request_failed),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.SpaceIsDeleted -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_space_deleted),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
                 }
             }
         }

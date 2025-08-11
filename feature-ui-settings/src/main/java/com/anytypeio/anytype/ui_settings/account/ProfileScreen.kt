@@ -64,7 +64,6 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce

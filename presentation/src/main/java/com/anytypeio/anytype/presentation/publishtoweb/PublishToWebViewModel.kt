@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.publishtoweb
 
+import android.icu.text.Transliterator
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -18,6 +20,8 @@ import com.anytypeio.anytype.domain.publishing.GetPublishingState
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import java.text.Normalizer
+import java.util.Locale
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -67,16 +71,12 @@ class PublishToWebViewModel(
                 if (state == null) {
                     _viewState.value = PublishToWebViewState.NotPublished(
                         domain = domain.orEmpty(),
-                        uri = wrapper?.name?.toWebSlug().orEmpty(),
+                        uri = wrapper?.name?.toWebSlugAdaptive().orEmpty(),
                         objectName = wrapper?.name.orEmpty(),
                         spaceName = space?.name.orEmpty(),
                         showJoinSpaceButton = true
                     )
                 } else {
-                    val uri = wrapper?.name?.toWebSlug()
-
-                    Timber.d("DROID-3786 Resolved uri: $uri")
-
                     if (domain != null) {
                         _viewState.value = PublishToWebViewState.Published(
                             domain = domain,
@@ -212,24 +212,6 @@ class PublishToWebViewModel(
         }
     }
 
-    private suspend fun resolveSuggestedUri() : String? {
-        return searchObjects(
-            SearchObjects.Params(
-                space = vmParams.space,
-                limit = 1,
-                filters = listOf(
-                    DVFilter(
-                        value = vmParams.ctx,
-                        condition = DVFilterCondition.EQUAL,
-                        relation = Relations.ID
-                    )
-                )
-            )
-        ).let { either ->
-            either.getOrNull().orEmpty().firstOrNull()?.name?.toWebSlug()
-        }
-    }
-
     private suspend fun fetchObject(): ObjectWrapper.Basic? {
         return searchObjects(
             SearchObjects.Params(
@@ -343,13 +325,34 @@ sealed class PublishToWebViewState {
     ) : PublishToWebViewState()
 }
 
-fun String.toWebSlug(): String =
-    trim()
-        .lowercase()
-        .replace(Regex("[^a-z0-9\\s-]"), "")
-        .replace(Regex("\\s+"), "-")
-        .replace(Regex("-+"), "-")
-        .trim('-')
+
+fun String.toWebSlugAdaptive(): String {
+    val lower = trim().lowercase(Locale.ROOT)
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        // API 29+: transliterate to Latin ASCII (covers Cyrillic, Greek, etc.)
+        val ascii = Transliterator
+            .getInstance("Any-Latin; Latin-ASCII")
+            .transliterate(lower)
+
+        // Strip diacritics (é -> e), keep only ascii letters/digits/space/hyphen
+        val deaccent = Normalizer.normalize(ascii, Normalizer.Form.NFD)
+            .replace(Regex("\\p{M}+"), "")
+
+        deaccent
+            .replace(Regex("[^a-z0-9\\s-]"), "")
+            .replace(Regex("\\s+"), "-")
+            .replace(Regex("-+"), "-")
+            .trim('-')
+    } else {
+        // < API 29: don't transliterate; keep Unicode letters/digits
+        lower
+            .replace(Regex("[^\\p{L}\\p{Nd}\\s-]"), "") // allow any letter/digit
+            .replace(Regex("\\s+"), "-")
+            .replace(Regex("-+"), "-")
+            .trim('-')
+    }
+}
 
 private fun normalizeUri(uri: String): String =
     uri.trim().removePrefix("/")

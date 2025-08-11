@@ -1883,4 +1883,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="allow">Zulassen</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limit für diesen Bereich erreicht. Bitte erweitere deine Mitgliedschaft oder kontaktiere den Support für Hilfe.</string>
+    <string name="share_space_error_not_shareable">Es sieht so aus, als ob der Space nicht mehr geteilt ist. Bitte stellen Sie sicher, dass Ihre Geräte synchronisiert sind.</string>
+    <string name="share_space_error_request_failed">Hoppla! Die Anfrage ist fehlgeschlagen. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
+    <string name="share_space_error_space_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

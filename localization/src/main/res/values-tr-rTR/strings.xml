@@ -1883,4 +1883,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
+    <string name="share_space_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

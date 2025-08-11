@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -16,11 +17,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class PublishToWebFragment : BaseBottomSheetComposeFragment() {
 
@@ -45,11 +48,33 @@ class PublishToWebFragment : BaseBottomSheetComposeFragment() {
                         viewState = vm.viewState.collectAsStateWithLifecycle().value,
                         onPublishClicked = vm::onPublishClicked,
                         onUnpublishClicked = vm::onUnpublishClicked,
-                        onUpdateClicked = vm::onUpdateClicked
+                        onUpdateClicked = vm::onUpdateClicked,
+                        onPreviewClicked = vm::onPreviewClicked
                     )
+                    LaunchedEffect(Unit) {
+                        vm.commands.collect { command ->
+                            Timber.d("new command: $command")
+                            when (command) {
+                                is PublishToWebViewModel.Command.Browse -> {
+                                    ActivityCustomTabsHelper.openUrl(
+                                        activity = requireActivity(),
+                                        url = command.url
+                                    )
+                                }
+                                else -> {
+                                    // Do nothing
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
     }
 
     override fun injectDependencies() {

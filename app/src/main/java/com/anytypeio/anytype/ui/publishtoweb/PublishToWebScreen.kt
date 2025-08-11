@@ -3,18 +3,24 @@ package com.anytypeio.anytype.ui.publishtoweb
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material.Card
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
@@ -38,6 +44,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 
 @Composable
@@ -46,6 +53,7 @@ fun PublishToWebScreen(
     onPublishClicked: (String) -> Unit = {},
     onUnpublishClicked: (String) -> Unit = {},
     onUpdateClicked: (String) -> Unit = {},
+    onPreviewClicked: () -> Unit = {}
 ) {
 
     val textFieldState = if (viewState !is PublishToWebViewState.Init)
@@ -53,205 +61,218 @@ fun PublishToWebScreen(
     else
         TextFieldState()
 
-    Column(
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Dragger(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
-        )
-        Header(
-            text = stringResource(R.string.publish_to_web)
-        )
-        Section(
-            title = stringResource(R.string.web_publishing_customize_url)
-        )
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth()
-                .height(48.dp)
-                .background(
-                    color = colorResource(R.color.transparent_tertiary),
-                    shape = RoundedCornerShape(12.dp)
-                ),
-            contentAlignment = Alignment.Center
+        Column(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(
+            Dragger(
                 modifier = Modifier
-                    .padding(horizontal = 12.dp)
+                    .padding(vertical = 6.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Header(
+                text = stringResource(R.string.publish_to_web)
+            )
+            Section(
+                title = stringResource(R.string.web_publishing_customize_url)
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .background(
+                        color = colorResource(R.color.transparent_tertiary),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .fillMaxWidth(),
+                    text = viewState.domain,
+                    style = BodyRegular,
+                    color = colorResource(R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .border(
+                        width = 0.5.dp,
+                        color = colorResource(R.color.shape_primary),
+                        shape = RoundedCornerShape(12.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                BasicTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp),
+                    state = textFieldState,
+                    textStyle = BodyRegular.copy(
+                        color = colorResource(R.color.text_primary)
+                    )
+                )
+            }
+            Section(
+                title = stringResource(R.string.preferences)
+            )
+            Row(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .height(52.dp)
                     .fillMaxWidth(),
-                text = viewState.domain,
-                style = BodyRegular,
-                color = colorResource(R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_plus_rounded_24),
+                    contentDescription = stringResource(R.string.content_description_plus_button)
+                )
+                Text(
+                    text = stringResource(R.string.web_publishing_join_space_button),
+                    style = BodyRegular,
+                    color = colorResource(R.color.text_primary),
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp)
+                )
+                Switch(
+                    checked = true,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = colorResource(id = R.color.white),
+                        checkedTrackColor = colorResource(id = R.color.color_accent),
+                        checkedTrackAlpha = 1f,
+                        uncheckedThumbColor = colorResource(id = R.color.white),
+                        uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
+                    ),
+                    onCheckedChange = {
+
+                    }
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(8.dp))
+
         Box(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(48.dp)
-                .border(
-                    width = 0.5.dp,
-                    color = colorResource(R.color.shape_primary),
-                    shape = RoundedCornerShape(12.dp)
-                ),
-            contentAlignment = Alignment.Center
+                .background(color = colorResource(R.color.shape_transparent_tertiary))
         ) {
-            BasicTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                state = textFieldState,
-                textStyle = BodyRegular.copy(
-                    color = colorResource(R.color.text_primary)
-                )
-            )
-        }
-        Section(
-            title = stringResource(R.string.preferences)
-        )
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .height(52.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(R.drawable.ic_plus_rounded_24),
-                contentDescription = stringResource(R.string.content_description_plus_button)
-            )
-            Text(
-                text = stringResource(R.string.web_publishing_join_space_button),
-                style = BodyRegular,
-                color = colorResource(R.color.text_primary),
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
-            )
-            Switch(
-                checked = true,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = colorResource(id = R.color.white),
-                    checkedTrackColor = colorResource(id = R.color.color_accent),
-                    checkedTrackAlpha = 1f,
-                    uncheckedThumbColor = colorResource(id = R.color.white),
-                    uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
-                ),
-                onCheckedChange = {
-
-                }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        when(viewState) {
-            is PublishToWebViewState.NotPublished -> {
-                ButtonPrimary(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    onClick = { onPublishClicked(textFieldState.text.toString()) },
-                    text = stringResource(R.string.web_publishing_publish),
-                    size = ButtonSize.Large
-                )
-            }
-            is PublishToWebViewState.Published -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    ButtonSecondary(
-                        modifier = Modifier.weight(1f),
-                        onClick = { onUnpublishClicked(textFieldState.text.toString()) },
-                        text = stringResource(R.string.web_publishing_unpublish),
-                        size = ButtonSize.Large
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    ButtonPrimary(
-                        modifier = Modifier.weight(1f),
-                        onClick = { onUpdateClicked(textFieldState.text.toString()) },
-                        text = stringResource(R.string.web_publishing_update),
-                        size = ButtonSize.Large
-                    )
-                }
-            }
-            is PublishToWebViewState.Publishing -> {
-                ButtonPrimaryLoading(
-                    modifierButton = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    onClick = {
-                        // Do nothing
-                    },
-                    text = stringResource(R.string.web_publishing_update),
-                    size = ButtonSize.Large,
-                    loading = true
-                )
-            }
-            is PublishToWebViewState.FailedToPublish -> {
-                ButtonPrimary(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
-                    onClick = { onPublishClicked(textFieldState.text.toString()) },
-                    text = stringResource(R.string.web_publishing_publish),
-                    size = ButtonSize.Large
-                )
+            Column(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+            ) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    text = "Failed to publish: ${viewState.err}",
-                    style = Caption1Regular,
-                    color = colorResource(R.color.palette_system_red),
-                    maxLines = 3,
-                    textAlign = TextAlign.Center
+                PreviewCard(
+                    title = "Test",
+                    onPreviewClicked = onPreviewClicked
                 )
-            }
-            is PublishToWebViewState.FailedToUpdate -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    ButtonSecondary(
-                        modifier = Modifier.weight(1f),
-                        onClick = { onUnpublishClicked(textFieldState.text.toString()) },
-                        text = stringResource(R.string.web_publishing_unpublish),
-                        size = ButtonSize.Large
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    ButtonPrimary(
-                        modifier = Modifier.weight(1f),
-                        onClick = { onUpdateClicked(textFieldState.text.toString()) },
-                        text = stringResource(R.string.web_publishing_update),
-                        size = ButtonSize.Large
-                    )
+                Spacer(modifier = Modifier.height(12.dp))
+                when(viewState) {
+                    is PublishToWebViewState.NotPublished -> {
+                        ButtonPrimary(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = { onPublishClicked(textFieldState.text.toString()) },
+                            text = stringResource(R.string.web_publishing_publish),
+                            size = ButtonSize.Large
+                        )
+                    }
+                    is PublishToWebViewState.Published -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            ButtonSecondary(
+                                modifier = Modifier.weight(1f),
+                                onClick = { onUnpublishClicked(textFieldState.text.toString()) },
+                                text = stringResource(R.string.web_publishing_unpublish),
+                                size = ButtonSize.Large
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ButtonPrimary(
+                                modifier = Modifier.weight(1f),
+                                onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                                text = stringResource(R.string.web_publishing_update),
+                                size = ButtonSize.Large
+                            )
+                        }
+                    }
+                    is PublishToWebViewState.Publishing -> {
+                        ButtonPrimaryLoading(
+                            modifierButton = Modifier
+                                .fillMaxWidth(),
+                            onClick = {
+                                // Do nothing
+                            },
+                            text = stringResource(R.string.web_publishing_update),
+                            size = ButtonSize.Large,
+                            loading = true
+                        )
+                    }
+                    is PublishToWebViewState.FailedToPublish -> {
+                        ButtonPrimary(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = { onPublishClicked(textFieldState.text.toString()) },
+                            text = stringResource(R.string.web_publishing_publish),
+                            size = ButtonSize.Large
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Failed to publish: ${viewState.err}",
+                            style = Caption1Regular,
+                            color = colorResource(R.color.palette_system_red),
+                            maxLines = 3,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    is PublishToWebViewState.FailedToUpdate -> {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            ButtonSecondary(
+                                modifier = Modifier.weight(1f),
+                                onClick = { onUnpublishClicked(textFieldState.text.toString()) },
+                                text = stringResource(R.string.web_publishing_unpublish),
+                                size = ButtonSize.Large
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ButtonPrimary(
+                                modifier = Modifier.weight(1f),
+                                onClick = { onUpdateClicked(textFieldState.text.toString()) },
+                                text = stringResource(R.string.web_publishing_update),
+                                size = ButtonSize.Large
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                            text = "Failed to update: ${viewState.err}",
+                            style = Caption1Regular,
+                            color = colorResource(R.color.palette_system_red),
+                            maxLines = 3,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    else -> {
+                        // Do nothing.
+                    }
                 }
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    text = "Failed to update: ${viewState.err}",
-                    style = Caption1Regular,
-                    color = colorResource(R.color.palette_system_red),
-                    maxLines = 3,
-                    textAlign = TextAlign.Center
-                )
-            }
-            else -> {
-                // Do nothing.
+                Spacer(modifier = Modifier.height(10.dp))
             }
         }
-
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -299,5 +320,98 @@ fun PublishToWebScreenPublishingPreview() {
             domain = "Test",
             uri = "provence"
         )
+    )
+}
+
+@Composable
+private fun PreviewCard(
+    title: String,
+    onPreviewClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .background(
+                color = colorResource(R.color.background_secondary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .border(
+                width = 1.dp,
+                color = colorResource(R.color.shape_secondary),
+                shape = RoundedCornerShape(8.dp)
+            )
+            .fillMaxWidth()
+            .height(242.dp)
+            .clickable {
+                onPreviewClicked()
+            }
+    ) {
+
+        Box(
+            modifier = Modifier
+                .height(24.dp)
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(R.color.shape_secondary),
+                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
+                )
+        ) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                repeat(3) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(
+                                color = colorResource(R.color.transparent_tertiary),
+                                shape = CircleShape
+                            )
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp),
+            text = title,
+            style = HeadlineSubheading,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            color = colorResource(R.color.text_primary)
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .height(6.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp)
+                .background(color = colorResource(R.color.shape_secondary))
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Box(
+            modifier = Modifier
+                .height(6.dp)
+                .width(178.dp)
+                .padding(horizontal = 32.dp)
+                .background(color = colorResource(R.color.shape_secondary))
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun PreviewCardPreview() {
+    PreviewCard(
+        title = "What I Learned as a Product Designersigner What I Learned as a Product Designer",
+        onPreviewClicked = {}
     )
 }

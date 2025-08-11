@@ -36,6 +36,8 @@ class PublishToWebViewModel(
     private val _viewState = MutableStateFlow<PublishToWebViewState>(PublishToWebViewState.Init)
     val viewState = _viewState.asStateFlow()
 
+    val commands = MutableSharedFlow<Command>()
+
     init {
         proceedWithResolvingInitialState()
     }
@@ -55,24 +57,21 @@ class PublishToWebViewModel(
                     params = GetPublishingDomain.Params(space = vmParams.space)
                 ).getOrNull()
 
-                if (state != null) {
+                if (state == null) {
                     _viewState.value = PublishToWebViewState.NotPublished(
                         domain = domain.orEmpty(),
-                        uri = state.uri
+                        uri = resolveSuggestedUri().orEmpty()
                     )
                 } else {
-                    val domain = getPublishingDomain.async(
-                        params = GetPublishingDomain.Params(space = vmParams.space)
-                    ).getOrNull()
 
                     val uri = resolveSuggestedUri()
 
                     Timber.d("DROID-3786 Resolved uri: $uri")
 
                     if (domain != null) {
-                        _viewState.value = PublishToWebViewState.NotPublished(
+                        _viewState.value = PublishToWebViewState.Published(
                             domain = domain,
-                            uri = uri.orEmpty()
+                            uri = state.uri
                         )
                     } else {
                         // TODO
@@ -107,6 +106,29 @@ class PublishToWebViewModel(
         proceedWithUnpublishing()
     }
 
+    fun onPreviewClicked() {
+        Timber.d("DROID-3786 onPreviewClicked")
+        viewModelScope.launch {
+            when(val state = viewState.value) {
+                is PublishToWebViewState.FailedToPublish -> TODO()
+                is PublishToWebViewState.FailedToUpdate -> TODO()
+                PublishToWebViewState.Init -> TODO()
+                is PublishToWebViewState.NotPublished -> TODO()
+                is PublishToWebViewState.Published -> {
+                    commands.emit(
+                        Command.Browse(
+                            "https://" + state.domain + "/" + state.uri
+                        )
+                    )
+                }
+                is PublishToWebViewState.Publishing -> TODO()
+                else -> {
+                    Timber.w("Unexpected state")
+                }
+            }
+        }
+    }
+
     private fun proceedWithPublishing(uri: String) {
         viewModelScope.launch {
             publish.async(
@@ -122,7 +144,7 @@ class PublishToWebViewModel(
                     uri = viewState.value.uri,
                     err = it.message.orEmpty()
                 )
-            }.onSuccess {
+            }.onSuccess { uri ->
                 proceedWithResolvingInitialState()
             }
         }
@@ -207,6 +229,10 @@ class PublishToWebViewModel(
         val ctx: Id,
         val space: SpaceId
     )
+
+    sealed class Command {
+        data class Browse(val url: String): Command()
+    }
 }
 
 sealed class PublishToWebViewState {

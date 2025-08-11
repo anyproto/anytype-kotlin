@@ -63,6 +63,6 @@ class GetPublishingDomain @Inject constructor(
 
     companion object {
         private const val FREE_DOMAIN = "any.coop"
-        private const val PAID_DOMAIN = "any.org"
+        private const val PAID_DOMAIN = "org"
     }
 }

@@ -149,6 +149,7 @@ object EventsDictionary {
 
     // Widgets
 
+    const val screenWidget = "ScreenWidget"
     const val addWidget = "AddWidget"
     const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"

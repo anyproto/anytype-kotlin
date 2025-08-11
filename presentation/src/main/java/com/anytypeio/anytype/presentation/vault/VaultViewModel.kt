@@ -827,6 +827,9 @@ class VaultViewModel(
                 return@launch
             }
             
+            // Send analytics event for pinning space
+            analytics.sendEvent(eventName = EventsDictionary.pinSpace)
+            
             // Filter out the space being pinned if it's already in the list
             val newOrder = pinnedSpaces.filter { it.space.id != spaceId }.map { it.space.id }.toMutableList()
             // Insert the space at the beginning (position 0)
@@ -854,6 +857,9 @@ class VaultViewModel(
 
     fun onUnpinSpaceClicked(spaceId: Id) {
         viewModelScope.launch {
+            // Send analytics event for unpinning space
+            analytics.sendEvent(eventName = EventsDictionary.unpinSpace)
+            
             unpinSpace.async(
                 UnpinSpace.Params(spaceId = spaceId)
             ).fold(

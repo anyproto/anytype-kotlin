@@ -343,12 +343,20 @@ fun ProfileNameBlock(
 
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
+    val hasUserInput = remember { mutableStateOf(false) }
+
+    LaunchedEffect(name) {
+        if (!hasUserInput.value) {
+            nameValue.value = name
+        }
+    }
 
     LaunchedEffect(nameValue.value) {
         snapshotFlow { nameValue.value }
             .debounce(PROFILE_NAME_CHANGE_DELAY)
             .distinctUntilChanged()
             .filter { it.isNotEmpty() }
+            .filter { hasUserInput.value }
             .collect { query ->
                 onNameSet(query)
             }
@@ -363,6 +371,7 @@ fun ProfileNameBlock(
         BasicTextField(
             value = nameValue.value,
             onValueChange = {
+                hasUserInput.value = true
                 nameValue.value = it
             },
             modifier = Modifier

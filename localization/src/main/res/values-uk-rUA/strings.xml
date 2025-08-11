@@ -1909,4 +1909,10 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Досягнута межа для цього простору. Будь ласка, оновіть ваш членство або зверніться до служби підтримки за допомогою.</string>
+    <string name="share_space_error_not_shareable">Схоже, що простір більше не спільний. Переконайтеся, що ваші пристрої синхронізовані.</string>
+    <string name="share_space_error_request_failed">Упс! Запит не вдалося виконати. Будь ласка, перевірте підключення до Інтернету і спробуйте ще раз.</string>
+    <string name="share_space_error_space_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

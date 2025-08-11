@@ -844,6 +844,7 @@ class VaultViewModel(
                 },
                 onSuccess = { finalOrder ->
                     Timber.d("Successfully pinned space: $spaceId with final order: $finalOrder")
+                    analytics.sendEvent(eventName = EventsDictionary.pinSpace)
                     // The finalOrder contains the actual order from middleware with lexids
                     // Backend has confirmed the order, so we can trust the current state
                     // The space subscription will automatically update with the new order
@@ -863,6 +864,7 @@ class VaultViewModel(
                 },
                 onSuccess = {
                     Timber.d("Successfully unpinned space: $spaceId")
+                    analytics.sendEvent(eventName = EventsDictionary.unpinSpace)
                 }
             )
         }

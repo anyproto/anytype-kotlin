@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.vault
 
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -15,6 +17,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -30,6 +33,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -45,6 +49,8 @@ class VaultViewModelTest {
     private lateinit var notificationPermissionManager: NotificationPermissionManager
     private lateinit var stringResourceProvider: StringResourceProvider
     private lateinit var setSpaceOrder: SetSpaceOrder
+    private lateinit var unpinSpace: UnpinSpace
+    private lateinit var analytics: Analytics
 
     @Before
     fun setup() {
@@ -54,6 +60,8 @@ class VaultViewModelTest {
         notificationPermissionManager = mock()
         stringResourceProvider = mock()
         setSpaceOrder = mock()
+        unpinSpace = mock()
+        analytics = mock()
     }
 
     @Test

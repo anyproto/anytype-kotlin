@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
+import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -186,8 +187,11 @@ class SplashViewModel(
                     Timber.i("Account launched successfully, analyticsId: $analyticsId")
                     crashReporter.setUser(analyticsId)
                     updateUserProps(analyticsId)
-                    val props = Props.empty()
-                    sendEvent(startTime, openAccount, props)
+                    analytics.proceedWithAccountEvent(
+                        startTime = startTime,
+                        eventName = EventsDictionary.openAccount,
+                        analyticsId = analyticsId
+                    )
                     proceedWithGlobalSubscriptions()
                     commands.emit(Command.CheckAppStartIntent)
                 },

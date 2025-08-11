@@ -2027,17 +2027,10 @@ suspend fun Analytics.sendSettingsStorageOffloadEvent() {
 }
 
 suspend fun Analytics.proceedWithAccountEvent(
-    configStorage: ConfigStorage,
     startTime: Long,
     eventName: String,
-    lang: String? = null
+    analyticsId: Id
 ) {
-    val analyticsId = configStorage.get().analytics
-    val userProperty = UserProperty.AccountId(analyticsId)
-    updateUserProperty(userProperty)
-    if (lang != null) {
-        updateUserProperty(UserProperty.InterfaceLanguage(lang))
-    }
     sendEvent(
         startTime = startTime,
         middleTime = System.currentTimeMillis(),

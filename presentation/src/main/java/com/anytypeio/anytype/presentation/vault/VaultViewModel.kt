@@ -201,12 +201,16 @@ class VaultViewModel(
     private fun updateNotificationBadgeState() {
         try {
             val isDisabled = !notificationPermissionManager.areNotificationsEnabled()
-            isNotificationDisabled.value = isDisabled
+            isNotificationDisabled.value = if (BuildConfig.SHOW_CHATS){
+                isDisabled
+            } else {
+                false
+            }
             Timber.d("Notification badge state updated: isDisabled = $isDisabled")
         } catch (e: Exception) {
             Timber.e(e, "Error checking notification permission state")
             // Set a safe default state if we can't determine the actual state
-            isNotificationDisabled.value = true
+            isNotificationDisabled.value = BuildConfig.SHOW_CHATS
         }
     }
 

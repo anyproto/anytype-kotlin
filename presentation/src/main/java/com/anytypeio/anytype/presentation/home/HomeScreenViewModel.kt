@@ -226,7 +226,6 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
@@ -1961,7 +1960,7 @@ class HomeScreenViewModel(
     }
 
     fun onBackClicked() {
-        proceedWithExiting()
+        proceedWithCloseOpenObjects()
         viewModelScope.launch {
             commands.emit(
                 Command.HandleChatSpaceBackNavigation
@@ -1969,7 +1968,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithExiting() {
+    private fun proceedWithCloseOpenObjects() {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1989,7 +1988,6 @@ class HomeScreenViewModel(
                         }
                 }
             }
-            commands.emit(Command.Exit)
         }
     }
 
@@ -2502,7 +2500,7 @@ class HomeScreenViewModel(
                     .onFailure { Timber.e(it, "Error while leaving space") }
                     .onSuccess {
                         // Forcing return to the vault even if space has chat.
-                        proceedWithExiting()
+                        proceedWithCloseOpenObjects()
                     }
             } else {
                 Timber.e("Unexpected permission when trying to leave space: $permission")
@@ -2652,6 +2650,12 @@ class HomeScreenViewModel(
         }
     }
 
+    fun proceedWithExitingToVault() {
+        viewModelScope.launch {
+            proceedWithClearingSpaceBeforeExitingToVault()
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
@@ -2781,7 +2785,6 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            clearLastOpenedSpace = clearLastOpenedSpace,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
@@ -2849,7 +2852,6 @@ sealed class Command {
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
-    data object Exit: Command()
 
     data class SelectWidgetType(
         val ctx: Id,

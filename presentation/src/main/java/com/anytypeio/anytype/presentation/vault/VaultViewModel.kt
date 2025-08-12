@@ -189,7 +189,7 @@ class VaultViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Timber.e(e, "Error initializing notification permission monitoring")
+                Timber.w(e, "Error initializing notification permission monitoring")
             }
         }
     }

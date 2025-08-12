@@ -75,4 +75,12 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getYesterday(): String {
         return context.getString(R.string.yesterday)
     }
+
+    override fun getInitialSpaceName(): String {
+        return context.getString(R.string.onboarding_my_first_space)
+    }
+
+    override fun getUntitledCreatorName(): String {
+        return context.getString(R.string.unknown)
+    }
 }

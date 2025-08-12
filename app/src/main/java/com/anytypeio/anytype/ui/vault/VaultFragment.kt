@@ -209,6 +209,11 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
     private fun proceed(command: VaultCommand) {
         when (command) {
             is VaultCommand.EnterSpaceHomeScreen -> {

@@ -76,7 +76,7 @@ class CreateSpaceViewModel(
         viewModelScope.launch {
             val params = CreateSpace.Params(
                 details = mapOf(
-                    Relations.NAME to name,
+                    Relations.NAME to name.trim(),
                     Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
                         is SpaceIconView.Placeholder -> icon.color.index.toDouble()
                         else -> SystemColor.SKY.index.toDouble()

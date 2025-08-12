@@ -7,6 +7,7 @@ object EventsDictionary {
      */
 
     // Auth events
+    const val startCreateAccount = "StartCreateAccount"
     const val createAccount = "CreateAccount"
     const val openAccount = "OpenAccount"
     const val logout = "LogOut"
@@ -27,6 +28,8 @@ object EventsDictionary {
     const val switchSpace = "SwitchSpace"
     const val reorderSpace = "ReorderSpace"
     const val deleteSpace = "DeleteSpace"
+    const val pinSpace = "PinSpace"
+    const val unpinSpace = "UnpinSpace"
     const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
 
 
@@ -148,6 +151,7 @@ object EventsDictionary {
 
     // Widgets
 
+    const val screenWidget = "ScreenWidget"
     const val addWidget = "AddWidget"
     const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"
@@ -298,7 +302,6 @@ object EventsDictionary {
     }
 
     enum class ScreenOnboardingStep(val value: String) {
-        VAULT("Vault"),
         SOUL("Soul"),
         PHRASE("Phrase"),
         EMAIL("Email")

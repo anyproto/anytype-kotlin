@@ -2924,7 +2924,6 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        clearLastOpenedSpace = clearLastOpenedSpace,
         clearLastOpenedObject = clearLastOpenedObject,
         spaceBinWidgetContainer = SpaceBinWidgetContainer(
             container = storelessSubscriptionContainer,

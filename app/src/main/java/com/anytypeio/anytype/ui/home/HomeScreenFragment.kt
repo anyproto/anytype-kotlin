@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,7 +66,6 @@ import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
-import com.anytypeio.anytype.ui.chats.ChatFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -421,13 +419,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     Timber.e(it, "Error while opening vault from home screen")
                 }
             }
-            is Command.Exit -> {
-                runCatching {
-                    findNavController().popBackStack()
-                }.onFailure {
-                    Timber.e(it, "Error exiting home screen")
-                }
-            }
             is Command.ShowWidgetAutoCreatedToast -> {
                 toast(
                     msg = getString(
@@ -442,6 +433,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     // Back to ChatFragment if that was previous
                     val result = findNavController().popBackStack(R.id.chatScreen, false)
                     if (!result) {
+                        vm.proceedWithExitingToVault()
                         findNavController().navigate(R.id.action_back_on_vault)
                     }
                 }.onFailure {

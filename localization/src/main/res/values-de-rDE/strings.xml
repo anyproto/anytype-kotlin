@@ -30,7 +30,7 @@
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
     <string name="app_preferences">App-Einstellungen</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Alarmsymbol</string>
     <string name="modal_tap_to_type">Tippe zum Eingeben</string>
     <string name="modal_gallery">Galerie</string>
     <string name="modal_kanban">Kanban</string>
@@ -380,6 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Nicht unterstützter Block</string>
@@ -1007,7 +1008,7 @@
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
     <string name="onboarding_new_vault_button_text">Ich bin neu hier</string>
     <string name="onboarding_enter_my_vault">Weiter</string>
-    <string name="onboarding_have_key_button_text">Ich habe bereits einen Schlüssel</string>
+    <string name="onboarding_have_key_button_text">Ich habe bereits den Schlüssel</string>
     <string name="onboarding_get_my_key_button_text">Meinen Schlüssel holen</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
@@ -1026,7 +1027,7 @@
     <string name="onboarding_login_or">ODER</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
-    <string name="onboarding_your_name">Type your name</string>
+    <string name="onboarding_your_name">Gib deinen Namen ein</string>
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Was ist der Schlüssel?</string>
@@ -1116,6 +1117,19 @@
     <string name="date_type_older">Älter</string>
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
+    <string name="number_days_from">Anzahl der Tage ab jetzt</string>
+    <string name="number_days_ago">Anzahl der Tage zuvor</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Genauer Tag</string>
+    <string name="dates_filter_last_week">Letzte Woche</string>
+    <string name="dates_filter_current_week">Diese Woche</string>
+    <string name="dates_filter_next_week">Nächste Woche</string>
+    <string name="dates_filter_last_month">Letzter Monat</string>
+    <string name="dates_filter_current_month">Dieser Monat</string>
+    <string name="dates_filter_next_month">Nächster Monat</string>
+    <string name="dates_filter_last_year">Letztes Jahr</string>
+    <string name="dates_filter_current_year">Aktuelles Jahr</string>
+    <string name="dates_filter_next_year">Nächstes Jahr</string>
     <string name="settings_use_yamux">QUIC verwenden</string>
     <string name="settings_share_local_logs">Lokale Protokolle teilen</string>
     <!--endregion-->
@@ -1503,6 +1517,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="error_login_select_vault_error">Fehler beim Auswählen des Tresors.</string>
     <string name="error_login_account_deleted_error">Dieses Konto wurde gelöscht. Versuche es mit einem anderen Konto oder erstelle ein neues.</string>
     <string name="error_login_account_need_update_error">Konto kann nicht abgerufen werden. Bitte aktualisiere Anytype auf die neueste Version.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
     <string name="sort_empty_values_desc">Leere Werte anzeigen</string>
@@ -1571,6 +1588,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="all_content_sort_date_created">Erstellungsdatum</string>
     <string name="all_content_sort_date_used">Datum der letzten Verwendung</string>
     <string name="all_content_sort_name">Name</string>
+    <string name="all_content_item_menu_open">Als Objekt öffnen</string>
     <string name="all_content">Alle Objekte</string>
     <string name="allContent_group_today">Heute</string>
     <string name="allContent_group_yesterday">Gestern</string>
@@ -1600,6 +1618,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
@@ -1795,6 +1814,18 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_properties_screen_section_system_types">Systemeigenschaften</string>
     <string name="space_properties_screen_menu_move_to_bin">In den Papierkorb verschieben</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>
@@ -1808,9 +1839,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Benachrichtigungen aktivieren</string>
     <string name="notifications_modal_cancel_button">Nicht jetzt</string>
-    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
-    <string name="vault_create_space">Space</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1838,4 +1869,18 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
     <string name="content_desc_muted">Stumm geschaltet</string>
+    <string name="failed_to_load_image">Failed to load image</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Über QR-Code beitreten</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Erneut versuchen</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Einstellungen öffnen</string>
+    <string name="allow">Zulassen</string>
+    <string name="attachment_image">Attachment image</string>
 </resources>

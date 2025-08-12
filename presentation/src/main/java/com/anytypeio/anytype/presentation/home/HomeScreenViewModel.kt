@@ -226,7 +226,6 @@ class HomeScreenViewModel(
     private val createBlock: CreateBlock,
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
-    private val clearLastOpenedSpace: ClearLastOpenedSpace,
     private val clearLastOpenedObject: ClearLastOpenedObject,
     private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
@@ -1008,6 +1007,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetMenuTriggered(widget: Id) {
+        Timber.d("onWidgetMenuTriggered: $widget")
         viewModelScope.launch {
             val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
             analytics.sendScreenWidgetMenuEvent(
@@ -1449,6 +1449,10 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.screenWidget
+        )
     }
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
@@ -1956,6 +1960,7 @@ class HomeScreenViewModel(
     }
 
     fun onBackClicked() {
+        proceedWithCloseOpenObjects()
         viewModelScope.launch {
             commands.emit(
                 Command.HandleChatSpaceBackNavigation
@@ -1963,7 +1968,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithExiting(isSpaceRoot: Boolean) {
+    private fun proceedWithCloseOpenObjects() {
         viewModelScope.launch {
             if (spaceManager.getState() is SpaceManager.State.Space) {
                 // Proceed with releasing resources before exiting
@@ -1982,12 +1987,7 @@ class HomeScreenViewModel(
                             Timber.e(it, "Error while closing object from history")
                         }
                 }
-                if (isSpaceRoot) {
-                    Timber.d("Root space screen. Releasing resources...")
-                    proceedWithClearingSpaceBeforeExitingToVault()
-                }
             }
-            commands.emit(Command.Exit)
         }
     }
 
@@ -2166,7 +2166,7 @@ class HomeScreenViewModel(
         view: ViewId?,
         navigate: Boolean = true
     ) {
-        Timber.d("onCreateDataViewObject")
+        Timber.d("onCreateDataViewObject, widget: $widget, view: $view, navigate: $navigate")
         viewModelScope.launch {
             val target = widgets.value.orEmpty().find { it.id == widget }
             if (target != null) {
@@ -2300,7 +2300,7 @@ class HomeScreenViewModel(
         dv: DV,
         navigate: Boolean = false
     ) {
-        Timber.d("proceedWithCreatingDataViewObject")
+        Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
         val dataViewSourceType = dataViewSourceObj.uniqueKey
         val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
             viewer,
@@ -2500,9 +2500,7 @@ class HomeScreenViewModel(
                     .onFailure { Timber.e(it, "Error while leaving space") }
                     .onSuccess {
                         // Forcing return to the vault even if space has chat.
-                        proceedWithExiting(
-                            isSpaceRoot = true
-                        )
+                        proceedWithCloseOpenObjects()
                     }
             } else {
                 Timber.e("Unexpected permission when trying to leave space: $permission")
@@ -2511,6 +2509,7 @@ class HomeScreenViewModel(
     }
 
     fun onCreateWidgetElementClicked(view: WidgetView) {
+        Timber.d("onCreateWidgetElementClicked, widget: $view")
         when(view) {
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
@@ -2651,6 +2650,12 @@ class HomeScreenViewModel(
         }
     }
 
+    fun proceedWithExitingToVault() {
+        viewModelScope.launch {
+            proceedWithClearingSpaceBeforeExitingToVault()
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
@@ -2780,7 +2785,6 @@ class HomeScreenViewModel(
             createBlock = createBlock,
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
-            clearLastOpenedSpace = clearLastOpenedSpace,
             clearLastOpenedObject = clearLastOpenedObject,
             spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
@@ -2848,7 +2852,6 @@ sealed class Command {
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 
     data object OpenVault: Command()
-    data object Exit: Command()
 
     data class SelectWidgetType(
         val ctx: Id,
@@ -2942,19 +2945,30 @@ sealed class OpenObjectNavigation {
 /**
  * @param [attachmentTarget] optional target, to which the object will be attached
  */
-fun ObjectWrapper.Basic.navigation(effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None) : OpenObjectNavigation {
+fun ObjectWrapper.Basic.navigation(
+    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
+    openBookmarkAsObject: Boolean = false,
+) : OpenObjectNavigation {
     if (!isValid) return OpenObjectNavigation.NonValidObject
     return when (layout) {
         ObjectType.Layout.BOOKMARK -> {
-            val url = getValue<String>(Relations.SOURCE)
-            if (url.isNullOrEmpty()) {
+            if (openBookmarkAsObject) {
                 OpenObjectNavigation.OpenEditor(
                     target = id,
                     space = requireNotNull(spaceId),
                     effect = effect
                 )
             } else {
-                OpenObjectNavigation.OpenBookmarkUrl(url)
+                val url = getValue<String>(Relations.SOURCE)
+                if (url.isNullOrEmpty()) {
+                    OpenObjectNavigation.OpenEditor(
+                        target = id,
+                        space = requireNotNull(spaceId),
+                        effect = effect
+                    )
+                } else {
+                    OpenObjectNavigation.OpenBookmarkUrl(url)
+                }
             }
         }
         ObjectType.Layout.BASIC,

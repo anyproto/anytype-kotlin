@@ -14,4 +14,6 @@ interface StringResourceProvider {
     fun getAttachmentText(): String
     fun getSpaceAccessTypeName(accessType: SpaceAccessType?): String
     fun getYesterday(): String
+    fun getInitialSpaceName(): String
+    fun getUntitledCreatorName(): String
 }

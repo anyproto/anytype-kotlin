@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ext.DateParser
@@ -16,13 +17,12 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.isValueRequired
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -343,35 +343,51 @@ private val quickOptionDefaultOrder by lazy {
 }
 
 private val quickOptionOrderMap: Map<DVFilterCondition, List<DVFilterQuickOption>> by lazy {
+
+    // Extended options including all date ranges
+    val extendedOptions = listOf(
+        DVFilterQuickOption.TODAY,
+        DVFilterQuickOption.YESTERDAY,
+        DVFilterQuickOption.TOMORROW,
+        DVFilterQuickOption.CURRENT_WEEK,
+        DVFilterQuickOption.LAST_WEEK,
+        DVFilterQuickOption.NEXT_WEEK,
+        DVFilterQuickOption.CURRENT_MONTH,
+        DVFilterQuickOption.LAST_MONTH,
+        DVFilterQuickOption.NEXT_MONTH,
+        DVFilterQuickOption.CURRENT_YEAR,
+        DVFilterQuickOption.LAST_YEAR,
+        DVFilterQuickOption.NEXT_YEAR,
+    )
+
+    // Default options for exact dates and offsets
+    val defaultOptions = listOf(
+        DVFilterQuickOption.DAYS_AGO,
+        DVFilterQuickOption.DAYS_AHEAD,
+        DVFilterQuickOption.EXACT_DATE,
+    )
+
     buildMap {
+        // Equal condition: specific day options + defaults
         put(
             DVFilterCondition.EQUAL, listOf(
                 DVFilterQuickOption.TODAY,
                 DVFilterQuickOption.YESTERDAY,
                 DVFilterQuickOption.TOMORROW,
-                DVFilterQuickOption.DAYS_AGO,
-                DVFilterQuickOption.DAYS_AHEAD,
-                DVFilterQuickOption.EXACT_DATE,
-            )
+            ) + defaultOptions
         )
 
-        put(
-            DVFilterCondition.IN, listOf(
-                DVFilterQuickOption.TODAY,
-                DVFilterQuickOption.YESTERDAY,
-                DVFilterQuickOption.TOMORROW,
-                DVFilterQuickOption.CURRENT_WEEK,
-                DVFilterQuickOption.LAST_WEEK,
-                DVFilterQuickOption.NEXT_WEEK,
-                DVFilterQuickOption.CURRENT_MONTH,
-                DVFilterQuickOption.LAST_MONTH,
-                DVFilterQuickOption.NEXT_MONTH,
-                DVFilterQuickOption.CURRENT_YEAR,
-                DVFilterQuickOption.LAST_YEAR,
-                DVFilterQuickOption.NEXT_YEAR,
-            )
-        )
+        // Comparison conditions: all extended options + defaults (includes years)
+        val comparisonOptions = extendedOptions + defaultOptions
+        put(DVFilterCondition.GREATER, comparisonOptions)
+        put(DVFilterCondition.LESS, comparisonOptions)
+        put(DVFilterCondition.GREATER_OR_EQUAL, comparisonOptions)
+        put(DVFilterCondition.LESS_OR_EQUAL, comparisonOptions)
 
+        // In condition: only extended options (no defaults)
+        put(DVFilterCondition.IN, extendedOptions)
+
+        // Empty conditions
         put(DVFilterCondition.EMPTY, emptyList())
         put(DVFilterCondition.NOT_EMPTY, emptyList())
     }

@@ -5,16 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
@@ -42,9 +37,10 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -255,32 +251,20 @@ class SplashViewModel(
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
-                            spaceViews
-                                .observe(SpaceId(spaceId))
-                                .take(1)
-                                .collect { view ->
-                                    if (view.isActive) {
-                                        if (type == COLLECTION || type == SET) {
-                                            commands.emit(
-                                                Command.NavigateToObjectSet(
-                                                    id = target,
-                                                    space = spaceId,
-                                                    chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                )
-                                            )
-                                        } else {
-                                            commands.emit(
-                                                Command.NavigateToObject(
-                                                    id = target,
-                                                    space = spaceId,
-                                                    chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                )
-                                            )
-                                        }
-                                    } else {
-                                        proceedWithVaultNavigation()
-                                    }
-                                }
+                            val view = awaitActiveSpaceView(SpaceId(spaceId))
+                            if (view != null) {
+                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                // Layout may not be known here; open as an object and let UI resolve.
+                                commands.emit(
+                                    Command.NavigateToObject(
+                                        id = target,
+                                        space = spaceId,
+                                        chat = chatId
+                                    )
+                                )
+                            } else {
+                                proceedWithVaultNavigation()
+                            }
                         }
                     }
                 }
@@ -317,146 +301,6 @@ class SplashViewModel(
         }
     }
 
-    private fun proceedWithNavigation() {
-        Timber.i("proceedWithNavigation, get getLastOpenedObject")
-        viewModelScope.launch {
-            getLastOpenedObject(
-                params = GetLastOpenedObject.Params(space = SpaceId(spaceManager.get()))
-            ).process(
-                failure = {
-                    Timber.e(it, "Error while getting last opened object")
-                    proceedWithVaultNavigation()
-                },
-                success = { response ->
-                    Timber.i("Last opened object response: $response")
-                    when (response) {
-                        is GetLastOpenedObject.Response.Success -> {
-                            if (SupportedLayouts.lastOpenObjectLayouts.contains(response.obj.layout)) {
-                                Timber.i("Navigating to last opened object with id: ${response.obj.id}")
-                                val id = response.obj.id
-                                val space = requireNotNull(response.obj.spaceId)
-                                spaceViews
-                                    .observe(SpaceId(space))
-                                    .take(1)
-                                    .collect { view ->
-                                        if (view.isActive || view.isLoading) {
-                                            when (response.obj.layout) {
-                                                ObjectType.Layout.SET, ObjectType.Layout.COLLECTION ->
-                                                    commands.emit(
-                                                        Command.NavigateToObjectSet(
-                                                            id = id,
-                                                            space = space,
-                                                            chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                        )
-                                                    )
-                                                ObjectType.Layout.DATE -> {
-                                                    commands.emit(
-                                                        Command.NavigateToDateObject(
-                                                            id = id,
-                                                            space = space,
-                                                            chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                        )
-                                                    )
-                                                }
-                                                ObjectType.Layout.OBJECT_TYPE -> {
-                                                    commands.emit(
-                                                        Command.NavigateToObjectType(
-                                                            id = id,
-                                                            space = space,
-                                                            chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                        )
-                                                    )
-                                                }
-                                                else ->
-                                                    commands.emit(
-                                                        Command.NavigateToObject(
-                                                            id = id,
-                                                            space = space,
-                                                            chat = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                                                        )
-                                                    )
-                                            }
-                                        } else {
-                                            proceedWithVaultNavigation()
-                                        }
-                                    }
-                            } else {
-                                proceedWithVaultNavigation()
-                            }
-                        }
-                        else -> proceedWithVaultNavigation()
-                    }
-                }
-            )
-        }
-    }
-
-    /**
-     * Before navigating to widgets, make sure space was opened successfully during launchAccount
-     * @see [LaunchAccount] use-case
-     */
-    private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
-        Timber.d("proceedWithVaultNavigation deep link: $deeplink")
-        val space = getLastOpenedSpace.async(Unit).getOrNull()
-        if (space != null && spaceManager.getState() != SpaceManager.State.NoSpace) {
-            val view = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
-                spaceManager
-                    .observe()
-                    .take(1)
-                    .flatMapLatest { config ->
-                        spaceViews
-                            .observe(SpaceId(config.space))
-                            .filterNot { view ->
-                                if (view.isUnknown) {
-                                    Timber.w("View is unknown during restoration of the last opened space")
-                                }
-                                view.isUnknown
-                            }
-                            .take(1)
-                    }
-                    .firstOrNull()
-            }
-
-            if (view != null) {
-                Timber.i("Space view loaded: $view")
-                if (view.isActive || view.isLoading) {
-                    val chat = view.chatId
-                    when {
-                        view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
-                            Timber.i("Navigating to space level chat with id: $chat")
-                            commands.emit(
-                                Command.NavigateToChat(
-                                    space = space.id,
-                                    chat = chat,
-                                    deeplink = deeplink
-                                )
-                            )
-                        }
-
-                        else -> {
-                            Timber.i("Navigating to widgets (HomeScreen) for space with id: ${space.id}")
-                            commands.emit(
-                                Command.NavigateToWidgets(
-                                    space = space.id,
-                                    deeplink = deeplink
-                                )
-                            )
-                        }
-                    }
-                } else {
-                    Timber.w("Space view is not active or loading. Navigating to vault.")
-                    commands.emit(Command.NavigateToVault(deeplink))
-                }
-            } else {
-                Timber.w("Timeout while waiting for space view. Navigating to vault.")
-                commands.emit(Command.NavigateToVault(deeplink))
-            }
-        } else {
-            Timber.w("No space found or space manager state is NoSpace. Navigating to vault.")
-            commands.emit(Command.NavigateToVault(deeplink))
-        }
-    }
-
     private fun updateUserProps(id: String) {
         viewModelScope.updateUserProperties(
             analytics = analytics,
@@ -470,16 +314,156 @@ class SplashViewModel(
         }
     }
 
-    private fun sendEvent(startTime: Long, event: String, props: Props) {
-        val middleTime = System.currentTimeMillis()
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            startTime = startTime,
-            middleTime = middleTime,
-            eventName = event,
-            props = props
-        )
+    //region NAVIGATION
+    private suspend fun awaitActiveSpaceView(space: SpaceId) = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
+        spaceViews
+            .observe(space)
+            .onEach { view ->
+                Timber.i(
+                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}"
+                )
+            }
+            .filter { view -> view.isActive }
+            .take(1)
+            .catch {
+                Timber.w(it, "Error while observing space view for ${space.id}")
+            }
+            .firstOrNull()
     }
+
+    private suspend fun emitNavigationForObject(
+        id: Id,
+        space: Id,
+        layout: ObjectType.Layout?,
+        chatId: Id?
+    ) {
+        when (layout) {
+            ObjectType.Layout.SET,
+            ObjectType.Layout.COLLECTION ->
+                commands.emit(
+                    Command.NavigateToObjectSet(
+                        id = id,
+                        space = space,
+                        chat = chatId
+                    )
+                )
+            ObjectType.Layout.DATE -> {
+                commands.emit(
+                    Command.NavigateToDateObject(
+                        id = id,
+                        space = space,
+                        chat = chatId
+                    )
+                )
+            }
+            ObjectType.Layout.OBJECT_TYPE -> {
+                commands.emit(
+                    Command.NavigateToObjectType(
+                        id = id,
+                        space = space,
+                        chat = chatId
+                    )
+                )
+            }
+            else ->
+                commands.emit(
+                    Command.NavigateToObject(
+                        id = id,
+                        space = space,
+                        chat = chatId
+                    )
+                )
+        }
+    }
+
+    private fun proceedWithNavigation() {
+        Timber.i("proceedWithNavigation, get getLastOpenedObject")
+        viewModelScope.launch {
+            val params = GetLastOpenedObject.Params(
+                space = SpaceId(spaceManager.get())
+            )
+            getLastOpenedObject(params = params).process(
+                success = { response ->
+                    Timber.i("Last opened object response: ${response.javaClass.name}")
+                    when (response) {
+                        is GetLastOpenedObject.Response.Success -> {
+                            val obj = response.obj
+                            if (!SupportedLayouts.lastOpenObjectLayouts.contains(obj.layout)) {
+                                Timber.i("Last opened object layout not supported: ${obj.layout}")
+                                proceedWithVaultNavigation()
+                                return@process
+                            }
+
+                            val id = obj.id
+                            val space = requireNotNull(obj.spaceId)
+
+                            val view = awaitActiveSpaceView(SpaceId(space))
+                            if (view != null) {
+                                val chatId =
+                                    if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                emitNavigationForObject(
+                                    id = id,
+                                    space = space,
+                                    layout = obj.layout,
+                                    chatId = chatId
+                                )
+                            } else {
+                                Timber.w("Space view not ready or timeout while restoring last opened object. Navigating to vault.")
+                                proceedWithVaultNavigation()
+                            }
+                        }
+                        else -> proceedWithVaultNavigation()
+                    }
+                },
+                failure = {
+                    Timber.e(it, "Error while getting last opened object")
+                    proceedWithVaultNavigation()
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
+        Timber.d("proceedWithVaultNavigation deep link: $deeplink")
+        val space = getLastOpenedSpace.async(Unit).getOrNull()
+        if (space != null) {
+            val view = awaitActiveSpaceView(SpaceId(space.id))
+
+            if (view != null) {
+                Timber.i("Space view loaded: $view")
+                val chat = view.chatId
+                when {
+                    view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
+                        Timber.i("Navigating to space level chat with id: $chat")
+                        commands.emit(
+                            Command.NavigateToChat(
+                                space = space.id,
+                                chat = chat,
+                                deeplink = deeplink
+                            )
+                        )
+                    }
+
+                    else -> {
+                        Timber.i("Navigating to widgets (HomeScreen) for space with id: ${space.id}")
+                        commands.emit(
+                            Command.NavigateToWidgets(
+                                space = space.id,
+                                deeplink = deeplink
+                            )
+                        )
+                    }
+                }
+            } else {
+                Timber.w("Timeout while waiting for active space view. Navigating to vault.")
+                commands.emit(Command.NavigateToVault(deeplink))
+            }
+        } else {
+            Timber.w("No space found or space manager state is NoSpace. Navigating to vault.")
+            commands.emit(Command.NavigateToVault(deeplink))
+        }
+    }
+    //endregion
 
     sealed class Command {
         data class NavigateToVault(val deeplink: String? = null) : Command()

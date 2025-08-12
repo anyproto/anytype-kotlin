@@ -34,6 +34,7 @@ androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.2.1'
 recyclerviewVersion = '1.4.0'
 emojiCompatVersion = '1.1.0'
+emoji2Version = '1.5.0'
 lifecycleVersion = '2.9.1'
 lifecycleRuntimeComposeVersion = '2.9.1'
 navigationVersion = '2.8.9'
@@ -122,6 +123,10 @@ constraintLayout = { module = "androidx.constraintlayout:constraintlayout", vers
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }
 betterLinkMovement = { module = "me.saket:better-link-movement-method", version.ref = "betterLinkMethodVersion" }
 emojiCompat = { module = "androidx.emoji:emoji-appcompat", version.ref = "emojiCompatVersion" }
+emoji2 = { module = "androidx.emoji2:emoji2", version.ref = "emoji2Version" }
+emoji2Views = { module = "androidx.emoji2:emoji2-views", version.ref = "emoji2Version" }
+emoji2ViewsHelper = { module = "androidx.emoji2:emoji2-views-helper", version.ref = "emoji2Version" }
+emoji2Bundled = { module = "androidx.emoji2:emoji2-bundled", version.ref = "emoji2Version" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoViewVersion" }
 katex = { module = "com.github.judemanutd:katexview", version.ref = "katexVersion" }
 daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }
@@ -148,6 +153,7 @@ disableAnimation = { module = "com.bartoszlipinski:disable-animations-rule", ver
 navigationTesting = { module = "androidx.navigation:navigation-testing", version.ref = "navigationVersion" }
 room = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 dataStore = { module = "androidx.datastore:datastore", version.ref = "dataStoreVersion" }
+dataStorePreferences = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStoreVersion" }
 roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 annotations = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersion" }

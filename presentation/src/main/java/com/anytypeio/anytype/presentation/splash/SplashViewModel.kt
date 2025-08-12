@@ -218,12 +218,13 @@ class SplashViewModel(
         Timber.d("onIntentCreateNewObject, type:[$type]")
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            val spaceId = spaceManager.get()
-            if (spaceId.isEmpty()) {
+            val space = getLastOpenedSpace.async(Unit).getOrNull()
+            if (space == null) {
                 Timber.e("No space found")
+                proceedWithVaultNavigation()
                 return@launch
             }
-            val space = SpaceId(spaceId)
+            val spaceId = space.id
             val params = CreateObjectByTypeAndTemplate.Param(
                 typeKey = TypeKey(type),
                 space = space,
@@ -251,7 +252,7 @@ class SplashViewModel(
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
-                            val view = awaitActiveSpaceView(SpaceId(spaceId))
+                            val view = awaitActiveSpaceView(space)
                             if (view != null) {
                                 val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
                                 // Layout may not be known here; open as an object and let UI resolve.
@@ -379,9 +380,13 @@ class SplashViewModel(
     private fun proceedWithNavigation() {
         Timber.i("proceedWithNavigation, get getLastOpenedObject")
         viewModelScope.launch {
-            val params = GetLastOpenedObject.Params(
-                space = SpaceId(spaceManager.get())
-            )
+            val space = getLastOpenedSpace.async(Unit).getOrNull()
+            if (space == null) {
+                Timber.w("No space found for last opened object navigation")
+                proceedWithVaultNavigation()
+                return@launch
+            }
+            val params = GetLastOpenedObject.Params(space = space)
             getLastOpenedObject(params = params).process(
                 success = { response ->
                     Timber.i("Last opened object response: ${response.javaClass.name}")

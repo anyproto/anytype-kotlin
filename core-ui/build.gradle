@@ -45,6 +45,12 @@ dependencies {
     implementation libs.exoPlayerUi
     implementation libs.urlcleaner
     implementation libs.katex
+    
+    // Modern emoji support
+    implementation libs.emoji2
+    implementation libs.emoji2Views
+    implementation libs.emoji2ViewsHelper
+    implementation libs.emoji2Bundled
 
     implementation libs.compose
     implementation libs.composeFoundation

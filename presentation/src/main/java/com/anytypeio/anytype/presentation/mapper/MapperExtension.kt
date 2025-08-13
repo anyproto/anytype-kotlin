@@ -373,7 +373,18 @@ fun Block.Content.Text.marks(
                     )
                 }
             }
-            else -> null
+            Block.Content.Text.Mark.Type.EMOJI -> {
+                val param = mark.param
+                if (param.isNullOrBlank()) {
+                    null
+                } else {
+                    Markup.Mark.Emoji(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        param = param
+                    )
+                }
+            }
         }
     }
 
@@ -477,6 +488,11 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
     is Markup.Mark.Object -> Block.Content.Text.Mark(
         range = from..to,
         type = Block.Content.Text.Mark.Type.OBJECT,
+        param = param
+    )
+    is Markup.Mark.Emoji -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.EMOJI,
         param = param
     )
 }

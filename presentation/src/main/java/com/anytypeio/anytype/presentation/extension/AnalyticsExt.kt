@@ -250,6 +250,7 @@ fun Markup.Type.getPropName() = when (this) {
     Markup.Type.MENTION -> "Mention"
     Markup.Type.OBJECT -> "Object"
     Markup.Type.UNDERLINE -> "Underline"
+    Markup.Type.EMOJI -> "Emoji"
 }
 
 fun DVFilterCondition.getPropName() = when (this) {

@@ -21,7 +21,7 @@ dependencies {
     implementation libs.kotlin
     implementation libs.coroutinesAndroid
     implementation libs.androidxCore
-    implementation libs.emojiCompat
+    implementation libs.emoji2
     implementation libs.coil
 
     implementation libs.design

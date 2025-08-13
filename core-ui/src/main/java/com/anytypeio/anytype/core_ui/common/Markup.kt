@@ -8,7 +8,6 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.emoji2.text.EmojiCompat
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span.Bold
@@ -20,6 +19,7 @@ import com.anytypeio.anytype.core_ui.common.Span.ObjectLink
 import com.anytypeio.anytype.core_ui.common.Span.Strikethrough
 import com.anytypeio.anytype.core_ui.common.Span.TextColor
 import com.anytypeio.anytype.core_ui.common.Span.Url
+import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.extensions.drawable
@@ -29,7 +29,6 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import timber.log.Timber
 
 fun Markup.toSpannable(
     textColor: Int,
@@ -148,15 +147,8 @@ fun Markup.toSpannable(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            is Markup.Mark.Emoji -> {
-                try {
-                    val processed = EmojiCompat.get().process(mark.param)
-                    // Replace the original substring with the processed one
-                    replace(mark.from, mark.to, processed)
-                } catch (t: Throwable) {
-                    Timber.w(t, "EmojiCompat processing failed; leaving raw text")
-                }
-            }
+            is Markup.Mark.Emoji ->
+                replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
         }
     }
 }
@@ -285,15 +277,8 @@ fun Editable.setMarkup(
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
 
-            is Markup.Mark.Emoji -> {
-                try {
-                    val processed = EmojiCompat.get().process(mark.param)
-                    // Replace the original substring with the processed one
-                    replace(mark.from, mark.to, processed)
-                } catch (t: Throwable) {
-                    Timber.w(t, "EmojiCompat processing failed; leaving raw text")
-                }
-            }
+            is Markup.Mark.Emoji ->
+                replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
         }
     }
 }

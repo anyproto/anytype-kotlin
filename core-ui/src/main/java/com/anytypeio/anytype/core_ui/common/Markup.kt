@@ -8,18 +8,7 @@ import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.Span.Bold
-import com.anytypeio.anytype.core_ui.common.Span.Font
-import com.anytypeio.anytype.core_ui.common.Span.Highlight
-import com.anytypeio.anytype.core_ui.common.Span.Italic
-import com.anytypeio.anytype.core_ui.common.Span.Keyboard
-import com.anytypeio.anytype.core_ui.common.Span.ObjectLink
-import com.anytypeio.anytype.core_ui.common.Span.Strikethrough
-import com.anytypeio.anytype.core_ui.common.Span.TextColor
-import com.anytypeio.anytype.core_ui.common.Span.Url
-import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.extensions.drawable
@@ -29,6 +18,8 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.core_models.ThemeColor
+import timber.log.Timber
 
 fun Markup.toSpannable(
     textColor: Int,
@@ -42,16 +33,7 @@ fun Markup.toSpannable(
     onImageReady: (String) -> Unit = {},
     underlineHeight: Float
 ) = SpannableStringBuilder(body).apply {
-    // Process emoji marks first, in reverse order to prevent position shifting
-    val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>().sortedByDescending { it.from }
-    emojiMarks.forEach { mark ->
-        if (isRangeValid(mark = mark, textLength = length)) {
-            replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
-        }
-    }
-    
-    // Process all other marks normally
-    marks.filterNot { it is Markup.Mark.Emoji }.forEach { mark ->
+    marks.forEach { mark ->
         if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
@@ -156,9 +138,12 @@ fun Markup.toSpannable(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            else -> {
-                // Emoji marks are handled separately above
-            }
+            is Markup.Mark.Emoji -> setSpan(
+                Span.Emoji(mark.param),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
         }
     }
 }
@@ -181,33 +166,23 @@ fun Editable.setMarkup(
     underlineHeight: Float
 ) {
     removeSpans<Span>()
-    
-    // Process emoji marks first, in reverse order to prevent position shifting
-    val emojiMarks = markup.marks.filterIsInstance<Markup.Mark.Emoji>().sortedByDescending { it.from }
-    emojiMarks.forEach { mark ->
-        if (isRangeValid(mark, length)) {
-            replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
-        }
-    }
-    
-    // Process all other marks normally
-    markup.marks.filterNot { it is Markup.Mark.Emoji }.forEach { mark ->
+    markup.marks.forEach { mark ->
         if (!isRangeValid(mark, length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
-                Italic(),
+                Span.Italic(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             is Markup.Mark.Bold -> setSpan(
-                Bold(),
+                Span.Bold(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
             is Markup.Mark.Strikethrough -> setSpan(
-                Strikethrough(),
+                Span.Strikethrough(),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -215,12 +190,12 @@ fun Editable.setMarkup(
             is Markup.Mark.TextColor -> {
                 val value = mark.color()
                 val span = if (value != null && value != ThemeColor.DEFAULT) {
-                    TextColor(
+                    Span.TextColor(
                         color = context.resources.dark(color = value, default = textColor),
                         value = mark.color
                     )
                 } else {
-                    TextColor(
+                    Span.TextColor(
                         color = textColor,
                         value = mark.color
                     )
@@ -240,14 +215,14 @@ fun Editable.setMarkup(
             )
             is Markup.Mark.BackgroundColor -> {
                 setSpan(
-                    Highlight(mark.background),
+                    Span.Highlight(mark.background),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
             is Markup.Mark.Link -> setSpan(
-                Url(
+                Span.Url(
                     url = mark.param,
                     color = textColor,
                     underlineHeight = underlineHeight
@@ -258,34 +233,36 @@ fun Editable.setMarkup(
             )
             is Markup.Mark.Keyboard -> {
                 setSpan(
-                    Font(Markup.SPAN_MONOSPACE),
+                    Span.Font(Markup.SPAN_MONOSPACE),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
                 setSpan(
-                    Keyboard(VALUE_ROUNDED),
+                    Span.Keyboard(VALUE_ROUNDED),
                     mark.from,
                     mark.to,
                     Markup.DEFAULT_SPANNABLE_FLAG
                 )
             }
             is Markup.Mark.Mention -> {
-                setMentionSpan(
-                    onImageReady = onImageReady,
-                    mark = mark,
-                    context = context,
-                    click = click,
-                    mentionImageSize = mentionImageSize,
-                    mentionImagePadding = mentionImagePadding,
-                    mentionCheckedIcon = mentionCheckedIcon,
-                    mentionUncheckedIcon = mentionUncheckedIcon,
-                    mentionInitialsSize = mentionInitialsSize,
-                    textColor = textColor
-                )
+                context?.let {
+                    setMentionSpan(
+                        onImageReady = onImageReady,
+                        mark = mark,
+                        context = it,
+                        click = click,
+                        mentionImageSize = mentionImageSize,
+                        mentionImagePadding = mentionImagePadding,
+                        mentionCheckedIcon = mentionCheckedIcon,
+                        mentionUncheckedIcon = mentionUncheckedIcon,
+                        mentionInitialsSize = mentionInitialsSize,
+                        textColor = textColor
+                    )
+                } ?: run { Timber.d("Mention Span context is null") }
             }
             is Markup.Mark.Object -> setSpan(
-                ObjectLink(
+                Span.ObjectLink(
                     context = context,
                     link = mark.param,
                     color = textColor,
@@ -296,9 +273,12 @@ fun Editable.setMarkup(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            else -> {
-                // Emoji marks are handled separately above
-            }
+            is Markup.Mark.Emoji -> setSpan(
+                Span.Emoji(mark.param),
+                mark.from,
+                mark.to,
+                Markup.DEFAULT_SPANNABLE_FLAG
+            )
         }
     }
 }

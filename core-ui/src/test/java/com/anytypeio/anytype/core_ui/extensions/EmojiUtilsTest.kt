@@ -289,58 +289,61 @@ class EmojiUtilsTest {
         // Then - should not crash and should replace the ranges with emoji content
         assertNotNull(spannable)
         
-        // The text should be modified to contain the emojis where the marks specified
+        // With span-based approach, the underlying text remains unchanged
         val result = spannable.toString()
         
-        // After processing, the text should contain the emoji content
+        // Verify the original text is preserved
+        assertEquals(text, result, "Original text should remain unchanged with span-based approach")
         println("Original text: '$text'")
-        println("Processed text: '$result'")
-        println("Original length: ${text.length}, processed length: ${result.length}")
+        println("Result text: '$result' (should be identical)")
         
-        // The emoji processing with replace() means the text will be modified
-        // Let's just verify the test doesn't crash and debug what happens
+        // Verify that emoji spans are applied correctly
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
         
-        // Print out detailed character analysis
-        println("Character analysis:")
-        for (i in text.indices) {
-            println("  Position $i: '${text[i]}' (${text[i].code})")
+        println("\nEmoji span verification:")
+        assertEquals(4, emojiSpans.size, "Should have 4 emoji spans applied")
+        
+        // Verify span positions match the mark positions
+        val expectedPositions = listOf(
+            5 to 6,   // 🧟 at position 5
+            16 to 17, // 🔝 at position 16  
+            17 to 18, // 🏄‍♀️ at position 17
+            18 to 19  // ⛷️ at position 18
+        )
+        
+        emojiSpans.forEachIndexed { index, span ->
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            val (expectedStart, expectedEnd) = expectedPositions[index]
+            println("  Emoji span $index: position $start-$end")
+            
+            // Note: spans might not be in the same order as marks, so just verify all expected positions exist
+            assertTrue(expectedPositions.any { it.first == start && it.second == end }, 
+                "Should have emoji span at expected position $start-$end")
         }
         
-        // Check that ALL emojis from the middleware data are present in the result
-        println("\nEmoji verification:")
-        val expectedEmojis = listOf("🧟", "🔝", "🏄‍♀️", "⛷️")
-        expectedEmojis.forEach { emoji ->
-            val isPresent = result.contains(emoji)
-            println("  Emoji '$emoji': ${if (isPresent) "✓ FOUND" else "✗ MISSING"}")
-            assertTrue(isPresent, "Result should contain emoji '$emoji'")
-        }
-        
-        // Verify no Unicode corruption markers
+        // Verify no corruption in the base text (which should be unchanged)
         assertFalse(result.contains("��"), "Result should not contain Unicode corruption markers")
-        
-        // Basic sanity checks
-        assertTrue(result.isNotEmpty(), "Result should not be empty")
-        assertTrue(result.length >= expectedEmojis.size, "Result should have reasonable length after emoji replacement")
+        assertEquals(text.length, result.length, "Text length should remain unchanged")
     }
 
     @Test
     fun `should handle emojis mixed with various other markup types`() {
         // Given: Complex text with emojis AND other markup types (Bold, Italic, Strikethrough, etc.)
         val text = "Hello BOLD world and ITALIC text with STRIKE through! Link here."
-        // Positions: H e l l o   B O L D   w o r l d   a n d   I T A L I C   t e x t   w i t h   S T R I K E   t h r o u g h !   L i n k   h e r e .
-        //           0 1 2 3 4 5 6 7 8 9 101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263
         
         val marks = listOf(
-            // Emoji marks (will be processed first, in reverse order)
-            Markup.Mark.Emoji(from = 60, to = 61, param = "🔗"),  // Replace 'r' in "here" 
-            Markup.Mark.Emoji(from = 49, to = 50, param = "❗"),  // Replace '!' 
-            Markup.Mark.Emoji(from = 5, to = 6, param = "👋"),   // Replace space after "Hello"
-            Markup.Mark.Emoji(from = 20, to = 21, param = "🌍"), // Replace space before "and"
+            // Emoji marks
+            Markup.Mark.Emoji(from = 60, to = 61, param = "🔗"),  // Position 60 'r' in "here" 
+            Markup.Mark.Emoji(from = 49, to = 50, param = "❗"),  // Position 49 '!' 
+            Markup.Mark.Emoji(from = 5, to = 6, param = "👋"),   // Position 5 space after "Hello"
+            Markup.Mark.Emoji(from = 20, to = 21, param = "🌍"), // Position 20 space before "and"
             
-            // Other markup (processed after emojis, so positions are relative to emoji-processed text)
-            Markup.Mark.Bold(from = 6, to = 10),        // "BOLD" (after emoji replacement)
-            Markup.Mark.Italic(from = 21, to = 27),     // "ITALIC" 
-            Markup.Mark.Strikethrough(from = 38, to = 44), // "STRIKE"
+            // Other markup (with original positions since text is not modified)
+            Markup.Mark.Bold(from = 6, to = 10),        // "BOLD" 
+            Markup.Mark.Italic(from = 25, to = 31),     // "ITALIC" 
+            Markup.Mark.Strikethrough(from = 42, to = 48), // "STRIKE"
             Markup.Mark.Link(from = 57, to = 61, param = "https://example.com") // "Link"
         )
 
@@ -361,23 +364,25 @@ class EmojiUtilsTest {
         println("=== COMPLEX MARKUP TEST ===")
         println("Original: '$text'")
         println("Result:   '$result'")
-        println("Length change: ${text.length} → ${result.length}")
+        println("Length: ${text.length} (should be unchanged)")
         
-        // Then - should contain all emojis
-        val expectedEmojis = listOf("👋", "🌍", "❗", "🔗")
-        expectedEmojis.forEach { emoji ->
-            assertTrue(result.contains(emoji), "Should contain emoji '$emoji'")
-        }
+        // With span-based approach, original text should remain unchanged
+        assertEquals(text, result, "Original text should remain unchanged")
         
-        // Should still contain the text that wasn't replaced by emojis
-        assertTrue(result.contains("Hello"), "Should contain 'Hello'")
-        assertTrue(result.contains("BOLD"), "Should contain 'BOLD'")
-        assertTrue(result.contains("ITALIC"), "Should contain 'ITALIC'") 
-        assertTrue(result.contains("STRIKE"), "Should contain 'STRIKE'")
-        assertTrue(result.contains("Link"), "Should contain 'Link'")
-        
-        // Check that the spannable has the expected formatting spans
+        // Verify all span types are applied
         val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        val boldSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Bold>()
+        val italicSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Italic>()
+        val strikeSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Strikethrough>()
+        val linkSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Url>()
+        
+        assertEquals(4, emojiSpans.size, "Should have 4 emoji spans")
+        assertEquals(1, boldSpans.size, "Should have 1 bold span")
+        assertEquals(1, italicSpans.size, "Should have 1 italic span")
+        assertEquals(1, strikeSpans.size, "Should have 1 strikethrough span")
+        assertEquals(1, linkSpans.size, "Should have 1 link span")
+        
         println("Applied spans: ${spans.size}")
         spans.forEach { span ->
             val start = spannable.getSpanStart(span)
@@ -385,7 +390,7 @@ class EmojiUtilsTest {
             println("  ${span.javaClass.simpleName}: $start-$end '${spannable.substring(start, end)}'")
         }
         
-        // Verify no corruption
+        // Verify no corruption in base text
         assertFalse(result.contains("��"), "Should not contain Unicode corruption")
         assertTrue(result.isNotEmpty(), "Result should not be empty")
     }
@@ -417,10 +422,13 @@ class EmojiUtilsTest {
         assertNotNull(spannable)
         val result = spannable.toString()
         
-        // Should contain all the emojis
-        assertTrue(result.contains("😀"), "Should contain 😀")
-        assertTrue(result.contains("🌍"), "Should contain 🌍")
-        assertTrue(result.contains("✨"), "Should contain ✨")
+        // With span-based approach, original text should remain unchanged
+        assertEquals(text, result, "Original text should remain unchanged")
+        
+        // Verify emoji spans are applied correctly
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(3, emojiSpans.size, "Should have 3 emoji spans applied")
         
         println("Single char ranges - Original: '$text' -> Result: '$result'")
     }
@@ -452,12 +460,17 @@ class EmojiUtilsTest {
         
         println("Structure test - Original: '$text' -> Result: '$result'")
         
-        // Should contain the emojis
-        assertTrue(result.contains("🎯"), "Should contain 🎯")
-        assertTrue(result.contains("🚀"), "Should contain 🚀")
+        // With span-based approach, original text should remain unchanged
+        assertEquals(text, result, "Original text should remain unchanged")
         
-        // Should still contain the original structure elements
+        // Verify emoji spans are applied correctly
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(2, emojiSpans.size, "Should have 2 emoji spans applied")
+        
+        // Original structure should be preserved in text
         assertTrue(result.contains("ABC"), "Should still contain ABC")
+        assertTrue(result.contains("_"), "Should still contain underscores")
         assertTrue(result.contains("GHI"), "Should still contain GHI")
     }
 
@@ -489,12 +502,19 @@ class EmojiUtilsTest {
         println("  Result: '$result' (length: ${result.length})")
         println("  Expected: 'A🎯B'")
         
-        // In unit tests, EmojiUtils.processSafe returns input unchanged since EmojiCompat isn't initialized
-        // So we expect the emoji character to be directly inserted
-        assertEquals("A🎯B", result, "Should replace underscore with emoji")
-        assertTrue(result.contains("🎯"), "Should contain the emoji")
-        assertTrue(result.contains("A"), "Should still contain A")
-        assertTrue(result.contains("B"), "Should still contain B")
+        // With the new span-based approach, the underlying text is NOT modified
+        // Emojis are rendered via spans overlaying the original text
+        assertEquals("A_B", result, "Original text should remain unchanged with span-based approach")
+        
+        // Verify that emoji spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(1, emojiSpans.size, "Should have one emoji span applied")
+        
+        // The span should cover the underscore position
+        val emojiSpan = emojiSpans[0]
+        assertEquals(1, spannable.getSpanStart(emojiSpan), "Emoji span should start at position 1")
+        assertEquals(2, spannable.getSpanEnd(emojiSpan), "Emoji span should end at position 2")
     }
 
     @Test
@@ -624,19 +644,21 @@ class EmojiUtilsTest {
         println("Original: '$text'")
         println("Result:   '$result'")
         
-        // The fix should prevent the corruption by processing emojis in reverse order
+        // With span-based approach, corruption is prevented by not modifying text
         assertNotNull(result)
         assertTrue(result.isNotEmpty())
         
-        // With the fix, emojis should be properly placed without corruption
-        assertTrue(result.contains("🧟"), "Should contain zombie emoji")
-        assertTrue(result.contains("🔝"), "Should contain top emoji")
-        assertTrue(result.contains("🏄‍♀️"), "Should contain surfer emoji")
-        assertTrue(result.contains("⛷️"), "Should contain skier emoji")
+        // Original text should be preserved
+        assertEquals(text, result, "Original text should remain unchanged")
         
-        // The result should NOT contain corruption markers like ��
+        // Verify emoji spans are applied correctly
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(4, emojiSpans.size, "Should have 4 emoji spans applied")
+        
+        // The result should NOT contain corruption markers since text isn't modified
         assertFalse(result.contains("��"), "Should not contain Unicode corruption markers")
         
-        println("✅ Fix verified: No corruption detected!")
+        println("✅ Span-based fix verified: No text modification, no corruption!")
     }
 }

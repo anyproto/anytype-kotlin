@@ -42,7 +42,16 @@ fun Markup.toSpannable(
     onImageReady: (String) -> Unit = {},
     underlineHeight: Float
 ) = SpannableStringBuilder(body).apply {
-    marks.forEach { mark ->
+    // Process emoji marks first, in reverse order to prevent position shifting
+    val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>().sortedByDescending { it.from }
+    emojiMarks.forEach { mark ->
+        if (isRangeValid(mark = mark, textLength = length)) {
+            replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
+        }
+    }
+    
+    // Process all other marks normally
+    marks.filterNot { it is Markup.Mark.Emoji }.forEach { mark ->
         if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
@@ -147,8 +156,9 @@ fun Markup.toSpannable(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-            is Markup.Mark.Emoji ->
-                replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
+            else -> {
+                // Emoji marks are handled separately above
+            }
         }
     }
 }
@@ -171,7 +181,17 @@ fun Editable.setMarkup(
     underlineHeight: Float
 ) {
     removeSpans<Span>()
-    markup.marks.forEach { mark ->
+    
+    // Process emoji marks first, in reverse order to prevent position shifting
+    val emojiMarks = markup.marks.filterIsInstance<Markup.Mark.Emoji>().sortedByDescending { it.from }
+    emojiMarks.forEach { mark ->
+        if (isRangeValid(mark, length)) {
+            replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
+        }
+    }
+    
+    // Process all other marks normally
+    markup.marks.filterNot { it is Markup.Mark.Emoji }.forEach { mark ->
         if (!isRangeValid(mark, length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
@@ -276,9 +296,9 @@ fun Editable.setMarkup(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
-
-            is Markup.Mark.Emoji ->
-                replace(mark.from, mark.to, EmojiUtils.processSafe(mark.param))
+            else -> {
+                // Emoji marks are handled separately above
+            }
         }
     }
 }

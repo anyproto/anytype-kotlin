@@ -53,6 +53,11 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
             type = Mark.Type.OBJECT,
             param = span.link
         )
+        is Span.Emoji -> Mark(
+            range = getSpanStart(span)..getSpanEnd(span),
+            type = Mark.Type.EMOJI,
+            param = span.emojiText
+        )
         else -> null
     }
 }

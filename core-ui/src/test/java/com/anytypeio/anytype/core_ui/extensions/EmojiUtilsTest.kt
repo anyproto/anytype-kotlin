@@ -324,6 +324,73 @@ class EmojiUtilsTest {
     }
 
     @Test
+    fun `should handle emojis mixed with various other markup types`() {
+        // Given: Complex text with emojis AND other markup types (Bold, Italic, Strikethrough, etc.)
+        val text = "Hello BOLD world and ITALIC text with STRIKE through! Link here."
+        // Positions: H e l l o   B O L D   w o r l d   a n d   I T A L I C   t e x t   w i t h   S T R I K E   t h r o u g h !   L i n k   h e r e .
+        //           0 1 2 3 4 5 6 7 8 9 101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263
+        
+        val marks = listOf(
+            // Emoji marks (will be processed first, in reverse order)
+            Markup.Mark.Emoji(from = 60, to = 61, param = "🔗"),  // Replace 'r' in "here" 
+            Markup.Mark.Emoji(from = 49, to = 50, param = "❗"),  // Replace '!' 
+            Markup.Mark.Emoji(from = 5, to = 6, param = "👋"),   // Replace space after "Hello"
+            Markup.Mark.Emoji(from = 20, to = 21, param = "🌍"), // Replace space before "and"
+            
+            // Other markup (processed after emojis, so positions are relative to emoji-processed text)
+            Markup.Mark.Bold(from = 6, to = 10),        // "BOLD" (after emoji replacement)
+            Markup.Mark.Italic(from = 21, to = 27),     // "ITALIC" 
+            Markup.Mark.Strikethrough(from = 38, to = 44), // "STRIKE"
+            Markup.Mark.Link(from = 57, to = 61, param = "https://example.com") // "Link"
+        )
+
+        val markup = object : Markup {
+            override val body: String = text
+            override var marks: List<Markup.Mark> = marks
+        }
+
+        // When converting to spannable
+        val spannable = markup.toSpannable(
+            textColor = android.graphics.Color.BLACK,
+            context = context,
+            underlineHeight = 2f
+        )
+
+        val result = spannable.toString()
+        
+        println("=== COMPLEX MARKUP TEST ===")
+        println("Original: '$text'")
+        println("Result:   '$result'")
+        println("Length change: ${text.length} → ${result.length}")
+        
+        // Then - should contain all emojis
+        val expectedEmojis = listOf("👋", "🌍", "❗", "🔗")
+        expectedEmojis.forEach { emoji ->
+            assertTrue(result.contains(emoji), "Should contain emoji '$emoji'")
+        }
+        
+        // Should still contain the text that wasn't replaced by emojis
+        assertTrue(result.contains("Hello"), "Should contain 'Hello'")
+        assertTrue(result.contains("BOLD"), "Should contain 'BOLD'")
+        assertTrue(result.contains("ITALIC"), "Should contain 'ITALIC'") 
+        assertTrue(result.contains("STRIKE"), "Should contain 'STRIKE'")
+        assertTrue(result.contains("Link"), "Should contain 'Link'")
+        
+        // Check that the spannable has the expected formatting spans
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        println("Applied spans: ${spans.size}")
+        spans.forEach { span ->
+            val start = spannable.getSpanStart(span)
+            val end = spannable.getSpanEnd(span)
+            println("  ${span.javaClass.simpleName}: $start-$end '${spannable.substring(start, end)}'")
+        }
+        
+        // Verify no corruption
+        assertFalse(result.contains("��"), "Should not contain Unicode corruption")
+        assertTrue(result.isNotEmpty(), "Result should not be empty")
+    }
+
+    @Test
     fun `should handle emoji marks with single character ranges`() {
         // Given: Text with emoji marks that have single character ranges (to - from = 1)
         // This tests the common case where emojis are marked as single characters

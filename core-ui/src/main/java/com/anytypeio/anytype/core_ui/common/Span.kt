@@ -34,7 +34,7 @@ interface Span {
      * Emoji span that renders emojis at specified positions without modifying the underlying text.
      * This span overlays the emoji character over the existing text in the specified range.
      */
-    class Emoji(private val emojiText: String) : ReplacementSpan(), Span {
+    class Emoji(val emojiText: String) : ReplacementSpan(), Span {
         
         override fun getSize(
             paint: android.graphics.Paint,

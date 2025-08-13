@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableStringBuilder
+import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -142,7 +143,7 @@ fun Markup.toSpannable(
                 Span.Emoji(mark.param),
                 mark.from,
                 mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }
@@ -277,7 +278,7 @@ fun Editable.setMarkup(
                 Span.Emoji(mark.param),
                 mark.from,
                 mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }

@@ -28,11 +28,11 @@ class EmojiUtilsTest {
 
     @Test
     fun `should process emoji marks correctly in text`() {
-        // Given text with emoji marks
-        val text = "Hello 😀 world! 🎉 Nice day!"
+        // Given text WITHOUT emojis (as received from middleware) with emoji marks
+        val text = "Hello   world!   Nice day!" // Spaces where emojis should be rendered
         val marks = listOf(
-            Markup.Mark.Emoji(from = 6, to = 8, param = "😀"),
-            Markup.Mark.Emoji(from = 16, to = 18, param = "🎉")
+            Markup.Mark.Emoji(from = 6, to = 7, param = "😀"), // Length 1: space at position 6
+            Markup.Mark.Emoji(from = 15, to = 16, param = "🎉") // Length 1: space at position 15
         )
 
         val markup = object : Markup {
@@ -47,21 +47,25 @@ class EmojiUtilsTest {
             underlineHeight = 2f
         )
 
-        // Then
+        // Then - with span-based approach, text remains unchanged
         assertNotNull(spannable)
         assertEquals(text.length, spannable.length)
-        assertTrue(spannable.toString().contains("😀"))
-        assertTrue(spannable.toString().contains("🎉"))
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify emoji spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(2, emojiSpans.size, "Should have 2 emoji spans applied")
     }
 
     @Test
     fun `should handle multiple emoji marks in sequence`() {
-        // Given text with multiple consecutive emoji marks
-        val text = "Emojis: 😀😃😄 are fun!"
+        // Given text with multiple consecutive spaces where emojis should be rendered
+        val text = "Emojis:    are fun!" // 3 spaces for 3 emojis
         val marks = listOf(
-            Markup.Mark.Emoji(from = 8, to = 10, param = "😀"),
-            Markup.Mark.Emoji(from = 10, to = 12, param = "😃"),
-            Markup.Mark.Emoji(from = 12, to = 14, param = "😄")
+            Markup.Mark.Emoji(from = 8, to = 9, param = "😀"), // Length 1: first space
+            Markup.Mark.Emoji(from = 9, to = 10, param = "😃"), // Length 1: second space
+            Markup.Mark.Emoji(from = 10, to = 11, param = "😄") // Length 1: third space
         )
 
         val markup = object : Markup {
@@ -76,21 +80,24 @@ class EmojiUtilsTest {
             underlineHeight = 2f
         )
 
-        // Then
+        // Then - with span-based approach, original text remains unchanged
         assertNotNull(spannable)
-        assertTrue(spannable.toString().contains("😀"))
-        assertTrue(spannable.toString().contains("😃"))
-        assertTrue(spannable.toString().contains("😄"))
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify emoji spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(3, emojiSpans.size, "Should have 3 emoji spans applied")
     }
 
     @Test
     fun `should handle emoji marks mixed with other marks`() {
-        // Given text with emoji and other markup
-        val text = "Hello 😀 world!"
+        // Given text with space where emoji should be rendered and other markup
+        val text = "Hello   world!" // Space where emoji should be rendered
         val marks = listOf(
             Markup.Mark.Bold(from = 0, to = 5),
-            Markup.Mark.Emoji(from = 6, to = 8, param = "😀"),
-            Markup.Mark.Italic(from = 9, to = 15)
+            Markup.Mark.Emoji(from = 6, to = 7, param = "😀"), // Length 1: the space
+            Markup.Mark.Italic(from = 8, to = 14) // Adjusted position after correcting emoji
         )
 
         val markup = object : Markup {
@@ -105,17 +112,27 @@ class EmojiUtilsTest {
             underlineHeight = 2f
         )
 
-        // Then
+        // Then - with span-based approach, original text remains unchanged
         assertNotNull(spannable)
-        assertTrue(spannable.toString().contains("😀"))
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify all spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        val boldSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Bold>()
+        val italicSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Italic>()
+        
+        assertEquals(1, emojiSpans.size, "Should have 1 emoji span")
+        assertEquals(1, boldSpans.size, "Should have 1 bold span")
+        assertEquals(1, italicSpans.size, "Should have 1 italic span")
     }
 
     @Test
     fun `should handle empty emoji param gracefully`() {
-        // Given text with empty emoji param
-        val text = "Hello  world!"
+        // Given text with space and empty emoji param
+        val text = "Hello  world!" // Double space for testing
         val marks = listOf(
-            Markup.Mark.Emoji(from = 6, to = 8, param = "")
+            Markup.Mark.Emoji(from = 6, to = 7, param = "") // Length 1: one space
         )
 
         val markup = object : Markup {
@@ -130,10 +147,14 @@ class EmojiUtilsTest {
             underlineHeight = 2f
         )
 
-        // Then - should not crash and should replace the range with the processed empty param
+        // Then - should not crash and text should remain unchanged
         assertNotNull(spannable)
-        // Note: After replacement, text length might change since we replace from..to with processed param
-        assertTrue(spannable.length <= text.length)
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify emoji span is applied even with empty param
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(1, emojiSpans.size, "Should have 1 emoji span even with empty param")
     }
 
     @Test
@@ -185,11 +206,11 @@ class EmojiUtilsTest {
 
     @Test
     fun `should process complex unicode emojis correctly`() {
-        // Given text with complex unicode emojis (skin tone, compound emojis)
-        val text = "Hello 👍🏻 and 👨‍👩‍👧‍👦 world!"
+        // Given text with spaces where complex unicode emojis should be rendered
+        val text = "Hello   and   world!" // Spaces where emojis should be rendered
         val marks = listOf(
-            Markup.Mark.Emoji(from = 6, to = 8, param = "👍🏻"),
-            Markup.Mark.Emoji(from = 13, to = 21, param = "👨‍👩‍👧‍👦")
+            Markup.Mark.Emoji(from = 6, to = 7, param = "👍🏻"), // Length 1: skin tone emoji
+            Markup.Mark.Emoji(from = 12, to = 13, param = "👨‍👩‍👧‍👦") // Length 1: family emoji
         )
 
         val markup = object : Markup {
@@ -204,19 +225,24 @@ class EmojiUtilsTest {
             underlineHeight = 2f
         )
 
-        // Then should not crash and contain the processed text
+        // Then should not crash and text should remain unchanged
         assertNotNull(spannable)
-        assertTrue(spannable.length > 0)
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify complex emoji spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(2, emojiSpans.size, "Should have 2 emoji spans for complex emojis")
     }
 
     @Test
     fun `should handle edge case with overlapping emoji ranges`() {
-        // Given text with potentially overlapping ranges (should be processed in order)
-        val text = "Test 😀😃 end"
+        // Given text with adjacent spaces for emojis
+        val text = "Test   end" // Two spaces for two emojis
         val marks = listOf(
-            Markup.Mark.Emoji(from = 5, to = 7, param = "😀"),
+            Markup.Mark.Emoji(from = 5, to = 6, param = "😀"), // Length 1: first space
             Markup.Mark.Bold(from = 0, to = 4),
-            Markup.Mark.Emoji(from = 7, to = 9, param = "😃")
+            Markup.Mark.Emoji(from = 6, to = 7, param = "😃") // Length 1: second space
         )
 
         val markup = object : Markup {
@@ -233,14 +259,23 @@ class EmojiUtilsTest {
 
         // Then should handle gracefully
         assertNotNull(spannable)
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify all spans are applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        val boldSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Bold>()
+        
+        assertEquals(2, emojiSpans.size, "Should have 2 emoji spans")
+        assertEquals(1, boldSpans.size, "Should have 1 bold span")
     }
 
     @Test
     fun `should handle single emoji in text`() {
-        // Given text with single emoji
-        val text = "Just 🎉 one"
+        // Given text with single space where emoji should be rendered
+        val text = "Just   one" // Space where emoji should be rendered
         val marks = listOf(
-            Markup.Mark.Emoji(from = 5, to = 7, param = "🎉")
+            Markup.Mark.Emoji(from = 5, to = 6, param = "🎉") // Length 1: the space
         )
 
         val markup = object : Markup {
@@ -257,7 +292,12 @@ class EmojiUtilsTest {
 
         // Then
         assertNotNull(spannable)
-        assertTrue(spannable.toString().contains("🎉"))
+        assertEquals(text, spannable.toString()) // Original text should remain unchanged
+        
+        // Verify single emoji span is applied
+        val spans = spannable.getSpans(0, spannable.length, Any::class.java)
+        val emojiSpans = spans.filterIsInstance<com.anytypeio.anytype.core_ui.common.Span.Emoji>()
+        assertEquals(1, emojiSpans.size, "Should have 1 emoji span applied")
     }
 
     @Test

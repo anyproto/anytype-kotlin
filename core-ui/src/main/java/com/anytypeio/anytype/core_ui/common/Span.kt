@@ -13,7 +13,6 @@ import android.text.Annotation
 import android.text.TextPaint
 import android.text.style.*
 import android.view.View
-import androidx.emoji2.text.EmojiCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
 import com.anytypeio.anytype.core_ui.extensions.color

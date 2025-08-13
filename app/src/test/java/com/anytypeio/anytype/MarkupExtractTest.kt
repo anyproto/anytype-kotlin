@@ -262,6 +262,76 @@ class MarkupExtractTest {
         )
     }
 
+    @Test
+    fun `should extract emoji span`() {
+
+        // SETUP
+
+        val source = "Hello   world!" // Spaces where emojis should be rendered
+
+        val mark = Markup.Mark.Emoji(
+            from = 6,
+            to = 7,
+            param = "😀"
+        )
+
+        stubMarkup(source, mark)
+
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
+
+        // TESTING
+
+        val marks = editable.extractMarks()
+
+        assertEquals(expected = 1, actual = marks.size)
+        assertEquals(
+            expected = Mark(
+                range = mark.from..mark.to,
+                param = mark.param,
+                type = Mark.Type.EMOJI
+            ),
+            actual = marks.first()
+        )
+    }
+
+    @Test
+    fun `should extract multiple emoji spans with other markup`() {
+
+        // SETUP
+
+        val source = "Hello   world   test!" // Spaces for emojis
+
+        val marks = listOf(
+            Markup.Mark.Emoji(from = 6, to = 7, param = "😀"),
+            Markup.Mark.Bold(from = 0, to = 5),
+            Markup.Mark.Emoji(from = 14, to = 15, param = "🌍"),
+            Markup.Mark.Italic(from = 16, to = 20)
+        )
+
+        stubMarkup(source, marks)
+
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
+
+        // TESTING
+
+        val extractedMarks = editable.extractMarks()
+
+        assertEquals(expected = 4, actual = extractedMarks.size)
+        
+        // Verify all mark types are extracted
+        val emojiMarks = extractedMarks.filter { it.type == Mark.Type.EMOJI }
+        val boldMarks = extractedMarks.filter { it.type == Mark.Type.BOLD }
+        val italicMarks = extractedMarks.filter { it.type == Mark.Type.ITALIC }
+        
+        assertEquals(2, emojiMarks.size)
+        assertEquals(1, boldMarks.size)
+        assertEquals(1, italicMarks.size)
+        
+        // Verify emoji params are preserved
+        assertEquals("😀", emojiMarks.find { it.range.first == 6 }?.param)
+        assertEquals("🌍", emojiMarks.find { it.range.first == 14 }?.param)
+    }
+
     private fun stubMarkup(
         source: String,
         mark: Markup.Mark

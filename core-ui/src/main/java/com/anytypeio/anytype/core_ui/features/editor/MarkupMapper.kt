@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
 import android.text.Editable
+import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.Underline
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
@@ -54,6 +55,11 @@ fun Editable.marks(): List<Markup.Mark> = getSpans(0, length, Span::class.java).
             to = getSpanEnd(span),
             param = span.link.orEmpty(),
             isArchived = false
+        )
+        is Span.Emoji -> Markup.Mark.Emoji(
+            from = getSpanStart(span),
+            to = getSpanEnd(span),
+            param = span.emojiText
         )
         else -> null
     }

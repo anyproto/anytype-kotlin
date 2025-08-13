@@ -66,6 +66,12 @@ interface Markup {
             val isArchived: Boolean
         ) : Mark()
 
+        data class Emoji(
+            override val from: Int,
+            override val to: Int,
+            val param: String
+        ) : Mark()
+
         sealed class Mention : Mark() {
             abstract val param: String
 
@@ -168,7 +174,8 @@ interface Markup {
         KEYBOARD,
         MENTION,
         OBJECT,
-        UNDERLINE
+        UNDERLINE,
+        EMOJI
     }
 
     companion object {

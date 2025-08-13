@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.42.2"
+middlewareVersion = "v0.43.0-rc01"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -33,7 +33,7 @@ androidxSecurityCryptoVersion = '1.0.0'
 androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.2.1'
 recyclerviewVersion = '1.4.0'
-emojiCompatVersion = '1.1.0'
+emoji2Version = '1.5.0'
 lifecycleVersion = '2.9.1'
 lifecycleRuntimeComposeVersion = '2.9.1'
 navigationVersion = '2.8.9'
@@ -121,7 +121,7 @@ activityCompose = { module = "androidx.activity:activity-compose", version.ref =
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }
 betterLinkMovement = { module = "me.saket:better-link-movement-method", version.ref = "betterLinkMethodVersion" }
-emojiCompat = { module = "androidx.emoji:emoji-appcompat", version.ref = "emojiCompatVersion" }
+emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2Version" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoViewVersion" }
 katex = { module = "com.github.judemanutd:katexview", version.ref = "katexVersion" }
 daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }

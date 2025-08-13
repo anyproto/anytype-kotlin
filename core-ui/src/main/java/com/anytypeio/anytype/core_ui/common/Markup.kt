@@ -4,21 +4,22 @@ import android.content.Context
 import android.graphics.drawable.Drawable
 import android.text.Editable
 import android.text.SpannableStringBuilder
+import android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
 import android.text.style.ClickableSpan
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.extensions.drawable
+import com.anytypeio.anytype.core_ui.widgets.getDrawableAndTintColor
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.extensions.disable
-import com.anytypeio.anytype.core_ui.widgets.getDrawableAndTintColor
 import timber.log.Timber
 
 fun Markup.toSpannable(
@@ -137,6 +138,12 @@ fun Markup.toSpannable(
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
+            )
+            is Markup.Mark.Emoji -> setSpan(
+                Span.Emoji(mark.param),
+                mark.from,
+                mark.to,
+                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }
@@ -266,6 +273,12 @@ fun Editable.setMarkup(
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
+            )
+            is Markup.Mark.Emoji -> setSpan(
+                Span.Emoji(mark.param),
+                mark.from,
+                mark.to,
+                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }

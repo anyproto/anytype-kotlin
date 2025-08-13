@@ -51,6 +51,7 @@ dependencies {
     implementation libs.composeMaterial
     implementation libs.composeMaterial3
     implementation libs.composeToolingPreview
+    implementation libs.emoji2
     debugImplementation libs.composeTooling
     implementation libs.coilCompose
     implementation libs.coilSvg

@@ -620,12 +620,9 @@ class EmojiUtilsTest {
         println("  Expected: 'A🎯B'")
         println("  Length change: ${result.length - text.length}")
         
-        // Verify if replacement actually preserves length
-        if (result.length == text.length) {
-            println("  ✅ Length preserved")
-        } else {
-            println("  ⚠️ Length changed by ${result.length - text.length} - mixed markup positions may be affected")
-        }
+        // Assert that the length changes as expected (emoji replaces one character)
+        val expectedLengthChange = "🎯".length - 1
+        assertEquals(expectedLengthChange, result.length - text.length, "Emoji replacement should change length by $expectedLengthChange")
         
         // With the new text preprocessing approach, the text IS modified
         // Emojis are directly replaced in the text
@@ -1015,15 +1012,15 @@ class EmojiUtilsTest {
         println("  Result:   '$result' (length: ${result.length})")
         println("  Length change: ${result.length - originalText.length}")
         
-        // This will show if our 1:1 assumption is wrong!
-        val lengthChanged = result.length != originalText.length
-        println("  Length changed: $lengthChanged")
+        // Assert that the complex emoji changes length as expected
+        val complexEmoji = "🧗🏿‍♀️"
+        val expectedLengthChange = complexEmoji.length - 1  // Replacing 1 char ('B') with complex emoji
+        assertEquals(expectedLengthChange, result.length - originalText.length, 
+            "Complex emoji '$complexEmoji' replacement should change length by $expectedLengthChange")
         
-        if (lengthChanged) {
-            println("  \u26a0\ufe0f  WARNING: 1:1 replacement assumption is WRONG!")
-            println("  \u26a0\ufe0f  Subsequent span positions will be incorrect!")
-        } else {
-            println("  \u2705 1:1 replacement confirmed")
-        }
+        // This confirms that the 1:1 replacement assumption is definitively wrong
+        assertTrue(result.length != originalText.length, 
+            "Multi-codepoint emojis should change text length (not 1:1 replacement)")
+        println("  ✅ Confirmed: Multi-codepoint emojis change text length (expected: +$expectedLengthChange)")
     }
 }

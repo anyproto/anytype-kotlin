@@ -4,12 +4,14 @@ import com.anytypeio.anytype.core_models.Block
 
 object LinkDetector {
     
-    private const val HTTPS_PREFIX = "https://"
-    private const val MAILTO_PREFIX = "mailto:"
-    private const val TEL_PREFIX = "tel:"
+    const val HTTPS_PREFIX = "https://"
+    const val MAILTO_PREFIX = "mailto:"
+    const val TEL_PREFIX = "tel:"
+    const val ANYTYPE_PREFIX = "anytype://"
+    const val FILE_PREFIX = "file://"
     
     private val URL_REGEX = Regex(
-        "(https?://|www\\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",
+        "(https?://|www\\.|[a-zA-Z][a-zA-Z0-9+.-]*://)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",
         RegexOption.IGNORE_CASE
     )
     

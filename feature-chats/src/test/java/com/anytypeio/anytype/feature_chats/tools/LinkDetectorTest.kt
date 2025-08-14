@@ -387,5 +387,27 @@ class LinkDetectorTest {
         // Second phone number (no dashes)
         assertEquals("tel:+18005551234", marks[1].param)
     }
+
+    @Test
+    fun `test custom scheme detection for anytype`() {
+        val text = "Visit anytype://object/123"
+        val links = LinkDetector.detectLinks(text)
+        
+        // Custom schemes should be detected as URLs
+        assertEquals(1, links.size)
+        assertEquals("anytype://object/123", links[0].text)
+        assertEquals(LinkDetector.LinkType.URL, links[0].type)
+    }
+
+    @Test
+    fun `test file path detection`() {
+        val text = "Open file:///path/to/file.txt"
+        val links = LinkDetector.detectLinks(text)
+        
+        // File paths should be detected as URLs
+        assertEquals(1, links.size)
+        assertEquals("file:///path/to/file.txt", links[0].text)
+        assertEquals(LinkDetector.LinkType.URL, links[0].type)
+    }
     //endregion
 }

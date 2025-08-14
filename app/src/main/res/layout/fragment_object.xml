@@ -8,15 +8,6 @@
     android:background="@color/defaultCanvasColor"
     tools:context="com.anytypeio.anytype.ui.objects.ObjectFragment">
 
-    <View
-        android:id="@+id/topEdgeCover"
-        android:layout_width="match_parent"
-        android:layout_height="264dp"
-        android:background="@color/palette_dark_teal"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <!-- 1) Focus placeholder & loading overlay -->
     <View
         android:id="@+id/placeholder"
@@ -24,6 +15,7 @@
         android:layout_height="0dp"
         android:clickable="true"
         android:focusable="true"
+        android:visibility="gone"
         android:focusableInTouchMode="true"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,7 +36,7 @@
         android:id="@+id/sheet"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
+        android:background="@color/palette_light_grey"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -376,5 +368,24 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <View
+        android:id="@+id/topEdgeCover"
+        android:layout_width="match_parent"
+        android:layout_height="264dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/debugFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="EdgeToEdge Debug"
+        android:src="@android:drawable/ic_menu_manage"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

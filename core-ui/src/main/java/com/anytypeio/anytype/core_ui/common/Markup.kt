@@ -163,9 +163,6 @@ fun Markup.toSpannable(
                     textColor = textColor
                 )
             }
-            is Markup.Mark.Emoji -> {
-                // Already processed in processEmojiMarks() - skip
-            }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     link = mark.param,
@@ -178,6 +175,9 @@ fun Markup.toSpannable(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
+            is Markup.Mark.Emoji -> {
+                // Already processed in processEmojiMarks() - skip
+            }
         }
     }
 }
@@ -199,6 +199,14 @@ fun Editable.setMarkup(
     textColor: Int,
     underlineHeight: Float
 ) {
+    // First process emoji marks by replacing text
+    val processedText = markup.processEmojiMarks()
+    if (processedText != toString()) {
+        // Text changed due to emoji processing - update this Editable
+        clear()
+        append(processedText)
+    }
+    
     removeSpans<Span>()
     markup.marks.forEach { mark ->
         if (!isRangeValid(mark, length)) return@forEach
@@ -295,9 +303,6 @@ fun Editable.setMarkup(
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
-            is Markup.Mark.Emoji -> {
-                // Already processed in processEmojiMarks() - skip
-            }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     context = context,
@@ -310,6 +315,9 @@ fun Editable.setMarkup(
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
             )
+            is Markup.Mark.Emoji -> {
+                // Already processed in processEmojiMarks() - skip
+            }
         }
     }
 }

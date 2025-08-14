@@ -676,7 +676,14 @@ class EmojiUtilsTest {
             Markup.Mark.Emoji(from = 48, to = 49, param = "🪫"),
             Markup.Mark.Emoji(from = 49, to = 50, param = "🤥"),
             Markup.Mark.Emoji(from = 50, to = 51, param = "🪅"),
-            Markup.Mark.Emoji(from = 51, to = 52, param = "💁‍♀️")
+            Markup.Mark.Emoji(from = 51, to = 52, param = "💁‍♀️"),
+            Markup.Mark.Emoji(from = 52, to = 53, param = "🥓"),
+            Markup.Mark.Emoji(from = 53, to = 54, param = "💩"),
+            Markup.Mark.Emoji(from = 54, to = 55, param = "💒"),
+            Markup.Mark.Emoji(from = 55, to = 56, param = "🇦🇲"),
+            Markup.Mark.Emoji(from = 56, to = 57, param = "🥮"),
+            Markup.Mark.Emoji(from = 57, to = 58, param = "⏲️"),
+            Markup.Mark.Emoji(from = 58, to = 59, param = "🚟")
         )
 
         val markup = object : Markup {

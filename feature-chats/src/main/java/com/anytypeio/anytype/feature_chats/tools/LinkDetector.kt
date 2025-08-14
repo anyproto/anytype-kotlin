@@ -4,6 +4,10 @@ import com.anytypeio.anytype.core_models.Block
 
 object LinkDetector {
     
+    private const val HTTPS_PREFIX = "https://"
+    private const val MAILTO_PREFIX = "mailto:"
+    private const val TEL_PREFIX = "tel:"
+    
     private val URL_REGEX = Regex(
         "(https?://|www\\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",
         RegexOption.IGNORE_CASE
@@ -108,13 +112,13 @@ object LinkDetector {
                 val linkUrl = when (link.type) {
                     LinkType.URL -> {
                         if (link.text.startsWith("www.")) {
-                            "https://${link.text}"
+                            "$HTTPS_PREFIX${link.text}"
                         } else {
                             link.text
                         }
                     }
-                    LinkType.EMAIL -> "mailto:${link.text}"
-                    LinkType.PHONE -> "tel:${link.text.replace("-", "")}"
+                    LinkType.EMAIL -> "$MAILTO_PREFIX${link.text}"
+                    LinkType.PHONE -> "$TEL_PREFIX${link.text.replace("-", "")}"
                 }
                 
                 newMarks.add(

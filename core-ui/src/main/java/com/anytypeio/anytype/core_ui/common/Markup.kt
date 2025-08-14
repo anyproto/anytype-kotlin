@@ -37,10 +37,6 @@ fun Markup.toSpannable(
     underlineHeight = underlineHeight
 )
 
-fun isRangeValid(mark: Markup.Mark, textLength: Int): Boolean {
-    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to && mark.to <= textLength
-}
-
 fun Editable.setMarkup(
     markup: Markup,
     context: Context,
@@ -89,6 +85,10 @@ fun Editable.setMarkup(
             setSpan(span, start, end, flags)
         }
     }
+}
+
+fun isRangeValid(mark: Markup.Mark, textLength: Int): Boolean {
+    return mark.from >= 0 && mark.to >= 0 && mark.from < mark.to && mark.to <= textLength
 }
 
 fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =

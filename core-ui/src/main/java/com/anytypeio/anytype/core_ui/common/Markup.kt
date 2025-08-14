@@ -22,7 +22,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.setMentionSpan
  * - This may cause misalignment if other spans come after emoji positions
  * - Currently optimized for emoji-only scenarios and multiline emoji rendering
  */
-fun Markup.processEmojiMarks(): String {
+private fun Markup.processEmojiMarks(): String {
     val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>()
         .sortedByDescending { it.from } // Process from end to start to maintain indices
     
@@ -42,6 +42,38 @@ fun Markup.processEmojiMarks(): String {
     return result.toString()
 }
 
+private fun buildSpannable(
+    markup: Markup,
+    textColor: Int,
+    context: Context,
+    click: ((String) -> Unit)? = null,
+    mentionImageSize: Int = 0,
+    mentionImagePadding: Int = 0,
+    mentionCheckedIcon: Drawable? = null,
+    mentionUncheckedIcon: Drawable? = null,
+    mentionInitialsSize: Float = 0F,
+    onImageReady: (String) -> Unit = {},
+    underlineHeight: Float
+): SpannableStringBuilder {
+    // Process emojis once and then apply markup spans
+    val processed = markup.processEmojiMarks()
+    return SpannableStringBuilder(processed).apply {
+        applyMarkupSpans(
+            markup = markup,
+            context = context,
+            textColor = textColor,
+            click = click,
+            mentionImageSize = mentionImageSize,
+            mentionImagePadding = mentionImagePadding,
+            mentionCheckedIcon = mentionCheckedIcon,
+            mentionUncheckedIcon = mentionUncheckedIcon,
+            mentionInitialsSize = mentionInitialsSize,
+            onImageReady = onImageReady,
+            underlineHeight = underlineHeight
+        )
+    }
+}
+
 fun Markup.toSpannable(
     textColor: Int,
     context: Context,
@@ -53,21 +85,19 @@ fun Markup.toSpannable(
     mentionInitialsSize: Float = 0F,
     onImageReady: (String) -> Unit = {},
     underlineHeight: Float
-) = SpannableStringBuilder(processEmojiMarks()).apply {
-    applyMarkupSpans(
-        markup = this@toSpannable,
-        context = context,
-        textColor = textColor,
-        click = click,
-        mentionImageSize = mentionImageSize,
-        mentionImagePadding = mentionImagePadding,
-        mentionCheckedIcon = mentionCheckedIcon,
-        mentionUncheckedIcon = mentionUncheckedIcon,
-        mentionInitialsSize = mentionInitialsSize,
-        onImageReady = onImageReady,
-        underlineHeight = underlineHeight
-    )
-}
+) = buildSpannable(
+    markup = this,
+    textColor = textColor,
+    context = context,
+    click = click,
+    mentionImageSize = mentionImageSize,
+    mentionImagePadding = mentionImagePadding,
+    mentionCheckedIcon = mentionCheckedIcon,
+    mentionUncheckedIcon = mentionUncheckedIcon,
+    mentionInitialsSize = mentionInitialsSize,
+    onImageReady = onImageReady,
+    underlineHeight = underlineHeight
+)
 
 /**
  * Shared logic for applying markup spans to a spannable text.
@@ -89,7 +119,7 @@ private fun SpannableStringBuilder.applyMarkupSpans(
     markup.marks.forEach { mark ->
         // Skip emoji marks as they're already processed in the text
         if (mark is Markup.Mark.Emoji) return@forEach
-        
+
         // NOTE: Positions use original indices - may be misaligned if emojis changed text length
         if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
@@ -219,23 +249,11 @@ fun Editable.setMarkup(
     textColor: Int,
     underlineHeight: Float
 ) {
-    // First process emoji marks by replacing text
-    val processedText = markup.processEmojiMarks()
-    if (processedText != toString()) {
-        // Text changed due to emoji processing - update this Editable
-        clear()
-        append(processedText)
-    }
-    
-    // Clear existing spans and apply new ones using the shared logic
-    removeSpans<Span>()
-    
-    // Convert to SpannableStringBuilder to use shared logic
-    val spannableBuilder = SpannableStringBuilder(this)
-    spannableBuilder.applyMarkupSpans(
+    // Build a fully-prepared spannable once (includes emoji processing and spans)
+    val built = buildSpannable(
         markup = markup,
-        context = context,
         textColor = textColor,
+        context = context,
         click = click,
         mentionImageSize = mentionImageSize,
         mentionImagePadding = mentionImagePadding,
@@ -245,13 +263,23 @@ fun Editable.setMarkup(
         onImageReady = onImageReady,
         underlineHeight = underlineHeight
     )
-    
-    // Copy the spans back to this Editable
-    val spans = spannableBuilder.getSpans(0, spannableBuilder.length, Any::class.java)
+
+    // Update text only if it changed after emoji processing
+    val newText = built.toString()
+    if (newText != toString()) {
+        clear()
+        append(newText)
+    }
+
+    // Clear existing spans and apply new ones
+    removeSpans<Span>()
+
+    // Copy spans from the prepared builder back into this Editable
+    val spans = built.getSpans(0, built.length, Any::class.java)
     spans.forEach { span ->
-        val start = spannableBuilder.getSpanStart(span)
-        val end = spannableBuilder.getSpanEnd(span)
-        val flags = spannableBuilder.getSpanFlags(span)
+        val start = built.getSpanStart(span)
+        val end = built.getSpanEnd(span)
+        val flags = built.getSpanFlags(span)
         if (start >= 0 && end >= 0 && start <= length && end <= length) {
             setSpan(span, start, end, flags)
         }

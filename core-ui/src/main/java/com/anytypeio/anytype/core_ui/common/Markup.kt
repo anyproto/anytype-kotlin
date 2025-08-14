@@ -20,7 +20,33 @@ import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
 import timber.log.Timber
+
+/**
+ * Process emoji marks by replacing text at emoji positions with actual emoji characters.
+ * This is needed because ReplacementSpan doesn't work properly across newlines.
+ */
+fun Markup.processEmojiMarks(): String {
+    val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>()
+        .sortedByDescending { it.from } // Process from end to start to maintain indices
+    
+    if (emojiMarks.isEmpty()) return body
+    
+    val result = StringBuilder(body)
+    
+    emojiMarks.forEach { mark ->
+        if (mark.from >= 0 && mark.to <= result.length && mark.from < mark.to) {
+            // Process the emoji through EmojiCompat
+            val processedEmoji = EmojiUtils.processSafe(mark.param).toString()
+            // Replace the character(s) at the mark position with the emoji
+            result.replace(mark.from, mark.to, processedEmoji)
+            Timber.d("Replaced text at ${mark.from}-${mark.to} with emoji: ${mark.param}")
+        }
+    }
+    
+    return result.toString()
+}
 
 fun Markup.toSpannable(
     textColor: Int,
@@ -33,8 +59,10 @@ fun Markup.toSpannable(
     mentionInitialsSize: Float = 0F,
     onImageReady: (String) -> Unit = {},
     underlineHeight: Float
-) = SpannableStringBuilder(body).apply {
+) = SpannableStringBuilder(processEmojiMarks()).apply {
     marks.forEach { mark ->
+        // Skip emoji marks as they're already processed in the text
+        if (mark is Markup.Mark.Emoji) return@forEach
         if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(
@@ -127,6 +155,9 @@ fun Markup.toSpannable(
                     textColor = textColor
                 )
             }
+            is Markup.Mark.Emoji -> {
+                // Already processed in processEmojiMarks() - skip
+            }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     link = mark.param,
@@ -138,12 +169,6 @@ fun Markup.toSpannable(
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
-            )
-            is Markup.Mark.Emoji -> setSpan(
-                Span.Emoji(mark.param),
-                mark.from,
-                mark.to,
-                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }
@@ -262,6 +287,9 @@ fun Editable.setMarkup(
                     )
                 } ?: run { Timber.d("Mention Span context is null") }
             }
+            is Markup.Mark.Emoji -> {
+                // Already processed in processEmojiMarks() - skip
+            }
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     context = context,
@@ -273,12 +301,6 @@ fun Editable.setMarkup(
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
-            )
-            is Markup.Mark.Emoji -> setSpan(
-                Span.Emoji(mark.param),
-                mark.from,
-                mark.to,
-                SPAN_EXCLUSIVE_EXCLUSIVE
             )
         }
     }

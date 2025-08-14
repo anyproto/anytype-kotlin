@@ -94,36 +94,6 @@ fun isRangeValid(mark: Markup.Mark, textLength: Int): Boolean {
 fun List<Markup.Mark>.isLinksOrMentionsPresent(): Boolean =
     this.any { it is Markup.Mark.Link || it is Markup.Mark.Mention || it is Markup.Mark.Object }
 
-/**
- * Process emoji marks by replacing text at emoji positions with actual emoji characters.
- * This is needed because ReplacementSpan doesn't work properly across newlines.
- *
- * IMPORTANT LIMITATIONS:
- * - Text length may change when emojis are longer than replaced characters
- * - Positions of other markup spans are NOT remapped after emoji replacement
- * - This may cause misalignment if other spans come after emoji positions
- * - Currently optimized for emoji-only scenarios and multiline emoji rendering
- */
-private fun Markup.processEmojiMarks(): String {
-    val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>()
-        .sortedByDescending { it.from } // Process from end to start to maintain indices
-
-    if (emojiMarks.isEmpty()) return body
-
-    val result = StringBuilder(body)
-
-    emojiMarks.forEach { mark ->
-        if (mark.from >= 0 && mark.to <= result.length && mark.from < mark.to) {
-            // Process the emoji through EmojiCompat
-            val processedEmoji = EmojiUtils.processSafe(mark.param).toString()
-            // Replace the character(s) at the mark position with the emoji
-            result.replace(mark.from, mark.to, processedEmoji)
-        }
-    }
-
-    return result.toString()
-}
-
 private fun buildSpannable(
     markup: Markup,
     textColor: Int,
@@ -139,19 +109,22 @@ private fun buildSpannable(
 ): SpannableStringBuilder {
     // Process emojis once and then apply markup spans
     val processed = markup.processEmojiMarks()
+    val config = SpanConfig(
+        textColor = textColor,
+        click = click,
+        mentionImageSize = mentionImageSize,
+        mentionImagePadding = mentionImagePadding,
+        mentionCheckedIcon = mentionCheckedIcon,
+        mentionUncheckedIcon = mentionUncheckedIcon,
+        mentionInitialsSize = mentionInitialsSize,
+        onImageReady = onImageReady,
+        underlineHeight = underlineHeight
+    )
     return SpannableStringBuilder(processed).apply {
         applyMarkupSpans(
             markup = markup,
             context = context,
-            textColor = textColor,
-            click = click,
-            mentionImageSize = mentionImageSize,
-            mentionImagePadding = mentionImagePadding,
-            mentionCheckedIcon = mentionCheckedIcon,
-            mentionUncheckedIcon = mentionUncheckedIcon,
-            mentionInitialsSize = mentionInitialsSize,
-            onImageReady = onImageReady,
-            underlineHeight = underlineHeight
+            config = config
         )
     }
 }
@@ -163,15 +136,7 @@ private fun buildSpannable(
 private fun SpannableStringBuilder.applyMarkupSpans(
     markup: Markup,
     context: Context,
-    textColor: Int,
-    click: ((String) -> Unit)? = null,
-    mentionImageSize: Int = 0,
-    mentionImagePadding: Int = 0,
-    mentionCheckedIcon: Drawable? = null,
-    mentionUncheckedIcon: Drawable? = null,
-    mentionInitialsSize: Float = 0F,
-    onImageReady: (String) -> Unit = {},
-    underlineHeight: Float
+    config: SpanConfig
 ) {
     markup.marks.forEach { mark ->
         // Skip emoji marks as they're already processed in the text
@@ -205,12 +170,12 @@ private fun SpannableStringBuilder.applyMarkupSpans(
                 val value = mark.color()
                 val span = if (value != null && value != ThemeColor.DEFAULT) {
                     Span.TextColor(
-                        color = context.resources.dark(color = value, default = textColor),
+                        color = context.resources.dark(color = value, default = config.textColor),
                         value = mark.color
                     )
                 } else {
                     Span.TextColor(
-                        color = textColor,
+                        color = config.textColor,
                         value = mark.color
                     )
                 }
@@ -223,7 +188,7 @@ private fun SpannableStringBuilder.applyMarkupSpans(
             }
 
             is Markup.Mark.Underline -> setSpan(
-                Underline(underlineHeight = underlineHeight),
+                Underline(underlineHeight = config.underlineHeight),
                 mark.from,
                 mark.to,
                 Markup.DEFAULT_SPANNABLE_FLAG
@@ -241,8 +206,8 @@ private fun SpannableStringBuilder.applyMarkupSpans(
             is Markup.Mark.Link -> setSpan(
                 Span.Url(
                     url = mark.param,
-                    color = textColor,
-                    underlineHeight = underlineHeight
+                    color = config.textColor,
+                    underlineHeight = config.underlineHeight
                 ),
                 mark.from,
                 mark.to,
@@ -268,22 +233,22 @@ private fun SpannableStringBuilder.applyMarkupSpans(
                 setMentionSpan(
                     mark = mark,
                     context = context,
-                    click = click,
-                    mentionImageSize = mentionImageSize,
-                    mentionImagePadding = mentionImagePadding,
-                    mentionCheckedIcon = mentionCheckedIcon,
-                    mentionUncheckedIcon = mentionUncheckedIcon,
-                    onImageReady = onImageReady,
-                    mentionInitialsSize = mentionInitialsSize,
-                    textColor = textColor
+                    click = config.click,
+                    mentionImageSize = config.mentionImageSize,
+                    mentionImagePadding = config.mentionImagePadding,
+                    mentionCheckedIcon = config.mentionCheckedIcon,
+                    mentionUncheckedIcon = config.mentionUncheckedIcon,
+                    onImageReady = config.onImageReady,
+                    mentionInitialsSize = config.mentionInitialsSize,
+                    textColor = config.textColor
                 )
             }
 
             is Markup.Mark.Object -> setSpan(
                 Span.ObjectLink(
                     link = mark.param,
-                    color = textColor,
-                    click = click,
+                    color = config.textColor,
+                    click = config.click,
                     isArchived = mark.isArchived,
                     context = context
                 ),
@@ -298,3 +263,45 @@ private fun SpannableStringBuilder.applyMarkupSpans(
         }
     }
 }
+
+/**
+ * Process emoji marks by replacing text at emoji positions with actual emoji characters.
+ * This is needed because ReplacementSpan doesn't work properly across newlines.
+ *
+ * IMPORTANT LIMITATIONS:
+ * - Text length may change when emojis are longer than replaced characters
+ * - Positions of other markup spans are NOT remapped after emoji replacement
+ * - This may cause misalignment if other spans come after emoji positions
+ * - Currently optimized for emoji-only scenarios and multiline emoji rendering
+ */
+private fun Markup.processEmojiMarks(): String {
+    val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>()
+        .sortedByDescending { it.from } // Process from end to start to maintain indices
+
+    if (emojiMarks.isEmpty()) return body
+
+    val result = StringBuilder(body)
+
+    emojiMarks.forEach { mark ->
+        if (mark.from >= 0 && mark.to <= result.length && mark.from < mark.to) {
+            // Process the emoji through EmojiCompat
+            val processedEmoji = EmojiUtils.processSafe(mark.param).toString()
+            // Replace the character(s) at the mark position with the emoji
+            result.replace(mark.from, mark.to, processedEmoji)
+        }
+    }
+
+    return result.toString()
+}
+
+private data class SpanConfig(
+    val textColor: Int,
+    val click: ((String) -> Unit)?,
+    val mentionImageSize: Int,
+    val mentionImagePadding: Int,
+    val mentionCheckedIcon: Drawable?,
+    val mentionUncheckedIcon: Drawable?,
+    val mentionInitialsSize: Float,
+    val onImageReady: (String) -> Unit,
+    val underlineHeight: Float
+)

@@ -47,7 +47,6 @@ fun Markup.processEmojiMarks(): String {
             val processedEmoji = EmojiUtils.processSafe(mark.param).toString()
             // Replace the character(s) at the mark position with the emoji
             result.replace(mark.from, mark.to, processedEmoji)
-            Timber.d("Replaced text at ${mark.from}-${mark.to} with emoji: ${mark.param}")
         }
     }
     

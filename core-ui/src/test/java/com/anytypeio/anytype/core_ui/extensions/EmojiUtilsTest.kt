@@ -427,7 +427,8 @@ class EmojiUtilsTest {
             Markup.Mark.Emoji(from = 5, to = 6, param = "👋"),   // Position 5 space after "Hello"
             Markup.Mark.Emoji(from = 20, to = 21, param = "🌍"), // Position 20 space before "and"
             
-            // Other markup positions remain valid since emoji replacement is 1:1 character substitution
+            // NOTE: Other markup positions may be affected since emoji replacement can change text length
+            // Multi-codepoint emojis (like 🧗🏿‍♀️) are not 1:1 character replacements
             Markup.Mark.Bold(from = 6, to = 10),        // "BOLD" 
             Markup.Mark.Italic(from = 25, to = 31),     // "ITALIC" 
             Markup.Mark.Strikethrough(from = 42, to = 48), // "STRIKE"

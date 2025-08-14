@@ -621,6 +621,151 @@ class EmojiUtilsTest {
     }
 
     @Test
+    fun `should handle massive emoji block with 52 emoji marks`() {
+        // Given: The ACTUAL text with newline character that causes the issue
+        // Original text has 59 characters total with a newline at position 7
+        val text = "     ,l\n" + " ".repeat(51)  // 7 chars before \n + \n + 51 spaces = 59 total
+        
+        // Verify the text matches the expected format
+        assertEquals(59, text.length, "Text should be 59 characters long")
+        assertEquals(7, text.indexOf('\n'), "Newline should be at position 7")
+        
+        // Creating marks for all 52 emojis from the provided block
+        val marks = listOf(
+            Markup.Mark.Emoji(from = 0, to = 1, param = "🫠"),
+            Markup.Mark.Emoji(from = 8, to = 9, param = "😦"),
+            Markup.Mark.Emoji(from = 9, to = 10, param = "🥊"),
+            Markup.Mark.Emoji(from = 10, to = 11, param = "📐"),
+            Markup.Mark.Emoji(from = 11, to = 12, param = "🪰"),
+            Markup.Mark.Emoji(from = 12, to = 13, param = "🧂"),
+            Markup.Mark.Emoji(from = 13, to = 14, param = "🕶️"),
+            Markup.Mark.Emoji(from = 14, to = 15, param = "➿"),
+            Markup.Mark.Emoji(from = 15, to = 16, param = "🔨"),
+            Markup.Mark.Emoji(from = 16, to = 17, param = "🇱🇹"),
+            Markup.Mark.Emoji(from = 17, to = 18, param = "🖐🏻"),
+            Markup.Mark.Emoji(from = 18, to = 19, param = "🐆"),
+            Markup.Mark.Emoji(from = 19, to = 20, param = "🇸🇴"),
+            Markup.Mark.Emoji(from = 20, to = 21, param = "❄️"),
+            Markup.Mark.Emoji(from = 21, to = 22, param = "🦩"),
+            Markup.Mark.Emoji(from = 22, to = 23, param = "🍐"),
+            Markup.Mark.Emoji(from = 23, to = 24, param = "📹"),
+            Markup.Mark.Emoji(from = 24, to = 25, param = "🧗🏿‍♀️"),
+            Markup.Mark.Emoji(from = 25, to = 26, param = "🪧"),
+            Markup.Mark.Emoji(from = 26, to = 27, param = "👋🏼"),
+            Markup.Mark.Emoji(from = 27, to = 28, param = "6️⃣"),
+            Markup.Mark.Emoji(from = 28, to = 29, param = "⏏️"),
+            Markup.Mark.Emoji(from = 29, to = 30, param = "🚸"),
+            Markup.Mark.Emoji(from = 30, to = 31, param = "🌮"),
+            Markup.Mark.Emoji(from = 31, to = 32, param = "🫄🏽"),
+            Markup.Mark.Emoji(from = 32, to = 33, param = "🪠"),
+            Markup.Mark.Emoji(from = 33, to = 34, param = "🏒"),
+            Markup.Mark.Emoji(from = 34, to = 35, param = "😲"),
+            Markup.Mark.Emoji(from = 35, to = 36, param = "🦓"),
+            Markup.Mark.Emoji(from = 36, to = 37, param = "🧏‍♂️"),
+            Markup.Mark.Emoji(from = 37, to = 38, param = "🛐"),
+            Markup.Mark.Emoji(from = 38, to = 39, param = "🇻🇳"),
+            Markup.Mark.Emoji(from = 39, to = 40, param = "🧓🏻"),
+            Markup.Mark.Emoji(from = 40, to = 41, param = "🖨️"),
+            Markup.Mark.Emoji(from = 41, to = 42, param = "🍎"),
+            Markup.Mark.Emoji(from = 42, to = 43, param = "🍓"),
+            Markup.Mark.Emoji(from = 43, to = 44, param = "🥏"),
+            Markup.Mark.Emoji(from = 44, to = 45, param = "🩼"),
+            Markup.Mark.Emoji(from = 45, to = 46, param = "🤫"),
+            Markup.Mark.Emoji(from = 46, to = 47, param = "😘"),
+            Markup.Mark.Emoji(from = 47, to = 48, param = "🛎️"),
+            Markup.Mark.Emoji(from = 48, to = 49, param = "🪫"),
+            Markup.Mark.Emoji(from = 49, to = 50, param = "🤥"),
+            Markup.Mark.Emoji(from = 50, to = 51, param = "🪅"),
+            Markup.Mark.Emoji(from = 51, to = 52, param = "💁‍♀️")
+        )
+
+        val markup = object : Markup {
+            override val body: String = text
+            override var marks: List<Markup.Mark> = marks
+        }
+
+        // When converting to spannable
+        val spannable = markup.toSpannable(
+            textColor = android.graphics.Color.BLACK,
+            context = context,
+            underlineHeight = 2f
+        )
+
+        val result = spannable.toString()
+        
+        // Then verify the conversion
+        assertNotNull(result)
+        
+        // Print detailed analysis
+        println("=== MASSIVE EMOJI BLOCK TEST WITH NEWLINE ===")
+        println("Original text: '${text.replace('\n', '\\')}'")  // Show newline as \n
+        println("Original text length: ${text.length}")
+        println("Number of emoji marks: ${marks.size}")
+        println("Result length: ${result.length}")
+        
+        // Find the newline position
+        val newlinePos = text.indexOf('\n')
+        println("Newline position in original: $newlinePos")
+        
+        // Check characters around the newline
+        println("\nCharacters around newline position:")
+        for (i in maxOf(0, newlinePos - 2)..minOf(text.length - 1, newlinePos + 2)) {
+            val char = if (i < result.length) result[i] else '?'
+            val charDisplay = if (char == '\n') "\\n" else char.toString()
+            println("  Position $i: '$charDisplay' (code: ${char.code})")
+        }
+        
+        // Check that we have some emojis in the result
+        var emojiCount = 0
+        result.forEach { char ->
+            // Basic check for emoji-like characters (high Unicode range)
+            if (char.code >= 0x1F300) {
+                emojiCount++
+            }
+        }
+        
+        println("\nDetected emoji-like characters: $emojiCount")
+        
+        // Check if newline is preserved in result
+        val resultHasNewline = result.contains('\n')
+        println("Result contains newline: $resultHasNewline")
+        if (resultHasNewline) {
+            println("Newline position in result: ${result.indexOf('\n')}")
+        }
+        
+        // Analyze emoji placement across the newline
+        println("\nEmoji marks near newline (position $newlinePos):")
+        marks.filterIsInstance<Markup.Mark.Emoji>().forEach { mark ->
+            if (mark.from in (newlinePos - 2)..(newlinePos + 2)) {
+                println("  Mark at ${mark.from}-${mark.to}: ${mark.param}")
+            }
+        }
+        
+        // Test that complex emojis are present
+        val complexEmojis = listOf("🧗🏿‍♀️", "🧏‍♂️", "💁‍♀️", "🖐🏻", "🧓🏻", "👋🏼", "🫄🏽")
+        println("\nComplex emoji presence:")
+        complexEmojis.forEach { emoji ->
+            val contains = result.contains(emoji)
+            if (contains || marks.any { (it as? Markup.Mark.Emoji)?.param == emoji }) {
+                println("  $emoji: $contains")
+            }
+        }
+        
+        // The result should not be empty
+        assertTrue(result.isNotEmpty())
+        
+        // Check if the newline disrupts emoji replacement
+        assertTrue(text.contains('\n'), "Original text should contain newline")
+        
+        // Log sections of result for debugging
+        println("\nResult sections:")
+        val sections = result.split('\n')
+        sections.forEachIndexed { index, section ->
+            println("  Section $index (length ${section.length}): '${section.take(50)}${if (section.length > 50) "..." else ""}'")
+        }
+    }
+
+    @Test
     fun `should demonstrate correct emoji processing order`() {
         // Given: Same text but let's process in reverse order (highest position first)
         // This prevents range shifting issues

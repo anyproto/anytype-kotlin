@@ -26,6 +26,12 @@ import timber.log.Timber
 /**
  * Process emoji marks by replacing text at emoji positions with actual emoji characters.
  * This is needed because ReplacementSpan doesn't work properly across newlines.
+ * 
+ * IMPORTANT LIMITATIONS:
+ * - Text length may change when emojis are longer than replaced characters
+ * - Positions of other markup spans are NOT remapped after emoji replacement
+ * - This may cause misalignment if other spans come after emoji positions
+ * - Currently optimized for emoji-only scenarios and multiline emoji rendering
  */
 fun Markup.processEmojiMarks(): String {
     val emojiMarks = marks.filterIsInstance<Markup.Mark.Emoji>()
@@ -63,6 +69,8 @@ fun Markup.toSpannable(
     marks.forEach { mark ->
         // Skip emoji marks as they're already processed in the text
         if (mark is Markup.Mark.Emoji) return@forEach
+        
+        // NOTE: Positions use original indices - may be misaligned if emojis changed text length
         if (!isRangeValid(mark = mark, textLength = length)) return@forEach
         when (mark) {
             is Markup.Mark.Italic -> setSpan(

@@ -66,37 +66,27 @@ class LinkDetectorTest {
 
     @Test
     fun `test phone number detection with international format`() {
-        val text = "Call me at +1 555-123-4567"
+        val text = "Call me at +15551234567"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(1, links.size)
-        assertEquals("+1 555-123-4567", links[0].text)
+        assertEquals("+15551234567", links[0].text)
         assertEquals(LinkDetector.LinkType.PHONE, links[0].type)
     }
 
     @Test
-    fun `test phone number detection with dots`() {
-        val text = "Phone: 555.123.4567"
+    fun `test phone number detection with dashes`() {
+        val text = "Call me at +1-555-123-4567"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(1, links.size)
-        assertEquals("555.123.4567", links[0].text)
-        assertEquals(LinkDetector.LinkType.PHONE, links[0].type)
-    }
-
-    @Test
-    fun `test phone number detection with parentheses`() {
-        val text = "Contact: (555) 123-4567"
-        val links = LinkDetector.detectLinks(text)
-        
-        assertEquals(1, links.size)
-        assertEquals("(555) 123-4567", links[0].text)
+        assertEquals("+1-555-123-4567", links[0].text)
         assertEquals(LinkDetector.LinkType.PHONE, links[0].type)
     }
 
     @Test
     fun `test mixed content detection`() {
-        val text = "Email john@example.com or visit https://example.com or call 555-1234"
+        val text = "Email john@example.com or visit https://example.com or call +15551234"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(3, links.size)
@@ -109,7 +99,7 @@ class LinkDetectorTest {
         assertEquals("https://example.com", links[1].text)
         
         assertEquals(LinkDetector.LinkType.PHONE, links[2].type)
-        assertEquals("555-1234", links[2].text)
+        assertEquals("+15551234", links[2].text)
     }
 
     @Test
@@ -123,8 +113,8 @@ class LinkDetectorTest {
     }
 
     @Test
-    fun `test short phone numbers are ignored`() {
-        val text = "Code is 12345"
+    fun `test phone numbers without plus are ignored`() {
+        val text = "Code is 12345 or call 5551234567"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(0, links.size)
@@ -154,6 +144,16 @@ class LinkDetectorTest {
 
     @Test
     fun `test addLinkMarksToText with phone`() {
+        val text = "Call +15551234567"
+        val marks = LinkDetector.addLinkMarksToText(text, emptyList())
+        
+        assertEquals(1, marks.size)
+        assertEquals(Block.Content.Text.Mark.Type.LINK, marks[0].type)
+        assertEquals("tel:+15551234567", marks[0].param)
+    }
+
+    @Test
+    fun `test addLinkMarksToText with phone removes dashes`() {
         val text = "Call +1-555-123-4567"
         val marks = LinkDetector.addLinkMarksToText(text, emptyList())
         
@@ -231,8 +231,8 @@ class LinkDetectorTest {
     }
 
     @Test
-    fun `test phone number must have enough digits`() {
-        val text = "Too short: 123 or 456"
+    fun `test phone number must have plus prefix`() {
+        val text = "No plus: 1234567890"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(0, links.size)
@@ -240,11 +240,11 @@ class LinkDetectorTest {
 
     @Test
     fun `test international phone with country code`() {
-        val text = "UK number: +44 20 7123 4567"
+        val text = "UK number: +442071234567"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(1, links.size)
-        assertEquals("+44 20 7123 4567", links[0].text)
+        assertEquals("+442071234567", links[0].text)
         assertEquals(LinkDetector.LinkType.PHONE, links[0].type)
     }
 
@@ -282,15 +282,15 @@ class LinkDetectorTest {
 
     @Test
     fun `test phone number formats tel link correctly`() {
-        val text = "Call (555) 123-4567 or +1-800-555-1234"
+        val text = "Call +1-555-123-4567 or +18005551234"
         val marks = LinkDetector.addLinkMarksToText(text, emptyList())
         
         assertEquals(2, marks.size)
         
-        // First phone number
-        assertEquals("tel:5551234567", marks[0].param)
+        // First phone number (with dashes, should remove them in tel link)
+        assertEquals("tel:+15551234567", marks[0].param)
         
-        // Second phone number with country code
+        // Second phone number (no dashes)
         assertEquals("tel:+18005551234", marks[1].param)
     }
 
@@ -343,19 +343,18 @@ class LinkDetectorTest {
     }
 
     @Test
-    fun `test phone with country code and spaces`() {
-        val text = "International: +33 1 42 86 83 26"
+    fun `test phone with different country code`() {
+        val text = "International: +33142868326"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(1, links.size)
-        // The regex might not capture the exact format we expect, so let's test what it actually finds
+        assertEquals("+33142868326", links[0].text)
         assertEquals(LinkDetector.LinkType.PHONE, links[0].type)
-        assertTrue(links[0].text.startsWith("+33"), "Expected phone number to start with +33, but got: ${links[0].text}")
     }
 
     @Test
     fun `test detect multiple types in order`() {
-        val text = "Start https://first.com then email@test.com finally 555-1234"
+        val text = "Start https://first.com then email@test.com finally +15551234"
         val links = LinkDetector.detectLinks(text)
         
         assertEquals(3, links.size)
@@ -367,6 +366,7 @@ class LinkDetectorTest {
         assertTrue(links[1].start > links[0].end)
         
         assertEquals(LinkDetector.LinkType.PHONE, links[2].type)
+        assertEquals("+15551234", links[2].text)
         assertTrue(links[2].start > links[1].end)
     }
 

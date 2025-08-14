@@ -15,7 +15,7 @@ object LinkDetector {
     )
     
     private val PHONE_REGEX = Regex(
-        "(?:\\+?[1-9]\\d{0,2}[\\s.-]?)?(?:\\(?\\d{1,4}\\)?[\\s.-]?)?\\d{1,4}[\\s.-]?\\d{1,4}[\\s.-]?\\d{0,9}",
+        "\\+\\d{1,3}[\\d-]{7,15}",
         RegexOption.IGNORE_CASE
     )
     
@@ -68,22 +68,18 @@ object LinkDetector {
         
         // Detect phone numbers (only if not already part of a URL or email)
         PHONE_REGEX.findAll(text).forEach { match ->
-            val matchText = match.value.trim()
-            // Filter out invalid phone numbers (too short or just digits without proper formatting)
-            if (matchText.length >= 7 && matchText.count { it.isDigit() } >= 7) {
-                val isPartOfOtherLink = links.any { link ->
-                    match.range.first >= link.start && match.range.last < link.end
-                }
-                if (!isPartOfOtherLink) {
-                    links.add(
-                        DetectedLink(
-                            text = match.value,
-                            start = match.range.first,
-                            end = match.range.last + 1,
-                            type = LinkType.PHONE
-                        )
+            val isPartOfOtherLink = links.any { link ->
+                match.range.first >= link.start && match.range.last < link.end
+            }
+            if (!isPartOfOtherLink) {
+                links.add(
+                    DetectedLink(
+                        text = match.value,
+                        start = match.range.first,
+                        end = match.range.last + 1,
+                        type = LinkType.PHONE
                     )
-                }
+                )
             }
         }
         
@@ -118,7 +114,7 @@ object LinkDetector {
                         }
                     }
                     LinkType.EMAIL -> "mailto:${link.text}"
-                    LinkType.PHONE -> "tel:${link.text.filter { it.isDigit() || it == '+' }}"
+                    LinkType.PHONE -> "tel:${link.text.replace("-", "")}"
                 }
                 
                 newMarks.add(

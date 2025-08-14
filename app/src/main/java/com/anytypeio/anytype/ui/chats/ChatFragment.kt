@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -123,7 +124,19 @@ class ChatFragment : BaseComposeFragment() {
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onMarkupLinkClicked = { proceedWithAction(OpenUrl(it)) },
+                            onMarkupLinkClicked = { url ->
+                                when {
+                                    url.startsWith("mailto:") -> {
+                                        proceedWithAction(SystemAction.MailTo(url.removePrefix("mailto:")))
+                                    }
+                                    url.startsWith("tel:") -> {
+                                        proceedWithAction(SystemAction.Dial(url.removePrefix("tel:")))
+                                    }
+                                    else -> {
+                                        proceedWithAction(OpenUrl(url))
+                                    }
+                                }
+                            },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,
                             onViewChatReaction = { msg, emoji ->

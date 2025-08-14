@@ -25,7 +25,7 @@
     <string name="access">Erişim</string>
     <string name="wallpaper">Duvar kağıdı</string>
     <string name="tech_info">Teknik bilgi</string>
-    <string name="light">Açık</string>
+    <string name="light">Aydınlık</string>
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
@@ -57,7 +57,7 @@
     <string name="in_order_to_save">Yerel cihazınızda yer kazanmak için tüm dosyalarınızı şifrelenmiş yedekleme düğümümüze aktarabilirsiniz.  Dosyaları açtığınızda geri yüklenecektir.</string>
     <string name="manage_files">Dosyaları yönet</string>
     <string name="local_storage">Yerel depolama</string>
-    <string name="offload_files">Dosyaları boşalt</string>
+    <string name="offload_files">Dosyaları kaldır</string>
     <string name="local_storage_used">Kullanılan %1$s</string>
     <string name="space_usage">%1$s\'dan %2$s kadarı kullanıldı</string>
     <string name="remote_storage">Uzak depolama</string>
@@ -66,7 +66,7 @@
     <string name="account_name">İsim</string>
     <string name="space_settings">Alan ayarları</string>
     <string name="data_management">Veri yönetimi</string>
-    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ettiğinizde bu talebi iptal etmek için 30 gününüz vardır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak kaldırılır ve yeni cihazlarda Anytype\'da oturum açamazsınız.</string>
+    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
     <string name="snackbar_template_add">Bu türe yeni bir şablon eklendi</string>
     <string name="settings_membership">Üyelik</string>
@@ -450,7 +450,7 @@
     <string name="paste_link">Bağlantı</string>
     <string name="next">Sonraki</string>
     <string name="limit_object_types">Nesne türlerini sınırla</string>
-    <string name="deleted_account_msg">Gittiğinizi gördüğümüz için üzgünüz. Kasanızın silinmesini talep ettiğinizde bu talebi iptal etmek için 30 gününüz olacak. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir.</string>
+    <string name="deleted_account_msg">Gittiğinizi gördüğümüz için üzgünüz. Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir.</string>
     <string name="swipe_down_to_skip">Atlamak için aşağı kaydırın</string>
     <string name="show">Göster</string>
     <string name="this_type_has_templates">Bu türün %1$d adet şablonu var</string>

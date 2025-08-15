@@ -991,7 +991,7 @@
     <string name="library_type_removed">タイプ「%1$s」が削除されました</string>
     <string name="library_relation_added">プロパティ「%1$s」が追加されました</string>
     <string name="library_relation_removed">プロパティ「%1$s」が削除されました</string>
-    <string name="library_something_went_wrong">問題が発生しました。もう一度お試しください。</string>
+    <string name="library_something_went_wrong">問題が発生しました。あとでもう一度お試しください。</string>
     <string name="type_creation_new_type">新しいタイプ</string>
     <string name="type_creation_done">完了</string>
     <string name="type_creation_placeholder">タイプ名</string>
@@ -1443,7 +1443,7 @@
     <string name="membership_email_membership_not_found">メンバーシップが見つかりませんでした</string>
     <string name="membership_email_membership_already_active">すでにメンバーシップに加入しています</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">不明なエラーが発生しました。しばらくしてから再度お試しください。</string>
+    <string name="notifications_alert_error_unknown">不明なエラーが発生しました。あとでもう一度お試しください。</string>
     <string name="notifications_alert_error_bad_input">無効な入力が検出されました。データを確認して、もう一度やり直してください。</string>
     <string name="notifications_alert_error_internal">内部エラーが発生しました。開発チームに報告されました。</string>
     <string name="notifications_alert_error_no_objects_to_import">インポートできる項目がありませんでした。正しいオブジェクトを選択してください。</string>
@@ -1876,5 +1876,5 @@
     <string name="share_space_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="share_space_error_request_failed">申し訳ありません。リクエストの送信に失敗しました。インターネット接続を確認し、もう一度お試しください。</string>
     <string name="share_space_error_space_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
-    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
+    <string name="share_space_error_generic">予期せぬエラーが発生しました。あとでもう一度お試しください。</string>
 </resources>

@@ -33,6 +33,13 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 
+private data class AccessLevelUi(
+    val level: SpaceInviteLinkAccessLevel,
+    val icon: Int,
+    val titleRes: Int,
+    val descRes: Int
+)
+
 /**
  * Component for selecting space invite link access level
  * Implements Task #24: Three distinct link-based invitation options
@@ -58,60 +65,49 @@ fun InviteLinkAccessSelector(
                 .padding(vertical = 6.dp)
         )
 
-        // Editor Access Option
-        AccessLevelOption(
-            modifier = Modifier.noRippleClickable {
-                if (currentAccessLevel != SpaceInviteLinkAccessLevel.EDITOR_ACCESS) {
-                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.EDITOR_ACCESS)
-                }
-            },
-            icon = R.drawable.ic_link_editor_24,
-            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.EDITOR_ACCESS) R.drawable.ic_check_black_14 else null,
-            title = stringResource(R.string.multiplayer_editor_access),
-            description = stringResource(R.string.multiplayer_editor_access_desc)
+        val options = listOf(
+            AccessLevelUi(
+                level = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
+                icon = R.drawable.ic_link_editor_24,
+                titleRes = R.string.multiplayer_editor_access,
+                descRes = R.string.multiplayer_editor_access_desc
+            ),
+            AccessLevelUi(
+                level = SpaceInviteLinkAccessLevel.VIEWER_ACCESS,
+                icon = R.drawable.ic_link_viewer_24,
+                titleRes = R.string.multiplayer_viewer_access,
+                descRes = R.string.multiplayer_viewer_access_desc
+            ),
+            AccessLevelUi(
+                level = SpaceInviteLinkAccessLevel.REQUEST_ACCESS,
+                icon = R.drawable.ic_link_request_24,
+                titleRes = R.string.multiplayer_request_access,
+                descRes = R.string.multiplayer_request_access_desc
+            ),
+            AccessLevelUi(
+                level = SpaceInviteLinkAccessLevel.LINK_DISABLED,
+                icon = R.drawable.ic_link_disabled_24,
+                titleRes = R.string.multiplayer_link_disabled,
+                descRes = R.string.multiplayer_link_disabled_desc
+            )
         )
-        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
 
-        // Viewer Access Option
-        AccessLevelOption(
-            modifier = Modifier.noRippleClickable {
-                if (currentAccessLevel != SpaceInviteLinkAccessLevel.VIEWER_ACCESS) {
-                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.VIEWER_ACCESS)
-                }
-            },
-            icon = R.drawable.ic_link_viewer_24,
-            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.VIEWER_ACCESS) R.drawable.ic_check_black_14 else null,
-            title = stringResource(R.string.multiplayer_viewer_access),
-            description = stringResource(R.string.multiplayer_viewer_access_desc),
-        )
-        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-
-        // Request Access Option
-        AccessLevelOption(
-            modifier = Modifier.noRippleClickable {
-                if (currentAccessLevel != SpaceInviteLinkAccessLevel.REQUEST_ACCESS) {
-                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.REQUEST_ACCESS)
-                }
-            },
-            icon = R.drawable.ic_link_request_24,
-            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.REQUEST_ACCESS) R.drawable.ic_check_black_14 else null,
-            title = stringResource(R.string.multiplayer_request_access),
-            description = stringResource(R.string.multiplayer_request_access_desc)
-        )
-        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-
-        // Link Disabled Option
-        AccessLevelOption(
-            modifier = Modifier.noRippleClickable {
-                if (currentAccessLevel != SpaceInviteLinkAccessLevel.LINK_DISABLED) {
-                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.LINK_DISABLED)
-                }
-            },
-            icon = R.drawable.ic_link_disabled_24,
-            title = stringResource(R.string.multiplayer_link_disabled),
-            description = stringResource(R.string.multiplayer_link_disabled_desc),
-            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.LINK_DISABLED) R.drawable.ic_check_black_14 else null
-        )
+        options.forEachIndexed { index, item ->
+            AccessLevelOption(
+                modifier = Modifier.noRippleClickable {
+                    if (currentAccessLevel != item.level) {
+                        onAccessLevelChanged(item.level)
+                    }
+                },
+                icon = item.icon,
+                endIcon = if (currentAccessLevel == item.level) R.drawable.ic_check_black_14 else null,
+                title = stringResource(item.titleRes),
+                description = stringResource(item.descRes)
+            )
+            if (index < options.lastIndex) {
+                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+            }
+        }
     }
 }
 

@@ -263,14 +263,10 @@ class SpaceSettingsViewModel(
                             name = spaceView.name.orEmpty()
                         )
                     )
-                    add(
-                        Spacer(height = 8),
-                    )
-                    add(
-                        UiSpaceSettingsItem.Description(
-                            description = spaceView.description.orEmpty()
-                        )
-                    )
+                    if (spaceMemberCount > 0) {
+                        add(Spacer(height = 4))
+                        add(MembersSmall(count = spaceMemberCount))
+                    }
 
                     if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
                         add(Spacer(height = 8))
@@ -483,6 +479,9 @@ class SpaceSettingsViewModel(
                 val currentCount = spaceInfoTitleClickCount.value
                 spaceInfoTitleClickCount.value = currentCount + 1
             }
+
+            UiEvent.OnCopyLinkClicked -> TODO()
+            UiEvent.OnShareLinkClicked -> TODO()
         }
     }
 

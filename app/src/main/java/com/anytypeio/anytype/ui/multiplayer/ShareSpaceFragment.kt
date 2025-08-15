@@ -63,11 +63,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onCanEditClicked = vm::onCanEditClicked,
                     onCanViewClicked = vm::onCanViewClicked,
                     onRemoveMemberClicked = vm::onRemoveMemberClicked,
-                    onStopSharingClicked = vm::onStopSharingSpaceClicked,
                     onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
-                    onMoreInfoClicked = vm::onMoreInfoClicked,
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
-                    onDeleteLinkClicked = vm::onDeleteLinkClicked,
                     incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
                     isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
@@ -78,7 +75,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
-                    onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel
+                    onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
+                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->

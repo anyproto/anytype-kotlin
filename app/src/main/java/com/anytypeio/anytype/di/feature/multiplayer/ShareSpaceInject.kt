@@ -8,6 +8,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -68,4 +69,5 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun provideMembershipProvider(): MembershipProvider
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun clipboard(): Clipboard
 }

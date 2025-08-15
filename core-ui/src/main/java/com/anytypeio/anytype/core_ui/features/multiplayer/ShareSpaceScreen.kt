@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -43,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -75,6 +77,7 @@ import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -83,6 +86,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
@@ -108,15 +112,13 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
-    onStopSharingClicked: () -> Unit,
-    onMoreInfoClicked: () -> Unit,
     onShareQrCodeClicked: () -> Unit,
-    onDeleteLinkClicked: () -> Unit,
     onIncentiveClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
     onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
     onInviteLinkAccessChangeConfirmed: () -> Unit,
-    onInviteLinkAccessChangeCancel: () -> Unit
+    onInviteLinkAccessChangeCancel: () -> Unit,
+    onCopyInviteLinkClicked: () -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -143,70 +145,12 @@ fun ShareSpaceScreen(
                         .padding(vertical = 6.dp)
                 )
             }
-            var isMenuExpanded by remember { mutableStateOf(false) }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
                 Toolbar(title = stringResource(R.string.multiplayer_members))
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 16.dp)
-                ) {
-                    if (isCurrentUserOwner) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_action_more),
-                            contentDescription = "Menu button",
-                            modifier = Modifier.noRippleClickable {
-                                isMenuExpanded = true
-                            }
-                        )
-                    }
-                    DropdownMenu(
-                        expanded = isMenuExpanded,
-                        onDismissRequest = {
-                            isMenuExpanded = false
-                        },
-                        modifier = Modifier.background(
-                            color = colorResource(id = R.color.background_secondary)
-                        )
-                    ) {
-                        DropdownMenuItem(
-                            onClick = {
-                                onMoreInfoClicked()
-                                isMenuExpanded = false
-                            }
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.multiplayer_more_info),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.weight(1.0f)
-                            )
-                        }
-                        if (spaceAccessType == SpaceAccessType.SHARED && isCurrentUserOwner) {
-                            Divider(
-                                paddingStart = 0.dp,
-                                paddingEnd = 0.dp
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onStopSharingClicked()
-                                    isMenuExpanded = false
-                                }
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_system_red),
-                                    modifier = Modifier.weight(1.0f)
-                                )
-                            }
-                        }
-                    }
-                }
             }
             Section(
                 title = stringResource(R.string.multiplayer_members_invite_links_section)
@@ -223,6 +167,23 @@ fun ShareSpaceScreen(
                 description = desc,
                 endIcon = R.drawable.ic_arrow_forward_24,
             )
+            
+            // Show invite link and copy button when not LINK_DISABLED
+            if (inviteLinkAccessLevel != SpaceInviteLinkAccessLevel.LINK_DISABLED) {
+                when (val linkState = shareLinkViewState) {
+                    is ShareLinkViewState.Shared -> {
+                        InviteLinkDisplay(
+                            link = linkState.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+                    }
+                    else -> {
+                        // Show placeholder or generate link button if needed
+                    }
+                }
+            }
             Section(
                 title = stringResource(R.string.multiplayer_members_and_requests)
             )
@@ -699,6 +660,152 @@ private fun SpaceMemberRequest(
 }
 
 @Composable
+fun InviteLinkDisplay(
+    modifier: Modifier = Modifier,
+    link: String,
+    onCopyClicked: () -> Unit,
+    onShareClicked: () -> Unit,
+    onQrCodeClicked: () -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        // Link text with three dots menu
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(id = R.color.transparent_tertiary),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = link,
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.weight(1f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+            
+            // Three dots menu trigger
+            Box {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_action_more),
+                    contentDescription = "More options",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .noRippleClickable {
+                            showMenu = true
+                        },
+                    contentScale = ContentScale.Inside
+                )
+                
+                // Dropdown menu
+                DropdownMenu(
+                    modifier = Modifier.widthIn(min = 252.dp),
+                    containerColor = colorResource(R.color.background_secondary),
+                    shape = RoundedCornerShape(12.dp),
+                    expanded = showMenu,
+                    onDismissRequest = { showMenu = false }
+                ) {
+                    // Copy link
+                    DropdownMenuItem(
+                        onClick = {
+                            onCopyClicked()
+                            showMenu = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_copy_link),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_object_action_copy_link,),
+                            contentDescription = "Copy link icon",
+                            modifier = Modifier
+                                .size(22.dp)
+                                .align(Alignment.CenterVertically),
+                            colorFilter = ColorFilter.tint(
+                                colorResource(id = R.color.text_primary)
+                            )
+                        )
+                    }
+                    
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    
+                    // Share link
+                    DropdownMenuItem(
+                        onClick = {
+                            onShareClicked()
+                            showMenu = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_share_invite_link_menu),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_menu_share_link),
+                            contentDescription = "Share link icon",
+                            modifier = Modifier
+                                .size(22.dp)
+                                .align(Alignment.CenterVertically)
+                        )
+                    }
+                    
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    
+                    // Show QR code
+                    DropdownMenuItem(
+                        onClick = {
+                            onQrCodeClicked()
+                            showMenu = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_qr_invite_link_menu),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_qr_code_24),
+                            contentDescription = "QR code icon",
+                            modifier = Modifier
+                                .size(22.dp)
+                                .align(Alignment.CenterVertically),
+                        )
+                    }
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        // Copy button
+        ButtonPrimary(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
+            text = stringResource(R.string.copy_link),
+            onClick = throttledClick(onClick = onCopyClicked),
+            size = ButtonSize.Large,
+        )
+    }
+}
+
+@Composable
 @Preview
 fun SpaceJoinRequestPreview() {
     SpaceMemberRequest(
@@ -833,11 +940,8 @@ fun ShareSpaceScreenPreview() {
         onCanViewClicked = {},
         onCanEditClicked = {},
         isCurrentUserOwner = true,
-        onStopSharingClicked = {},
         onGenerateInviteLinkClicked = {},
-        onMoreInfoClicked = {},
         onShareQrCodeClicked = {},
-        onDeleteLinkClicked = {},
         spaceAccessType = null,
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
         onIncentiveClicked = {},
@@ -848,7 +952,8 @@ fun ShareSpaceScreenPreview() {
         confirmationDialogLevel = null,
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
-        onInviteLinkAccessChangeCancel = {}
+        onInviteLinkAccessChangeCancel = {},
+        onCopyInviteLinkClicked = {}
     )
 }
 

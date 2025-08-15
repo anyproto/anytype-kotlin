@@ -48,6 +48,7 @@ sealed class UiSpaceSettingsItem {
     data class Description(val description: String) : UiSpaceSettingsItem()
     data object Multiplayer : UiSpaceSettingsItem()
     data class Members(val count: Int) : UiSpaceSettingsItem()
+    data class MembersSmall(val count: Int) : UiSpaceSettingsItem()
     data object InviteMembers : UiSpaceSettingsItem()
     data class Chat(val isOn: Boolean) : UiSpaceSettingsItem()
     data object ObjectTypes : UiSpaceSettingsItem()

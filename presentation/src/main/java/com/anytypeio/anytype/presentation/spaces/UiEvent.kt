@@ -22,6 +22,8 @@ sealed class UiEvent {
     data object OnBinClick : UiEvent()
     data object OnPersonalizationClicked : UiEvent()
     data object OnInviteClicked : UiEvent()
+    data object OnCopyLinkClicked : UiEvent()
+    data object OnShareLinkClicked : UiEvent()
     data object OnQrCodeClicked : UiEvent()
     data object OnDebugClicked : UiEvent()
     data object OnSpaceInfoTitleClicked : UiEvent()

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -35,21 +36,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
-import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.ui_settings.BuildConfig
+import com.anytypeio.anytype.ui_settings.R
 
 @Composable
 fun SpaceSettingsContainer(
@@ -104,6 +114,24 @@ fun NewSpaceSettingsScreen(
                         contentDescription = stringResource(R.string.content_desc_back_button)
                     )
                 }
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .fillMaxHeight()
+                        .noRippleThrottledClickable {
+                            showEditTitle = true
+                        }
+                        .align(Alignment.CenterEnd),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp),
+                        text = stringResource(id = R.string.edit),
+                        color = colorResource(id = R.color.glyph_active),
+                        style = BodyRegular
+                    )
+                }
             }
         },
         content = { paddingValues ->
@@ -142,21 +170,42 @@ fun NewSpaceSettingsScreen(
 
                         is UiSpaceSettingsItem.Name -> {
                             item {
-                                NewSpaceNameInputField(
+                                Text(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .border(
-                                            shape = RoundedCornerShape(16.dp),
-                                            width = 0.5.dp,
-                                            color = colorResource(id = R.color.shape_primary)
-                                        )
-                                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                                        .padding(horizontal = 16.dp)
                                         .animateItem()
                                         .noRippleClickable {
                                             showEditTitle = true
                                         },
-                                    name = item.name,
-                                    isEditEnabled = false
+                                    text = item.name,
+                                    style = HeadlineHeading,
+                                    color = colorResource(id = R.color.text_primary),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        is UiSpaceSettingsItem.MembersSmall -> {
+                            item {
+                                val t = if (item.count > 0) {
+                                    pluralStringResource(
+                                        id = R.plurals.multiplayer_number_of_space_members,
+                                        item.count,
+                                        item.count,
+                                        item.count
+                                    )
+                                } else {
+                                    stringResource(id = R.string.three_dots_text_placeholder)
+                                }
+                                Text(
+                                    modifier = Modifier
+                                        .padding(horizontal = 32.dp)
+                                        .fillMaxWidth()
+                                        .animateItem(),
+                                    text = t,
+                                    style = Caption1Regular,
+                                    color = colorResource(id = R.color.text_secondary),
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }

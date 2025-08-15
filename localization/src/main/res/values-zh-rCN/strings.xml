@@ -1866,4 +1866,10 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">允许</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
+    <string name="share_space_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>
+    <string name="share_space_error_request_failed">哎呀！请求失败。请检查您的互联网连接，然后重试。</string>
+    <string name="share_space_error_space_deleted">看起来空间已被删除。请确保您的设备已同步。</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

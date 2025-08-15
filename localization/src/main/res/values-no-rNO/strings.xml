@@ -1883,4 +1883,10 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Tillat</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Grensen er nådd for dette rommet. Vennligst oppgrader medlemskapet ditt eller kontakt support for hjelp.</string>
+    <string name="share_space_error_not_shareable">Det ser ut til at rommet ikke lenger er delt. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="share_space_error_request_failed">Oops! Forespørselen mislyktes. Vennligst sjekk internettforbindelsen din og prøv igjen.</string>
+    <string name="share_space_error_space_deleted">Det ser ut som om rommet har blitt slettet. Vennligst sørg for at enhetene dine er synkronisert.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

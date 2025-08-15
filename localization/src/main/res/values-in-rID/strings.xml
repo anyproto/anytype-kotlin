@@ -1870,4 +1870,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="open_settings">Buka Setelan</string>
     <string name="allow">Izinkan</string>
     <string name="attachment_image">Lampiran gambar</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Batas sudah tercapai untuk ruang ini. Harap tingkatkan keanggotaan Anda atau hubungi dukungan untuk mendapatkan bantuan.</string>
+    <string name="share_space_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="share_space_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
+    <string name="share_space_error_space_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

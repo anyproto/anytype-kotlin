@@ -1870,4 +1870,10 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">允許</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">此空間容量已達上限。請升級您的會員資格或聯繫支援部門尋求協助。</string>
+    <string name="share_space_error_not_shareable">此空間似乎已不再共享。請確保您的裝置已同步。</string>
+    <string name="share_space_error_request_failed">哎呀！請求失敗了。請檢查您的網路連線後再試一次。</string>
+    <string name="share_space_error_space_deleted">此空間似乎已被刪除。請確保您的裝置已同步。</string>
+    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
 </resources>

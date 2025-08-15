@@ -25,7 +25,7 @@
     <string name="access">Erişim</string>
     <string name="wallpaper">Duvar kağıdı</string>
     <string name="tech_info">Teknik bilgi</string>
-    <string name="light">Açık</string>
+    <string name="light">Aydınlık</string>
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
@@ -47,7 +47,7 @@
     <string name="about_meta_info_for_copy_new">Cihaz: %1$s\nAndroid sürümü: %2$d\nUygulama sürümü: %3$s\nDerleme numarası: %4$d\nKütüphane sürümü: %5$s\nHesap\u00A0kimliği:\u00A0%6$s\nCihaz\u00A0kimliği:\u00A0%7$s\nAnalytics\u00A0kimliği:\u00A0%8$s\nEthereum key\u00A0kimliği:\u00A0%9$s</string>
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
-    <string name="default_space">Giriş alanı</string>
+    <string name="default_space">Birincil alan</string>
     <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="profile_settings_apply_upload_image">Resim yükle</string>
@@ -57,7 +57,7 @@
     <string name="in_order_to_save">Yerel cihazınızda yer kazanmak için tüm dosyalarınızı şifrelenmiş yedekleme düğümümüze aktarabilirsiniz.  Dosyaları açtığınızda geri yüklenecektir.</string>
     <string name="manage_files">Dosyaları yönet</string>
     <string name="local_storage">Yerel depolama</string>
-    <string name="offload_files">Dosyaları boşalt</string>
+    <string name="offload_files">Dosyaları kaldır</string>
     <string name="local_storage_used">Kullanılan %1$s</string>
     <string name="space_usage">%1$s\'dan %2$s kadarı kullanıldı</string>
     <string name="remote_storage">Uzak depolama</string>
@@ -66,7 +66,7 @@
     <string name="account_name">İsim</string>
     <string name="space_settings">Alan ayarları</string>
     <string name="data_management">Veri yönetimi</string>
-    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ettiğinizde bu talebi iptal etmek için 30 gününüz vardır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak kaldırılır ve yeni cihazlarda Anytype\'da oturum açamazsınız.</string>
+    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
     <string name="snackbar_template_add">Bu türe yeni bir şablon eklendi</string>
     <string name="settings_membership">Üyelik</string>
@@ -450,7 +450,7 @@
     <string name="paste_link">Bağlantı</string>
     <string name="next">Sonraki</string>
     <string name="limit_object_types">Nesne türlerini sınırla</string>
-    <string name="deleted_account_msg">Gittiğinizi gördüğümüz için üzgünüz. Kasanızın silinmesini talep ettiğinizde bu talebi iptal etmek için 30 gününüz olacak. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir.</string>
+    <string name="deleted_account_msg">Gittiğinizi gördüğümüz için üzgünüz. Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir.</string>
     <string name="swipe_down_to_skip">Atlamak için aşağı kaydırın</string>
     <string name="show">Göster</string>
     <string name="this_type_has_templates">Bu türün %1$d adet şablonu var</string>
@@ -848,7 +848,7 @@
     <string name="anytype_update_alert_description">Verilerinizden bazıları Anytype\'ın daha yeni bir sürümünde değiştirildi. Lütfen uygulamanızı tüm dokümanlarınızla ve en son özelliklerle çalışacak şekilde güncelleyin.</string>
     <string name="anytype_update_alert_title">Güncelleme zamanı</string>
     <string name="space_type_default">Girdi</string>
-    <string name="space_type_default_space">Giriş alanı</string>
+    <string name="space_type_default_space">Birincil alan</string>
     <string name="space_type_private">Özel</string>
     <string name="space_type_private_space">Özel alan</string>
     <string name="space_type_shared">Paylaşılan</string>
@@ -1565,7 +1565,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_unread_section_title">Okunmamış</string>
     <string name="vault_all_section_title">Hepsi</string>
     <string name="vault_pinned_section_title">Sabitlendi</string>
-    <string name="vault_pin_space">Pin</string>
+    <string name="vault_pin_space">Sabitle</string>
     <string name="vault_unpin_space">Sabitlemeyi kaldır</string>
     <string name="vault_max_pinned_limit_reached">%1$d sabitlenmiş alan sınırına ulaştınız</string>
     <string name="all_content_title_all_content">Tüm Nesneler</string>
@@ -1883,4 +1883,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
+    <string name="share_space_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
+    <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
+    <string name="share_space_error_generic">Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
 </resources>

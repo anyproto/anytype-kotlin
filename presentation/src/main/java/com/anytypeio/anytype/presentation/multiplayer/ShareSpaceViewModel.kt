@@ -561,6 +561,12 @@ class ShareSpaceViewModel(
                 is MultiplayerError.Generic.SpaceIsDeleted -> {
                     shareSpaceErrors.value = ShareSpaceErrors.SpaceIsDeleted
                 }
+                is MultiplayerError.Generic.IncorrectPermissions -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.IncorrectPermissions
+                }
+                is MultiplayerError.Generic.NoSuchSpace -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.NoSuchSpace
+                }
             }
         } else {
             shareSpaceErrors.value = ShareSpaceErrors.Error(error)
@@ -775,5 +781,7 @@ sealed class ShareSpaceErrors {
     data object NotShareable : ShareSpaceErrors()
     data object RequestFailed : ShareSpaceErrors()
     data object SpaceIsDeleted : ShareSpaceErrors()
+    data object IncorrectPermissions : ShareSpaceErrors()
+    data object NoSuchSpace : ShareSpaceErrors()
     data class Error(val error: Throwable) : ShareSpaceErrors()
 }

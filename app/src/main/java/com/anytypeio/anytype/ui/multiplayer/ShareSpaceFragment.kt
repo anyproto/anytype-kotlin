@@ -131,6 +131,23 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                             onDismissRequest = { vm.dismissShareSpaceErrors() }
                         )
                     }
+
+                    ShareSpaceErrors.IncorrectPermissions -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_incorrect_permissions),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.NoSuchSpace -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_no_such_space),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
                 }
             }
         }

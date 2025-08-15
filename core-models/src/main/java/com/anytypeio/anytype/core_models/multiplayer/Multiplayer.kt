@@ -74,6 +74,8 @@ sealed class MultiplayerError : Exception() {
         class SpaceIsDeleted : Generic()
         class LimitReached : Generic()
         class RequestFailed : Generic()
+        class NoSuchSpace : Generic()
+        class IncorrectPermissions : Generic()
     }
 }
 

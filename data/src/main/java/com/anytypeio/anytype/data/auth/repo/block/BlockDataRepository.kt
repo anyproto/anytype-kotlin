@@ -1179,4 +1179,8 @@ class BlockDataRepository(
     override suspend fun debugStats(): String {
         return remote.debugStats()
     }
+
+    override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
+        remote.spaceChangeInvite(command)
+    }
 }

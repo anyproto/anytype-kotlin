@@ -3102,6 +3102,19 @@ class Middleware @Inject constructor(
         return response
     }
 
+    @Throws(Exception::class)
+    fun spaceChangeInvite(
+        command: Command.SpaceChangeInvite
+    ) {
+        val request = Rpc.Space.InviteChange.Request(
+            spaceId = command.space.id,
+            permissions = command.permissions.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceChangeInvite(request) }
+        logResponseIfDebug(response, time)
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

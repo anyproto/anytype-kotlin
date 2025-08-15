@@ -542,4 +542,6 @@ interface BlockRepository {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
 
     suspend fun debugStats(): String
+
+    suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 }

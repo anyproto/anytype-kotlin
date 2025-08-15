@@ -497,4 +497,6 @@ interface BlockRemote {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState)
 
     suspend fun debugStats(): String
+
+    suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 }

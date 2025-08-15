@@ -1151,4 +1151,8 @@ class BlockMiddleware(
     override suspend fun debugStats(): String {
         return middleware.debugStats()
     }
+
+    override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
+        middleware.spaceChangeInvite(command)
+    }
 }

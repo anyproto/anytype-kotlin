@@ -1,25 +1,25 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,14 +28,10 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.views.Title2
 
 /**
  * Component for selecting space invite link access level
@@ -45,161 +41,133 @@ import com.anytypeio.anytype.core_ui.views.Title1
 fun InviteLinkAccessSelector(
     modifier: Modifier = Modifier,
     currentAccessLevel: SpaceInviteLinkAccessLevel,
-    hasActiveLink: Boolean,
     onAccessLevelChanged: (SpaceInviteLinkAccessLevel) -> Unit,
-    onGenerateLinkClicked: () -> Unit,
-    onShareLinkClicked: () -> Unit,
-    onShowQrCodeClicked: () -> Unit,
-    onDeleteLinkClicked: () -> Unit,
-    isLoading: Boolean = false
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(
-                color = colorResource(id = R.color.background_primary),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .border(
-                width = 0.5.dp,
-                color = colorResource(id = R.color.shape_primary),
-                shape = RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp)
+        modifier = modifier.fillMaxWidth()
+        .padding(horizontal = 8.dp)
+        .background(
+            shape = RoundedCornerShape(16.dp),
+            color = colorResource(id = R.color.background_secondary)
+        )
+            .padding(bottom = 8.dp)
     ) {
-        Text(
-            text = stringResource(R.string.multiplayer_invite_link_access),
-            style = PreviewTitle2Medium,
-            color = colorResource(id = R.color.text_primary)
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
         )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // Link Disabled Option
-        AccessLevelOption(
-            level = SpaceInviteLinkAccessLevel.LINK_DISABLED,
-            currentLevel = currentAccessLevel,
-            title = stringResource(R.string.multiplayer_link_disabled),
-            description = stringResource(R.string.multiplayer_link_disabled_desc),
-            onSelected = { onAccessLevelChanged(SpaceInviteLinkAccessLevel.LINK_DISABLED) }
-        )
-        
-        Divider(modifier = Modifier.padding(vertical = 12.dp))
-        
+
         // Editor Access Option
         AccessLevelOption(
-            level = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
-            currentLevel = currentAccessLevel,
+            modifier = Modifier.noRippleClickable {
+                if (currentAccessLevel != SpaceInviteLinkAccessLevel.EDITOR_ACCESS) {
+                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.EDITOR_ACCESS)
+                }
+            },
+            icon = R.drawable.ic_link_editor_24,
+            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.EDITOR_ACCESS) R.drawable.ic_check_black_14 else null,
             title = stringResource(R.string.multiplayer_editor_access),
-            description = stringResource(R.string.multiplayer_editor_access_desc),
-            onSelected = { onAccessLevelChanged(SpaceInviteLinkAccessLevel.EDITOR_ACCESS) }
+            description = stringResource(R.string.multiplayer_editor_access_desc)
         )
-        
-        Divider(modifier = Modifier.padding(vertical = 12.dp))
-        
+        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+
         // Viewer Access Option
         AccessLevelOption(
-            level = SpaceInviteLinkAccessLevel.VIEWER_ACCESS,
-            currentLevel = currentAccessLevel,
+            modifier = Modifier.noRippleClickable {
+                if (currentAccessLevel != SpaceInviteLinkAccessLevel.VIEWER_ACCESS) {
+                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.VIEWER_ACCESS)
+                }
+            },
+            icon = R.drawable.ic_link_viewer_24,
+            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.VIEWER_ACCESS) R.drawable.ic_check_black_14 else null,
             title = stringResource(R.string.multiplayer_viewer_access),
             description = stringResource(R.string.multiplayer_viewer_access_desc),
-            onSelected = { onAccessLevelChanged(SpaceInviteLinkAccessLevel.VIEWER_ACCESS) }
         )
-        
-        Divider(modifier = Modifier.padding(vertical = 12.dp))
-        
+        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+
         // Request Access Option
         AccessLevelOption(
-            level = SpaceInviteLinkAccessLevel.REQUEST_ACCESS,
-            currentLevel = currentAccessLevel,
-            title = stringResource(R.string.multiplayer_request_access),
-            description = stringResource(R.string.multiplayer_request_access_desc),
-            onSelected = { onAccessLevelChanged(SpaceInviteLinkAccessLevel.REQUEST_ACCESS) }
-        )
-        
-        // Action buttons based on current state
-        if (currentAccessLevel != SpaceInviteLinkAccessLevel.LINK_DISABLED) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Divider()
-            Spacer(modifier = Modifier.height(20.dp))
-            
-            if (hasActiveLink) {
-                // Show share options
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    ButtonPrimary(
-                        text = stringResource(R.string.multiplayer_share_link),
-                        onClick = onShareLinkClicked,
-                        size = ButtonSize.Small,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ButtonSecondary(
-                        text = stringResource(R.string.multiplayer_qr_code),
-                        onClick = onShowQrCodeClicked,
-                        size = ButtonSize.Small,
-                        modifier = Modifier.weight(1f)
-                    )
+            modifier = Modifier.noRippleClickable {
+                if (currentAccessLevel != SpaceInviteLinkAccessLevel.REQUEST_ACCESS) {
+                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.REQUEST_ACCESS)
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                ButtonSecondary(
-                    text = stringResource(R.string.multiplayer_delete_link),
-                    onClick = onDeleteLinkClicked,
-                    size = ButtonSize.Small,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            } else {
-                // Show generate button
-                ButtonPrimary(
-                    text = stringResource(R.string.multiplayer_generate_invite_link),
-                    onClick = onGenerateLinkClicked,
-                    size = ButtonSize.Small,
-                    modifier = Modifier.fillMaxWidth(),
-                    loading = isLoading
-                )
-            }
-        }
+            },
+            icon = R.drawable.ic_link_request_24,
+            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.REQUEST_ACCESS) R.drawable.ic_check_black_14 else null,
+            title = stringResource(R.string.multiplayer_request_access),
+            description = stringResource(R.string.multiplayer_request_access_desc)
+        )
+        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+
+        // Link Disabled Option
+        AccessLevelOption(
+            modifier = Modifier.noRippleClickable {
+                if (currentAccessLevel != SpaceInviteLinkAccessLevel.LINK_DISABLED) {
+                    onAccessLevelChanged(SpaceInviteLinkAccessLevel.LINK_DISABLED)
+                }
+            },
+            icon = R.drawable.ic_link_disabled_24,
+            title = stringResource(R.string.multiplayer_link_disabled),
+            description = stringResource(R.string.multiplayer_link_disabled_desc),
+            endIcon = if (currentAccessLevel == SpaceInviteLinkAccessLevel.LINK_DISABLED) R.drawable.ic_check_black_14 else null
+        )
     }
 }
 
 @Composable
-private fun AccessLevelOption(
-    level: SpaceInviteLinkAccessLevel,
-    currentLevel: SpaceInviteLinkAccessLevel,
+fun AccessLevelOption(
+    modifier: Modifier = Modifier,
+    icon: Int,
+    endIcon: Int? = null,
     title: String,
-    description: String,
-    onSelected: () -> Unit
+    description: String
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .noRippleClickable { onSelected() }
-            .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.Top
+        modifier = modifier
+            .heightIn(min = 72.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        RadioButton(
-            selected = level == currentLevel,
-            onClick = onSelected,
-            colors = RadioButtonDefaults.colors(
-                selectedColor = colorResource(id = R.color.palette_system_amber_100),
-                unselectedColor = colorResource(id = R.color.text_secondary)
-            ),
-            modifier = Modifier.size(20.dp)
-        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(color = colorResource(id = R.color.shape_transparent_secondary)),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = icon),
+                contentDescription = "Link icon",
+            )
+        }
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = BodyRegular,
+                style = Title2,
                 color = colorResource(id = R.color.text_primary)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = description,
-                style = Caption1Regular,
+                style = Relations2,
                 color = colorResource(id = R.color.text_secondary)
             )
+        }
+        if (endIcon != null) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = endIcon),
+                contentDescription = "End icon",
+                contentScale = ContentScale.Inside
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+        } else {
+            Spacer(modifier = Modifier.width(16.dp))
         }
     }
 }
@@ -209,11 +177,6 @@ private fun AccessLevelOption(
 private fun InviteLinkAccessSelectorPreview() {
     InviteLinkAccessSelector(
         currentAccessLevel = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
-        hasActiveLink = true,
-        onAccessLevelChanged = {},
-        onGenerateLinkClicked = {},
-        onShareLinkClicked = {},
-        onShowQrCodeClicked = {},
-        onDeleteLinkClicked = {}
+        onAccessLevelChanged = {}
     )
 }

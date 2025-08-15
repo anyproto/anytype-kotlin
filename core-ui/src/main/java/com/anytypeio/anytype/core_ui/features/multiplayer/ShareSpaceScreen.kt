@@ -1,19 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,7 +28,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -45,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
@@ -58,7 +56,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,6 +66,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -92,7 +90,7 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
@@ -101,6 +99,9 @@ fun ShareSpaceScreen(
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
     incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
+    inviteLinkAccessLoading: Boolean,
+    confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
     onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -112,12 +113,19 @@ fun ShareSpaceScreen(
     onShareQrCodeClicked: () -> Unit,
     onDeleteLinkClicked: () -> Unit,
     onIncentiveClicked: () -> Unit,
-    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit
+    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
+    onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
+    onInviteLinkAccessChangeConfirmed: () -> Unit,
+    onInviteLinkAccessChangeCancel: () -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
+    var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
+    val sheetState =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
             .nestedScroll(nestedScrollInteropConnection)
     ) {
         Column(
@@ -141,11 +149,7 @@ fun ShareSpaceScreen(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                if (isCurrentUserOwner) {
-                    Toolbar(title = stringResource(R.string.multiplayer_sharing))
-                } else {
-                    Toolbar(title = stringResource(R.string.multiplayer_members))
-                }
+                Toolbar(title = stringResource(R.string.multiplayer_members))
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -196,7 +200,7 @@ fun ShareSpaceScreen(
                                 Text(
                                     text = stringResource(id = R.string.multiplayer_space_stop_sharing),
                                     style = BodyRegular,
-                                    color = colorResource(id = R.color.palette_dark_red),
+                                    color = colorResource(id = R.color.palette_system_red),
                                     modifier = Modifier.weight(1.0f)
                                 )
                             }
@@ -204,6 +208,21 @@ fun ShareSpaceScreen(
                     }
                 }
             }
+            Section(
+                title = stringResource(R.string.multiplayer_members_invite_links_section)
+            )
+            val (title, desc, icon) = inviteLinkAccessLevel.getInviteLinkItemParams()
+            AccessLevelOption(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .noRippleThrottledClickable {
+                        showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                    },
+                icon = icon,
+                title = title,
+                description = desc,
+                endIcon = R.drawable.ic_arrow_forward_24,
+            )
             Section(
                 title = stringResource(R.string.multiplayer_members_and_requests)
             )
@@ -286,44 +305,21 @@ fun ShareSpaceScreen(
                 decayAnimationSpec = decayAnimation
             )
         }
-        val offset =
-            if (anchoredDraggableState.offset.isNaN()) 0 else anchoredDraggableState.offset.toInt()
         SideEffect {
             anchoredDraggableState.updateAnchors(anchors)
         }
-        AnimatedVisibility(
-            visible = shareLinkViewState is ShareLinkViewState.Shared,
-            enter = slideInVertically { it },
-            exit = slideOutVertically { it },
-            modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            Box(modifier = Modifier
-                .padding(16.dp)
-                .offset {
-                    IntOffset(x = 0, y = offset)
-                }
-                .anchoredDraggable(anchoredDraggableState, Orientation.Vertical)
+        //Invite Link Access Selector
+        if (showInviteLinkAccessSelector) {
+            ModalBottomSheet(
+                sheetState = sheetState,
+                onDismissRequest = { showInviteLinkAccessSelector = false },
+                dragHandle = null,
+                containerColor = Color.Transparent,
+                contentColor = Color.Transparent,
             ) {
-                if (shareLinkViewState is ShareLinkViewState.Shared) {
-                    ShareInviteLinkCard(
-                        link = shareLinkViewState.link,
-                        onShareInviteClicked = onShareInviteLinkClicked,
-                        onDeleteLinkClicked = onDeleteLinkClicked,
-                        onShowQrCodeClicked = onShareQrCodeClicked,
-                        isCurrentUserOwner = isCurrentUserOwner
-                    )
-                }
-            }
-        }
-        AnimatedVisibility(
-            visible = shareLinkViewState is ShareLinkViewState.NotGenerated,
-            enter = slideInVertically { it },
-            exit = slideOutVertically { it },
-            modifier = Modifier.align(Alignment.BottomStart)
-        ) {
-            Box(modifier = Modifier.padding(16.dp)) {
-                GenerateInviteLinkCard(
-                    onGenerateInviteLinkClicked = onGenerateInviteLinkClicked
+                InviteLinkAccessSelector(
+                    currentAccessLevel = inviteLinkAccessLevel,
+                    onAccessLevelChanged = onInviteLinkAccessLevelSelected
                 )
             }
         }
@@ -332,10 +328,22 @@ fun ShareSpaceScreen(
         if (isLoadingInProgress) {
             DotsLoadingIndicator(
                 animating = true,
-                modifier = Modifier.graphicsLayer { alpha = loadingAlpha }.align(Alignment.Center),
+                modifier = Modifier
+                    .graphicsLayer { alpha = loadingAlpha }
+                    .align(Alignment.Center),
                 animationSpecs = FadeAnimationSpecs(itemCount = 3),
                 color = colorResource(id = R.color.text_primary),
                 size = ButtonSize.Large
+            )
+        }
+        
+        // Confirmation dialog for invite link access changes
+        confirmationDialogLevel?.let { newLevel ->
+            InviteLinkAccessConfirmationDialog(
+                currentLevel = inviteLinkAccessLevel,
+                newLevel = newLevel,
+                onConfirm = onInviteLinkAccessChangeConfirmed,
+                onDismiss = onInviteLinkAccessChangeCancel
             )
         }
     }
@@ -411,7 +419,7 @@ private fun SpaceMember(
         modifier = Modifier
             .height(72.dp)
             .fillMaxWidth()
-            .noRippleThrottledClickable{ onMemberClicked(member) }
+            .noRippleThrottledClickable { onMemberClicked(member) }
     ) {
         Spacer(modifier = Modifier.width(16.dp))
         SpaceMemberIcon(
@@ -834,7 +842,13 @@ fun ShareSpaceScreenPreview() {
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
         onIncentiveClicked = {},
         isLoadingInProgress = false,
-        onMemberClicked = {}
+        onMemberClicked = {},
+        inviteLinkAccessLevel = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
+        inviteLinkAccessLoading = false,
+        confirmationDialogLevel = null,
+        onInviteLinkAccessLevelSelected = {},
+        onInviteLinkAccessChangeConfirmed = {},
+        onInviteLinkAccessChangeCancel = {}
     )
 }
 

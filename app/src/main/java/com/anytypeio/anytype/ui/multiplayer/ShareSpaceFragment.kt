@@ -53,31 +53,33 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme(
-                    typography = typography,
-                    shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
-                ) {
-                    ShareSpaceScreen(
-                        spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value,
-                        shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
-                        isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
-                        onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
-                        members = vm.members.collectAsStateWithLifecycle().value,
-                        onViewRequestClicked = vm::onViewRequestClicked,
-                        onCanEditClicked = vm::onCanEditClicked,
-                        onCanViewClicked = vm::onCanViewClicked,
-                        onRemoveMemberClicked = vm::onRemoveMemberClicked,
-                        onStopSharingClicked = vm::onStopSharingSpaceClicked,
-                        onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
-                        onMoreInfoClicked = vm::onMoreInfoClicked,
-                        onShareQrCodeClicked = vm::onShareQrCodeClicked,
-                        onDeleteLinkClicked = vm::onDeleteLinkClicked,
-                        incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
-                        onIncentiveClicked = vm::onIncentiveClicked,
-                        isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
-                        onMemberClicked = vm::onMemberClicked
-                    )
-                }
+                ShareSpaceScreen(
+                    spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value,
+                    shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
+                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
+                    onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
+                    members = vm.members.collectAsStateWithLifecycle().value,
+                    onViewRequestClicked = vm::onViewRequestClicked,
+                    onCanEditClicked = vm::onCanEditClicked,
+                    onCanViewClicked = vm::onCanViewClicked,
+                    onRemoveMemberClicked = vm::onRemoveMemberClicked,
+                    onStopSharingClicked = vm::onStopSharingSpaceClicked,
+                    onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
+                    onMoreInfoClicked = vm::onMoreInfoClicked,
+                    onShareQrCodeClicked = vm::onShareQrCodeClicked,
+                    onDeleteLinkClicked = vm::onDeleteLinkClicked,
+                    incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
+                    onIncentiveClicked = vm::onIncentiveClicked,
+                    isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
+                    onMemberClicked = vm::onMemberClicked,
+                    // New Task #24 parameters
+                    inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
+                    inviteLinkAccessLoading = vm.inviteLinkAccessLoading.collectAsStateWithLifecycle().value,
+                    confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,
+                    onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
+                    onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
+                    onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel
+                )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
                         proceedWithCommand(command)
@@ -281,6 +283,12 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                     is MultiplayerError.Generic.SpaceIsDeleted -> {
                         toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
+                    }
+                    is MultiplayerError.Generic.IncorrectPermissions -> {
+                        toast(resources.getString(R.string.share_space_error_incorrect_permissions))
+                    }
+                    is MultiplayerError.Generic.NoSuchSpace -> {
+                        toast(resources.getString(R.string.share_space_error_no_such_space))
                     }
                 }
             }

@@ -168,6 +168,36 @@ fun AccessLevelOption(
     }
 }
 
+@Composable
+fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams() : Triple<String, String, Int> {
+    return when (this) {
+        SpaceInviteLinkAccessLevel.LINK_DISABLED ->
+            Triple(
+                stringResource(R.string.multiplayer_link_disabled),
+                stringResource(R.string.multiplayer_link_disabled_desc),
+                R.drawable.ic_link_disabled_24
+            )
+        SpaceInviteLinkAccessLevel.EDITOR_ACCESS ->
+            Triple(
+                stringResource(R.string.multiplayer_editor_access),
+                stringResource(R.string.multiplayer_editor_access_desc),
+                R.drawable.ic_link_editor_24
+            )
+        SpaceInviteLinkAccessLevel.VIEWER_ACCESS ->
+            Triple(
+                stringResource(R.string.multiplayer_viewer_access),
+                stringResource(R.string.multiplayer_viewer_access_desc),
+                R.drawable.ic_link_viewer_24
+            )
+        SpaceInviteLinkAccessLevel.REQUEST_ACCESS ->
+            Triple(
+                stringResource(R.string.multiplayer_request_access),
+                stringResource(R.string.multiplayer_request_access_desc),
+                R.drawable.ic_link_request_24
+            )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun InviteLinkAccessSelectorPreview() {

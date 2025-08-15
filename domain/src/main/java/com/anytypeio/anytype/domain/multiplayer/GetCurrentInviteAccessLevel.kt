@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
+import com.anytypeio.anytype.domain.base.getOrThrow
 import javax.inject.Inject
 
 /**

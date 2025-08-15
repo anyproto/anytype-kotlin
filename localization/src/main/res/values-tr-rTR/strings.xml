@@ -47,7 +47,7 @@
     <string name="about_meta_info_for_copy_new">Cihaz: %1$s\nAndroid sürümü: %2$d\nUygulama sürümü: %3$s\nDerleme numarası: %4$d\nKütüphane sürümü: %5$s\nHesap\u00A0kimliği:\u00A0%6$s\nCihaz\u00A0kimliği:\u00A0%7$s\nAnalytics\u00A0kimliği:\u00A0%8$s\nEthereum key\u00A0kimliği:\u00A0%9$s</string>
     <string name="space">Alan</string>
     <string name="space_name">Alan ismi</string>
-    <string name="default_space">Giriş alanı</string>
+    <string name="default_space">Birincil alan</string>
     <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
     <string name="profile_settings_apply_upload_image">Resim yükle</string>
@@ -848,7 +848,7 @@
     <string name="anytype_update_alert_description">Verilerinizden bazıları Anytype\'ın daha yeni bir sürümünde değiştirildi. Lütfen uygulamanızı tüm dokümanlarınızla ve en son özelliklerle çalışacak şekilde güncelleyin.</string>
     <string name="anytype_update_alert_title">Güncelleme zamanı</string>
     <string name="space_type_default">Girdi</string>
-    <string name="space_type_default_space">Giriş alanı</string>
+    <string name="space_type_default_space">Birincil alan</string>
     <string name="space_type_private">Özel</string>
     <string name="space_type_private_space">Özel alan</string>
     <string name="space_type_shared">Paylaşılan</string>
@@ -1565,7 +1565,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_unread_section_title">Okunmamış</string>
     <string name="vault_all_section_title">Hepsi</string>
     <string name="vault_pinned_section_title">Sabitlendi</string>
-    <string name="vault_pin_space">Pin</string>
+    <string name="vault_pin_space">Sabitle</string>
     <string name="vault_unpin_space">Sabitlemeyi kaldır</string>
     <string name="vault_max_pinned_limit_reached">%1$d sabitlenmiş alan sınırına ulaştınız</string>
     <string name="all_content_title_all_content">Tüm Nesneler</string>

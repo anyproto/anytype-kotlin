@@ -29,7 +29,7 @@
     <string name="dark">Escuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Configurações</string>
-    <string name="app_preferences">App Preferences</string>
+    <string name="app_preferences">Preferências</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Ícone de alerta</string>
     <string name="modal_tap_to_type">Toque para digitar</string>
     <string name="modal_gallery">Galeria</string>
     <string name="modal_kanban">Kanban</string>
@@ -380,7 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Botão de compartilhar</string>
     <string name="content_desc_home_button">Home button</string>
-    <string name="content_desc_chat_button">Chat button</string>
+    <string name="content_desc_chat_button">Botão de conversa</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Bloco não suportado</string>
@@ -828,7 +828,7 @@
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
     <string name="personal">Padrão</string>
-    <string name="create_space">Create space</string>
+    <string name="create_space">Criar espaço</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">Alterar ícone</string>
     <string name="generic_error">Algo deu errado. Por favor, tente novamente.</string>
@@ -1000,7 +1000,7 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">o aplicativo para tudo</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
+    <string name="onboarding_auth_subtitle">Criptografado, offline\n&amp; aberto</string>
     <string name="onboarding_auth_description">Crie &amp; colabore em espaços que você possua. Criptografados, &amp; abertos.</string>
     <string name="onboarding_terms_and_policy_prefix">"Ao continuar, você concorda com"</string>
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
@@ -1015,9 +1015,9 @@
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
     <string name="onboarding_this_is_your_key_title">Esta é a sua chave</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Ela substitui o usuário e a senha. Mantenha-a segura — você controla seus dados. Você pode encontrar essa chave  mais tarde nas configurações do aplicativo.</string>
     <string name="onboarding_show_my_key">Exibir minha chave</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Revelar e copiar</string>
     <string name="onboarding_key_skip">Pular</string>
     <string name="onboarding_key_not_now">Agora não</string>
     <string name="onboarding_key_copy">Copiar para área de transferência</string>
@@ -1027,9 +1027,9 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_your_key_can_t_be_empty">Sua chave não pode estar vazia</string>
-    <string name="onboarding_your_name">Type your name</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
+    <string name="onboarding_your_name">Informe seu nome</string>
+    <string name="onboarding_mnemonic_read_more">Ler mais</string>
+    <string name="onboarding_key_additional_info">Você pode encontrar essa chave depois nas configurações do aplicativo</string>
     <string name="onboarding_what_is_the_key">Qual é a chave?</string>
     <string name="onboarding_recovery_phrase_description">Ele é representado por uma frase de recuperação — 12 palavras aleatórias a partir do qual o seu cofre é magicamente gerado neste dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Quem quer que saiba a combinação destas palavras é dono do seu cofre?</string>
@@ -1615,7 +1615,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
-    <string name="main_navigation_content_desc_chat_button">Chat button</string>
+    <string name="main_navigation_content_desc_chat_button">Botão de conversa</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>

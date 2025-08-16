@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.multiplayer
 
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -23,42 +24,44 @@ class GetCurrentInviteAccessLevel @Inject constructor(
     override suspend fun doWork(params: Params): SpaceInviteLinkAccessLevel {
         return try {
             val result = repo.getSpaceInviteLink(params.space)
-            mapInviteToAccessLevel(
-                inviteType = result.inviteType,
-                permissions = result.permissions
-            )
+            mapInviteToAccessLevel(result)
         } catch (e: Exception) {
             // No active invite link found or error occurred
             logger.logException(e, "GetCurrentInviteAccessLevel")
-            SpaceInviteLinkAccessLevel.LINK_DISABLED
+            SpaceInviteLinkAccessLevel.LinkDisabled
         }
     }
-    
+
     /**
      * Maps middleware invite type and permissions to SpaceInviteLinkAccessLevel
      * Based on iOS SpaceRichInviteType mapping logic
      */
     private fun mapInviteToAccessLevel(
-        inviteType: InviteType, 
-        permissions: SpaceMemberPermissions?
+        spaceInviteLink: SpaceInviteLink
     ): SpaceInviteLinkAccessLevel {
-        return when (inviteType) {
+        return when (spaceInviteLink.inviteType) {
             InviteType.MEMBER -> {
                 // MEMBER type = request access (manual approval)
-                SpaceInviteLinkAccessLevel.REQUEST_ACCESS
+                SpaceInviteLinkAccessLevel.RequestAccess(spaceInviteLink.scheme)
             }
+
             InviteType.GUEST -> {
                 // GUEST type is not supported in our current UI
-                SpaceInviteLinkAccessLevel.LINK_DISABLED
+                SpaceInviteLinkAccessLevel.LinkDisabled
             }
+
             InviteType.WITHOUT_APPROVE -> {
                 // WITHOUT_APPROVE type - check permissions to determine editor vs viewer
-                when (permissions) {
-                    SpaceMemberPermissions.WRITER -> SpaceInviteLinkAccessLevel.EDITOR_ACCESS
-                    SpaceMemberPermissions.READER -> SpaceInviteLinkAccessLevel.VIEWER_ACCESS
-                    SpaceMemberPermissions.OWNER,
-                    SpaceMemberPermissions.NO_PERMISSIONS,
-                    null -> SpaceInviteLinkAccessLevel.LINK_DISABLED
+                when (spaceInviteLink.permissions) {
+                    SpaceMemberPermissions.OWNER, SpaceMemberPermissions.WRITER -> SpaceInviteLinkAccessLevel.EditorAccess(
+                        spaceInviteLink.scheme
+                    )
+
+                    SpaceMemberPermissions.READER -> SpaceInviteLinkAccessLevel.ViewerAccess(
+                        spaceInviteLink.scheme
+                    )
+
+                    SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LinkDisabled
                 }
             }
         }

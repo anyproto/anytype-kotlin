@@ -67,25 +67,25 @@ fun InviteLinkAccessSelector(
 
         val options = listOf(
             AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
+                level = SpaceInviteLinkAccessLevel.EditorAccess(""),
                 icon = R.drawable.ic_link_editor_24,
                 titleRes = R.string.multiplayer_editor_access,
                 descRes = R.string.multiplayer_editor_access_desc
             ),
             AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.VIEWER_ACCESS,
+                level = SpaceInviteLinkAccessLevel.ViewerAccess(""),
                 icon = R.drawable.ic_link_viewer_24,
                 titleRes = R.string.multiplayer_viewer_access,
                 descRes = R.string.multiplayer_viewer_access_desc
             ),
             AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.REQUEST_ACCESS,
+                level = SpaceInviteLinkAccessLevel.RequestAccess(""),
                 icon = R.drawable.ic_link_request_24,
                 titleRes = R.string.multiplayer_request_access,
                 descRes = R.string.multiplayer_request_access_desc
             ),
             AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.LINK_DISABLED,
+                level = SpaceInviteLinkAccessLevel.LinkDisabled,
                 icon = R.drawable.ic_link_disabled_24,
                 titleRes = R.string.multiplayer_link_disabled,
                 descRes = R.string.multiplayer_link_disabled_desc
@@ -171,25 +171,25 @@ fun AccessLevelOption(
 @Composable
 fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams() : Triple<String, String, Int> {
     return when (this) {
-        SpaceInviteLinkAccessLevel.LINK_DISABLED ->
+        SpaceInviteLinkAccessLevel.LinkDisabled ->
             Triple(
                 stringResource(R.string.multiplayer_link_disabled),
                 stringResource(R.string.multiplayer_link_disabled_desc),
                 R.drawable.ic_link_disabled_24
             )
-        SpaceInviteLinkAccessLevel.EDITOR_ACCESS ->
+        is SpaceInviteLinkAccessLevel.EditorAccess ->
             Triple(
                 stringResource(R.string.multiplayer_editor_access),
                 stringResource(R.string.multiplayer_editor_access_desc),
                 R.drawable.ic_link_editor_24
             )
-        SpaceInviteLinkAccessLevel.VIEWER_ACCESS ->
+        is SpaceInviteLinkAccessLevel.ViewerAccess ->
             Triple(
                 stringResource(R.string.multiplayer_viewer_access),
                 stringResource(R.string.multiplayer_viewer_access_desc),
                 R.drawable.ic_link_viewer_24
             )
-        SpaceInviteLinkAccessLevel.REQUEST_ACCESS ->
+        is SpaceInviteLinkAccessLevel.RequestAccess ->
             Triple(
                 stringResource(R.string.multiplayer_request_access),
                 stringResource(R.string.multiplayer_request_access_desc),
@@ -202,7 +202,7 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams() : Triple<String, String
 @Composable
 private fun InviteLinkAccessSelectorPreview() {
     InviteLinkAccessSelector(
-        currentAccessLevel = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
+        currentAccessLevel = SpaceInviteLinkAccessLevel.EditorAccess(""),
         onAccessLevelChanged = {}
     )
 }

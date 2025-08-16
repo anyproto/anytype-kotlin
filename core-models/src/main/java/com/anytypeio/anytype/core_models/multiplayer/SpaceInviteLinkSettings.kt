@@ -3,61 +3,43 @@ package com.anytypeio.anytype.core_models.multiplayer
 /**
  * Represents the access level for space invitation links as per Task #24
  */
-enum class SpaceInviteLinkAccessLevel(val code: Int, val link: String? = null) {
+sealed class SpaceInviteLinkAccessLevel {
+
     /**
      * Link is disabled - no active invitation link
      */
-    LINK_DISABLED(0),
-    
+    data object LinkDisabled : SpaceInviteLinkAccessLevel()
+
     /**
      * Editor access - users can edit the space content
-     * Maps to: InviteType.MEMBER + SpaceMemberPermissions.WRITER
+     * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.WRITER
      */
-    EDITOR_ACCESS(1),
-    
+    data class EditorAccess(val link: String) : SpaceInviteLinkAccessLevel()
+
     /**
      * Viewer access - users can only view the space content
-     * Maps to: InviteType.MEMBER + SpaceMemberPermissions.READER
+     * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.READER
      */
-    VIEWER_ACCESS(2),
-    
+    data class ViewerAccess(val link: String) : SpaceInviteLinkAccessLevel()
+
     /**
      * Request access - users need approval to join
-     * Maps to: InviteType.GUEST (requires approval)
+     * Maps to: InviteType.MEMBER (requires approval)
      */
-    REQUEST_ACCESS(3);
-    
-    fun toInviteTypeAndPermissions(): Pair<InviteType, SpaceMemberPermissions?>? {
-        return when (this) {
-            LINK_DISABLED -> null
-            EDITOR_ACCESS -> InviteType.MEMBER to SpaceMemberPermissions.WRITER
-            VIEWER_ACCESS -> InviteType.MEMBER to SpaceMemberPermissions.READER
-            REQUEST_ACCESS -> InviteType.GUEST to null // Guest type requires approval, no permissions
-        }
-    }
-    
+    data class RequestAccess(val link: String) : SpaceInviteLinkAccessLevel()
+
     /**
      * Checks if changing to the new access level requires user confirmation
      */
     fun needsConfirmationToChangeTo(newLevel: SpaceInviteLinkAccessLevel): Boolean {
         // No confirmation needed when enabling from disabled state
-        if (this == LINK_DISABLED) return false
-        
+        if (this is LinkDisabled) return false
+
         return when (newLevel) {
-            EDITOR_ACCESS -> this != VIEWER_ACCESS
-            VIEWER_ACCESS -> this != EDITOR_ACCESS
-            REQUEST_ACCESS -> true // Always needs confirmation
-            LINK_DISABLED -> true // Always needs confirmation
-        }
-    }
-    
-    companion object {
-        fun getDefaultForSpaceType(spaceUxType: SpaceUxType): SpaceInviteLinkAccessLevel {
-            return when (spaceUxType) {
-                SpaceUxType.CHAT -> EDITOR_ACCESS
-                SpaceUxType.DATA -> LINK_DISABLED
-                else -> LINK_DISABLED
-            }
+            is EditorAccess -> this !is ViewerAccess
+            is ViewerAccess -> this !is EditorAccess
+            is RequestAccess -> true // Always needs confirmation
+            is LinkDisabled -> true // Always needs confirmation
         }
     }
 }

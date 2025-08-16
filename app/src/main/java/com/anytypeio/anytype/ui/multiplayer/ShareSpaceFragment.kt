@@ -50,7 +50,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ShareSpaceScreen(
-                    shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
                     isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                     members = vm.members.collectAsStateWithLifecycle().value,
@@ -207,22 +206,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while showing remove member warning")
-                }
-            }
-            is Command.ShowDeleteLinkWarning -> {
-                runCatching {
-                    val dialog = DeleteSpaceInviteLinkWarning()
-                    dialog.onAccepted = {
-                        vm.onDeleteLinkAccepted().also {
-                            dialog.dismiss()
-                        }
-                    }
-                    dialog.onCancelled = {
-                        // Do nothing.
-                    }
-                    dialog.show(childFragmentManager, null)
-                }.onFailure {
-                    Timber.e(it, "Error while navigation")
                 }
             }
             is Command.Dismiss -> {

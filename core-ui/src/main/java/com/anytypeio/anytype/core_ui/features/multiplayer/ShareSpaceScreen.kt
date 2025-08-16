@@ -68,7 +68,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
@@ -96,10 +95,7 @@ import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -107,23 +103,24 @@ fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
-    shareLinkViewState: ShareLinkViewState,
     incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
-    onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
-    onShareQrCodeClicked: () -> Unit,
     onIncentiveClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
+
     onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
     onInviteLinkAccessChangeConfirmed: () -> Unit,
     onInviteLinkAccessChangeCancel: () -> Unit,
-    onCopyInviteLinkClicked: () -> Unit
+
+    onShareInviteLinkClicked: (String) -> Unit,
+    onCopyInviteLinkClicked: (String) -> Unit,
+    onShareQrCodeClicked: (String) -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -175,20 +172,26 @@ fun ShareSpaceScreen(
             )
             
             // Show invite link and copy button when not LINK_DISABLED
-            if (inviteLinkAccessLevel != SpaceInviteLinkAccessLevel.LINK_DISABLED) {
-                when (val linkState = shareLinkViewState) {
-                    is ShareLinkViewState.Shared -> {
-                        InviteLinkDisplay(
-                            link = linkState.link,
-                            onCopyClicked = onCopyInviteLinkClicked,
-                            onShareClicked = onShareInviteLinkClicked,
-                            onQrCodeClicked = onShareQrCodeClicked
-                        )
-                    }
-                    else -> {
-                        // Show placeholder or generate link button if needed
-                    }
-                }
+            when (inviteLinkAccessLevel) {
+                is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
+                    link = inviteLinkAccessLevel.link,
+                    onCopyClicked = onCopyInviteLinkClicked,
+                    onShareClicked = onShareInviteLinkClicked,
+                    onQrCodeClicked = onShareQrCodeClicked
+                )
+                SpaceInviteLinkAccessLevel.LinkDisabled -> {}
+                is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
+                    link = inviteLinkAccessLevel.link,
+                    onCopyClicked = onCopyInviteLinkClicked,
+                    onShareClicked = onShareInviteLinkClicked,
+                    onQrCodeClicked = onShareQrCodeClicked
+                )
+                is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
+                    link = inviteLinkAccessLevel.link,
+                    onCopyClicked = onCopyInviteLinkClicked,
+                    onShareClicked = onShareInviteLinkClicked,
+                    onQrCodeClicked = onShareQrCodeClicked
+                )
             }
             Section(
                 title = stringResource(R.string.multiplayer_members_and_requests)
@@ -703,9 +706,9 @@ private fun SpaceMemberRequest(
 fun InviteLinkDisplay(
     modifier: Modifier = Modifier,
     link: String,
-    onCopyClicked: () -> Unit,
-    onShareClicked: () -> Unit,
-    onQrCodeClicked: () -> Unit
+    onCopyClicked: (String) -> Unit,
+    onShareClicked: (String) -> Unit,
+    onQrCodeClicked: (String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
     
@@ -760,7 +763,7 @@ fun InviteLinkDisplay(
                     // Copy link
                     DropdownMenuItem(
                         onClick = {
-                            onCopyClicked()
+                            onCopyClicked(link)
                             showMenu = false
                         }
                     ) {
@@ -787,7 +790,7 @@ fun InviteLinkDisplay(
                     // Share link
                     DropdownMenuItem(
                         onClick = {
-                            onShareClicked()
+                            onShareClicked(link)
                             showMenu = false
                         }
                     ) {
@@ -811,7 +814,7 @@ fun InviteLinkDisplay(
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
-                            onQrCodeClicked()
+                            onQrCodeClicked(link)
                             showMenu = false
                         }
                     ) {
@@ -839,7 +842,9 @@ fun InviteLinkDisplay(
                 .fillMaxWidth()
                 .height(48.dp),
             text = stringResource(R.string.copy_link),
-            onClick = throttledClick(onClick = onCopyClicked),
+            onClick = {
+                onCopyClicked(link)
+            },
             size = ButtonSize.Large,
         )
     }
@@ -914,9 +919,6 @@ fun SpaceLeaveRequestPreview() {
 )
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Shared(
-            link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
-        ),
         onShareInviteLinkClicked = {},
         members = buildList {
             add(
@@ -980,13 +982,12 @@ fun ShareSpaceScreenPreview() {
         onCanViewClicked = {},
         onCanEditClicked = {},
         isCurrentUserOwner = true,
-        onGenerateInviteLinkClicked = {},
         onShareQrCodeClicked = {},
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
         onIncentiveClicked = {},
         isLoadingInProgress = false,
         onMemberClicked = {},
-        inviteLinkAccessLevel = SpaceInviteLinkAccessLevel.EDITOR_ACCESS,
+        inviteLinkAccessLevel = SpaceInviteLinkAccessLevel.EditorAccess("https://example.com/invite"),
         inviteLinkAccessLoading = false,
         confirmationDialogLevel = null,
         onInviteLinkAccessLevelSelected = {},

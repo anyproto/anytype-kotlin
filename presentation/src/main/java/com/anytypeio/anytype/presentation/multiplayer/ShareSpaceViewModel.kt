@@ -22,14 +22,12 @@ import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
-import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceInvitePermissions
@@ -37,16 +35,15 @@ import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.GetCurrentInviteAccessLevel
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.multiplayer.UpdateSpaceInviteLinkAccess
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
@@ -75,7 +72,6 @@ class ShareSpaceViewModel(
     private val analytics: Analytics,
     private val membershipProvider: MembershipProvider,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val updateSpaceInviteLinkAccess: UpdateSpaceInviteLinkAccess,
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions
@@ -84,7 +80,6 @@ class ShareSpaceViewModel(
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
-    val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
@@ -92,7 +87,7 @@ class ShareSpaceViewModel(
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
 
     // New state for invite link access levels (Task #24)
-    val inviteLinkAccessLevel = MutableStateFlow(SpaceInviteLinkAccessLevel.LINK_DISABLED)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
 
@@ -181,9 +176,8 @@ class ShareSpaceViewModel(
     }
 
     private suspend fun generateInviteLink(
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions,
-        getCurrentOnSuccess: Boolean = true
+        inviteType: InviteType? = null,
+        permissions: SpaceMemberPermissions? = null
     ) {
         generateSpaceInviteLink.async(
             params = GenerateSpaceInviteLink.Params(
@@ -193,20 +187,8 @@ class ShareSpaceViewModel(
             )
         ).fold(
             onSuccess = { inviteLink ->
-                shareLinkViewState.value = ShareLinkViewState.Shared(inviteLink.scheme)
-                if (getCurrentOnSuccess) {
-                    getCurrentInviteLink()
-                    try {
-                        inviteLinkAccessLevel.value = getCurrentInviteAccessLevel.async(
-                            GetCurrentInviteAccessLevel.Params(vmParams.space)
-                        ).getOrThrow()
-                    } catch (e: Exception) {
-                        Timber.w(e, "Failed to get current invite access level")
-                        inviteLinkAccessLevel.value =
-                            SpaceInviteLinkAccessLevel.EDITOR_ACCESS // Default
-                    }
-                }
-                Timber.d("Successfully generated invite link")
+                Timber.d("Successfully generated invite link, link: ${inviteLink.scheme}")
+                getCurrentInviteLink()
             },
             onFailure = {
                 Timber.e(it, "Error while generating invite link")
@@ -215,43 +197,27 @@ class ShareSpaceViewModel(
         )
     }
 
-    fun onShareInviteLinkClicked() {
+    fun onShareInviteLinkClicked(link: String) {
         viewModelScope.launch {
-            when (val value = shareLinkViewState.value) {
-                is ShareLinkViewState.Shared -> {
-                    commands.emit(Command.ShareInviteLink(value.link))
-                    analytics.sendEvent(
-                        eventName = clickSettingsSpaceShare,
-                        props = Props(
-                            mapOf(EventsPropertiesKey.type to shareTypeShareLink)
-                        )
-                    )
-                }
-
-                else -> {
-                    Timber.w("Ignoring share-invite click while in state: $value")
-                }
-            }
+            commands.emit(ShareInviteLink(link))
+            analytics.sendEvent(
+                eventName = clickSettingsSpaceShare,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to shareTypeShareLink)
+                )
+            )
         }
     }
 
-    fun onShareQrCodeClicked() {
+    fun onShareQrCodeClicked(link: String) {
         viewModelScope.launch {
-            when (val value = shareLinkViewState.value) {
-                is ShareLinkViewState.Shared -> {
-                    commands.emit(Command.ShareQrCode(value.link))
-                    analytics.sendEvent(
-                        eventName = clickSettingsSpaceShare,
-                        props = Props(
-                            mapOf(EventsPropertiesKey.type to shareTypeQR)
-                        )
-                    )
-                }
-
-                else -> {
-                    Timber.w("Ignoring QR-code click while in state: $value")
-                }
-            }
+            commands.emit(Command.ShareQrCode(link))
+            analytics.sendEvent(
+                eventName = clickSettingsSpaceShare,
+                props = Props(
+                    mapOf(EventsPropertiesKey.type to shareTypeQR)
+                )
+            )
         }
     }
 
@@ -419,30 +385,6 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onDeleteLinkAccepted() {
-        Timber.d("onDeleteLinkAccepted")
-        viewModelScope.launch {
-            if (isCurrentUserOwner.value) {
-                revokeSpaceInviteLink.async(
-                    params = vmParams.space
-                ).fold(
-                    onSuccess = {
-                        Timber.d("Revoked space invite link").also {
-                            shareLinkViewState.value = ShareLinkViewState.NotGenerated
-                        }
-                        analytics.sendEvent(eventName = EventsDictionary.revokeShareLink)
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error while revoking space invite link")
-                        proceedWithMultiplayerError(e)
-                    }
-                )
-            } else {
-                Timber.w("Something wrong with permissions.")
-            }
-        }
-    }
-
     // New methods for Task #24 invite link access management
 
     /**
@@ -472,23 +414,15 @@ class ShareSpaceViewModel(
         inviteLinkConfirmationDialog.value = null
     }
 
-    fun onCopyInviteLinkClicked() {
+    fun onCopyInviteLinkClicked(link: String) {
         viewModelScope.launch {
-            when (val linkState = shareLinkViewState.value) {
-                is ShareLinkViewState.Shared -> {
-                    try {
-                        copyInviteLinkToClipboard.run(
-                            CopyInviteLinkToClipboard.Params(linkState.link)
-                        )
-                        sendToast("Invite link copied to clipboard")
-                    } catch (error: Exception) {
-                        Timber.e(error, "Failed to copy invite link to clipboard")
-                    }
-                }
-
-                else -> {
-                    Timber.w("Attempted to copy link but no active link found")
-                }
+            try {
+                copyInviteLinkToClipboard.run(
+                    CopyInviteLinkToClipboard.Params(link)
+                )
+                sendToast("Invite link copied to clipboard")
+            } catch (error: Exception) {
+                Timber.e(error, "Failed to copy invite link to clipboard")
             }
         }
     }
@@ -501,14 +435,13 @@ class ShareSpaceViewModel(
 
             when (newLevel) {
 
-                SpaceInviteLinkAccessLevel.LINK_DISABLED -> {
+                SpaceInviteLinkAccessLevel.LinkDisabled -> {
                     revokeSpaceInviteLink.async(space).fold(
                         onSuccess = {
                             Timber.d("Successfully disabled invite link")
                             inviteLinkAccessLoading.value = false
                             inviteLinkConfirmationDialog.value = null
                             inviteLinkAccessLevel.value = newLevel
-                            shareLinkViewState.value = ShareLinkViewState.NotGenerated
                         },
                         onFailure = {
                             Timber.e(it, "Failed to disable invite link")
@@ -518,9 +451,9 @@ class ShareSpaceViewModel(
                     )
                 }
 
-                SpaceInviteLinkAccessLevel.EDITOR_ACCESS -> {
+                is SpaceInviteLinkAccessLevel.EditorAccess -> {
                     when (currentLevel) {
-                        SpaceInviteLinkAccessLevel.LINK_DISABLED -> {
+                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
                             makeSpaceShareable(
                                 space = space,
                                 actionSuccess = {
@@ -535,13 +468,15 @@ class ShareSpaceViewModel(
                                 }
                             )
                         }
-                        SpaceInviteLinkAccessLevel.EDITOR_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
                             Timber.d("Invite link already has EDITOR access")
                             inviteLinkAccessLoading.value = false
                             inviteLinkConfirmationDialog.value = null
                             return@launch
                         }
-                        SpaceInviteLinkAccessLevel.VIEWER_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                             proceedWithUpdateLink(
                                 space = space,
                                 newLevel = newLevel,
@@ -557,7 +492,8 @@ class ShareSpaceViewModel(
                                 }
                             )
                         }
-                        SpaceInviteLinkAccessLevel.REQUEST_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
                             revokeSpaceInviteLink.async(space).fold(
                                 onSuccess = {
                                     Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
@@ -576,9 +512,9 @@ class ShareSpaceViewModel(
                     }
                 }
 
-                SpaceInviteLinkAccessLevel.VIEWER_ACCESS -> {
+                is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                     when (currentLevel) {
-                        SpaceInviteLinkAccessLevel.LINK_DISABLED -> {
+                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
                             makeSpaceShareable(
                                 space = space,
                                 actionSuccess = {
@@ -593,7 +529,8 @@ class ShareSpaceViewModel(
                                 }
                             )
                         }
-                        SpaceInviteLinkAccessLevel.EDITOR_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
                             proceedWithUpdateLink(
                                 space = space,
                                 newLevel = newLevel,
@@ -609,13 +546,15 @@ class ShareSpaceViewModel(
                                 }
                             )
                         }
-                        SpaceInviteLinkAccessLevel.VIEWER_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                             Timber.d("Invite link already has VIEWER access")
                             inviteLinkAccessLoading.value = false
                             inviteLinkConfirmationDialog.value = null
                             return@launch
                         }
-                        SpaceInviteLinkAccessLevel.REQUEST_ACCESS -> {
+
+                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
                             revokeSpaceInviteLink.async(space).fold(
                                 onSuccess = {
                                     Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
@@ -634,12 +573,35 @@ class ShareSpaceViewModel(
                     }
                 }
 
-                SpaceInviteLinkAccessLevel.REQUEST_ACCESS -> {
-                    when(currentLevel) {
-                        SpaceInviteLinkAccessLevel.LINK_DISABLED -> TODO()
-                        SpaceInviteLinkAccessLevel.EDITOR_ACCESS -> TODO()
-                        SpaceInviteLinkAccessLevel.VIEWER_ACCESS -> TODO()
-                        SpaceInviteLinkAccessLevel.REQUEST_ACCESS -> TODO()
+                is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                    when (currentLevel) {
+                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                            makeSpaceShareable(
+                                space = space,
+                                actionSuccess = {
+                                    generateInviteLink()
+                                },
+                                actionFailure = { error ->
+                                    inviteLinkAccessLoading.value = false
+                                    proceedWithMultiplayerError(error)
+                                }
+                            )
+                        }
+
+                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                            generateInviteLink()
+                        }
+
+                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                            generateInviteLink()
+                        }
+
+                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                            Timber.d("Invite link already has REQUEST_ACCESS")
+                            inviteLinkAccessLoading.value = false
+                            inviteLinkConfirmationDialog.value = null
+                            return@launch
+                        }
                     }
                 }
             }
@@ -652,11 +614,20 @@ class ShareSpaceViewModel(
         onSuccess: suspend () -> Unit,
         onFailure: (Throwable) -> Unit
     ) {
-        val params = UpdateSpaceInviteLinkAccess.Params(
+        val params = ChangeSpaceInvitePermissions.Params(
             space = space,
-            newLevel = newLevel
+            permissions = when (newLevel) {
+                is SpaceInviteLinkAccessLevel.EditorAccess ->
+                    SpaceMemberPermissions.WRITER
+                SpaceInviteLinkAccessLevel.LinkDisabled ->
+                    SpaceMemberPermissions.NO_PERMISSIONS
+                is SpaceInviteLinkAccessLevel.RequestAccess ->
+                    SpaceMemberPermissions.NO_PERMISSIONS
+                is SpaceInviteLinkAccessLevel.ViewerAccess ->
+                    SpaceMemberPermissions.READER
+            }
         )
-        updateSpaceInviteLinkAccess.async(params).fold(
+        changeSpaceInvitePermissions.async(params).fold(
             onSuccess = {
                 Timber.d("Successfully updated invite link permissions to: $newLevel")
                 onSuccess()
@@ -685,37 +656,6 @@ class ShareSpaceViewModel(
         )
     }
 
-    private suspend fun generateInviteLink(newLevel: SpaceInviteLinkAccessLevel) {
-        val (inviteType, permissions) = newLevel.toInviteTypeAndPermissions()
-            ?: run {
-                Timber.e("Cannot generate invite for disabled state")
-                inviteLinkAccessLoading.value = false
-                return
-            }
-
-        generateSpaceInviteLink.async(
-            GenerateSpaceInviteLink.Params(
-                space = vmParams.space,
-                inviteType = inviteType,
-                permissions = permissions ?: SpaceMemberPermissions.READER
-            )
-        ).fold(
-            onSuccess = { result ->
-                Timber.d("Successfully generated new invite link for level: $newLevel")
-                getCurrentInviteLink()
-                inviteLinkAccessLoading.value = false
-                inviteLinkConfirmationDialog.value = null
-                inviteLinkAccessLevel.value = newLevel
-                shareLinkViewState.value = ShareLinkViewState.Shared(result.scheme)
-            },
-            onFailure = {
-                Timber.e(it, "Failed to generate new invite link")
-                inviteLinkAccessLoading.value = false
-                proceedWithMultiplayerError(it)
-            }
-        )
-    }
-
     private suspend fun getCurrentInviteLink() {
         val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
         getCurrentInviteAccessLevel.async(params).fold(
@@ -725,7 +665,7 @@ class ShareSpaceViewModel(
             },
             onFailure = { error ->
                 Timber.e(error, "Failed to retrieve current invite link access level")
-                inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LINK_DISABLED
+                inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
             }
         )
     }
@@ -800,12 +740,10 @@ class ShareSpaceViewModel(
         private val removeSpaceMembers: RemoveSpaceMembers,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val getSpaceInviteLink: GetSpaceInviteLink,
         private val permissions: UserPermissionProvider,
         private val analytics: Analytics,
         private val membershipProvider: MembershipProvider,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val updateSpaceInviteLinkAccess: UpdateSpaceInviteLinkAccess,
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions
@@ -820,13 +758,11 @@ class ShareSpaceViewModel(
             container = container,
             urlBuilder = urlBuilder,
             getAccount = getAccount,
-            getSpaceInviteLink = getSpaceInviteLink,
             permissions = permissions,
             makeSpaceShareable = makeSpaceShareable,
             analytics = analytics,
             membershipProvider = membershipProvider,
             spaceViews = spaceViews,
-            updateSpaceInviteLinkAccess = updateSpaceInviteLinkAccess,
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             changeSpaceInvitePermissions = changeSpaceInvitePermissions
@@ -850,7 +786,6 @@ class ShareSpaceViewModel(
         data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
         data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object ShowHowToShareSpace : Command()
-        data object ShowDeleteLinkWarning : Command()
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()

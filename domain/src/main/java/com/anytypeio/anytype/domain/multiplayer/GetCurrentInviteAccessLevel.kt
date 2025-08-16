@@ -1,59 +1,64 @@
 package com.anytypeio.anytype.domain.multiplayer
 
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
-import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
-import com.anytypeio.anytype.domain.base.getOrThrow
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 
 /**
  * Use case to determine the current invite access level from middleware
- * This will need to be implemented when we have access to invite type and permissions from the API
+ * Uses spaceInviteGetCurrent to get detailed invite information including type and permissions
  */
 class GetCurrentInviteAccessLevel @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
-    private val getSpaceInviteLink: GetSpaceInviteLink
+    private val repo: BlockRepository,
+    private val logger: Logger
 ) : ResultInteractor<GetCurrentInviteAccessLevel.Params, SpaceInviteLinkAccessLevel>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): SpaceInviteLinkAccessLevel {
         return try {
-            val invite = getSpaceInviteLink.async(params.space).getOrThrow()
-            
-            // TODO: Once middleware provides invite type and permissions in the response,
-            // we can properly determine the access level here
-            // For now, we assume EDITOR_ACCESS if a link exists
-            // This should be updated to:
-            // mapInviteToAccessLevel(invite.inviteType, invite.permissions)
-            
-            SpaceInviteLinkAccessLevel.EDITOR_ACCESS
-            
+            val result = repo.getSpaceInviteLink(params.space)
+            mapInviteToAccessLevel(
+                inviteType = result.inviteType,
+                permissions = result.permissions
+            )
         } catch (e: Exception) {
-            // No active invite link found
+            // No active invite link found or error occurred
+            logger.logException(e, "GetCurrentInviteAccessLevel")
             SpaceInviteLinkAccessLevel.LINK_DISABLED
         }
     }
     
     /**
-     * TODO: Implement when middleware provides invite type and permissions
+     * Maps middleware invite type and permissions to SpaceInviteLinkAccessLevel
      */
     private fun mapInviteToAccessLevel(
         inviteType: InviteType, 
         permissions: SpaceMemberPermissions?
     ): SpaceInviteLinkAccessLevel {
         return when (inviteType) {
+            InviteType.MEMBER -> {
+                SpaceInviteLinkAccessLevel.REQUEST_ACCESS
+            }
+            InviteType.GUEST -> {
+                // GUEST type requires approval (request access)
+                SpaceInviteLinkAccessLevel.LINK_DISABLED
+            }
             InviteType.WITHOUT_APPROVE -> {
+                // WITHOUT_APPROVE type - need to check permissions
                 when (permissions) {
                     SpaceMemberPermissions.WRITER -> SpaceInviteLinkAccessLevel.EDITOR_ACCESS
                     SpaceMemberPermissions.READER -> SpaceInviteLinkAccessLevel.VIEWER_ACCESS
-                    else -> SpaceInviteLinkAccessLevel.VIEWER_ACCESS // default
+                    SpaceMemberPermissions.OWNER -> SpaceInviteLinkAccessLevel.LINK_DISABLED
+                    SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LINK_DISABLED
+                    null -> SpaceInviteLinkAccessLevel.LINK_DISABLED
                 }
             }
-            InviteType.MEMBER -> SpaceInviteLinkAccessLevel.REQUEST_ACCESS
-            else -> SpaceInviteLinkAccessLevel.LINK_DISABLED
         }
     }
 

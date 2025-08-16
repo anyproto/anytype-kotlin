@@ -36,6 +36,7 @@ class GetCurrentInviteAccessLevel @Inject constructor(
     
     /**
      * Maps middleware invite type and permissions to SpaceInviteLinkAccessLevel
+     * Based on iOS SpaceRichInviteType mapping logic
      */
     private fun mapInviteToAccessLevel(
         inviteType: InviteType, 
@@ -43,19 +44,20 @@ class GetCurrentInviteAccessLevel @Inject constructor(
     ): SpaceInviteLinkAccessLevel {
         return when (inviteType) {
             InviteType.MEMBER -> {
+                // MEMBER type = request access (manual approval)
                 SpaceInviteLinkAccessLevel.REQUEST_ACCESS
             }
             InviteType.GUEST -> {
-                // GUEST type requires approval (request access)
+                // GUEST type is not supported in our current UI
                 SpaceInviteLinkAccessLevel.LINK_DISABLED
             }
             InviteType.WITHOUT_APPROVE -> {
-                // WITHOUT_APPROVE type - need to check permissions
+                // WITHOUT_APPROVE type - check permissions to determine editor vs viewer
                 when (permissions) {
                     SpaceMemberPermissions.WRITER -> SpaceInviteLinkAccessLevel.EDITOR_ACCESS
                     SpaceMemberPermissions.READER -> SpaceInviteLinkAccessLevel.VIEWER_ACCESS
-                    SpaceMemberPermissions.OWNER -> SpaceInviteLinkAccessLevel.LINK_DISABLED
-                    SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LINK_DISABLED
+                    SpaceMemberPermissions.OWNER,
+                    SpaceMemberPermissions.NO_PERMISSIONS,
                     null -> SpaceInviteLinkAccessLevel.LINK_DISABLED
                 }
             }

@@ -38,6 +38,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,8 +72,12 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -93,6 +98,8 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.ShareLinkViewState
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -124,6 +131,7 @@ fun ShareSpaceScreen(
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -280,7 +288,10 @@ fun ShareSpaceScreen(
             ) {
                 InviteLinkAccessSelector(
                     currentAccessLevel = inviteLinkAccessLevel,
-                    onAccessLevelChanged = onInviteLinkAccessLevelSelected
+                    onAccessLevelChanged = {
+                        showInviteLinkAccessSelector = false
+                        onInviteLinkAccessLevelSelected(it)
+                    }
                 )
             }
         }
@@ -299,14 +310,45 @@ fun ShareSpaceScreen(
         }
         
         // Confirmation dialog for invite link access changes
-        confirmationDialogLevel?.let { newLevel ->
-            InviteLinkAccessConfirmationDialog(
-                currentLevel = inviteLinkAccessLevel,
-                newLevel = newLevel,
-                onConfirm = onInviteLinkAccessChangeConfirmed,
-                onDismiss = onInviteLinkAccessChangeCancel
+        if (confirmationDialogLevel != null) {
+            showConfirmScreen(
+                onInviteLinkAccessChangeConfirmed = onInviteLinkAccessChangeConfirmed,
+                onInviteLinkAccessChangeCancel = onInviteLinkAccessChangeCancel,
+                onDismissRequest = onInviteLinkAccessChangeCancel,
+                isLoading = inviteLinkAccessLoading
             )
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun showConfirmScreen(
+    onInviteLinkAccessChangeConfirmed: () -> Unit,
+    onInviteLinkAccessChangeCancel: () -> Unit,
+    onDismissRequest: () -> Unit,
+    isLoading: Boolean
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        containerColor = colorResource(id = R.color.background_secondary),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        dragHandle = null
+    ) {
+        GenericAlert(
+            onFirstButtonClicked = onInviteLinkAccessChangeCancel,
+            onSecondButtonClicked = onInviteLinkAccessChangeConfirmed,
+            config = AlertConfig.WithTwoButtons(
+                title = stringResource(id = R.string.multiplayer_link_will_be_invalidated),
+                description = stringResource(R.string.multiplayer_link_will_be_invalidated_desc),
+                firstButtonText = stringResource(R.string.cancel),
+                secondButtonText = stringResource(R.string.confirm),
+                firstButtonType = BUTTON_SECONDARY,
+                secondButtonType = BUTTON_PRIMARY,
+                icon = R.drawable.ic_popup_alert_56,
+                isSecondButtonLoading = isLoading,
+            )
+        )
     }
 }
 

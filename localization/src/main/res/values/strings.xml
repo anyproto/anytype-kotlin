@@ -1390,7 +1390,7 @@
     <string name="multiplayer_qr_code">QR Code</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
-    <string name="multiplayer_link_will_be_invalidated_desc">If you switch link type, your existing link will be deactivated.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
     <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>

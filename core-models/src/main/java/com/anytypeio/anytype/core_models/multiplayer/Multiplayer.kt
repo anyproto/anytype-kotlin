@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.core_models.multiplayer
 
+import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 data class SpaceInviteLink(
     val fileKey: String,
-    val contentId: String
+    val contentId: String,
+    val inviteType: InviteType,
+    val permissions: SpaceMemberPermissions
 ) {
     val scheme = "https://invite.any.coop/$contentId#$fileKey"
 }

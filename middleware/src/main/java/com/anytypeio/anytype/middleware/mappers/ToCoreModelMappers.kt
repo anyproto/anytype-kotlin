@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
@@ -954,6 +955,14 @@ fun MParticipantPermission.toCore(): SpaceMemberPermissions {
     }
 }
 
+fun MInviteType.toCoreModel(): InviteType {
+    return when (this) {
+        anytype.model.InviteType.Member -> InviteType.MEMBER
+        anytype.model.InviteType.Guest -> InviteType.GUEST
+        anytype.model.InviteType.WithoutApprove -> InviteType.WITHOUT_APPROVE
+    }
+}
+
 fun MNotification.toCoreModel(): Notification {
     return Notification(
         id = id,
@@ -1237,4 +1246,21 @@ fun MLinkPreview.toCoreLinkPreview(): LinkPreview {
         description = description,
         title = title
     )
+}
+
+fun MInviteType.fromMw(): InviteType {
+    return when (this) {
+        anytype.model.InviteType.Member -> InviteType.MEMBER
+        anytype.model.InviteType.Guest -> InviteType.GUEST
+        anytype.model.InviteType.WithoutApprove -> InviteType.WITHOUT_APPROVE
+    }
+}
+
+fun MParticipantPermission.fromMw(): SpaceMemberPermissions {
+    return when (this) {
+        anytype.model.ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
+        anytype.model.ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
+        anytype.model.ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
+        anytype.model.ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+    }
 }

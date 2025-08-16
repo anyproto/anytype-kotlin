@@ -105,7 +105,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
-    spaceAccessType: SpaceAccessType?,
     isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareLinkViewState,
@@ -113,7 +112,6 @@ fun ShareSpaceScreen(
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
-    onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
@@ -984,7 +982,6 @@ fun ShareSpaceScreenPreview() {
         isCurrentUserOwner = true,
         onGenerateInviteLinkClicked = {},
         onShareQrCodeClicked = {},
-        spaceAccessType = null,
         incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
         onIncentiveClicked = {},
         isLoadingInProgress = false,

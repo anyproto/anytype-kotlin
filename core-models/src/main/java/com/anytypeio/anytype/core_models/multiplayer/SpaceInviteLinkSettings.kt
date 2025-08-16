@@ -3,7 +3,7 @@ package com.anytypeio.anytype.core_models.multiplayer
 /**
  * Represents the access level for space invitation links as per Task #24
  */
-enum class SpaceInviteLinkAccessLevel(val code: Int) {
+enum class SpaceInviteLinkAccessLevel(val code: Int, val link: String? = null) {
     /**
      * Link is disabled - no active invitation link
      */
@@ -38,7 +38,6 @@ enum class SpaceInviteLinkAccessLevel(val code: Int) {
     
     /**
      * Checks if changing to the new access level requires user confirmation
-     * Based on iOS implementation logic
      */
     fun needsConfirmationToChangeTo(newLevel: SpaceInviteLinkAccessLevel): Boolean {
         // No confirmation needed when enabling from disabled state
@@ -52,14 +51,6 @@ enum class SpaceInviteLinkAccessLevel(val code: Int) {
         }
     }
     
-    /**
-     * Checks if this transition can use changeInvite API vs needs revoke+regenerate
-     */
-    fun canUseChangeInviteApi(newLevel: SpaceInviteLinkAccessLevel): Boolean {
-        return (this == EDITOR_ACCESS && newLevel == VIEWER_ACCESS) ||
-               (this == VIEWER_ACCESS && newLevel == EDITOR_ACCESS)
-    }
-    
     companion object {
         fun getDefaultForSpaceType(spaceUxType: SpaceUxType): SpaceInviteLinkAccessLevel {
             return when (spaceUxType) {
@@ -70,11 +61,3 @@ enum class SpaceInviteLinkAccessLevel(val code: Int) {
         }
     }
 }
-
-/**
- * Settings for space invitation link
- */
-data class SpaceInviteLinkSettings(
-    val accessLevel: SpaceInviteLinkAccessLevel,
-    val activeLink: SpaceInviteLink? = null
-)

@@ -5,14 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,7 +28,6 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceErrors
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -54,7 +50,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ShareSpaceScreen(
-                    spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value,
                     shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
                     isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
@@ -63,7 +58,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onCanEditClicked = vm::onCanEditClicked,
                     onCanViewClicked = vm::onCanViewClicked,
                     onRemoveMemberClicked = vm::onRemoveMemberClicked,
-                    onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink,
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
                     incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
@@ -213,22 +207,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while showing remove member warning")
-                }
-            }
-            is Command.ShowStopSharingWarning -> {
-                runCatching {
-                    val dialog = StopSharingWarning()
-                    dialog.onAccepted = {
-                        vm.onStopSharingAccepted().also {
-                            dialog.dismiss()
-                        }
-                    }
-                    dialog.onCancelled = {
-                        // Do nothing.
-                    }
-                    dialog.show(childFragmentManager, null)
-                }.onFailure {
-                    Timber.e(it, "Error while navigation")
                 }
             }
             is Command.ShowDeleteLinkWarning -> {

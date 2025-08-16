@@ -18,12 +18,11 @@ class ChangeSpaceInvitePermissions @Inject constructor(
 ) : ResultInteractor<ChangeSpaceInvitePermissions.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        repo.spaceChangeInvite(
-            Command.SpaceChangeInvite(
-                space = params.space,
-                permissions = params.permissions
-            )
+        val command = Command.SpaceChangeInvite(
+            space = params.space,
+            permissions = params.permissions
         )
+        repo.spaceChangeInvite(command)
     }
 
     data class Params(

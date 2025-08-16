@@ -404,8 +404,8 @@ interface BlockRemote {
     suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(

@@ -1875,5 +1875,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
     <string name="share_space_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
     <string name="share_space_error_space_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
-    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
+    <string name="share_space_error_generic">Terjadi galat tak terduga. Silakan coba lagi nanti.</string>
 </resources>

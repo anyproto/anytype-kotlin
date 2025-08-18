@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
@@ -49,6 +51,7 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentInviteAccessLevel
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -87,12 +90,14 @@ class SpaceSettingsViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val appActionManager: AppActionManager,
     private val getSpaceInviteLink: GetSpaceInviteLink,
+    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
     private val getAccount: GetAccount,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val deviceTokenStoringService: DeviceTokenStoringService
+    private val deviceTokenStoringService: DeviceTokenStoringService,
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -105,6 +110,7 @@ class SpaceSettingsViewModel(
     val _notificationState = MutableStateFlow(NotificationState.ALL)
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -114,6 +120,7 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
+        getCurrentInviteLink()
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -480,19 +487,46 @@ class SpaceSettingsViewModel(
                 spaceInfoTitleClickCount.value = currentCount + 1
             }
 
-            UiEvent.OnCopyLinkClicked -> TODO()
-            UiEvent.OnShareLinkClicked -> TODO()
+            UiEvent.OnCopyLinkClicked -> {
+                viewModelScope.launch {
+                    getSpaceInviteLink
+                        .async(vmParams.space)
+                        .onFailure {
+                            commands.emit(
+                                ManageSharedSpace(vmParams.space)
+                            )
+                        }
+                        .onSuccess { link ->
+                            try {
+                                copyInviteLinkToClipboard.run(
+                                    CopyInviteLinkToClipboard.Params(link.scheme)
+                                )
+                                sendToast("Invite link copied to clipboard")
+                            } catch (error: Exception) {
+                                Timber.e(error, "Failed to copy invite link to clipboard")
+                            }
+                        }
+                }
+            }
+            UiEvent.OnShareLinkClicked -> {
+                viewModelScope.launch {
+                    getSpaceInviteLink
+                        .async(vmParams.space)
+                        .onFailure {
+                            commands.emit(
+                                ManageSharedSpace(vmParams.space)
+                            )
+                        }
+                        .onSuccess { link ->
+                            commands.emit(
+                                ShareInviteLink(link.scheme)
+                            )
+                        }
+                }
+            }
         }
     }
 
-    fun onStop() {
-        // TODO unsubscribe
-    }
-
-//    fun onSpaceDebugClicked() {
-//        proceedWithSpaceDebug()
-//    }
-//
     private fun proceedWithRemovingSpaceIcon() {
         viewModelScope.launch {
             setSpaceDetails.async(
@@ -506,22 +540,6 @@ class SpaceSettingsViewModel(
             )
         }
     }
-
-//    fun onDeleteSpaceClicked() {
-//        viewModelScope.launch {
-//            val state = spaceViewState.value as? SpaceData.Success ?: return@launch
-//            if (state.isUserOwner) {
-//                commands.emit(Command.ShowDeleteSpaceWarning)
-//                analytics.sendEvent(
-//                    eventName = EventsDictionary.clickDeleteSpace,
-//                    props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
-//                )
-//            } else {
-//                commands.emit(Command.ShowLeaveSpaceWarning)
-//                analytics.sendEvent(eventName = screenLeaveSpace)
-//            }
-//        }
-//    }
 
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
@@ -574,85 +592,6 @@ class SpaceSettingsViewModel(
             )
         }
     }
-
-    // What is below is candidate to legacy. Might be deleted soon.
-
-    // TODO add debug functionality
-
-//    private fun proceedWithSpaceDebug() {
-//        viewModelScope.launch {
-//            debugSpaceShareDownloader
-//                .stream(Unit)
-//                .collect { result ->
-//                    result.fold(
-//                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
-//                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
-//                    )
-//                }
-//        }
-//    }
-
-//    fun onSharePrivateSpaceClicked() {
-//        viewModelScope.launch {
-//            val data = spaceViewState.value as? SpaceData.Success ?: return@launch
-//            when(data.spaceType) {
-//                PRIVATE_SPACE_TYPE -> {
-//                    analytics.sendEvent(
-//                        eventName = EventsDictionary.screenSettingsSpaceShare,
-//                        props = Props(
-//                            mapOf(
-//                                EventsPropertiesKey.route to EventsDictionary.Routes.settings
-//                            )
-//                        )
-//                    )
-//                }
-//                SHARED_SPACE_TYPE -> {
-//                    analytics.sendEvent(
-//                        eventName = EventsDictionary.screenSettingsSpaceMembers,
-//                        props = Props(
-//                            mapOf(
-//                                EventsPropertiesKey.route to EventsDictionary.Routes.settings
-//                            )
-//                        )
-//                    )
-//                }
-//            }
-//        }
-//        viewModelScope.launch {
-//            val data = spaceViewState.value as? SpaceData.Success ?: return@launch
-//            val shareLimits = data.shareLimitReached
-//            if (!shareLimits.shareLimitReached) {
-//                commands.emit(Command.SharePrivateSpace(params.space))
-//            } else {
-//                commands.emit(Command.ShowShareLimitReachedError)
-//            }
-//        }
-//    }
-
-//    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) : Boolean {
-//        return spaceView.spaceAccessType != null
-//    }
-
-//    fun onAddMoreSpacesClicked() {
-//        viewModelScope.launch {
-//            getMembership.async(GetMembershipStatus.Params(noCache = false)).fold(
-//                onSuccess = { membership ->
-//                    if (membership != null) {
-//                        val activeTier = TierId(membership.tier)
-//                        if (activeTier.isPossibleToUpgrade(reason = MembershipUpgradeReason.NumberOfSharedSpaces)) {
-//                            commands.emit(Command.NavigateToMembership)
-//                        } else {
-//                            commands.emit(Command.NavigateToMembershipUpdate)
-//                        }
-//                    }
-//                },
-//                onFailure = {
-//                    Timber.e(it, "Error while getting membership status")
-//                    commands.emit(Command.NavigateToMembershipUpdate)
-//                }
-//            )
-//        }
-//    }
 
     fun proceedWithSettingSpaceImage(path: String) {
         Timber.d("onSpaceImageClicked: $path")
@@ -842,8 +781,20 @@ class SpaceSettingsViewModel(
         Timber.d("Notification permission dialog dismissed")
     }
 
-    fun shouldShowNotificationPermissionDialog(): Boolean {
-        return notificationPermissionManager.shouldShowPermissionDialog()
+    private fun getCurrentInviteLink() {
+        viewModelScope.launch {
+            val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
+            getCurrentInviteAccessLevel.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully retrieved current invite link access level")
+                    inviteLinkAccessLevel.value = it
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Failed to retrieve current invite link access level")
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
+                }
+            )
+        }
     }
 
     data class SpaceData(
@@ -873,6 +824,7 @@ class SpaceSettingsViewModel(
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data class ShowInviteLinkQrCode(val link: String) : Command()
+        data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
         data object ExitToVault : Command()
@@ -909,12 +861,14 @@ class SpaceSettingsViewModel(
         private val appActionManager: AppActionManager,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val getSpaceInviteLink: GetSpaceInviteLink,
+        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
         private val getAccount: GetAccount,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
-        private val deviceTokenStoreService: DeviceTokenStoringService
+        private val deviceTokenStoreService: DeviceTokenStoringService,
+        private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -939,12 +893,14 @@ class SpaceSettingsViewModel(
             appActionManager = appActionManager,
             storeOfObjectTypes = storeOfObjectTypes,
             getSpaceInviteLink = getSpaceInviteLink,
+            copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,
             getAccount = getAccount,
             notificationPermissionManager = notificationPermissionManager,
             setSpaceNotificationMode = setSpaceNotificationMode,
-            deviceTokenStoringService = deviceTokenStoreService
+            deviceTokenStoringService = deviceTokenStoreService,
+            getCurrentInviteAccessLevel = getCurrentInviteAccessLevel
         ) as T
     }
 

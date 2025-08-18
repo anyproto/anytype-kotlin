@@ -10,8 +10,10 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -113,4 +115,6 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun uriFileProvider(): UriFileProvider
     fun notificationsPermissionManager(): NotificationPermissionManager
     fun deviceTokenStoreService(): DeviceTokenStoringService
+    fun clipboard() : Clipboard
+    fun logger(): Logger
 }

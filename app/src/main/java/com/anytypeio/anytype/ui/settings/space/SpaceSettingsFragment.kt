@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.settings.space
 
 import android.Manifest
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -300,6 +301,15 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
 
                 Command.RequestNotificationPermission -> {
                     showNotificationPermissionDialog.value = true
+                }
+
+                is Command.ShareInviteLink -> {
+                    val intent = Intent().apply {
+                        action = Intent.ACTION_SEND
+                        putExtra(Intent.EXTRA_TEXT, command.link)
+                        type = "text/plain"
+                    }
+                    startActivity(Intent.createChooser(intent, null))
                 }
             }
         }

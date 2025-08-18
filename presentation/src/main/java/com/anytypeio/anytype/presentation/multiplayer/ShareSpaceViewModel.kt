@@ -406,30 +406,11 @@ class ShareSpaceViewModel(
     /**
      * Called when user selects a new invite link access level
      */
-    fun onInviteLinkAccessLevelSelected(event: UiEvent) {
+    fun onInviteLinkAccessLevelSelected(newLevel: SpaceInviteLinkAccessLevel) {
         val currentLevel = inviteLinkAccessLevel.value
-        val needsConfirmation = when (event) {
-            is UiEvent.AccessChange.Editor -> currentLevel.needsConfirmationToChangeToEditor()
-            is UiEvent.AccessChange.Viewer -> currentLevel.needsConfirmationToChangeToViewer()
-            is UiEvent.AccessChange.Request -> currentLevel.needsConfirmationToChangeToRequest()
-            is UiEvent.AccessChange.Disabled -> currentLevel.needsConfirmationToDisable()
-        }
-        
-        if (needsConfirmation) {
-            val newLevel = when (event) {
-                is UiEvent.AccessChange.Editor -> SpaceInviteLinkAccessLevel.EditorAccess("")
-                is UiEvent.AccessChange.Viewer -> SpaceInviteLinkAccessLevel.ViewerAccess("")
-                is UiEvent.AccessChange.Request -> SpaceInviteLinkAccessLevel.RequestAccess("")
-                is UiEvent.AccessChange.Disabled -> SpaceInviteLinkAccessLevel.LinkDisabled
-            }
+        if (currentLevel.needsConfirmationToChangeTo(newLevel)) {
             inviteLinkConfirmationDialog.value = newLevel
         } else {
-            val newLevel = when (event) {
-                is UiEvent.AccessChange.Editor -> SpaceInviteLinkAccessLevel.EditorAccess("")
-                is UiEvent.AccessChange.Viewer -> SpaceInviteLinkAccessLevel.ViewerAccess("")
-                is UiEvent.AccessChange.Request -> SpaceInviteLinkAccessLevel.RequestAccess("")
-                is UiEvent.AccessChange.Disabled -> SpaceInviteLinkAccessLevel.LinkDisabled
-            }
             updateInviteLinkAccessLevel(newLevel)
         }
     }

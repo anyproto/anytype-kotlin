@@ -549,7 +549,7 @@ fun MultiplayerButtons(
             icon = R.drawable.ic_copy_link_24
         )
         LinkItem(
-            onClick = { uiEvent(UiEvent.OnQrCodeClicked) },
+            onClick = { uiEvent(UiEvent.OnQrCodeClicked(link)) },
             text = stringResource(id = R.string.space_settings_qrcode),
             description = "QR code icon",
             icon = R.drawable.ic_qr_code_24

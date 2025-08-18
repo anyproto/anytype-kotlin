@@ -14,57 +14,44 @@ sealed class SpaceInviteLinkAccessLevel {
      * Editor access - users can edit the space content
      * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.WRITER
      */
-    data class EditorAccess(val link: String) : SpaceInviteLinkAccessLevel()
+    data class EditorAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+        companion object {
+            val EMPTY = EditorAccess("")
+        }
+    }
 
     /**
      * Viewer access - users can only view the space content
      * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.READER
      */
-    data class ViewerAccess(val link: String) : SpaceInviteLinkAccessLevel()
+    data class ViewerAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+        companion object {
+            val EMPTY = ViewerAccess("")
+        }
+    }
 
     /**
      * Request access - users need approval to join
      * Maps to: InviteType.MEMBER (requires approval)
      */
-    data class RequestAccess(val link: String) : SpaceInviteLinkAccessLevel()
-
-    /**
-     * Checks if changing to Editor access requires user confirmation
-     */
-    fun needsConfirmationToChangeToEditor(): Boolean {
-        // No confirmation needed when enabling from disabled state
-        if (this is LinkDisabled) return false
-        // No confirmation needed when changing from Viewer to Editor
-        return this !is ViewerAccess
+    data class RequestAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+        companion object {
+            val EMPTY = RequestAccess("")
+        }
     }
 
     /**
-     * Checks if changing to Viewer access requires user confirmation
+     * Checks if changing to the new access level requires user confirmation
      */
-    fun needsConfirmationToChangeToViewer(): Boolean {
+    fun needsConfirmationToChangeTo(newLevel: SpaceInviteLinkAccessLevel): Boolean {
         // No confirmation needed when enabling from disabled state
         if (this is LinkDisabled) return false
-        // No confirmation needed when changing from Editor to Viewer
-        return this !is EditorAccess
-    }
 
-    /**
-     * Checks if changing to Request access requires user confirmation
-     */
-    fun needsConfirmationToChangeToRequest(): Boolean {
-        // No confirmation needed when enabling from disabled state
-        if (this is LinkDisabled) return false
-        // Always needs confirmation when changing to Request access
-        return true
-    }
-
-    /**
-     * Checks if disabling the link requires user confirmation
-     */
-    fun needsConfirmationToDisable(): Boolean {
-        // Already disabled, no confirmation needed
-        if (this is LinkDisabled) return false
-        // Always needs confirmation when disabling an active link
-        return true
+        return when (newLevel) {
+            is EditorAccess -> this !is ViewerAccess
+            is ViewerAccess -> this !is EditorAccess
+            is RequestAccess -> true // Always needs confirmation
+            is LinkDisabled -> true // Always needs confirmation
+        }
     }
 }

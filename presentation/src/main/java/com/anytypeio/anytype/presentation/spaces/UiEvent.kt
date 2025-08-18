@@ -24,7 +24,7 @@ sealed class UiEvent {
     data object OnInviteClicked : UiEvent()
     data class OnCopyLinkClicked(val link: String) : UiEvent()
     data class OnShareLinkClicked(val link: String) : UiEvent()
-    data object OnQrCodeClicked : UiEvent()
+    data class OnQrCodeClicked(val link: String) : UiEvent()
     data object OnDebugClicked : UiEvent()
     data object OnSpaceInfoTitleClicked : UiEvent()
 

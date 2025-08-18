@@ -27,15 +27,12 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.onFailure
-import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -92,7 +89,6 @@ class SpaceSettingsViewModel(
     private val observeWallpaper: ObserveWallpaper,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val appActionManager: AppActionManager,
-    private val getSpaceInviteLink: GetSpaceInviteLink,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
@@ -258,9 +254,7 @@ class SpaceSettingsViewModel(
                     deviceToken = deviceToken
                 )
 
-                // TODO In the next PR : show different settings for viewer
-
-                val items = buildList<UiSpaceSettingsItem> {
+                val items = buildList {
                     add(
                         UiSpaceSettingsItem.Icon(
                             icon = spaceView.spaceIcon(
@@ -276,15 +270,11 @@ class SpaceSettingsViewModel(
                         )
                     )
                     when (spaceView.spaceAccessType) {
-                        SpaceAccessType.PRIVATE -> {
+                        SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(height = 4))
                             add(MembersSmall(count = spaceMemberCount))
                         }
-                        SpaceAccessType.SHARED -> {
-                            add(Spacer(height = 4))
-                            add(MembersSmall(count = spaceMemberCount))
-                        }
-                        else -> {
+                        SpaceAccessType.DEFAULT, null -> {
                             add(Spacer(height = 4))
                             add(EntrySpace)
                         }
@@ -308,16 +298,12 @@ class SpaceSettingsViewModel(
                         }
 
                         when (spaceView.spaceAccessType) {
-                            SpaceAccessType.PRIVATE -> {
-                                add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount))
-                            }
-                            SpaceAccessType.SHARED -> {
+                            SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(Members(count = spaceMemberCount))
                             }
                             SpaceAccessType.DEFAULT, null -> {
-                                // Do nothing. Collaboration section is not needed for default(personal) spaces
+                                // Do nothing.
                             }
                         }
                     }
@@ -405,20 +391,11 @@ class SpaceSettingsViewModel(
             UiEvent.OnPersonalizationClicked -> {
                 sendToast("Coming soon")
             }
-            UiEvent.OnQrCodeClicked -> {
+            is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    getSpaceInviteLink
-                        .async(vmParams.space)
-                        .onFailure {
-                            commands.emit(
-                                ManageSharedSpace(vmParams.space)
-                            )
-                        }
-                        .onSuccess { link ->
-                            commands.emit(
-                                ShowInviteLinkQrCode(link.scheme)
-                            )
-                        }
+                    commands.emit(
+                        ShowInviteLinkQrCode(uiEvent.link)
+                    )
                 }
             }
             is UiEvent.OnSaveDescriptionClicked -> {
@@ -517,7 +494,7 @@ class SpaceSettingsViewModel(
 
             is UiEvent.OnCopyLinkClicked -> {
                 viewModelScope.launch {
-                    val params = CopyInviteLinkToClipboard.Params(vmParams.space.id)
+                    val params = CopyInviteLinkToClipboard.Params(uiEvent.link)
                     copyInviteLinkToClipboard.invoke(params)
                         .proceed(
                             failure = {
@@ -878,7 +855,6 @@ class SpaceSettingsViewModel(
         private val observeWallpaper: ObserveWallpaper,
         private val appActionManager: AppActionManager,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val getSpaceInviteLink: GetSpaceInviteLink,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
@@ -911,7 +887,6 @@ class SpaceSettingsViewModel(
             observeWallpaper = observeWallpaper,
             appActionManager = appActionManager,
             storeOfObjectTypes = storeOfObjectTypes,
-            getSpaceInviteLink = getSpaceInviteLink,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             fetchObject = fetchObject,
             setObjectDetails = setObjectDetails,

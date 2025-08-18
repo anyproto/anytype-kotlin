@@ -32,7 +32,6 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.UiEvent
 
 
 enum class UiLinkAccessItem(val icon: Int, val titleRes: Int, val descRes: Int) {
@@ -66,7 +65,7 @@ enum class UiLinkAccessItem(val icon: Int, val titleRes: Int, val descRes: Int) 
 fun InviteLinkAccessSelector(
     modifier: Modifier = Modifier,
     currentAccessLevel: SpaceInviteLinkAccessLevel,
-    onAccessLevelChanged: (UiEvent) -> Unit,
+    onAccessLevelChanged: (SpaceInviteLinkAccessLevel) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -98,10 +97,10 @@ fun InviteLinkAccessSelector(
                     if (!isSelected) {
                         onAccessLevelChanged(
                             when (item) {
-                                UiLinkAccessItem.DISABLED -> UiEvent.AccessChange.Disabled
-                                UiLinkAccessItem.EDITOR -> UiEvent.AccessChange.Editor
-                                UiLinkAccessItem.REQUEST -> UiEvent.AccessChange.Request
-                                UiLinkAccessItem.VIEWER -> UiEvent.AccessChange.Viewer
+                                UiLinkAccessItem.DISABLED -> SpaceInviteLinkAccessLevel.LinkDisabled
+                                UiLinkAccessItem.EDITOR -> SpaceInviteLinkAccessLevel.EditorAccess.EMPTY
+                                UiLinkAccessItem.REQUEST -> SpaceInviteLinkAccessLevel.RequestAccess.EMPTY
+                                UiLinkAccessItem.VIEWER -> SpaceInviteLinkAccessLevel.ViewerAccess.EMPTY
                             }
                         )
                     }

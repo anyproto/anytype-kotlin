@@ -113,7 +113,7 @@ fun ShareSpaceScreen(
     onIncentiveClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
 
-    onInviteLinkAccessLevelSelected: (ShareSpaceViewModel.UiEvent) -> Unit,
+    onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
     onInviteLinkAccessChangeConfirmed: () -> Unit,
     onInviteLinkAccessChangeCancel: () -> Unit,
 
@@ -333,7 +333,9 @@ private fun showConfirmScreen(
     ) {
         GenericAlert(
             onFirstButtonClicked = onInviteLinkAccessChangeCancel,
-            onSecondButtonClicked = onInviteLinkAccessChangeConfirmed,
+            onSecondButtonClicked = {
+                onInviteLinkAccessChangeConfirmed()
+            },
             config = AlertConfig.WithTwoButtons(
                 title = stringResource(id = R.string.multiplayer_link_will_be_invalidated),
                 description = stringResource(R.string.multiplayer_link_will_be_invalidated_desc),

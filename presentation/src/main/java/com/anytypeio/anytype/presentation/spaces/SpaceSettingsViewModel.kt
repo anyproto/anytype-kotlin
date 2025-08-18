@@ -51,7 +51,8 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
-import com.anytypeio.anytype.domain.multiplayer.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -65,8 +66,10 @@ import javax.inject.Inject
 import kotlin.collections.map
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -97,7 +100,8 @@ class SpaceSettingsViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deviceTokenStoringService: DeviceTokenStoringService,
-    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
+    private val spaceInviteLinkStore: SpaceInviteLinkStore
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -120,7 +124,7 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
-        getCurrentInviteLink()
+        subscribeToInviteLinkState()
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -199,8 +203,9 @@ class SpaceSettingsViewModel(
             combine(
                 restrictions,
                 otherFlows,
-                spaceInfoTitleClickCount
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount ->
+                spaceInfoTitleClickCount,
+                inviteLinkAccessLevel
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -270,27 +275,50 @@ class SpaceSettingsViewModel(
                             name = spaceView.name.orEmpty()
                         )
                     )
-                    if (spaceMemberCount > 0) {
-                        add(Spacer(height = 4))
-                        add(MembersSmall(count = spaceMemberCount))
-                    }
-
-                    if (spaceView.spaceAccessType == SpaceAccessType.SHARED) {
-                        add(Spacer(height = 8))
-                        add(UiSpaceSettingsItem.Multiplayer)
-                    }
-
-                    when(spaceView.spaceAccessType) {
+                    when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE -> {
-                            add(UiSpaceSettingsItem.Section.Collaboration)
-                            add(UiSpaceSettingsItem.InviteMembers)
+                            add(Spacer(height = 4))
+                            add(MembersSmall(count = spaceMemberCount))
                         }
                         SpaceAccessType.SHARED -> {
-                            add(UiSpaceSettingsItem.Section.Collaboration)
-                            add(Members(count = spaceMemberCount))
+                            add(Spacer(height = 4))
+                            add(MembersSmall(count = spaceMemberCount))
                         }
-                        SpaceAccessType.DEFAULT, null -> {
-                            // Do nothing.
+                        else -> {
+                            add(Spacer(height = 4))
+                            add(EntrySpace)
+                        }
+                    }
+
+                    if (permission?.isOwnerOrEditor() == true) {
+                        when (inviteLink) {
+                            is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                                add(Spacer(height = 8))
+                                add(InviteLink(inviteLink.link))
+                            }
+                            is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                                add(Spacer(height = 8))
+                                add(InviteLink(inviteLink.link))
+                            }
+                            is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                                add(Spacer(height = 8))
+                                add(InviteLink(inviteLink.link))
+                            }
+                            SpaceInviteLinkAccessLevel.LinkDisabled -> {}
+                        }
+
+                        when (spaceView.spaceAccessType) {
+                            SpaceAccessType.PRIVATE -> {
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount))
+                            }
+                            SpaceAccessType.SHARED -> {
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount))
+                            }
+                            SpaceAccessType.DEFAULT, null -> {
+                                // Do nothing. Collaboration section is not needed for default(personal) spaces
+                            }
                         }
                     }
 
@@ -311,15 +339,15 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
                     if (widgetAutoCreationPreference != null) {
                         add(Spacer(height = 8))
-                        add(
-                            widgetAutoCreationPreference
-                        )
+                        add(widgetAutoCreationPreference)
                     }
 
-                    add(UiSpaceSettingsItem.Section.DataManagement)
-                    add(UiSpaceSettingsItem.RemoteStorage)
-                    add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Bin)
+                    if (permission?.isOwnerOrEditor() == true) {
+                        add(UiSpaceSettingsItem.Section.DataManagement)
+                        add(UiSpaceSettingsItem.RemoteStorage)
+                        add(Spacer(height = 8))
+                        add(UiSpaceSettingsItem.Bin)
+                    }
 
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
@@ -487,41 +515,27 @@ class SpaceSettingsViewModel(
                 spaceInfoTitleClickCount.value = currentCount + 1
             }
 
-            UiEvent.OnCopyLinkClicked -> {
+            is UiEvent.OnCopyLinkClicked -> {
                 viewModelScope.launch {
-                    getSpaceInviteLink
-                        .async(vmParams.space)
-                        .onFailure {
-                            commands.emit(
-                                ManageSharedSpace(vmParams.space)
-                            )
-                        }
-                        .onSuccess { link ->
-                            try {
-                                copyInviteLinkToClipboard.run(
-                                    CopyInviteLinkToClipboard.Params(link.scheme)
-                                )
+                    val params = CopyInviteLinkToClipboard.Params(vmParams.space.id)
+                    copyInviteLinkToClipboard.invoke(params)
+                        .proceed(
+                            failure = {
+                                Timber.e(it, "Failed to copy invite link to clipboard")
+                                sendToast("Failed to copy invite link")
+                            },
+                            success = {
+                                Timber.d("Invite link copied to clipboard: ${uiEvent.link}")
                                 sendToast("Invite link copied to clipboard")
-                            } catch (error: Exception) {
-                                Timber.e(error, "Failed to copy invite link to clipboard")
                             }
-                        }
+                        )
                 }
             }
-            UiEvent.OnShareLinkClicked -> {
+            is UiEvent.OnShareLinkClicked -> {
                 viewModelScope.launch {
-                    getSpaceInviteLink
-                        .async(vmParams.space)
-                        .onFailure {
-                            commands.emit(
-                                ManageSharedSpace(vmParams.space)
-                            )
-                        }
-                        .onSuccess { link ->
-                            commands.emit(
-                                ShareInviteLink(link.scheme)
-                            )
-                        }
+                    commands.emit(
+                        ShareInviteLink(uiEvent.link)
+                    )
                 }
             }
         }
@@ -781,19 +795,23 @@ class SpaceSettingsViewModel(
         Timber.d("Notification permission dialog dismissed")
     }
 
-    private fun getCurrentInviteLink() {
+    private fun subscribeToInviteLinkState() {
         viewModelScope.launch {
-            val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
-            getCurrentInviteAccessLevel.async(params).fold(
-                onSuccess = {
-                    Timber.d("Successfully retrieved current invite link access level")
-                    inviteLinkAccessLevel.value = it
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Failed to retrieve current invite link access level")
+            spaceInviteLinkStore
+                .observe(vmParams.space)
+                .onStart {
+                    val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
+                    getCurrentInviteAccessLevel.async(params).getOrNull()
+                }
+                .catch {
+                    Timber.e(it, "Error observing invite link access level")
+                    // Emit default value on error
                     inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
                 }
-            )
+                .collect { accessLevel ->
+                    Timber.d("Invite link access level updated: $accessLevel")
+                    inviteLinkAccessLevel.value = accessLevel
+                }
         }
     }
 
@@ -868,7 +886,8 @@ class SpaceSettingsViewModel(
         private val notificationPermissionManager: NotificationPermissionManager,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
         private val deviceTokenStoreService: DeviceTokenStoringService,
-        private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
+        private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
+        private val spaceInviteLinkStore: SpaceInviteLinkStore
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -900,7 +919,8 @@ class SpaceSettingsViewModel(
             notificationPermissionManager = notificationPermissionManager,
             setSpaceNotificationMode = setSpaceNotificationMode,
             deviceTokenStoringService = deviceTokenStoreService,
-            getCurrentInviteAccessLevel = getCurrentInviteAccessLevel
+            getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
+            spaceInviteLinkStore = spaceInviteLinkStore
         ) as T
     }
 

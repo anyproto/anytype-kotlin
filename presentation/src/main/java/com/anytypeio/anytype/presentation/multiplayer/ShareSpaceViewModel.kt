@@ -34,7 +34,8 @@ import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceInvitePermissions
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
@@ -74,7 +75,8 @@ class ShareSpaceViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-    private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions
+    private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
+    private val spaceInviteLinkStore: SpaceInviteLinkStore
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -96,6 +98,20 @@ class ShareSpaceViewModel(
         proceedWithUserPermissions(space = vmParams.space)
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()
+        viewModelScope.launch {
+            spaceInviteLinkStore.observe(vmParams.space)
+                .onStart {
+                    Timber.d("Observing space invite link store for space: ${vmParams.space}")
+                    proceedWithRequestCurrentInviteLink()
+                }
+                .catch {
+                    Timber.e(it, "Error while observing space invite link store")
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
+                }
+                .collect { inviteLink ->
+                    inviteLinkAccessLevel.value = inviteLink
+                }
+        }
     }
 
     private fun proceedWithUserPermissions(space: SpaceId) {
@@ -188,7 +204,7 @@ class ShareSpaceViewModel(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link, link: ${inviteLink.scheme}")
-                getCurrentInviteLink()
+                proceedWithRequestCurrentInviteLink()
             },
             onFailure = {
                 Timber.e(it, "Error while generating invite link")
@@ -390,11 +406,30 @@ class ShareSpaceViewModel(
     /**
      * Called when user selects a new invite link access level
      */
-    fun onInviteLinkAccessLevelSelected(newLevel: SpaceInviteLinkAccessLevel) {
+    fun onInviteLinkAccessLevelSelected(event: UiEvent) {
         val currentLevel = inviteLinkAccessLevel.value
-        if (currentLevel.needsConfirmationToChangeTo(newLevel)) {
+        val needsConfirmation = when (event) {
+            is UiEvent.AccessChange.Editor -> currentLevel.needsConfirmationToChangeToEditor()
+            is UiEvent.AccessChange.Viewer -> currentLevel.needsConfirmationToChangeToViewer()
+            is UiEvent.AccessChange.Request -> currentLevel.needsConfirmationToChangeToRequest()
+            is UiEvent.AccessChange.Disabled -> currentLevel.needsConfirmationToDisable()
+        }
+        
+        if (needsConfirmation) {
+            val newLevel = when (event) {
+                is UiEvent.AccessChange.Editor -> SpaceInviteLinkAccessLevel.EditorAccess("")
+                is UiEvent.AccessChange.Viewer -> SpaceInviteLinkAccessLevel.ViewerAccess("")
+                is UiEvent.AccessChange.Request -> SpaceInviteLinkAccessLevel.RequestAccess("")
+                is UiEvent.AccessChange.Disabled -> SpaceInviteLinkAccessLevel.LinkDisabled
+            }
             inviteLinkConfirmationDialog.value = newLevel
         } else {
+            val newLevel = when (event) {
+                is UiEvent.AccessChange.Editor -> SpaceInviteLinkAccessLevel.EditorAccess("")
+                is UiEvent.AccessChange.Viewer -> SpaceInviteLinkAccessLevel.ViewerAccess("")
+                is UiEvent.AccessChange.Request -> SpaceInviteLinkAccessLevel.RequestAccess("")
+                is UiEvent.AccessChange.Disabled -> SpaceInviteLinkAccessLevel.LinkDisabled
+            }
             updateInviteLinkAccessLevel(newLevel)
         }
     }
@@ -481,7 +516,7 @@ class ShareSpaceViewModel(
                                 space = space,
                                 newLevel = newLevel,
                                 onSuccess = {
-                                    getCurrentInviteLink()
+                                    proceedWithRequestCurrentInviteLink()
                                     inviteLinkAccessLoading.value = false
                                     inviteLinkConfirmationDialog.value = null
                                     inviteLinkAccessLevel.value = newLevel
@@ -535,7 +570,7 @@ class ShareSpaceViewModel(
                                 space = space,
                                 newLevel = newLevel,
                                 onSuccess = {
-                                    getCurrentInviteLink()
+                                    proceedWithRequestCurrentInviteLink()
                                     inviteLinkAccessLoading.value = false
                                     inviteLinkConfirmationDialog.value = null
                                     inviteLinkAccessLevel.value = newLevel
@@ -656,18 +691,9 @@ class ShareSpaceViewModel(
         )
     }
 
-    private suspend fun getCurrentInviteLink() {
+    private suspend fun proceedWithRequestCurrentInviteLink() {
         val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
-        getCurrentInviteAccessLevel.async(params).fold(
-            onSuccess = {
-                Timber.d("Successfully retrieved current invite link access level")
-                inviteLinkAccessLevel.value = it
-            },
-            onFailure = { error ->
-                Timber.e(error, "Failed to retrieve current invite link access level")
-                inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
-            }
-        )
+        getCurrentInviteAccessLevel.async(params).getOrNull()
     }
 
     fun onMoreInfoClicked() {
@@ -746,7 +772,8 @@ class ShareSpaceViewModel(
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-        private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions
+        private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
+        private val spaceInviteLinkStore: SpaceInviteLinkStore
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -765,7 +792,8 @@ class ShareSpaceViewModel(
             spaceViews = spaceViews,
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
-            changeSpaceInvitePermissions = changeSpaceInvitePermissions
+            changeSpaceInvitePermissions = changeSpaceInvitePermissions,
+            spaceInviteLinkStore = spaceInviteLinkStore
         ) as T
     }
 
@@ -802,6 +830,15 @@ class ShareSpaceViewModel(
     companion object {
         const val SHARE_SPACE_MEMBER_SUBSCRIPTION = "share-space-subscription.member"
         const val SHARE_SPACE_SPACE_SUBSCRIPTION = "share-space-subscription.space"
+    }
+
+    sealed class UiEvent{
+        sealed class AccessChange : UiEvent() {
+            data object Editor : AccessChange()
+            data object Viewer : AccessChange()
+            data object Request : AccessChange()
+            data object Disabled : AccessChange()
+        }
     }
 
     //Active membership status of the current user

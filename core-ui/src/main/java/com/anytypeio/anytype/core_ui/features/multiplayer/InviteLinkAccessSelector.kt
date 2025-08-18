@@ -32,37 +32,30 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.UiEvent
 
 
-sealed class UiLinkAccessItem {
-    abstract val icon: Int
-    abstract val titleRes: Int
-    abstract val descRes: Int
-
-    data class Editor(
-        override val titleRes: Int,
-        override val descRes: Int,
-        override val icon: Int
-    ) : UiLinkAccessItem()
-
-    data class Viewer(
-        override val titleRes: Int,
-        override val descRes: Int,
-        override val icon: Int
-    ) : UiLinkAccessItem()
-
-    data class Request(
-        override val titleRes: Int,
-        override val descRes: Int,
-        override val icon: Int
-    ) : UiLinkAccessItem()
-
-    data class Disabled(
-        override val titleRes: Int,
-        override val descRes: Int,
-        override val icon: Int
-    ) : UiLinkAccessItem()
+enum class UiLinkAccessItem(val icon: Int, val titleRes: Int, val descRes: Int) {
+    VIEWER(
+        R.drawable.ic_link_viewer_24,
+        R.string.multiplayer_viewer_access,
+        R.string.multiplayer_viewer_access_desc
+    ),
+    EDITOR(
+        R.drawable.ic_link_editor_24,
+        R.string.multiplayer_editor_access,
+        R.string.multiplayer_editor_access_desc
+    ),
+    REQUEST(
+        R.drawable.ic_link_request_24,
+        R.string.multiplayer_request_access,
+        R.string.multiplayer_request_access_desc
+    ),
+    DISABLED(
+        R.drawable.ic_link_disabled_24,
+        R.string.multiplayer_link_disabled,
+        R.string.multiplayer_link_disabled_desc
+    )
 }
 
 /**
@@ -73,7 +66,7 @@ sealed class UiLinkAccessItem {
 fun InviteLinkAccessSelector(
     modifier: Modifier = Modifier,
     currentAccessLevel: SpaceInviteLinkAccessLevel,
-    onAccessLevelChanged: (ShareSpaceViewModel.UiEvent) -> Unit,
+    onAccessLevelChanged: (UiEvent) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -92,26 +85,10 @@ fun InviteLinkAccessSelector(
         )
 
         val options = listOf(
-            UiLinkAccessItem.Viewer(
-                icon = R.drawable.ic_link_viewer_24,
-                titleRes = R.string.multiplayer_viewer_access,
-                descRes = R.string.multiplayer_viewer_access_desc
-            ),
-            UiLinkAccessItem.Editor(
-                icon = R.drawable.ic_link_editor_24,
-                titleRes = R.string.multiplayer_editor_access,
-                descRes = R.string.multiplayer_editor_access_desc
-            ),
-            UiLinkAccessItem.Request(
-                icon = R.drawable.ic_link_request_24,
-                titleRes = R.string.multiplayer_request_access,
-                descRes = R.string.multiplayer_request_access_desc
-            ),
-            UiLinkAccessItem.Disabled(
-                icon = R.drawable.ic_link_disabled_24,
-                titleRes = R.string.multiplayer_link_disabled,
-                descRes = R.string.multiplayer_link_disabled_desc
-            )
+            UiLinkAccessItem.VIEWER,
+            UiLinkAccessItem.EDITOR,
+            UiLinkAccessItem.REQUEST,
+            UiLinkAccessItem.DISABLED
         )
 
         options.forEachIndexed { index, item ->
@@ -121,10 +98,10 @@ fun InviteLinkAccessSelector(
                     if (!isSelected) {
                         onAccessLevelChanged(
                             when (item) {
-                                is UiLinkAccessItem.Disabled -> ShareSpaceViewModel.UiEvent.AccessChange.Disabled
-                                is UiLinkAccessItem.Editor -> ShareSpaceViewModel.UiEvent.AccessChange.Editor
-                                is UiLinkAccessItem.Request -> ShareSpaceViewModel.UiEvent.AccessChange.Request
-                                is UiLinkAccessItem.Viewer -> ShareSpaceViewModel.UiEvent.AccessChange.Viewer
+                                UiLinkAccessItem.DISABLED -> UiEvent.AccessChange.Disabled
+                                UiLinkAccessItem.EDITOR -> UiEvent.AccessChange.Editor
+                                UiLinkAccessItem.REQUEST -> UiEvent.AccessChange.Request
+                                UiLinkAccessItem.VIEWER -> UiEvent.AccessChange.Viewer
                             }
                         )
                     }
@@ -194,42 +171,15 @@ fun AccessLevelOption(
     }
 }
 
-@Composable
-fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiLinkAccessItem {
-    when (this) {
-        is SpaceInviteLinkAccessLevel.EditorAccess -> return UiLinkAccessItem.Editor(
-            icon = R.drawable.ic_link_editor_24,
-            titleRes = R.string.multiplayer_editor_access,
-            descRes = R.string.multiplayer_editor_access_desc
-        )
-
-        is SpaceInviteLinkAccessLevel.ViewerAccess -> return UiLinkAccessItem.Viewer(
-            icon = R.drawable.ic_link_viewer_24,
-            titleRes = R.string.multiplayer_viewer_access,
-            descRes = R.string.multiplayer_viewer_access_desc
-        )
-
-        is SpaceInviteLinkAccessLevel.RequestAccess -> return UiLinkAccessItem.Request(
-            icon = R.drawable.ic_link_request_24,
-            titleRes = R.string.multiplayer_request_access,
-            descRes = R.string.multiplayer_request_access_desc
-        )
-
-        SpaceInviteLinkAccessLevel.LinkDisabled -> return UiLinkAccessItem.Disabled(
-            icon = R.drawable.ic_link_disabled_24,
-            titleRes = R.string.multiplayer_link_disabled,
-            descRes = R.string.multiplayer_link_disabled_desc
-        )
-    }
+fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiLinkAccessItem = when (this) {
+    is SpaceInviteLinkAccessLevel.EditorAccess -> UiLinkAccessItem.EDITOR
+    is SpaceInviteLinkAccessLevel.ViewerAccess -> UiLinkAccessItem.VIEWER
+    is SpaceInviteLinkAccessLevel.RequestAccess -> UiLinkAccessItem.REQUEST
+    SpaceInviteLinkAccessLevel.LinkDisabled -> UiLinkAccessItem.DISABLED
 }
 
 private fun SpaceInviteLinkAccessLevel.matches(item: UiLinkAccessItem): Boolean {
-    return when (this) {
-        is SpaceInviteLinkAccessLevel.EditorAccess -> item is UiLinkAccessItem.Editor
-        is SpaceInviteLinkAccessLevel.ViewerAccess -> item is UiLinkAccessItem.Viewer
-        is SpaceInviteLinkAccessLevel.RequestAccess -> item is UiLinkAccessItem.Request
-        SpaceInviteLinkAccessLevel.LinkDisabled -> item is UiLinkAccessItem.Disabled
-    }
+    return this.getInviteLinkItemParams() == item
 }
 
 @Preview(showBackground = true)

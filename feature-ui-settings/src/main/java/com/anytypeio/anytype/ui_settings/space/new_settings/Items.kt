@@ -528,6 +528,7 @@ fun NewSettingsTextField(
 
 @Composable
 fun MultiplayerButtons(
+    link: String,
     modifier: Modifier = Modifier,
     uiEvent: (UiEvent) -> Unit
 ) {
@@ -536,13 +537,13 @@ fun MultiplayerButtons(
         horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally),
     ) {
         LinkItem(
-            onClick = { uiEvent(UiEvent.OnShareLinkClicked) },
+            onClick = { uiEvent(UiEvent.OnShareLinkClicked(link)) },
             text = stringResource(id = R.string.space_settings_share_link),
             description = "Share link icon",
             icon = R.drawable.ic_share_link_24
         )
         LinkItem(
-            onClick = { uiEvent(UiEvent.OnCopyLinkClicked) },
+            onClick = { uiEvent(UiEvent.OnCopyLinkClicked(link)) },
             text = stringResource(id = R.string.space_settings_copy_link),
             description = "Copy link icon",
             icon = R.drawable.ic_copy_link_24

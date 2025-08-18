@@ -38,7 +38,6 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,6 +82,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
@@ -90,7 +90,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
@@ -114,7 +113,7 @@ fun ShareSpaceScreen(
     onIncentiveClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
 
-    onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
+    onInviteLinkAccessLevelSelected: (ShareSpaceViewModel.UiEvent) -> Unit,
     onInviteLinkAccessChangeConfirmed: () -> Unit,
     onInviteLinkAccessChangeCancel: () -> Unit,
 
@@ -126,7 +125,6 @@ fun ShareSpaceScreen(
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
     val sheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -158,17 +156,14 @@ fun ShareSpaceScreen(
             Section(
                 title = stringResource(R.string.multiplayer_members_invite_links_section)
             )
-            val (title, desc, icon) = inviteLinkAccessLevel.getInviteLinkItemParams()
+            val item = inviteLinkAccessLevel.getInviteLinkItemParams()
             AccessLevelOption(
                 modifier = Modifier
                     .fillMaxWidth()
                     .noRippleThrottledClickable {
                         showInviteLinkAccessSelector = !showInviteLinkAccessSelector
                     },
-                icon = icon,
-                title = title,
-                description = desc,
-                endIcon = R.drawable.ic_arrow_forward_24,
+                uiItemUI = item
             )
             
             // Show invite link and copy button when not LINK_DISABLED

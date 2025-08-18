@@ -41,8 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -51,8 +49,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
@@ -187,22 +183,31 @@ fun NewSpaceSettingsScreen(
                         }
                         is UiSpaceSettingsItem.MembersSmall -> {
                             item {
-                                val t = if (item.count > 0) {
-                                    pluralStringResource(
-                                        id = R.plurals.multiplayer_number_of_space_members,
-                                        item.count,
-                                        item.count,
-                                        item.count
-                                    )
-                                } else {
-                                    stringResource(id = R.string.three_dots_text_placeholder)
-                                }
                                 Text(
                                     modifier = Modifier
                                         .padding(horizontal = 32.dp)
                                         .fillMaxWidth()
                                         .animateItem(),
-                                    text = t,
+                                    text = pluralStringResource(
+                                        id = R.plurals.multiplayer_number_of_space_members,
+                                        item.count,
+                                        item.count,
+                                        item.count
+                                    ),
+                                    style = Caption1Regular,
+                                    color = colorResource(id = R.color.text_secondary),
+                                    textAlign = TextAlign.Center
+                                )
+                            }
+                        }
+                        is UiSpaceSettingsItem.EntrySpace -> {
+                            item {
+                                Text(
+                                    modifier = Modifier
+                                        .padding(horizontal = 32.dp)
+                                        .fillMaxWidth()
+                                        .animateItem(),
+                                    text = stringResource(id = R.string.default_space),
                                     style = Caption1Regular,
                                     color = colorResource(id = R.color.text_secondary),
                                     textAlign = TextAlign.Center
@@ -231,9 +236,10 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
-                        UiSpaceSettingsItem.Multiplayer -> {
+                        is UiSpaceSettingsItem.InviteLink -> {
                             item {
                                 MultiplayerButtons(
+                                    link = item.link,
                                     modifier = Modifier
                                         .fillMaxWidth(),
                                     uiEvent = uiEvent

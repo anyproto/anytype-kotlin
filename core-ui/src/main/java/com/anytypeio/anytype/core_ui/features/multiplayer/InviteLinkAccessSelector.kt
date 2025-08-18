@@ -32,13 +32,38 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 
-private data class AccessLevelUi(
-    val level: SpaceInviteLinkAccessLevel,
-    val icon: Int,
-    val titleRes: Int,
-    val descRes: Int
-)
+
+sealed class UiLinkAccessItem {
+    abstract val icon: Int
+    abstract val titleRes: Int
+    abstract val descRes: Int
+
+    data class Editor(
+        override val titleRes: Int,
+        override val descRes: Int,
+        override val icon: Int
+    ) : UiLinkAccessItem()
+
+    data class Viewer(
+        override val titleRes: Int,
+        override val descRes: Int,
+        override val icon: Int
+    ) : UiLinkAccessItem()
+
+    data class Request(
+        override val titleRes: Int,
+        override val descRes: Int,
+        override val icon: Int
+    ) : UiLinkAccessItem()
+
+    data class Disabled(
+        override val titleRes: Int,
+        override val descRes: Int,
+        override val icon: Int
+    ) : UiLinkAccessItem()
+}
 
 /**
  * Component for selecting space invite link access level
@@ -48,15 +73,16 @@ private data class AccessLevelUi(
 fun InviteLinkAccessSelector(
     modifier: Modifier = Modifier,
     currentAccessLevel: SpaceInviteLinkAccessLevel,
-    onAccessLevelChanged: (SpaceInviteLinkAccessLevel) -> Unit,
+    onAccessLevelChanged: (ShareSpaceViewModel.UiEvent) -> Unit,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
-        .padding(horizontal = 8.dp)
-        .background(
-            shape = RoundedCornerShape(16.dp),
-            color = colorResource(id = R.color.background_secondary)
-        )
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.background_secondary)
+            )
             .padding(bottom = 8.dp)
     ) {
         Dragger(
@@ -66,26 +92,22 @@ fun InviteLinkAccessSelector(
         )
 
         val options = listOf(
-            AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.EditorAccess(""),
-                icon = R.drawable.ic_link_editor_24,
-                titleRes = R.string.multiplayer_editor_access,
-                descRes = R.string.multiplayer_editor_access_desc
-            ),
-            AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.ViewerAccess(""),
+            UiLinkAccessItem.Viewer(
                 icon = R.drawable.ic_link_viewer_24,
                 titleRes = R.string.multiplayer_viewer_access,
                 descRes = R.string.multiplayer_viewer_access_desc
             ),
-            AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.RequestAccess(""),
+            UiLinkAccessItem.Editor(
+                icon = R.drawable.ic_link_editor_24,
+                titleRes = R.string.multiplayer_editor_access,
+                descRes = R.string.multiplayer_editor_access_desc
+            ),
+            UiLinkAccessItem.Request(
                 icon = R.drawable.ic_link_request_24,
                 titleRes = R.string.multiplayer_request_access,
                 descRes = R.string.multiplayer_request_access_desc
             ),
-            AccessLevelUi(
-                level = SpaceInviteLinkAccessLevel.LinkDisabled,
+            UiLinkAccessItem.Disabled(
                 icon = R.drawable.ic_link_disabled_24,
                 titleRes = R.string.multiplayer_link_disabled,
                 descRes = R.string.multiplayer_link_disabled_desc
@@ -93,16 +115,22 @@ fun InviteLinkAccessSelector(
         )
 
         options.forEachIndexed { index, item ->
+            val isSelected = currentAccessLevel.matches(item)
             AccessLevelOption(
                 modifier = Modifier.noRippleClickable {
-                    if (currentAccessLevel != item.level) {
-                        onAccessLevelChanged(item.level)
+                    if (!isSelected) {
+                        onAccessLevelChanged(
+                            when (item) {
+                                is UiLinkAccessItem.Disabled -> ShareSpaceViewModel.UiEvent.AccessChange.Disabled
+                                is UiLinkAccessItem.Editor -> ShareSpaceViewModel.UiEvent.AccessChange.Editor
+                                is UiLinkAccessItem.Request -> ShareSpaceViewModel.UiEvent.AccessChange.Request
+                                is UiLinkAccessItem.Viewer -> ShareSpaceViewModel.UiEvent.AccessChange.Viewer
+                            }
+                        )
                     }
                 },
-                icon = item.icon,
-                endIcon = if (currentAccessLevel == item.level) R.drawable.ic_check_black_14 else null,
-                title = stringResource(item.titleRes),
-                description = stringResource(item.descRes)
+                uiItemUI = item,
+                isSelected = isSelected
             )
             if (index < options.lastIndex) {
                 Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
@@ -114,10 +142,8 @@ fun InviteLinkAccessSelector(
 @Composable
 fun AccessLevelOption(
     modifier: Modifier = Modifier,
-    icon: Int,
-    endIcon: Int? = null,
-    title: String,
-    description: String
+    uiItemUI: UiLinkAccessItem,
+    isSelected: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -135,29 +161,29 @@ fun AccessLevelOption(
         ) {
             Image(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(id = icon),
+                painter = painterResource(id = uiItemUI.icon),
                 contentDescription = "Link icon",
             )
         }
         Spacer(modifier = Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = title,
+                text = stringResource(id = uiItemUI.titleRes),
                 style = Title2,
                 color = colorResource(id = R.color.text_primary)
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = description,
+                text = stringResource(id = uiItemUI.descRes),
                 style = Relations2,
                 color = colorResource(id = R.color.text_secondary)
             )
         }
-        if (endIcon != null) {
+        if (isSelected) {
             Spacer(modifier = Modifier.width(12.dp))
             Image(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(id = endIcon),
+                painter = painterResource(id = R.drawable.ic_check_black_14),
                 contentDescription = "End icon",
                 contentScale = ContentScale.Inside
             )
@@ -169,32 +195,40 @@ fun AccessLevelOption(
 }
 
 @Composable
-fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams() : Triple<String, String, Int> {
+fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiLinkAccessItem {
+    when (this) {
+        is SpaceInviteLinkAccessLevel.EditorAccess -> return UiLinkAccessItem.Editor(
+            icon = R.drawable.ic_link_editor_24,
+            titleRes = R.string.multiplayer_editor_access,
+            descRes = R.string.multiplayer_editor_access_desc
+        )
+
+        is SpaceInviteLinkAccessLevel.ViewerAccess -> return UiLinkAccessItem.Viewer(
+            icon = R.drawable.ic_link_viewer_24,
+            titleRes = R.string.multiplayer_viewer_access,
+            descRes = R.string.multiplayer_viewer_access_desc
+        )
+
+        is SpaceInviteLinkAccessLevel.RequestAccess -> return UiLinkAccessItem.Request(
+            icon = R.drawable.ic_link_request_24,
+            titleRes = R.string.multiplayer_request_access,
+            descRes = R.string.multiplayer_request_access_desc
+        )
+
+        SpaceInviteLinkAccessLevel.LinkDisabled -> return UiLinkAccessItem.Disabled(
+            icon = R.drawable.ic_link_disabled_24,
+            titleRes = R.string.multiplayer_link_disabled,
+            descRes = R.string.multiplayer_link_disabled_desc
+        )
+    }
+}
+
+private fun SpaceInviteLinkAccessLevel.matches(item: UiLinkAccessItem): Boolean {
     return when (this) {
-        SpaceInviteLinkAccessLevel.LinkDisabled ->
-            Triple(
-                stringResource(R.string.multiplayer_link_disabled),
-                stringResource(R.string.multiplayer_link_disabled_desc),
-                R.drawable.ic_link_disabled_24
-            )
-        is SpaceInviteLinkAccessLevel.EditorAccess ->
-            Triple(
-                stringResource(R.string.multiplayer_editor_access),
-                stringResource(R.string.multiplayer_editor_access_desc),
-                R.drawable.ic_link_editor_24
-            )
-        is SpaceInviteLinkAccessLevel.ViewerAccess ->
-            Triple(
-                stringResource(R.string.multiplayer_viewer_access),
-                stringResource(R.string.multiplayer_viewer_access_desc),
-                R.drawable.ic_link_viewer_24
-            )
-        is SpaceInviteLinkAccessLevel.RequestAccess ->
-            Triple(
-                stringResource(R.string.multiplayer_request_access),
-                stringResource(R.string.multiplayer_request_access_desc),
-                R.drawable.ic_link_request_24
-            )
+        is SpaceInviteLinkAccessLevel.EditorAccess -> item is UiLinkAccessItem.Editor
+        is SpaceInviteLinkAccessLevel.ViewerAccess -> item is UiLinkAccessItem.Viewer
+        is SpaceInviteLinkAccessLevel.RequestAccess -> item is UiLinkAccessItem.Request
+        SpaceInviteLinkAccessLevel.LinkDisabled -> item is UiLinkAccessItem.Disabled
     }
 }
 

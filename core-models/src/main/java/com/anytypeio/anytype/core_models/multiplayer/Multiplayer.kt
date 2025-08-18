@@ -69,6 +69,7 @@ sealed class SpaceInviteError : Exception() {
     class SpaceDeleted : SpaceInviteError()
     class InvalidInvite : SpaceInviteError()
     class InvalidNotFound : SpaceInviteError()
+    data object InviteNotActive : SpaceInviteError()
 }
 
 sealed class MultiplayerError : Exception() {

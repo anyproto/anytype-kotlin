@@ -1914,7 +1914,14 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteGetCurrent.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteGetCurrent.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when (error.code) {
+                Rpc.Space.InviteGetCurrent.Response.Error.Code.NO_ACTIVE_INVITE -> {
+                    throw SpaceInviteError.InviteNotActive
+                }
+                else -> {
+                    throw Exception(error.description)
+                }
+            }
         } else {
             return response
         }

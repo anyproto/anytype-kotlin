@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -117,4 +118,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun deviceTokenStoreService(): DeviceTokenStoringService
     fun clipboard() : Clipboard
     fun logger(): Logger
+    fun spaceInviteLinkStore() : SpaceInviteLinkStore
 }

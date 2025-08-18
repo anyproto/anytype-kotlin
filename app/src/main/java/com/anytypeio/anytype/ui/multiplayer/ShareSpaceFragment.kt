@@ -62,7 +62,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onIncentiveClicked = vm::onIncentiveClicked,
                     isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
                     onMemberClicked = vm::onMemberClicked,
-                    // New Task #24 parameters
                     inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
                     inviteLinkAccessLoading = vm.inviteLinkAccessLoading.collectAsStateWithLifecycle().value,
                     confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,

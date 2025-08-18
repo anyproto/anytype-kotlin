@@ -37,6 +37,8 @@ import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
@@ -341,6 +343,12 @@ object DataModule {
         setAppState = setAppState,
         coroutineScope = scope
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideSpaceInviteLinkStore(
+    ): SpaceInviteLinkStore = SpaceInviteLinkStoreImpl()
 
     @Provides
     @Singleton

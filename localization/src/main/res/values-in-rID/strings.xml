@@ -1176,8 +1176,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Bagikan tautan undangan</string>
+    <string name="multiplayer_share_invite_link_menu">Bagikan tautan</string>
+    <string name="multiplayer_qr_invite_link_menu">Tampilkan kode QR</string>
     <string name="multiplayer_share_invite_link_description">Bagikan tautan undangan ini agar orang lain dapat bergabung ke Ruangmu. Begitu mereka mengeklik tautan dan meminta akses, kamu bisa mengatur hak akses mereka.</string>
     <string name="multiplayer_invite_link">Tautan undangan</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Tautan dinonaktifkan</string>
+    <string name="multiplayer_link_disabled_desc">Hanya anggota yang sudah diundang yang memiliki akses</string>
+    <string name="multiplayer_editor_access">Akses penyunting</string>
+    <string name="multiplayer_editor_access_desc">Orang dengan tautan ini bisa menyunting dan menulis di obrolan</string>
+    <string name="multiplayer_viewer_access">Akses pembaca</string>
+    <string name="multiplayer_viewer_access_desc">Orang dengan tautan ini bisa membaca obrolan</string>
+    <string name="multiplayer_request_access">Minta akses</string>
+    <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
+    <string name="multiplayer_qr_code">Kode QR</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Salin tautan</string>
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="multiplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
@@ -1193,6 +1213,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Anggota</string>
+    <string name="multiplayer_members_invite_links_section">Tautan undangan</string>
     <string name="multiplayer_cant_add_members">Anda tidak dapat menambah anggota lagi</string>
     <string name="multiplayer_cant_add_editors">Kamu tidak bisa menambah penyunting lagi</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
@@ -1738,6 +1759,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_section_data_management">Manajemen Data</string>
     <string name="space_settings_section_misc">Lain-Lain</string>
     <string name="space_settings_invite">Undang</string>
+    <string name="space_settings_share_link">Bagikan tautan</string>
+    <string name="space_settings_copy_link">Salin tautan</string>
     <string name="space_settings_invite_members">Undang anggota</string>
     <string name="space_settings_qrcode">Kode QR</string>
     <string name="space_settings_members_button_members">Anggota</string>
@@ -1875,5 +1898,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_not_shareable">Kelihatannya ruang ini tidak dibagikan lagi. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
     <string name="share_space_error_request_failed">Ups! Permintaan gagal. Tolong periksa koneksi internetmu lalu coba lagi.</string>
     <string name="share_space_error_space_deleted">Kelihatannya ruang ini sudah dihapus. Tolong pastikan bahwa perangkatmu tersinkron dengan baik.</string>
-    <string name="share_space_error_generic">Terjadi galat tak terduga. Silakan coba lagi nanti.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
 </resources>

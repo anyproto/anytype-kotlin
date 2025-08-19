@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
@@ -939,18 +940,20 @@ fun MNotificationStatus.toCoreModel(): NotificationStatus {
     }
 }
 
-fun MNotificationActionType.toCoreModel(): NotificationActionType {
-    return when (this) {
-        MNotificationActionType.CLOSE -> NotificationActionType.CLOSE
-    }
-}
-
 fun MParticipantPermission.toCore(): SpaceMemberPermissions {
     return when (this) {
         ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
         ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
         ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
         ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+    }
+}
+
+fun MInviteType.toCoreModel(): InviteType {
+    return when (this) {
+        anytype.model.InviteType.Member -> InviteType.MEMBER
+        anytype.model.InviteType.Guest -> InviteType.GUEST
+        anytype.model.InviteType.WithoutApprove -> InviteType.WITHOUT_APPROVE
     }
 }
 

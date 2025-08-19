@@ -1914,7 +1914,14 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Space.InviteGetCurrent.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteGetCurrent.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when (error.code) {
+                Rpc.Space.InviteGetCurrent.Response.Error.Code.NO_ACTIVE_INVITE -> {
+                    throw SpaceInviteError.InviteNotActive
+                }
+                else -> {
+                    throw Exception(error.description)
+                }
+            }
         } else {
             return response
         }
@@ -2743,6 +2750,33 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Debug.Stat.Response.Error.Code.NULL) {
             throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceChangeInvite(request: Rpc.Space.InviteChange.Request): Rpc.Space.InviteChange.Response {
+        val encoded = Service.spaceInviteChange(
+            Rpc.Space.InviteChange.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.InviteChange.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.InviteChange.Response.Error.Code.NULL) {
+            when (error.code) {
+                Rpc.Space.InviteChange.Response.Error.Code.NO_SUCH_SPACE -> {
+                    throw MultiplayerError.Generic.NoSuchSpace()
+                }
+                Rpc.Space.InviteChange.Response.Error.Code.SPACE_IS_DELETED -> {
+                    throw MultiplayerError.Generic.SpaceIsDeleted()
+                }
+                Rpc.Space.InviteChange.Response.Error.Code.INCORRECT_PERMISSIONS -> {
+                    throw MultiplayerError.Generic.IncorrectPermissions()
+                }
+                Rpc.Space.InviteChange.Response.Error.Code.REQUEST_FAILED -> {
+                    throw MultiplayerError.Generic.RequestFailed()
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

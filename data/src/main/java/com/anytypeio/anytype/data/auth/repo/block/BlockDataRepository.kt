@@ -931,8 +931,8 @@ class BlockDataRepository(
 
     override suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink {
         return remote.generateSpaceInviteLink(
             space = space,
@@ -1178,5 +1178,9 @@ class BlockDataRepository(
 
     override suspend fun debugStats(): String {
         return remote.debugStats()
+    }
+
+    override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
+        remote.spaceChangeInvite(command)
     }
 }

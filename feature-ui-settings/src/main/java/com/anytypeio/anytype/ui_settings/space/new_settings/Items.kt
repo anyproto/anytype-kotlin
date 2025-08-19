@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,7 +52,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -527,66 +528,65 @@ fun NewSettingsTextField(
 
 @Composable
 fun MultiplayerButtons(
+    link: String,
     modifier: Modifier = Modifier,
     uiEvent: (UiEvent) -> Unit
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally),
     ) {
-        Column(
-            modifier = Modifier
-                .noRippleThrottledClickable {
-                    uiEvent(UiEvent.OnInviteClicked)
-                }
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_add_member_32),
-                contentDescription = "Invite new member icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_invite),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnShareLinkClicked(link)) },
+            text = stringResource(id = R.string.space_settings_share_link),
+            description = "Share link icon",
+            icon = R.drawable.ic_share_link_24
+        )
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnCopyLinkClicked(link)) },
+            text = stringResource(id = R.string.space_settings_copy_link),
+            description = "Copy link icon",
+            icon = R.drawable.ic_copy_link_24
+        )
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnQrCodeClicked(link)) },
+            text = stringResource(id = R.string.space_settings_qrcode),
+            description = "QR code icon",
+            icon = R.drawable.ic_qr_code_24
+        )
+    }
+}
 
-        Column(
+@Composable
+private fun RowScope.LinkItem(onClick:() -> Unit, text: String, description: String, icon: Int) {
+    Column(
+        modifier = Modifier
+            .noRippleThrottledClickable {
+                onClick()
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
             modifier = Modifier
-                .noRippleThrottledClickable {
-                    uiEvent(UiEvent.OnQrCodeClicked)
-                }
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(64.dp)
+                .background(
+                    shape = RoundedCornerShape(10.dp),
+                    color = colorResource(id = R.color.shape_transparent_secondary)
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_qr_code_32),
-                contentDescription = "Share QR code icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_qrcode),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = icon),
+                contentDescription = description
             )
         }
+        Text(
+            modifier = Modifier.wrapContentSize().padding(top = 6.dp),
+            text = text,
+            style = Caption2Regular,
+            color = colorResource(id = R.color.text_primary)
+        )
     }
 }
 

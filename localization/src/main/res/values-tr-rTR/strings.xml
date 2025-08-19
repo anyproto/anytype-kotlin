@@ -1180,8 +1180,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Davet bağlantısını paylaş</string>
+    <string name="multiplayer_share_invite_link_menu">Bağlantıyı paylaş</string>
+    <string name="multiplayer_qr_invite_link_menu">Kare kodu göster</string>
     <string name="multiplayer_share_invite_link_description">Başkalarının alanınıza katılabilmesi için bu davet bağlantısını paylaşın. Bağlantınıza tıklayıp erişim talep ettiklerinde, erişim haklarını ayarlayabilirsiniz.</string>
     <string name="multiplayer_invite_link">Davet bağlantısı</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Bağlantı devre dışı</string>
+    <string name="multiplayer_link_disabled_desc">Yalnızca davet edilmiş üyeler erişebilir</string>
+    <string name="multiplayer_editor_access">Düzenleyici erişimi</string>
+    <string name="multiplayer_editor_access_desc">Bağlantıya sahip kişiler sohbette düzenleyebilir ve yazabilir</string>
+    <string name="multiplayer_viewer_access">Görüntüleyici erişimi</string>
+    <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
+    <string name="multiplayer_request_access">Erişim talebi</string>
+    <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
+    <string name="multiplayer_qr_code">Karekod</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Alan sahibi için özel bir yorum bırakın</string>
     <string name="multiplayer_request_to_join_explanation">Alan sahibi talebinizi onayladığında, alana erişim hakları sahibinin belirlediği şekilde katılırsınız.</string>
@@ -1197,6 +1217,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Yorumunuzu yazmak için dokunun</string>
     <string name="multiplayer_share_space">Alan paylaş</string>
     <string name="multiplayer_members_and_requests">Üyeler</string>
+    <string name="multiplayer_members_invite_links_section">Davet bağlantısı</string>
     <string name="multiplayer_cant_add_members">Daha fazla üye ekleyemezsiniz</string>
     <string name="multiplayer_cant_add_editors">Daha fazla düzenleyici ekleyemezsiniz</string>
     <string name="multiplayer_upgrade_button">✦ Yükselt</string>
@@ -1751,6 +1772,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_section_data_management">Veri Yönetimi</string>
     <string name="space_settings_section_misc">Diğer</string>
     <string name="space_settings_invite">Davet et</string>
+    <string name="space_settings_share_link">Bağlantıyı paylaş</string>
+    <string name="space_settings_copy_link">Bağlantıyı kopyala</string>
     <string name="space_settings_invite_members">Üyeleri davet edin</string>
     <string name="space_settings_qrcode">Karekod</string>
     <string name="space_settings_members_button_members">Üyeler</string>
@@ -1888,5 +1911,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
-    <string name="share_space_error_generic">Beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyin.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
 </resources>

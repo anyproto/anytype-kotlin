@@ -174,7 +174,6 @@ fun ShareSpaceScreen(
                     onShareClicked = onShareInviteLinkClicked,
                     onQrCodeClicked = onShareQrCodeClicked
                 )
-                SpaceInviteLinkAccessLevel.LinkDisabled -> {}
                 is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
                     link = inviteLinkAccessLevel.link,
                     onCopyClicked = onCopyInviteLinkClicked,
@@ -187,6 +186,7 @@ fun ShareSpaceScreen(
                     onShareClicked = onShareInviteLinkClicked,
                     onQrCodeClicked = onShareQrCodeClicked
                 )
+                SpaceInviteLinkAccessLevel.LinkDisabled -> {}
             }
             Section(
                 title = stringResource(R.string.multiplayer_members_and_requests)

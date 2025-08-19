@@ -55,7 +55,6 @@ class GetCurrentInviteAccessLevel @Inject constructor(
 
     /**
      * Maps middleware invite type and permissions to SpaceInviteLinkAccessLevel
-     * Based on iOS SpaceRichInviteType mapping logic
      */
     private fun mapInviteToAccessLevel(
         spaceInviteLink: SpaceInviteLink

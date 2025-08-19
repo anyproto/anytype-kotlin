@@ -940,12 +940,6 @@ fun MNotificationStatus.toCoreModel(): NotificationStatus {
     }
 }
 
-fun MNotificationActionType.toCoreModel(): NotificationActionType {
-    return when (this) {
-        MNotificationActionType.CLOSE -> NotificationActionType.CLOSE
-    }
-}
-
 fun MParticipantPermission.toCore(): SpaceMemberPermissions {
     return when (this) {
         ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
@@ -1246,21 +1240,4 @@ fun MLinkPreview.toCoreLinkPreview(): LinkPreview {
         description = description,
         title = title
     )
-}
-
-fun MInviteType.fromMw(): InviteType {
-    return when (this) {
-        anytype.model.InviteType.Member -> InviteType.MEMBER
-        anytype.model.InviteType.Guest -> InviteType.GUEST
-        anytype.model.InviteType.WithoutApprove -> InviteType.WITHOUT_APPROVE
-    }
-}
-
-fun MParticipantPermission.fromMw(): SpaceMemberPermissions {
-    return when (this) {
-        anytype.model.ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
-        anytype.model.ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
-        anytype.model.ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
-        anytype.model.ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
-    }
 }

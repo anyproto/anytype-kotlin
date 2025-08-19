@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_models.multiplayer
 
 /**
- * Represents the access level for space invitation links as per Task #24
+ * Represents the access level for space invitation links
  */
 sealed class SpaceInviteLinkAccessLevel {
 
@@ -12,7 +12,6 @@ sealed class SpaceInviteLinkAccessLevel {
 
     /**
      * Editor access - users can edit the space content
-     * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.WRITER
      */
     data class EditorAccess(val link: String) : SpaceInviteLinkAccessLevel() {
         companion object {
@@ -22,7 +21,6 @@ sealed class SpaceInviteLinkAccessLevel {
 
     /**
      * Viewer access - users can only view the space content
-     * Maps to: InviteType.WITHOUT_APPROVE + SpaceMemberPermissions.READER
      */
     data class ViewerAccess(val link: String) : SpaceInviteLinkAccessLevel() {
         companion object {
@@ -32,7 +30,6 @@ sealed class SpaceInviteLinkAccessLevel {
 
     /**
      * Request access - users need approval to join
-     * Maps to: InviteType.MEMBER (requires approval)
      */
     data class RequestAccess(val link: String) : SpaceInviteLinkAccessLevel() {
         companion object {

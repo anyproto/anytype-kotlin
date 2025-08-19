@@ -29,12 +29,12 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 
 
-enum class UiLinkAccessItem(val icon: Int, val titleRes: Int, val descRes: Int) {
+enum class UiInviteLinkAccess(val icon: Int, val titleRes: Int, val descRes: Int) {
     VIEWER(
         R.drawable.ic_link_viewer_24,
         R.string.multiplayer_viewer_access,
@@ -57,9 +57,15 @@ enum class UiLinkAccessItem(val icon: Int, val titleRes: Int, val descRes: Int) 
     )
 }
 
+val DEFAULT_OPTIONS = listOf(
+    UiInviteLinkAccess.EDITOR,
+    UiInviteLinkAccess.VIEWER,
+    UiInviteLinkAccess.REQUEST,
+    UiInviteLinkAccess.DISABLED
+)
+
 /**
  * Component for selecting space invite link access level
- * Implements Task #24: Three distinct link-based invitation options
  */
 @Composable
 fun InviteLinkAccessSelector(
@@ -83,24 +89,17 @@ fun InviteLinkAccessSelector(
                 .padding(vertical = 6.dp)
         )
 
-        val options = listOf(
-            UiLinkAccessItem.VIEWER,
-            UiLinkAccessItem.EDITOR,
-            UiLinkAccessItem.REQUEST,
-            UiLinkAccessItem.DISABLED
-        )
-
-        options.forEachIndexed { index, item ->
+        DEFAULT_OPTIONS.forEachIndexed { index, item ->
             val isSelected = currentAccessLevel.matches(item)
             AccessLevelOption(
-                modifier = Modifier.noRippleClickable {
+                modifier = Modifier.noRippleThrottledClickable {
                     if (!isSelected) {
                         onAccessLevelChanged(
                             when (item) {
-                                UiLinkAccessItem.DISABLED -> SpaceInviteLinkAccessLevel.LinkDisabled
-                                UiLinkAccessItem.EDITOR -> SpaceInviteLinkAccessLevel.EditorAccess.EMPTY
-                                UiLinkAccessItem.REQUEST -> SpaceInviteLinkAccessLevel.RequestAccess.EMPTY
-                                UiLinkAccessItem.VIEWER -> SpaceInviteLinkAccessLevel.ViewerAccess.EMPTY
+                                UiInviteLinkAccess.EDITOR -> SpaceInviteLinkAccessLevel.EditorAccess.EMPTY
+                                UiInviteLinkAccess.VIEWER -> SpaceInviteLinkAccessLevel.ViewerAccess.EMPTY
+                                UiInviteLinkAccess.REQUEST -> SpaceInviteLinkAccessLevel.RequestAccess.EMPTY
+                                UiInviteLinkAccess.DISABLED -> SpaceInviteLinkAccessLevel.LinkDisabled
                             }
                         )
                     }
@@ -108,7 +107,7 @@ fun InviteLinkAccessSelector(
                 uiItemUI = item,
                 isSelected = isSelected
             )
-            if (index < options.lastIndex) {
+            if (index < DEFAULT_OPTIONS.lastIndex) {
                 Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
             }
         }
@@ -118,7 +117,7 @@ fun InviteLinkAccessSelector(
 @Composable
 fun AccessLevelOption(
     modifier: Modifier = Modifier,
-    uiItemUI: UiLinkAccessItem,
+    uiItemUI: UiInviteLinkAccess,
     isSelected: Boolean = false
 ) {
     Row(
@@ -170,14 +169,14 @@ fun AccessLevelOption(
     }
 }
 
-fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiLinkAccessItem = when (this) {
-    is SpaceInviteLinkAccessLevel.EditorAccess -> UiLinkAccessItem.EDITOR
-    is SpaceInviteLinkAccessLevel.ViewerAccess -> UiLinkAccessItem.VIEWER
-    is SpaceInviteLinkAccessLevel.RequestAccess -> UiLinkAccessItem.REQUEST
-    SpaceInviteLinkAccessLevel.LinkDisabled -> UiLinkAccessItem.DISABLED
+fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = when (this) {
+    is SpaceInviteLinkAccessLevel.EditorAccess -> UiInviteLinkAccess.EDITOR
+    is SpaceInviteLinkAccessLevel.ViewerAccess -> UiInviteLinkAccess.VIEWER
+    is SpaceInviteLinkAccessLevel.RequestAccess -> UiInviteLinkAccess.REQUEST
+    SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
 }
 
-private fun SpaceInviteLinkAccessLevel.matches(item: UiLinkAccessItem): Boolean {
+private fun SpaceInviteLinkAccessLevel.matches(item: UiInviteLinkAccess): Boolean {
     return this.getInviteLinkItemParams() == item
 }
 

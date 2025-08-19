@@ -102,22 +102,13 @@ fun ViewerSpaceSettings(
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
-        if (description.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = description,
-                modifier = Modifier.padding(horizontal = 16.dp).fillMaxWidth(),
-                style = BodyCalloutRegular,
-                color = colorResource(R.color.text_primary),
-                textAlign = TextAlign.Center
-            )
-        }
         Spacer(modifier = Modifier.height(12.dp))
-        MultiplayerButtons(
-            modifier = Modifier
-                .padding(horizontal = 16.dp),
-            uiEvent = uiEvent
-        )
+        //todo: uncomment when invite link is implemented
+//        MultiplayerButtons(
+//            modifier = Modifier
+//                .padding(horizontal = 16.dp),
+//            uiEvent = uiEvent
+//        )
         Spacer(modifier = Modifier.height(24.dp))
     }
 

@@ -484,9 +484,9 @@ class ShareSpaceViewModel(
                 revokeSpaceInviteLink.async(space).fold(
                     onSuccess = {
                         Timber.d("Successfully disabled invite link")
+                        proceedWithRequestCurrentInviteLink()
                         inviteLinkAccessLoading.value = false
                         inviteLinkConfirmationDialog.value = null
-                        inviteLinkAccessLevel.value = newLevel
                     },
                     onFailure = {
                         Timber.e(it, "Failed to disable invite link")
@@ -520,7 +520,6 @@ class ShareSpaceViewModel(
                                 proceedWithRequestCurrentInviteLink()
                                 inviteLinkAccessLoading.value = false
                                 inviteLinkConfirmationDialog.value = null
-                                inviteLinkAccessLevel.value = newLevel
                             },
                             onFailure = { error ->
                                 inviteLinkAccessLoading.value = false
@@ -565,7 +564,6 @@ class ShareSpaceViewModel(
                                 proceedWithRequestCurrentInviteLink()
                                 inviteLinkAccessLoading.value = false
                                 inviteLinkConfirmationDialog.value = null
-                                inviteLinkAccessLevel.value = newLevel
                             },
                             onFailure = { error ->
                                 inviteLinkAccessLoading.value = false

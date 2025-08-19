@@ -2758,7 +2758,7 @@ class MiddlewareServiceImplementation @Inject constructor(
     override fun spaceChangeInvite(request: Rpc.Space.InviteChange.Request): Rpc.Space.InviteChange.Response {
         val encoded = Service.spaceInviteChange(
             Rpc.Space.InviteChange.Request.ADAPTER.encode(request)
-        )
+        ) ?: return Rpc.Space.InviteChange.Response()
         val response = Rpc.Space.InviteChange.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Space.InviteChange.Response.Error.Code.NULL) {

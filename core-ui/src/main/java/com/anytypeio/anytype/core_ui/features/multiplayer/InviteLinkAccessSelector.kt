@@ -90,7 +90,7 @@ fun InviteLinkAccessSelector(
         )
 
         DEFAULT_OPTIONS.forEachIndexed { index, item ->
-            val isSelected = currentAccessLevel.matches(item)
+            val isSelected = currentAccessLevel.getInviteLinkItemParams() == item
             AccessLevelOption(
                 modifier = Modifier.noRippleThrottledClickable {
                     if (!isSelected) {
@@ -174,10 +174,6 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = w
     is SpaceInviteLinkAccessLevel.ViewerAccess -> UiInviteLinkAccess.VIEWER
     is SpaceInviteLinkAccessLevel.RequestAccess -> UiInviteLinkAccess.REQUEST
     SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
-}
-
-private fun SpaceInviteLinkAccessLevel.matches(item: UiInviteLinkAccess): Boolean {
-    return this.getInviteLinkItemParams() == item
 }
 
 @Preview(showBackground = true)

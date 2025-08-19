@@ -2465,7 +2465,7 @@ class HomeScreenViewModel(
 
     fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
         when(uiEvent) {
-            UiEvent.OnQrCodeClicked -> {
+            is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
                     getSpaceInviteLink
                         .async(space)

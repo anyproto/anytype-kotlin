@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
@@ -87,6 +88,7 @@ class ShareSpaceViewModel(
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
+    private var _spaceViews: ObjectWrapper.SpaceView? = null
 
     // New state for invite link access levels (Task #24)
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
@@ -174,6 +176,7 @@ class ShareSpaceViewModel(
                 isLoadingInProgress.value = true
             }.collect { result ->
                 isLoadingInProgress.value = false
+                _spaceViews = result.spaceView
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
@@ -456,184 +459,175 @@ class ShareSpaceViewModel(
     }
 
     private fun updateInviteLinkAccessLevel(newLevel: SpaceInviteLinkAccessLevel) {
-        viewModelScope.launch {
-            inviteLinkAccessLoading.value = true
-            val currentLevel = inviteLinkAccessLevel.value
-            val space = vmParams.space
+        if (!inSpaceSharable()) {
+            viewModelScope.launch {
+                makeSpaceShareable(
+                    space = vmParams.space,
+                    actionSuccess = { proceedWithUpdatingInviteLink(newLevel) },
+                    actionFailure = { proceedWithMultiplayerError(it) }
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                proceedWithUpdatingInviteLink(newLevel)
+            }
+        }
+    }
 
-            when (newLevel) {
+    private suspend fun proceedWithUpdatingInviteLink(newLevel: SpaceInviteLinkAccessLevel) {
+        inviteLinkAccessLoading.value = true
+        val currentLevel = inviteLinkAccessLevel.value
+        val space = vmParams.space
 
-                SpaceInviteLinkAccessLevel.LinkDisabled -> {
-                    revokeSpaceInviteLink.async(space).fold(
-                        onSuccess = {
-                            Timber.d("Successfully disabled invite link")
-                            inviteLinkAccessLoading.value = false
-                            inviteLinkConfirmationDialog.value = null
-                            inviteLinkAccessLevel.value = newLevel
-                        },
-                        onFailure = {
-                            Timber.e(it, "Failed to disable invite link")
-                            inviteLinkAccessLoading.value = false
-                            proceedWithMultiplayerError(it)
-                        }
-                    )
-                }
+        when (newLevel) {
 
-                is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                    when (currentLevel) {
-                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
-                            makeSpaceShareable(
-                                space = space,
-                                actionSuccess = {
-                                    generateInviteLink(
-                                        inviteType = InviteType.WITHOUT_APPROVE,
-                                        permissions = SpaceMemberPermissions.WRITER
-                                    )
-                                },
-                                actionFailure = { error ->
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(error)
-                                }
-                            )
-                        }
+            SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                revokeSpaceInviteLink.async(space).fold(
+                    onSuccess = {
+                        Timber.d("Successfully disabled invite link")
+                        inviteLinkAccessLoading.value = false
+                        inviteLinkConfirmationDialog.value = null
+                        inviteLinkAccessLevel.value = newLevel
+                    },
+                    onFailure = {
+                        Timber.e(it, "Failed to disable invite link")
+                        inviteLinkAccessLoading.value = false
+                        proceedWithMultiplayerError(it)
+                    }
+                )
+            }
 
-                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                            Timber.d("Invite link already has EDITOR access")
-                            inviteLinkAccessLoading.value = false
-                            inviteLinkConfirmationDialog.value = null
-                            return@launch
-                        }
+            is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                when (currentLevel) {
+                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                        generateInviteLink(
+                            inviteType = InviteType.WITHOUT_APPROVE,
+                            permissions = SpaceMemberPermissions.WRITER
+                        )
+                    }
 
-                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                            proceedWithUpdateLink(
-                                space = space,
-                                newLevel = newLevel,
-                                onSuccess = {
-                                    proceedWithRequestCurrentInviteLink()
-                                    inviteLinkAccessLoading.value = false
-                                    inviteLinkConfirmationDialog.value = null
-                                    inviteLinkAccessLevel.value = newLevel
-                                },
-                                onFailure = { error ->
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(error)
-                                }
-                            )
-                        }
+                    is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                        Timber.d("Invite link already has EDITOR access")
+                        inviteLinkAccessLoading.value = false
+                        inviteLinkConfirmationDialog.value = null
+                        return
+                    }
 
-                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                            revokeSpaceInviteLink.async(space).fold(
-                                onSuccess = {
-                                    Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
-                                    generateInviteLink(
-                                        inviteType = InviteType.WITHOUT_APPROVE,
-                                        permissions = SpaceMemberPermissions.WRITER
-                                    )
-                                },
-                                onFailure = {
-                                    Timber.e(it, "Failed to revoke invite link for REQUEST_ACCESS")
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(it)
-                                }
-                            )
-                        }
+                    is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                        proceedWithUpdateLink(
+                            space = space,
+                            newLevel = newLevel,
+                            onSuccess = {
+                                proceedWithRequestCurrentInviteLink()
+                                inviteLinkAccessLoading.value = false
+                                inviteLinkConfirmationDialog.value = null
+                                inviteLinkAccessLevel.value = newLevel
+                            },
+                            onFailure = { error ->
+                                inviteLinkAccessLoading.value = false
+                                proceedWithMultiplayerError(error)
+                            }
+                        )
+                    }
+
+                    is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                        revokeSpaceInviteLink.async(space).fold(
+                            onSuccess = {
+                                Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
+                                generateInviteLink(
+                                    inviteType = InviteType.WITHOUT_APPROVE,
+                                    permissions = SpaceMemberPermissions.WRITER
+                                )
+                            },
+                            onFailure = {
+                                Timber.e(it, "Failed to revoke invite link for REQUEST_ACCESS")
+                                inviteLinkAccessLoading.value = false
+                                proceedWithMultiplayerError(it)
+                            }
+                        )
                     }
                 }
+            }
 
-                is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                    when (currentLevel) {
-                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
-                            makeSpaceShareable(
-                                space = space,
-                                actionSuccess = {
-                                    generateInviteLink(
-                                        inviteType = InviteType.WITHOUT_APPROVE,
-                                        permissions = SpaceMemberPermissions.READER
-                                    )
-                                },
-                                actionFailure = { error ->
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(error)
-                                }
-                            )
-                        }
+            is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                when (currentLevel) {
+                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                        generateInviteLink(
+                            inviteType = InviteType.WITHOUT_APPROVE,
+                            permissions = SpaceMemberPermissions.READER
+                        )
+                    }
 
-                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                            proceedWithUpdateLink(
-                                space = space,
-                                newLevel = newLevel,
-                                onSuccess = {
-                                    proceedWithRequestCurrentInviteLink()
-                                    inviteLinkAccessLoading.value = false
-                                    inviteLinkConfirmationDialog.value = null
-                                    inviteLinkAccessLevel.value = newLevel
-                                },
-                                onFailure = { error ->
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(error)
-                                }
-                            )
-                        }
+                    is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                        proceedWithUpdateLink(
+                            space = space,
+                            newLevel = newLevel,
+                            onSuccess = {
+                                proceedWithRequestCurrentInviteLink()
+                                inviteLinkAccessLoading.value = false
+                                inviteLinkConfirmationDialog.value = null
+                                inviteLinkAccessLevel.value = newLevel
+                            },
+                            onFailure = { error ->
+                                inviteLinkAccessLoading.value = false
+                                proceedWithMultiplayerError(error)
+                            }
+                        )
+                    }
 
-                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                            Timber.d("Invite link already has VIEWER access")
-                            inviteLinkAccessLoading.value = false
-                            inviteLinkConfirmationDialog.value = null
-                            return@launch
-                        }
+                    is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                        Timber.d("Invite link already has VIEWER access")
+                        inviteLinkAccessLoading.value = false
+                        inviteLinkConfirmationDialog.value = null
+                        return
+                    }
 
-                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                            revokeSpaceInviteLink.async(space).fold(
-                                onSuccess = {
-                                    Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
-                                    generateInviteLink(
-                                        inviteType = InviteType.WITHOUT_APPROVE,
-                                        permissions = SpaceMemberPermissions.READER
-                                    )
-                                },
-                                onFailure = {
-                                    Timber.e(it, "Failed to revoke invite link for REQUEST_ACCESS")
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(it)
-                                }
-                            )
-                        }
+                    is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                        revokeSpaceInviteLink.async(space).fold(
+                            onSuccess = {
+                                Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
+                                generateInviteLink(
+                                    inviteType = InviteType.WITHOUT_APPROVE,
+                                    permissions = SpaceMemberPermissions.READER
+                                )
+                            },
+                            onFailure = {
+                                Timber.e(it, "Failed to revoke invite link for REQUEST_ACCESS")
+                                inviteLinkAccessLoading.value = false
+                                proceedWithMultiplayerError(it)
+                            }
+                        )
                     }
                 }
+            }
 
-                is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                    when (currentLevel) {
-                        SpaceInviteLinkAccessLevel.LinkDisabled -> {
-                            makeSpaceShareable(
-                                space = space,
-                                actionSuccess = {
-                                    generateInviteLink()
-                                },
-                                actionFailure = { error ->
-                                    inviteLinkAccessLoading.value = false
-                                    proceedWithMultiplayerError(error)
-                                }
-                            )
-                        }
+            is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                when (currentLevel) {
+                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                        generateInviteLink()
+                    }
 
-                        is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                            generateInviteLink()
-                        }
+                    is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                        generateInviteLink()
+                    }
 
-                        is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                            generateInviteLink()
-                        }
+                    is SpaceInviteLinkAccessLevel.ViewerAccess -> {
+                        generateInviteLink()
+                    }
 
-                        is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                            Timber.d("Invite link already has REQUEST_ACCESS")
-                            inviteLinkAccessLoading.value = false
-                            inviteLinkConfirmationDialog.value = null
-                            return@launch
-                        }
+                    is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                        Timber.d("Invite link already has REQUEST_ACCESS")
+                        inviteLinkAccessLoading.value = false
+                        inviteLinkConfirmationDialog.value = null
+                        return
                     }
                 }
             }
         }
+    }
+
+    private fun inSpaceSharable(): Boolean {
+        return _spaceViews?.spaceAccessType == SpaceAccessType.SHARED
     }
 
     private suspend fun proceedWithUpdateLink(
@@ -729,7 +723,7 @@ class ShareSpaceViewModel(
                 }
             }
         } else {
-            shareSpaceErrors.value = ShareSpaceErrors.Error(error)
+            shareSpaceErrors.value = ShareSpaceErrors.Error(error.message ?: "Unknown error")
         }
     }
 
@@ -962,5 +956,5 @@ sealed class ShareSpaceErrors {
     data object SpaceIsDeleted : ShareSpaceErrors()
     data object IncorrectPermissions : ShareSpaceErrors()
     data object NoSuchSpace : ShareSpaceErrors()
-    data class Error(val error: Throwable) : ShareSpaceErrors()
+    data class Error(val msg: String) : ShareSpaceErrors()
 }

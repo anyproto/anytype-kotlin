@@ -1180,8 +1180,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>
+    <string name="multiplayer_share_invite_link_menu">Deel koppeling</string>
+    <string name="multiplayer_qr_invite_link_menu">Toon QR-code</string>
     <string name="multiplayer_share_invite_link_description">Deel deze uitnodigingslink zodat anderen zich kunnen aansluiten bij je ruimte. Zodra ze op je link klikken en toegang aanvragen, kun je hun toegangsrechten instellen.</string>
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Koppeling uitgeschakeld</string>
+    <string name="multiplayer_link_disabled_desc">Alleen reeds uitgenodigde leden hebben toegang</string>
+    <string name="multiplayer_editor_access">Schrijftoegang</string>
+    <string name="multiplayer_editor_access_desc">Mensen met koppeling kunnen bewerken en schrijven in chat</string>
+    <string name="multiplayer_viewer_access">Leestoegang</string>
+    <string name="multiplayer_viewer_access_desc">Mensen met koppeling kunnen chat zien en lezen</string>
+    <string name="multiplayer_request_access">Vraag toegang aan</string>
+    <string name="multiplayer_request_access_desc">Eigenaar moet elk deelnameverzoek goedkeuren</string>
+    <string name="multiplayer_qr_code">QR-code</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Kopieer link</string>
     <string name="multiplayer_join_a_space">Deelnemen aan een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
     <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte je verzoek goedkeurt, krijg je toegang tot de ruimte met de door de eigenaar bepaalde toegangsrechten.</string>
@@ -1197,6 +1217,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden</string>
+    <string name="multiplayer_members_invite_links_section">Uitnodigingslink</string>
     <string name="multiplayer_cant_add_members">Je kunt geen leden meer toevoegen</string>
     <string name="multiplayer_cant_add_editors">Je kunt geen bewerkers meer toevoegen</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
@@ -1751,6 +1772,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_section_data_management">Gegevensbeheer</string>
     <string name="space_settings_section_misc">Overig</string>
     <string name="space_settings_invite">Nodig uit</string>
+    <string name="space_settings_share_link">Deel koppeling</string>
+    <string name="space_settings_copy_link">Kopieer link</string>
     <string name="space_settings_invite_members">Nodig leden uit</string>
     <string name="space_settings_qrcode">QR-code</string>
     <string name="space_settings_members_button_members">Leden</string>
@@ -1888,5 +1911,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat je apparaten zijn gesynchroniseerd.</string>
     <string name="share_space_error_request_failed">Oeps! De aanvraag is mislukt. Controleer jouw internetverbinding en probeer het opnieuw.</string>
     <string name="share_space_error_space_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
-    <string name="share_space_error_generic">An unexpected error occurred. Please try again later.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
 </resources>

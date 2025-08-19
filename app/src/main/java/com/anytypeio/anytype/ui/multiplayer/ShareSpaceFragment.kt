@@ -82,7 +82,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 when (errors) {
                     is ShareSpaceErrors.Error -> {
                         BaseAlertDialog(
-                            dialogText = stringResource(R.string.share_space_error_generic),
+                            dialogText = stringResource(R.string.share_space_error_generic, errors.msg),
                             buttonText = stringResource(R.string.button_ok),
                             onButtonClick = { vm.dismissShareSpaceErrors() },
                             onDismissRequest = { vm.dismissShareSpaceErrors() }

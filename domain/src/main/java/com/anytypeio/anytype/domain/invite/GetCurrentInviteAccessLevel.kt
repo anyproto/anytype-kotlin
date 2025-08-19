@@ -33,7 +33,11 @@ class GetCurrentInviteAccessLevel @Inject constructor(
 
             accessLevel
         } catch (e: Exception) {
-            // No active invite link found or error occurred
+            /**
+             * Exception handling:
+             * - SpaceInviteError.InviteNotActive is considered an expected exception, indicating there is no active invite link.
+             * - All other exceptions are considered unexpected and are logged for debugging purposes.
+             */
             if (e !is SpaceInviteError.InviteNotActive) {
                 // Log non-expected errors
                 logger.logException(e, "GetCurrentInviteAccessLevel error")

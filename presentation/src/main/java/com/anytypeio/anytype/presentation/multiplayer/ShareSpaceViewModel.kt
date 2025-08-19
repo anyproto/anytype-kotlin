@@ -412,8 +412,7 @@ class ShareSpaceViewModel(
         }
     }
 
-    // New methods for Task #24 invite link access management
-
+    //region Invite Link Access Level
     /**
      * Called when user selects a new invite link access level
      */
@@ -682,6 +681,8 @@ class ShareSpaceViewModel(
         val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
         getCurrentInviteAccessLevel.async(params).getOrNull()
     }
+
+    //endregion
 
     fun onMoreInfoClicked() {
         viewModelScope.launch {

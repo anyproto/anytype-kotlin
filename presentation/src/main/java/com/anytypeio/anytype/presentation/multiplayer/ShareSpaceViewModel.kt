@@ -205,15 +205,20 @@ class ShareSpaceViewModel(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link, link: ${inviteLink.scheme}")
                 proceedWithRequestCurrentInviteLink()
+                // Reset loading state and close confirmation dialog after successful generation
+                inviteLinkAccessLoading.value = false
+                inviteLinkConfirmationDialog.value = null
             },
             onFailure = {
                 Timber.e(it, "Error while generating invite link")
+                inviteLinkAccessLoading.value = false
                 proceedWithMultiplayerError(it)
             }
         )
     }
 
     fun onShareInviteLinkClicked(link: String) {
+        Timber.d("onShareInviteLinkClicked, link: $link")
         viewModelScope.launch {
             commands.emit(ShareInviteLink(link))
             analytics.sendEvent(
@@ -226,6 +231,7 @@ class ShareSpaceViewModel(
     }
 
     fun onShareQrCodeClicked(link: String) {
+        Timber.d("onShareQrCodeClicked, link: $link")
         viewModelScope.launch {
             commands.emit(Command.ShareQrCode(link))
             analytics.sendEvent(
@@ -238,6 +244,7 @@ class ShareSpaceViewModel(
     }
 
     fun onViewRequestClicked(view: ShareSpaceMemberView) {
+        Timber.d("onViewRequestClicked, view: [$view]")
         viewModelScope.launch {
             commands.emit(
                 Command.ViewJoinRequest(
@@ -247,7 +254,6 @@ class ShareSpaceViewModel(
             )
         }
     }
-
 
     fun onCanEditClicked(
         view: ShareSpaceMemberView
@@ -379,6 +385,7 @@ class ShareSpaceViewModel(
     }
 
     fun onMemberClicked(member: ObjectWrapper.SpaceMember) {
+        Timber.d("onMemberClicked, member: $member")
         viewModelScope.launch {
             commands.emit(
                 Command.OpenParticipantObject(
@@ -390,6 +397,7 @@ class ShareSpaceViewModel(
     }
 
     fun onIncentiveClicked() {
+        Timber.d("onIncentiveClicked")
         val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
         val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
@@ -408,6 +416,7 @@ class ShareSpaceViewModel(
      */
     fun onInviteLinkAccessLevelSelected(newLevel: SpaceInviteLinkAccessLevel) {
         val currentLevel = inviteLinkAccessLevel.value
+        Timber.d("onInviteLinkAccessLevelSelected, new level: $newLevel, current level: $currentLevel")
         if (currentLevel.needsConfirmationToChangeTo(newLevel)) {
             inviteLinkConfirmationDialog.value = newLevel
         } else {
@@ -419,6 +428,7 @@ class ShareSpaceViewModel(
      * Called when user confirms changing the invite link access level
      */
     fun onInviteLinkAccessChangeConfirmed() {
+        Timber.d("onInviteLinkAccessChangeConfirmed")
         val newLevel = inviteLinkConfirmationDialog.value ?: return
         updateInviteLinkAccessLevel(newLevel)
     }
@@ -427,10 +437,12 @@ class ShareSpaceViewModel(
      * Called when user cancels the confirmation dialog
      */
     fun onInviteLinkAccessChangeCancel() {
+        Timber.d("onInviteLinkAccessChangeCancel")
         inviteLinkConfirmationDialog.value = null
     }
 
     fun onCopyInviteLinkClicked(link: String) {
+        Timber.d("onCopyInviteLinkClicked, link: $link")
         viewModelScope.launch {
             try {
                 copyInviteLinkToClipboard.run(

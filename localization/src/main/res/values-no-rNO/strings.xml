@@ -60,7 +60,7 @@
     <string name="offload_files">Slett lokale filer</string>
     <string name="local_storage_used">%1$s brukt</string>
     <string name="space_usage">%1$s av %2$s brukt</string>
-    <string name="remote_storage">Fjernlagring</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Kontakt oss</string>
     <string name="get_more_space">Få mer plass</string>
     <string name="account_name">Navn</string>
@@ -1785,6 +1785,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="space_settings_join_space_by_qr_title">Bli med</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1828,7 +1829,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">Mine typer</string>
     <string name="space_types_screen_section_system_types">System Types</string>

@@ -15,8 +15,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -57,11 +59,13 @@ import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.lists.objects.ObjectsListItem
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiEvent
@@ -83,7 +87,8 @@ fun MembersItem(
         modifier = modifier,
         title = stringResource(id = R.string.space_settings_members_button_members),
         icon = R.drawable.ic_members_24,
-        count = item.count.toString()
+        count = item.count.toString(),
+        countIsColored = item.withColor
     )
 }
 
@@ -147,6 +152,12 @@ fun DefaultTypeItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
+
+        ListWidgetObjectIcon(
+            modifier = Modifier,
+            iconSize = 20.dp,
+            icon = icon
+        )
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = name.take(10),
@@ -209,7 +220,7 @@ fun WallpaperItem(
                                     alpha = 0.3f
                                 )
                             ),
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
                 )
@@ -225,7 +236,7 @@ fun WallpaperItem(
                                     alpha = 0.3f
                                 )
                             ),
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
                 )
@@ -298,6 +309,7 @@ fun BaseButton(
     title: String,
     count: String? = null,
     textColor: Int = R.color.text_primary,
+    countIsColored: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -326,15 +338,37 @@ fun BaseButton(
             color = colorResource(id = textColor),
         )
         if (count != null) {
-            Text(
+            val (shape, color, textColor) = when {
+                countIsColored && count.length > 2 -> {
+                    Triple(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                }
+                countIsColored -> {
+                    Triple(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                }
+                else -> {
+                    Triple(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary))
+                }
+            }
+            val horizontalPadding = if (count.length > 1) 5.dp else 0.dp
+            Box(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(horizontal = 6.dp),
-                text = count,
-                textAlign = TextAlign.Center,
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_secondary),
-            )
+                    .sizeIn(minWidth = 20.dp, minHeight = 20.dp)
+                    .background(
+                        color = color,
+                        shape = shape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = horizontalPadding),
+                    text = count,
+                    textAlign = TextAlign.Center,
+                    style = Caption1Regular,
+                    color = textColor
+                )
+            }
         }
         Image(
             painter = painterResource(id = R.drawable.ic_disclosure_8_24),
@@ -344,6 +378,16 @@ fun BaseButton(
     }
 }
 
+@DefaultPreviews
+@Composable
+private fun BaseButtonMembersPreview() {
+    BaseButton(
+        title = "Members",
+        icon = R.drawable.ic_members_24,
+        count = "19",
+        countIsColored = true
+    )
+}
 
 
 @OptIn(FlowPreview::class)
@@ -653,7 +697,7 @@ fun AutoCreateWidgetItem(
             colors = SwitchDefaults.colors().copy(
                 checkedBorderColor = Color.Transparent,
                 uncheckedBorderColor = Color.Transparent,
-                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
+                checkedTrackColor = colorResource(R.color.control_accent_80),
                 uncheckedTrackColor = colorResource(R.color.shape_secondary)
             )
         )

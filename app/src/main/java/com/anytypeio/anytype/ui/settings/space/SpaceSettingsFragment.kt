@@ -39,7 +39,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
-import com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -51,6 +50,7 @@ import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.ui.settings.DebugFragment
 import java.io.File
 import javax.inject.Inject
@@ -141,6 +141,8 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                     )
                 }
             }
+            
+            ShareSpaceQrCodeScreen(viewModel = vm)
         }
     }
 
@@ -256,16 +258,6 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                         )
                     }.onFailure {
                         Timber.w(it, "Error while opening bin from widgets")
-                    }
-                }
-                is Command.ShowInviteLinkQrCode -> {
-                    runCatching {
-                        findNavController().navigate(
-                            R.id.shareSpaceInviteQrCodeScreen,
-                            ShareQrCodeSpaceInviteFragment.args(link = command.link)
-                        )
-                    }.onFailure {
-                        Timber.w(it, "Error while showing invite QR code from space settings")
                     }
                 }
 

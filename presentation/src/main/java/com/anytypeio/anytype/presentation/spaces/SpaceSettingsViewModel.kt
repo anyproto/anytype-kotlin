@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -108,6 +109,8 @@ class SpaceSettingsViewModel(
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     val _notificationState = MutableStateFlow(NotificationState.ALL)
+
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
@@ -183,7 +186,8 @@ class SpaceSettingsViewModel(
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
                     id = defaultType?.id,
                     name = defaultType?.name.orEmpty(),
-                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    icon = defaultType?.objectIcon()
+                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
                 )
             } else {
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
@@ -280,30 +284,29 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (permission?.isOwnerOrEditor() == true) {
+                    if (spaceView.isPossibleToShare) {
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
-                            SpaceInviteLinkAccessLevel.LinkDisabled -> {}
-                        }
-
-                        when (spaceView.spaceAccessType) {
-                            SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
+                            SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(Members(count = spaceMemberCount))
-                            }
-                            SpaceAccessType.DEFAULT, null -> {
-                                // Do nothing.
                             }
                         }
                     }
@@ -393,8 +396,20 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    commands.emit(
-                        ShowInviteLinkQrCode(uiEvent.link)
+                    val (spaceName, spaceIcon) = when (val state = uiState.value) {
+                        is UiSpaceSettingsState.SpaceSettings -> {
+                            val name = state.items.filterIsInstance<Name>()
+                                .firstOrNull()?.name ?: ""
+                            val icon = state.items.filterIsInstance<Icon>()
+                                .firstOrNull()?.icon
+                            name to icon
+                        }
+                        else -> "" to null
+                    }
+                    uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
+                        link = uiEvent.link,
+                        spaceName = spaceName,
+                        icon = spaceIcon
                     )
                 }
             }
@@ -772,6 +787,10 @@ class SpaceSettingsViewModel(
         Timber.d("Notification permission dialog dismissed")
     }
 
+    fun onHideQrCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
+    }
+
     private fun subscribeToInviteLinkState() {
         viewModelScope.launch {
             spaceInviteLinkStore
@@ -818,7 +837,6 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
-        data class ShowInviteLinkQrCode(val link: String) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()

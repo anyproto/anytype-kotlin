@@ -27,7 +27,7 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.InviteLink("linkl"),
                 UiSpaceSettingsItem.Spacer(height = 8),
                 UiSpaceSettingsItem.Section.Collaboration,
-                UiSpaceSettingsItem.Members(5),
+                UiSpaceSettingsItem.Members(1, true),
                 UiSpaceSettingsItem.Section.ContentModel,
                 UiSpaceSettingsItem.ObjectTypes,
                 UiSpaceSettingsItem.Section.Preferences,

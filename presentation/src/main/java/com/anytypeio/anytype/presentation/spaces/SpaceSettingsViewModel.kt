@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -183,7 +184,8 @@ class SpaceSettingsViewModel(
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
                     id = defaultType?.id,
                     name = defaultType?.name.orEmpty(),
-                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                    icon = defaultType?.objectIcon()
+                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
                 )
             } else {
                 defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
@@ -280,30 +282,29 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (permission?.isOwnerOrEditor() == true) {
+                    if (spaceView.isPossibleToShare) {
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                                add(Spacer(height = 8))
+                                add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
+                                add(UiSpaceSettingsItem.Section.Collaboration)
+                                add(Members(count = spaceMemberCount, withColor = true))
                             }
-                            SpaceInviteLinkAccessLevel.LinkDisabled -> {}
-                        }
-
-                        when (spaceView.spaceAccessType) {
-                            SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
+                            SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(Members(count = spaceMemberCount))
-                            }
-                            SpaceAccessType.DEFAULT, null -> {
-                                // Do nothing.
                             }
                         }
                     }

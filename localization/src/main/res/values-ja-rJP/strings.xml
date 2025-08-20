@@ -1773,6 +1773,7 @@
     <string name="space_settings_delete_space_button">スペースを削除</string>
     <string name="space_settings_icon_title">画像を編集</string>
     <string name="space_settings_save_button">保存</string>
+    <string name="space_settings_join_space_by_qr_title">参加</string>
     <string name="object_type_add_property_screen_title">プロパティを追加</string>
     <string name="object_type_add_property_screen_create">プロパティ「%1$s」を作成</string>
     <string name="object_type_add_property_screen_section_types">プロパティ種類</string>
@@ -1816,7 +1817,7 @@
     <string name="object_conflict_menu_item_title">タイプに合わせてリセット</string>
     <string name="widget_source_suggested">提案</string>
     <string name="widgets_empty_state_message">まだウィジェットがありません</string>
-    <string name="space_settings_auto_create_widgets">タイプウィジェットの自動作成</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">タイプ</string>
     <string name="space_types_screen_section_my_types">作成したタイプ</string>
     <string name="space_types_screen_section_system_types">標準タイプ</string>

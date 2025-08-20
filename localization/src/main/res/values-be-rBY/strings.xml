@@ -1811,6 +1811,7 @@
     <string name="space_settings_delete_space_button">Выдаліць Прастору</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="space_settings_join_space_by_qr_title">Далучыцца</string>
     <string name="object_type_add_property_screen_title">Дадаць уласцівасць</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1854,7 +1855,7 @@
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">Мае тыпы</string>
     <string name="space_types_screen_section_system_types">System Types</string>

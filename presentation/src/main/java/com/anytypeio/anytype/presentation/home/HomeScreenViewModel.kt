@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -99,6 +100,7 @@ import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
+import com.anytypeio.anytype.presentation.home.Command.*
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -115,7 +117,10 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
@@ -238,7 +243,8 @@ class HomeScreenViewModel(
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -279,6 +285,7 @@ class HomeScreenViewModel(
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -2413,6 +2420,7 @@ class HomeScreenViewModel(
     }
 
     fun onSpaceSettingsClicked(space: SpaceId) {
+        Timber.d("onSpaceSettingsClicked, space: $space")
         viewModelScope.launch {
             val permission = userPermissions.value
             if (permission?.isOwnerOrEditor() == true) {
@@ -2441,6 +2449,11 @@ class HomeScreenViewModel(
                         Timber.w("Creator ID was empty")
                         createdByScreenName = EMPTY_STRING_VALUE
                     }
+                    val inviteLink = getSpaceInviteLink
+                        .async(space)
+                        .getOrNull()
+                        ?.scheme
+                    
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),
                         description = targetSpaceView.description.orEmpty(),
@@ -2456,7 +2469,8 @@ class HomeScreenViewModel(
                                 ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                             createdBy = createdByScreenName,
                             isDebugVisible = false
-                        )
+                        ),
+                        inviteLink = inviteLink
                     )
                 }
             }
@@ -2467,19 +2481,42 @@ class HomeScreenViewModel(
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    getSpaceInviteLink
-                        .async(space)
-                        .onFailure { commands.emit(Command.ShareSpace(space)) }
-                        .onSuccess { link ->
-                            commands.emit(Command.ShowInviteLinkQrCode(link.scheme))
-                        }
+                    val currentState = viewerSpaceSettingsState.value
+                    if (currentState is ViewerSpaceSettingsState.Visible) {
+                        uiQrCodeState.value = SpaceInvite(
+                            link = uiEvent.link,
+                            spaceName = currentState.name,
+                            icon = currentState.icon
+                        )
+                    }
                 }
             }
             UiEvent.OnInviteClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShareSpace(space)) }
+                viewModelScope.launch { commands.emit(ShareSpace(space)) }
             }
             UiEvent.OnLeaveSpaceClicked -> {
                 viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+            }
+            is UiEvent.OnShareLinkClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.ShareInviteLink(uiEvent.link))
+                }
+            }
+            is UiEvent.OnCopyLinkClicked -> {
+                viewModelScope.launch {
+                    val params = CopyInviteLinkToClipboard.Params(uiEvent.link)
+                    copyInviteLinkToClipboard.invoke(params)
+                        .proceed(
+                            failure = {
+                                Timber.e(it, "Failed to copy invite link to clipboard")
+                                sendToast("Failed to copy invite link")
+                            },
+                            success = {
+                                Timber.d("Invite link copied to clipboard: ${uiEvent.link}")
+                                sendToast("Invite link copied to clipboard")
+                            }
+                        )
+                }
             }
             else -> {
                 Timber.w("Unexpected UI event: $uiEvent")
@@ -2489,6 +2526,10 @@ class HomeScreenViewModel(
 
     fun onDismissViewerSpaceSettings() {
         viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Hidden
+    }
+
+    fun onHideQrCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
     }
 
     fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
@@ -2677,7 +2718,8 @@ class HomeScreenViewModel(
             val name: String,
             val description: String,
             val icon: SpaceIconView,
-            val techInfo: SpaceTechInfo
+            val techInfo: SpaceTechInfo,
+            val inviteLink: String? = null
         ) : ViewerSpaceSettingsState()
     }
 
@@ -2738,7 +2780,8 @@ class HomeScreenViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
-        private val notificationPermissionManager: NotificationPermissionManager
+        private val notificationPermissionManager: NotificationPermissionManager,
+        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2797,7 +2840,8 @@ class HomeScreenViewModel(
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
-            notificationPermissionManager = notificationPermissionManager
+            notificationPermissionManager = notificationPermissionManager,
+            copyInviteLinkToClipboard = copyInviteLinkToClipboard
         ) as T
     }
 
@@ -2907,11 +2951,11 @@ sealed class Command {
         data class MembershipScreen(val tierId: String?) : Deeplink()
     }
 
-    data class ShowInviteLinkQrCode(val link: String) : Command()
-
     data object ShowLeaveSpaceWarning : Command()
 
     data object HandleChatSpaceBackNavigation : Command()
+
+    data class ShareInviteLink(val link: String) : Command()
 }
 
 /**

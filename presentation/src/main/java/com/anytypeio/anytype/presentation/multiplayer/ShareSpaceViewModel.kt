@@ -49,6 +49,9 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Comman
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -77,7 +80,8 @@ class ShareSpaceViewModel(
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
-    private val spaceInviteLinkStore: SpaceInviteLinkStore
+    private val spaceInviteLinkStore: SpaceInviteLinkStore,
+    private val gradientProvider: SpaceGradientProvider
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -89,6 +93,7 @@ class ShareSpaceViewModel(
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
     private var _spaceViews: ObjectWrapper.SpaceView? = null
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     // New state for invite link access levels (Task #24)
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
@@ -236,7 +241,12 @@ class ShareSpaceViewModel(
     fun onShareQrCodeClicked(link: String) {
         Timber.d("onShareQrCodeClicked, link: $link")
         viewModelScope.launch {
-            commands.emit(Command.ShareQrCode(link))
+            val spaceView = _spaceViews ?: return@launch
+            uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
+                link = link,
+                spaceName = spaceView.name.orEmpty(),
+                icon = spaceView.spaceIcon(urlBuilder, gradientProvider)
+            )
             analytics.sendEvent(
                 eventName = clickSettingsSpaceShare,
                 props = Props(
@@ -730,6 +740,10 @@ class ShareSpaceViewModel(
         shareSpaceErrors.value = ShareSpaceErrors.Hidden
     }
 
+    fun onHideQrCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
+    }
+
     override fun onCleared() {
         viewModelScope.launch {
             container.unsubscribe(
@@ -759,7 +773,8 @@ class ShareSpaceViewModel(
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
-        private val spaceInviteLinkStore: SpaceInviteLinkStore
+        private val spaceInviteLinkStore: SpaceInviteLinkStore,
+        private val gradientProvider: SpaceGradientProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -779,7 +794,8 @@ class ShareSpaceViewModel(
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             changeSpaceInvitePermissions = changeSpaceInvitePermissions,
-            spaceInviteLinkStore = spaceInviteLinkStore
+            spaceInviteLinkStore = spaceInviteLinkStore,
+            gradientProvider = gradientProvider
         ) as T
     }
 
@@ -795,7 +811,6 @@ class ShareSpaceViewModel(
 
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
-        data class ShareQrCode(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
         data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()

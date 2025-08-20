@@ -2422,20 +2422,39 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink {
-        val request = Rpc.Space.InviteGenerate.Request(
-            spaceId = space.id,
-            inviteType = inviteType.toMiddleware(),
-            permissions = permissions.toMw()
-        )
+        val request = if (inviteType != null && permissions != null) {
+            Rpc.Space.InviteGenerate.Request(
+                spaceId = space.id,
+                inviteType = inviteType.toMiddleware(),
+                permissions = permissions.toMw()
+            )
+        } else if (inviteType != null) {
+            Rpc.Space.InviteGenerate.Request(
+                spaceId = space.id,
+                inviteType = inviteType.toMiddleware()
+            )
+        } else if (permissions != null) {
+            Rpc.Space.InviteGenerate.Request(
+                spaceId = space.id,
+                permissions = permissions.toMw()
+            )
+        } else {
+            Rpc.Space.InviteGenerate.Request(
+                spaceId = space.id
+            )
+        }
+        
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
         logResponseIfDebug(response, time)
         return SpaceInviteLink(
             contentId = response.inviteCid,
-            fileKey = response.inviteFileKey
+            fileKey = response.inviteFileKey,
+            permissions = response.permissions.toCore(),
+            inviteType = response.inviteType.toCoreModel()
         )
     }
 
@@ -2574,7 +2593,9 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return SpaceInviteLink(
             fileKey = response.inviteFileKey,
-            contentId = response.inviteCid
+            contentId = response.inviteCid,
+            permissions = response.permissions.toCore(),
+            inviteType = response.inviteType.toCoreModel()
         )
     }
 
@@ -3100,6 +3121,19 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.setSpaceMode(request) }
         logResponseIfDebug(response, time)
         return response
+    }
+
+    @Throws(Exception::class)
+    fun spaceChangeInvite(
+        command: Command.SpaceChangeInvite
+    ) {
+        val request = Rpc.Space.InviteChange.Request(
+            spaceId = command.space.id,
+            permissions = command.permissions.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceChangeInvite(request) }
+        logResponseIfDebug(response, time)
     }
 
     private fun logRequestIfDebug(request: Any) {

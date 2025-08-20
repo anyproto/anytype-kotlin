@@ -94,6 +94,12 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                     is MultiplayerError.Generic.SpaceIsDeleted -> {
                         toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
                     }
+                    is MultiplayerError.Generic.IncorrectPermissions -> {
+                        toast(resources.getString(R.string.share_space_error_incorrect_permissions))
+                    }
+                    is MultiplayerError.Generic.NoSuchSpace -> {
+                        toast(resources.getString(R.string.share_space_error_no_such_space))
+                    }
                 }
             }
         }

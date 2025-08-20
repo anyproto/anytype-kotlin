@@ -280,18 +280,17 @@ class MarkupExtractTest {
         val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
 
         // TESTING
-
+        
+        // With new text preprocessing approach, emojis are replaced in text, not as spans
+        // So we expect no emoji spans to be extracted since emojis are now part of the text
         val marks = editable.extractMarks()
 
-        assertEquals(expected = 1, actual = marks.size)
-        assertEquals(
-            expected = Mark(
-                range = mark.from..mark.to,
-                param = mark.param,
-                type = Mark.Type.EMOJI
-            ),
-            actual = marks.first()
-        )
+        assertEquals(expected = 0, actual = marks.size)
+        
+        // Verify the emoji was actually replaced in the text
+        assertTrue(editable.toString().contains("😀"), "Text should contain the emoji")
+        assertTrue(editable.toString().contains("Hello"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("world!"), "Text should still contain original content")
     }
 
     @Test
@@ -316,20 +315,25 @@ class MarkupExtractTest {
 
         val extractedMarks = editable.extractMarks()
 
-        assertEquals(expected = 4, actual = extractedMarks.size)
+        // With new text preprocessing approach, emojis are replaced in text, not as spans
+        // So we expect only 2 marks (Bold and Italic), not 4
+        assertEquals(expected = 2, actual = extractedMarks.size)
         
-        // Verify all mark types are extracted
+        // Verify only non-emoji mark types are extracted
         val emojiMarks = extractedMarks.filter { it.type == Mark.Type.EMOJI }
         val boldMarks = extractedMarks.filter { it.type == Mark.Type.BOLD }
         val italicMarks = extractedMarks.filter { it.type == Mark.Type.ITALIC }
         
-        assertEquals(2, emojiMarks.size)
+        assertEquals(0, emojiMarks.size, "No emoji spans should be extracted")
         assertEquals(1, boldMarks.size)
         assertEquals(1, italicMarks.size)
         
-        // Verify emoji params are preserved
-        assertEquals("😀", emojiMarks.find { it.range.first == 6 }?.param)
-        assertEquals("🌍", emojiMarks.find { it.range.first == 14 }?.param)
+        // Verify emojis were replaced in the actual text
+        assertTrue(editable.toString().contains("😀"), "Text should contain first emoji")
+        assertTrue(editable.toString().contains("🌍"), "Text should contain second emoji")
+        assertTrue(editable.toString().contains("Hello"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("world"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("test!"), "Text should still contain original content")
     }
 
     private fun stubMarkup(

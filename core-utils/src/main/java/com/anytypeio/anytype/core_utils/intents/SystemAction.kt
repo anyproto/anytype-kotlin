@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.normalizeUrl
 import com.anytypeio.anytype.core_utils.ext.toast
+import timber.log.Timber
 
 sealed class SystemAction {
     data class OpenUrl(val url: String) : SystemAction()
@@ -17,58 +18,71 @@ sealed class SystemAction {
     companion object {
         const val LABEL_EMAIL = "Email"
         const val LABEL_PHONE = "Phone"
-        const val LABEL_URL = "Phone"
+        const val LABEL_URL = "Url"
     }
 }
 
-fun Fragment.proceedWithAction(action: SystemAction) = when(action) {
-    is SystemAction.CopyToClipboard -> {
-        requireContext().copyPlainTextToClipboard(
-            plainText = action.plain,
-            label = action.label,
-            successToast = "Copied to clipboard!",
-            failureToast = "Failed to copy to clipboard. Please, try again later."
-        )
-    }
-    is SystemAction.MailTo -> {
-        try {
-            val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                data = Uri.parse("mailto:" + action.email)
-            }
-            context?.let {
-                startActivity(
-                    emailIntent.createEmailOnlyChooserIntent(
-                        context = it,
-                        title = "Send email"
+fun Fragment.proceedWithAction(action: SystemAction): Boolean {
+    Timber.d("Proceeding with action: $action")
+    return when (action) {
+        is SystemAction.CopyToClipboard -> {
+            requireContext().copyPlainTextToClipboard(
+                plainText = action.plain,
+                label = action.label,
+                successToast = "Copied to clipboard!",
+                failureToast = "Failed to copy to clipboard. Please, try again later."
+            )
+            true // Clipboard copy usually succeeds
+        }
+
+        is SystemAction.MailTo -> {
+            try {
+                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                    data = Uri.parse("mailto:" + action.email)
+                }
+                context?.let {
+                    startActivity(
+                        emailIntent.createEmailOnlyChooserIntent(
+                            context = it,
+                            title = "Send email"
+                        )
                     )
-                )
+                }
+                true
+            } catch (e: Exception) {
+                toast("An error occurred. Email may be invalid: ${e.message}")
+                false
             }
-        } catch (e: Exception) {
-            toast("An error occurred. Email may be invalid: ${e.message}")
         }
-    }
-    is SystemAction.OpenUrl -> {
-        try {
-            val url = action.url.normalizeUrl()
-            requireActivity().let { activity ->
-                ActivityCustomTabsHelper.openUrl(
-                    activity = activity,
-                    url = url
-                )
+
+        is SystemAction.OpenUrl -> {
+            try {
+                val url = action.url.normalizeUrl()
+                requireActivity().let { activity ->
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = activity,
+                        url = url
+                    )
+                }
+                true
+            } catch (e: Exception) {
+                toast("An error occurred. Url may be invalid: ${e.message}")
+                false
             }
-        } catch (e: Exception) {
-            toast("An error occurred. Url may be invalid: ${e.message}")
         }
-    }
-    is SystemAction.Dial -> {
-        try {
-            Intent(Intent.ACTION_DIAL).apply {
-                data = Uri.parse("tel:${action.phone}")
-            }.let {
-                startActivity(it)
+
+        is SystemAction.Dial -> {
+            try {
+                Intent(Intent.ACTION_DIAL).apply {
+                    data = Uri.parse("tel:${action.phone}")
+                }.let {
+                    startActivity(it)
+                }
+                true
+            } catch (e: Exception) {
+                toast("An error occurred. Phone number may be invalid: ${e.message}")
+                false
             }
-        } catch (e: Exception) {
-            toast("An error occurred. Phone number may be invalid: ${e.message}")
         }
     }
 }

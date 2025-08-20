@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -57,6 +58,10 @@ import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
@@ -123,7 +128,43 @@ class ChatFragment : BaseComposeFragment() {
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onMarkupLinkClicked = { proceedWithAction(OpenUrl(it)) },
+                            onMarkupLinkClicked = { url ->
+                                val handled = when {
+                                    url.startsWith(MAILTO_PREFIX) -> {
+                                        val action = SystemAction.MailTo(url.removePrefix(MAILTO_PREFIX))
+                                        proceedWithAction(action)
+                                    }
+                                    url.startsWith(TEL_PREFIX) -> {
+                                        val action = SystemAction.Dial(url.removePrefix(TEL_PREFIX))
+                                        proceedWithAction(action)
+                                    }
+                                    url.startsWith(ANYTYPE_PREFIX) || url.startsWith(FILE_PREFIX) -> {
+                                        // Unsupported schemes - copy to clipboard directly
+                                        proceedWithAction(
+                                            SystemAction.CopyToClipboard(
+                                                plain = url,
+                                                label = "link"
+                                            )
+                                        )
+                                    }
+                                    else -> {
+                                        val action = OpenUrl(url)
+                                        proceedWithAction(action)
+                                    }
+                                }
+                                
+                                // If the primary action failed, fallback to copying to clipboard
+                                if (!handled && !url.startsWith(ANYTYPE_PREFIX)
+                                    && !url.startsWith(FILE_PREFIX)
+                                ) {
+                                    proceedWithAction(
+                                        SystemAction.CopyToClipboard(
+                                            plain = url,
+                                            label = "link"
+                                        )
+                                    )
+                                }
+                            },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,
                             onViewChatReaction = { msg, emoji ->

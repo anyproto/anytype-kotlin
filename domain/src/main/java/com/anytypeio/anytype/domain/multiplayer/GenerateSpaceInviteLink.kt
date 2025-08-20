@@ -24,7 +24,7 @@ class GenerateSpaceInviteLink @Inject constructor(
 
     data class Params(
         val space: SpaceId,
-        val inviteType: InviteType,
-        val permissions: SpaceMemberPermissions
+        val inviteType: InviteType?,
+        val permissions: SpaceMemberPermissions?
     )
 }

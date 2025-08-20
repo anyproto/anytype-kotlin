@@ -404,8 +404,8 @@ interface BlockRemote {
     suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(
@@ -497,4 +497,6 @@ interface BlockRemote {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState)
 
     suspend fun debugStats(): String
+
+    suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 }

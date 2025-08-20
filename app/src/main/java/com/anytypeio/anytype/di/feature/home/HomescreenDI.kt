@@ -306,4 +306,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun notificationPermissionManager(): NotificationPermissionManager
     fun provideChatEventChannel(): ChatEventChannel
     fun provideChatPreviewContainer(): ChatPreviewContainer
+    fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
 }

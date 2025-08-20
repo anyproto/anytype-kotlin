@@ -60,7 +60,7 @@
     <string name="offload_files">Descarregar arquivos</string>
     <string name="local_storage_used">%1$s usados</string>
     <string name="space_usage">%1$s de %2$s usados</string>
-    <string name="remote_storage">Armazenamento remoto</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Fale conosco</string>
     <string name="get_more_space">Obtenha mais espaço</string>
     <string name="account_name">Nome</string>
@@ -1782,6 +1782,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Salvar</string>
+    <string name="space_settings_join_space_by_qr_title">Junte-se</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1825,7 +1826,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">Meus Tipos</string>
     <string name="space_types_screen_section_system_types">System Types</string>

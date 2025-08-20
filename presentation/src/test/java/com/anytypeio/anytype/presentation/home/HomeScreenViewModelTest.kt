@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -2880,6 +2881,9 @@ class HomeScreenViewModelTest {
         }
     }
 
+    @Mock
+    private lateinit var copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2939,7 +2943,8 @@ class HomeScreenViewModelTest {
         deleteSpace = deleteSpace,
         setAsFavourite = setObjectListIsFavorite,
         chatPreviews = chacPreviewContainer,
-        notificationPermissionManager = notificationPermissionManager
+        notificationPermissionManager = notificationPermissionManager,
+        copyInviteLinkToClipboard = copyInviteLinkToClipboard
     )
 
     companion object {

@@ -60,7 +60,7 @@
     <string name="offload_files">Melepaskan berkas</string>
     <string name="local_storage_used">%1$s digunakan</string>
     <string name="space_usage">%1$s dari %2$s digunakan</string>
-    <string name="remote_storage">Penyimpanan jarak jauh</string>
+    <string name="remote_storage">Penyimpanan Jarak Jauh</string>
     <string name="contact_us">Hubungi kami</string>
     <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
@@ -1772,6 +1772,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_delete_space_button">Hapus Ruang</string>
     <string name="space_settings_icon_title">Sunting gambar</string>
     <string name="space_settings_save_button">Simpan</string>
+    <string name="space_settings_join_space_by_qr_title">Gabung</string>
     <string name="object_type_add_property_screen_title">Tambahkan properti</string>
     <string name="object_type_add_property_screen_create">Buat properti \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Format atribut</string>
@@ -1815,7 +1816,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="object_conflict_menu_item_title">Lerai konflik tata letak</string>
     <string name="widget_source_suggested">Disarankan</string>
     <string name="widgets_empty_state_message">Belum ada gawit</string>
-    <string name="space_settings_auto_create_widgets">Buat Gawit Tipe Otomatis</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Tipe objek</string>
     <string name="space_types_screen_section_my_types">Tipeku</string>
     <string name="space_types_screen_section_system_types">Tipe Sistem</string>

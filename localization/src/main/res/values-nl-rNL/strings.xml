@@ -1785,6 +1785,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_delete_space_button">Verwijder ruimte</string>
     <string name="space_settings_icon_title">Bewerk afbeelding</string>
     <string name="space_settings_save_button">Sla op</string>
+    <string name="space_settings_join_space_by_qr_title">Deelnemen</string>
     <string name="object_type_add_property_screen_title">Voeg eigenschap toe</string>
     <string name="object_type_add_property_screen_create">Maak eigenschap \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Eigenschappen formaten</string>
@@ -1828,7 +1829,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="object_conflict_menu_item_title">Los opmaak conflict op</string>
     <string name="widget_source_suggested">Voorgesteld</string>
     <string name="widgets_empty_state_message">Er zijn nog geen widgets</string>
-    <string name="space_settings_auto_create_widgets">Maak automatisch type widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Objecttypes</string>
     <string name="space_types_screen_section_my_types">Mijn types</string>
     <string name="space_types_screen_section_system_types">Systeemtypes</string>

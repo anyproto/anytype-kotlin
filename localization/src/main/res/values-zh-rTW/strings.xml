@@ -60,7 +60,7 @@
     <string name="offload_files">刪除本地檔案</string>
     <string name="local_storage_used">%1$s 已使用</string>
     <string name="space_usage">已使用 %1$s；總共 %2$s</string>
-    <string name="remote_storage">遠端儲存空間</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">聯繫我們</string>
     <string name="get_more_space">獲取更多空間</string>
     <string name="account_name">名稱</string>
@@ -1772,6 +1772,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="space_settings_join_space_by_qr_title">加入</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1815,7 +1816,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">我的類型</string>
     <string name="space_types_screen_section_system_types">System Types</string>

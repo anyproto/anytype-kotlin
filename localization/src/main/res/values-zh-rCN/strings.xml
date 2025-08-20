@@ -1768,6 +1768,7 @@
     <string name="space_settings_delete_space_button">删除空间</string>
     <string name="space_settings_icon_title">编辑图片</string>
     <string name="space_settings_save_button">保存</string>
+    <string name="space_settings_join_space_by_qr_title">加入</string>
     <string name="object_type_add_property_screen_title">添加属性</string>
     <string name="object_type_add_property_screen_create">创建属性“%1$s”</string>
     <string name="object_type_add_property_screen_section_types">属性格式</string>
@@ -1811,7 +1812,7 @@
     <string name="object_conflict_menu_item_title">解决布局冲突</string>
     <string name="widget_source_suggested">建议</string>
     <string name="widgets_empty_state_message">还没有部件</string>
-    <string name="space_settings_auto_create_widgets">自动创建类型小部件</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">对象类型</string>
     <string name="space_types_screen_section_my_types">我的类型</string>
     <string name="space_types_screen_section_system_types">系统类型</string>

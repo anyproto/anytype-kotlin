@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +16,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -27,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
+import androidx.navigation.NavOptions.*
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -46,13 +48,15 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.UiEvent
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
+import com.anytypeio.anytype.ui.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
-import com.anytypeio.anytype.ui.multiplayer.ShareQrCodeSpaceInviteFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
@@ -133,9 +137,7 @@ class HomeScreenFragment : BaseComposeFragment(),
 
             if (spaceSettingsState is ViewerSpaceSettingsState.Visible) {
                 ModalBottomSheet(
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 32.dp),
-                    containerColor = colorResource(R.color.background_secondary),
+                    containerColor = Color.Transparent,
                     onDismissRequest = vm::onDismissViewerSpaceSettings,
                     dragHandle = null,
                     content = {
@@ -144,6 +146,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                             icon = spaceSettingsState.icon,
                             description = spaceSettingsState.description,
                             info = spaceSettingsState.techInfo,
+                            inviteLink = spaceSettingsState.inviteLink,
                             uiEvent = {
                                 vm.onViewerSpaceSettingsUiEvent(
                                     space = SpaceId(space),
@@ -153,6 +156,24 @@ class HomeScreenFragment : BaseComposeFragment(),
                         )
                     }
                 )
+            }
+            // QR Code Modal for viewer settings
+            when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
+                is UiSpaceQrCodeState.SpaceInvite -> {
+                    QrCodeScreen(
+                        spaceName = qrCodeState.spaceName,
+                        link = qrCodeState.link,
+                        icon = qrCodeState.icon,
+                        onShare = { link ->
+                            vm.onViewerSpaceSettingsUiEvent(
+                                uiEvent = UiEvent.OnShareLinkClicked(link = link),
+                                space = SpaceId(space)
+                            )
+                        },
+                        onDismiss = { vm.onHideQrCodeScreen() }
+                    )
+                }
+                else -> {}
             }
 
             BackHandler {
@@ -333,7 +354,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                     findNavController().navigate(
                         R.id.paymentsScreen,
                         MembershipFragment.args(command.tierId),
-                        NavOptions.Builder().setLaunchSingleTop(true).build()
+                        Builder().setLaunchSingleTop(true).build()
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening membership screen")
@@ -352,16 +373,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening share screen")
-                }
-            }
-            is Command.ShowInviteLinkQrCode -> {
-                runCatching {
-                    findNavController().navigate(
-                        R.id.shareSpaceInviteQrCodeScreen,
-                        ShareQrCodeSpaceInviteFragment.args(link = command.link)
-                    )
-                }.onFailure {
-                    Timber.w(it, "Error while showing invite QR code from space settings in widgets")
                 }
             }
             is Command.ShowLeaveSpaceWarning -> {
@@ -439,6 +450,15 @@ class HomeScreenFragment : BaseComposeFragment(),
                 }.onFailure {
                     Timber.e(it, "Error while handling home screen back navigation")
                 }
+            }
+
+            is Command.ShareInviteLink -> {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, command.link)
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(intent, null))
             }
         }
     }

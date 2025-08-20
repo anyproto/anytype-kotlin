@@ -115,7 +115,9 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
@@ -279,6 +281,7 @@ class HomeScreenViewModel(
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -2413,6 +2416,7 @@ class HomeScreenViewModel(
     }
 
     fun onSpaceSettingsClicked(space: SpaceId) {
+        Timber.d("onSpaceSettingsClicked, space: $space")
         viewModelScope.launch {
             val permission = userPermissions.value
             if (permission?.isOwnerOrEditor() == true) {
@@ -2441,6 +2445,11 @@ class HomeScreenViewModel(
                         Timber.w("Creator ID was empty")
                         createdByScreenName = EMPTY_STRING_VALUE
                     }
+                    val inviteLink = getSpaceInviteLink
+                        .async(space)
+                        .getOrNull()
+                        ?.scheme
+                    
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),
                         description = targetSpaceView.description.orEmpty(),
@@ -2456,7 +2465,8 @@ class HomeScreenViewModel(
                                 ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                             createdBy = createdByScreenName,
                             isDebugVisible = false
-                        )
+                        ),
+                        inviteLink = inviteLink
                     )
                 }
             }
@@ -2467,12 +2477,14 @@ class HomeScreenViewModel(
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    getSpaceInviteLink
-                        .async(space)
-                        .onFailure { commands.emit(Command.ShareSpace(space)) }
-                        .onSuccess { link ->
-                            commands.emit(Command.ShowInviteLinkQrCode(link.scheme))
-                        }
+                    val currentState = viewerSpaceSettingsState.value
+                    if (currentState is ViewerSpaceSettingsState.Visible) {
+                        uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
+                            link = uiEvent.link,
+                            spaceName = currentState.name,
+                            icon = currentState.icon
+                        )
+                    }
                 }
             }
             UiEvent.OnInviteClicked -> {
@@ -2489,6 +2501,10 @@ class HomeScreenViewModel(
 
     fun onDismissViewerSpaceSettings() {
         viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Hidden
+    }
+
+    fun onHideQrCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
     }
 
     fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
@@ -2677,7 +2693,8 @@ class HomeScreenViewModel(
             val name: String,
             val description: String,
             val icon: SpaceIconView,
-            val techInfo: SpaceTechInfo
+            val techInfo: SpaceTechInfo,
+            val inviteLink: String? = null
         ) : ViewerSpaceSettingsState()
     }
 
@@ -2906,8 +2923,6 @@ sealed class Command {
         ) : Deeplink()
         data class MembershipScreen(val tierId: String?) : Deeplink()
     }
-
-    data class ShowInviteLinkQrCode(val link: String) : Command()
 
     data object ShowLeaveSpaceWarning : Command()
 

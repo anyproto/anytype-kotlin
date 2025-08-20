@@ -50,6 +50,7 @@ fun ViewerSpaceSettings(
     description: String,
     icon: SpaceIconView,
     info: SpaceTechInfo,
+    inviteLink: String? = null,
     uiEvent: (UiEvent) -> Unit,
 ) {
 
@@ -57,7 +58,15 @@ fun ViewerSpaceSettings(
     var showTechInfo by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        Modifier
+            .padding(horizontal = 8.dp)
+            .padding(bottom = 16.dp)
+            .fillMaxWidth()
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(20.dp),
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Dragger(
             modifier = Modifier
@@ -96,20 +105,22 @@ fun ViewerSpaceSettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             text = title.ifEmpty { stringResource(R.string.untitled) },
             style = HeadlineHeading,
             color = colorResource(R.color.text_primary),
-            modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        //todo: uncomment when invite link is implemented
-//        MultiplayerButtons(
-//            modifier = Modifier
-//                .padding(horizontal = 16.dp),
-//            uiEvent = uiEvent
-//        )
-        Spacer(modifier = Modifier.height(24.dp))
+        if (!inviteLink.isNullOrEmpty()) {
+            Spacer(modifier = Modifier.height(24.dp))
+            MultiplayerButtons(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp),
+                link = inviteLink,
+                uiEvent = uiEvent
+            )
+        }
+        Spacer(modifier = Modifier.height(32.dp))
     }
 
     if (showTechInfo) {

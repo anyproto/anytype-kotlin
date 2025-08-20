@@ -27,6 +27,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceErrors
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import javax.inject.Inject
 import timber.log.Timber
@@ -74,6 +75,18 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     vm.commands.collect { command ->
                         proceedWithCommand(command)
                     }
+                }
+                when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
+                    is UiSpaceQrCodeState.SpaceInvite -> {
+                        QrCodeScreen(
+                            spaceName = qrCodeState.spaceName,
+                            link = qrCodeState.link,
+                            icon = qrCodeState.icon,
+                            onShare = vm::onShareInviteLinkClicked,
+                            onDismiss = { vm.onHideQrCodeScreen() }
+                        )
+                    }
+                    else -> {}
                 }
                 LaunchedEffect(Unit) {
                     vm.toasts.collect { toast(it) }
@@ -160,18 +173,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
-            }
-            is Command.ShareQrCode -> {
-                runCatching {
-                    findNavController().navigate(
-                        resId = R.id.shareSpaceInviteQrCodeScreen,
-                        args = ShareQrCodeSpaceInviteFragment.args(
-                            link = command.link
-                        )
-                    )
-                }.onFailure {
-                    Timber.d(it, "Error while navigation")
-                }
             }
             is Command.ViewJoinRequest -> {
                 runCatching {

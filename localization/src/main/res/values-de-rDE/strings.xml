@@ -60,7 +60,7 @@
     <string name="offload_files">Dateien abladen</string>
     <string name="local_storage_used">%1$s benutzt</string>
     <string name="space_usage">%1$s von %2$s benutzt</string>
-    <string name="remote_storage">Externer Speicher</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Kontaktiere uns</string>
     <string name="get_more_space">Speicherplatz erweitern</string>
     <string name="account_name">Name</string>
@@ -1785,6 +1785,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_delete_space_button">Bereich löschen</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
+    <string name="space_settings_join_space_by_qr_title">Beitreten</string>
     <string name="object_type_add_property_screen_title">Eigenschaft hinzufügen</string>
     <string name="object_type_add_property_screen_create">Eigenschaft ‚%1$s‘ erstellen</string>
     <string name="object_type_add_property_screen_section_types">Formate der Eigenschaften</string>
@@ -1828,7 +1829,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
     <string name="widgets_empty_state_message">Es gibt noch keine Widgets</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Objekttypen</string>
     <string name="space_types_screen_section_my_types">Meine Typen</string>
     <string name="space_types_screen_section_system_types">Systemtypen</string>

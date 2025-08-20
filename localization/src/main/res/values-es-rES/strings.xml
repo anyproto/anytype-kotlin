@@ -1785,6 +1785,7 @@ En concreto,
     <string name="space_settings_delete_space_button">Eliminar espacio</string>
     <string name="space_settings_icon_title">Editar imagen</string>
     <string name="space_settings_save_button">Guardar</string>
+    <string name="space_settings_join_space_by_qr_title">Unirte</string>
     <string name="object_type_add_property_screen_title">Añadir propiedad</string>
     <string name="object_type_add_property_screen_create">Crear propiedad «%1$s»</string>
     <string name="object_type_add_property_screen_section_types">Formatos de propiedades</string>
@@ -1828,7 +1829,7 @@ En concreto,
     <string name="object_conflict_menu_item_title">Resolver conflicto de diseño</string>
     <string name="widget_source_suggested">Sugerencia</string>
     <string name="widgets_empty_state_message">Aún no hay ningún widget</string>
-    <string name="space_settings_auto_create_widgets">Crear widgets de tipo automáticamente</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Tipos de objeto</string>
     <string name="space_types_screen_section_my_types">Mis tipos</string>
     <string name="space_types_screen_section_system_types">Tipos del sistema</string>

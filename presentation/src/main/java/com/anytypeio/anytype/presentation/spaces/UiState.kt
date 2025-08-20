@@ -24,6 +24,15 @@ sealed class UiSpaceSettingsState {
     data class SpaceSettingsError(val message: String) : UiSpaceSettingsState()
 }
 
+sealed class UiSpaceQrCodeState {
+    data object Hidden : UiSpaceQrCodeState()
+    data class SpaceInvite(
+        val link: String,
+        val spaceName: String,
+        val icon: SpaceIconView?
+    ) : UiSpaceQrCodeState()
+}
+
 data class SpaceTechInfo(
     val spaceId: SpaceId,
     val createdBy: String,

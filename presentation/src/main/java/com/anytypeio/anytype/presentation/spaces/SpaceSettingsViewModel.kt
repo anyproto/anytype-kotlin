@@ -109,6 +109,8 @@ class SpaceSettingsViewModel(
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     val _notificationState = MutableStateFlow(NotificationState.ALL)
+
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
@@ -394,8 +396,20 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
-                    commands.emit(
-                        ShowInviteLinkQrCode(uiEvent.link)
+                    val (spaceName, spaceIcon) = when (val state = uiState.value) {
+                        is UiSpaceSettingsState.SpaceSettings -> {
+                            val name = state.items.filterIsInstance<Name>()
+                                .firstOrNull()?.name ?: ""
+                            val icon = state.items.filterIsInstance<Icon>()
+                                .firstOrNull()?.icon
+                            name to icon
+                        }
+                        else -> "" to null
+                    }
+                    uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
+                        link = uiEvent.link,
+                        spaceName = spaceName,
+                        icon = spaceIcon
                     )
                 }
             }
@@ -773,6 +787,10 @@ class SpaceSettingsViewModel(
         Timber.d("Notification permission dialog dismissed")
     }
 
+    fun onHideQrCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
+    }
+
     private fun subscribeToInviteLinkState() {
         viewModelScope.launch {
             spaceInviteLinkStore
@@ -819,7 +837,6 @@ class SpaceSettingsViewModel(
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
         data class SharePrivateSpace(val space: SpaceId) : Command()
         data class ManageSharedSpace(val space: SpaceId) : Command()
-        data class ShowInviteLinkQrCode(val link: String) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
         data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()

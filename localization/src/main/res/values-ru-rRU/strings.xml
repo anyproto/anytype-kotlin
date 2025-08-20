@@ -60,7 +60,7 @@
     <string name="offload_files">Выгрузить файлы</string>
     <string name="local_storage_used">%1$s использовано</string>
     <string name="space_usage">%1$s из %2$s используется</string>
-    <string name="remote_storage">Удалённое хранилище</string>
+    <string name="remote_storage">Облачное хранилище</string>
     <string name="contact_us">Связаться с нами</string>
     <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Название</string>
@@ -1814,6 +1814,7 @@
     <string name="space_settings_delete_space_button">Удалить пространство</string>
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
+    <string name="space_settings_join_space_by_qr_title">Присоединись</string>
     <string name="object_type_add_property_screen_title">Добавить свойство</string>
     <string name="object_type_add_property_screen_create">Создать свойство \"%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Формат свойств</string>
@@ -1857,7 +1858,7 @@
     <string name="object_conflict_menu_item_title">Разрешить конфликт макетов</string>
     <string name="widget_source_suggested">Предложения</string>
     <string name="widgets_empty_state_message">Пока нет виджетов</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Типы объектов</string>
     <string name="space_types_screen_section_my_types">Мои типы</string>
     <string name="space_types_screen_section_system_types">Системные типы</string>

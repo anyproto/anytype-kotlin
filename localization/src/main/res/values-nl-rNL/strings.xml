@@ -1916,4 +1916,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

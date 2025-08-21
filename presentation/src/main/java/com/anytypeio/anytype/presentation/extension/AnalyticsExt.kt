@@ -57,11 +57,11 @@ import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
@@ -76,28 +76,34 @@ fun Block.Prototype.getAnalyticsEvent(
     middlewareTime: Long,
     renderTime: Long,
     spaceParams: AnalyticSpaceHelperDelegate.Params,
-    isDate: Boolean = false
+    isDate: Boolean = false,
+    route: String? = null
 ): EventAnalytics.Anytype {
     val props = when (this) {
         is Block.Prototype.Text -> {
             Props(
-                mapOf(
-                    EventsPropertiesKey.type to "text",
-                    EventsPropertiesKey.style to getStyleName(),
-                    EventsPropertiesKey.permissions to spaceParams.permission,
-                    EventsPropertiesKey.spaceType to spaceParams.spaceType
-
-                )
+                buildMap {
+                    put(EventsPropertiesKey.type, "text")
+                    put(EventsPropertiesKey.style, getStyleName())
+                    put(EventsPropertiesKey.permissions, spaceParams.permission)
+                    put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    if (route != null) {
+                        put(EventsPropertiesKey.route, route)
+                    }
+                }
             )
         }
         is Block.Prototype.File -> {
             Props(
-                mapOf(
-                    EventsPropertiesKey.type to getTypePropName(),
-                    EventsPropertiesKey.style to "Embed",
-                    EventsPropertiesKey.permissions to spaceParams.permission,
-                    EventsPropertiesKey.spaceType to spaceParams.spaceType
-                )
+                buildMap {
+                    put(EventsPropertiesKey.type, getTypePropName())
+                    put(EventsPropertiesKey.style, "Embed")
+                    put(EventsPropertiesKey.permissions, spaceParams.permission)
+                    put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    if (route != null) {
+                        put(EventsPropertiesKey.route, route)
+                    }
+                }
             )
         }
         is Block.Prototype.Link -> {
@@ -115,64 +121,88 @@ fun Block.Prototype.getAnalyticsEvent(
                         }
                         put(EventsPropertiesKey.permissions, spaceParams.permission)
                         put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                        if (route != null) {
+                            put(EventsPropertiesKey.route, route)
+                        }
                     }
                 )
             )
         }
         is Block.Prototype.Relation -> {
-            Props(mapOf(
-                EventsPropertiesKey.type to "relation",
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            ))
+            Props(buildMap {
+                put(EventsPropertiesKey.type, "relation")
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            })
         }
         is Block.Prototype.DividerLine -> {
             Props(
-                mapOf(
-                    EventsPropertiesKey.type to "div",
-                    EventsPropertiesKey.style to "line",
-                    EventsPropertiesKey.permissions to spaceParams.permission,
-                    EventsPropertiesKey.spaceType to spaceParams.spaceType
-                )
+                buildMap {
+                    put(EventsPropertiesKey.type, "div")
+                    put(EventsPropertiesKey.style, "line")
+                    put(EventsPropertiesKey.permissions, spaceParams.permission)
+                    put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    if (route != null) {
+                        put(EventsPropertiesKey.route, route)
+                    }
+                }
             )
         }
         is Block.Prototype.DividerDots -> {
             Props(
-                mapOf(
-                    EventsPropertiesKey.type to "div",
-                    EventsPropertiesKey.style to "dots",
-                    EventsPropertiesKey.permissions to spaceParams.permission,
-                    EventsPropertiesKey.spaceType to spaceParams.spaceType
-                )
+                buildMap {
+                    put(EventsPropertiesKey.type, "div")
+                    put(EventsPropertiesKey.style, "dots")
+                    put(EventsPropertiesKey.permissions, spaceParams.permission)
+                    put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    if (route != null) {
+                        put(EventsPropertiesKey.route, route)
+                    }
+                }
             )
         }
         is Block.Prototype.Bookmark -> {
-            Props(mapOf(
-                EventsPropertiesKey.type to "bookmark",
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            ))
+            Props(buildMap {
+                put(EventsPropertiesKey.type, "bookmark")
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            })
         }
         is Block.Prototype.Latex -> {
-            Props(mapOf(
-                EventsPropertiesKey.type to "latex",
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            ))
+            Props(buildMap {
+                put(EventsPropertiesKey.type, "latex")
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            })
         }
         is Block.Prototype.TableOfContents -> {
-            Props(mapOf(
-                EventsPropertiesKey.type to "table_of_contents",
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            ))
+            Props(buildMap {
+                put(EventsPropertiesKey.type, "table_of_contents")
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            })
         }
         is Block.Prototype.SimpleTable -> {
-            Props(mapOf(
-                EventsPropertiesKey.type to "table",
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            ))
+            Props(buildMap {
+                put(EventsPropertiesKey.type, "table")
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            })
         }
     }
 
@@ -624,7 +654,8 @@ suspend fun Analytics.sendAnalyticsCreateBlockEvent(
     startTime: Long,
     middlewareTime: Long,
     spaceParams: AnalyticSpaceHelperDelegate.Params,
-    isDate: Boolean = false
+    isDate: Boolean = false,
+    route: String? = null
 ) {
     val event = prototype.getAnalyticsEvent(
         eventName = EventsDictionary.blockCreate,
@@ -632,7 +663,8 @@ suspend fun Analytics.sendAnalyticsCreateBlockEvent(
         middlewareTime = middlewareTime,
         renderTime = System.currentTimeMillis(),
         spaceParams = spaceParams,
-        isDate = isDate
+        isDate = isDate,
+        route = route
     )
     registerEvent(event)
 }
@@ -670,7 +702,8 @@ suspend fun Analytics.sendAnalyticsRemoveObjects(
 suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(
     markupType: Block.Content.Text.Mark.Type,
     typeId: Id? = null,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    route: String? = null
 ) {
     val objectType = when (typeId) {
         null -> null
@@ -680,10 +713,13 @@ suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockChangeTextStyle,
         props = Props(
-            mapOf(
-                EventsPropertiesKey.type to markupType.getPropName(),
-                EventsPropertiesKey.objectType to objectType
-            )
+            buildMap {
+                put(EventsPropertiesKey.type, markupType.getPropName())
+                put(EventsPropertiesKey.objectType, objectType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            }
         )
     )
     registerEvent(event)
@@ -691,16 +727,20 @@ suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(
 
 suspend fun Analytics.sendAnalyticsChangeTextBlockStyleEvent(
     style: Block.Content.Text.Style,
-    count: Int
+    count: Int,
+    route: String? = null
 ) {
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockChangeBlockStyle,
         props = Props(
-            mapOf(
-                EventsPropertiesKey.type to "Text",
-                EventsPropertiesKey.style to style.getStyleName(),
-                EventsPropertiesKey.count to count
-            )
+            buildMap {
+                put(EventsPropertiesKey.type, "Text")
+                put(EventsPropertiesKey.style, style.getStyleName())
+                put(EventsPropertiesKey.count, count)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            }
         )
     )
     registerEvent(event)
@@ -736,7 +776,7 @@ suspend fun Analytics.sendAnalyticsReorderBlockEvent(count: Int) {
     registerEvent(event)
 }
 
-suspend fun Analytics.sendAnalyticsUploadMediaEvent(mediaType: Mimetype) {
+suspend fun Analytics.sendAnalyticsUploadMediaEvent(mediaType: Mimetype, route: String? = null) {
     val type = when (mediaType) {
         Mimetype.MIME_FILE_ALL -> "file"
         Mimetype.MIME_IMAGE_ALL -> "image"
@@ -745,7 +785,12 @@ suspend fun Analytics.sendAnalyticsUploadMediaEvent(mediaType: Mimetype) {
     }
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockUpload,
-        props = Props(mapOf(EventsPropertiesKey.type to type))
+        props = Props(buildMap {
+            put(EventsPropertiesKey.type, type)
+            if (route != null) {
+                put(EventsPropertiesKey.route, route)
+            }
+        })
     )
     registerEvent(event)
 }
@@ -785,16 +830,20 @@ suspend fun Analytics.sendAnalyticsRedoEvent(type: Boolean) {
 fun CoroutineScope.sendAnalyticsBlockAlignEvent(
     analytics: Analytics,
     count: Int,
-    align: Block.Align
+    align: Block.Align,
+    route: String? = null
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.blockChangeBlockAlign,
         props = Props(
-            mapOf(
-                EventsPropertiesKey.align to align.getPropName(),
-                EventsPropertiesKey.count to count
-            )
+            buildMap {
+                put(EventsPropertiesKey.align, align.getPropName())
+                put(EventsPropertiesKey.count, count)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            }
         )
     )
 }
@@ -842,18 +891,22 @@ fun CoroutineScope.sendAnalyticsCreateRelationEvent(
     analytics: Analytics,
     format: String,
     type: String,
-    spaceParams: AnalyticSpaceHelperDelegate.Params
+    spaceParams: AnalyticSpaceHelperDelegate.Params,
+    route: String? = null
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.relationCreate,
         props = Props(
-            mapOf(
-                EventsPropertiesKey.format to format,
-                EventsPropertiesKey.type to type,
-                EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
-            )
+            buildMap {
+                put(EventsPropertiesKey.format, format)
+                put(EventsPropertiesKey.type, type)
+                put(EventsPropertiesKey.permissions, spaceParams.permission)
+                put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            }
         )
     )
 }
@@ -919,11 +972,10 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     objType: ObjectWrapper.Type?,
     spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
-    val objTypeParam = if (objType == null) null
-    else objType.sourceObject ?: OBJ_TYPE_CUSTOM
+
     val props = Props(
         mapOf(
-            EventsPropertiesKey.objectType to objTypeParam,
+            EventsPropertiesKey.objectType to (objType?.sourceObject ?: OBJ_TYPE_CUSTOM),
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,
@@ -988,16 +1040,41 @@ fun CoroutineScope.sendAnalyticsBlockBackgroundEvent(
     analytics: Analytics,
     count: Int = 1,
     color: String,
-    context: String? = null
+    context: String? = null,
+    route: String? = null
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.blockChangeBackground,
         props = Props(
+            buildMap {
+                put(EventsPropertiesKey.color, color)
+                put(EventsPropertiesKey.count, count)
+                if (context != null) {
+                    put(EventsPropertiesKey.context, context)
+                }
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsBlockColorEvent(
+    analytics: Analytics,
+    count: Int = 1,
+    color: String,
+    route: String? = null
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.blockChangeColor,
+        props = Props(
             mapOf(
                 EventsPropertiesKey.color to color,
                 EventsPropertiesKey.count to count,
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.route to route
             )
         )
     )
@@ -1074,14 +1151,6 @@ fun CoroutineScope.sendAnalyticsRelationUrlEdit(analytics: Analytics) {
     )
 }
 
-fun CoroutineScope.sendAnalyticsSlashMenuEvent(
-    analytics: Analytics
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.slashMenu
-    )
-}
 
 fun CoroutineScope.sendAnalyticsStyleMenuEvent(
     analytics: Analytics
@@ -1107,6 +1176,63 @@ fun CoroutineScope.sendAnalyticsMentionMenuEvent(
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.mentionMenu
+    )
+}
+
+fun CoroutineScope.sendAnalyticsScreenSlashMenuEvent(
+    analytics: Analytics,
+    route: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenSlashMenu,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.route to route
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickSlashMenuEvent(
+    analytics: Analytics,
+    item: SlashItem.Style.Type
+) {
+    val type = when(item) {
+        is SlashItem.Style.Type.Text -> "Text"
+        is SlashItem.Style.Type.Heading -> "Heading"
+        is SlashItem.Style.Type.Checkbox -> "Checkbox"
+        is SlashItem.Style.Type.Bulleted -> "Bulleted"
+        is SlashItem.Style.Type.Numbered -> "Numbered"
+        is SlashItem.Style.Type.Toggle -> "Toggle"
+        is SlashItem.Style.Type.Highlighted -> "Highlighted"
+        is SlashItem.Style.Type.Callout -> "Callout"
+        SlashItem.Style.Type.Subheading -> ""
+        SlashItem.Style.Type.Title -> ""
+    }
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickSlashMenu,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickSlashMenuEvent(
+    analytics: Analytics,
+    type: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickSlashMenu,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type
+            )
+        )
     )
 }
 
@@ -2223,7 +2349,8 @@ private fun getAnalyticsObjectType(
 
 fun CoroutineScope.sendAnalyticsCreateLink(
     analytics: Analytics,
-    spaceParams: AnalyticSpaceHelperDelegate.Params
+    spaceParams: AnalyticSpaceHelperDelegate.Params,
+    route: String? = null
 ) {
     sendEvent(
         analytics = analytics,
@@ -2232,6 +2359,9 @@ fun CoroutineScope.sendAnalyticsCreateLink(
             buildMap {
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                if (route != null) {
+                    put(EventsPropertiesKey.route, route)
+                }
             }
         )
     )

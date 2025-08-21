@@ -87,13 +87,16 @@ fun PulsatingCircleScreen() {
             .padding(bottom = 26.dp)
     ) {
         SimpleCircleShape(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier
+                .align(Alignment.Center),
             size = finalSize,
             gradient = finalBrush
         )
 
         Text(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = 32.dp),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 32.dp),
             text = stringResource(R.string.private_local_yours_forever),
             color = colorResource(R.color.text_secondary),
             style = PreviewTitle2Medium

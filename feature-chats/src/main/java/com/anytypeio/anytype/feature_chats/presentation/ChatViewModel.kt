@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.core_utils.tools.DEFAULT_URL_REGEX
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
@@ -57,6 +56,8 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector
+import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -349,7 +350,14 @@ class ChatViewModel @Inject constructor(
                             msg = content?.text.orEmpty(),
                             parts = content?.text
                                 .orEmpty()
-                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .let { text ->
+                                    // Add detected links (URLs, emails, phones) to existing marks
+                                    val enhancedMarks = LinkDetector.addLinkMarksToText(
+                                        text = text,
+                                        existingMarks = content?.marks.orEmpty()
+                                    )
+                                    text.splitByMarks(marks = enhancedMarks)
+                                }
                                 .map { (part, styles) ->
                                     ChatView.Message.Content.Part(
                                         part = part,
@@ -363,6 +371,7 @@ class ChatViewModel @Inject constructor(
                         isUserAuthor = msg.creator == account,
                         shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
+                        isSynced = msg.synced,
                         reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (emoji, ids) -> ids.size }
@@ -383,7 +392,10 @@ class ChatViewModel @Inject constructor(
                                         target = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
-                                        ext = wrapper?.fileExt.orEmpty()
+                                        ext = wrapper?.fileExt.orEmpty(),
+                                        status = wrapper
+                                            ?.syncStatus()
+                                            ?: ChatView.Message.Attachment.SyncStatus.Unknown
                                     )
                                 }
                                 else -> {
@@ -394,7 +406,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.VIDEO -> {
@@ -402,7 +415,8 @@ class ChatViewModel @Inject constructor(
                                                 target = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty()
+                                                ext = wrapper.fileExt.orEmpty(),
+                                                status = wrapper.syncStatus()
                                             )
                                         }
                                         ObjectType.Layout.BOOKMARK -> {
@@ -588,28 +602,14 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
-            val urlRegex = Regex(DEFAULT_URL_REGEX)
-            val parsedUrls = buildList {
-                urlRegex.findAll(msg).forEach { match ->
-                    val range = match.range
-                    // Adjust the range to include the last character (inclusive end range)
-                    val adjustedRange = range.first..range.last + 1
-                    val url = match.value
-
-                    // Check if a LINK markup already exists in the same range
-                    if (markup.none { it.range == adjustedRange && it.type == Block.Content.Text.Mark.Type.LINK }) {
-                        add(
-                            Block.Content.Text.Mark(
-                                range = adjustedRange,
-                                type = Block.Content.Text.Mark.Type.LINK,
-                                param = url
-                            )
-                        )
-                    }
-                }
-            }
-
-            val normalizedMarkup = (markup + parsedUrls).sortedBy { it.range.first }
+            // Use LinkDetector to find all types of links (URLs, emails, phones)
+            val detectedLinkMarks = LinkDetector.addLinkMarksToText(
+                text = msg,
+                existingMarks = markup
+            )
+            
+            // The LinkDetector already handles deduplication, so we can use its result directly
+            val normalizedMarkup = detectedLinkMarks.sortedBy { it.range.first }
 
             var shouldClearChatTempFolder = false
 
@@ -828,7 +828,8 @@ class ChatViewModel @Inject constructor(
                                 id = mode.msg,
                                 text = msg.trim(),
                                 attachments = attachments,
-                                marks = normalizedMarkup
+                                marks = normalizedMarkup,
+                                synced = false
                             )
                         )
                     ).onSuccess {
@@ -1117,6 +1118,14 @@ class ChatViewModel @Inject constructor(
                                 // If url not found, open bookmark object instead of browsing.
                                 navigation.emit(wrapper.navigation())
                             }
+                        } else if (wrapper.layout == ObjectType.Layout.AUDIO) {
+                            val hash = urlBuilder.original(wrapper.id)
+                            commands.emit(
+                                ViewModelCommand.PlayAudio(
+                                    url = hash,
+                                    name = wrapper.name.orEmpty()
+                                )
+                            )
                         } else {
                             navigation.emit(wrapper.navigation())
                         }
@@ -1157,8 +1166,8 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed(isSpaceRoot: Boolean) {
-        Timber.d("onBackButtonPressed, isSpaceRoot: $isSpaceRoot")
+    fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
@@ -1172,17 +1181,14 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            if (isSpaceRoot) {
-                Timber.d("Root space screen. Releasing resources...")
-                proceedWithClearingSpaceBeforeExitingToVault()
-            }
+            proceedWithClearingSpaceBeforeExitingToVault()
             commands.emit(ViewModelCommand.Exit)
         }
     }
 
-    fun onSpaceNameClicked(isSpaceRoot: Boolean) {
-        Timber.d("onSpaceNameClicked, isSpaceRoot: $isSpaceRoot")
-        onBackButtonPressed(isSpaceRoot = isSpaceRoot)
+    fun onSpaceNameClicked() {
+        Timber.d("onSpaceNameClicked")
+        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {
@@ -1599,6 +1605,10 @@ class ChatViewModel @Inject constructor(
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
+    
+    fun onCameraPermissionDenied() {
+        errorState.value = UiErrorState.CameraPermissionDenied
+    }
 
     private fun proceedWithSpaceSubscription() {
         viewModelScope.launch {
@@ -1626,6 +1636,7 @@ class ChatViewModel @Inject constructor(
         data object OpenWidgets : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
+        data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
@@ -1703,6 +1714,7 @@ class ChatViewModel @Inject constructor(
     sealed class UiErrorState {
         data object Hidden : UiErrorState()
         data class Show(val msg: String) : UiErrorState()
+        data object CameraPermissionDenied : UiErrorState()
     }
 
     sealed class Params {

@@ -3,13 +3,9 @@ package com.anytypeio.anytype.feature_chats.ui
 import android.net.Uri
 import android.provider.OpenableColumns
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,11 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -54,7 +48,6 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -67,7 +60,6 @@ import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
@@ -267,7 +259,8 @@ fun ChatScreenWrapper(
                 )
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
-            onCreateAndAttachObject = vm::onCreateAndAttachObject
+            onCreateAndAttachObject = vm::onCreateAndAttachObject,
+            onCameraPermissionDenied = vm::onCameraPermissionDenied
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -403,7 +396,8 @@ fun ChatScreen(
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    onCreateAndAttachObject: () -> Unit
+    onCreateAndAttachObject: () -> Unit,
+    onCameraPermissionDenied: () -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -834,15 +828,10 @@ fun ChatScreen(
                 )
             }
 
-            if (isLoading || isSyncing) {
-                ShimmerEffect(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp),
-                    colorStart = colorResource(R.color.glyph_active).copy(0.1f),
-                    colorEnd = colorResource(R.color.glyph_active).copy(0.3f)
-                )
-            }
+            DelayedSyncIndicator(
+                isLoading = isLoading,
+                isSyncing = isSyncing
+            )
         }
 
         if (isReadOnly) {
@@ -901,7 +890,8 @@ fun ChatScreen(
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
-                onCreateAndAttachObject = onCreateAndAttachObject
+                onCreateAndAttachObject = onCreateAndAttachObject,
+                onCameraPermissionDenied = onCameraPermissionDenied
             )
         }
     }
@@ -946,6 +936,37 @@ suspend fun smoothScrollToBottom(lazyListState: LazyListState) {
     }
 }
 
+@Composable
+fun DelayedSyncIndicator(
+    isLoading: Boolean,
+    isSyncing: Boolean,
+    delayMillis: Long = SYNC_INDICATOR_DELAY
+) {
+    var shouldShowSyncing by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = isSyncing) {
+        if (isSyncing) {
+            delay(delayMillis)
+            if (isSyncing) {
+                shouldShowSyncing = true
+            }
+        } else {
+            shouldShowSyncing = false
+        }
+    }
+
+    if (isLoading || (isSyncing && shouldShowSyncing)) {
+        ShimmerEffect(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp),
+            colorStart = colorResource(R.color.glyph_active).copy(0.1f),
+            colorEnd = colorResource(R.color.glyph_active).copy(0.3f)
+        )
+    }
+}
+
 internal const val DATE_KEY_PREFIX = "date-"
 private val JumpToBottomThreshold = 200.dp
 private const val FLOATING_DATE_DELAY = 1000L
+private const val SYNC_INDICATOR_DELAY = 2000L

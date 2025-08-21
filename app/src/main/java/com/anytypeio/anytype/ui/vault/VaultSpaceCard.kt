@@ -69,9 +69,8 @@ fun VaultSpaceCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    maxPinnedSpaces: Int,
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean = false
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -93,17 +92,25 @@ fun VaultSpaceCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
+                currentPinnedCount = currentPinnedCount,
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }
@@ -154,7 +161,6 @@ fun VaultChatCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: SpaceIconView,
-    previewText: String? = null,
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
@@ -173,7 +179,7 @@ fun VaultChatCard(
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
-    showPinButton: Boolean
+    currentPinnedCount: Int
 ) {
     Box(
         modifier = modifier
@@ -186,7 +192,7 @@ fun VaultChatCard(
         )
         ContentChat(
             title = title,
-            subtitle = previewText ?: chatPreview?.message?.content?.text.orEmpty(),
+            subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
@@ -199,17 +205,25 @@ fun VaultChatCard(
         
         // Include dropdown menu inside the card
         spaceView?.let { space ->
-            SpaceActionsDropdownMenuHost(
-                spaceView = space,
+            SpaceActionsDropdownMenu(
                 expanded = expandedSpaceId == space.space.id,
                 onDismiss = onDismissMenu,
-                onMuteSpace = onMuteSpace,
-                onUnmuteSpace = onUnmuteSpace,
-                onPinSpace = onPinSpace,
-                onUnpinSpace = onUnpinSpace,
-                maxPinnedSpaces = maxPinnedSpaces,
-                onSpaceSettings = onSpaceSettings,
-                showPinButton = showPinButton
+                isMuted = spaceView.isMuted,
+                isPinned = spaceView.isPinned,
+                currentPinnedCount = currentPinnedCount,
+                onMuteToggle = {
+                    spaceView.space.targetSpaceId?.let {
+                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    }
+                },
+                onPinToggle = {
+                    spaceView.space.id.let {
+                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                    }
+                },
+                onSpaceSettings = {
+                    spaceView.space.id.let { onSpaceSettings(it) }
+                }
             )
         }
     }
@@ -625,8 +639,7 @@ fun VaultSpaceCardPreview() {
         title = "B&O Museum",
         subtitle = "Private space",
         icon = SpaceIconView.Placeholder(),
-        maxPinnedSpaces = 6,
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -636,7 +649,6 @@ fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -660,10 +672,11 @@ fun ChatWithMentionAndMessage() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -673,7 +686,6 @@ fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -696,10 +708,11 @@ fun ChatWithMention() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 
@@ -709,7 +722,6 @@ fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
         icon = SpaceIconView.Placeholder(),
-        previewText = "John Doe: Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -731,10 +743,11 @@ fun ChatPreview() {
                     marks = emptyList(),
                     style = Block.Content.Text.Style.P
                 ),
-                order = "order-id"
+                order = "order-id",
+                synced = false
             )
         ),
-        showPinButton = true
+        currentPinnedCount = 3
     )
 }
 

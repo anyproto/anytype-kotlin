@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
-import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem.Loading
 
 data class DateObjectVmParams(
     val objectId: Id,
@@ -96,12 +95,6 @@ sealed class UiFieldsItem {
             override val title: String
         ) : Item()
     }
-}
-
-sealed class UiNavigationWidget {
-    data object Hidden : UiNavigationWidget()
-    data object Editor : UiNavigationWidget()
-    data object Viewer : UiNavigationWidget()
 }
 
 sealed class UiFieldsSheetState {

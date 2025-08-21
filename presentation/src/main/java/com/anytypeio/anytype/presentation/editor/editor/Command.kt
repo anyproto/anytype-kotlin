@@ -39,6 +39,9 @@ sealed class Command {
         val id: String
     ) : Command()
 
+    data class PlayVideo(val url: String) : Command()
+    data class PlayAudio(val url: String, val name: String? = null) : Command()
+
     data class OpenObjectSnackbar(
         val id: Id,
         val space: Id,
@@ -75,10 +78,10 @@ sealed class Command {
     data class OpenObjectLayout(val ctx: Id) : Command()
     data class SetObjectIcon(val ctx: Id, val space: Id) : Command()
 
-    object AlertDialog : Command()
+    data object AlertDialog : Command()
 
     data class OpenFullScreenImage(
-        val target: Id,
+        val target: Id = "",
         val url: Url
     ) : Command()
 

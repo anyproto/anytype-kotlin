@@ -14,11 +14,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
+import coil3.ImageLoader
 import coil3.imageLoader
 import coil3.load
 import coil3.request.ImageRequest
+import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.target.Target
+import coil3.video.VideoFrameDecoder
+import coil3.video.videoFrameMillis
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -614,6 +618,8 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = imageBinding.title
         override val selectionView: View = itemView
 
+        private val progress = imageBinding.progress
+
         override fun applyTextColor(item: BlockView.Title) {
             // Do nothing
         }
@@ -622,13 +628,24 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             // Do nothing
         }
 
-        fun bind(item: BlockView.Title.Image) {
+        fun bind(
+            item: BlockView.Title.Image,
+            clicked: (ListenerType) -> Unit
+        ) {
             super.bind(
                 item = item,
-                onCoverClicked = {},
-                click = {}
+                onCoverClicked = {
+                    // Click event intentionally ignored
+                },
+                click = {
+                    // Click event intentionally ignored
+                }
             )
             content.setText(item.text)
+
+            image.setOnClickListener {
+                clicked(ListenerType.Header.Image)
+            }
         }
 
         override fun setImage(item: BlockView.Title) {
@@ -644,6 +661,17 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
             val request = ImageRequest.Builder(context)
                 .data(url)
+                .listener(
+                    onStart = {
+                        progress.visible()
+                    },
+                    onSuccess = { _, _ ->
+                        progress.gone()
+                    },
+                    onError = { _, _ ->
+                        progress.gone()
+                    }
+                )
                 .target(object : Target {
                     override fun onSuccess(result: coil3.Image) {
                         if (result is android.graphics.drawable.BitmapDrawable) {
@@ -690,92 +718,72 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
     }
 
     class Video(
-        private val videoBinding: ItemBlockTitleVideoBinding,
-        lifecycle: Lifecycle
-    ) : Title(videoBinding.root), LifecycleEventObserver {
+        private val videoBinding: ItemBlockTitleVideoBinding
+    ) : Title(videoBinding.root) {
 
         override val icon: ObjectIconWidget = videoBinding.objectIconWidget
         override val image: ImageView = videoBinding.cover
         override val content: TextInputWidget = videoBinding.title
         override val selectionView: View = itemView
 
-        private var player: ExoPlayer? = null
-        private var videoUrl: String? = null
-
-        private val playerView: StyledPlayerView = videoBinding.playerView
-        private val playButton: ImageView = videoBinding.playButton
-
-        init {
-            lifecycle.addObserver(this)
-        }
-
-        fun bind(item: BlockView.Title.Video) {
+        fun bind(
+            item: BlockView.Title.Video,
+            onPlayClicked: () -> Unit
+        ) {
             super.bind(
                 item = item,
                 onCoverClicked = {},
                 click = {}
             )
             content.setText(item.text)
-            setupPreview(item)
+            setupPreview(onPlayClicked, item.videoUrl)
         }
 
-        private fun setupPreview(item: BlockView.Title.Video) {
-            videoUrl = item.videoUrl
+        private fun setupPreview(
+            onPlayClicked: () -> Unit,
+            url: String?
+        ) {
             with(videoBinding) {
+
+                progress.visible()
                 objectIconWidget.gone()
-                playerView.visible()
-                playButton.visible()
-                playButton.setOnClickListener { togglePlayback() }
-            }
-        }
-
-        private fun togglePlayback() {
-            videoUrl?.let { url ->
-                if (player?.isPlaying == true) pause() else play(url)
-            }
-        }
-
-        fun play(url: String) {
-            release()
-            player = ExoPlayer.Builder(itemView.context)
-                .setLoadControl(
-                    DefaultLoadControl.Builder()
-                        .setBufferDurationsMs(600, 1000, 250, 500)
-                        .build()
-                )
-                .build()
-                .apply {
-                    playerView.player = this
-                    setMediaItem(MediaItem.fromUri(url))
-                    prepare()
-                    playWhenReady = true
+                playButton.setOnClickListener {
+                    onPlayClicked()
                 }
-            playButton.gone()
-        }
 
-        fun pause() {
-            player?.pause()
-            videoBinding.playButton.visible()
+                if (!url.isNullOrEmpty()) {
+                    val imageLoader = ImageLoader.Builder(itemView.context)
+                        .components {
+                            add(VideoFrameDecoder.Factory())
+                        }
+                        .build()
+                    videoThumbnail.load(url, imageLoader) {
+                        crossfade(true)
+                        videoFrameMillis(1000L)
+                        listener(
+                            onStart = {
+                                progress.visible()
+                            },
+                            onSuccess = { _, _ ->
+                                progress.gone()
+                                playButton.visible()
+                            },
+                            onError = { _, _ ->
+                                progress.gone()
+                                playButton.visible()
+                            }
+                        )
+                    }
+                }
+            }
         }
-
-        fun release() {
-            player?.release()
-            player = null
-        }
-
 
         override fun applyTextColor(item: BlockView.Title) {
+            // Do nothing
         }
 
         override fun applyBackground(item: BlockView.Title) {
-        }
-
-        override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-            when (event) {
-                Lifecycle.Event.ON_PAUSE -> pause()
-                Lifecycle.Event.ON_DESTROY -> release()
-                else -> {}
-            }
+            // Do nothing
         }
     }
 }

@@ -43,6 +43,12 @@
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>
 
+    <color name="control_accent_125">#5A91FF</color>
+    <color name="control_accent">#377AFF</color>
+    <color name="control_accent_80">#2D63CF</color>
+    <color name="control_accent_50">#224C9E</color>
+    <color name="control_accent_25">#18346E</color>
+
     <!-- Background -->
     <color name="widget_background">#BF252525</color>
 

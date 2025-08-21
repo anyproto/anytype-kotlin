@@ -373,7 +373,18 @@ fun Block.Content.Text.marks(
                     )
                 }
             }
-            else -> null
+            Block.Content.Text.Mark.Type.EMOJI -> {
+                val param = mark.param
+                if (param.isNullOrBlank()) {
+                    null
+                } else {
+                    Markup.Mark.Emoji(
+                        from = mark.range.first,
+                        to = mark.range.last,
+                        param = param
+                    )
+                }
+            }
         }
     }
 
@@ -479,6 +490,11 @@ fun Markup.Mark.mark(): Block.Content.Text.Mark = when (this) {
         type = Block.Content.Text.Mark.Type.OBJECT,
         param = param
     )
+    is Markup.Mark.Emoji -> Block.Content.Text.Mark(
+        range = from..to,
+        type = Block.Content.Text.Mark.Type.EMOJI,
+        param = param
+    )
 }
 
 fun Block.Content.DataView.Sort.Type.toView(): Viewer.SortType = when (this) {
@@ -494,13 +510,13 @@ fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
 }
 
 fun DVFilterCondition.toTextView(): Viewer.Filter.Condition.Text = when (this) {
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Text.None()
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Text.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Text.NotEqual()
     DVFilterCondition.LIKE -> Viewer.Filter.Condition.Text.Like()
     DVFilterCondition.NOT_LIKE -> Viewer.Filter.Condition.Text.NotLike()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Text.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Text.NotEmpty()
-    DVFilterCondition.NONE -> Viewer.Filter.Condition.Text.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Text relations")
 }
 
@@ -519,6 +535,7 @@ fun DVFilterCondition.toDateView(): Viewer.Filter.Condition.Date = when (this) {
 }
 
 fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (this) {
+    DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     DVFilterCondition.EQUAL -> Viewer.Filter.Condition.Number.Equal()
     DVFilterCondition.NOT_EQUAL -> Viewer.Filter.Condition.Number.NotEqual()
     DVFilterCondition.GREATER -> Viewer.Filter.Condition.Number.Greater()
@@ -527,7 +544,6 @@ fun DVFilterCondition.toNumberView(): Viewer.Filter.Condition.Number = when (thi
     DVFilterCondition.LESS_OR_EQUAL -> Viewer.Filter.Condition.Number.LessOrEqual()
     DVFilterCondition.EMPTY -> Viewer.Filter.Condition.Number.Empty()
     DVFilterCondition.NOT_EMPTY -> Viewer.Filter.Condition.Number.NotEmpty()
-    DVFilterCondition.NONE -> Viewer.Filter.Condition.Number.None()
     else -> throw IllegalStateException("Unexpected filter condition $this for Number or Date relations")
 }
 
@@ -659,7 +675,7 @@ fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
     SimpleRelationView(
         key = dataViewRelation.key,
         title = dataViewRelation.name.orEmpty(),
-        format = dataViewRelation.format.toView(),
+        format = dataViewRelation.format,
         isVisible = isVisible,
         isHidden = dataViewRelation.isHidden == true,
         isReadonly = dataViewRelation.isReadonlyValue,
@@ -679,7 +695,7 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
                     SimpleRelationView(
                         key = relation.key,
                         title = relation.name.orEmpty(),
-                        format = relation.format.toView(),
+                        format = relation.format,
                         isVisible = viewerRelation.isVisible,
                         isHidden = relation.isHidden ?: false,
                         isReadonly = relation.isReadonlyValue,
@@ -707,24 +723,6 @@ fun RelationFormat.toView() = when (this) {
     RelationFormat.TAG -> ColumnView.Format.TAG
     RelationFormat.RELATIONS -> ColumnView.Format.RELATIONS
     RelationFormat.UNDEFINED -> ColumnView.Format.UNDEFINED
-}
-
-fun ColumnView.Format.toRelationFormat(): RelationFormat = when (this) {
-    ColumnView.Format.SHORT_TEXT -> RelationFormat.SHORT_TEXT
-    ColumnView.Format.LONG_TEXT -> RelationFormat.LONG_TEXT
-    ColumnView.Format.NUMBER -> RelationFormat.NUMBER
-    ColumnView.Format.STATUS -> RelationFormat.STATUS
-    ColumnView.Format.DATE -> RelationFormat.DATE
-    ColumnView.Format.FILE -> RelationFormat.FILE
-    ColumnView.Format.CHECKBOX -> RelationFormat.CHECKBOX
-    ColumnView.Format.URL -> RelationFormat.URL
-    ColumnView.Format.EMAIL -> RelationFormat.EMAIL
-    ColumnView.Format.PHONE -> RelationFormat.PHONE
-    ColumnView.Format.EMOJI -> RelationFormat.EMOJI
-    ColumnView.Format.OBJECT -> RelationFormat.OBJECT
-    ColumnView.Format.TAG -> RelationFormat.TAG
-    ColumnView.Format.RELATIONS -> RelationFormat.RELATIONS
-    ColumnView.Format.UNDEFINED -> RelationFormat.UNDEFINED
 }
 
 fun ObjectWrapper.Type.toObjectTypeView(

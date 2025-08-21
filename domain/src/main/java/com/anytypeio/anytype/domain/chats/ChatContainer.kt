@@ -657,7 +657,15 @@ class ChatContainer @Inject constructor(
                         }
                     }
                 }
-
+                is Event.Command.Chats.UpdateMessageSyncStatus -> {
+                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
+                    idsInWindow.forEach { id ->
+                        val index = messageList.indexOfFirst { it.id == id }
+                        if (messageList[index].synced != event.isSynced) {
+                            messageList[index] = messageList[index].copy(synced = event.isSynced)
+                        }
+                    }
+                }
                 is Event.Command.Chats.UpdateState -> {
                     logger.logWarning(
                         "DROID-2966 Updating chat state, " +
@@ -778,7 +786,7 @@ class ChatContainer @Inject constructor(
         private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
 
 
-        private val ATTACHMENT_KEYS = listOf(
+        val ATTACHMENT_KEYS = listOf(
             Relations.ID,
             Relations.SPACE_ID,
             Relations.PICTURE,
@@ -798,6 +806,7 @@ class ChatContainer @Inject constructor(
             Relations.SIZE_IN_BYTES,
             Relations.FILE_MIME_TYPE,
             Relations.FILE_EXT,
+            Relations.SYNC_STATUS
         )
     }
 

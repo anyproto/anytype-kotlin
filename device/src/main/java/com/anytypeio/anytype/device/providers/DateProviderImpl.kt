@@ -96,6 +96,24 @@ class DateProviderImpl @Inject constructor(
         return weekAgoWithZeroTime.atStartOfDay(defaultZoneId).toEpochSecond()
     }
 
+    override fun getTimestampForLastYearAtStartOfYear(): TimeInSeconds {
+        val currentDate = LocalDate.now(defaultZoneId)
+        val startOfLastYear = LocalDate.of(currentDate.year - 1, 1, 1)
+        return startOfLastYear.atStartOfDay(defaultZoneId).toEpochSecond()
+    }
+
+    override fun getTimestampForCurrentYearAtStartOfYear(): TimeInSeconds {
+        val currentDate = LocalDate.now(defaultZoneId)
+        val startOfCurrentYear = LocalDate.of(currentDate.year, 1, 1)
+        return startOfCurrentYear.atStartOfDay(defaultZoneId).toEpochSecond()
+    }
+
+    override fun getTimestampForNextYearAtStartOfYear(): TimeInSeconds {
+        val currentDate = LocalDate.now(defaultZoneId)
+        val startOfNextYear = LocalDate.of(currentDate.year + 1, 1, 1)
+        return startOfNextYear.atStartOfDay(defaultZoneId).toEpochSecond()
+    }
+
     override fun getRelativeTimeSpanString(date: TimeInSeconds): CharSequence =
         DateUtils.getRelativeTimeSpanString(
             date,

@@ -47,7 +47,9 @@ import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -56,21 +58,24 @@ import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
-import com.anytypeio.anytype.ui.home.isSpaceRootScreen
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.vault.AlertScreenModals
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -115,19 +120,51 @@ class ChatFragment : BaseComposeFragment() {
                     ) {
                         ChatTopToolbar(
                             header = vm.header.collectAsStateWithLifecycle().value,
-                            onBackButtonClicked = {
-                                vm.onBackButtonPressed(isSpaceRootScreen())
-                            },
-                            onSpaceNameClicked = {
-                                vm.onSpaceNameClicked(isSpaceRoot = isSpaceRootScreen())
-                            },
+                            onBackButtonClicked = vm::onBackButtonPressed,
+                            onSpaceNameClicked = vm::onSpaceIconClicked,
                             onSpaceIconClicked = vm::onSpaceIconClicked
                         )
                         ChatScreenWrapper(
                             modifier = Modifier.weight(1f),
                             vm = vm,
                             onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
-                            onMarkupLinkClicked = { proceedWithAction(OpenUrl(it)) },
+                            onMarkupLinkClicked = { url ->
+                                val handled = when {
+                                    url.startsWith(MAILTO_PREFIX) -> {
+                                        val action = SystemAction.MailTo(url.removePrefix(MAILTO_PREFIX))
+                                        proceedWithAction(action)
+                                    }
+                                    url.startsWith(TEL_PREFIX) -> {
+                                        val action = SystemAction.Dial(url.removePrefix(TEL_PREFIX))
+                                        proceedWithAction(action)
+                                    }
+                                    url.startsWith(ANYTYPE_PREFIX) || url.startsWith(FILE_PREFIX) -> {
+                                        // Unsupported schemes - copy to clipboard directly
+                                        proceedWithAction(
+                                            SystemAction.CopyToClipboard(
+                                                plain = url,
+                                                label = "link"
+                                            )
+                                        )
+                                    }
+                                    else -> {
+                                        val action = OpenUrl(url)
+                                        proceedWithAction(action)
+                                    }
+                                }
+                                
+                                // If the primary action failed, fallback to copying to clipboard
+                                if (!handled && !url.startsWith(ANYTYPE_PREFIX)
+                                    && !url.startsWith(FILE_PREFIX)
+                                ) {
+                                    proceedWithAction(
+                                        SystemAction.CopyToClipboard(
+                                            plain = url,
+                                            label = "link"
+                                        )
+                                    )
+                                }
+                            },
                             onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
                             onSelectChatReaction = vm::onSelectChatReaction,
                             onViewChatReaction = { msg, emoji ->
@@ -305,9 +342,9 @@ class ChatFragment : BaseComposeFragment() {
                         when (command) {
                             is ChatViewModel.ViewModelCommand.Exit -> {
                                 runCatching {
-                                    findNavController().popBackStack()
+                                    findNavController().navigate(R.id.action_back_on_vault)
                                 }.onFailure {
-                                    Timber.e(it, "Error while exiting chat")
+                                    Timber.e(it, "Error while back on vault from chat screen")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.OpenWidgets -> {
@@ -325,13 +362,13 @@ class ChatFragment : BaseComposeFragment() {
                             }
                             is ChatViewModel.ViewModelCommand.MediaPreview -> {
                                 runCatching {
-                                    findNavController().navigate(
-                                        R.id.fullScreenImageFragment,
-                                        FullScreenPictureFragment.args(
-                                            url = command.url,
-                                            ignoreRootWindowInsets = true
-                                        )
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_IMAGE,
+                                        url = command.url
                                     )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching media image viewer")
                                 }
                             }
                             is ChatViewModel.ViewModelCommand.SelectChatReaction -> {
@@ -387,6 +424,18 @@ class ChatFragment : BaseComposeFragment() {
                                     Timber.e(it, "Error while opening bookmark from chat")
                                 }
                             }
+                            is ChatViewModel.ViewModelCommand.PlayAudio -> {
+                                runCatching {
+                                    MediaActivity.start(
+                                        context = requireContext(),
+                                        mediaType = MediaActivity.TYPE_AUDIO,
+                                        url = command.url,
+                                        name = command.name
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error while launching audio player")
+                                }
+                            }
                             is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
                                 runCatching {
                                     val intent = Intent().apply {
@@ -427,9 +476,7 @@ class ChatFragment : BaseComposeFragment() {
                     }
                 }
                 BackHandler {
-                    vm.onBackButtonPressed(
-                        isSpaceRoot = isSpaceRootScreen()
-                    )
+                    vm.onBackButtonPressed()
                 }
                 LaunchedEffect(Unit) {
                     vm.checkNotificationPermissionDialogState()
@@ -498,6 +545,19 @@ class ChatFragment : BaseComposeFragment() {
                     buttonText = stringResource(id = R.string.membership_error_button_text_dismiss),
                     onButtonClick = vm::hideError,
                     onDismissRequest = vm::hideError
+                )
+            }
+            ChatViewModel.UiErrorState.CameraPermissionDenied -> {
+                AlertScreenModals(
+                    title = getString(R.string.camera_permission_required_title),
+                    description = getString(R.string.camera_permission_settings_message),
+                    firstButtonText = getString(R.string.open_settings),
+                    secondButtonText = getString(R.string.cancel),
+                    onAction = {
+                        requireContext().openAppSettings()
+                        vm.hideError()
+                    },
+                    onDismiss = vm::hideError
                 )
             }
         }

@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.42.0-rc17"
+middlewareVersion = "v0.43.0-rc02"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 
@@ -33,7 +33,7 @@ androidxSecurityCryptoVersion = '1.0.0'
 androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.2.1'
 recyclerviewVersion = '1.4.0'
-emojiCompatVersion = '1.1.0'
+emoji2Version = '1.5.0'
 lifecycleVersion = '2.9.1'
 lifecycleRuntimeComposeVersion = '2.9.1'
 navigationVersion = '2.8.9'
@@ -60,6 +60,7 @@ roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.2.0'
+telephotoZoomableVersion = '0.16.0'
 coilVideoVersion = '3.2.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
@@ -100,6 +101,7 @@ coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVe
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }
 coilCache = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coilComposeVersion"  }
+telephotoZoomableImage = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "telephotoZoomableVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }
@@ -119,7 +121,7 @@ activityCompose = { module = "androidx.activity:activity-compose", version.ref =
 constraintLayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintLayoutVersion" }
 recyclerView = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerviewVersion" }
 betterLinkMovement = { module = "me.saket:better-link-movement-method", version.ref = "betterLinkMethodVersion" }
-emojiCompat = { module = "androidx.emoji:emoji-appcompat", version.ref = "emojiCompatVersion" }
+emoji2 = { group = "androidx.emoji2", name = "emoji2", version.ref = "emoji2Version" }
 photoView = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoViewVersion" }
 katex = { module = "com.github.judemanutd:katexview", version.ref = "katexVersion" }
 daggerCompiler = { module = "com.google.dagger:dagger-compiler", version.ref = "daggerVersion" }

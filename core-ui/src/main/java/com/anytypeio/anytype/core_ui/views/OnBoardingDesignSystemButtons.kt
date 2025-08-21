@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryActive
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactive
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.core_ui.ColorButtonSecondaryBorder
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryBorderPressed
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryPressed
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryText
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 
@@ -84,8 +86,7 @@ fun OnBoardingButtonPrimary(
                         animating = true,
                         modifier = Modifier
                             .graphicsLayer { alpha = loadingAlpha }
-                            .align(Alignment.Center)
-                        ,
+                            .align(Alignment.Center),
                         animationSpecs = FadeAnimationSpecs(itemCount = 3),
                         size = ButtonSize.XSmall,
                         color = ColorButtonRegular
@@ -130,13 +131,15 @@ fun OnBoardingButtonSecondary(
             colors = if (disabledBackgroundColor != null) {
                 ButtonDefaults.buttonColors(
                     backgroundColor = backgroundColor,
-                    disabledBackgroundColor = disabledBackgroundColor
+                    disabledBackgroundColor = disabledBackgroundColor,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
                 )
             } else {
                 ButtonDefaults.buttonColors(
-                    backgroundColor = backgroundColor
+                    backgroundColor = backgroundColor,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
                 )
-                                                         },
+            },
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
             elevation = ButtonDefaults.elevation(
@@ -148,7 +151,7 @@ fun OnBoardingButtonSecondary(
             Text(
                 text = text,
                 style = size.textStyle.copy(
-                    color = textColor
+                    color = if (enabled) textColor else colorResource(id = R.color.text_tertiary)
                 )
             )
         }

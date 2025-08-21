@@ -37,7 +37,6 @@ import com.anytypeio.anytype.core_ui.features.multiplayer.JoiningLoadingState
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Prompt
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -303,6 +302,12 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                     is MultiplayerError.Generic.SpaceIsDeleted -> {
                         toast(resources.getString(R.string.multiplayer_error_space_is_deleted))
+                    }
+                    is MultiplayerError.Generic.IncorrectPermissions -> {
+                        toast(resources.getString(R.string.share_space_error_incorrect_permissions))
+                    }
+                    is MultiplayerError.Generic.NoSuchSpace -> {
+                        toast(resources.getString(R.string.share_space_error_no_such_space))
                     }
                 }
             }

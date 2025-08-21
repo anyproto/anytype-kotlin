@@ -1,20 +1,23 @@
 package com.anytypeio.anytype.domain.page
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
 /**
  * Use-case for re-doing latest changes in document.
  */
-class Redo(
-    private val repo: BlockRepository
-) : BaseUseCase<Redo.Result, Redo.Params>() {
+class Redo @Inject constructor(
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Redo.Params, Redo.Result>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.redo(
+    override suspend fun doWork(params: Params): Result {
+        return repo.redo(
             command = Command.Redo(
                 context = params.context
             )

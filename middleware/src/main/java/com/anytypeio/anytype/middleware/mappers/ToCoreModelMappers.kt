@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipPeriodType
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
@@ -638,6 +639,9 @@ fun MDVFilterQuickOption.toCoreModels(): DVFilterQuickOption = when (this) {
     MDVFilterQuickOption.NextMonth -> DVFilterQuickOption.NEXT_MONTH
     MDVFilterQuickOption.NumberOfDaysAgo -> DVFilterQuickOption.DAYS_AGO
     MDVFilterQuickOption.NumberOfDaysNow -> DVFilterQuickOption.DAYS_AHEAD
+    MDVFilterQuickOption.LastYear -> DVFilterQuickOption.LAST_YEAR
+    MDVFilterQuickOption.CurrentYear -> DVFilterQuickOption.CURRENT_YEAR
+    MDVFilterQuickOption.NextYear -> DVFilterQuickOption.NEXT_YEAR
 }
 
 fun MDVFilterOperator.toCoreModels(): DVFilterOperator = when (this) {
@@ -936,18 +940,20 @@ fun MNotificationStatus.toCoreModel(): NotificationStatus {
     }
 }
 
-fun MNotificationActionType.toCoreModel(): NotificationActionType {
-    return when (this) {
-        MNotificationActionType.CLOSE -> NotificationActionType.CLOSE
-    }
-}
-
 fun MParticipantPermission.toCore(): SpaceMemberPermissions {
     return when (this) {
         ParticipantPermissions.Reader -> SpaceMemberPermissions.READER
         ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
         ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
         ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+    }
+}
+
+fun MInviteType.toCoreModel(): InviteType {
+    return when (this) {
+        anytype.model.InviteType.Member -> InviteType.MEMBER
+        anytype.model.InviteType.Guest -> InviteType.GUEST
+        anytype.model.InviteType.WithoutApprove -> InviteType.WITHOUT_APPROVE
     }
 }
 
@@ -1154,7 +1160,8 @@ fun MChatMessage.core(): Chat.Message = Chat.Message(
         identities.ids
     } ?: emptyMap(),
     read = read,
-    mentionRead = mentionRead
+    mentionRead = mentionRead,
+    synced = synced
 )
 
 fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(

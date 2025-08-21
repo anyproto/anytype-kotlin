@@ -144,8 +144,3 @@ private fun ObjectWrapper.Type.objectFallbackIcon(): ObjectIcon.TypeIcon.Fallbac
 fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
     return ObjectIcon.None
 }
-
-fun ObjectWrapper.Basic.getFileUrl(urlBuilder: UrlBuilder): String? {
-    val fileId = getValue<String>(Relations.FILE_ID) ?: return null
-    return urlBuilder.file(fileId)
-}

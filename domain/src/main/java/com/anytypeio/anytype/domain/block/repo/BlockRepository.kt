@@ -396,7 +396,7 @@ interface BlockRepository {
     ): Payload
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>)
+    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
     suspend fun spaceUnsetOrder(spaceViewId: Id)
     suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
     suspend fun getSpaceConfig(space: Id): Config
@@ -450,8 +450,8 @@ interface BlockRepository {
     suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(
@@ -542,4 +542,6 @@ interface BlockRepository {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
 
     suspend fun debugStats(): String
+
+    suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 }

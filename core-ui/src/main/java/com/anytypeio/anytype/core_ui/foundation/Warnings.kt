@@ -14,28 +14,23 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.geometry.toRect
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
+import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.UxSmallTextRegular
@@ -109,6 +104,25 @@ private fun AlertWithMessageButton() {
             secondButtonText = "Retry",
             title = "It's time to update",
             description = "Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features."
+        )
+    )
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+private fun AlertWithLoadingSecondButton() {
+    GenericAlert(
+        onFirstButtonClicked = {},
+        onSecondButtonClicked = {},
+        config = AlertConfig.WithTwoButtons(
+            firstButtonType = BUTTON_SECONDARY,
+            secondButtonType = BUTTON_PRIMARY,
+            icon = R.drawable.ic_popup_update_56,
+            firstButtonText = "Cancel",
+            secondButtonText = "Processing",
+            title = "Processing request",
+            description = "Please wait while we process your request...",
+            isSecondButtonLoading = true
         )
     )
 }
@@ -254,30 +268,63 @@ private fun AlertButtons(
                 Spacer(modifier = Modifier.width(12.dp))
                 when (config.secondButtonType) {
                     BUTTON_SECONDARY -> {
-                        ButtonSecondary(
-                            text = config.secondButtonText,
-                            onClick = onRightButtonClicked,
-                            size = ButtonSize.Large,
-                            modifier = Modifier.weight(1f)
-                        )
+                        if (config.isSecondButtonLoading) {
+                            ButtonSecondaryLoading(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifierButton = Modifier.fillMaxWidth(),
+                                modifierBox = Modifier.weight(1f),
+                                loading = true
+                            )
+                        } else {
+                            ButtonSecondary(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
 
                     BUTTON_PRIMARY -> {
-                        ButtonPrimary(
-                            text = config.secondButtonText,
-                            onClick = onRightButtonClicked,
-                            size = ButtonSize.Large,
-                            modifier = Modifier.weight(1f)
-                        )
+                        if (config.isSecondButtonLoading) {
+                            ButtonPrimaryLoading(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifierButton = Modifier.fillMaxWidth(),
+                                modifierBox = Modifier.weight(1f),
+                                loading = true
+                            )
+                        } else {
+                            ButtonPrimary(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
 
                     BUTTON_WARNING -> {
-                        ButtonWarning(
-                            text = config.secondButtonText,
-                            onClick = onRightButtonClicked,
-                            size = ButtonSize.Large,
-                            modifier = Modifier.weight(1f)
-                        )
+                        if (config.isSecondButtonLoading) {
+                            ButtonWarningLoading(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifierButton = Modifier.fillMaxWidth(),
+                                modifierBox = Modifier.weight(1f),
+                                loading = true
+                            )
+                        } else {
+                            ButtonWarning(
+                                text = config.secondButtonText,
+                                onClick = onRightButtonClicked,
+                                size = ButtonSize.Large,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
                     }
                 }
             }
@@ -287,8 +334,10 @@ private fun AlertButtons(
 
 @Composable
 fun Prompt(
+    showDragger: Boolean = true,
     title: String,
     description: String,
+    icon: Int? = null,
     primaryButtonText: String,
     secondaryButtonText: String,
     onPrimaryButtonClicked: () -> Unit,
@@ -297,12 +346,20 @@ fun Prompt(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Dragger(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        Spacer(modifier = Modifier.height(20.dp))
+        if (showDragger) {
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 6.dp)
+            )
+            Spacer(modifier = Modifier.height(20.dp))
+        } else {
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        if (icon != null) {
+            AlertIcon(icon)
+            Spacer(modifier = Modifier.height(15.dp))
+        }
         Text(
             text = title,
             style = HeadlineHeading,
@@ -352,6 +409,7 @@ fun Prompt(
 @Composable
 fun PromptPreview() {
     Prompt(
+        icon = R.drawable.ic_popup_alert_56,
         title = "Get notified",
         description = "Please enable notifications to stay informed about any requests to join or leave spaces.",
         primaryButtonText = "Enable",
@@ -376,7 +434,8 @@ sealed class AlertConfig {
         val firstButtonText: String,
         val secondButtonText: String,
         val firstButtonType: ButtonType,
-        val secondButtonType: ButtonType
+        val secondButtonType: ButtonType,
+        val isSecondButtonLoading: Boolean = false
     ) : AlertConfig()
 
     data class WithOneButton(
@@ -388,34 +447,8 @@ sealed class AlertConfig {
     ) : AlertConfig()
 }
 
-object OvalCornerShape : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        val rect = size.toRect()
-        val path = Path().apply {
-            addOval(rect)
-        }
-        return Outline.Generic(path)
-    }
-}
-
 typealias ButtonType = Int
 
 const val BUTTON_PRIMARY = 0
 const val BUTTON_SECONDARY = 1
 const val BUTTON_WARNING = 2
-
-typealias GradientType = Int
-
-const val GRADIENT_TYPE_GREEN = 0
-const val GRADIENT_TYPE_RED = 1
-const val GRADIENT_TYPE_BLUE = 2
-val GREEN_FROM = Color(0xFFA9F496)
-val GREEN_TO = Color(0xFF00BCF2AF)
-val RED_FROM = Color(0xFFFFBCBC)
-val RED_TO = Color(0xFF00FFE6E6)
-val BLUE_FROM = Color(0xFF80D1FF)
-val BLUE_TO = Color(0xFF00BBE7FF)

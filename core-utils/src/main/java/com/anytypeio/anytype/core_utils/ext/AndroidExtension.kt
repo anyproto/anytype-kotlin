@@ -340,13 +340,14 @@ class GetImageContract : ActivityResultContract<Int, Uri?>() {
 fun NavController.safeNavigate(
     @IdRes currentDestinationId: Int,
     @IdRes id: Int,
-    args: Bundle? = null
+    args: Bundle? = null,
+    errorMessage: String? = null
 ) {
     if (currentDestinationId == currentDestination?.id) {
         runCatching {
             navigate(id, args)
         }.onFailure {
-            Timber.e(it, "Error while navigation")
+            Timber.e(it, "Error while navigation, $errorMessage")
         }
     }
 }
@@ -464,6 +465,22 @@ fun Context.openNotificationSettings() {
             data = Uri.fromParts("package", packageName, null)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
+    }
+    startActivity(intent)
+}
+
+/**
+ * Opens the application's settings screen in the system settings.
+ *
+ * This extension function launches an intent that navigates the user to the
+ * app-specific settings page, where permissions and other options can be managed.
+ * Typically used when prompting the user to manually adjust app permissions.
+ *
+ * @receiver Context used to start the settings activity.
+ */
+fun Context.openAppSettings() {
+    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+        data = Uri.fromParts("package", packageName, null)
     }
     startActivity(intent)
 }

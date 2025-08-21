@@ -9,6 +9,7 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -120,6 +121,7 @@ fun AllContentWrapperScreen(
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
+    onOpenAsObject: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
@@ -163,7 +165,8 @@ fun AllContentWrapperScreen(
         canPaginate = canPaginate,
         onUpdateLimitSearch = onUpdateLimitSearch,
         onShareButtonClicked = onShareButtonClicked,
-        onHomeButtonClicked = onHomeButtonClicked
+        onHomeButtonClicked = onHomeButtonClicked,
+        onOpenAsObject = onOpenAsObject
     )
 }
 
@@ -182,6 +185,7 @@ fun AllContentMainScreen(
     onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
+    onOpenAsObject: (UiContentItem.Item) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
     uiContentState: UiContentState,
@@ -224,7 +228,7 @@ fun AllContentMainScreen(
         containerColor = colorResource(id = R.color.background_primary),
         bottomBar = {
             Box(
-                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier
                         .windowInsetsPadding(WindowInsets.navigationBars)
                         .padding(bottom = 20.dp)
@@ -247,7 +251,7 @@ fun AllContentMainScreen(
         },
         topBar = {
             Column(
-                modifier = if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
                     Modifier
                         .windowInsetsPadding(WindowInsets.statusBars)
                         .fillMaxWidth()
@@ -327,7 +331,8 @@ fun AllContentMainScreen(
                             moveToBin = moveToBin,
                             onRelationClicked = onRelationClicked,
                             canPaginate = canPaginate,
-                            onUpdateLimitSearch = onUpdateLimitSearch
+                            onUpdateLimitSearch = onUpdateLimitSearch,
+                            onOpenAsObject = onOpenAsObject
                         )
                     }
                 }
@@ -353,9 +358,9 @@ fun BottomMenu(
     if (isImeVisible) return
     BottomNavigationMenu(
         modifier = modifier,
-        searchClick = onGlobalSearchClicked,
-        addDocClick = onAddDocClicked,
-        addDocLongClick = onCreateObjectLongClicked,
+        onSearchClick = onGlobalSearchClicked,
+        onAddDocClick = onAddDocClicked,
+        onAddDocLongClick = onCreateObjectLongClicked,
         onShareButtonClicked = onShareButtonClicked,
         state = uiBottomMenu,
         onHomeButtonClicked = onHomeButtonClicked
@@ -366,6 +371,7 @@ fun BottomMenu(
 private fun ContentItems(
     uiItemsState: UiItemsState.Content,
     onItemClicked: (UiContentItem.Item) -> Unit,
+    onOpenAsObject: (UiContentItem.Item) -> Unit,
     onTypeClicked: (UiContentItem) -> Unit,
     onRelationClicked: (UiContentItem) -> Unit,
     uiContentState: UiContentState,
@@ -397,6 +403,8 @@ private fun ContentItems(
             onUpdateLimitSearch()
         }
     }
+
+    var expandedItemId by remember { mutableStateOf<Id?>(null) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -443,11 +451,23 @@ private fun ContentItems(
                             .fillMaxWidth()
                             .height(72.dp)
                             .animateItem()
-                            .noRippleClickable {
-                                onItemClicked(item)
-                            },
+                            .combinedClickable(
+                                onClick = {
+                                    onItemClicked(item)
+                                },
+                                onLongClick = {
+                                    expandedItemId =
+                                        if (expandedItemId == item.id) null else item.id
+                                }
+                            ),
                         item = item,
-                        moveToBin = { moveToBin(it) }
+                        moveToBin = { moveToBin(it) },
+                        expandedItemId = expandedItemId,
+                        onDismissMenu = { expandedItemId = null },
+                        onOpenAsObject = {
+                            expandedItemId = null
+                            onOpenAsObject(it)
+                        }
                     )
                     Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
@@ -629,13 +649,17 @@ fun PreviewMainScreen() {
         canPaginate = true,
         onUpdateLimitSearch = {},
         onShareButtonClicked = {},
-        onHomeButtonClicked = {}
+        onHomeButtonClicked = {},
+        onOpenAsObject = {}
     )
 }
 
 @Composable
 fun RowScope.Item(
-    item: UiContentItem.Item
+    item: UiContentItem.Item,
+    expandedItemId: Id?,
+    onDismissMenu: () -> Unit = {},
+    onOpenAsObject: (UiContentItem.Item) -> Unit
 ) {
     val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
     val description = item.description
@@ -681,6 +705,12 @@ fun RowScope.Item(
         leadingContent = {
             ListWidgetObjectIcon(icon = item.icon, modifier = Modifier, iconSize = 48.dp)
         }
+    )
+    AllContentItemMenu(
+        item = item,
+        expanded = item.id == expandedItemId,
+        onDismiss = onDismissMenu,
+        onOpenAsObject = onOpenAsObject
     )
 }
 
@@ -826,7 +856,10 @@ fun SwipeToDismissListItems(
     item: UiContentItem.Item,
     modifier: Modifier,
     animationDuration: Int = 500,
-    moveToBin: (UiContentItem.Item) -> Unit
+    moveToBin: (UiContentItem.Item) -> Unit,
+    expandedItemId: Id?,
+    onDismissMenu: () -> Unit = {},
+    onOpenAsObject: (UiContentItem.Item) -> Unit
 ) {
     var isRemoved by remember { mutableStateOf(false) }
     val dismissState = rememberSwipeToDismissBoxState(
@@ -873,7 +906,14 @@ fun SwipeToDismissListItems(
                     dismissState = dismissState
                 )
             },
-            content = { Item(item = item) }
+            content = {
+                Item(
+                    item = item,
+                    expandedItemId = expandedItemId,
+                    onOpenAsObject = onOpenAsObject,
+                    onDismissMenu = onDismissMenu
+                )
+            }
         )
     }
 }
@@ -930,6 +970,8 @@ fun MtSwipeToDismissListItems() {
             space = SpaceId("1"),
         ),
         modifier = Modifier.fillMaxWidth(),
-        moveToBin = {}
+        moveToBin = {},
+        onOpenAsObject = {},
+        expandedItemId = null
     )
 }

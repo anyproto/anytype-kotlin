@@ -4,14 +4,17 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -33,6 +36,8 @@ import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 
 @Component(
     dependencies = [VaultComponentDependencies::class],
@@ -66,12 +71,12 @@ object VaultModule {
         @Binds
         fun deepLinkToObjectDelegate(
             default: DeepLinkToObjectDelegate.Default
-        ) : DeepLinkToObjectDelegate
+        ): DeepLinkToObjectDelegate
     }
 
     @PerScreen
     @Provides
-    fun provideSpaceInviteResolver() : SpaceInviteResolver = DefaultSpaceInviteResolver
+    fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
 
     @JvmStatic
     @Provides
@@ -96,11 +101,14 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun logger(): Logger
     fun awaitAccount(): AwaitAccountStartManager
     fun profileContainer(): ProfileSubscriptionManager
-    fun chatPreviewContainer(): ChatPreviewContainer
     fun pendingIntentStore(): PendingIntentStore
     fun stringResourceProvider(): StringResourceProvider
     fun dateProvider(): DateProvider
     fun fieldParser(): FieldParser
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun notificationPermissionManager(): NotificationPermissionManager
+    fun provideChatEventChannel(): ChatEventChannel
+    fun provideStorelessSubscriptionContainer(): StorelessSubscriptionContainer
+    fun provideVaultChatPreviewContainer(): ChatPreviewContainer
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

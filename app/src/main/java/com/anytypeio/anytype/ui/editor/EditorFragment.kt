@@ -55,7 +55,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
-import androidx.transition.Fade
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
@@ -154,7 +153,6 @@ import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
-import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -167,6 +165,7 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -586,8 +585,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             changeStyleClicks()
                 .onEach { vm.onBlockToolbarStyleClicked() }
                 .launchIn(lifecycleScope)
-            mentionClicks()
-                .onEach { vm.onStartMentionWidgetClicked() }
+            undoRedoClicks()
+                .onEach { vm.onUndoRedoActionClicked() }
                 .launchIn(lifecycleScope)
         }
 
@@ -630,6 +629,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.bottomToolbar
             .homeClicks()
+            .onEach { vm.onHomeButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
+            .chatClicks()
             .onEach { vm.onHomeButtonClicked() }
             .launchIn(lifecycleScope)
 
@@ -1105,29 +1109,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
-                    runCatching {
-                        findNavController().navigate(
-                            resId = R.id.objectMenuScreen,
-                            args = ObjectMenuFragment.args(
-                                ctx = command.ctx,
-                                space = command.space,
-                                isArchived = command.isArchived,
-                                isFavorite = command.isFavorite,
-                                isLocked = command.isLocked,
-                                isReadOnly = command.isReadOnly,
-                                fromName = getFrom(),
-                                isTemplate = command.isTemplate
-                            )
-                        )
-                    }.onFailure {
-                        Timber.e("Error while opening document menu: $it")
-                    }
+                    findNavController().safeNavigate(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.objectMenuScreen,
+                        args = ObjectMenuFragment.args(
+                            ctx = command.ctx,
+                            space = command.space,
+                            isArchived = command.isArchived,
+                            isFavorite = command.isFavorite,
+                            isLocked = command.isLocked,
+                            isReadOnly = command.isReadOnly,
+                            fromName = getFrom(),
+                            isTemplate = command.isTemplate
+                        ),
+                        errorMessage = "Error while opening document menu"
+                    )
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.action_pageScreen_to_objectCoverScreen,
-                        SelectCoverObjectFragment.args(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.action_pageScreen_to_objectCoverScreen,
+                        args = SelectCoverObjectFragment.args(
                             ctx = command.ctx,
                             space = space
                         )
@@ -1143,15 +1145,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 is Command.OpenFullScreenImage -> {
-                    val screen = FullScreenPictureFragment.new(command.target, command.url).apply {
-                        enterTransition = Fade()
-                        exitTransition = Fade()
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_IMAGE,
+                            url = command.url
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching media image viewer")
                     }
-                    childFragmentManager
-                        .beginTransaction()
-                        .add(R.id.root, screen)
-                        .addToBackStack(null)
-                        .commit()
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
@@ -1317,6 +1319,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         openFileByDefaultApp(uri)
                     }
                 }
+                is Command.PlayVideo -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_VIDEO,
+                            url = command.url,
+                            name = ""
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching video player")
+                    }
+                }
+                is Command.PlayAudio -> {
+                    runCatching {
+                        MediaActivity.start(
+                            context = requireContext(),
+                            mediaType = MediaActivity.TYPE_AUDIO,
+                            url = command.url,
+                            name = command.name
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while launching audio player")
+                    }
+                }
                 is Command.SaveTextToSystemClipboard -> {
                     val clipData = ClipData.newPlainText("Uri", command.text)
                     clipboard().setPrimaryClip(clipData)
@@ -1393,14 +1419,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     )
                 }
                 is Command.OpenShareScreen -> {
-                    runCatching {
-                        findNavController().navigate(
-                            R.id.shareSpaceScreen,
-                            args = ShareSpaceFragment.args(command.space)
-                        )
-                    }.onFailure {
-                        Timber.e(it, "Error while opening share screen")
-                    }
+                    findNavController().safeNavigate(
+                        currentDestinationId = R.id.pageScreen,
+                        id = R.id.shareSpaceScreen,
+                        args = ShareSpaceFragment.args(command.space),
+                        errorMessage = "Error while opening share screen"
+                    )
                 }
             }
         }
@@ -2347,7 +2371,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     open fun observeSelectingTemplate() {
         val navController = findNavController()
-        val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
+        val navBackStackEntry = try {
+            navController.getBackStackEntry(R.id.pageScreen)
+        } catch (e: IllegalArgumentException) {
+            Timber.w(
+                e,
+                "pageScreen not found in NavController back stack, skipping template observation"
+            )
+            return
+        }
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)

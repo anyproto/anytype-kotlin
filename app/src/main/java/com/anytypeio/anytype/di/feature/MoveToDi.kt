@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -38,7 +37,6 @@ interface MoveToComponent {
 
 interface MoveToDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
-    fun getObjectTypes(): GetObjectTypes
     fun searchObjects(): SearchObjects
     fun analytics(): Analytics
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
@@ -55,7 +53,6 @@ object MoveToModule {
     fun provideMoveToViewModelFactory(
         vmParams: MoveToViewModel.VmParams,
         urlBuilder: UrlBuilder,
-        getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -64,7 +61,6 @@ object MoveToModule {
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
-        getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,

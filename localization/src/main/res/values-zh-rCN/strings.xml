@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">返回按钮</string>
     <string name="content_desc_share_button">分享按钮</string>
     <string name="content_desc_home_button">主页按钮</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">搜索按钮</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">不支持的数据块</string>
@@ -1005,7 +1006,7 @@
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
     <string name="onboarding_new_vault_button_text">我是新手</string>
     <string name="onboarding_enter_my_vault">下一步</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">我有密钥</string>
     <string name="onboarding_get_my_key_button_text">获得我的密钥</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
@@ -1112,6 +1113,19 @@
     <string name="date_type_older">较早的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天后</string>
+    <string name="number_days_from">从现在起的天数</string>
+    <string name="number_days_ago">前几天</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">确切日期</string>
+    <string name="dates_filter_last_week">上个星期</string>
+    <string name="dates_filter_current_week">本周</string>
+    <string name="dates_filter_next_week">下星期</string>
+    <string name="dates_filter_last_month">上个月</string>
+    <string name="dates_filter_current_month">本月</string>
+    <string name="dates_filter_next_month">下个月</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">分享本地日志</string>
     <!--endregion-->
@@ -1489,6 +1503,9 @@
     <string name="error_login_select_vault_error">选择库时出错</string>
     <string name="error_login_account_deleted_error">此账号已被删除。请尝试使用另一个账号或者创建一个新的。</string>
     <string name="error_login_account_need_update_error">无法获取账户信息。请将 Anytype 更新至最新版本。</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
     <string name="sort_empty_values_desc">显示空白值</string>
@@ -1530,6 +1547,10 @@
     <string name="vault_my_spaces">我的空间</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">所有</string>
+    <string name="vault_pinned_section_title">固定</string>
+    <string name="vault_pin_space">钉住</string>
+    <string name="vault_unpin_space">取消固定</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">所有对象</string>
     <string name="all_content_title_only_unlinked">仅未链接</string>
     <string name="all_content_title_only_unlinked_description">在关联图中没有直连或反链的对象。</string>
@@ -1550,6 +1571,7 @@
     <string name="all_content_sort_date_created">创建日期</string>
     <string name="all_content_sort_date_used">上次使用日期</string>
     <string name="all_content_sort_name">名称</string>
+    <string name="all_content_item_menu_open">作为对象打开</string>
     <string name="all_content">所有对象</string>
     <string name="allContent_group_today">今天</string>
     <string name="allContent_group_yesterday">昨天</string>
@@ -1579,6 +1601,7 @@
     <string name="main_navigation_content_desc_back_button">返回按钮</string>
     <string name="main_navigation_content_desc_members_button">分享和会员按钮</string>
     <string name="main_navigation_content_desc_home_button">主页按钮</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>
@@ -1774,6 +1797,18 @@
     <string name="space_properties_screen_section_system_types">系统属性</string>
     <string name="space_properties_screen_menu_move_to_bin">移到回收站</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">创建账户出错：缺少空间</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>
@@ -1787,9 +1822,9 @@
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">暂不</string>
-    <string name="vault_create_chat">聊天</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">实时对话</string>
-    <string name="vault_create_space">空间</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">用于有组织的内容与数据</string>
     <string name="vault_empty_state_text">还没有空间</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1807,6 +1842,8 @@
     <string name="notifications_disable_short">Disable</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Notifications</string>
     <string name="notification_settings_disabled">Notifications are disabled</string>
     <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
@@ -1815,4 +1852,18 @@
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">请再试一次</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="allow">允许</string>
+    <string name="attachment_image">Attachment image</string>
 </resources>

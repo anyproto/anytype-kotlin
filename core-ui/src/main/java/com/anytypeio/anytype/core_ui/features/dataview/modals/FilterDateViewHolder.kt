@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.extension.hasValue
-import com.anytypeio.anytype.presentation.relations.toName
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 
 class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
@@ -26,6 +25,7 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
         item: FilterView.Expression.Date
     ) = with(itemView) {
         setup(
+            relationKey = item.relation,
             isEditMode = item.isInEditMode,
             title = item.title,
             condition = item.condition.title,
@@ -46,9 +46,20 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
                 )
                 DVFilterQuickOption.EXACT_DATE -> {
                     val relativeDate = item.relativeDate
-                    relativeDate?.getPrettyName(resources = resources)
+                    relativeDate?.getPrettyName(resources = resources) ?: resources.getString(R.string.dates_filter_exact_day)
                 }
-                else -> item.quickOption.toName()
+                DVFilterQuickOption.YESTERDAY -> resources.getString(R.string.yesterday)
+                DVFilterQuickOption.TODAY -> resources.getString(R.string.today)
+                DVFilterQuickOption.TOMORROW -> resources.getString(R.string.tomorrow)
+                DVFilterQuickOption.LAST_WEEK -> resources.getString(R.string.dates_filter_last_week)
+                DVFilterQuickOption.CURRENT_WEEK -> resources.getString(R.string.dates_filter_current_week)
+                DVFilterQuickOption.NEXT_WEEK -> resources.getString(R.string.dates_filter_next_week)
+                DVFilterQuickOption.LAST_MONTH -> resources.getString(R.string.dates_filter_last_month)
+                DVFilterQuickOption.CURRENT_MONTH -> resources.getString(R.string.dates_filter_current_month)
+                DVFilterQuickOption.NEXT_MONTH -> resources.getString(R.string.dates_filter_next_month)
+                DVFilterQuickOption.LAST_YEAR -> resources.getString(R.string.dates_filter_last_year)
+                DVFilterQuickOption.CURRENT_YEAR -> resources.getString(R.string.dates_filter_current_year)
+                DVFilterQuickOption.NEXT_YEAR -> resources.getString(R.string.dates_filter_next_year)
             }
         } else {
             binding.tvValue.text = null

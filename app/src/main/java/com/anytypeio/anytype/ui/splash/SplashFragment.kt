@@ -5,17 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.IdRes
+import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
@@ -37,7 +40,7 @@ import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
-import kotlinx.coroutines.launch
+import kotlin.collections.plusAssign
 import timber.log.Timber
 
 /**
@@ -54,67 +57,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         showVersion()
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch {
-                    vm.commands.collect {
-                        try {
-                            observe(it)
-                        } catch (e: Exception) {
-                            toast(e.message ?: resources.getString(R.string.unknown_error))
-                        }
-                    }
-                }
-                launch {
-                    vm.state.collect { state ->
-                        when(state) {
-                            is SplashViewModel.State.Init -> {
-                                binding.error.gone()
-                                binding.compose.visibility = View.GONE
-                            }
-                            is SplashViewModel.State.Error -> {
-                                binding.error.text = state.msg
-                                binding.error.visible()
-                            }
-                            is SplashViewModel.State.Loading -> {
-                                binding.compose.setContent {
-                                    PulsatingCircleScreen()
-                                }
-                                binding.compose.visible()
-                            }
-                            is SplashViewModel.State.Migration -> {
-                                binding.compose.setContent {
-                                    when(state) {
-                                        is SplashViewModel.State.Migration.AwaitingStart -> {
-                                            MigrationStartScreen(
-                                                onStartUpdate = vm::onStartMigrationClicked
-                                            )
-                                        }
-                                        is SplashViewModel.State.Migration.InProgress -> {
-                                            MigrationInProgressScreen(
-                                                progress = state.progress
-                                            )
-                                        }
-                                        is SplashViewModel.State.Migration.Failed -> {
-                                            MigrationFailedScreen(
-                                                state = state.state,
-                                                onRetryClicked = vm::onRetryMigrationClicked
-                                            )
-                                        }
-                                    }
-                                }
-                                binding.compose.visible()
-                            }
-                            is SplashViewModel.State.Success -> {
-                                binding.compose.gone()
-                                binding.error.gone()
-                                binding.error.text = ""
-                            }
-                        }
-                    }
-                }
-            }
-        }
         if (BuildConfig.DEBUG) {
             binding.error.setOnClickListener {
                 vm.onErrorClicked()
@@ -122,205 +64,183 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         }
     }
 
-    private fun observe(command: SplashViewModel.Command) {
+    override fun onStart() {
+        jobs += subscribe(vm.state) {
+            Timber.d("Splash state: $it")
+            handleState(it)
+        }
+        jobs += subscribe(vm.commands) {
+            Timber.d("Splash command: $it")
+            handleCommand(it)
+        }
+        super.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+    }
+
+    private fun handleState(state: SplashViewModel.State) = with(binding) {
+        when (state) {
+            is SplashViewModel.State.Init -> {
+                error.gone()
+                compose.gone()
+            }
+
+            is SplashViewModel.State.Error -> {
+                error.text = state.msg
+                error.visible()
+                compose.gone()
+            }
+
+            is SplashViewModel.State.Loading -> {
+                showCompose {
+                    PulsatingCircleScreen()
+                }
+                error.gone()
+            }
+
+            is SplashViewModel.State.Migration -> {
+                showCompose {
+                    when (state) {
+                        is SplashViewModel.State.Migration.AwaitingStart -> {
+                            MigrationStartScreen(onStartUpdate = vm::onStartMigrationClicked)
+                        }
+
+                        is SplashViewModel.State.Migration.InProgress -> {
+                            MigrationInProgressScreen(progress = state.progress)
+                        }
+
+                        is SplashViewModel.State.Migration.Failed -> {
+                            MigrationFailedScreen(
+                                state = state.state,
+                                onRetryClicked = vm::onRetryMigrationClicked
+                            )
+                        }
+                    }
+                }
+                error.gone()
+            }
+
+            is SplashViewModel.State.Success -> {
+                error.gone()
+                compose.gone()
+                error.text = ""
+            }
+        }
+    }
+
+    private fun showCompose(content: @Composable () -> Unit) = with(binding) {
+        compose.setContent {
+            content()
+        }
+        compose.visible()
+    }
+
+    private fun handleCommand(command: SplashViewModel.Command) {
+        val nav = findNavController()
         when (command) {
             is SplashViewModel.Command.NavigateToWidgets -> {
-                runCatching {
-                    findNavController().navigate(
-                        resId = R.id.actionOpenVaultFromSplash,
-                        args = VaultFragment.args(deeplink = null)
-                    )
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            deeplink = command.deeplink,
-                            space = command.space
-                        )
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to widgets from splash")
-                }
+                nav.safeNavigateOrLog(
+                    id = R.id.homeScreen,
+                    args = HomeScreenFragment.args(
+                        deeplink = command.deeplink,
+                        space = command.space
+                    ),
+                    errorTag = "Widgets Screen from Splash Screen",
+                )
             }
-            is SplashViewModel.Command.NavigateToSpaceLevelChat -> {
-                runCatching {
-                    findNavController().navigate(
-                        resId = R.id.actionOpenVaultFromSplash,
-                        args = VaultFragment.args(deeplink = null)
-                    )
-                    findNavController().navigate(
-                        R.id.actionOpenChatFromVault,
-                        args = ChatFragment.args(
-                            space = command.space,
-                            ctx = command.chat
-                        )
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to space-level chat from splash")
-                }
+
+            is SplashViewModel.Command.NavigateToChat -> {
+                nav.safeNavigateOrLog(
+                    id = R.id.chatScreen,
+                    args = ChatFragment.args(
+                        space = command.space,
+                        ctx = command.chat
+                    ),
+                    errorTag = "Chat Screen from Splash Screen",
+                )
             }
+
             is SplashViewModel.Command.NavigateToVault -> {
-                try {
-                    findNavController().navigate(
-                        resId = R.id.actionOpenVaultFromSplash,
-                        args = VaultFragment.args(deeplink = command.deeplink)
-                    )
-                } catch (e: Exception) {
-                    Timber.e(e, "Error while opening dashboard from splash screen")
-                    toast("Error while navigating to desktop: ${e.message}")
-                }
+                nav.safeNavigateOrLog(
+                    id = R.id.actionOpenVaultFromSplash,
+                    args = VaultFragment.args(deeplink = command.deeplink),
+                    errorTag = "Vault Screen from Splash Screen",
+                )
             }
+
             is SplashViewModel.Command.NavigateToObject -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    val chat = command.chat
-                    if (chat == null) {
-                        findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
-                            args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
-                            )
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
-                            args = ChatFragment.args(
-                                space = command.space,
-                                ctx = chat
-                            )
-                        )
-                    }
-                    findNavController().navigate(
-                        resId = R.id.objectNavigation,
+                navigateToHomeOrChatThen(
+                    nav = nav,
+                    chat = command.chat,
+                    space = command.space
+                ) {
+                    nav.safeNavigateOrLog(
+                        id = R.id.objectNavigation,
                         args = EditorFragment.args(
                             ctx = command.id,
                             space = command.space
-                        )
+                        ),
+                        errorTag = "object from splash",
                     )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to object from splash")
                 }
             }
-            is SplashViewModel.Command.NavigateToChat -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        args = HomeScreenFragment.args(
-                            space = command.space,
-                            deeplink = null
-                        )
-                    )
-                    findNavController().navigate(
-                        R.id.chatScreen,
-                        args = ChatFragment.args(
-                            space = command.space,
-                            ctx = command.chat
-                        )
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to chat from push")
-                }
-            }
+
             is SplashViewModel.Command.NavigateToObjectType -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    val chat = command.chat
-                    if (chat == null) {
-                        findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
-                            args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
-                            )
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
-                            args = ChatFragment.args(
-                                space = command.space,
-                                ctx = chat
-                            )
-                        )
-                    }
-                    findNavController().navigate(
-                        resId = R.id.objectTypeNavigation,
+                navigateToHomeOrChatThen(
+                    nav = nav,
+                    chat = command.chat,
+                    space = command.space
+                ) {
+                    nav.safeNavigateOrLog(
+                        id = R.id.objectTypeNavigation,
                         args = ObjectTypeFragment.args(
                             objectId = command.id,
                             space = command.space
-                        )
+                        ),
+                        errorTag = "object type from splash",
                     )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to object from splash")
                 }
             }
+
             is SplashViewModel.Command.NavigateToObjectSet -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    val chat = command.chat
-                    if (chat == null) {
-                        findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
-                            args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
-                            )
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
-                            args = ChatFragment.args(
-                                space = command.space,
-                                ctx = chat
-                            )
-                        )
-                    }
-                    findNavController().navigate(
-                        resId = R.id.dataViewNavigation,
+                navigateToHomeOrChatThen(
+                    nav = nav,
+                    chat = command.chat,
+                    space = command.space
+                ) {
+                    nav.safeNavigateOrLog(
+                        id = R.id.dataViewNavigation,
                         args = ObjectSetFragment.args(
                             ctx = command.id,
                             space = command.space
-                        )
+                        ),
+                        errorTag = "set-or-collection from splash",
                     )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to set-or-collection from splash")
                 }
             }
+
             is SplashViewModel.Command.NavigateToDateObject -> {
-                runCatching {
-                    findNavController().navigate(R.id.actionOpenVaultFromSplash)
-                    val chat = command.chat
-                    if (chat == null) {
-                        findNavController().navigate(
-                            R.id.actionOpenSpaceFromVault,
-                            args = HomeScreenFragment.args(
-                                space = command.space,
-                                deeplink = null
-                            )
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.actionOpenChatFromVault,
-                            args = ChatFragment.args(
-                                space = command.space,
-                                ctx = chat
-                            )
-                        )
-                    }
-                    findNavController().navigate(
-                        resId = R.id.dateObjectScreen,
+                navigateToHomeOrChatThen(
+                    nav = nav,
+                    chat = command.chat,
+                    space = command.space
+                ) {
+                    nav.safeNavigateOrLog(
+                        id = R.id.dateObjectScreen,
                         args = DateObjectFragment.args(
                             objectId = command.id,
                             space = command.space
-                        )
+                        ),
+                        errorTag = "date object from splash",
                     )
-                }.onFailure {
-                    Timber.e(it, "Error while navigating to date object from splash")
                 }
             }
+
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 val intent = activity?.intent
-                val deepLink: String?
+                var deepLink: String? = null
                 if (intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND)) {
                     val data = intent.dataString
                     deepLink = if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
@@ -328,31 +248,29 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     } else {
                         intent.extras?.getString(Intent.EXTRA_TEXT)
                     }
-                } else {
-                    deepLink = null
                 }
                 if (!deepLink.isNullOrEmpty()) {
-                    // Clearing intent to only handle it once:
                     with(requireNotNull(intent)) {
                         setAction(null)
                         setData(null)
                         putExtras(Bundle())
                     }
                 }
-                findNavController().navigate(
-                    R.id.action_splashFragment_to_authStart,
-                    args = OnboardingFragment.args(deepLink)
+                nav.safeNavigateOrLog(
+                    id = R.id.action_splashFragment_to_authStart,
+                    args = OnboardingFragment.args(deepLink),
+                    errorTag = "AuthStart navigation",
                 )
             }
+
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = activity?.intent
                 Timber.d("Checking app start intent: $intent, action: ${intent?.action}")
                 when {
                     intent != null && (intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND) -> {
-                        val data =
-                            intent.dataString.orNull() ?: intent.extras?.getString(Intent.EXTRA_TEXT)
+                        val data = intent.dataString.orNull()
+                            ?: intent.extras?.getString(Intent.EXTRA_TEXT)
                         if (data != null && DefaultDeepLinkResolver.isDeepLink(data)) {
-                            // Clearing intent to only handle it once:
                             with(intent) {
                                 setAction(null)
                                 setData(null)
@@ -373,6 +291,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                             }
                         }
                     }
+
                     intent?.action == AnytypePushService.ACTION_OPEN_CHAT -> {
                         val chatId = intent.getStringExtra(Relations.CHAT_ID)
                         val spaceId = intent.getStringExtra(Relations.SPACE_ID)
@@ -385,6 +304,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                             vm.onIntentActionNotFound()
                         }
                     }
+
                     else -> {
                         vm.onIntentActionNotFound()
                     }
@@ -395,6 +315,35 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 toast(command.message)
             }
         }
+    }
+
+    private fun navigateToHomeOrChatThen(
+        nav: NavController,
+        chat: Id?,
+        space: Id,
+        then: () -> Unit
+    ) {
+        if (chat.isNullOrBlank()) {
+            nav.safeNavigateOrLog(
+                id = R.id.homeScreen,
+                args = HomeScreenFragment.args(deeplink = null, space = space)
+            )
+        } else {
+            nav.safeNavigateOrLog(
+                id = R.id.chatScreen,
+                args = ChatFragment.args(space = space, ctx = chat)
+            )
+        }
+        then()
+    }
+
+    private fun NavController.safeNavigateOrLog(
+        @IdRes id: Int,
+        args: Bundle? = null,
+        errorTag: String? = null
+    ) {
+        val currentId = currentDestination?.id ?: return
+        safeNavigate(currentId, id, args, errorTag)
     }
 
     private fun showVersion() {

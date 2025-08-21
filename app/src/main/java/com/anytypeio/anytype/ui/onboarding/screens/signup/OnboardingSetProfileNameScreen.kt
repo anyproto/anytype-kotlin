@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -53,20 +52,30 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.profile.AccountProfile
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
 
 
 @Composable
 fun SetProfileNameWrapper(
     viewModel: OnboardingSetProfileNameViewModel,
+    spaceId: String,
+    startingObjectId: String?,
+    profileId: String,
     onBackClicked: () -> Unit,
 ) {
     val name = remember { mutableStateOf("") }
+    val placeholderName = viewModel.profileView.collectAsStateWithLifecycle().value
 
     SetProfileNameScreen(
+        placeholderName = placeholderName,
         onNextClicked = { inputName ->
             name.value = inputName
             viewModel.onNextClicked(
-                name = inputName
+                name = inputName,
+                spaceId = spaceId,
+                startingObjectId = startingObjectId,
+                profileId = profileId
             )
         },
         isLoading = viewModel.state
@@ -78,6 +87,7 @@ fun SetProfileNameWrapper(
 
 @Composable
 private fun SetProfileNameScreen(
+    placeholderName: AccountProfile,
     onNextClicked: (Name) -> Unit,
     onBackClicked: () -> Unit,
     isLoading: Boolean
@@ -87,22 +97,17 @@ private fun SetProfileNameScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
     var isError by remember { mutableStateOf(false) }
+    val placeholderText = (placeholderName as? AccountProfile.Data)?.name ?: stringResource(id = R.string.onboarding_your_name)
 
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
-    fun validateAndSubmit() {
-        if (innerValue.text.isNotEmpty()) {
-            isError = false
-            focusManager.clearFocus()
-            keyboardController?.hide()
-            onNextClicked(innerValue.text)
-        } else {
-            isError = true
-            focusManager.clearFocus()
-            keyboardController?.hide()
-        }
+    fun submit() {
+        isError = false
+        focusManager.clearFocus()
+        keyboardController?.hide()
+        onNextClicked(innerValue.text)
     }
 
     Box(
@@ -131,7 +136,7 @@ private fun SetProfileNameScreen(
                     .focusRequester(focusRequester),
                 placeholder = {
                     Text(
-                        text = stringResource(id = R.string.onboarding_your_name),
+                        text = placeholderText,
                         style = PreviewTitle1Regular,
                         color = Color(0xFF646464)
                     )
@@ -161,7 +166,7 @@ private fun SetProfileNameScreen(
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {
-                    validateAndSubmit()
+                    submit()
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -180,7 +185,7 @@ private fun SetProfileNameScreen(
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_button_continue),
             onClick = {
-                validateAndSubmit()
+                submit()
             },
             size = ButtonSize.Large,
             modifier = Modifier
@@ -192,7 +197,7 @@ private fun SetProfileNameScreen(
                 )
                 .align(Alignment.BottomCenter),
             isLoading = isLoading,
-            enabled = innerValue.text.isNotEmpty()
+            enabled = true
         )
     }
 }
@@ -244,6 +249,10 @@ private fun SetProfileNameScreenPreview() {
     SetProfileNameScreen(
         onNextClicked = {},
         onBackClicked = {},
-        isLoading = false
+        isLoading = false,
+        placeholderName = AccountProfile.Data(
+            name = "Funny Name",
+            icon = ProfileIconView.Loading
+        )
     )
 }

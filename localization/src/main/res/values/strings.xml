@@ -76,7 +76,7 @@
     <string name="offload_files">Offload files</string>
     <string name="local_storage_used">%1$s used</string>
     <string name="space_usage">%1$s of %2$s used</string>
-    <string name="remote_storage">Remote storage</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Contact us</string>
     <string name="get_more_space">Get more space</string>
     <string name="account_name">Name</string>
@@ -433,6 +433,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Share button</string>
     <string name="content_desc_home_button">Home button</string>
+    <string name="content_desc_chat_button">Chat button</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Unsupported block</string>
@@ -1126,7 +1127,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
     <string name="onboarding_enter_my_vault">Next</string>
-    <string name="onboarding_have_key_button_text">I already have a key</string>
+    <string name="onboarding_have_key_button_text">I already have the key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1292,6 +1293,20 @@
 
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="number_days_from">Number of days from now</string>
+    <string name="number_days_ago">Number of days ago</string>
+    
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Exact day</string>
+    <string name="dates_filter_last_week">Last week</string>
+    <string name="dates_filter_current_week">Current week</string>
+    <string name="dates_filter_next_week">Next week</string>
+    <string name="dates_filter_last_month">Last month</string>
+    <string name="dates_filter_current_month">Current month</string>
+    <string name="dates_filter_next_month">Next month</string>
+    <string name="dates_filter_last_year">Last year</string>
+    <string name="dates_filter_current_year">Current year</string>
+    <string name="dates_filter_next_year">Next year</string>
 
     <string name="settings_use_yamux">Use QUIC</string>
     <string name="settings_share_local_logs">Share local logs</string>
@@ -1359,8 +1374,28 @@
     <!--region MULTIPLAYER -->
 
     <string name="multiplayer_share_invite_link">Share invite link</string>
+    <string name="multiplayer_share_invite_link_menu">Share link</string>
+    <string name="multiplayer_qr_invite_link_menu">Show QR code</string>
     <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
     <string name="multiplayer_invite_link">Invite link</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabled</string>
+    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
+    <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
+    <string name="multiplayer_request_access">Request access</string>
+    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Copy link</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
@@ -1379,6 +1414,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
     <string name="multiplayer_members_and_requests">Members</string>
+    <string name="multiplayer_members_invite_links_section">Invite link</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
@@ -1751,6 +1787,9 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Select vault error.</string>
     <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
     <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
 
@@ -1831,6 +1870,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_date_created">Date created</string>
     <string name="all_content_sort_date_used">Date last used</string>
     <string name="all_content_sort_name">Name</string>
+    <string name="all_content_item_menu_open">Open as Object</string>
 
     <string name="all_content">All Objects</string>
 
@@ -1868,6 +1908,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat button</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
 
@@ -2012,6 +2053,8 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Invite</string>
+    <string name="space_settings_share_link">Share link</string>
+    <string name="space_settings_copy_link">Copy link</string>
     <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">Members</string>
@@ -2023,6 +2066,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
+    <string name="space_settings_join_space_by_qr_title">Join</string>
 
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
@@ -2073,7 +2117,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
 
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">My Types</string>
@@ -2084,6 +2128,19 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
+    
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
+    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
+    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
 
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
@@ -2100,9 +2157,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">Not now</string>
 
-    <string name="vault_create_chat">Chat</string>
+    <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
-    <string name="vault_create_space">Space</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
     <string name="vault_empty_state_text">There are no spaces yet</string>
@@ -2134,5 +2191,31 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="failed_to_load_image">Failed to load image</string>
+    
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_try_again">Try again</string>
+    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="open_settings">Open Settings</string>
+    <string name="allow">Allow</string>
+    <string name="attachment_image">Attachment image</string>
+
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
+    <string name="share_space_error_space_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">
+        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
 
 </resources>

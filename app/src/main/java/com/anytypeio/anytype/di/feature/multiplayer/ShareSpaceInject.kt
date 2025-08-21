@@ -8,8 +8,11 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -18,11 +21,13 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [ShareSpaceDependencies::class],
@@ -46,6 +51,11 @@ interface ShareSpaceComponent {
 
 @Module
 object ShareSpaceModule {
+
+    @PerDialog
+    @Provides
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @Module
     interface Declarations {
         @PerScreen
@@ -68,4 +78,7 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun provideMembershipProvider(): MembershipProvider
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun clipboard(): Clipboard
+    fun logger(): Logger
+    fun spaceInviteLinkStore(): SpaceInviteLinkStore
 }

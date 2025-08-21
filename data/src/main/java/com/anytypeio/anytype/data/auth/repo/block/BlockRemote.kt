@@ -343,7 +343,7 @@ interface BlockRemote {
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
     suspend fun deleteSpace(space: SpaceId)
-    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>)
+    suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
     suspend fun spaceUnsetOrder(spaceViewId: Id)
     suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
 
@@ -404,8 +404,8 @@ interface BlockRemote {
     suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(
@@ -497,4 +497,6 @@ interface BlockRemote {
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState)
 
     suspend fun debugStats(): String
+
+    suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 }

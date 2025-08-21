@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -566,6 +567,9 @@ fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: D
             time + SECONDS_IN_DAY * value
         }
         DVFilterQuickOption.EXACT_DATE -> value
+        DVFilterQuickOption.LAST_YEAR -> dateProvider.getTimestampForLastYearAtStartOfYear()
+        DVFilterQuickOption.CURRENT_YEAR -> dateProvider.getTimestampForCurrentYearAtStartOfYear()
+        DVFilterQuickOption.NEXT_YEAR -> dateProvider.getTimestampForNextYearAtStartOfYear()
     }
 }
 

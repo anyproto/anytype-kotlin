@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
@@ -35,7 +36,8 @@ class DateObjectVMFactory @Inject constructor(
     private val createObject: CreateObject,
     private val fieldParser: FieldParser,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val getDateObjectByTimestamp: GetDateObjectByTimestamp
+    private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -56,6 +58,7 @@ class DateObjectVMFactory @Inject constructor(
             createObject = createObject,
             fieldParser = fieldParser,
             setObjectListIsArchived = setObjectListIsArchived,
-            getDateObjectByTimestamp = getDateObjectByTimestamp
+            getDateObjectByTimestamp = getDateObjectByTimestamp,
+            spaceViews = spaceViews
         ) as T
 }

@@ -14,7 +14,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.relationIcon
+import com.anytypeio.anytype.core_ui.extensions.icon
 import com.anytypeio.anytype.core_ui.features.sets.CreateFilterAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.textChanges
@@ -102,7 +102,7 @@ open class CreateFilterFromSelectedValueFragment :
             }
             subscribe(vm.relationState.filterNotNull()) {
                 binding.tvRelationName.text = it.title
-                binding.ivRelationIcon.setImageResource(it.format.relationIcon(true))
+                binding.ivRelationIcon.setImageResource(it.icon())
             }
             subscribe(vm.optionCountState) { binding.btnBottomAction.setNumber(it.toString()) }
             subscribe(vm.isCompleted) { isCompleted ->

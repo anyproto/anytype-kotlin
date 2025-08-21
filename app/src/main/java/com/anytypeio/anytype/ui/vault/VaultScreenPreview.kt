@@ -1,10 +1,17 @@
 package com.anytypeio.anytype.ui.vault
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -23,7 +30,7 @@ fun ChatWithManyAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:30",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // No message text, so should show "5 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -63,7 +70,7 @@ fun ChatWithManyMixedAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "14:15",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // No message text, should show "6 Attachments"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -106,12 +113,11 @@ fun ChatWithImageAttachments() {
             .padding(horizontal = 16.dp),
         title = "Design Team",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Alice: Check out these designs",
         creatorName = "Alice",
         messageText = "Check out these designs",
         messageTime = "10:45",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -139,12 +145,11 @@ fun ChatWithFileAttachments() {
             .padding(horizontal = 16.dp),
         title = "Project Discussion",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Bob: Here are the documents",
         creatorName = "Bob",
         messageText = "Here are the documents",
         messageTime = "14:22",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
@@ -168,12 +173,11 @@ fun ChatWithLinkAttachments() {
             .padding(horizontal = 16.dp),
         title = "Resource Sharing",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Charlie: Found some useful links",
         creatorName = "Charlie",
         messageText = "Found some useful links",
         messageTime = "11:30",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
@@ -207,12 +211,11 @@ fun ChatWithMixedAttachments() {
             .padding(horizontal = 16.dp),
         title = "Development Updates",
         icon = SpaceIconView.Placeholder(),
-        previewText = "Dana: Latest progress and resources",
         creatorName = "Dana",
         messageText = "Latest progress and resources",
         messageTime = "16:30",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -243,7 +246,7 @@ fun ChatWithAttachmentsNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "12:15",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -270,7 +273,7 @@ fun ChatWithManyLinksNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "15:45",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // No message text, should show "5 Attachments" for mixed link/file types
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -314,7 +317,7 @@ fun ChatWithSingleLinkNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "09:15",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Single link should show object name instead of "1 Object"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -338,7 +341,7 @@ fun ChatWithMultipleLinksOnlyNoText() {
         icon = SpaceIconView.Placeholder(),
         messageTime = "10:30",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Multiple links only should show "3 Objects"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -373,7 +376,7 @@ fun ChatWithSingleImageNoMessage() {
         creatorName = "Alice",
         messageTime = "09:00",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Single image, no message: "Alice: [] Image"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -398,7 +401,7 @@ fun ChatWithSingleLinkWithMessage() {
         messageText = "Check this out",
         messageTime = "10:00",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Single link with message: "Bob: [] API Documentation Check this out"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -423,7 +426,7 @@ fun ChatWithMultipleImagesNoMessage() {
         creatorName = "Charlie",
         messageTime = "11:00",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Multiple images, no message: "Charlie: [][][] 3 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -456,7 +459,7 @@ fun ChatWithMultipleObjectsWithMessage() {
         messageText = "Here are some resources",
         messageTime = "12:00",
         maxPinnedSpaces = 6,
-        showPinButton = true,
+        currentPinnedCount = 2,
         // Multiple objects with message: "Dana: [][][] 3 Objects Here are some resources"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -489,7 +492,43 @@ fun ChatEmpty() {
         title = "Empty Chat",
         icon = SpaceIconView.Placeholder(),
         messageTime = "08:00",
-        showPinButton = true,
+        currentPinnedCount = 2,
         maxPinnedSpaces = 6
     )
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Muted Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = true,
+            isPinned = false,
+            currentPinnedCount = 3,
+            onMuteToggle = {},
+            onPinToggle = {},
+            onSpaceSettings = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Unmuted Not Owner")
+@Composable
+fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
+    var expanded by remember { mutableStateOf(true) }
+    Box(Modifier.fillMaxSize()) {
+        SpaceActionsDropdownMenu(
+            expanded = expanded,
+            onDismiss = { expanded = false },
+            isMuted = false,
+            isPinned = false,
+            currentPinnedCount = 6,
+            onMuteToggle = {},
+            onPinToggle = {},
+            onSpaceSettings = {}
+        )
+    }
 }

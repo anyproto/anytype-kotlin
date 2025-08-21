@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
+import com.anytypeio.anytype.presentation.common.TypedViewState.*
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlinx.coroutines.Job
@@ -99,18 +100,23 @@ class RequestJoinSpaceViewModel(
                         if (e is SpaceInviteError) {
                             when(e) {
                                 is SpaceInviteError.InvalidInvite -> {
-                                    state.value = TypedViewState.Error(
+                                    state.value = Error(
                                         ErrorView.InvalidLink
                                     )
                                 }
                                 is SpaceInviteError.InvalidNotFound -> {
-                                    state.value = TypedViewState.Error(
+                                    state.value = Error(
                                         ErrorView.InviteNotFound
                                     )
                                 }
                                 is SpaceInviteError.SpaceDeleted -> {
-                                    state.value = TypedViewState.Error(
+                                    state.value = Error(
                                         ErrorView.SpaceDeleted
+                                    )
+                                }
+                                SpaceInviteError.InviteNotActive -> {
+                                    state.value = Error(
+                                        ErrorView.InvalidLink
                                     )
                                 }
                             }

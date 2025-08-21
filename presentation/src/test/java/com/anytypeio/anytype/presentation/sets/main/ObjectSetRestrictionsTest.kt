@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
-import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -21,14 +23,20 @@ import org.mockito.MockitoAnnotations
 class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
     private lateinit var viewModel: ObjectSetViewModel
-    private lateinit var mockObjectSet: MockSet
+    private var mockObjectSet: MockSet = MockSet(context = root, space = defaultSpace)
+
+    val relationLinksWithCreatedDate = mockObjectSet.relationLinks + StubRelationLink(Relations.CREATED_DATE, RelationFormat.DATE)
+    val dataViewWithCreatedDate = StubDataView(
+        id = mockObjectSet.dataView.id,
+        views = listOf(mockObjectSet.viewer),
+        relationLinks = relationLinksWithCreatedDate
+    )
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root, space = defaultSpace)
     }
 
     @After
@@ -41,7 +49,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details,
             dataViewRestrictions = listOf(
                 DataViewRestrictions(
@@ -50,10 +58,10 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
                 )
             )
         )
+
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -85,7 +93,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details,
             dataViewRestrictions = listOf(
                 DataViewRestrictions(
@@ -97,7 +105,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -129,7 +136,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         // SETUP
         stubSpaceManager(mockObjectSet.spaceId)
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details,
             dataViewRestrictions = listOf(
                 DataViewRestrictions(
@@ -141,7 +148,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -175,7 +181,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details,
             dataViewRestrictions = listOf(
                 DataViewRestrictions(
@@ -187,7 +193,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
@@ -221,7 +226,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, dataViewWithCreatedDate),
             details = mockObjectSet.details,
             dataViewRestrictions = listOf(
                 DataViewRestrictions(
@@ -233,7 +238,6 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             spaceId = mockObjectSet.spaceId,
-            storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
             objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),

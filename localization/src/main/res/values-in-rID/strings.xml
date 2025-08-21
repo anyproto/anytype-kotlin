@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Ikon peringatan</string>
     <string name="modal_tap_to_type">Ketuk untuk mengetik</string>
     <string name="modal_gallery">Galeri</string>
     <string name="modal_kanban">Kanban</string>
@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">Tombol kembali</string>
     <string name="content_desc_share_button">Tombol bagikan</string>
     <string name="content_desc_home_button">Tombol beranda</string>
+    <string name="content_desc_chat_button">Tombol obrolan</string>
     <string name="content_desc_search_button">Tombol cari</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Balok tak didukung</string>
@@ -1005,7 +1006,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Aku pengguna baru</string>
     <string name="onboarding_enter_my_vault">Lanjut</string>
-    <string name="onboarding_have_key_button_text">Sudah punya kunci</string>
+    <string name="onboarding_have_key_button_text">Aku sudah punya kunci</string>
     <string name="onboarding_get_my_key_button_text">Ambil Kunciku</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1112,6 +1113,19 @@
     <string name="date_type_older">Lebih lama</string>
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
+    <string name="number_days_from">Sekian hari ke depan</string>
+    <string name="number_days_ago">Sekian hari yang lalu</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">Hari yang pasti</string>
+    <string name="dates_filter_last_week">Minggu lalu</string>
+    <string name="dates_filter_current_week">Minggu ini</string>
+    <string name="dates_filter_next_week">Minggu depan</string>
+    <string name="dates_filter_last_month">Bulan lalu</string>
+    <string name="dates_filter_current_month">Bulan ini</string>
+    <string name="dates_filter_next_month">Bulan depan</string>
+    <string name="dates_filter_last_year">Tahun lalu</string>
+    <string name="dates_filter_current_year">Tahun ini</string>
+    <string name="dates_filter_next_year">Tahun depan</string>
     <string name="settings_use_yamux">Gunakan QUIC</string>
     <string name="settings_share_local_logs">Bagikan log lokal</string>
     <!--endregion-->
@@ -1493,6 +1507,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="error_login_select_vault_error">Memilih akun salah.</string>
     <string name="error_login_account_deleted_error">Akun ini sudah dihapus. Coba gunakan akun lain atau buat yang baru.</string>
     <string name="error_login_account_need_update_error">Tidak dapat mengambil data akun. Silakan perbarui Anytype ke versi terbaru.</string>
+    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_network_error">Galat jaringan. Silakan cek sambungan internetmu lalu coba lagi.</string>
+    <string name="error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan sambung ulang kembali ke internet lalu coba lagi.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
     <string name="global_search_no_related_objects_found">Tidak ada objek terkait ditemukan</string>
     <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
@@ -1534,6 +1551,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_my_spaces">Ruangku</string>
     <string name="vault_unread_section_title">Belum dibaca</string>
     <string name="vault_all_section_title">Semua</string>
+    <string name="vault_pinned_section_title">Tersemat</string>
+    <string name="vault_pin_space">Pin</string>
+    <string name="vault_unpin_space">Lepas sematan</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
@@ -1554,6 +1575,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="all_content_sort_date_created">Tanggal dibuat</string>
     <string name="all_content_sort_date_used">Tanggal terakhir dipakai</string>
     <string name="all_content_sort_name">Nama</string>
+    <string name="all_content_item_menu_open">Buka sebagai Objek</string>
     <string name="all_content">Semua Objek</string>
     <string name="allContent_group_today">Hari ini</string>
     <string name="allContent_group_yesterday">Kemarin</string>
@@ -1583,6 +1605,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_back_button">Tombol kembali</string>
     <string name="main_navigation_content_desc_members_button">Tombol bagikan dan anggota</string>
     <string name="main_navigation_content_desc_home_button">Tombol beranda</string>
+    <string name="main_navigation_content_desc_chat_button">Tombol obrolan</string>
     <string name="main_navigation_content_desc_search_button">Tombol telusuri objek</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>
@@ -1778,6 +1801,18 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_properties_screen_section_system_types">Properti Sistem</string>
     <string name="space_properties_screen_menu_move_to_bin">Pindah ke bak sampah</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Terjadi kesalahan saat membuat akun: tidak ada ruang</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">Gagal membuat akun karena galat jaringan. Silakan cek koneksimu.</string>
+    <string name="onboarding_error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan cek sambunganmu lalu coba lagi.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Akun dibuat tetapi gagal memulai simpul. Silakan coba masuk lagi.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Akun dibuat tetapi gagal mengatur nama. Kamu bisa mengaturnya nanti di Setelan.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Gagal menghentikan simpul yang sedang berjalan. Silakan mulai ulang aplikasi lalu coba lagi.</string>
+    <string name="onboarding_error_failed_to_write_config">Gagal menyimpan konfigurasi. Silakan cek izin penyimpanan perangkatmu.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Gagal membuat repositori lokal. Silakan cek ruang penyimpanan yang tersedia.</string>
+    <string name="onboarding_error_account_creation_canceled">Pembuatan akun dibatalkan.</string>
+    <string name="onboarding_error_config_file_not_found">Berkas konfigurasi tidak ditemukan. Silakan pasang ulang aplikasi.</string>
+    <string name="onboarding_error_config_file_invalid">Berkas konfigurasi tidak valid. Silakan pasang ulang aplikasi.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Konfigurasi jaringan tidak sesuai. Silakan cek pengaturan jaringanmu.</string>
     <string name="onboarding_set_your_name_title">Tambahkan Namamu</string>
     <string name="onboarding_soul_creation_description">Hanya dapat dilihat oleh orang yang saling berbgi denganmu. Nama ini tidak disimpan secara sentral.</string>
     <string name="onboarding_email_add_title">Tetap terinformasi</string>
@@ -1791,9 +1826,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_modal_description">Dapatkan pemberitahuan segera ketika seseorang mengirim pesan atau menyebutmu di ruangmu.</string>
     <string name="notifications_modal_success_button">Nyalakan Pemberitahuan</string>
     <string name="notifications_modal_cancel_button">Tidak dulu</string>
-    <string name="vault_create_chat">Obrolan</string>
+    <string name="vault_create_chat">Obrolan Baru</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
-    <string name="vault_create_space">Ruang</string>
+    <string name="vault_create_space">Ruang Baru</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="vault_empty_search_state_text">No matches found</string>
@@ -1811,6 +1846,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Pemberitahuan</string>
     <string name="notification_settings_disabled">Pemberitahuan dinonaktifkan</string>
     <string name="notification_settings_disabled_subtitle">Terima pemberitahuan pesan baru dengan mengaktifkannya di setelan perangkatmu.</string>
@@ -1819,4 +1856,18 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notification_settings_state_disabled">Nonaktif</string>
     <string name="notification_settings_state_enabled">Aktif</string>
     <string name="content_desc_muted">Disenyapkan</string>
+    <string name="failed_to_load_image">Gagal memuat gambar</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">Gabung via kode QR</string>
+    <string name="vault_qr_scan_error_title">Tidak bisa memindai kode QR</string>
+    <string name="vault_qr_scan_error_description">Pastikan kodenya terlihat jelas lalu coba lagi.</string>
+    <string name="vault_qr_invalid_title">Kode QR tidak valid</string>
+    <string name="vault_qr_invalid_description">Kode yang terpindai tidak sesuai dengan undangan mana pun. Silakan cek lalu coba lagi.</string>
+    <string name="vault_qr_try_again">Coba lagi</string>
+    <string name="camera_permission_required_title">Izin kamera diperlukan</string>
+    <string name="camera_permission_rationale_message">Untuk memindai kode QR, Anytype memerlukan akses kameramu. Izin ini hanya digunakan untuk memindai kode QR.</string>
+    <string name="camera_permission_settings_message">Untuk memindai kode QR, kamu harus mengizinkan akses kamera di setelan perangkatmu.</string>
+    <string name="open_settings">Buka Setelan</string>
+    <string name="allow">Izinkan</string>
+    <string name="attachment_image">Lampiran gambar</string>
 </resources>

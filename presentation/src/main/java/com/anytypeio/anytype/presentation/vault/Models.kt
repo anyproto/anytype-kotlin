@@ -14,7 +14,6 @@ sealed class VaultSpaceView {
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
     val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
-    abstract val showPinButton: Boolean
 
     val lastMessageDate: Long?
         get() = when (this) {
@@ -27,8 +26,7 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
-        override val showPinButton: Boolean
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class Chat(
@@ -38,14 +36,12 @@ sealed class VaultSpaceView {
         val unreadMentionCount: Int = 0,
         val chatMessage: com.anytypeio.anytype.core_models.chats.Chat.Message.Content? = null,
         val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,
-        val previewText: String? = null,
         val creatorName: String? = null,
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
-        override val showPinButton: Boolean
+        override val isMuted: Boolean? = null
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -59,15 +55,13 @@ sealed class VaultSpaceView {
     }
 }
 
-/**
- * Data structure for organizing vault spaces into pinned and main sections:
- * @property pinnedSpaces List of pinned spaces (max MAX_PINNED_SPACES)
- * @property mainSpaces List of unpinned spaces
- */
-data class VaultSectionView(
-    val pinnedSpaces: List<VaultSpaceView> = emptyList(),
-    val mainSpaces: List<VaultSpaceView> = emptyList()
-) {
+sealed class VaultUiState {
+    data object Loading : VaultUiState()
+    data class Sections(
+        val pinnedSpaces: List<VaultSpaceView> = emptyList(),
+        val mainSpaces: List<VaultSpaceView> = emptyList()
+    ) : VaultUiState()
+
     companion object {
         const val MAX_PINNED_SPACES = 6
     }
@@ -82,6 +76,8 @@ sealed class VaultCommand {
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
     data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
+    data object ScanQrCode : VaultCommand()
+    data class NavigateToRequestJoinSpace(val link: String) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
         data object DeepLinkToObjectNotWorking : Deeplink()
@@ -109,4 +105,7 @@ sealed class VaultNavigation {
 sealed class VaultErrors {
     data object Hidden : VaultErrors()
     data object MaxPinnedSpacesReached : VaultErrors()
+    data object QrScannerError : VaultErrors()
+    data object QrCodeIsNotValid : VaultErrors()
+    data object CameraPermissionDenied : VaultErrors()
 }

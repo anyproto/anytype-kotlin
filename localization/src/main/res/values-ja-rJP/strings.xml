@@ -379,6 +379,7 @@
     <string name="content_desc_back_button">戻るボタン</string>
     <string name="content_desc_share_button">共有ボタン</string>
     <string name="content_desc_home_button">ホームボタン</string>
+    <string name="content_desc_chat_button">チャットボタン</string>
     <string name="content_desc_search_button">検索ボタン</string>
     <string name="content_desc_add_doc_button">ドキュメントを追加</string>
     <string name="unsupported_block">未対応ブロック</string>
@@ -1112,6 +1113,19 @@
     <string name="date_type_older">さらに古い</string>
     <string name="dates_days_ago">%1$s日前</string>
     <string name="dates_days_from">%1$s日後</string>
+    <string name="number_days_from">今日からの何日後</string>
+    <string name="number_days_ago">今日からの何日前</string>
+    <!-- Date filter quick options -->
+    <string name="dates_filter_exact_day">特定の日付</string>
+    <string name="dates_filter_last_week">先週</string>
+    <string name="dates_filter_current_week">今週</string>
+    <string name="dates_filter_next_week">来週</string>
+    <string name="dates_filter_last_month">先月</string>
+    <string name="dates_filter_current_month">今月</string>
+    <string name="dates_filter_next_month">来月</string>
+    <string name="dates_filter_last_year">去年</string>
+    <string name="dates_filter_current_year">今年</string>
+    <string name="dates_filter_next_year">来年</string>
     <string name="settings_use_yamux">QUICを使用</string>
     <string name="settings_share_local_logs">ローカルログを共有</string>
     <!--endregion-->
@@ -1494,6 +1508,9 @@
     <string name="error_login_select_vault_error">保管庫選択エラーです。</string>
     <string name="error_login_account_deleted_error">このアカウントは削除されました。別のアカウントを使用するか、新しいアカウントを作成してください。</string>
     <string name="error_login_account_need_update_error">アカウントを取得できません。Anytypeアプリを最新版に更新してください。</string>
+    <string name="error_wallet_setup">ウォレットをセットアップできません。デバイスのストレージ容量を確認して、もう一度お試しください。</string>
+    <string name="error_network_error">ネットワークエラーが発生しました。インターネット接続を確認して、もう一度お試しください。</string>
+    <string name="error_offline_device">デバイスがオフラインのようです。インターネット接続を確認して、もう一度お試しください。</string>
     <string name="global_search_related_to">"関連："</string>
     <string name="global_search_no_related_objects_found">関連するオブジェクトが見つかりません</string>
     <string name="sort_empty_values_desc">未入力の値を表示</string>
@@ -1535,6 +1552,10 @@
     <string name="vault_my_spaces">自分のスペース</string>
     <string name="vault_unread_section_title">未読</string>
     <string name="vault_all_section_title">すべて</string>
+    <string name="vault_pinned_section_title">ピン留め</string>
+    <string name="vault_pin_space">ピン留め</string>
+    <string name="vault_unpin_space">ピン留め解除</string>
+    <string name="vault_max_pinned_limit_reached">%1$d個までしかスペースはピン留めできません。</string>
     <string name="all_content_title_all_content">すべてのオブジェクト</string>
     <string name="all_content_title_only_unlinked">リンクのない</string>
     <string name="all_content_title_only_unlinked_description">グラフビューで、どのオブジェクトともリンクやバックリンクなどの繋がりのないオブジェクトです。</string>
@@ -1555,6 +1576,7 @@
     <string name="all_content_sort_date_created">作成日時順</string>
     <string name="all_content_sort_date_used">最後に使用した日時順</string>
     <string name="all_content_sort_name">名前</string>
+    <string name="all_content_item_menu_open">オブジェクトとして開く</string>
     <string name="all_content">すべてのオブジェクト</string>
     <string name="allContent_group_today">今日</string>
     <string name="allContent_group_yesterday">昨日</string>
@@ -1584,6 +1606,7 @@
     <string name="main_navigation_content_desc_back_button">戻るボタン</string>
     <string name="main_navigation_content_desc_members_button">共有とメンバーボタン</string>
     <string name="main_navigation_content_desc_home_button">ホームボタン</string>
+    <string name="main_navigation_content_desc_chat_button">チャットボタン</string>
     <string name="main_navigation_content_desc_search_button">オブジェクト検索ボタン</string>
     <string name="main_navigation_content_desc_create_button">オブジェクト作成ボタン</string>
     <string name="chat">チャット</string>
@@ -1779,6 +1802,18 @@
     <string name="space_properties_screen_section_system_types">標準プロパティ</string>
     <string name="space_properties_screen_menu_move_to_bin">ゴミ箱に移動</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">アカウント作成中にエラーが発生しました：スペースがありません</string>
+    <!-- Account creation error messages -->
+    <string name="onboarding_error_network_error">ネットワークエラーのためアカウントを作成できませんでした。接続を確認してください。</string>
+    <string name="onboarding_error_offline_device">デバイスがオフラインのようです。接続を確認して、もう一度お試しください。</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">アカウントが作成されましたが、ノードを開始できませんでした。ログインしてみてください。</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">アカウントが作成されましたが、名前の設定に失敗しました。あとで設定から変更できます。</string>
+    <string name="onboarding_error_failed_to_stop_running_node">実行中のノードを停止できませんでした。アプリを再起動してもう一度お試しください。</string>
+    <string name="onboarding_error_failed_to_write_config">設定を保存できませんでした。ストレージのアクセス許可を確認してください。</string>
+    <string name="onboarding_error_failed_to_create_local_repo">ローカルリポジトリの作成に失敗しました。利用可能なストレージ容量を確認してください。</string>
+    <string name="onboarding_error_account_creation_canceled">アカウントの作成が中断されました。</string>
+    <string name="onboarding_error_config_file_not_found">設定ファイルが見つかりません。アプリを再インストールしてください。</string>
+    <string name="onboarding_error_config_file_invalid">無効な設定ファイルです。アプリを再インストールしてください。</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">ネットワーク設定が一致しません。ネットワーク設定を確認してください。</string>
     <string name="onboarding_set_your_name_title">名前を設定しましょう</string>
     <string name="onboarding_soul_creation_description">何かを共有した相手にのみ表示されます。入力された名前が一元管理されることはありません。</string>
     <string name="onboarding_email_add_title">最新情報を受け取る</string>
@@ -1792,12 +1827,12 @@
     <string name="notifications_modal_description">スペースでメッセージやメンションがあった場合にすぐに通知を受け取ります。</string>
     <string name="notifications_modal_success_button">通知を有効化</string>
     <string name="notifications_modal_cancel_button">あとで</string>
-    <string name="vault_create_chat">チャット</string>
+    <string name="vault_create_chat">新しいチャット</string>
     <string name="vault_create_chat_description">チームでの会話や共同作業に</string>
-    <string name="vault_create_space">スペース</string>
+    <string name="vault_create_space">新しいスペース</string>
     <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">一致するものが見つかりませんでした</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
     <string name="chat_box_camera">カメラ</string>
     <string name="chat_box_take_photo">写真を撮る</string>
@@ -1812,6 +1847,8 @@
     <string name="notifications_disable_short">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
+    <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。</string>
+    <string name="vault_space_settings">スペース設定</string>
     <string name="notification_settings_title">通知</string>
     <string name="notification_settings_disabled">通知が無効です</string>
     <string name="notification_settings_disabled_subtitle">メッセージ通知を受け取るには、デバイスの設定から通知を有効にしてください。</string>
@@ -1820,4 +1857,18 @@
     <string name="notification_settings_state_disabled">無効</string>
     <string name="notification_settings_state_enabled">有効</string>
     <string name="content_desc_muted">ミュート</string>
+    <string name="failed_to_load_image">画像を読み込めませんでした</string>
+    <!-- Vault Screen - Join via QR -->
+    <string name="vault_join_via_qr">QRコードで参加</string>
+    <string name="vault_qr_scan_error_title">QRコードをスキャンできませんでした</string>
+    <string name="vault_qr_scan_error_description">はっきり見えることを確認し、もう一度お試しください。</string>
+    <string name="vault_qr_invalid_title">無効なQRコード</string>
+    <string name="vault_qr_invalid_description">スキャンされたQRコードから有効な招待コードが見つかりませんでした。確認してもう一度お試しください。</string>
+    <string name="vault_qr_try_again">もう一度実行</string>
+    <string name="camera_permission_required_title">カメラへのアクセスが必要です</string>
+    <string name="camera_permission_rationale_message">QRコードをスキャンするには、Anytypeがカメラにアクセスする必要があります。この許可はQRコードのスキャンにのみ使用されます。</string>
+    <string name="camera_permission_settings_message">QRコードをスキャンするには、デバイス設定でカメラへのアクセスを許可する必要があります。</string>
+    <string name="open_settings">設定を開く</string>
+    <string name="allow">許可</string>
+    <string name="attachment_image">添付画像</string>
 </resources>

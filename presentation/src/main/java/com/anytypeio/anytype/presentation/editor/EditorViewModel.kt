@@ -24,14 +24,18 @@ import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.TimeInMillis
+import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.addMention
 import com.anytypeio.anytype.core_models.ext.asMap
@@ -44,8 +48,11 @@ import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
+import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -81,6 +88,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -107,10 +115,14 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.OnApply
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.OnQuickStart
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Intent
+import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
+import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Media
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -130,6 +142,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosi
 import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
 import com.anytypeio.anytype.presentation.editor.editor.ext.getOnFocusChangedEvent
 import com.anytypeio.anytype.presentation.editor.editor.ext.highlight
+import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
 import com.anytypeio.anytype.presentation.editor.editor.ext.isStyleClearable
 import com.anytypeio.anytype.presentation.editor.editor.ext.nextSearchTarget
 import com.anytypeio.anytype.presentation.editor.editor.ext.previousSearchTarget
@@ -181,6 +194,10 @@ import com.anytypeio.anytype.presentation.editor.editor.updateText
 import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
+import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -201,8 +218,15 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelec
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.extension.getBookmarkObject
+import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
+import com.anytypeio.anytype.presentation.extension.getInternalFlagsObject
+import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeForObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
 import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
+import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
@@ -217,6 +241,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenTemplateSelectorEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
@@ -233,40 +258,22 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.*
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.ExitToSpaceHome
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenDateObject
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenParticipant
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenSetOrCollection
+import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenTypeObject
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NewObject
 import com.anytypeio.anytype.presentation.navigation.SectionDates
 import com.anytypeio.anytype.presentation.navigation.SectionObjects
 import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.TimeInMillis
-import com.anytypeio.anytype.core_models.TimeInSeconds
-import com.anytypeio.anytype.core_models.ext.toObject
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.SAM.*
-import com.anytypeio.anytype.core_models.ObjectViewDetails
-import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Copy
-import com.anytypeio.anytype.presentation.editor.editor.Intent.Clipboard.Paste
-import com.anytypeio.anytype.presentation.editor.editor.ext.isAllowedToShowTypesWidget
-import com.anytypeio.anytype.presentation.extension.getBookmarkObject
-import com.anytypeio.anytype.presentation.extension.getInternalFlagsObject
-import com.anytypeio.anytype.presentation.extension.getObject
-import com.anytypeio.anytype.presentation.extension.getTypeObject
-import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDatePickerDismiss
-import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnDateSelected
-import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTodayClick
-import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent.OnTomorrowClick
-import com.anytypeio.anytype.presentation.extension.getFileDetailsForBlock
-import com.anytypeio.anytype.presentation.extension.getTypeForObject
-import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenTemplateSelectorEvent
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
@@ -289,7 +296,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
-import kotlin.collections.orEmpty
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -358,7 +364,8 @@ class EditorViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -443,7 +450,12 @@ class EditorViewModel(
      */
     val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
-    val navPanelState = permission.map { permission -> NavPanelState.fromPermission(permission) }
+    val navPanelState = permission.map { permission ->
+        NavPanelState.fromPermission(
+            permission = permission,
+            spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
+        )
+    }
 
     init {
         Timber.i("EditorViewModel, init")
@@ -467,7 +479,9 @@ class EditorViewModel(
                         target = action.target
                     )
                     Action.SearchOnPage -> onEnterSearchModeClicked()
-                    Action.UndoRedo -> onUndoRedoActionClicked()
+                    Action.UndoRedo -> {
+                        onUndoRedoActionClicked()
+                    }
                     is Action.OpenObject -> proceedWithOpeningObject(
                         target = action.target
                     )
@@ -1616,8 +1630,8 @@ class EditorViewModel(
                     command = Command.OpenDocumentMenu(
                         ctx = context,
                         space = vmParams.space.id,
-                        isArchived = wrapper?.isArchived == true,
-                        isFavorite = wrapper?.isFavorite == true,
+                        isArchived = wrapper.isArchived == true,
+                        isFavorite = wrapper.isFavorite == true,
                         isLocked = mode == EditorMode.Locked,
                         isReadOnly = isReadOnly,
                         isTemplate = isObjectTemplate()
@@ -1879,7 +1893,7 @@ class EditorViewModel(
             if (view is BlockView.Selectable) {
                 select(view.id)
             } else {
-                Timber.w("SelectAll", "Block with id ${view.id} cannot be selected.")
+                Timber.w("SelectAll, Block with id ${view.id} cannot be selected.")
             }
         }
 
@@ -2266,7 +2280,9 @@ class EditorViewModel(
             orchestrator.proxies.intents.send(
                 Intent.Document.Redo(
                     context = context,
-                    onRedoExhausted = { sendSnack(Snack.UndoRedo("Nothing to redo.")) }
+                    onRedoExhausted = {
+                        sendSnack(Snack.UndoRedo("Nothing to redo."))
+                    }
                 )
             )
         }
@@ -2466,7 +2482,14 @@ class EditorViewModel(
                     context = context,
                     target = id,
                     position = position,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
         }
@@ -2482,9 +2505,45 @@ class EditorViewModel(
                 Intent.CRUD.Replace(
                     context = context,
                     target = id,
-                    prototype = Prototype.File(type = type, state = state)
+                    prototype = Prototype.File(type = type, state = state),
+                    onSuccess = { newBlockId ->
+                        Timber.d("File block created with id: $newBlockId")
+                        proceedWithOpeningMediaPicker(
+                            blockId = newBlockId,
+                            type = type
+                        )
+                    }
                 )
             )
+        }
+    }
+
+    private fun proceedWithOpeningMediaPicker(
+        blockId: String,
+        type: Block.Content.File.Type
+    ) {
+        when (type) {
+            Content.File.Type.IMAGE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_IMAGE_ALL)
+                dispatch(Command.OpenPhotoPicker)
+            }
+
+            Content.File.Type.VIDEO -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_VIDEO_ALL)
+                dispatch(Command.OpenVideoPicker)
+            }
+
+            Content.File.Type.FILE -> {
+                currentMediaUploadDescription =
+                    Media.Upload.Description(blockId, Mimetype.MIME_FILE_ALL)
+                dispatch(Command.OpenFilePicker)
+            }
+
+            else -> {
+                // No action for other types
+            }
         }
     }
 
@@ -3904,10 +3963,7 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         if (!clicked.item.image.isNullOrEmpty()){
                             dispatch(
-                                Command.OpenFullScreenImage(
-                                    target = "",
-                                    url = clicked.item.image
-                                )
+                                Command.OpenFullScreenImage(url = clicked.item.image)
                             )
                         } else {
                             Timber.e("Can't proceed with opening full screen image")
@@ -3964,7 +4020,11 @@ class EditorViewModel(
             }
             is ListenerType.Video.View -> {
                 when (mode) {
-                    EditorMode.Edit -> Unit
+                    EditorMode.Edit, EditorMode.Read, EditorMode.Locked -> {
+                        dispatch(
+                            Command.PlayVideo(url = clicked.url)
+                        )
+                    }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
                     else -> Unit
                 }
@@ -4271,7 +4331,15 @@ class EditorViewModel(
                     }
                 }
             }
-            else -> {}
+            ListenerType.Header.Video -> {
+                dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+            }
+            ListenerType.Header.Image -> {
+                dispatch(Command.OpenFullScreenImage(url = urlBuilder.original(context)))
+            }
+            else -> {
+                Timber.w("Ignoring listener type: $clicked")
+            }
         }
     }
 
@@ -4298,7 +4366,7 @@ class EditorViewModel(
             if (type != null) {
                 navigate(
                     EventWrapper(
-                        AppNavigation.Command.OpenTypeObject(
+                        OpenTypeObject(
                             target = type.id,
                             space = vmParams.space.id
                         )
@@ -4365,11 +4433,40 @@ class EditorViewModel(
     }
 
     private fun onFileBlockClicked(blockId: String) {
-        dispatch(
-            Command.OpenFileByDefaultApp(
-                id = blockId
+        val fileDetails = blocks.getFileDetailsForBlock(blockId, orchestrator, fieldParser)
+        if (fileDetails != null) {
+            val target = orchestrator.stores.details.current().getObject(fileDetails.targetObjectId)
+            when(target?.layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        Command.PlayVideo(
+                            url = urlBuilder.original(fileDetails.targetObjectId)
+                        )
+                    )
+                }
+                ObjectType.Layout.AUDIO-> {
+                    dispatch(
+                        Command.PlayAudio(
+                            url = urlBuilder.original(fileDetails.targetObjectId),
+                            name = target.name
+                        )
+                    )
+                }
+                else -> {
+                    dispatch(
+                        Command.OpenFileByDefaultApp(
+                            id = blockId
+                        )
+                    )
+                }
+            }
+        } else {
+            dispatch(
+                Command.OpenFileByDefaultApp(
+                    id = blockId
+                )
             )
-        )
+        }
     }
 
     fun startSharingFile(id: String, onDownloaded: (Uri) -> Unit = {}) {
@@ -6828,7 +6925,15 @@ class EditorViewModel(
     }
 
     fun onUndoRedoActionClicked() {
-        isUndoRedoToolbarIsVisible.value = true
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
+        dispatch(Command.CloseKeyboard)
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(Editor.Focus.empty())
+            views.onEach { if (it is Focusable) it.isFocused = false }
+            renderCommand.send(Unit)
+            delay(300L)
+            isUndoRedoToolbarIsVisible.value = true
+        }
     }
 
     fun onUndoRedoToolbarIsHidden() {

@@ -31,6 +31,7 @@ sealed interface ChatView {
         val isUserAuthor: Boolean = false,
         val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
+        val isSynced: Boolean,
         val avatar: Avatar = Avatar.Initials(),
         val reply: Reply? = null,
         val startOfUnreadMessageSection: Boolean = false
@@ -65,6 +66,13 @@ sealed interface ChatView {
 
         sealed class Attachment {
 
+            sealed class SyncStatus {
+                data object Unknown: SyncStatus()
+                data object Synced: SyncStatus()
+                data object Syncing: SyncStatus()
+                data object Failed: SyncStatus()
+            }
+
             data class Gallery(val images: List<Image>): Attachment() {
 
                 val rowConfig = getRowConfiguration(images.size)
@@ -89,15 +97,19 @@ sealed interface ChatView {
                 val target: Id,
                 val url: String,
                 val name: String,
-                val ext: String
+                val ext: String,
+                val status: SyncStatus = SyncStatus.Unknown
             ): Attachment()
 
             data class Video(
                 val target: Id,
                 val url: String,
                 val name: String,
-                val ext: String
-            ): Attachment()
+                val ext: String,
+                val status: SyncStatus = SyncStatus.Unknown
+            ): Attachment() {
+                val isSyncing: Boolean = status is SyncStatus.Syncing
+            }
 
             data class Link(
                 val target: Id,

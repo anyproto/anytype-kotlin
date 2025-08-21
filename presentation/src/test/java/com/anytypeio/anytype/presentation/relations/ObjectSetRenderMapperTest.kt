@@ -53,7 +53,7 @@ class ObjectSetRenderMapperTest {
         val expected = SimpleRelationView(
             key = relation.key,
             title = relation.name.orEmpty(),
-            format = relation.format.toView(),
+            format = relation.format,
             isVisible = true,
             isHidden = false
         )
@@ -101,7 +101,7 @@ class ObjectSetRenderMapperTest {
         val expected = SimpleRelationView(
             key = relation.key,
             title = relation.name.orEmpty(),
-            format = relation.format.toView(),
+            format = relation.format,
             isVisible = false,
             isHidden = false
         )

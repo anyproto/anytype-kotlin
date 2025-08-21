@@ -716,7 +716,8 @@ object ObjectSearchConstants {
         Relations.FILE_MIME_TYPE,
         Relations.RESTRICTIONS,
         Relations.TARGET_OBJECT_TYPE,
-        Relations.SOURCE
+        Relations.SOURCE,
+        Relations.CREATED_DATE
     )
 
     val defaultFilesKeys = defaultKeys + listOf(
@@ -1292,6 +1293,15 @@ fun buildTemplateFilter(): DVFilter = DVFilter(
     relation = Relations.TYPE_UNIQUE_KEY,
     condition = DVFilterCondition.NOT_EQUAL,
     value = ObjectTypeUniqueKeys.TEMPLATE
+)
+
+fun buildChatsFilter(): DVFilter = DVFilter(
+    relation = Relations.RECOMMENDED_LAYOUT,
+    condition = DVFilterCondition.NOT_IN,
+    value = listOf(
+        ObjectType.Layout.CHAT_DERIVED.code.toDouble(),
+        ObjectType.Layout.CHAT.code.toDouble()
+    )
 )
 
 fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(

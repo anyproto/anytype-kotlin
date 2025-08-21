@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -30,7 +29,6 @@ import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import java.util.Locale
 import kotlin.test.assertEquals
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -349,7 +347,7 @@ class SplashViewModelTest {
 
             val first = awaitItem()
             assertEquals(
-                expected = SplashViewModel.Command.NavigateToSpaceLevelChat(
+                expected = SplashViewModel.Command.NavigateToChat(
                     space = space,
                     chat = chatId,
                     deeplink = deeplink

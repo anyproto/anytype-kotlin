@@ -47,6 +47,7 @@ fun Markup.Type.toCoreModel(): Mark.Type = when (this) {
     Markup.Type.MENTION -> Mark.Type.MENTION
     Markup.Type.OBJECT -> Mark.Type.OBJECT
     Markup.Type.UNDERLINE -> Mark.Type.UNDERLINE
+    Markup.Type.EMOJI -> Mark.Type.EMOJI
 }
 
 fun Block.Content.Text.addMarkToContent(mark: Mark): Block.Content.Text {

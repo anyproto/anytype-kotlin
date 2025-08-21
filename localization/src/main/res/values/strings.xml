@@ -2217,5 +2217,6 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">
         The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 
 </resources>

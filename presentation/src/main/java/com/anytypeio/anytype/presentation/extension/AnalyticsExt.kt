@@ -973,11 +973,10 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     objType: ObjectWrapper.Type?,
     spaceParams: AnalyticSpaceHelperDelegate.Params
 ) {
-    val objTypeParam = if (objType == null) null
-    else objType.uniqueKey.takeIf { it.isNotEmpty() } ?: OBJ_TYPE_CUSTOM
+
     val props = Props(
         mapOf(
-            EventsPropertiesKey.objectType to objTypeParam,
+            EventsPropertiesKey.objectType to (objType?.sourceObject ?: OBJ_TYPE_CUSTOM),
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,

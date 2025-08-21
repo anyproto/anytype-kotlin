@@ -57,12 +57,10 @@ import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.editor.Markup
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
@@ -1190,48 +1188,6 @@ fun CoroutineScope.sendAnalyticsScreenSlashMenuEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.route to route
-            )
-        )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsClickSlashMenuEvent(
-    analytics: Analytics,
-    item: SlashItem.Style.Type
-) {
-    val type = when(item) {
-        is SlashItem.Style.Type.Text -> "Text"
-        is SlashItem.Style.Type.Heading -> "Heading"
-        is SlashItem.Style.Type.Checkbox -> "Checkbox"
-        is SlashItem.Style.Type.Bulleted -> "Bulleted"
-        is SlashItem.Style.Type.Numbered -> "Numbered"
-        is SlashItem.Style.Type.Toggle -> "Toggle"
-        is SlashItem.Style.Type.Highlighted -> "Highlighted"
-        is SlashItem.Style.Type.Callout -> "Callout"
-        SlashItem.Style.Type.Subheading -> TODO()
-        SlashItem.Style.Type.Title -> TODO()
-    }
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.clickSlashMenu,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.type to type
-            )
-        )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsClickSlashMenuEvent(
-    analytics: Analytics,
-    type: String
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.clickSlashMenu,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.type to type
             )
         )
     )

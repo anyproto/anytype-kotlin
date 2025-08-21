@@ -248,8 +248,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEv
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickSlashMenuEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockColorEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent

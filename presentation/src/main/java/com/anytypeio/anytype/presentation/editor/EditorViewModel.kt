@@ -233,6 +233,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackground
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateLink
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent

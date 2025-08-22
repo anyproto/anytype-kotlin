@@ -23,6 +23,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.Layout
@@ -41,9 +42,11 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -75,12 +78,16 @@ fun VaultSpaceCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(96.dp)
             .padding(horizontal = 16.dp)
+            .background(
+                color = (getSpaceIconColor(icon)?.res() ?: Color.Transparent).copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 56.dp,
+            mainSize = 64.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )
@@ -116,6 +123,14 @@ fun VaultSpaceCard(
     }
 }
 
+fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
+    return when (icon) {
+        is SpaceIconView.ChatSpace.Placeholder -> icon.color
+        is SpaceIconView.DataSpace.Placeholder -> icon.color
+        else -> null
+    }
+}
+
 @Composable
 private fun ContentSpace(
     title: String,
@@ -125,7 +140,7 @@ private fun ContentSpace(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 68.dp, top = 9.dp)
+            .padding(start = 80.dp, top = 12.1.dp)
     ) {
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },

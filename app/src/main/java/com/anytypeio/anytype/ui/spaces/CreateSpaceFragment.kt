@@ -153,11 +153,4 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
     override fun releaseDependencies() {
         componentManager().createSpaceComponent.release()
     }
-
-    companion object {
-        const val ARG_SPACE_TYPE = "arg.space_type"
-
-        const val TYPE_SPACE = "space"
-        const val TYPE_CHAT = "chat"
-    }
 }

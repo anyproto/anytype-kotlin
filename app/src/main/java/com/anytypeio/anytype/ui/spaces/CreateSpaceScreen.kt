@@ -107,7 +107,7 @@ fun CreateSpaceScreen(
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 spaceIconView = when (spaceIconView) {
-                    is SpaceIconView.Placeholder -> spaceIconView.copy(
+                    is SpaceIconView.DataSpace.Placeholder -> spaceIconView.copy(
                         name = innerValue.text.ifEmpty {
                             stringResource(id = R.string.u)
                         }
@@ -268,7 +268,8 @@ fun SpaceIcon(
                     )
                 }
             }
-            if (spaceIconView is SpaceIconView.Image) {
+            if (spaceIconView is SpaceIconView.ChatSpace.Image
+                || spaceIconView is SpaceIconView.DataSpace.Image) {
                 Divider(
                     paddingStart = 0.dp,
                     paddingEnd = 0.dp,
@@ -334,7 +335,7 @@ fun UseCase() {
 fun CreateSpaceScreenPreview() {
     val state = remember { mutableStateOf(false) }
     CreateSpaceScreen(
-        spaceIconView = SpaceIconView.Placeholder(
+        spaceIconView = SpaceIconView.DataSpace.Placeholder(
             color = SystemColor.RED,
             name = "My Space"
         ),

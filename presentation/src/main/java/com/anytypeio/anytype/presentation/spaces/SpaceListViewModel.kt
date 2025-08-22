@@ -51,10 +51,7 @@ class SpaceListViewModel(
                     data = spaceViews.map { spaceView ->
                         SpaceListItemView(
                             space = spaceView,
-                            icon = spaceView.spaceIcon(
-                                builder = urlBuilder,
-                                spaceGradientProvider = SpaceGradientProvider.Default
-                            ),
+                            icon = spaceView.spaceIcon(urlBuilder),
                             permissions = permission.getOrDefault(
                                 key = requireNotNull(spaceView.targetSpaceId),
                                 defaultValue = SpaceMemberPermissions.NO_PERMISSIONS

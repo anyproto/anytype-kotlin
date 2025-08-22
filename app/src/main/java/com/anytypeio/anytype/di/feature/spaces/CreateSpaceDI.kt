@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
@@ -25,7 +26,10 @@ import dagger.Module
 interface CreateSpaceComponent {
     @Component.Factory
     interface Builder {
-        fun create(dependencies: CreateSpaceDependencies): CreateSpaceComponent
+        fun create(
+            @BindsInstance vmParams: CreateSpaceViewModel.VmParams,
+            dependencies: CreateSpaceDependencies
+        ): CreateSpaceComponent
     }
 
     fun inject(fragment: CreateSpaceFragment)

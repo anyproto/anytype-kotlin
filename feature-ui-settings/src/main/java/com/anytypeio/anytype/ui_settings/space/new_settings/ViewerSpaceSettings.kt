@@ -193,7 +193,7 @@ fun ViewerSpaceSettingsWithDescriptionPreview() {
         title = "Susan Sontag",
         description = stringResource(R.string.default_text_placeholder),
         uiEvent = {},
-        icon = SpaceIconView.Placeholder(
+        icon = SpaceIconView.DataSpace.Placeholder(
             name = "Susan",
             color = SystemColor.SKY
         ),
@@ -215,7 +215,7 @@ fun ViewerSpaceSettingsWithoutDescriptionPreview() {
         title = "Susan Sontag",
         description = "",
         uiEvent = {},
-        icon = SpaceIconView.Placeholder(
+        icon = SpaceIconView.DataSpace.Placeholder(
             name = "Susan",
             color = SystemColor.SKY
         ),

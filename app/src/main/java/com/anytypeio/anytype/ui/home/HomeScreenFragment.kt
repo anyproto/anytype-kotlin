@@ -498,9 +498,6 @@ class HomeScreenFragment : BaseComposeFragment(),
                     Timber.e(e, "Error while opening all content from widgets")
                 }
             }
-            is Navigation.OpenSpaceSwitcher -> {
-                findNavController().navigate(R.id.actionOpenSpaceSwitcher)
-            }
             is Navigation.OpenDateObject -> {
                 runCatching {
                     navigation().openDateObject(
@@ -535,7 +532,7 @@ class HomeScreenFragment : BaseComposeFragment(),
                 runCatching {
                     findNavController()
                         .navigate(
-                            R.id.actionOpenSpaceSettings,
+                            R.id.action_open_space_settings_from_widgets,
                             SpaceSettingsFragment.args(
                                 space = SpaceId(space)
                             )

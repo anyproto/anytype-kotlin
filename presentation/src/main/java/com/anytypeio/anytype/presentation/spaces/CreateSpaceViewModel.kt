@@ -10,8 +10,8 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateSpaceViewModel(
+    private val vmParams: VmParams,
     private val createSpace: CreateSpace,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
@@ -40,13 +41,14 @@ class CreateSpaceViewModel(
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    val spaceIconView : MutableStateFlow<SpaceIconView> = MutableStateFlow(
-        SpaceIconView.Placeholder(
+    val spaceIconView: MutableStateFlow<SpaceIconView> = MutableStateFlow(
+        SpaceIconView.DataSpace.Placeholder(
             color = SystemColor.entries.random()
         )
     )
 
     init {
+        Timber.d("CreateSpaceViewModel initialized with spaceUxType: %s", vmParams.spaceUxType)
         viewModelScope.launch {
             analytics.sendEvent(eventName = EventsDictionary.screenSettingsSpaceCreate)
         }
@@ -56,11 +58,15 @@ class CreateSpaceViewModel(
 
     fun onImageSelected(url: Url) {
         Timber.d("onImageSelected: $url")
-        spaceIconView.value = SpaceIconView.Image(url = url)
+        if (vmParams.spaceUxType == SpaceUxType.CHAT) {
+            spaceIconView.value = SpaceIconView.ChatSpace.Image(url = url)
+        } else {
+            spaceIconView.value = SpaceIconView.DataSpace.Image(url = url)
+        }
     }
 
-    fun onCreateSpace(name: String, withChat: Boolean) {
-        Timber.d("onCreateSpace, withChat: $withChat")
+    fun onCreateSpace(name: String) {
+        Timber.d("onCreateSpace, spaceUxType: %s, name: %s", vmParams.spaceUxType, name)
         if (isDismissed.value) {
             return
         }
@@ -68,7 +74,7 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        val (uxType, useCase) = if (withChat) {
+        val (uxType, useCase) = if (vmParams.spaceUxType == SpaceUxType.CHAT) {
             SpaceUxType.CHAT to SpaceCreationUseCase.NONE
         } else {
             SpaceUxType.DATA to SpaceCreationUseCase.EMPTY_MOBILE
@@ -78,13 +84,14 @@ class CreateSpaceViewModel(
                 details = mapOf(
                     Relations.NAME to name.trim(),
                     Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
-                        is SpaceIconView.Placeholder -> icon.color.index.toDouble()
+                        is SpaceIconView.ChatSpace.Placeholder -> icon.color.index.toDouble()
+                        is SpaceIconView.DataSpace.Placeholder -> icon.color.index.toDouble()
                         else -> SystemColor.SKY.index.toDouble()
                     },
                     Relations.SPACE_UX_TYPE to uxType.code.toDouble()
                 ),
                 useCase = useCase,
-                withChat = withChat
+                withChat = vmParams.spaceUxType == SpaceUxType.CHAT
             )
             createSpace.stream(params = params).collect { result ->
                 result.fold(
@@ -107,11 +114,18 @@ class CreateSpaceViewModel(
         spaceManager.set(spaceId)
 
         when (val icon = spaceIconView.value) {
-            is SpaceIconView.Image -> uploadAndSetIcon(
+            is SpaceIconView.ChatSpace.Image -> uploadAndSetIcon(
                 url = icon.url,
                 spaceId = spaceId,
                 startingObject = response.startingObject
             )
+
+            is SpaceIconView.DataSpace.Image -> uploadAndSetIcon(
+                url = icon.url,
+                spaceId = spaceId,
+                startingObject = response.startingObject
+            )
+
             else -> finishCreation(spaceId, response.startingObject)
         }
     }
@@ -159,12 +173,16 @@ class CreateSpaceViewModel(
     }
 
     private fun proceedWithResettingRandomSpaceGradient() {
-        spaceIconView.value = SpaceIconView.Placeholder(
-            color = SystemColor.entries.random()
-        )
+        val color = SystemColor.entries.random()
+        spaceIconView.value = if (vmParams.spaceUxType == SpaceUxType.CHAT) {
+            SpaceIconView.ChatSpace.Placeholder(color)
+        } else {
+            SpaceIconView.DataSpace.Placeholder(color)
+        }
     }
 
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val createSpace: CreateSpace,
         private val spaceManager: SpaceManager,
         private val analytics: Analytics,
@@ -179,7 +197,8 @@ class CreateSpaceViewModel(
             spaceManager = spaceManager,
             analytics = analytics,
             uploadFile = uploadFile,
-            setSpaceDetails = setSpaceDetails
+            setSpaceDetails = setSpaceDetails,
+            vmParams = vmParams
         ) as T
     }
 
@@ -187,6 +206,14 @@ class CreateSpaceViewModel(
         data class SwitchSpace(
             val space: Space,
             val startingObject: Id?
-        ): Command()
+        ) : Command()
+    }
+
+    data class VmParams(
+        val spaceUxType: SpaceUxType
+    )
+
+    companion object {
+        const val MAX_SPACE_COUNT = 50
     }
 }

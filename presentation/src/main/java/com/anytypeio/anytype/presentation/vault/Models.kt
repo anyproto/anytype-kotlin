@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -70,8 +71,7 @@ sealed class VaultUiState {
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
     data class EnterSpaceLevelChat(val space: Space, val chat: Id) : VaultCommand()
-    data object CreateNewSpace : VaultCommand()
-    data object CreateChat : VaultCommand()
+    data class CreateNewSpace(val spaceUxType: SpaceUxType) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()

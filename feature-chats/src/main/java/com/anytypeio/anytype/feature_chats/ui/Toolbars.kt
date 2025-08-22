@@ -133,7 +133,7 @@ fun ChatTopToolbarPreview() {
     ChatTopToolbar(
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
-            icon = SpaceIconView.Placeholder(name = "Us"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
             showIcon = true,
             isMuted = false
         ),
@@ -149,7 +149,7 @@ fun ChatTopToolbarMutedPreview() {
     ChatTopToolbar(
         header = ChatViewModel.HeaderView.Default(
             title = "My Chat Space",
-            icon = SpaceIconView.Placeholder(name = "MCS"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),
             showIcon = true,
             isMuted = true
         ),

@@ -80,7 +80,7 @@ fun AddToAnytypeScreenUrlPreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
                 isSelected = true,
-                icon = SpaceIconView.Placeholder()
+                icon = SpaceIconView.DataSpace.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -103,7 +103,7 @@ fun AddToAnytypeScreenNotePreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf()),
                 isSelected = false,
-                icon = SpaceIconView.Placeholder()
+                icon = SpaceIconView.DataSpace.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -531,7 +531,7 @@ private fun CurrentSpaceSection(
                 .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val hasIcon = icon is SpaceIconView.Placeholder || icon is SpaceIconView.Image
+            val hasIcon = icon is SpaceIconView.DataSpace || icon is SpaceIconView.ChatSpace
             if (icon != null && hasIcon) {
                 SpaceIconView(
                     icon = icon,
@@ -600,33 +600,6 @@ private fun Header() {
             modifier = Modifier.align(Alignment.Center),
             style = Title2
         )
-    }
-}
-
-
-@Composable
-private fun SmallSpaceIcon(
-    icon: SpaceIconView,
-    modifier: Modifier
-) {
-    val size = 20.dp
-    when (icon) {
-        is SpaceIconView.Image -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = com.anytypeio.anytype.ui_settings.R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = modifier
-                    .size(size)
-                    .clip(RoundedCornerShape(4.dp))
-            )
-        }
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 

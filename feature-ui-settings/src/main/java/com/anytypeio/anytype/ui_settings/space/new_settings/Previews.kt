@@ -17,7 +17,7 @@ fun NewSpaceSettingsScreenPreview() {
         uiState = UiSpaceSettingsState.SpaceSettings(
             items = listOf(
                 UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Icon(SpaceIconView.Placeholder()),
+                UiSpaceSettingsItem.Icon(SpaceIconView.DataSpace.Placeholder()),
                 UiSpaceSettingsItem.Spacer(height = 16),
                 UiSpaceSettingsItem.Name("Dream team"),
                 UiSpaceSettingsItem.Spacer(height = 4),

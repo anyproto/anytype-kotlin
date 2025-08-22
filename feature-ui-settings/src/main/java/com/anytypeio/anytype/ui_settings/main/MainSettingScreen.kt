@@ -112,7 +112,7 @@ fun SpaceHeader(
                             )
                         }
                     }
-                    if (icon is SpaceIconView.Image) {
+                    if (icon is SpaceIconView.DataSpace.Image) {
                         DropdownMenuItem(
                             onClick = {
                                 onRemoveIconClicked()

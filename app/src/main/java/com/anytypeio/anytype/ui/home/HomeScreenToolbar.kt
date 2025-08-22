@@ -144,7 +144,7 @@ fun HomeScreenToolbar(
 @Composable
 fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
-        spaceIconView = SpaceIconView.Placeholder(name = "A"),
+        spaceIconView = SpaceIconView.DataSpace.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
         name = "Test space",

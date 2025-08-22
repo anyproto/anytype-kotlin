@@ -38,7 +38,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
+import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultUiState
 
 @Composable
@@ -77,7 +77,7 @@ fun VaultScreenTopToolbar(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = uiState.mainSpaces.size >= SelectSpaceViewModel.MAX_SPACE_COUNT,
+                    spaceCountLimitReached = uiState.mainSpaces.size >= CreateSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = false
                 )
                 DefaultSearchBar(

@@ -14,16 +14,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
-import com.anytypeio.anytype.ui.chats.ChatFragment
-import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -35,7 +33,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<CreateSpaceViewModel> { factory }
 
-    private val spaceType get() = argString(ARG_SPACE_TYPE)
+    private val args by navArgs<CreateSpaceFragmentArgs>()
+    val spaceUxType: SpaceUxType get() = args.spaceUxType
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,8 +59,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     spaceIconView = vm.spaceIconView.collectAsState().value,
                     onCreate = { name ->
                         vm.onCreateSpace(
-                            name = name,
-                            withChat = spaceType == TYPE_CHAT
+                            name = name
                         )
                     },
                     onSpaceIconUploadClicked = {
@@ -72,8 +70,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     onSpaceIconRemoveClicked = {
                         vm.onSpaceIconRemovedClicked()
                     },
-                    isLoading = vm.isInProgress.collectAsState(),
-                    isChatSpace = spaceType == TYPE_CHAT
+                    isLoading = vm.isInProgress.collectAsState()
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -89,36 +86,36 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                     findNavController().navigate(R.id.exitToVaultAction)
                                     
                                     // Check if this is a Chat space creation
-                                    if (spaceType == TYPE_CHAT) {
-                                        // For Chat spaces, navigate directly to chat screen
-                                        findNavController().navigate(
-                                            R.id.actionOpenChatFromVault,
-                                            ChatFragment.args(
-                                                space = command.space.id,
-                                                ctx = command.space.id // Use space ID as chat context for new Chat spaces
-                                            )
-                                        )
-                                    } else {
-                                        // For regular spaces, use existing navigation logic
-                                        findNavController().navigate(
-                                            R.id.actionOpenSpaceFromVault,
-                                            args = HomeScreenFragment.args(
-                                                space = command.space.id,
-                                                deeplink = null
-                                            )
-                                        )
-                                        command.startingObject
-                                            ?.takeIf { it.isNotEmpty() }
-                                            ?.let { startingObject ->
-                                                findNavController().navigate(
-                                                    R.id.objectNavigation,
-                                                    EditorFragment.args(
-                                                        ctx = startingObject,
-                                                        space = command.space.id
-                                                    )
-                                                )
-                                            }
-                                    }
+//                                    if (vm == TYPE_CHAT) {
+//                                        // For Chat spaces, navigate directly to chat screen
+//                                        findNavController().navigate(
+//                                            R.id.actionOpenChatFromVault,
+//                                            ChatFragment.args(
+//                                                space = command.space.id,
+//                                                ctx = command.space.id // Use space ID as chat context for new Chat spaces
+//                                            )
+//                                        )
+//                                    } else {
+//                                        // For regular spaces, use existing navigation logic
+//                                        findNavController().navigate(
+//                                            R.id.actionOpenSpaceFromVault,
+//                                            args = HomeScreenFragment.args(
+//                                                space = command.space.id,
+//                                                deeplink = null
+//                                            )
+//                                        )
+//                                        command.startingObject
+//                                            ?.takeIf { it.isNotEmpty() }
+//                                            ?.let { startingObject ->
+//                                                findNavController().navigate(
+//                                                    R.id.objectNavigation,
+//                                                    EditorFragment.args(
+//                                                        ctx = startingObject,
+//                                                        space = command.space.id
+//                                                    )
+//                                                )
+//                                            }
+//                                    }
                                 }.onFailure {
                                     Timber.e(it, "Error while exiting to vault or opening created space")
                                 }
@@ -137,7 +134,10 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().createSpaceComponent.get().inject(this)
+        val vmParams = CreateSpaceViewModel.VmParams(
+            spaceUxType = spaceUxType
+        )
+        componentManager().createSpaceComponent.get(vmParams).inject(this)
     }
 
     override fun releaseDependencies() {

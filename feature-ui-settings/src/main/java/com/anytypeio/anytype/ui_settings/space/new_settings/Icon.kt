@@ -108,7 +108,7 @@ fun NewSpaceIcon(
                                 )
                             }
                         }
-                        if (icon is SpaceIconView.Image) {
+                        if (icon is SpaceIconView.DataSpace.Image) {
                             Divider(
                                 thickness = 0.5.dp,
                                 color = colorResource(id = R.color.shape_primary)

@@ -638,7 +638,7 @@ fun VaultSpaceCardPreview() {
         modifier = Modifier.fillMaxWidth(),
         title = "B&O Museum",
         subtitle = "Private space",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         currentPinnedCount = 3
     )
 }
@@ -648,7 +648,7 @@ fun VaultSpaceCardPreview() {
 fun ChatWithMentionAndMessage() {
     VaultChatCard(
         title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -685,7 +685,7 @@ fun ChatWithMentionAndMessage() {
 fun ChatWithMention() {
     VaultChatCard(
         title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",
@@ -721,7 +721,7 @@ fun ChatWithMention() {
 fun ChatPreview() {
     VaultChatCard(
         title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "John Doe",
         messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
         messageTime = "18:32",

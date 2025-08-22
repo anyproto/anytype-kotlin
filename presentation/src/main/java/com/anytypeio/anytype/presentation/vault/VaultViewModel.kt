@@ -418,10 +418,7 @@ class VaultViewModel(
 
         return VaultSpaceView.Chat(
             space = space,
-            icon = space.spaceIcon(
-                builder = urlBuilder,
-                spaceGradientProvider = SpaceGradientProvider.Default
-            ),
+            icon = space.spaceIcon(urlBuilder),
             chatPreview = chatPreview,
             creatorName = creatorName,
             messageText = messageText,
@@ -447,10 +444,7 @@ class VaultViewModel(
             NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
         }
 
-        val icon = space.spaceIcon(
-            builder = urlBuilder,
-            spaceGradientProvider = SpaceGradientProvider.Default
-        )
+        val icon = space.spaceIcon(urlBuilder)
 
         val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
         
@@ -521,14 +515,22 @@ class VaultViewModel(
     fun onCreateSpaceClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(VaultCommand.CreateNewSpace)
+            commands.emit(
+                VaultCommand.CreateNewSpace(
+                    spaceUxType = SpaceUxType.DATA // Default to DATA space type
+                )
+            )
         }
     }
 
     fun onCreateChatClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(VaultCommand.CreateChat)
+            commands.emit(
+                VaultCommand.CreateNewSpace(
+                    spaceUxType = SpaceUxType.CHAT // Default to CHAT space type
+                )
+            )
         }
     }
 

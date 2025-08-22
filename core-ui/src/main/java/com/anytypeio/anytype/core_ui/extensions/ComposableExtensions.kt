@@ -18,6 +18,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import com.anytypeio.anytype.core_models.DayOfWeekCustom
 import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 
@@ -133,5 +134,20 @@ fun RelativeDate.getPrettyName(): String {
         is RelativeDate.Yesterday -> stringResource(id = R.string.yesterday)
         is RelativeDate.Other -> this.formattedDate
         RelativeDate.Empty -> ""
+    }
+}
+
+@Composable
+fun SystemColor.res(): Color {
+    return when (this) {
+        SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
+        SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
+        SystemColor.RED -> colorResource(id = R.color.palette_system_red)
+        SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
+        SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
+        SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
+        SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
+        SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
+        SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
     }
 }

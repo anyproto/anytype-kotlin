@@ -413,7 +413,7 @@ private fun SpaceCardItemPreview() {
         spaceName = "Architecture",
         spaceStatus = SpaceStatus.SPACE_ACTIVE,
         permissions = SpaceMemberPermissions.OWNER,
-        spaceIcon = SpaceIconView.Placeholder(),
+        spaceIcon = SpaceIconView.DataSpace.Placeholder(),
         onCancelJoinRequestClicked = {},
         onLeaveSpaceClicked = {},
         onDeleteSpaceClicked = {},

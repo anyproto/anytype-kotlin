@@ -261,10 +261,7 @@ class SpaceSettingsViewModel(
                 val items = buildList {
                     add(
                         UiSpaceSettingsItem.Icon(
-                            icon = spaceView.spaceIcon(
-                                builder = urlBuilder,
-                                spaceGradientProvider = gradientProvider
-                            )
+                            icon = spaceView.spaceIcon(urlBuilder)
                         )
                     )
                     add(Spacer(height = 24))

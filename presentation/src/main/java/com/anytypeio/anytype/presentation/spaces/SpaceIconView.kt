@@ -26,50 +26,41 @@ sealed class SpaceIconView {
     }
 }
 
+private val DEFAULT_PLACEHOLDER_COLOR = SystemColor.SKY
+
 fun ObjectWrapper.SpaceView.spaceIcon(
     builder: UrlBuilder,
 ) : SpaceIconView {
-    val isChatSpace = this.spaceUxType == SpaceUxType.CHAT
-    return when {
-        !iconImage.isNullOrEmpty() -> {
-            val hash = checkNotNull(iconImage)
-            if (isChatSpace) {
-                SpaceIconView.ChatSpace.Image(builder.medium(hash))
-            } else {
-                SpaceIconView.DataSpace.Image(builder.medium(hash))
-            }
-        }
-        iconOption != null -> {
-            val name = this.name
-            val color = iconOption?.let {
-                SystemColor.color(
-                    idx = it.toInt()
-                )
-            }
-            if (isChatSpace) {
-                SpaceIconView.ChatSpace.Placeholder(
-                    name = name.orEmpty(),
-                    color =color ?: SystemColor.SKY
-                )
-            } else {
-                SpaceIconView.DataSpace.Placeholder(
-                    name = name.orEmpty(),
-                    color =color ?: SystemColor.SKY
-                )
-            }
-        }
-        else -> {
-            if (isChatSpace) {
-                SpaceIconView.ChatSpace.Placeholder(
-                    name = this.name.orEmpty(),
-                    color = SystemColor.SKY
-                )
-            } else {
-                SpaceIconView.DataSpace.Placeholder(
-                    name = this.name.orEmpty(),
-                    color = SystemColor.SKY
-                )
-            }
+    val isChat = spaceUxType == SpaceUxType.CHAT
+
+    // Helpers to eliminate duplication between Chat and Data branches
+    val makeImage: (Url) -> SpaceIconView = { url ->
+        if (isChat) {
+            SpaceIconView.ChatSpace.Image(url)
+        } else {
+            SpaceIconView.DataSpace.Image(url)
         }
     }
+    val makePlaceholder: (SystemColor, String) -> SpaceIconView = { color, title ->
+        if (isChat) {
+            SpaceIconView.ChatSpace.Placeholder(color = color, name = title)
+        } else {
+            SpaceIconView.DataSpace.Placeholder(color = color, name = title)
+        }
+    }
+
+    // Prefer image if we have a non-empty hash
+    iconImage?.takeIf { it.isNotEmpty() }?.let { hash ->
+        return makeImage(builder.medium(hash))
+    }
+
+    // Derive placeholder color & name with safe defaults
+    val placeholderColor = iconOption
+        ?.toInt()
+        ?.let { SystemColor.color(idx = it) }
+        ?: DEFAULT_PLACEHOLDER_COLOR
+
+    val displayName = name.orEmpty()
+
+    return makePlaceholder(placeholderColor, displayName)
 }

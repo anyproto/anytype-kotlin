@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.core_ui.features.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -81,9 +82,10 @@ fun VaultSpaceCard(
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = (getSpaceIconColor(icon)?.res() ?: Color.Transparent).copy(alpha = 0.3f),
+                color = getSpaceBackgroundColor(icon).copy(alpha = 0.3f),
                 shape = RoundedCornerShape(20.dp)
             )
+            .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,
@@ -127,8 +129,20 @@ fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
     return when (icon) {
         is SpaceIconView.ChatSpace.Placeholder -> icon.color
         is SpaceIconView.DataSpace.Placeholder -> icon.color
-        else -> null
+        is SpaceIconView.ChatSpace.Image -> icon.color
+        is SpaceIconView.DataSpace.Image -> icon.color
+        SpaceIconView.Loading -> null
     }
+}
+
+@Composable
+fun getSpaceBackgroundColor(icon: SpaceIconView): Color {
+    // First try to get color from icon
+    getSpaceIconColor(icon)?.res()?.let { return it }
+    
+    // If icon doesn't have a color (e.g., for images), use a default wallpaper color
+    // Using a neutral teal color as fallback that works well with the design
+    return Color(android.graphics.Color.parseColor(WallpaperColor.TEAL.hex))
 }
 
 @Composable
@@ -198,10 +212,18 @@ fun VaultChatCard(
 ) {
     Box(
         modifier = modifier
+            .fillMaxWidth()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                color = getSpaceBackgroundColor(icon).copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 56.dp,
+            mainSize = 64.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart)
         )
@@ -261,7 +283,7 @@ private fun BoxScope.ContentChat(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(start = 68.dp, top = 8.dp),
+            .padding(start = 80.dp, top = 12.1.dp),
         verticalArrangement = Arrangement.Top
     ) {
         TitleRow(
@@ -648,14 +670,22 @@ private fun buildChatContentWithInlineIcons(
 
 @Composable
 @DefaultPreviews
-fun VaultSpaceCardPreview() {
-    VaultSpaceCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "B&O Museum",
-        subtitle = "Private space",
-        icon = SpaceIconView.ChatSpace.Placeholder(),
-        currentPinnedCount = 3
-    )
+fun VaultDataSpaceCardPreview() {
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultSpaceCard(
+            modifier = Modifier.fillMaxWidth(),
+            title = "B&O Museum",
+            subtitle = "Private space",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            currentPinnedCount = 3
+        )
+    }
+
 }
 
 @Composable

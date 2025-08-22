@@ -159,12 +159,21 @@ class CreateSpaceViewModel(
     private suspend fun finishCreation(spaceId: Id, startingObject: Id?) {
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
-        commands.emit(
-            Command.SwitchSpace(
-                space = Space(spaceId),
-                startingObject = startingObject
+        if (vmParams.spaceUxType == SpaceUxType.CHAT) {
+            commands.emit(
+                Command.SwitchSpaceChat(
+                    space = Space(spaceId),
+                    startingObject = startingObject
+                )
             )
-        )
+        } else {
+            commands.emit(
+                Command.SwitchSpace(
+                    space = Space(spaceId),
+                    startingObject = startingObject
+                )
+            )
+        }
     }
 
     private fun onError(error: Throwable) {
@@ -209,6 +218,10 @@ class CreateSpaceViewModel(
 
     sealed class Command {
         data class SwitchSpace(
+            val space: Space,
+            val startingObject: Id?
+        ) : Command()
+        data class SwitchSpaceChat(
             val space: Space,
             val startingObject: Id?
         ) : Command()

@@ -42,9 +42,14 @@ class CreateSpaceViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     val spaceIconView: MutableStateFlow<SpaceIconView> = MutableStateFlow(
-        SpaceIconView.DataSpace.Placeholder(
-            color = SystemColor.entries.random()
-        )
+        if (vmParams.spaceUxType == SpaceUxType.CHAT)
+            SpaceIconView.ChatSpace.Placeholder(
+                color = SystemColor.entries.random()
+            )
+        else
+            SpaceIconView.DataSpace.Placeholder(
+                color = SystemColor.entries.random()
+            )
     )
 
     init {

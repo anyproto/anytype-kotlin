@@ -112,6 +112,11 @@ fun CreateSpaceScreen(
                             stringResource(id = R.string.u)
                         }
                     )
+                    is SpaceIconView.ChatSpace.Placeholder -> spaceIconView.copy(
+                        name = innerValue.text.ifEmpty {
+                            stringResource(id = R.string.u)
+                        }
+                    )
                     else -> spaceIconView
                 },
                 onSpaceIconUploadClicked = onSpaceIconUploadClicked,

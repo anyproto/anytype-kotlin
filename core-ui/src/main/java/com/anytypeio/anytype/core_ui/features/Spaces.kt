@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -14,11 +15,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
@@ -87,18 +91,19 @@ fun SpaceIconView(
                     .background(
                         color = color,
                         shape = CircleShape
-                    )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     text = icon
                         .name
                         .ifEmpty { stringResource(id = R.string.u) }
                         .take(1)
                         .uppercase(),
-                    style = AvatarTitle.copy(
-                        fontSize = fontSize,
-                    ),
+                    fontSize = fontSize,
+                    textAlign = TextAlign.Center,
                     color = colorResource(id = R.color.text_label_inversion),
                 )
             }
@@ -112,18 +117,19 @@ fun SpaceIconView(
                     .background(
                         color = color,
                         shape = RoundedCornerShape(radius)
-                    )
+                    ),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
-                    modifier = Modifier.align(Alignment.Center),
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     text = icon
                         .name
                         .ifEmpty { stringResource(id = R.string.u) }
                         .take(1)
                         .uppercase(),
-                    style = AvatarTitle.copy(
-                        fontSize = fontSize,
-                    ),
+                    textAlign = TextAlign.Center,
+                    fontSize = fontSize,
                     color = colorResource(id = R.color.text_label_inversion),
                 )
             }
@@ -133,4 +139,15 @@ fun SpaceIconView(
 
         }
     }
+}
+
+@DefaultPreviews
+@Composable
+private fun SpaceIconViewPreview() {
+    SpaceIconView(
+        icon = SpaceIconView.ChatSpace.Placeholder(
+            name = "U"
+        ),
+        onSpaceIconClick = {}
+    )
 }

@@ -75,9 +75,6 @@
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Object-Version_history-Screen"/>
         <action
-            android:id="@+id/actionOpenSpaceSwitcher"
-            app:destination="@id/selectSpaceScreen" />
-        <action
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
@@ -155,9 +152,6 @@
             android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
             android:label="Set-Version_history-Screen"/>
         <action
-            android:id="@+id/actionOpenSpaceSwitcher"
-            app:destination="@id/selectSpaceScreen"/>
-        <action
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="false" />
@@ -206,9 +200,6 @@
             android:id="@+id/action_open_space_settings"
             app:destination="@id/spaceSettingsScreen" />
         <action
-            android:id="@+id/action_open_spaces"
-            app:destination="@id/selectSpaceScreen" />
-        <action
             android:id="@+id/action_open_vault"
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
@@ -218,10 +209,7 @@
             android:id="@+id/action_open_all_content"
             app:destination="@id/allContentScreen" />
         <action
-            android:id="@+id/actionOpenSpaceSwitcher"
-            app:destination="@id/selectSpaceScreen"/>
-        <action
-            android:id="@+id/actionOpenSpaceSettings"
+            android:id="@+id/action_open_space_settings_from_widgets"
             app:destination="@id/spaceSettingsScreen"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -243,9 +231,6 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@id/vaultScreen"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/actionOpenSpaceSwitcher"
-            app:destination="@id/selectSpaceScreen" />
         <action
             android:id="@+id/actionExitToSpaceWidgets"
             app:popUpTo="@+id/homeScreen"
@@ -310,16 +295,6 @@
         android:id="@+id/selectWidgetTypeScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"/>
 
-    <dialog
-        android:id="@+id/selectSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment">
-        <action
-            android:id="@+id/switchSpaceAction"
-            app:popUpTo="@+id/homeScreen"
-            app:popUpToInclusive="false"
-            app:enterAnim="@anim/anim_switch_space_enter" />
-    </dialog>
-
     <fragment
         android:id="@+id/vaultScreen"
         android:name="com.anytypeio.anytype.ui.vault.VaultFragment">
@@ -330,12 +305,6 @@
             android:id="@+id/actionOpenChatFromVault"
             app:destination="@id/chatScreen" />
         <action
-            android:id="@+id/actionCreateSpaceFromVault"
-            app:destination="@id/createSpaceScreen" />
-        <action
-            android:id="@+id/actionCreateChatFromVault"
-            app:destination="@id/createSpaceScreen" />
-        <action
             android:id="@+id/action_open_space_settings"
             app:destination="@id/spaceSettingsScreen" />
     </fragment>
@@ -344,9 +313,9 @@
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <argument
-            android:name="arg.space_type"
-            android:defaultValue="space"
-            app:argType="string" />
+            android:name="spaceUxType"
+            android:defaultValue="NONE"
+            app:argType="com.anytypeio.anytype.core_models.multiplayer.SpaceUxType" />
         <action
             android:id="@+id/exitToVaultAction"
             app:popUpTo="@+id/vaultScreen"
@@ -545,10 +514,6 @@
         <action
             android:id="@+id/actionOpenTypeCreationScreen"
             app:destination="@id/typeCreationFragment" />
-
-        <action
-            android:id="@+id/actionOpenSpaceSwitcher"
-            app:destination="@id/selectSpaceScreen"/>
     </fragment>
 
     <dialog

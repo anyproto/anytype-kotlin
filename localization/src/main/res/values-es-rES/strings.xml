@@ -1180,8 +1180,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Compartir enlace de invitación</string>
+    <string name="multiplayer_share_invite_link_menu">Compartir enlace</string>
+    <string name="multiplayer_qr_invite_link_menu">Mostrar el código QR</string>
     <string name="multiplayer_share_invite_link_description">Comparte este enlace con quien quieras que acceda a tu espacio. Cuando haga clic en el enlace y envíe su solicitud, podrás definir sus derechos de acceso.</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Enlace desactivado</string>
+    <string name="multiplayer_link_disabled_desc">Solo tendrán acceso los miembros que ya se hayan incorporado.</string>
+    <string name="multiplayer_editor_access">Acceso como editor</string>
+    <string name="multiplayer_editor_access_desc">Quienes tengan el enlace podrán editar y escribir en el chat.</string>
+    <string name="multiplayer_viewer_access">Acceso como visitante</string>
+    <string name="multiplayer_viewer_access_desc">Quienes tengan el enlace podrán ver y leer el chat.</string>
+    <string name="multiplayer_request_access">Solicitar acceso</string>
+    <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
+    <string name="multiplayer_qr_code">Código QR</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Copiar enlace</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
     <string name="multiplayer_request_to_join_explanation">Cuando el propietario del espacio apruebe tu solicitud, tendrás acceso al espacio con los derechos que el propietario determine.</string>
@@ -1197,6 +1217,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Escribe tu comentario</string>
     <string name="multiplayer_share_space">Compartir espacio</string>
     <string name="multiplayer_members_and_requests">Miembros</string>
+    <string name="multiplayer_members_invite_links_section">Enlace de invitación</string>
     <string name="multiplayer_cant_add_members">No puedes añadir más miembros</string>
     <string name="multiplayer_cant_add_editors">No puedes añadir más editores</string>
     <string name="multiplayer_upgrade_button">✦ Ampliar</string>
@@ -1517,9 +1538,9 @@ En concreto,
     <string name="error_login_select_vault_error">Error al seleccionar el arca</string>
     <string name="error_login_account_deleted_error">Esta cuenta se ha eliminado. Prueba con otra cuenta o crea una nueva.</string>
     <string name="error_login_account_need_update_error">No se puede recuperar la cuenta. Por favor, actualiza Anytype a la versión más reciente.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
-    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
-    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
+    <string name="error_wallet_setup">No se puede configurar la cartera. Comprueba el almacenamiento del dispositivo e inténtalo de nuevo.</string>
+    <string name="error_network_error">Ha habido un error de red. Comprueba tu conexión a Internet e inténtalo de nuevo.</string>
+    <string name="error_offline_device">Tu dispositivo parece estar desconectado. Conéctate a internet e inténtalo de nuevo.</string>
     <string name="global_search_related_to">"Relacionado con: "</string>
     <string name="global_search_no_related_objects_found">No se ha encontrado ningún objeto relacionado.</string>
     <string name="sort_empty_values_desc">Mostrar valores vacíos</string>
@@ -1751,6 +1772,8 @@ En concreto,
     <string name="space_settings_section_data_management">Gestión de datos</string>
     <string name="space_settings_section_misc">Varios</string>
     <string name="space_settings_invite">Invitar</string>
+    <string name="space_settings_share_link">Compartir enlace</string>
+    <string name="space_settings_copy_link">Copiar enlace</string>
     <string name="space_settings_invite_members">Invitar a miembros</string>
     <string name="space_settings_qrcode">Código QR</string>
     <string name="space_settings_members_button_members">Miembros</string>
@@ -1762,6 +1785,7 @@ En concreto,
     <string name="space_settings_delete_space_button">Eliminar espacio</string>
     <string name="space_settings_icon_title">Editar imagen</string>
     <string name="space_settings_save_button">Guardar</string>
+    <string name="space_settings_join_space_by_qr_title">Unirte</string>
     <string name="object_type_add_property_screen_title">Añadir propiedad</string>
     <string name="object_type_add_property_screen_create">Crear propiedad «%1$s»</string>
     <string name="object_type_add_property_screen_section_types">Formatos de propiedades</string>
@@ -1805,7 +1829,7 @@ En concreto,
     <string name="object_conflict_menu_item_title">Resolver conflicto de diseño</string>
     <string name="widget_source_suggested">Sugerencia</string>
     <string name="widgets_empty_state_message">Aún no hay ningún widget</string>
-    <string name="space_settings_auto_create_widgets">Crear widgets de tipo automáticamente</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Tipos de objeto</string>
     <string name="space_types_screen_section_my_types">Mis tipos</string>
     <string name="space_types_screen_section_system_types">Tipos del sistema</string>
@@ -1815,10 +1839,10 @@ En concreto,
     <string name="space_properties_screen_menu_move_to_bin">Mover a la papelera</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Error al crear la cuenta: falta el espacio</string>
     <!-- Account creation error messages -->
-    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
-    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
-    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
+    <string name="onboarding_error_network_error">No se pudo crear la cuenta debido a un error de red. Comprueba tu conexión.</string>
+    <string name="onboarding_error_offline_device">Tu dispositivo parece estar desconectado. Comprueba tu conexión e inténtalo de nuevo.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Se ha creado la cuenta, pero no se ha podido iniciar el nodo. Intenta iniciar sesión.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Se ha creado la cuenta, pero no se pudo establecer el nombre. Podrás hacerlo después en los ajustes.</string>
     <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
     <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
     <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
@@ -1883,4 +1907,14 @@ En concreto,
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>
+    <string name="share_space_error_not_shareable">Parece que este espacio ya no está compartido. Asegúrate de que tus dispositivos están sincronizados.</string>
+    <string name="share_space_error_request_failed">¡Huy! La solicitud ha fallado. Comprueba tu conexión a Internet e inténtalo de nuevo.</string>
+    <string name="share_space_error_space_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

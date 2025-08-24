@@ -1184,7 +1184,7 @@
     <string name="multiplayer_qr_invite_link_menu">Kare kodu göster</string>
     <string name="multiplayer_share_invite_link_description">Başkalarının alanınıza katılabilmesi için bu davet bağlantısını paylaşın. Bağlantınıza tıklayıp erişim talep ettiklerinde, erişim haklarını ayarlayabilirsiniz.</string>
     <string name="multiplayer_invite_link">Davet bağlantısı</string>
-    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_invite_link_access">Davet bağlantısı erişimi</string>
     <string name="multiplayer_link_disabled">Bağlantı devre dışı</string>
     <string name="multiplayer_link_disabled_desc">Yalnızca davet edilmiş üyeler erişebilir</string>
     <string name="multiplayer_editor_access">Düzenleyici erişimi</string>
@@ -1194,12 +1194,12 @@
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
     <string name="multiplayer_qr_code">Karekod</string>
-    <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
-    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
-    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
-    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
-    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_change_access_title">Davet bağlantısı erişimini değiştirmek mi istiyorsunuz?</string>
+    <string name="multiplayer_link_will_be_invalidated">Mevcut bağlantı çalışmayı durduracak.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">Paylaşımı kapatırsanız veya manuel onaylamaya geçerseniz mevcut bağlantınız devre dışı bırakılır. Yeniden etkinleştirirseniz yeni bir bağlantı oluşturulur.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Bağlantıya sahip olan herkes alan içeriğini düzenleyebilir.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Bağlantıya sahip olan herkes alan içeriğini yalnızca görüntüleyebilir.</string>
+    <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>

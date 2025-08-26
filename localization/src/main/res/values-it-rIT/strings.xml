@@ -29,8 +29,8 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
-    <string name="app_preferences">App Preferences</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="app_preferences">Preferenze App</string>
+    <string name="vault_key">Cassaforte &amp; Chiave</string>
     <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
     <string name="about_help_and_community">Aiuto &amp; Community</string>
@@ -60,7 +60,7 @@
     <string name="offload_files">Libera file</string>
     <string name="local_storage_used">%1$s utilizzato</string>
     <string name="space_usage">%1$s di %2$s utilizzato</string>
-    <string name="remote_storage">Archiviazione remota</string>
+    <string name="remote_storage">Spazio di archiviazione remoto</string>
     <string name="contact_us">Contattaci</string>
     <string name="get_more_space">Ottieni più spazio</string>
     <string name="account_name">Nome</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Icona di avviso</string>
     <string name="modal_tap_to_type">Tocca per digitare</string>
     <string name="modal_gallery">Galleria</string>
     <string name="modal_kanban">Kanban</string>
@@ -380,7 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Pulsante condivisione</string>
     <string name="content_desc_home_button">Home button</string>
-    <string name="content_desc_chat_button">Chat button</string>
+    <string name="content_desc_chat_button">Pulsante Chat</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blocco non supportato</string>
@@ -1127,10 +1127,10 @@
     <string name="dates_filter_last_month">Mese scorso</string>
     <string name="dates_filter_current_month">Mese corrente</string>
     <string name="dates_filter_next_month">Mese successivo</string>
-    <string name="dates_filter_last_year">Last year</string>
-    <string name="dates_filter_current_year">Current year</string>
-    <string name="dates_filter_next_year">Next year</string>
-    <string name="settings_use_yamux">Use QUIC</string>
+    <string name="dates_filter_last_year">L\'anno scorso</string>
+    <string name="dates_filter_current_year">Anno in corso</string>
+    <string name="dates_filter_next_year">L\'anno prossimo</string>
+    <string name="settings_use_yamux">Usa QUIC</string>
     <string name="settings_share_local_logs">Condividi i log locali</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista Kanban non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.</string>
@@ -1181,8 +1181,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Condividi il link di invito</string>
+    <string name="multiplayer_share_invite_link_menu">Condividi link</string>
+    <string name="multiplayer_qr_invite_link_menu">Mostra codice QR</string>
     <string name="multiplayer_share_invite_link_description">Condividi questo link di invito in modo che altri possano unirsi al tuo Spazio. Una volta che cliccano sul tuo link e richiedono l\'accesso, puoi impostare i loro diritti di accesso.</string>
     <string name="multiplayer_invite_link">Link di invito</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabilitato</string>
+    <string name="multiplayer_link_disabled_desc">Solo i membri già invitati hanno accesso</string>
+    <string name="multiplayer_editor_access">Accesso editor</string>
+    <string name="multiplayer_editor_access_desc">Le persone con un link possono modificare e scrivere in chat</string>
+    <string name="multiplayer_viewer_access">Accesso al visualizzatore</string>
+    <string name="multiplayer_viewer_access_desc">Le persone con link possono visualizzare e leggere la chat</string>
+    <string name="multiplayer_request_access">Richiesta di accesso</string>
+    <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
+    <string name="multiplayer_qr_code">Codice QR</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Copia collegamento</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
     <string name="multiplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
@@ -1198,6 +1218,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tocca per scrivere il tuo commento</string>
     <string name="multiplayer_share_space">Condividi lo spazio</string>
     <string name="multiplayer_members_and_requests">Membri</string>
+    <string name="multiplayer_members_invite_links_section">Link di invito</string>
     <string name="multiplayer_cant_add_members">Non puoi aggiungere altri membri</string>
     <string name="multiplayer_cant_add_editors">Non puoi aggiungere altri editor</string>
     <string name="multiplayer_upgrade_button">✦ Aggiorna</string>
@@ -1264,7 +1285,7 @@
     <string name="multiplayer_notification_member_permission_change_read">I tuoi diritti di accesso sono stati impostati in sola lettura nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_permission_change_edit">I tuoi diritti di accesso sono stati impostati per la modifica nello spazio %1$s.</string>
     <string name="multiplayer_notification_member_join_request_declined">La tua richiesta di unirti allo spazio %1$s è stata rifiutata.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">Ti sei unito a %1$s.</string>
     <string name="multiplayer_notification_request_declined">Richiesta non approvata</string>
     <string name="multiplayer_notification_view_request">Vista</string>
     <string name="multiplayer_notification_go_to_space">Vai allo spazio</string>
@@ -1518,9 +1539,9 @@ Please provide specific details of your needs here.</string>
     <string name="error_login_select_vault_error">Errore nella selezione della cassaforte.</string>
     <string name="error_login_account_deleted_error">Questo account è stato eliminato. Provare ad usare un altro account o crearne uno nuovo.</string>
     <string name="error_login_account_need_update_error">Impossibile recuperare l\'account. Si prega di aggiornare Anytype all\'ultima versione.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
-    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
-    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
+    <string name="error_wallet_setup">Impossibile impostare il portafoglio. Controllare la memoria del dispositivo e riprovare.</string>
+    <string name="error_network_error">Si è verificato un errore di rete. Controlla la connessione a Internet e riprova.</string>
+    <string name="error_offline_device">Il dispositivo sembra essere offline. Si prega di connettersi a Internet e riprovare.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
     <string name="sort_empty_values_desc">Mostra valori vuoti</string>
@@ -1568,7 +1589,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_pinned_section_title">Fissato</string>
     <string name="vault_pin_space">Pin</string>
     <string name="vault_unpin_space">Togli</string>
-    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
+    <string name="vault_max_pinned_limit_reached">È stato raggiunto il limite di %1$d spazi appuntati</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
@@ -1619,7 +1640,7 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Condividi e il pulsante membri</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
-    <string name="main_navigation_content_desc_chat_button">Chat button</string>
+    <string name="main_navigation_content_desc_chat_button">Pulsante Chat</string>
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>
@@ -1752,6 +1773,8 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_section_data_management">Gestione Dati</string>
     <string name="space_settings_section_misc">Varie</string>
     <string name="space_settings_invite">Invita</string>
+    <string name="space_settings_share_link">Condividi link</string>
+    <string name="space_settings_copy_link">Copia collegamento</string>
     <string name="space_settings_invite_members">Invita membri</string>
     <string name="space_settings_qrcode">Codice QR</string>
     <string name="space_settings_members_button_members">Membri</string>
@@ -1763,6 +1786,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_delete_space_button">Elimina Spazio</string>
     <string name="space_settings_icon_title">Modifica foto</string>
     <string name="space_settings_save_button">Salva</string>
+    <string name="space_settings_join_space_by_qr_title">Unisciti</string>
     <string name="object_type_add_property_screen_title">Aggiungi proprietà</string>
     <string name="object_type_add_property_screen_create">Crea proprietà \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Formati delle proprietà</string>
@@ -1806,7 +1830,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Risolvi il conflitto di layout</string>
     <string name="widget_source_suggested">Suggerito</string>
     <string name="widgets_empty_state_message">Non ci sono ancora widget</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">I miei Tipi</string>
     <string name="space_types_screen_section_system_types">Tipi Di Sistema</string>
@@ -1816,17 +1840,17 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_menu_move_to_bin">Sposta nel cestino</string>
     <string name="onboarding_error_while_creating_account_space_is_missing">Errore durante la creazione dell\'account: manca lo spazio</string>
     <!-- Account creation error messages -->
-    <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
-    <string name="onboarding_error_offline_device">Your device seems to be offline. Please check your connection and try again.</string>
-    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
-    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
-    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
-    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
-    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
+    <string name="onboarding_error_network_error">Impossibile creare un account a causa di un errore di rete. Controllare la connessione.</string>
+    <string name="onboarding_error_offline_device">Il dispositivo sembra essere offline. Controllare la connessione e riprovare.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">L\'account è stato creato ma non è riuscito ad avviare il nodo. Prova ad accedere.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">L\'account è stato creato ma non è stato possibile impostare il nome. È possibile aggiornarlo in seguito nelle impostazioni.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Non è stato possibile arrestare il nodo in esecuzione. Riavviare l\'applicazione e riprovare.</string>
+    <string name="onboarding_error_failed_to_write_config">Impossibile salvare la configurazione. Controlla i permessi di archiviazione.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Impossibile creare un repository locale. Controllare lo spazio di archiviazione disponibile.</string>
+    <string name="onboarding_error_account_creation_canceled">Creazione account annullata.</string>
+    <string name="onboarding_error_config_file_not_found">File di configurazione non trovato. Si prega di reinstallare l\'applicazione.</string>
+    <string name="onboarding_error_config_file_invalid">File di configurazione non valido. Si prega di reinstallare l\'applicazione.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">La configurazione di rete non corrisponde. Controllare le impostazioni di rete.</string>
     <string name="onboarding_set_your_name_title">Aggiungi Il Tuo Nome</string>
     <string name="onboarding_soul_creation_description">Visibile solo alle persone con cui condividi qualcosa. Non esiste un registro centrale per questi nomi.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>
@@ -1840,12 +1864,12 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_description">Ricevi una notifica immediata quando qualcuno ti invia un messaggio o ti menziona nei tuoi spazi.</string>
     <string name="notifications_modal_success_button">Abilita le notifiche</string>
     <string name="notifications_modal_cancel_button">Non ora</string>
-    <string name="vault_create_chat">New Chat</string>
+    <string name="vault_create_chat">Nuova Chat</string>
     <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
-    <string name="vault_create_space">New Space</string>
+    <string name="vault_create_space">Nuovo Spazio</string>
     <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
     <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">Nessuna corrispondenza trovata</string>
     <string name="chat_new_messages_section_text">Nuovi messaggi</string>
     <string name="chat_box_camera">Fotocamera</string>
     <string name="chat_box_take_photo">Scatta Foto</string>
@@ -1857,11 +1881,11 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_disable">Disattiva le notifiche</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
-    <string name="notifications_disable_short">Disable</string>
-    <string name="space_notify_unmute">Unmute</string>
-    <string name="space_notify_mute">Mute</string>
-    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
-    <string name="vault_space_settings">Space Settings</string>
+    <string name="notifications_disable_short">Disattiva</string>
+    <string name="space_notify_unmute">Riattiva</string>
+    <string name="space_notify_mute">Silenzia</string>
+    <string name="vault_pinned_limit_message">%1$d gli spazi fissati sono il tuo limite attuale. Rimuovi uno per aggiungere un nuovo preferito.</string>
+    <string name="vault_space_settings">Impostazioni Spazio</string>
     <string name="notification_settings_title">Notifiche</string>
     <string name="notification_settings_disabled">Le notifiche sono disabilitate</string>
     <string name="notification_settings_disabled_subtitle">Ricevi le notifiche dei nuovi messaggi attivandole nelle impostazioni del dispositivo.</string>
@@ -1869,19 +1893,29 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_title">Notifiche dei messaggi</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
-    <string name="content_desc_muted">Muted</string>
-    <string name="failed_to_load_image">Failed to load image</string>
+    <string name="content_desc_muted">Silenziato</string>
+    <string name="failed_to_load_image">Impossibile caricare l\'immagine</string>
     <!-- Vault Screen - Join via QR -->
-    <string name="vault_join_via_qr">Join via QR Code</string>
-    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
-    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
-    <string name="vault_qr_invalid_title">Invalid QR code</string>
-    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_join_via_qr">Unisciti tramite QR Code</string>
+    <string name="vault_qr_scan_error_title">Impossibile scansionare il codice QR</string>
+    <string name="vault_qr_scan_error_description">Assicurati che sia ben visibile e riprova.</string>
+    <string name="vault_qr_invalid_title">Codice QR non valido</string>
+    <string name="vault_qr_invalid_description">Il codice QR scansionato non corrisponde a un invito valido. Si prega di controllare e riprovare.</string>
     <string name="vault_qr_try_again">Riprova</string>
-    <string name="camera_permission_required_title">Camera permission required</string>
-    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
-    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="camera_permission_required_title">È necessaria l\'autorizzazione della fotocamera</string>
+    <string name="camera_permission_rationale_message">Per scansionare i codici QR, Anytype deve avere accesso alla fotocamera. Questa autorizzazione viene utilizzata solo per la scansione dei codici QR.</string>
+    <string name="camera_permission_settings_message">Per scansionare i codici QR, è necessario consentire l\'accesso alla fotocamera nelle impostazioni del dispositivo.</string>
     <string name="open_settings">Apri Impostazioni</string>
     <string name="allow">Allow</string>
-    <string name="attachment_image">Attachment image</string>
+    <string name="attachment_image">Immagine allegata</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limite raggiunto per questo spazio. Aggiorna il tuo abbonamento o contatta il supporto per assistenza.</string>
+    <string name="share_space_error_not_shareable">Sembra che lo spazio non sia più condiviso. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
+    <string name="share_space_error_request_failed">Ops! La richiesta è fallita. Controlla la tua connessione Internet e prova di nuovo.</string>
+    <string name="share_space_error_space_deleted">Sembra che lo spazio sia stato eliminato. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

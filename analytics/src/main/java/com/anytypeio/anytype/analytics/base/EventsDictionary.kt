@@ -7,6 +7,7 @@ object EventsDictionary {
      */
 
     // Auth events
+    const val startCreateAccount = "StartCreateAccount"
     const val createAccount = "CreateAccount"
     const val openAccount = "OpenAccount"
     const val logout = "LogOut"
@@ -27,6 +28,8 @@ object EventsDictionary {
     const val switchSpace = "SwitchSpace"
     const val reorderSpace = "ReorderSpace"
     const val deleteSpace = "DeleteSpace"
+    const val pinSpace = "PinSpace"
+    const val unpinSpace = "UnpinSpace"
     const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
 
 
@@ -90,6 +93,7 @@ object EventsDictionary {
     const val blockChangeBlockStyle = "ChangeBlockStyle"
     const val blockChangeBlockAlign = "ChangeBlockAlign"
     const val blockChangeBackground = "ChangeBlockBackground"
+    const val blockChangeColor = "ChangeBlockColor"
     const val blockDuplicate = "DuplicateBlock"
     const val blockPaste = "PasteBlock"
     const val blockCopy = "CopyBlock"
@@ -134,7 +138,8 @@ object EventsDictionary {
     const val hideKeyboard = "KeyboardBarHideKeyboardMenu"
 
     // Toolbars
-    const val slashMenu = "KeyboardBarSlashMenu"
+    const val screenSlashMenu = "ScreenSlashMenu"
+    const val clickSlashMenu = "ClickSlashMenu"
     const val styleMenu = "KeyboardBarStyleMenu"
     const val selectionMenu = "KeyboardBarSelectionMenu"
     const val mentionMenu = "KeyboardBarMentionMenu"
@@ -148,6 +153,7 @@ object EventsDictionary {
 
     // Widgets
 
+    const val screenWidget = "ScreenWidget"
     const val addWidget = "AddWidget"
     const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"
@@ -328,6 +334,9 @@ object EventsDictionary {
         const val objCreateMention = "Mention"
         const val objPowerTool = "Powertool"
         const val objLink = "Link"
+        const val keyboardBar = "KeyboardBar"
+        const val slash = "Slash"
+        const val slashMenu = "SlashMenu"
         const val screenSettings = "ScreenSettings"
         const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"

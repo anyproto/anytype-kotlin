@@ -81,6 +81,12 @@
     <color name="dashboard_card_background">#FFFFFF</color>
     <color name="dashboard_background">#99F5F5F5</color>
 
+    <color name="control_accent_125">#105AEF</color>
+    <color name="control_accent">#377AFF</color>
+    <color name="control_accent_80">#699BFF</color>
+    <color name="control_accent_50">#9BBCFF</color>
+    <color name="control_accent_25">#CDDEFF</color>
+
     <!-- Background -->
     <color name="widget_background">#FFFFFF</color>
 

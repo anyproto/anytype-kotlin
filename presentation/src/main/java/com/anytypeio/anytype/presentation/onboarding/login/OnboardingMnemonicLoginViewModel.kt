@@ -295,12 +295,11 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                     }
                 },
-                success = { (analyticsId, status) ->
+                success = { (analyticsId, _) ->
                     analytics.proceedWithAccountEvent(
-                        configStorage = configStorage,
                         startTime = startTime,
                         eventName = EventsDictionary.openAccount,
-                        lang = localeProvider.language()
+                        analyticsId = analyticsId
                     )
                     crashReporter.setUser(analyticsId)
                     proceedWithGlobalSubscriptions()

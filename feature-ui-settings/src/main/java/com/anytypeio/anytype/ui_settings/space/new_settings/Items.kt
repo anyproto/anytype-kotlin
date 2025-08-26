@@ -9,13 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -51,16 +54,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.lists.objects.ObjectsListItem
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiEvent
@@ -82,7 +87,8 @@ fun MembersItem(
         modifier = modifier,
         title = stringResource(id = R.string.space_settings_members_button_members),
         icon = R.drawable.ic_members_24,
-        count = item.count.toString()
+        count = item.count.toString(),
+        countIsColored = item.withColor
     )
 }
 
@@ -146,6 +152,12 @@ fun DefaultTypeItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
+
+        ListWidgetObjectIcon(
+            modifier = Modifier,
+            iconSize = 20.dp,
+            icon = icon
+        )
         Text(
             modifier = Modifier.padding(start = 8.dp),
             text = name.take(10),
@@ -208,7 +220,7 @@ fun WallpaperItem(
                                     alpha = 0.3f
                                 )
                             ),
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
                 )
@@ -224,7 +236,7 @@ fun WallpaperItem(
                                     alpha = 0.3f
                                 )
                             ),
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                         .padding(horizontal = 8.dp),
                 )
@@ -297,6 +309,7 @@ fun BaseButton(
     title: String,
     count: String? = null,
     textColor: Int = R.color.text_primary,
+    countIsColored: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -325,15 +338,37 @@ fun BaseButton(
             color = colorResource(id = textColor),
         )
         if (count != null) {
-            Text(
+            val (shape, color, textColor) = when {
+                countIsColored && count.length > 2 -> {
+                    Triple(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                }
+                countIsColored -> {
+                    Triple(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                }
+                else -> {
+                    Triple(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary))
+                }
+            }
+            val horizontalPadding = if (count.length > 1) 5.dp else 0.dp
+            Box(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(horizontal = 6.dp),
-                text = count,
-                textAlign = TextAlign.Center,
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_secondary),
-            )
+                    .sizeIn(minWidth = 20.dp, minHeight = 20.dp)
+                    .background(
+                        color = color,
+                        shape = shape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(horizontal = horizontalPadding),
+                    text = count,
+                    textAlign = TextAlign.Center,
+                    style = Caption1Regular,
+                    color = textColor
+                )
+            }
         }
         Image(
             painter = painterResource(id = R.drawable.ic_disclosure_8_24),
@@ -343,6 +378,16 @@ fun BaseButton(
     }
 }
 
+@DefaultPreviews
+@Composable
+private fun BaseButtonMembersPreview() {
+    BaseButton(
+        title = "Members",
+        icon = R.drawable.ic_members_24,
+        count = "19",
+        countIsColored = true
+    )
+}
 
 
 @OptIn(FlowPreview::class)
@@ -527,66 +572,65 @@ fun NewSettingsTextField(
 
 @Composable
 fun MultiplayerButtons(
+    link: String,
     modifier: Modifier = Modifier,
     uiEvent: (UiEvent) -> Unit
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        horizontalArrangement = Arrangement.spacedBy(24.dp, alignment = Alignment.CenterHorizontally),
     ) {
-        Column(
-            modifier = Modifier
-                .noRippleThrottledClickable {
-                    uiEvent(UiEvent.OnInviteClicked)
-                }
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_add_member_32),
-                contentDescription = "Invite new member icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_invite),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnShareLinkClicked(link)) },
+            text = stringResource(id = R.string.space_settings_share_link),
+            description = "Share link icon",
+            icon = R.drawable.ic_share_link_24
+        )
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnCopyLinkClicked(link)) },
+            text = stringResource(id = R.string.space_settings_copy_link),
+            description = "Copy link icon",
+            icon = R.drawable.ic_copy_link_24
+        )
+        LinkItem(
+            onClick = { uiEvent(UiEvent.OnQrCodeClicked(link)) },
+            text = stringResource(id = R.string.space_settings_qrcode),
+            description = "QR code icon",
+            icon = R.drawable.ic_qr_code_24
+        )
+    }
+}
 
-        Column(
+@Composable
+private fun RowScope.LinkItem(onClick:() -> Unit, text: String, description: String, icon: Int) {
+    Column(
+        modifier = Modifier
+            .noRippleThrottledClickable {
+                onClick()
+            },
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
             modifier = Modifier
-                .noRippleThrottledClickable {
-                    uiEvent(UiEvent.OnQrCodeClicked)
-                }
-                .weight(1f)
-                .border(
-                    shape = RoundedCornerShape(16.dp),
-                    width = 0.5.dp,
-                    color = colorResource(id = R.color.shape_primary)
-                )
-                .padding(vertical = 14.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .size(64.dp)
+                .background(
+                    shape = RoundedCornerShape(10.dp),
+                    color = colorResource(id = R.color.shape_transparent_secondary)
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Image(
-                modifier = Modifier.size(32.dp),
-                painter = painterResource(id = R.drawable.ic_qr_code_32),
-                contentDescription = "Share QR code icon"
-            )
-            Text(
-                modifier = Modifier.wrapContentSize(),
-                text = stringResource(id = R.string.space_settings_qrcode),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = icon),
+                contentDescription = description
             )
         }
+        Text(
+            modifier = Modifier.wrapContentSize().padding(top = 6.dp),
+            text = text,
+            style = Caption2Regular,
+            color = colorResource(id = R.color.text_primary)
+        )
     }
 }
 
@@ -653,7 +697,7 @@ fun AutoCreateWidgetItem(
             colors = SwitchDefaults.colors().copy(
                 checkedBorderColor = Color.Transparent,
                 uncheckedBorderColor = Color.Transparent,
-                checkedTrackColor = colorResource(R.color.palette_system_amber_50),
+                checkedTrackColor = colorResource(R.color.control_accent_80),
                 uncheckedTrackColor = colorResource(R.color.shape_secondary)
             )
         )

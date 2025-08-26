@@ -24,6 +24,15 @@ sealed class UiSpaceSettingsState {
     data class SpaceSettingsError(val message: String) : UiSpaceSettingsState()
 }
 
+sealed class UiSpaceQrCodeState {
+    data object Hidden : UiSpaceQrCodeState()
+    data class SpaceInvite(
+        val link: String,
+        val spaceName: String,
+        val icon: SpaceIconView?
+    ) : UiSpaceQrCodeState()
+}
+
 data class SpaceTechInfo(
     val spaceId: SpaceId,
     val createdBy: String,
@@ -46,8 +55,10 @@ sealed class UiSpaceSettingsItem {
     data class Icon(val icon: SpaceIconView) : UiSpaceSettingsItem()
     data class Name(val name: String) : UiSpaceSettingsItem()
     data class Description(val description: String) : UiSpaceSettingsItem()
-    data object Multiplayer : UiSpaceSettingsItem()
-    data class Members(val count: Int) : UiSpaceSettingsItem()
+    data class InviteLink(val link: String) : UiSpaceSettingsItem()
+    data class Members(val count: Int, val withColor: Boolean = false) : UiSpaceSettingsItem()
+    data class MembersSmall(val count: Int) : UiSpaceSettingsItem()
+    data object EntrySpace : UiSpaceSettingsItem()
     data object InviteMembers : UiSpaceSettingsItem()
     data class Chat(val isOn: Boolean) : UiSpaceSettingsItem()
     data object ObjectTypes : UiSpaceSettingsItem()

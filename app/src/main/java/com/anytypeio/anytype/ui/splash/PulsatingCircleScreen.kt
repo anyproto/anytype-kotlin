@@ -10,15 +10,17 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,10 +33,13 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 
 @Composable
 fun PulsatingCircleScreen() {
@@ -75,34 +80,40 @@ fun PulsatingCircleScreen() {
             )
         )
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .windowInsetsPadding(WindowInsets.systemBars)
+            .padding(bottom = 26.dp)
     ) {
-        Box(
+        SimpleCircleShape(
             modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            contentAlignment = Alignment.Center
-        ) {
-            SimpleCircleShape(
-                size = finalSize,
-                gradient = finalBrush
-            )
-        }
+                .align(Alignment.Center),
+            size = finalSize,
+            gradient = finalBrush
+        )
+
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(horizontal = 32.dp),
+            text = stringResource(R.string.private_local_yours_forever),
+            color = colorResource(R.color.text_secondary),
+            style = PreviewTitle2Medium
+        )
     }
 }
 
 @Composable
 fun SimpleCircleShape(
+    modifier: Modifier = Modifier,
     size: Dp,
     gradient: Brush,
     borderWidth: Dp = 0.dp,
     borderColor: Color = Color.Transparent
 ) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .wrapContentSize(Alignment.Center)
     ) {
         Box(

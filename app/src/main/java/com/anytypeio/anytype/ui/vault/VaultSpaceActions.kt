@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -12,24 +10,17 @@ import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import com.anytypeio.anytype.presentation.vault.VaultUiState
 
 @Composable
@@ -38,8 +29,7 @@ fun SpaceActionsDropdownMenu(
     onDismiss: () -> Unit,
     isMuted: Boolean?,
     isPinned: Boolean,
-    maxPinnedSpaces: Int,
-    showPinButton: Boolean,
+    currentPinnedCount: Int,
     onMuteToggle: () -> Unit,
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
@@ -56,16 +46,23 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        if (!showPinButton && !isPinned) {
-            // Show info message instead of Pin
+        // Show pin/unpin option or limit message
+        val canPin = currentPinnedCount < VaultUiState.MAX_PINNED_SPACES
+
+        if (!isPinned && !canPin) {
+            // Show info message when limit reached and space is not pinned
             Row(modifier = Modifier.padding(16.dp)) {
                 Text(
-                    text = stringResource(R.string.vault_pinned_limit_message, maxPinnedSpaces),
+                    text = stringResource(
+                        R.string.vault_pinned_limit_message,
+                        VaultUiState.MAX_PINNED_SPACES
+                    ),
                     style = PreviewTitle2Regular,
                     color = colorResource(id = R.color.text_secondary)
                 )
             }
         } else {
+            // Show pin/unpin option when space is pinned or when there's room to pin
             DropdownMenuItem(
                 onClick = {
                     onPinToggle()
@@ -154,78 +151,4 @@ fun SpaceActionsDropdownMenu(
             }
         )
     }
-}
-
-@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Muted Owner")
-@Composable
-fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
-    var expanded by remember { mutableStateOf(true) }
-    Box(Modifier.fillMaxSize()) {
-        SpaceActionsDropdownMenu(
-            expanded = expanded,
-            onDismiss = { expanded = false },
-            isMuted = true,
-            isPinned = false,
-            maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-            showPinButton = true,
-            onMuteToggle = {},
-            onPinToggle = {},
-            onSpaceSettings = {}
-        )
-    }
-}
-
-@Preview(showBackground = true, name = "SpaceActionsDropdownMenu - Unmuted Not Owner")
-@Composable
-fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
-    var expanded by remember { mutableStateOf(true) }
-    Box(Modifier.fillMaxSize()) {
-        SpaceActionsDropdownMenu(
-            expanded = expanded,
-            onDismiss = { expanded = false },
-            isMuted = false,
-            isPinned = false,
-            maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-            showPinButton = true,
-            onMuteToggle = {},
-            onPinToggle = {},
-            onSpaceSettings = {}
-        )
-    }
-}
-
-@Composable
-fun SpaceActionsDropdownMenuHost(
-    spaceView: VaultSpaceView,
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onMuteSpace: (Id) -> Unit,
-    onUnmuteSpace: (Id) -> Unit,
-    onPinSpace: (Id) -> Unit,
-    onUnpinSpace: (Id) -> Unit,
-    maxPinnedSpaces: Int,
-    showPinButton: Boolean,
-    onSpaceSettings: (Id) -> Unit
-) {
-    SpaceActionsDropdownMenu(
-        expanded = expanded,
-        onDismiss = onDismiss,
-        isMuted = spaceView.isMuted,
-        isPinned = spaceView.isPinned,
-        showPinButton = showPinButton,
-        maxPinnedSpaces = maxPinnedSpaces,
-        onMuteToggle = {
-            spaceView.space.targetSpaceId?.let {
-                if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-            }
-        },
-        onPinToggle = {
-            spaceView.space.id.let {
-                if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
-            }
-        },
-        onSpaceSettings = {
-            spaceView.space.id.let { onSpaceSettings(it) }
-        }
-    )
 }

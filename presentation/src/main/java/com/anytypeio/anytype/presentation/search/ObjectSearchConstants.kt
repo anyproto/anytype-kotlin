@@ -1295,6 +1295,15 @@ fun buildTemplateFilter(): DVFilter = DVFilter(
     value = ObjectTypeUniqueKeys.TEMPLATE
 )
 
+fun buildChatsFilter(): DVFilter = DVFilter(
+    relation = Relations.RECOMMENDED_LAYOUT,
+    condition = DVFilterCondition.NOT_IN,
+    value = listOf(
+        ObjectType.Layout.CHAT_DERIVED.code.toDouble(),
+        ObjectType.Layout.CHAT.code.toDouble()
+    )
+)
+
 fun buildSpaceIdFilter(spaces: List<Id>): DVFilter = DVFilter(
     relation = Relations.SPACE_ID,
     condition = DVFilterCondition.IN,

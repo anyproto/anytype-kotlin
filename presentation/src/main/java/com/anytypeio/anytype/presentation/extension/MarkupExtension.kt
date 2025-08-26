@@ -18,26 +18,6 @@ fun List<Markup.Mark>.isBoldInRange(selection: IntRange): Boolean {
     return filterIsInstance(Markup.Mark.Bold::class.java).isInRange(selection)
 }
 
-fun List<Markup.Mark>.isItalicInRange(selection: IntRange): Boolean {
-    if (selection.first >= selection.last) return false
-    return filterIsInstance(Markup.Mark.Italic::class.java).isInRange(selection)
-}
-
-fun List<Markup.Mark>.isStrikethroughInRange(selection: IntRange): Boolean {
-    if (selection.first >= selection.last) return false
-    return filterIsInstance(Markup.Mark.Strikethrough::class.java).isInRange(selection)
-}
-
-fun List<Markup.Mark>.isKeyboardInRange(selection: IntRange): Boolean {
-    if (selection.first >= selection.last) return false
-    return filterIsInstance(Markup.Mark.Keyboard::class.java).isInRange(selection)
-}
-
-fun List<Markup.Mark>.isLinkInRange(selection: IntRange): Boolean {
-    if (selection.first >= selection.last) return false
-    return filterIsInstance(Markup.Mark.Link::class.java).isInRange(selection)
-}
-
 private fun List<Markup.Mark>.isInRange(selection: IntRange): Boolean {
     if (isEmpty()) return false
     forEach { mark ->
@@ -207,5 +187,6 @@ private fun Markup.Mark.updateRanges(start: Int, length: Int): Markup.Mark {
         is Markup.Mark.Mention.Profile.WithInitials -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Mention.Date -> copy(from = newFrom, to = newTo)
         is Markup.Mark.Mention.ObjectType -> copy(from = newFrom, to = newTo)
+        is Markup.Mark.Emoji -> copy(from = newFrom, to = newTo)
     }
 }

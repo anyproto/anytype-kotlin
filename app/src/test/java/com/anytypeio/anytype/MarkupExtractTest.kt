@@ -262,6 +262,80 @@ class MarkupExtractTest {
         )
     }
 
+    @Test
+    fun `should extract emoji span`() {
+
+        // SETUP
+
+        val source = "Hello   world!" // Spaces where emojis should be rendered
+
+        val mark = Markup.Mark.Emoji(
+            from = 6,
+            to = 7,
+            param = "😀"
+        )
+
+        stubMarkup(source, mark)
+
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
+
+        // TESTING
+        
+        // With new text preprocessing approach, emojis are replaced in text, not as spans
+        // So we expect no emoji spans to be extracted since emojis are now part of the text
+        val marks = editable.extractMarks()
+
+        assertEquals(expected = 0, actual = marks.size)
+        
+        // Verify the emoji was actually replaced in the text
+        assertTrue(editable.toString().contains("😀"), "Text should contain the emoji")
+        assertTrue(editable.toString().contains("Hello"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("world!"), "Text should still contain original content")
+    }
+
+    @Test
+    fun `should extract multiple emoji spans with other markup`() {
+
+        // SETUP
+
+        val source = "Hello   world   test!" // Spaces for emojis
+
+        val marks = listOf(
+            Markup.Mark.Emoji(from = 6, to = 7, param = "😀"),
+            Markup.Mark.Bold(from = 0, to = 5),
+            Markup.Mark.Emoji(from = 14, to = 15, param = "🌍"),
+            Markup.Mark.Italic(from = 16, to = 20)
+        )
+
+        stubMarkup(source, marks)
+
+        val editable = markup.toSpannable(textColor = 11, context = context, underlineHeight = 1f)
+
+        // TESTING
+
+        val extractedMarks = editable.extractMarks()
+
+        // With new text preprocessing approach, emojis are replaced in text, not as spans
+        // So we expect only 2 marks (Bold and Italic), not 4
+        assertEquals(expected = 2, actual = extractedMarks.size)
+        
+        // Verify only non-emoji mark types are extracted
+        val emojiMarks = extractedMarks.filter { it.type == Mark.Type.EMOJI }
+        val boldMarks = extractedMarks.filter { it.type == Mark.Type.BOLD }
+        val italicMarks = extractedMarks.filter { it.type == Mark.Type.ITALIC }
+        
+        assertEquals(0, emojiMarks.size, "No emoji spans should be extracted")
+        assertEquals(1, boldMarks.size)
+        assertEquals(1, italicMarks.size)
+        
+        // Verify emojis were replaced in the actual text
+        assertTrue(editable.toString().contains("😀"), "Text should contain first emoji")
+        assertTrue(editable.toString().contains("🌍"), "Text should contain second emoji")
+        assertTrue(editable.toString().contains("Hello"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("world"), "Text should still contain original content")
+        assertTrue(editable.toString().contains("test!"), "Text should still contain original content")
+    }
+
     private fun stubMarkup(
         source: String,
         mark: Markup.Mark

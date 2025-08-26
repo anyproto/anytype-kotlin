@@ -46,7 +46,7 @@ class VaultViewModelFactory @Inject constructor(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
-    private val setSpaceOrder: SetSpaceOrder
+    private val setSpaceOrder: SetSpaceOrder,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(

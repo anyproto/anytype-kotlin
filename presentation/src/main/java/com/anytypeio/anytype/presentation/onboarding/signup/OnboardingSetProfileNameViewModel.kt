@@ -53,14 +53,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     init {
         Timber.i("OnboardingSetProfileNameViewModel, init")
-        viewModelScope.launch {
-            sendAnalyticsOnboardingScreenEvent(
-                analytics,
-                EventsDictionary.ScreenOnboardingStep.SOUL
-            )
-        }
     }
 
+    //region Name Screen
     fun onNextClicked(
         name: String,
         spaceId: String,

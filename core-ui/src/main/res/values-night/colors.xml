@@ -43,6 +43,10 @@
     <color name="dashboard_card_background">#99000000</color>
     <color name="dashboard_background">#99252525</color>
 
+    <color name="control_secondary">#7B7B7B</color>
+    <color name="control_transparent_secondary">#66FFFFFF</color>
+    <color name="control_transparent_tetriary">#26FFFFFF</color>
+
     <color name="control_accent_125">#5A91FF</color>
     <color name="control_accent">#377AFF</color>
     <color name="control_accent_80">#2D63CF</color>

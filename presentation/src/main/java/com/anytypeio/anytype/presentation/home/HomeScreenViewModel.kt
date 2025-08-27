@@ -2457,10 +2457,7 @@ class HomeScreenViewModel(
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),
                         description = targetSpaceView.description.orEmpty(),
-                        icon = targetSpaceView.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = SpaceGradientProvider.Default
-                        ),
+                        icon = targetSpaceView.spaceIcon(urlBuilder),
                         techInfo = SpaceTechInfo(
                             spaceId = space,
                             networkId = config?.network.orEmpty(),
@@ -2702,7 +2699,6 @@ class HomeScreenViewModel(
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
-        data object OpenSpaceSwitcher: Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()

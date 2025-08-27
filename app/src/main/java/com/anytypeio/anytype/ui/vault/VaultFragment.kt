@@ -22,6 +22,7 @@ import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -46,9 +47,6 @@ import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.ARG_SPACE_TYPE
-import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_CHAT
-import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment.Companion.TYPE_SPACE
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
@@ -247,22 +245,11 @@ class VaultFragment : BaseComposeFragment() {
             is VaultCommand.CreateNewSpace -> {
                 runCatching {
                     findNavController().navigate(
-                        R.id.actionCreateSpaceFromVault,
-                        bundleOf(ARG_SPACE_TYPE to TYPE_SPACE)
+                        R.id.createSpaceScreen,
+                        bundleOf("spaceUxType" to command.spaceUxType)
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening create space screen from vault")
-                }
-            }
-
-            VaultCommand.CreateChat -> {
-                runCatching {
-                    findNavController().navigate(
-                        R.id.actionCreateChatFromVault,
-                        bundleOf(ARG_SPACE_TYPE to TYPE_CHAT)
-                    )
-                }.onFailure {
-                    Timber.e(it, "Error while opening create chat screen from vault")
                 }
             }
 

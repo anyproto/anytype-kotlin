@@ -27,7 +27,7 @@ fun ChatWithManyAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "File Archive",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:30",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -67,7 +67,7 @@ fun ChatWithManyMixedAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Mixed Files",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "14:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -112,7 +112,7 @@ fun ChatWithImageAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Design Team",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Alice",
         messageText = "Check out these designs",
         messageTime = "10:45",
@@ -144,7 +144,7 @@ fun ChatWithFileAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Project Discussion",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Bob",
         messageText = "Here are the documents",
         messageTime = "14:22",
@@ -172,7 +172,7 @@ fun ChatWithLinkAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Resource Sharing",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Charlie",
         messageText = "Found some useful links",
         messageTime = "11:30",
@@ -210,7 +210,7 @@ fun ChatWithMixedAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Development Updates",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Dana",
         messageText = "Latest progress and resources",
         messageTime = "16:30",
@@ -243,7 +243,7 @@ fun ChatWithAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Media Sharing",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "12:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -270,7 +270,7 @@ fun ChatWithManyLinksNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Reference Links",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "15:45",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -314,7 +314,7 @@ fun ChatWithSingleLinkNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Link",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -338,7 +338,7 @@ fun ChatWithMultipleLinksOnlyNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Links Only",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "10:30",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -372,7 +372,7 @@ fun ChatWithSingleImageNoMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Image Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Alice",
         messageTime = "09:00",
         maxPinnedSpaces = 6,
@@ -396,7 +396,7 @@ fun ChatWithSingleLinkWithMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Link With Text",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Bob",
         messageText = "Check this out",
         messageTime = "10:00",
@@ -422,7 +422,7 @@ fun ChatWithMultipleImagesNoMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Images Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Charlie",
         messageTime = "11:00",
         maxPinnedSpaces = 6,
@@ -454,7 +454,7 @@ fun ChatWithMultipleObjectsWithMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Objects Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Dana",
         messageText = "Here are some resources",
         messageTime = "12:00",
@@ -490,7 +490,7 @@ fun ChatEmpty() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Empty Chat",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "08:00",
         currentPinnedCount = 2,
         maxPinnedSpaces = 6

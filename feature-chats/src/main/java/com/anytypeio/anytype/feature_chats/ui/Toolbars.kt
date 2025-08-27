@@ -34,7 +34,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -133,7 +133,7 @@ fun ChatTopToolbarPreview() {
     ChatTopToolbar(
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
-            icon = SpaceIconView.Placeholder(name = "Us"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
             showIcon = true,
             isMuted = false
         ),
@@ -149,7 +149,7 @@ fun ChatTopToolbarMutedPreview() {
     ChatTopToolbar(
         header = ChatViewModel.HeaderView.Default(
             title = "My Chat Space",
-            icon = SpaceIconView.Placeholder(name = "MCS"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),
             showIcon = true,
             isMuted = true
         ),

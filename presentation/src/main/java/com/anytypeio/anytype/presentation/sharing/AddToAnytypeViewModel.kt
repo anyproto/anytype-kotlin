@@ -127,10 +127,7 @@ class AddToAnytypeViewModel(
                         }.mapIndexed { index, space ->
                             SpaceView(
                                 obj = space,
-                                icon = space.spaceIcon(
-                                    builder = urlBuilder,
-                                    spaceGradientProvider = SpaceGradientProvider.Default
-                                ),
+                                icon = space.spaceIcon(urlBuilder),
                                 isSelected = if (!isSelectedSpaceAvailable) {
                                     index == 0
                                 } else {

@@ -324,7 +324,7 @@ class HomeScreenViewModelTest {
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.DataSpace.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )

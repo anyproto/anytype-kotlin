@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.onStart
 class SpaceWidgetContainer @Inject constructor(
     private val spaceManager: SpaceManager,
     private val container: StorelessSubscriptionContainer,
-    private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
@@ -72,10 +70,7 @@ class SpaceWidgetContainer @Inject constructor(
             ) { spaceView, membersCount ->
                 WidgetView.SpaceWidget.View(
                     space = spaceView,
-                    icon = spaceView.spaceIcon(
-                        builder = urlBuilder,
-                        spaceGradientProvider = spaceGradientProvider
-                    ),
+                    icon = spaceView.spaceIcon(urlBuilder),
                     type = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     membersCount = membersCount
                 )

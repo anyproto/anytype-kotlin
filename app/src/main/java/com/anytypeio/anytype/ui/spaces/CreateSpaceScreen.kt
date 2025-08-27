@@ -53,7 +53,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -107,7 +107,12 @@ fun CreateSpaceScreen(
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 spaceIconView = when (spaceIconView) {
-                    is SpaceIconView.Placeholder -> spaceIconView.copy(
+                    is SpaceIconView.DataSpace.Placeholder -> spaceIconView.copy(
+                        name = innerValue.text.ifEmpty {
+                            stringResource(id = R.string.u)
+                        }
+                    )
+                    is SpaceIconView.ChatSpace.Placeholder -> spaceIconView.copy(
                         name = innerValue.text.ifEmpty {
                             stringResource(id = R.string.u)
                         }
@@ -268,7 +273,8 @@ fun SpaceIcon(
                     )
                 }
             }
-            if (spaceIconView is SpaceIconView.Image) {
+            if (spaceIconView is SpaceIconView.ChatSpace.Image
+                || spaceIconView is SpaceIconView.DataSpace.Image) {
                 Divider(
                     paddingStart = 0.dp,
                     paddingEnd = 0.dp,
@@ -334,7 +340,7 @@ fun UseCase() {
 fun CreateSpaceScreenPreview() {
     val state = remember { mutableStateOf(false) }
     CreateSpaceScreen(
-        spaceIconView = SpaceIconView.Placeholder(
+        spaceIconView = SpaceIconView.DataSpace.Placeholder(
             color = SystemColor.RED,
             name = "My Space"
         ),

@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -144,7 +144,7 @@ fun HomeScreenToolbar(
 @Composable
 fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
-        spaceIconView = SpaceIconView.Placeholder(name = "A"),
+        spaceIconView = SpaceIconView.DataSpace.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
         name = "Test space",

@@ -184,10 +184,7 @@ class ChatViewModel @Inject constructor(
                     val isMuted = NotificationStateCalculator.calculateMutedState(view, notificationPermissionManager)
                     HeaderView.Default(
                         title = view.name.orEmpty(),
-                        icon = view.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = SpaceGradientProvider.Default
-                        ),
+                        icon = view.spaceIcon(builder = urlBuilder),
                         showIcon = true,
                         isMuted = isMuted
                     )

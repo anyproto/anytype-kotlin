@@ -94,7 +94,6 @@ import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerAddToAnytypeComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
-import com.anytypeio.anytype.di.feature.spaces.DaggerSelectSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
@@ -132,6 +131,7 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
+import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
@@ -845,22 +845,16 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val selectSpaceComponent = Component {
-        DaggerSelectSpaceComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
     val spaceListComponent = Component {
         DaggerSpaceListComponent
             .factory()
             .create(findComponentDependencies())
     }
 
-    val createSpaceComponent = Component {
+    val createSpaceComponent = ComponentWithParams { vmParams: CreateSpaceViewModel.VmParams ->
         DaggerCreateSpaceComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(vmParams, findComponentDependencies())
     }
 
     val spaceSettingsComponent = ComponentWithParams { vmParams: SpaceSettingsViewModel.VmParams ->

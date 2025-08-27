@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -98,7 +100,8 @@ class VaultViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
-    private val setSpaceOrder: SetSpaceOrder
+    private val setSpaceOrder: SetSpaceOrder,
+    private val getSpaceWallpapers: GetSpaceWallpapers
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -215,6 +218,12 @@ class VaultViewModel(
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>
     ): VaultUiState.Sections {
+        // Fetch all space wallpapers once
+        val wallpapers: Map<Id, Wallpaper> = getSpaceWallpapers.async(Unit).getOrNull() ?: run {
+            Timber.w("Failed to fetch space wallpapers")
+            emptyMap()
+        }
+        
         // Index chatPreviews by space.id for O(1) lookup
         val chatPreviewMap = chatPreviews.associateBy { it.space.id }
         // Map all active spaces to VaultSpaceView objects
@@ -231,7 +240,7 @@ class VaultViewModel(
                     preview.chat == spaceChatId
                 } == true // If no chatId is set, don't show preview
             }
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, wallpapers)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -268,16 +277,17 @@ class VaultViewModel(
     private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView {
         return when (space.spaceUxType) {
             SpaceUxType.CHAT -> {
                 // Always create chat view for chat spaces, even without preview
-                createChatView(space, chatPreview, permissions)
+                createChatView(space, chatPreview, permissions, wallpapers)
             }
             else -> {
                 // For DATA, STREAM, NONE, or null - treat as data space
-                createStandardSpaceView(space, permissions)
+                createStandardSpaceView(space, permissions, wallpapers)
             }
         }
     }
@@ -374,7 +384,8 @@ class VaultViewModel(
     private suspend fun createChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView.Chat {
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
@@ -416,12 +427,11 @@ class VaultViewModel(
         val isOwner = perms.isOwner()
         val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
 
+        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
+        
         return VaultSpaceView.Chat(
             space = space,
-            icon = space.spaceIcon(
-                builder = urlBuilder,
-                spaceGradientProvider = SpaceGradientProvider.Default
-            ),
+            icon = space.spaceIcon(urlBuilder),
             chatPreview = chatPreview,
             creatorName = creatorName,
             messageText = messageText,
@@ -430,13 +440,15 @@ class VaultViewModel(
             unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            wallpaper = wallpaper
         )
     }
 
     private fun createStandardSpaceView(
         space: ObjectWrapper.SpaceView,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView.Space {
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
@@ -447,19 +459,19 @@ class VaultViewModel(
             NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
         }
 
-        val icon = space.spaceIcon(
-            builder = urlBuilder,
-            spaceGradientProvider = SpaceGradientProvider.Default
-        )
+        val icon = space.spaceIcon(urlBuilder)
 
         val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
+        
+        val wallpaper = space.targetSpaceId?.let { wallpapers[it] } ?: Wallpaper.Default
         
         return VaultSpaceView.Space(
             space = space,
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted
+            isMuted = isMuted,
+            wallpaper = wallpaper
         )
     }
 
@@ -521,14 +533,22 @@ class VaultViewModel(
     fun onCreateSpaceClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(VaultCommand.CreateNewSpace)
+            commands.emit(
+                VaultCommand.CreateNewSpace(
+                    spaceUxType = SpaceUxType.DATA // Default to DATA space type
+                )
+            )
         }
     }
 
     fun onCreateChatClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = false
-            commands.emit(VaultCommand.CreateChat)
+            commands.emit(
+                VaultCommand.CreateNewSpace(
+                    spaceUxType = SpaceUxType.CHAT // Default to CHAT space type
+                )
+            )
         }
     }
 

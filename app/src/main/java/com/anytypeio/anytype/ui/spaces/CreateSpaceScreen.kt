@@ -53,7 +53,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium

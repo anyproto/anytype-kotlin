@@ -16,11 +16,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,7 +35,9 @@ import coil3.toBitmap
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.AVG_COLOR_EXTRA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.common.buildImageLoader
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -129,19 +133,39 @@ private fun SpaceImage(
     modifier: Modifier,
     backgroundColor: MutableState<Color>? = null
 ) {
-    val painter = rememberAsyncImagePainter(model = url)
+    val context = LocalContext.current
+    val spaceImageLoader = remember {
+        buildImageLoader(
+            context = context,
+            compute = { bmp -> bmp.averageColor1x1() }
+        )
+    }
+    val painter = rememberAsyncImagePainter(model = url, imageLoader = spaceImageLoader)
     val state by painter.state.collectAsState()
 
     // Compute once per successful result using the same painter instance
     LaunchedEffect(state) {
         val success = state as? AsyncImagePainter.State.Success ?: return@LaunchedEffect
-        val bmp = success.result.image.toBitmap()
-        try {
-            val avgArgb = bmp.averageColor1x1()
-            backgroundColor?.value = Color(avgArgb)
-        } catch (e: Exception) {
-            Timber.w(e, "Failed to compute average color")
+        val key = success.result.memoryCacheKey
+        val cache = spaceImageLoader.memoryCache
+        val value = key?.let { cache?.get(it) }
+        val cached = (value?.extras?.get(AVG_COLOR_EXTRA) as? Int)
+
+        if (cached != null) {
+            Timber.i("[AvgColor/UI] Using cached color key=%s value=#%08X", key, cached)
+            backgroundColor?.value = Color(cached)
+            return@LaunchedEffect
         }
+
+        // Fallback—should be rare if interceptor stored it
+        runCatching { success.result.image.toBitmap().averageColor1x1() }
+            .onSuccess { avg ->
+                backgroundColor?.value = Color(avg)
+                Timber.i("[AvgColor/UI] Fallback computed=#%08X for key=%s", avg, key)
+            }
+            .onFailure { e ->
+                Timber.w(e, "[AvgColor/UI] Fallback failed for key=%s", key)
+            }
     }
 
     Image(

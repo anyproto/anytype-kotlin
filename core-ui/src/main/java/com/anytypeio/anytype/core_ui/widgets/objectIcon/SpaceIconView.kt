@@ -36,9 +36,9 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
-import com.anytypeio.anytype.presentation.wallpaper.getWallpaperColor
 import timber.log.Timber
 
 @Composable
@@ -271,6 +271,40 @@ private fun SystemColor.resInt(): Int {
         SystemColor.SKY -> R.color.palette_system_sky
         SystemColor.TEAL -> R.color.palette_system_teal
         SystemColor.GREEN -> R.color.palette_system_green
+    }
+}
+
+private fun getWallpaperColor(wallpaper: Wallpaper): WallpaperColor? {
+    return when (wallpaper) {
+        is Wallpaper.Color -> {
+            // Find the wallpaper color by code
+            WallpaperColor.entries.find { it.code == wallpaper.code }
+        }
+
+        is Wallpaper.Gradient -> {
+            // For gradients, use the primary color based on the gradient code
+            when (wallpaper.code) {
+                CoverGradient.YELLOW -> WallpaperColor.YELLOW
+                CoverGradient.RED -> WallpaperColor.RED
+                CoverGradient.BLUE -> WallpaperColor.BLUE
+                CoverGradient.TEAL -> WallpaperColor.TEAL
+                CoverGradient.PINK_ORANGE -> WallpaperColor.PINK
+                CoverGradient.BLUE_PINK -> WallpaperColor.BLUE
+                CoverGradient.GREEN_ORANGE -> WallpaperColor.GREEN
+                CoverGradient.SKY -> WallpaperColor.ICE
+                else -> null
+            }
+        }
+
+        is Wallpaper.Image -> {
+            // For images, we can't extract a color, return null to use fallback
+            null
+        }
+
+        is Wallpaper.Default -> {
+            // Use a default neutral color
+            WallpaperColor.ICE
+        }
     }
 }
 

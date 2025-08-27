@@ -39,6 +39,7 @@ import com.anytypeio.anytype.core_ui.common.AVG_COLOR_EXTRA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.buildImageLoader
 import com.anytypeio.anytype.core_ui.extensions.res
+import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -280,20 +281,6 @@ private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
         is SpaceIconView.ChatSpace.Placeholder -> icon.color
         is SpaceIconView.DataSpace.Placeholder -> icon.color
         else -> null
-    }
-}
-
-private fun SystemColor.resInt(): Int {
-    return when (this) {
-        SystemColor.YELLOW -> R.color.palette_system_yellow
-        SystemColor.AMBER -> R.color.palette_system_amber_100
-        SystemColor.RED -> R.color.palette_system_red
-        SystemColor.PINK -> R.color.palette_system_pink
-        SystemColor.PURPLE -> R.color.palette_system_purple
-        SystemColor.BLUE -> R.color.palette_system_blue
-        SystemColor.SKY -> R.color.palette_system_sky
-        SystemColor.TEAL -> R.color.palette_system_teal
-        SystemColor.GREEN -> R.color.palette_system_green
     }
 }
 

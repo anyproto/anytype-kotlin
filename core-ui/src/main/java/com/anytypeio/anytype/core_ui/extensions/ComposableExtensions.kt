@@ -139,15 +139,20 @@ fun RelativeDate.getPrettyName(): String {
 
 @Composable
 fun SystemColor.res(): Color {
+    val resInt = resInt()
+    return colorResource(id = resInt)
+}
+
+fun SystemColor.resInt(): Int {
     return when (this) {
-        SystemColor.YELLOW -> colorResource(id = R.color.palette_system_yellow)
-        SystemColor.AMBER -> colorResource(id = R.color.palette_system_amber_100)
-        SystemColor.RED -> colorResource(id = R.color.palette_system_red)
-        SystemColor.PINK -> colorResource(id = R.color.palette_system_pink)
-        SystemColor.PURPLE -> colorResource(id = R.color.palette_system_purple)
-        SystemColor.BLUE -> colorResource(id = R.color.palette_system_blue)
-        SystemColor.SKY -> colorResource(id = R.color.palette_system_sky)
-        SystemColor.TEAL -> colorResource(id = R.color.palette_system_teal)
-        SystemColor.GREEN -> colorResource(id = R.color.palette_system_green)
+        SystemColor.YELLOW -> R.color.palette_system_yellow
+        SystemColor.AMBER -> R.color.palette_system_amber_100
+        SystemColor.RED -> R.color.palette_system_red
+        SystemColor.PINK -> R.color.palette_system_pink
+        SystemColor.PURPLE -> R.color.palette_system_purple
+        SystemColor.BLUE -> R.color.palette_system_blue
+        SystemColor.SKY -> R.color.palette_system_sky
+        SystemColor.TEAL -> R.color.palette_system_teal
+        SystemColor.GREEN -> R.color.palette_system_green
     }
 }

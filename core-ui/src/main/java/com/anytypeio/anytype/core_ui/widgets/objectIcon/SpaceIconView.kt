@@ -76,111 +76,109 @@ fun SpaceIconView(
 
     when (icon) {
         is SpaceIconView.ChatSpace.Image -> {
-            val painter = rememberAsyncImagePainter(model = icon.url)
-            val state by painter.state.collectAsState()
-            // compute once per successful result
-            LaunchedEffect(state) {
-                val success = state as? AsyncImagePainter.State.Success ?: return@LaunchedEffect
-                val bmp = success.result.image.toBitmap() // handles most drawables
-                try {
-                    val avgArgb = bmp.averageColor1x1()
-                    backgroundColor?.value = Color(avgArgb)
-                } catch (e: Exception) {
-                    Timber.w(e, "Failed to compute average color")
-                }
-            }
-
-            Image(
-                painter = rememberAsyncImagePainter(model = icon.url),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = clickableModifier
-                    .size(mainSize)
-                    .clip(shape = CircleShape)
+            SpaceImage(
+                url = icon.url,
+                shape = CircleShape,
+                mainSize = mainSize,
+                modifier = clickableModifier,
+                backgroundColor = backgroundColor
             )
         }
 
         is SpaceIconView.DataSpace.Image -> {
-            val painter = rememberAsyncImagePainter(model = icon.url)
-            val state by painter.state.collectAsState()
-            // compute once per successful result
-            LaunchedEffect(state) {
-                val success = state as? AsyncImagePainter.State.Success ?: return@LaunchedEffect
-                val image = success.result.image
-                val bmp = image.toBitmap() // handles most drawables
-                try {
-                    val avgArgb = bmp.averageColor1x1()
-                    backgroundColor?.value = Color(avgArgb)
-                } catch (e: Exception) {
-                    Timber.w(e, "Failed to compute average color")
-                }
-            }
-
-            Image(
-                painter = rememberAsyncImagePainter(model = icon.url),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = clickableModifier
-                    .size(mainSize)
-                    .clip(RoundedCornerShape(radius))
+            SpaceImage(
+                url = icon.url,
+                shape = RoundedCornerShape(radius),
+                mainSize = mainSize,
+                modifier = clickableModifier,
+                backgroundColor = backgroundColor
             )
         }
 
         is SpaceIconView.ChatSpace.Placeholder -> {
-            val color = icon.color.res()
-            Box(
+            SpacePlaceholder(
+                name = icon.name,
+                color = icon.color.res(),
+                shape = CircleShape,
+                mainSize = mainSize,
+                fontSize = fontSize,
                 modifier = clickableModifier
-                    .size(mainSize)
-                    .background(
-                        color = color,
-                        shape = CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = icon
-                        .name
-                        .ifEmpty { stringResource(id = R.string.u) }
-                        .take(1)
-                        .uppercase(),
-                    fontSize = fontSize,
-                    textAlign = TextAlign.Center,
-                    color = colorResource(id = R.color.text_label_inversion),
-                )
-            }
+            )
         }
 
         is SpaceIconView.DataSpace.Placeholder -> {
-            val color = icon.color.res()
-            Box(
+            SpacePlaceholder(
+                name = icon.name,
+                color = icon.color.res(),
+                shape = RoundedCornerShape(radius),
+                mainSize = mainSize,
+                fontSize = fontSize,
                 modifier = clickableModifier
-                    .size(mainSize)
-                    .background(
-                        color = color,
-                        shape = RoundedCornerShape(radius)
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    text = icon
-                        .name
-                        .ifEmpty { stringResource(id = R.string.u) }
-                        .take(1)
-                        .uppercase(),
-                    textAlign = TextAlign.Center,
-                    fontSize = fontSize,
-                    color = colorResource(id = R.color.text_label_inversion),
-                )
-            }
+            )
         }
 
-        SpaceIconView.Loading -> {
+        SpaceIconView.Loading -> { /* no-op */ }
+    }
+}
 
+@Composable
+private fun SpaceImage(
+    url: String,
+    shape: androidx.compose.ui.graphics.Shape,
+    mainSize: Dp,
+    modifier: Modifier,
+    backgroundColor: MutableState<Color>? = null
+) {
+    val painter = rememberAsyncImagePainter(model = url)
+    val state by painter.state.collectAsState()
+
+    // Compute once per successful result using the same painter instance
+    LaunchedEffect(state) {
+        val success = state as? AsyncImagePainter.State.Success ?: return@LaunchedEffect
+        val bmp = success.result.image.toBitmap()
+        try {
+            val avgArgb = bmp.averageColor1x1()
+            backgroundColor?.value = Color(avgArgb)
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to compute average color")
         }
+    }
+
+    Image(
+        painter = painter,
+        contentDescription = "Custom image space icon",
+        contentScale = ContentScale.Crop,
+        modifier = modifier
+            .size(mainSize)
+            .clip(shape)
+    )
+}
+
+@Composable
+private fun SpacePlaceholder(
+    name: String,
+    color: Color,
+    shape: androidx.compose.ui.graphics.Shape,
+    mainSize: Dp,
+    fontSize: androidx.compose.ui.unit.TextUnit,
+    modifier: Modifier
+) {
+    Box(
+        modifier = modifier
+            .size(mainSize)
+            .background(color = color, shape = shape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = name
+                .ifEmpty { stringResource(id = R.string.u) }
+                .take(1)
+                .uppercase(),
+            fontSize = fontSize,
+            textAlign = TextAlign.Center,
+            color = colorResource(id = R.color.text_label_inversion)
+        )
     }
 }
 
@@ -188,21 +186,22 @@ fun SpaceIconView(
 fun Bitmap.averageColor1x1(): Int {
     if (isRecycled) error("Bitmap is recycled")
 
-    // Ensure software bitmap if source is HARDWARE
-    val sw = if (config == Bitmap.Config.HARDWARE) {
-        copy(Bitmap.Config.ARGB_8888, false)
-            ?: error("Failed to copy HARDWARE bitmap to software")
-    } else {
-        this
-    }
-
+    var sw: Bitmap? = null
     try {
+        // Ensure software bitmap if source is HARDWARE
+        sw = if (config == Bitmap.Config.HARDWARE) {
+            copy(Bitmap.Config.ARGB_8888, false)
+                ?: error("Failed to copy HARDWARE bitmap to software")
+        } else {
+            this
+        }
+
         val tiny = Bitmap.createScaledBitmap(sw, 1, 1, /* filter = */ true)
         val c = tiny.getPixel(0, 0)
         tiny.recycle()
         return c
     } finally {
-        if (sw !== this && !sw.isRecycled) sw.recycle()
+        if (sw !== this && sw != null && !sw.isRecycled) sw.recycle()
     }
 }
 

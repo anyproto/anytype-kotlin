@@ -1180,8 +1180,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Partager le lien d\'invitation</string>
+    <string name="multiplayer_share_invite_link_menu">Partager le lien</string>
+    <string name="multiplayer_qr_invite_link_menu">Afficher le QR code</string>
     <string name="multiplayer_share_invite_link_description">Partagez ce lien d\'invitation pour que d\'autres puissent rejoindre votre espace. Une fois qu\'ils cliquent sur votre lien et demandent l\'accès, vous pouvez définir leurs droits d\'accès.</string>
     <string name="multiplayer_invite_link">Lien d\'invitation</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabled</string>
+    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
+    <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
+    <string name="multiplayer_request_access">Request access</string>
+    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_qr_code">Code QR</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Copier le lien</string>
     <string name="multiplayer_join_a_space">Rejoindre un espace</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commentaire privé pour un propriétaire d\'espace</string>
     <string name="multiplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
@@ -1197,6 +1217,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tapotez pour écrire votre commentaire</string>
     <string name="multiplayer_share_space">Partager l\'espace</string>
     <string name="multiplayer_members_and_requests">Membres</string>
+    <string name="multiplayer_members_invite_links_section">Lien d\'invitation</string>
     <string name="multiplayer_cant_add_members">Vous ne pouvez plus ajouter de membres</string>
     <string name="multiplayer_cant_add_editors">Vous ne pouvez pas ajouter plus d\'éditeurs</string>
     <string name="multiplayer_upgrade_button">✦ Passer à un abonnement supérieur</string>
@@ -1748,6 +1769,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_section_data_management">Gestion de données</string>
     <string name="space_settings_section_misc">Divers</string>
     <string name="space_settings_invite">Inviter</string>
+    <string name="space_settings_share_link">Partager le lien</string>
+    <string name="space_settings_copy_link">Copier le lien</string>
     <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">Code QR</string>
     <string name="space_settings_members_button_members">Membres</string>
@@ -1759,6 +1782,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_delete_space_button">Supprimer l\'espace</string>
     <string name="space_settings_icon_title">Modifier l\'image</string>
     <string name="space_settings_save_button">Sauvegarder</string>
+    <string name="space_settings_join_space_by_qr_title">Rejoindre</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1802,7 +1826,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">Mes Types</string>
     <string name="space_types_screen_section_system_types">System Types</string>
@@ -1880,4 +1904,14 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="open_settings">Ouvrir les paramètres</string>
     <string name="allow">Autoriser</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limite atteinte pour cet espace. Veuillez mettre à jour votre abonnement ou contacter le support pour obtenir de l\'aide.</string>
+    <string name="share_space_error_not_shareable">Il semble que l\'espace n\'est plus partagé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="share_space_error_request_failed">Oups ! La demande a échoué. Veuillez vérifier votre connexion Internet et réessayer.</string>
+    <string name="share_space_error_space_deleted">Il semble que l\'espace ait été supprimé. Veuillez vous assurer que vos appareils sont synchronisés.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

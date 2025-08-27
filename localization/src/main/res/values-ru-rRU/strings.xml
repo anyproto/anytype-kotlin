@@ -60,7 +60,7 @@
     <string name="offload_files">Выгрузить файлы</string>
     <string name="local_storage_used">%1$s использовано</string>
     <string name="space_usage">%1$s из %2$s используется</string>
-    <string name="remote_storage">Удалённое хранилище</string>
+    <string name="remote_storage">Облачное хранилище</string>
     <string name="contact_us">Связаться с нами</string>
     <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Название</string>
@@ -1188,8 +1188,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Поделится ссылкой на приглашение </string>
+    <string name="multiplayer_share_invite_link_menu">Share link</string>
+    <string name="multiplayer_qr_invite_link_menu">Показать QR-код</string>
     <string name="multiplayer_share_invite_link_description">Поделитесь этой ссылкой-приглашением, чтобы другие могли присоединиться к вашему пространсту. После того, как они нажмут на ссылку и запросят доступ, вы можете выбирать их права доступа.</string>
     <string name="multiplayer_invite_link">Ссылка на приглашение </string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabled</string>
+    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
+    <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
+    <string name="multiplayer_request_access">Request access</string>
+    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_qr_code">QR-код</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Скопировать ссылку</string>
     <string name="multiplayer_join_a_space">Присоединиться к пространству</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="multiplayer_request_to_join_explanation">Как только владелец сообщества одобрит ваш запрос, вы присоединитесь к разделу с определенными правами доступа.</string>
@@ -1205,6 +1225,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
     <string name="multiplayer_members_and_requests">Участники</string>
+    <string name="multiplayer_members_invite_links_section">Ссылка на приглашение </string>
     <string name="multiplayer_cant_add_members">Вы не можете добавить больше участников</string>
     <string name="multiplayer_cant_add_editors">Вы не можете добавить больше редакторов</string>
     <string name="multiplayer_upgrade_button">✦ Обновить</string>
@@ -1780,6 +1801,8 @@
     <string name="space_settings_section_data_management">Управление данными</string>
     <string name="space_settings_section_misc">Прочее</string>
     <string name="space_settings_invite">Пригласить</string>
+    <string name="space_settings_share_link">Share link</string>
+    <string name="space_settings_copy_link">Скопировать ссылку</string>
     <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR-код</string>
     <string name="space_settings_members_button_members">Участники</string>
@@ -1791,6 +1814,7 @@
     <string name="space_settings_delete_space_button">Удалить пространство</string>
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
+    <string name="space_settings_join_space_by_qr_title">Присоединись</string>
     <string name="object_type_add_property_screen_title">Добавить свойство</string>
     <string name="object_type_add_property_screen_create">Создать свойство \"%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Формат свойств</string>
@@ -1834,7 +1858,7 @@
     <string name="object_conflict_menu_item_title">Разрешить конфликт макетов</string>
     <string name="widget_source_suggested">Предложения</string>
     <string name="widgets_empty_state_message">Пока нет виджетов</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Типы объектов</string>
     <string name="space_types_screen_section_my_types">Мои типы</string>
     <string name="space_types_screen_section_system_types">Системные типы</string>
@@ -1912,4 +1936,14 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">Разрешить</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
+    <string name="share_space_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="share_space_error_request_failed">Упс! Ошибка запроса. Пожалуйста, проверьте подключение к Интернету и повторите попытку.</string>
+    <string name="share_space_error_space_deleted">Похоже, пространство было удалено. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

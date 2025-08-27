@@ -29,7 +29,7 @@
     <string name="dark">Escuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Configurações</string>
-    <string name="app_preferences">App Preferences</string>
+    <string name="app_preferences">Preferências</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
@@ -60,7 +60,7 @@
     <string name="offload_files">Descarregar arquivos</string>
     <string name="local_storage_used">%1$s usados</string>
     <string name="space_usage">%1$s de %2$s usados</string>
-    <string name="remote_storage">Armazenamento remoto</string>
+    <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Fale conosco</string>
     <string name="get_more_space">Obtenha mais espaço</string>
     <string name="account_name">Nome</string>
@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="alert_icon_description">Alert icon</string>
+    <string name="alert_icon_description">Ícone de alerta</string>
     <string name="modal_tap_to_type">Toque para digitar</string>
     <string name="modal_gallery">Galeria</string>
     <string name="modal_kanban">Kanban</string>
@@ -380,7 +380,7 @@
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_share_button">Botão de compartilhar</string>
     <string name="content_desc_home_button">Home button</string>
-    <string name="content_desc_chat_button">Chat button</string>
+    <string name="content_desc_chat_button">Botão de conversa</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Bloco não suportado</string>
@@ -828,7 +828,7 @@
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
     <string name="personal">Padrão</string>
-    <string name="create_space">Create space</string>
+    <string name="create_space">Criar espaço</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">Alterar ícone</string>
     <string name="generic_error">Algo deu errado. Por favor, tente novamente.</string>
@@ -1000,7 +1000,7 @@
     <!--endregion-->
     <!--region ONBOARDING -->
     <string name="onboarding_auth_title">o aplicativo para tudo</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
+    <string name="onboarding_auth_subtitle">Criptografado, offline\n&amp; aberto</string>
     <string name="onboarding_auth_description">Crie &amp; colabore em espaços que você possua. Criptografados, &amp; abertos.</string>
     <string name="onboarding_terms_and_policy_prefix">"Ao continuar, você concorda com"</string>
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
@@ -1015,9 +1015,9 @@
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
     <string name="onboarding_this_is_your_key_title">Esta é a sua chave</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Ela substitui o usuário e a senha. Mantenha-a segura — você controla seus dados. Você pode encontrar essa chave  mais tarde nas configurações do aplicativo.</string>
     <string name="onboarding_show_my_key">Exibir minha chave</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Revelar e copiar</string>
     <string name="onboarding_key_skip">Pular</string>
     <string name="onboarding_key_not_now">Agora não</string>
     <string name="onboarding_key_copy">Copiar para área de transferência</string>
@@ -1027,9 +1027,9 @@
     <string name="onboarding_login_or">OU</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_your_key_can_t_be_empty">Sua chave não pode estar vazia</string>
-    <string name="onboarding_your_name">Type your name</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
+    <string name="onboarding_your_name">Informe seu nome</string>
+    <string name="onboarding_mnemonic_read_more">Ler mais</string>
+    <string name="onboarding_key_additional_info">Você pode encontrar essa chave depois nas configurações do aplicativo</string>
     <string name="onboarding_what_is_the_key">Qual é a chave?</string>
     <string name="onboarding_recovery_phrase_description">Ele é representado por uma frase de recuperação — 12 palavras aleatórias a partir do qual o seu cofre é magicamente gerado neste dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2">Quem quer que saiba a combinação destas palavras é dono do seu cofre?</string>
@@ -1180,8 +1180,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Compartilhar link de convite</string>
+    <string name="multiplayer_share_invite_link_menu">Share link</string>
+    <string name="multiplayer_qr_invite_link_menu">Mostrar código QR</string>
     <string name="multiplayer_share_invite_link_description">Compartilhe este link de convite para que outros possam se juntar ao seu Espaço. Dado que eles clicarem no link e solicitarem acesso, você pode definir os direitos de acesso.</string>
     <string name="multiplayer_invite_link">Link de convite</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabled</string>
+    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
+    <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
+    <string name="multiplayer_request_access">Request access</string>
+    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">Copiar link</string>
     <string name="multiplayer_join_a_space">Juntar-se a um espaço</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
     <string name="multiplayer_request_to_join_explanation">Quando o dono do espaço aprovar sua solicitação, você se juntará ao espaço com as permissões que o dono determinar.</string>
@@ -1197,6 +1217,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>
     <string name="multiplayer_share_space">Compartilhar espaço</string>
     <string name="multiplayer_members_and_requests">Membros</string>
+    <string name="multiplayer_members_invite_links_section">Link de convite</string>
     <string name="multiplayer_cant_add_members">Você não pode adicionar mais membros</string>
     <string name="multiplayer_cant_add_editors">Você não pode adicionar mais editores</string>
     <string name="multiplayer_upgrade_button">✦ Atualizar</string>
@@ -1615,7 +1636,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
-    <string name="main_navigation_content_desc_chat_button">Chat button</string>
+    <string name="main_navigation_content_desc_chat_button">Botão de conversa</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>
@@ -1748,6 +1769,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Invite</string>
+    <string name="space_settings_share_link">Share link</string>
+    <string name="space_settings_copy_link">Copiar link</string>
     <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">Membros</string>
@@ -1759,6 +1782,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Salvar</string>
+    <string name="space_settings_join_space_by_qr_title">Junte-se</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1802,7 +1826,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Suggested</string>
     <string name="widgets_empty_state_message">There is no widgets yet</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Type Widgets</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">Meus Tipos</string>
     <string name="space_types_screen_section_system_types">System Types</string>
@@ -1880,4 +1904,14 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
+    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_request_failed">Opa! A solicitação falhou. Por favor, verifique sua conexão com a Internet e tente novamente.</string>
+    <string name="share_space_error_space_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

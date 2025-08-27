@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.core_ui.features
+package com.anytypeio.anytype.core_ui.widgets.objectIcon
 
 import android.graphics.Bitmap
 import androidx.annotation.ColorInt
@@ -15,9 +15,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
@@ -28,11 +30,16 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
 import coil3.toBitmap
+import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.getSpaceIconColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.getWallpaperColor
 import timber.log.Timber
 
 @Composable
@@ -40,7 +47,7 @@ fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
     icon: SpaceIconView,
-    backgroundColor: MutableState<androidx.compose.ui.graphics.Color>? = null,
+    backgroundColor: MutableState<Color>? = null,
     onSpaceIconClick: (() -> Unit)? = null
 ) {
     val clickableModifier = if (onSpaceIconClick != null) {
@@ -78,7 +85,7 @@ fun SpaceIconView(
                 val bmp = success.result.image.toBitmap() // handles most drawables
                 try {
                     val avgArgb = bmp.averageColor1x1()
-                    backgroundColor?.value = androidx.compose.ui.graphics.Color(avgArgb)
+                    backgroundColor?.value = Color(avgArgb)
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to compute average color")
                 }
@@ -104,7 +111,7 @@ fun SpaceIconView(
                 val bmp = image.toBitmap() // handles most drawables
                 try {
                     val avgArgb = bmp.averageColor1x1()
-                    backgroundColor?.value = androidx.compose.ui.graphics.Color(avgArgb)
+                    backgroundColor?.value = Color(avgArgb)
                 } catch (e: Exception) {
                     Timber.w(e, "Failed to compute average color")
                 }
@@ -200,6 +207,65 @@ fun Bitmap.averageColor1x1(): Int {
     }
 }
 
+/**
+ * Computes the background color for a space item based on priority:
+ * 1. Wallpaper color (if available)
+ * 2. Computed average color from image icon
+ * 3. Placeholder icon color
+ * 4. Default fallback color
+ *
+ * @param icon The SpaceIconView to compute background for
+ * @param wallpaper Optional wallpaper configuration
+ * @param backgroundColor State containing computed background color from image
+ */
+fun computeSpaceBackgroundColor(
+    icon: SpaceIconView,
+    wallpaper: Wallpaper? = null,
+    backgroundColor: MutableState<Color>? = null
+): Color {
+
+    // First priority: Use wallpaper color if available
+    if (wallpaper != null) {
+        val wallpaperColor = getWallpaperColor(wallpaper)
+        if (wallpaperColor != null) {
+            return try {
+                Color(android.graphics.Color.parseColor(wallpaperColor.hex))
+            } catch (e: IllegalArgumentException) {
+                // Handle invalid color format
+                Color(android.graphics.Color.parseColor(WallpaperColor.TEAL.hex))
+            }
+        }
+    }
+
+    // Second priority: Use computed average color from image icon
+    backgroundColor?.value?.let {
+        if (it != Color.Transparent) return it
+    }
+
+    // Third priority: Use icon color for placeholders
+    val spaceIconColor = getSpaceIconColor(icon)
+    if (spaceIconColor != null) {
+        return Color(spaceIconColor.resInt())
+    }
+
+    // Final fallback
+    return Color(android.graphics.Color.parseColor(WallpaperColor.TEAL.hex))
+}
+
+fun SystemColor.resInt(): Int {
+    return when (this) {
+        SystemColor.YELLOW -> R.color.palette_system_yellow
+        SystemColor.AMBER -> R.color.palette_system_amber_100
+        SystemColor.RED -> R.color.palette_system_red
+        SystemColor.PINK -> R.color.palette_system_pink
+        SystemColor.PURPLE -> R.color.palette_system_purple
+        SystemColor.BLUE -> R.color.palette_system_blue
+        SystemColor.SKY -> R.color.palette_system_sky
+        SystemColor.TEAL -> R.color.palette_system_teal
+        SystemColor.GREEN -> R.color.palette_system_green
+    }
+}
+
 @DefaultPreviews
 @Composable
 private fun SpaceIconViewPreview() {
@@ -208,6 +274,6 @@ private fun SpaceIconViewPreview() {
             name = "U"
         ),
         onSpaceIconClick = {},
-        backgroundColor = androidx.compose.ui.graphics.Color.Gray.let { androidx.compose.runtime.mutableStateOf(it) }
+        backgroundColor = Color.Gray.let { mutableStateOf(it) }
     )
 }

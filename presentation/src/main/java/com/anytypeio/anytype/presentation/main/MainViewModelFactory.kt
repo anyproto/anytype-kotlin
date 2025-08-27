@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
-import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -27,7 +26,6 @@ import javax.inject.Inject
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
     private val analytics: Analytics,
-    private val observeWallpaper: ObserveWallpaper,
     private val restoreWallpaper: RestoreWallpaper,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
@@ -52,7 +50,6 @@ class MainViewModelFactory @Inject constructor(
     ): T = MainViewModel(
         resumeAccount = resumeAccount,
         analytics = analytics,
-        observeWallpaper = observeWallpaper,
         restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,

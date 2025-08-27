@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
-import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -61,7 +60,6 @@ object MainEntryModule {
     fun provideMainViewModelFactory(
         resumeAccount: ResumeAccount,
         analytics: Analytics,
-        observeWallpaper: ObserveWallpaper,
         restoreWallpaper: RestoreWallpaper,
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
@@ -82,7 +80,6 @@ object MainEntryModule {
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
-        observeWallpaper = observeWallpaper,
         restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
@@ -122,11 +119,6 @@ object MainEntryModule {
         spaceManager = spaceManager,
         settings = settingsRepository
     )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideObserveWallpaperUseCase(): ObserveWallpaper = ObserveWallpaper()
 
     @JvmStatic
     @PerScreen

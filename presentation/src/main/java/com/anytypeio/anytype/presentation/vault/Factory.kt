@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -47,6 +48,7 @@ class VaultViewModelFactory @Inject constructor(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
     private val setSpaceOrder: SetSpaceOrder,
+    private val getSpaceWallpapers: GetSpaceWallpapers,
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -72,6 +74,7 @@ class VaultViewModelFactory @Inject constructor(
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
-        setSpaceOrder = setSpaceOrder
+        setSpaceOrder = setSpaceOrder,
+        getSpaceWallpapers = getSpaceWallpapers
     ) as T
 }

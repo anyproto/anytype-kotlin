@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -85,6 +86,14 @@ object VaultModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
+    
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetSpaceWallpapers(
+        userSettingsRepository: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetSpaceWallpapers = GetSpaceWallpapers(userSettingsRepository, dispatchers)
 }
 
 interface VaultComponentDependencies : ComponentDependencies {

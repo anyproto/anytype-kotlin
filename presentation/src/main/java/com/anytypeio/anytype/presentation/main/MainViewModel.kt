@@ -53,7 +53,6 @@ import timber.log.Timber
 
 class MainViewModel(
     private val resumeAccount: ResumeAccount,
-    private val observeWallpaper: ObserveWallpaper,
     private val restoreWallpaper: RestoreWallpaper,
     private val analytics: Analytics,
     private val interceptAccountStatus: InterceptAccountStatus,
@@ -78,7 +77,6 @@ class MainViewModel(
 
     private val deepLinkJobs = mutableListOf<Job>()
 
-    val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
@@ -86,11 +84,6 @@ class MainViewModel(
         viewModelScope.launch {
             restoreWallpaper.flow().collect {
                 // Do nothing, just run pipeline.
-            }
-        }
-        viewModelScope.launch {
-            observeWallpaper.build(BaseUseCase.None).collect {
-                wallpaper.value = it
             }
         }
         viewModelScope.launch {

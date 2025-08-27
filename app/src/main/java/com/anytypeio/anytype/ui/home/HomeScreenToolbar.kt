@@ -30,6 +30,7 @@ import timber.log.Timber
 
 @Composable
 fun HomeScreenToolbar(
+    modifier: Modifier = Modifier,
     spaceIconView: SpaceIconView,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
@@ -38,7 +39,7 @@ fun HomeScreenToolbar(
     membersCount: Int
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
     ) {

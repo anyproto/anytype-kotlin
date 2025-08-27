@@ -1,34 +1,36 @@
 package com.anytypeio.anytype.ui.home
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavOptions
-import androidx.navigation.NavOptions.*
+import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -37,10 +39,11 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
@@ -66,15 +69,15 @@ import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
-import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeScreenFragment : BaseComposeFragment(),
+class HomeScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
     WidgetObjectTypeListener,
     WidgetSourceTypeListener {
@@ -87,6 +90,7 @@ class HomeScreenFragment : BaseComposeFragment(),
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) == true
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
 
+    val jobs = mutableListOf<Job>()
 
     @Inject
     lateinit var featureToggles: FeatureToggles
@@ -96,89 +100,107 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        componentManager().homeScreenComponent.get().inject(this)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        componentManager().homeScreenComponent.release()
+        super.onDestroy()
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            MaterialTheme(
-                typography = typography,
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.background_secondary)
-                )
-            ) {
-                val view = (vm.views.collectAsStateWithLifecycle().value.find {
-                    it is WidgetView.SpaceWidget.View
-                } as? WidgetView.SpaceWidget.View)
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    HomeScreenToolbar(
-                        spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                        onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                        membersCount = view?.membersCount ?: 0,
-                        name = view?.space?.name.orEmpty(),
-                        onBackButtonClicked = vm::onBackClicked,
-                        onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
-                    )
-                    PageWithWidgets(
-                        modifier = Modifier.weight(1f),
-                        showSpaceWidget = false
-                    )
+    ): View = content {
+        val view = (vm.views.collectAsStateWithLifecycle().value.find {
+            it is WidgetView.SpaceWidget.View
+        } as? WidgetView.SpaceWidget.View)
+        Scaffold(
+            modifier = Modifier.fillMaxSize(),
+            topBar = {
+                val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+                    Modifier
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .fillMaxWidth()
+                } else {
+                    Modifier.fillMaxWidth()
                 }
-            }
-
-            val spaceSettingsState = vm.viewerSpaceSettingsState.collectAsStateWithLifecycle().value
-
-            if (spaceSettingsState is ViewerSpaceSettingsState.Visible) {
-                ModalBottomSheet(
-                    containerColor = Color.Transparent,
-                    onDismissRequest = vm::onDismissViewerSpaceSettings,
-                    dragHandle = null,
-                    content = {
-                        ViewerSpaceSettings(
-                            title = spaceSettingsState.name,
-                            icon = spaceSettingsState.icon,
-                            description = spaceSettingsState.description,
-                            info = spaceSettingsState.techInfo,
-                            inviteLink = spaceSettingsState.inviteLink,
-                            uiEvent = {
-                                vm.onViewerSpaceSettingsUiEvent(
-                                    space = SpaceId(space),
-                                    uiEvent = it
-                                )
-                            }
-                        )
-                    }
+                HomeScreenToolbar(
+                    modifier = modifier,
+                    spaceIconView = view?.icon ?: SpaceIconView.Loading,
+                    onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
+                    membersCount = view?.membersCount ?: 0,
+                    name = view?.space?.name.orEmpty(),
+                    onBackButtonClicked = vm::onBackClicked,
+                    onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
                 )
             }
-            // QR Code Modal for viewer settings
-            when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
-                is UiSpaceQrCodeState.SpaceInvite -> {
-                    QrCodeScreen(
-                        spaceName = qrCodeState.spaceName,
-                        link = qrCodeState.link,
-                        icon = qrCodeState.icon,
-                        onShare = { link ->
+        ) { paddingValues ->
+            val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+                Modifier
+                    .windowInsetsPadding(WindowInsets.navigationBars)
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding())
+            } else {
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            }
+            PageWithWidgets(
+                modifier = contentModifier,
+                showSpaceWidget = false
+            )
+        }
+
+        val spaceSettingsState = vm.viewerSpaceSettingsState.collectAsStateWithLifecycle().value
+
+        if (spaceSettingsState is ViewerSpaceSettingsState.Visible) {
+            ModalBottomSheet(
+                containerColor = Color.Transparent,
+                onDismissRequest = vm::onDismissViewerSpaceSettings,
+                dragHandle = null,
+                content = {
+                    ViewerSpaceSettings(
+                        title = spaceSettingsState.name,
+                        icon = spaceSettingsState.icon,
+                        description = spaceSettingsState.description,
+                        info = spaceSettingsState.techInfo,
+                        inviteLink = spaceSettingsState.inviteLink,
+                        uiEvent = {
                             vm.onViewerSpaceSettingsUiEvent(
-                                uiEvent = UiEvent.OnShareLinkClicked(link = link),
-                                space = SpaceId(space)
+                                space = SpaceId(space),
+                                uiEvent = it
                             )
-                        },
-                        onDismiss = { vm.onHideQrCodeScreen() }
+                        }
                     )
                 }
-                else -> {}
+            )
+        }
+        // QR Code Modal for viewer settings
+        when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
+            is UiSpaceQrCodeState.SpaceInvite -> {
+                QrCodeScreen(
+                    spaceName = qrCodeState.spaceName,
+                    link = qrCodeState.link,
+                    icon = qrCodeState.icon,
+                    onShare = { link ->
+                        vm.onViewerSpaceSettingsUiEvent(
+                            uiEvent = UiEvent.OnShareLinkClicked(link = link),
+                            space = SpaceId(space)
+                        )
+                    },
+                    onDismiss = { vm.onHideQrCodeScreen() }
+                )
             }
+            else -> {}
+        }
 
-            BackHandler {
-                vm.onBackClicked()
-            }
+        BackHandler {
+            vm.onBackClicked()
         }
     }
 
@@ -235,6 +257,7 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun onStop() {
         super.onStop()
+        jobs.cancel()
         vm.onStop()
     }
 
@@ -574,15 +597,6 @@ class HomeScreenFragment : BaseComposeFragment(),
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onCreateNewObjectClicked(objType = objType)
-    }
-
-    override fun injectDependencies() {
-        componentManager().homeScreenComponent.get().inject(this)
-
-    }
-
-    override fun releaseDependencies() {
-        componentManager().homeScreenComponent.release()
     }
 
     companion object {

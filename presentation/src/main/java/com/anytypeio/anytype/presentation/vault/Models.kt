@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -14,6 +15,7 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
+    abstract val wallpaper: Wallpaper
     val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
 
     val lastMessageDate: Long?
@@ -27,7 +29,8 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val wallpaper: Wallpaper = Wallpaper.Default
     ) : VaultSpaceView()
 
     data class Chat(
@@ -42,7 +45,8 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val wallpaper: Wallpaper = Wallpaper.Default
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

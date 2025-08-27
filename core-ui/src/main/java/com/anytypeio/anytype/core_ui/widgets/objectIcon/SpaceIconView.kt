@@ -37,7 +37,6 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.getSpaceIconColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.getWallpaperColor
 import timber.log.Timber
@@ -232,7 +231,8 @@ fun computeSpaceBackgroundColor(
                 Color(android.graphics.Color.parseColor(wallpaperColor.hex))
             } catch (e: IllegalArgumentException) {
                 // Handle invalid color format
-                Color(android.graphics.Color.parseColor(WallpaperColor.TEAL.hex))
+                Timber.w(e, "Invalid wallpaper color format: ${wallpaperColor.hex}")
+                Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
             }
         }
     }
@@ -249,10 +249,18 @@ fun computeSpaceBackgroundColor(
     }
 
     // Final fallback
-    return Color(android.graphics.Color.parseColor(WallpaperColor.TEAL.hex))
+    return Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
 }
 
-fun SystemColor.resInt(): Int {
+private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
+    return when (icon) {
+        is SpaceIconView.ChatSpace.Placeholder -> icon.color
+        is SpaceIconView.DataSpace.Placeholder -> icon.color
+        else -> null
+    }
+}
+
+private fun SystemColor.resInt(): Int {
     return when (this) {
         SystemColor.YELLOW -> R.color.palette_system_yellow
         SystemColor.AMBER -> R.color.palette_system_amber_100
@@ -265,6 +273,8 @@ fun SystemColor.resInt(): Int {
         SystemColor.GREEN -> R.color.palette_system_green
     }
 }
+
+private val DEFAULT_SPACE_BACKGROUND_COLOR = WallpaperColor.ICE.hex
 
 @DefaultPreviews
 @Composable

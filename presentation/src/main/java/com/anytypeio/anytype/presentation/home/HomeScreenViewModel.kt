@@ -49,7 +49,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
@@ -115,13 +115,11 @@ import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -247,7 +245,7 @@ class HomeScreenViewModel(
     private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-    private val userSettings: UserSettingsRepository
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -442,12 +440,13 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             spaceManager.observe()
                 .flatMapLatest { config ->
-                    try {
-                        userSettings.observeWallpaper(config.space)
-                    } catch (e: Exception) {
-                        Timber.e(e, "Failed to observe wallpaper for space: ${config.space}")
-                        kotlinx.coroutines.flow.flowOf(Wallpaper.Default)
-                    }
+                    observeSpaceWallpaper.flow(
+                        ObserveSpaceWallpaper.Params(space = config.space)
+                    )
+                }
+                .catch {
+                    Timber.w(it, "Error while observing wallpaper for space")
+                    emit(Wallpaper.Default)
                 }
                 .collect { spaceWallpaper ->
                     wallpaper.value = spaceWallpaper
@@ -2800,7 +2799,7 @@ class HomeScreenViewModel(
         private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-        private val userSettings: UserSettingsRepository
+        private val observeSpaceWallpaper: ObserveSpaceWallpaper
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2861,7 +2860,7 @@ class HomeScreenViewModel(
             chatPreviews = chatPreviews,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
-            userSettings = userSettings
+            observeSpaceWallpaper = observeSpaceWallpaper
         ) as T
     }
 

@@ -49,7 +49,6 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
@@ -244,8 +243,7 @@ class HomeScreenViewModel(
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-    private val observeSpaceWallpaper: ObserveSpaceWallpaper
+    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -263,7 +261,6 @@ class HomeScreenViewModel(
     val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
-    val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
 
     private var isWidgetSessionRestored = false
 
@@ -400,7 +397,6 @@ class HomeScreenViewModel(
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
         proceedWithNavPanelState()
-        proceedWithWallpaperObserving()
     }
 
     private fun proceedWithNavPanelState() {
@@ -433,24 +429,6 @@ class HomeScreenViewModel(
             }.collect {
                 navPanelState.value = it
             }
-        }
-    }
-
-    private fun proceedWithWallpaperObserving() {
-        viewModelScope.launch {
-            spaceManager.observe()
-                .flatMapLatest { config ->
-                    observeSpaceWallpaper.flow(
-                        ObserveSpaceWallpaper.Params(space = config.space)
-                    )
-                }
-                .catch {
-                    Timber.w(it, "Error while observing wallpaper for space")
-                    emit(Wallpaper.Default)
-                }
-                .collect { spaceWallpaper ->
-                    wallpaper.value = spaceWallpaper
-                }
         }
     }
 
@@ -2798,8 +2776,7 @@ class HomeScreenViewModel(
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
-        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-        private val observeSpaceWallpaper: ObserveSpaceWallpaper
+        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2859,8 +2836,7 @@ class HomeScreenViewModel(
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
             notificationPermissionManager = notificationPermissionManager,
-            copyInviteLinkToClipboard = copyInviteLinkToClipboard,
-            observeSpaceWallpaper = observeSpaceWallpaper
+            copyInviteLinkToClipboard = copyInviteLinkToClipboard
         ) as T
     }
 

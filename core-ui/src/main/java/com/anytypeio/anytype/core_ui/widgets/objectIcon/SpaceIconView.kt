@@ -66,7 +66,6 @@ fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
     icon: SpaceIconView,
-    backgroundColorState: MutableState<Color>? = null,
     onSpaceIconClick: (() -> Unit)? = null
 ) {
     val clickableModifier = if (onSpaceIconClick != null) {
@@ -100,8 +99,7 @@ fun SpaceIconView(
                 url = icon.url,
                 shape = CircleShape,
                 mainSize = mainSize,
-                modifier = clickableModifier,
-                backgroundColor = backgroundColorState
+                modifier = clickableModifier
             )
         }
 
@@ -110,8 +108,7 @@ fun SpaceIconView(
                 url = icon.url,
                 shape = RoundedCornerShape(radius),
                 mainSize = mainSize,
-                modifier = clickableModifier,
-                backgroundColor = backgroundColorState
+                modifier = clickableModifier
             )
         }
 
@@ -146,43 +143,9 @@ private fun SpaceImage(
     url: String,
     shape: Shape,
     mainSize: Dp,
-    modifier: Modifier,
-    backgroundColor: MutableState<Color>? = null
+    modifier: Modifier
 ) {
-    val context = LocalContext.current
-    val spaceImageLoader = remember {
-        buildImageLoader(
-            context = context,
-            compute = { bmp -> bmp.averageColor1x1() }
-        )
-    }
-    val painter = rememberAsyncImagePainter(model = url, imageLoader = spaceImageLoader)
-    val state by painter.state.collectAsState()
-
-    // Compute once per successful result using the same painter instance
-    LaunchedEffect(state) {
-        val success = state as? AsyncImagePainter.State.Success ?: return@LaunchedEffect
-        val key = success.result.memoryCacheKey
-        val cache = spaceImageLoader.memoryCache
-        val value = key?.let { cache?.get(it) }
-        val cached = (value?.extras?.get(AVG_COLOR_EXTRA) as? Int)
-
-        if (cached != null) {
-            Timber.i("[AvgColor/UI] Using cached color key=%s value=#%08X", key, cached)
-            backgroundColor?.value = Color(cached)
-            return@LaunchedEffect
-        }
-
-        // Fallback—should be rare if interceptor stored it
-        runCatching { success.result.image.toBitmap().averageColor1x1() }
-            .onSuccess { avg ->
-                backgroundColor?.value = Color(avg)
-                Timber.i("[AvgColor/UI] Fallback computed=#%08X for key=%s", avg, key)
-            }
-            .onFailure { e ->
-                Timber.w(e, "[AvgColor/UI] Fallback failed for key=%s", key)
-            }
-    }
+    val painter = rememberAsyncImagePainter(model = url)
 
     Image(
         painter = painter,
@@ -222,35 +185,13 @@ private fun SpacePlaceholder(
     }
 }
 
-@ColorInt
-fun Bitmap.averageColor1x1(): Int {
-    if (isRecycled) error("Bitmap is recycled")
-
-    var sw: Bitmap? = null
-    try {
-        // Ensure software bitmap if source is HARDWARE
-        sw = if (config == Bitmap.Config.HARDWARE) {
-            copy(Bitmap.Config.ARGB_8888, false)
-                ?: error("Failed to copy HARDWARE bitmap to software")
-        } else {
-            this
-        }
-
-        val tiny = Bitmap.createScaledBitmap(sw, 1, 1, /* filter = */ true)
-        val c = tiny.getPixel(0, 0)
-        tiny.recycle()
-        return c
-    } finally {
-        if (sw !== this && sw != null && !sw.isRecycled) sw.recycle()
-    }
-}
-
 /**
  * Sealed class representing different background types for space icons
  */
 sealed class SpaceBackground {
     data class SolidColor(val color: Color) : SpaceBackground()
     data class Gradient(val brush: Brush) : SpaceBackground()
+    data object None : SpaceBackground()
 }
 
 /**
@@ -267,8 +208,7 @@ sealed class SpaceBackground {
 @Composable
 fun computeSpaceBackground(
     icon: SpaceIconView,
-    wallpaper: Wallpaper? = null,
-    backgroundColor: MutableState<Color>? = null
+    wallpaper: Wallpaper? = null
 ): SpaceBackground {
 
     // First priority: Use wallpaper if available
@@ -300,33 +240,29 @@ fun computeSpaceBackground(
                 // For images, we can't extract a color, skip to next priority
             }
             is Wallpaper.Default -> {
-                SpaceBackground.SolidColor(
-                    Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
-                )
+                val iconColor = getSpaceIconColor(icon)
+                if (iconColor != null) {
+                    return SpaceBackground.SolidColor(iconColor.res())
+                } else {
+                    SpaceBackground.SolidColor(
+                        Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
+                    )
+                }
             }
         }
     }
 
-    // Second priority: Use computed average color from image icon
-    backgroundColor?.value?.let {
-        if (it != Color.Transparent) return SpaceBackground.SolidColor(it)
-    }
-
-    // Third priority: Use icon color for placeholders
-    val iconColor = getSpaceIconColor(icon)
-    if (iconColor != null) {
-        return SpaceBackground.SolidColor(iconColor.res())
-    }
-
     // Default fallback
-    return SpaceBackground.SolidColor(Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR)))
+    return SpaceBackground.None
 }
 
 private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
     return when (icon) {
         is SpaceIconView.ChatSpace.Placeholder -> icon.color
         is SpaceIconView.DataSpace.Placeholder -> icon.color
-        else -> null
+        is SpaceIconView.ChatSpace.Image -> icon.color
+        is SpaceIconView.DataSpace.Image -> icon.color
+        SpaceIconView.Loading -> null
     }
 }
 
@@ -381,7 +317,6 @@ private fun SpaceIconViewPreview() {
         icon = SpaceIconView.ChatSpace.Placeholder(
             name = "U"
         ),
-        onSpaceIconClick = {},
-        backgroundColorState = Color.Gray.let { mutableStateOf(it) }
+        onSpaceIconClick = {}
     )
 }

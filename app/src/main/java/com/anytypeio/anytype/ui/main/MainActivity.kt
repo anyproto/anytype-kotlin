@@ -125,6 +125,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     }
                 }
                 launch {
+                    vm.wallpaper.collect { wallpaper ->
+                        setWallpaper(wallpaper)
+                    }
+                }
+                launch {
                     vm.commands.collect { command ->
                         when (command) {
                             is Command.ShowDeletedAccountScreen -> {
@@ -310,6 +315,37 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         } else {
             Timber.d("onSaveInstanceStateNotNull")
         }
+    }
+
+    private fun setWallpaper(wallpaper: Wallpaper?) {
+        if (wallpaper == null) return
+        when (wallpaper) {
+            is Wallpaper.Gradient -> {
+                when (wallpaper.code) {
+                    CoverGradient.YELLOW -> container.setBackgroundResource(R.drawable.cover_gradient_yellow)
+                    CoverGradient.RED -> container.setBackgroundResource(R.drawable.cover_gradient_red)
+                    CoverGradient.BLUE -> container.setBackgroundResource(R.drawable.cover_gradient_blue)
+                    CoverGradient.TEAL -> container.setBackgroundResource(R.drawable.cover_gradient_teal)
+                    CoverGradient.PINK_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_1)
+                    CoverGradient.BLUE_PINK -> container.setBackgroundResource(R.drawable.wallpaper_gradient_2)
+                    CoverGradient.GREEN_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_3)
+                    CoverGradient.SKY -> container.setBackgroundResource(R.drawable.wallpaper_gradient_4)
+                }
+            }
+            is Wallpaper.Default -> {
+                container.setBackgroundResource(R.drawable.cover_gradient_default)
+            }
+            is Wallpaper.Color -> {
+                val color = WallpaperColor.entries.find { it.code == wallpaper.code }
+                if (color != null) {
+                    container.setBackgroundColor(Color.parseColor(color.hex))
+                }
+            }
+            is Wallpaper.Image -> {
+                container.setBackgroundResource(R.color.default_dashboard_background_color)
+            }
+        }
+        container.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
     }
 
     private fun setFragmentLifecycleCallbacks() {

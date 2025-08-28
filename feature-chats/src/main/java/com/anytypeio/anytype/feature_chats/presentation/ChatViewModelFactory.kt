@@ -25,7 +25,6 @@ import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -60,8 +59,7 @@ class ChatViewModelFactory @Inject constructor(
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject,
-    private val observeSpaceWallpaper: ObserveSpaceWallpaper
+    private val getObject: GetObject
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -92,7 +90,6 @@ class ChatViewModelFactory @Inject constructor(
         clearChatsTempFolder = clearChatsTempFolder,
         objectWatcher = objectWatcher,
         createObject = createObject,
-        getObject = getObject,
-        observeSpaceWallpaper = observeSpaceWallpaper
+        getObject = getObject
     ) as T
 }

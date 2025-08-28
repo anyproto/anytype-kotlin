@@ -21,11 +21,8 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.Layout
@@ -77,11 +74,9 @@ fun VaultSpaceCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
-    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
     val spaceBackground = computeSpaceBackground(
         icon = icon,
-        wallpaper = spaceView?.wallpaper,
-        backgroundColor = backgroundColor
+        wallpaper = spaceView?.wallpaper
     )
 
     val updatedModifier = when (spaceBackground) {
@@ -105,6 +100,16 @@ fun VaultSpaceCard(
                 alpha = 0.3f
             )
             .padding(horizontal = 16.dp)
+
+        SpaceBackground.None -> Modifier
+            .fillMaxSize()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp)
     }
 
     Box(modifier = updatedModifier) {
@@ -112,8 +117,7 @@ fun VaultSpaceCard(
             icon = icon,
             mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart),
-            backgroundColorState = backgroundColor
+                .align(Alignment.CenterStart)
         )
         ContentSpace(
             title = title,
@@ -210,11 +214,9 @@ fun VaultChatCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
-    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
     val spaceBackground = computeSpaceBackground(
         icon = icon,
-        wallpaper = spaceView?.wallpaper,
-        backgroundColor = backgroundColor
+        wallpaper = spaceView?.wallpaper
     )
 
     val updatedModifier = when (spaceBackground) {
@@ -238,6 +240,16 @@ fun VaultChatCard(
                 alpha = 0.3f
             )
             .padding(horizontal = 16.dp)
+
+        SpaceBackground.None -> Modifier
+            .fillMaxSize()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp)
     }
 
     Box(modifier = updatedModifier) {
@@ -245,8 +257,7 @@ fun VaultChatCard(
             icon = icon,
             mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart),
-            backgroundColorState = backgroundColor
+                .align(Alignment.CenterStart)
         )
         ContentChat(
             title = title,

@@ -5,6 +5,6 @@ sealed class WallpaperView {
     data class Gradient(val code: String) : WallpaperView()
 
     companion object {
-        const val WALLPAPER_DEFAULT_ALPHA = 76
+        const val WALLPAPER_DEFAULT_ALPHA = 85
     }
 }

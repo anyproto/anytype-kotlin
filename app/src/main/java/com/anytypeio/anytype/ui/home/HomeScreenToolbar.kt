@@ -10,12 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -24,10 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import timber.log.Timber
@@ -40,8 +36,7 @@ fun HomeScreenToolbar(
     onBackButtonClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     name: String,
-    membersCount: Int,
-    backgroundColorState: MutableState<Color>,
+    membersCount: Int
 ) {
     Box(
         modifier = modifier
@@ -74,8 +69,7 @@ fun HomeScreenToolbar(
             onSpaceIconClick = {
                 onSpaceIconClicked()
             },
-            mainSize = 32.dp,
-            backgroundColorState = backgroundColorState
+            mainSize = 32.dp
         )
 
         Text(
@@ -150,14 +144,12 @@ fun HomeScreenToolbar(
 @DefaultPreviews
 @Composable
 fun HomeScreenToolbarPreview() {
-    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
     HomeScreenToolbar(
         spaceIconView = SpaceIconView.DataSpace.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
         name = "Test space",
         onBackButtonClicked = {},
-        onSettingsClicked = {},
-        backgroundColorState = backgroundColor,
+        onSettingsClicked = {}
     )
 }

@@ -48,8 +48,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceBackground
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackground
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -71,8 +69,6 @@ import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -127,34 +123,8 @@ class ChatFragment : Fragment() {
 
             ErrorScreen()
 
-            // Shared background color state for both toolbar and content
-            val backgroundColor = remember {
-                mutableStateOf(Color.Transparent)
-            }
-
-            // Get wallpaper from ViewModel
-            val wallpaper = vm.wallpaper.collectAsStateWithLifecycle().value
-            val headerState = vm.header.collectAsStateWithLifecycle().value
-            val spaceIconState = (headerState as? ChatViewModel.HeaderView.Default)?.icon
-                ?: SpaceIconView.Loading
-
-            val spaceBackground = computeSpaceBackground(
-                icon = spaceIconState,
-                wallpaper = wallpaper,
-                backgroundColor = backgroundColor
-            )
-
-            val scaffoldModifier = when (spaceBackground) {
-                is SpaceBackground.SolidColor -> Modifier
-                    .fillMaxSize()
-                    .background(spaceBackground.color.copy(alpha = 0.3f))
-                is SpaceBackground.Gradient -> Modifier
-                    .fillMaxSize()
-                    .background(spaceBackground.brush, alpha = 0.3f)
-            }
-
             Scaffold(
-                modifier = scaffoldModifier,
+                modifier = Modifier.fillMaxSize(),
                 containerColor = Color.Transparent,
                 topBar = {
                     val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
@@ -166,8 +136,7 @@ class ChatFragment : Fragment() {
                     }
                     ChatTopToolbar(
                         modifier = modifier,
-                        header = headerState,
-                        backgroundColorState = backgroundColor,
+                        header = vm.header.collectAsStateWithLifecycle().value,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
                         onSpaceIconClicked = vm::onSpaceIconClicked

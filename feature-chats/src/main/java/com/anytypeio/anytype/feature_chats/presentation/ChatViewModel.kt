@@ -46,15 +46,11 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
-import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
@@ -70,7 +66,6 @@ import com.anytypeio.anytype.presentation.notifications.NotificationStateCalcula
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -121,8 +116,7 @@ class ChatViewModel @Inject constructor(
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject,
-    private val observeSpaceWallpaper: ObserveSpaceWallpaper
+    private val getObject: GetObject
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -145,7 +139,6 @@ class ChatViewModel @Inject constructor(
     val isGeneratingInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
-    val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -248,10 +241,6 @@ class ChatViewModel @Inject constructor(
 
         viewModelScope.launch {
             proceedWithObservingSyncStatus()
-        }
-
-        viewModelScope.launch {
-            proceedWithWallpaperObserving()
         }
 
         proceedWithSpaceSubscription()
@@ -532,14 +521,6 @@ class ChatViewModel @Inject constructor(
             .collect { status ->
                 syncStatus.value = status
             }
-    }
-
-    private suspend fun proceedWithWallpaperObserving() {
-        observeSpaceWallpaper.flow(
-            ObserveSpaceWallpaper.Params(space = vmParams.space.id)
-        ).collect { spaceWallpaper ->
-            wallpaper.value = spaceWallpaper
-        }
     }
     
     fun onChatBoxInputChanged(

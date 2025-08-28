@@ -50,7 +50,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 fun ChatTopToolbar(
     modifier: Modifier,
     header: ChatViewModel.HeaderView,
-    backgroundColorState: MutableState<Color>,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onSpaceNameClicked: () -> Unit
@@ -117,7 +116,6 @@ fun ChatTopToolbar(
                     modifier = Modifier.align(Alignment.Center),
                     mainSize = 28.dp,
                     icon = header.icon,
-                    backgroundColorState = backgroundColorState,
                     onSpaceIconClick = {
                         onSpaceIconClicked()
                     }
@@ -143,7 +141,6 @@ fun ChatTopToolbarPreview() {
             showIcon = true,
             isMuted = false
         ),
-        backgroundColorState = remember { mutableStateOf(Color.Transparent) },
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {}
@@ -161,7 +158,6 @@ fun ChatTopToolbarMutedPreview() {
             showIcon = true,
             isMuted = true
         ),
-        backgroundColorState = remember { mutableStateOf(Color.Transparent) },
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {}

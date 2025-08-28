@@ -10,9 +10,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
@@ -30,7 +32,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
-import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -41,10 +43,14 @@ import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -70,7 +76,8 @@ class MainViewModel(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val pendingIntentStore: PendingIntentStore
+    private val pendingIntentStore: PendingIntentStore,
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -80,7 +87,10 @@ class MainViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
+    val wallpaper: MutableStateFlow<Wallpaper?> = MutableStateFlow(null)
+
     init {
+        subscribeToActiveSpaceWallpaper()
         viewModelScope.launch {
             restoreWallpaper.flow().collect {
                 // Do nothing, just run pipeline.
@@ -119,6 +129,80 @@ class MainViewModel(
                     userProperty = UserProperty.Tier(result.value)
                 )
             }
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun subscribeToActiveSpaceWallpaper() {
+        viewModelScope.launch {
+            spaceManager.observe()
+                .flatMapLatest { config ->
+                    observeSpaceWallpaper.flow(
+                        ObserveSpaceWallpaper.Params(space = config.space)
+                    )
+                }
+                .catch {
+                    Timber.w(it, "Error while observing wallpaper for space")
+                    emit(Wallpaper.Default)
+                }
+                .collect { spaceWallpaper ->
+                    val finalWallpaper = when (spaceWallpaper) {
+                        Wallpaper.Default -> {
+                            // Try to get color from space icon when wallpaper is default
+                            getCurrentSpaceIconColor()?.let { color ->
+                                Wallpaper.Color(color.code)
+                            } ?: spaceWallpaper
+                        }
+                        else -> spaceWallpaper
+                    }
+                    Timber.d("Space wallpaper updated: $finalWallpaper (original: $spaceWallpaper)")
+                    wallpaper.value = finalWallpaper
+                }
+        }
+    }
+
+    /**
+     * Gets the SystemColor from the current space's icon option.
+     * Used as fallback when wallpaper is Wallpaper.Default.
+     */
+    private suspend fun getCurrentSpaceIconColor(): WallpaperColor? {
+        return try {
+            val currentSpaceId = spaceManager.get()
+            if (!currentSpaceId.isEmpty()) {
+                val spaceView = spaceViews.get(SpaceId(currentSpaceId))
+                val iconOption = spaceView?.iconOption
+                
+                if (iconOption != null) {
+                    val systemColor = SystemColor.color(idx = iconOption.toInt())
+                    // Find the closest WallpaperColor to the SystemColor
+                    findClosestWallpaperColorForSystemColor(systemColor)
+                } else {
+                    null
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            Timber.w(e, "Failed to get current space icon color")
+            null
+        }
+    }
+    
+    /**
+     * Maps SystemColor to the closest WallpaperColor for consistent theming.
+     */
+    private fun findClosestWallpaperColorForSystemColor(systemColor: SystemColor): WallpaperColor {
+        // Map SystemColor to closest WallpaperColor based on visual similarity
+        return when (systemColor) {
+            SystemColor.AMBER -> WallpaperColor.ORANGE
+            SystemColor.BLUE -> WallpaperColor.BLUE
+            SystemColor.GREEN -> WallpaperColor.GREEN
+            SystemColor.PINK -> WallpaperColor.PINK
+            SystemColor.PURPLE -> WallpaperColor.PURPLE
+            SystemColor.RED -> WallpaperColor.RED
+            SystemColor.SKY -> WallpaperColor.ICE
+            SystemColor.TEAL -> WallpaperColor.TEAL
+            SystemColor.YELLOW -> WallpaperColor.YELLOW
         }
     }
 

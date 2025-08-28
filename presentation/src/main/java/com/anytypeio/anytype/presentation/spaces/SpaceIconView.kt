@@ -9,16 +9,24 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 sealed class SpaceIconView {
     data object Loading : SpaceIconView()
 
-    sealed class ChatSpace: SpaceIconView(){
-        data class Image(val url: Url) : ChatSpace()
+    sealed class ChatSpace : SpaceIconView() {
+        data class Image(
+            val url: Url,
+            val color: SystemColor = SystemColor.SKY,
+        ) : ChatSpace()
+
         data class Placeholder(
             val color: SystemColor = SystemColor.SKY,
             val name: String = ""
         ) : ChatSpace()
     }
 
-    sealed class DataSpace: SpaceIconView() {
-        data class Image(val url: Url) : DataSpace()
+    sealed class DataSpace : SpaceIconView() {
+        data class Image(
+            val url: Url,
+            val color: SystemColor = SystemColor.SKY,
+        ) : DataSpace()
+
         data class Placeholder(
             val color: SystemColor = SystemColor.SKY,
             val name: String = ""
@@ -34,11 +42,11 @@ fun ObjectWrapper.SpaceView.spaceIcon(
     val isChat = spaceUxType == SpaceUxType.CHAT
 
     // Helpers to eliminate duplication between Chat and Data branches
-    val makeImage: (Url) -> SpaceIconView = { url ->
+    val makeImage: (SystemColor, Url) -> SpaceIconView = { color, url ->
         if (isChat) {
-            SpaceIconView.ChatSpace.Image(url)
+            SpaceIconView.ChatSpace.Image(url, color)
         } else {
-            SpaceIconView.DataSpace.Image(url)
+            SpaceIconView.DataSpace.Image(url, color)
         }
     }
     val makePlaceholder: (SystemColor, String) -> SpaceIconView = { color, title ->
@@ -49,16 +57,16 @@ fun ObjectWrapper.SpaceView.spaceIcon(
         }
     }
 
-    // Prefer image if we have a non-empty hash
-    iconImage?.takeIf { it.isNotEmpty() }?.let { hash ->
-        return makeImage(builder.medium(hash))
-    }
-
     // Derive placeholder color & name with safe defaults
     val placeholderColor = iconOption
         ?.toInt()
         ?.let { SystemColor.color(idx = it) }
         ?: DEFAULT_PLACEHOLDER_COLOR
+
+    // Prefer image if we have a non-empty hash
+    iconImage?.takeIf { it.isNotEmpty() }?.let { hash ->
+        return makeImage(placeholderColor, builder.medium(hash))
+    }
 
     val displayName = name.orEmpty()
 

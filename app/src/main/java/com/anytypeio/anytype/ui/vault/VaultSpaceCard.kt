@@ -55,7 +55,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackgroundColor
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackground
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
@@ -77,23 +78,36 @@ fun VaultSpaceCard(
     currentPinnedCount: Int
 ) {
     val backgroundColor = remember { mutableStateOf(Color.Transparent) }
-    val computeSpaceBackgroundColor = computeSpaceBackgroundColor(
+    val spaceBackground = computeSpaceBackground(
         icon = icon,
         wallpaper = spaceView?.wallpaper,
         backgroundColor = backgroundColor
     )
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
+    val updatedModifier = when (spaceBackground) {
+        is SpaceBackground.SolidColor -> modifier
+            .fillMaxSize()
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = computeSpaceBackgroundColor.copy(alpha = 0.3f),
+                color = spaceBackground.color.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp)
-    ) {
+
+        is SpaceBackground.Gradient -> modifier
+            .fillMaxSize()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                brush = spaceBackground.brush,
+                shape = RoundedCornerShape(20.dp),
+                alpha = 0.3f
+            )
+            .padding(horizontal = 16.dp)
+    }
+
+    Box(modifier = updatedModifier) {
         SpaceIconView(
             icon = icon,
             mainSize = 64.dp,
@@ -197,23 +211,36 @@ fun VaultChatCard(
     currentPinnedCount: Int
 ) {
     val backgroundColor = remember { mutableStateOf(Color.Transparent) }
-    val computeSpaceBackgroundColor = computeSpaceBackgroundColor(
+    val spaceBackground = computeSpaceBackground(
         icon = icon,
         wallpaper = spaceView?.wallpaper,
         backgroundColor = backgroundColor
     )
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
+    val updatedModifier = when (spaceBackground) {
+        is SpaceBackground.SolidColor -> modifier
+            .fillMaxSize()
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = computeSpaceBackgroundColor.copy(alpha = 0.3f),
+                color = spaceBackground.color.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp)
-    ) {
+
+        is SpaceBackground.Gradient -> modifier
+            .fillMaxSize()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                brush = spaceBackground.brush,
+                shape = RoundedCornerShape(20.dp),
+                alpha = 0.3f
+            )
+            .padding(horizontal = 16.dp)
+    }
+
+    Box(modifier = updatedModifier) {
         SpaceIconView(
             icon = icon,
             mainSize = 64.dp,

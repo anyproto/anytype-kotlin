@@ -20,7 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -39,12 +41,25 @@ import com.anytypeio.anytype.core_ui.common.AVG_COLOR_EXTRA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.buildImageLoader
 import com.anytypeio.anytype.core_ui.extensions.res
-import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import timber.log.Timber
+
+/**
+ * Data class representing gradient colors for wallpaper backgrounds
+ */
+data class GradientColors(
+    val startColor: Color,
+    val endColor: Color
+) {
+    fun toBrush(): Brush = Brush.linearGradient(
+        colors = listOf(startColor, endColor),
+        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+        end = androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY)
+    )
+}
 
 @Composable
 fun SpaceIconView(
@@ -129,7 +144,7 @@ fun SpaceIconView(
 @Composable
 private fun SpaceImage(
     url: String,
-    shape: androidx.compose.ui.graphics.Shape,
+    shape: Shape,
     mainSize: Dp,
     modifier: Modifier,
     backgroundColor: MutableState<Color>? = null
@@ -183,7 +198,7 @@ private fun SpaceImage(
 private fun SpacePlaceholder(
     name: String,
     color: Color,
-    shape: androidx.compose.ui.graphics.Shape,
+    shape: Shape,
     mainSize: Dp,
     fontSize: androidx.compose.ui.unit.TextUnit,
     modifier: Modifier
@@ -231,49 +246,80 @@ fun Bitmap.averageColor1x1(): Int {
 }
 
 /**
- * Computes the background color for a space item based on priority:
- * 1. Wallpaper color (if available)
+ * Sealed class representing different background types for space icons
+ */
+sealed class SpaceBackground {
+    data class SolidColor(val color: Color) : SpaceBackground()
+    data class Gradient(val brush: Brush) : SpaceBackground()
+}
+
+/**
+ * Computes the background for a SpaceIconView with priority:
+ * 1. Wallpaper (gradient or color if available)
  * 2. Computed average color from image icon
- * 3. Placeholder icon color
+ * 3. Icon color for placeholders
  * 4. Default fallback color
  *
  * @param icon The SpaceIconView to compute background for
  * @param wallpaper Optional wallpaper configuration
  * @param backgroundColor State containing computed background color from image
  */
-fun computeSpaceBackgroundColor(
+@Composable
+fun computeSpaceBackground(
     icon: SpaceIconView,
     wallpaper: Wallpaper? = null,
     backgroundColor: MutableState<Color>? = null
-): Color {
+): SpaceBackground {
 
-    // First priority: Use wallpaper color if available
+    // First priority: Use wallpaper if available
     if (wallpaper != null) {
-        val wallpaperColor = getWallpaperColor(wallpaper)
-        if (wallpaperColor != null) {
-            return try {
-                Color(android.graphics.Color.parseColor(wallpaperColor.hex))
-            } catch (e: IllegalArgumentException) {
-                // Handle invalid color format
-                Timber.w(e, "Invalid wallpaper color format: ${wallpaperColor.hex}")
-                Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
+        when (wallpaper) {
+            is Wallpaper.Gradient -> {
+                val gradient = getWallpaperGradient(wallpaper)
+                if (gradient != null) {
+                    return SpaceBackground.Gradient(gradient.toBrush())
+                }
+            }
+            is Wallpaper.Color -> {
+                val wallpaperColor = WallpaperColor.entries.find { it.code == wallpaper.code }
+                if (wallpaperColor != null) {
+                    return try {
+                        SpaceBackground.SolidColor(
+                            Color(android.graphics.Color.parseColor(wallpaperColor.hex))
+                        )
+                    } catch (e: IllegalArgumentException) {
+                        // Handle invalid color format
+                        Timber.w(e, "Invalid wallpaper color format: ${wallpaperColor.hex}")
+                        SpaceBackground.SolidColor(
+                            Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
+                        )
+                    }
+                }
+            }
+            is Wallpaper.Image -> {
+                // For images, we can't extract a color, skip to next priority
+            }
+            is Wallpaper.Default -> {
+                SpaceBackground.SolidColor(
+                    Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
+                )
             }
         }
     }
 
     // Second priority: Use computed average color from image icon
     backgroundColor?.value?.let {
-        if (it != Color.Transparent) return it
+        if (it != Color.Transparent) return SpaceBackground.SolidColor(it)
     }
 
     // Third priority: Use icon color for placeholders
-    val spaceIconColor = getSpaceIconColor(icon)
-    if (spaceIconColor != null) {
-        return Color(spaceIconColor.resInt())
+    val iconColor = getSpaceIconColor(icon)
+    if (iconColor != null) {
+        return SpaceBackground.SolidColor(iconColor.res())
     }
 
-    // Final fallback
-    return Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
+    // Default fallback
+    return SpaceBackground.SolidColor(Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR)))
 }
 
 private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
@@ -284,37 +330,45 @@ private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
     }
 }
 
-private fun getWallpaperColor(wallpaper: Wallpaper): WallpaperColor? {
-    return when (wallpaper) {
-        is Wallpaper.Color -> {
-            // Find the wallpaper color by code
-            WallpaperColor.entries.find { it.code == wallpaper.code }
-        }
-
-        is Wallpaper.Gradient -> {
-            // For gradients, use the primary color based on the gradient code
-            when (wallpaper.code) {
-                CoverGradient.YELLOW -> WallpaperColor.YELLOW
-                CoverGradient.RED -> WallpaperColor.RED
-                CoverGradient.BLUE -> WallpaperColor.BLUE
-                CoverGradient.TEAL -> WallpaperColor.TEAL
-                CoverGradient.PINK_ORANGE -> WallpaperColor.PINK
-                CoverGradient.BLUE_PINK -> WallpaperColor.BLUE
-                CoverGradient.GREEN_ORANGE -> WallpaperColor.GREEN
-                CoverGradient.SKY -> WallpaperColor.ICE
-                else -> null
-            }
-        }
-
-        is Wallpaper.Image -> {
-            // For images, we can't extract a color, return null to use fallback
-            null
-        }
-
-        is Wallpaper.Default -> {
-            // Use a default neutral color
-            WallpaperColor.ICE
-        }
+/**
+ * Gets gradient colors for wallpaper gradients using actual start/end colors
+ */
+@Composable
+private fun getWallpaperGradient(wallpaper: Wallpaper.Gradient): GradientColors? {
+    return when (wallpaper.code) {
+        CoverGradient.YELLOW -> GradientColors(
+            startColor = colorResource(R.color.yellowStart),
+            endColor = colorResource(R.color.yellowEnd)
+        )
+        CoverGradient.RED -> GradientColors(
+            startColor = colorResource(R.color.redStart),
+            endColor = colorResource(R.color.redEnd)
+        )
+        CoverGradient.BLUE -> GradientColors(
+            startColor = colorResource(R.color.blueStart),
+            endColor = colorResource(R.color.blueEnd)
+        )
+        CoverGradient.TEAL -> GradientColors(
+            startColor = colorResource(R.color.tealStart),
+            endColor = colorResource(R.color.tealEnd)
+        )
+        CoverGradient.PINK_ORANGE -> GradientColors(
+            startColor = colorResource(R.color.pinkOrangeStart),
+            endColor = colorResource(R.color.pinkOrangeEnd)
+        )
+        CoverGradient.BLUE_PINK -> GradientColors(
+            startColor = colorResource(R.color.bluePinkStart),
+            endColor = colorResource(R.color.bluePinkEnd)
+        )
+        CoverGradient.GREEN_ORANGE -> GradientColors(
+            startColor = colorResource(R.color.greenOrangeStart),
+            endColor = colorResource(R.color.greenOrangeEnd)
+        )
+        CoverGradient.SKY -> GradientColors(
+            startColor = colorResource(R.color.skyStart),
+            endColor = colorResource(R.color.skyEnd)
+        )
+        else -> null
     }
 }
 

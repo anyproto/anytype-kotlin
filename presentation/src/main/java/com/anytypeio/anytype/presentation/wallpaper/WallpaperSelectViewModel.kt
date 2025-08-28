@@ -37,7 +37,7 @@ class WallpaperSelectViewModel(
             )
             add(WallpaperSelectView.Section.SolidColor)
             addAll(
-                WallpaperColor.values().map {
+                WallpaperColor.entries.map {
                     WallpaperSelectView.Wallpaper(
                         item = WallpaperView.SolidColor(it.code)
                     )

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,7 +40,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackgroundColor
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackground
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -132,15 +134,24 @@ class HomeScreenFragment : Fragment(),
         // Get wallpaper from ViewModel
         val wallpaper = vm.wallpaper.collectAsStateWithLifecycle().value
 
-        val computedBackgroundColor = computeSpaceBackgroundColor(
+        val spaceBackground = computeSpaceBackground(
             icon = view?.icon ?: SpaceIconView.Loading,
             wallpaper = wallpaper,
             backgroundColor = backgroundColor
         )
+
+        val scaffoldModifier = when (spaceBackground) {
+            is SpaceBackground.SolidColor -> Modifier
+                .fillMaxSize()
+                .background(spaceBackground.color.copy(alpha = 0.3f))
+            is SpaceBackground.Gradient -> Modifier
+                .fillMaxSize()
+                .background(spaceBackground.brush, alpha = 0.3f)
+        }
+
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
-            containerColor = computedBackgroundColor.copy(alpha = 0.3f),
+            modifier = scaffoldModifier,
+            containerColor = Color.Transparent,
             topBar = {
                 val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
                     Modifier

@@ -45,14 +45,14 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun ChatTopToolbar(
+    modifier: Modifier,
     header: ChatViewModel.HeaderView,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onSpaceNameClicked: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(52.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -131,6 +131,7 @@ fun ChatTopToolbar(
 @Composable
 fun ChatTopToolbarPreview() {
     ChatTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
             icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
@@ -147,6 +148,7 @@ fun ChatTopToolbarPreview() {
 @Composable
 fun ChatTopToolbarMutedPreview() {
     ChatTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
         header = ChatViewModel.HeaderView.Default(
             title = "My Chat Space",
             icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),

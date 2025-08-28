@@ -330,4 +330,29 @@
 
     <color name="modal_screen_outside_background">#26000000</color>
 
+    <!-- Gradient colors for wallpaper representation -->
+    <color name="blueStart">#AB50CC</color>
+    <color name="blueEnd">#3E58EB</color>
+
+    <color name="bluePinkStart">#73B7F0</color>
+    <color name="bluePinkEnd">#F3BFAC</color>
+
+    <color name="greenOrangeEnd">#FFCC81</color>
+    <color name="greenOrangeStart">#63B3CB</color>
+
+    <color name="pinkOrangeEnd">#FFCC81</color>
+    <color name="pinkOrangeStart">#D8A4E1</color>
+
+    <color name="redEnd">#E51CA0</color>
+    <color name="redStart">#F55522</color>
+
+    <color name="skyEnd">#DAEAF3</color>
+    <color name="skyStart">#73B7F0</color>
+
+    <color name="tealEnd">#0FC8BA</color>
+    <color name="tealStart">#2AA7EE</color>
+
+    <color name="yellowEnd">#ECD91B</color>
+    <color name="yellowStart">#FFB522</color>
+
 </resources>

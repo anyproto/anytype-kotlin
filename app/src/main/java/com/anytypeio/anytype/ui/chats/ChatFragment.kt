@@ -167,6 +167,7 @@ class ChatFragment : Fragment() {
                     ChatTopToolbar(
                         modifier = modifier,
                         header = headerState,
+                        backgroundColorState = backgroundColor,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
                         onSpaceIconClicked = vm::onSpaceIconClicked

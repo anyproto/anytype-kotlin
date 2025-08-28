@@ -24,9 +24,7 @@ import com.anytypeio.anytype.persistence.SpacePreference
 import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.VaultPreference
 import com.anytypeio.anytype.persistence.VaultPreferences
-import com.anytypeio.anytype.persistence.common.JsonString
-import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
-import com.anytypeio.anytype.persistence.common.serializeWallpaperSettings
+import com.anytypeio.anytype.persistence.WallpaperSetting
 import com.anytypeio.anytype.persistence.common.toJsonString
 import com.anytypeio.anytype.persistence.common.toStringMap
 import com.anytypeio.anytype.persistence.model.asSettings
@@ -35,6 +33,7 @@ import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
+import com.anytypeio.anytype.persistence.preferences.WallpaperMigration
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -58,7 +57,10 @@ class DefaultUserSettingsCache(
 
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
-        serializer = SpacePrefSerializer
+        serializer = SpacePrefSerializer,
+        produceMigrations = { context ->
+            listOf(WallpaperMigration(prefs))
+        }
     )
 
     private val Context.vaultPrefsStore: DataStore<VaultPreferences> by dataStore(
@@ -132,58 +134,69 @@ class DefaultUserSettingsCache(
             TypeId(result)
     }
 
+
     override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
         if (space.isEmpty()) return
 
-        val curr = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
-
-        val result: JsonString
-
         val setting = wallpaper.asSettings()
 
-        if (!curr.isNullOrEmpty()) {
-            val map = curr.deserializeWallpaperSettings().toMutableMap()
-            if (setting != null) {
-                map[space] = setting
-            } else {
-                map.remove(space)
-            }
-            result = map.serializeWallpaperSettings()
-        } else {
-            result = if (setting != null) {
-                mapOf(space to setting).serializeWallpaperSettings()
-            } else {
-                ""
-            }
-        }
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val existingSpacePref = existingPreferences.preferences.getOrDefault(
+                key = space,
+                defaultValue = SpacePreference()
+            )
 
-        prefs
-            .edit()
-            .putString(WALLPAPER_SETTINGS_KEY, result)
-            .apply()
+            val updatedSpacePref = if (setting != null) {
+                val protoWallpaperSetting = WallpaperSetting(
+                    type = setting.type,
+                    value_ = setting.value
+                )
+                existingSpacePref.copy(wallpaperSetting = protoWallpaperSetting)
+            } else {
+                existingSpacePref.copy(wallpaperSetting = null)
+            }
+
+            val updatedPreferences = buildMap {
+                putAll(existingPreferences.preferences)
+                put(space, updatedSpacePref)
+            }
+
+            SpacePreferences(preferences = updatedPreferences)
+        }
     }
 
     override suspend fun getWallpaper(space: Id): Wallpaper {
-        val rawSettings = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
-        return if (rawSettings.isNullOrEmpty()) {
-            Wallpaper.Default
+        val spacePreferences = context.spacePrefsStore.data.first()
+        val spacePref = spacePreferences.preferences[space]
+        val wallpaperSetting = spacePref?.wallpaperSetting
+
+        return if (wallpaperSetting != null) {
+            val setting = com.anytypeio.anytype.persistence.model.WallpaperSetting(
+                type = wallpaperSetting.type,
+                value = wallpaperSetting.value_
+            )
+            setting.asWallpaper()
         } else {
-            val deserialized = rawSettings.deserializeWallpaperSettings()
-            val setting = deserialized[space]
-            setting?.asWallpaper() ?: Wallpaper.Default
+            Wallpaper.Default
         }
     }
 
     override suspend fun getWallpapers(): Map<Id, Wallpaper> {
-        val rawSettings = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
-        return if (rawSettings.isNullOrEmpty()) {
-            emptyMap()
-        } else {
-            val deserialized = rawSettings.deserializeWallpaperSettings()
-            return deserialized.mapValues { setting ->
-                setting.value.asWallpaper()
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val wallpaperSetting = spacePref.wallpaperSetting
+                if (wallpaperSetting != null) {
+                    val setting = com.anytypeio.anytype.persistence.model.WallpaperSetting(
+                        type = wallpaperSetting.type,
+                        value = wallpaperSetting.value_
+                    )
+                    spaceId to setting.asWallpaper()
+                } else {
+                    null
+                }
             }
-        }
+            .toMap()
     }
 
     override suspend fun setThemeMode(mode: ThemeMode) {

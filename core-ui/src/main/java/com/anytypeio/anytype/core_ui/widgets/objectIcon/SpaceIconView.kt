@@ -51,7 +51,7 @@ fun SpaceIconView(
     modifier: Modifier = Modifier,
     mainSize: Dp = 96.dp,
     icon: SpaceIconView,
-    backgroundColor: MutableState<Color>? = null,
+    backgroundColorState: MutableState<Color>? = null,
     onSpaceIconClick: (() -> Unit)? = null
 ) {
     val clickableModifier = if (onSpaceIconClick != null) {
@@ -86,7 +86,7 @@ fun SpaceIconView(
                 shape = CircleShape,
                 mainSize = mainSize,
                 modifier = clickableModifier,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColorState
             )
         }
 
@@ -96,7 +96,7 @@ fun SpaceIconView(
                 shape = RoundedCornerShape(radius),
                 mainSize = mainSize,
                 modifier = clickableModifier,
-                backgroundColor = backgroundColor
+                backgroundColor = backgroundColorState
             )
         }
 
@@ -328,6 +328,6 @@ private fun SpaceIconViewPreview() {
             name = "U"
         ),
         onSpaceIconClick = {},
-        backgroundColor = Color.Gray.let { mutableStateOf(it) }
+        backgroundColorState = Color.Gray.let { mutableStateOf(it) }
     )
 }

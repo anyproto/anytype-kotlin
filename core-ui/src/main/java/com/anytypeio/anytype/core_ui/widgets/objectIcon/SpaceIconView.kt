@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets.objectIcon
 
-import android.graphics.Bitmap
-import androidx.annotation.ColorInt
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,12 +9,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,42 +16,22 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
-import coil3.toBitmap
-import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.common.AVG_COLOR_EXTRA
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.common.buildImageLoader
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.wallpaper.WallpaperUtils
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import timber.log.Timber
-
-/**
- * Data class representing gradient colors for wallpaper backgrounds
- */
-data class GradientColors(
-    val startColor: Color,
-    val endColor: Color
-) {
-    fun toBrush(): Brush = Brush.linearGradient(
-        colors = listOf(startColor, endColor),
-        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-        end = androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY)
-    )
-}
 
 @Composable
 fun SpaceIconView(
@@ -186,6 +158,20 @@ private fun SpacePlaceholder(
 }
 
 /**
+ * Data class representing gradient colors for wallpaper backgrounds
+ */
+data class GradientColors(
+    val startColor: Color,
+    val endColor: Color
+) {
+    fun toBrush(): Brush = Brush.linearGradient(
+        colors = listOf(startColor, endColor),
+        start = androidx.compose.ui.geometry.Offset(0f, 0f),
+        end = androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY)
+    )
+}
+
+/**
  * Sealed class representing different background types for space icons
  */
 sealed class SpaceBackground {
@@ -197,81 +183,49 @@ sealed class SpaceBackground {
 /**
  * Computes the background for a SpaceIconView with priority:
  * 1. Wallpaper (gradient or color if available)
- * 2. Computed average color from image icon
- * 3. Icon color for placeholders
- * 4. Default fallback color
+ * 2. Icon color for placeholders/images
+ * 3. Default fallback
  *
  * @param icon The SpaceIconView to compute background for
  * @param wallpaper Optional wallpaper configuration
- * @param backgroundColor State containing computed background color from image
  */
 @Composable
 fun computeSpaceBackground(
     icon: SpaceIconView,
     wallpaper: Wallpaper? = null
 ): SpaceBackground {
-
-    // First priority: Use wallpaper if available
-    if (wallpaper != null) {
-        when (wallpaper) {
-            is Wallpaper.Gradient -> {
-                val gradient = getWallpaperGradient(wallpaper)
-                if (gradient != null) {
-                    return SpaceBackground.Gradient(gradient.toBrush())
-                }
-            }
-            is Wallpaper.Color -> {
-                val wallpaperColor = WallpaperColor.entries.find { it.code == wallpaper.code }
-                if (wallpaperColor != null) {
-                    return try {
-                        SpaceBackground.SolidColor(
-                            Color(android.graphics.Color.parseColor(wallpaperColor.hex))
-                        )
-                    } catch (e: IllegalArgumentException) {
-                        // Handle invalid color format
-                        Timber.w(e, "Invalid wallpaper color format: ${wallpaperColor.hex}")
-                        SpaceBackground.SolidColor(
-                            Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
-                        )
-                    }
-                }
-            }
-            is Wallpaper.Image -> {
-                // For images, we can't extract a color, skip to next priority
-            }
-            is Wallpaper.Default -> {
-                val iconColor = getSpaceIconColor(icon)
-                if (iconColor != null) {
-                    return SpaceBackground.SolidColor(iconColor.res())
-                } else {
-                    SpaceBackground.SolidColor(
-                        Color(android.graphics.Color.parseColor(DEFAULT_SPACE_BACKGROUND_COLOR))
-                    )
-                }
+    val result = WallpaperUtils.computeWallpaperResult(icon, wallpaper)
+    
+    return when (result) {
+        is WallpaperUtils.WallpaperResult.Gradient -> {
+            val gradient = getWallpaperGradientByCode(result.gradientCode)
+            if (gradient != null) {
+                SpaceBackground.Gradient(gradient.toBrush())
+            } else {
+                SpaceBackground.None
             }
         }
-    }
-
-    // Default fallback
-    return SpaceBackground.None
-}
-
-private fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
-    return when (icon) {
-        is SpaceIconView.ChatSpace.Placeholder -> icon.color
-        is SpaceIconView.DataSpace.Placeholder -> icon.color
-        is SpaceIconView.ChatSpace.Image -> icon.color
-        is SpaceIconView.DataSpace.Image -> icon.color
-        SpaceIconView.Loading -> null
+        is WallpaperUtils.WallpaperResult.SolidColor -> {
+            try {
+                SpaceBackground.SolidColor(
+                    Color(android.graphics.Color.parseColor(result.colorHex))
+                )
+            } catch (e: IllegalArgumentException) {
+                Timber.w(e, "Invalid color format: ${result.colorHex}")
+                SpaceBackground.None
+            }
+        }
+        WallpaperUtils.WallpaperResult.None -> SpaceBackground.None
     }
 }
+
 
 /**
  * Gets gradient colors for wallpaper gradients using actual start/end colors
  */
 @Composable
-private fun getWallpaperGradient(wallpaper: Wallpaper.Gradient): GradientColors? {
-    return when (wallpaper.code) {
+private fun getWallpaperGradientByCode(gradientCode: String): GradientColors? {
+    return when (gradientCode) {
         CoverGradient.YELLOW -> GradientColors(
             startColor = colorResource(R.color.yellowStart),
             endColor = colorResource(R.color.yellowEnd)
@@ -308,7 +262,6 @@ private fun getWallpaperGradient(wallpaper: Wallpaper.Gradient): GradientColors?
     }
 }
 
-private val DEFAULT_SPACE_BACKGROUND_COLOR = WallpaperColor.ICE.hex
 
 @DefaultPreviews
 @Composable

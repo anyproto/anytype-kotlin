@@ -10,7 +10,6 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -47,7 +46,6 @@ import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
@@ -55,8 +53,11 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.core_ui.wallpaper.WallpaperUtils
+import com.anytypeio.anytype.core_ui.wallpaper.getGradientDrawableResource
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
@@ -317,36 +318,40 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
-    private fun setWallpaper(wallpaper: Wallpaper?) {
+    private fun setWallpaper(wallpaper: Wallpaper?, spaceIcon: SpaceIconView? = null) {
         if (wallpaper == null) return
-        when (wallpaper) {
-            is Wallpaper.Gradient -> {
-                when (wallpaper.code) {
-                    CoverGradient.YELLOW -> container.setBackgroundResource(R.drawable.cover_gradient_yellow)
-                    CoverGradient.RED -> container.setBackgroundResource(R.drawable.cover_gradient_red)
-                    CoverGradient.BLUE -> container.setBackgroundResource(R.drawable.cover_gradient_blue)
-                    CoverGradient.TEAL -> container.setBackgroundResource(R.drawable.cover_gradient_teal)
-                    CoverGradient.PINK_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_1)
-                    CoverGradient.BLUE_PINK -> container.setBackgroundResource(R.drawable.wallpaper_gradient_2)
-                    CoverGradient.GREEN_ORANGE -> container.setBackgroundResource(R.drawable.wallpaper_gradient_3)
-                    CoverGradient.SKY -> container.setBackgroundResource(R.drawable.wallpaper_gradient_4)
+        
+        // Use WallpaperUtils to compute the wallpaper result with fallbacks
+        val result = WallpaperUtils.computeWallpaperResult(
+            icon = spaceIcon ?: SpaceIconView.Loading,
+            wallpaper = wallpaper
+        )
+        
+        when (result) {
+            is WallpaperUtils.WallpaperResult.Gradient -> {
+                container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
+            }
+            is WallpaperUtils.WallpaperResult.SolidColor -> {
+                try {
+                    container.setBackgroundColor(Color.parseColor(result.colorHex))
+                } catch (e: IllegalArgumentException) {
+                    Timber.w(e, "Invalid color format: ${result.colorHex}")
+                    container.setBackgroundResource(getDefaultDrawableResource())
                 }
             }
-            is Wallpaper.Default -> {
-                container.setBackgroundResource(R.drawable.cover_gradient_default)
-            }
-            is Wallpaper.Color -> {
-                val color = WallpaperColor.entries.find { it.code == wallpaper.code }
-                if (color != null) {
-                    container.setBackgroundColor(Color.parseColor(color.hex))
-                }
-            }
-            is Wallpaper.Image -> {
-                container.setBackgroundResource(R.color.default_dashboard_background_color)
+            WallpaperUtils.WallpaperResult.None -> {
+                container.setBackgroundResource(getDefaultDrawableResource())
             }
         }
+        
         container.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
     }
+
+    /**
+     * Gets the default fallback drawable resource
+     */
+    @androidx.annotation.DrawableRes
+    private fun getDefaultDrawableResource(): Int = R.drawable.cover_gradient_default
 
     private fun setFragmentLifecycleCallbacks() {
         supportFragmentManager.registerFragmentLifecycleCallbacks(

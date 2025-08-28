@@ -102,7 +102,6 @@ class ChatFragment : Fragment() {
     }
 
     // Rendering
-
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,

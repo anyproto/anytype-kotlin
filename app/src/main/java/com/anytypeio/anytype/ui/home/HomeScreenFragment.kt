@@ -39,7 +39,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
@@ -89,8 +88,6 @@ class HomeScreenFragment : Fragment(),
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) == true
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
-
-    val jobs = mutableListOf<Job>()
 
     @Inject
     lateinit var featureToggles: FeatureToggles
@@ -261,7 +258,6 @@ class HomeScreenFragment : Fragment(),
 
     override fun onStop() {
         super.onStop()
-        jobs.cancel()
         vm.onStop()
     }
 

@@ -20,6 +20,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.os.bundleOf
@@ -37,6 +39,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackgroundColor
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -97,6 +100,7 @@ class HomeScreenFragment : Fragment(),
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
+    
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -119,8 +123,24 @@ class HomeScreenFragment : Fragment(),
         val view = (vm.views.collectAsStateWithLifecycle().value.find {
             it is WidgetView.SpaceWidget.View
         } as? WidgetView.SpaceWidget.View)
+        
+        // Shared background color state for both toolbar and content
+        val backgroundColor = remember {
+            mutableStateOf(Color.Transparent)
+        }
+        
+        // Get wallpaper from ViewModel
+        val wallpaper = vm.wallpaper.collectAsStateWithLifecycle().value
+
+        val computedBackgroundColor = computeSpaceBackgroundColor(
+            icon = view?.icon ?: SpaceIconView.Loading,
+            wallpaper = wallpaper,
+            backgroundColor = backgroundColor
+        )
         Scaffold(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
+            containerColor = computedBackgroundColor.copy(alpha = 0.3f),
             topBar = {
                 val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
                     Modifier
@@ -136,7 +156,8 @@ class HomeScreenFragment : Fragment(),
                     membersCount = view?.membersCount ?: 0,
                     name = view?.space?.name.orEmpty(),
                     onBackButtonClicked = vm::onBackClicked,
-                    onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
+                    onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
+                    backgroundColorState = backgroundColor
                 )
             }
         ) { paddingValues ->

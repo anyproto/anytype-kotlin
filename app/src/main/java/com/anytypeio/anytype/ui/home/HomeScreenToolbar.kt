@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -36,7 +40,8 @@ fun HomeScreenToolbar(
     onBackButtonClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     name: String,
-    membersCount: Int
+    membersCount: Int,
+    backgroundColorState: MutableState<Color>,
 ) {
     Box(
         modifier = modifier
@@ -69,7 +74,8 @@ fun HomeScreenToolbar(
             onSpaceIconClick = {
                 onSpaceIconClicked()
             },
-            mainSize = 32.dp
+            mainSize = 32.dp,
+            backgroundColorState = backgroundColorState
         )
 
         Text(
@@ -144,12 +150,14 @@ fun HomeScreenToolbar(
 @DefaultPreviews
 @Composable
 fun HomeScreenToolbarPreview() {
+    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
     HomeScreenToolbar(
         spaceIconView = SpaceIconView.DataSpace.Placeholder(name = "A"),
         onSpaceIconClicked = {},
         membersCount = 74,
         name = "Test space",
         onBackButtonClicked = {},
-        onSettingsClicked = {}
+        onSettingsClicked = {},
+        backgroundColorState = backgroundColor,
     )
 }

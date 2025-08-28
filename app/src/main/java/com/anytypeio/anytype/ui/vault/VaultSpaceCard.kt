@@ -99,7 +99,7 @@ fun VaultSpaceCard(
             mainSize = 64.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart),
-            backgroundColor = backgroundColor
+            backgroundColorState = backgroundColor
         )
         ContentSpace(
             title = title,
@@ -219,7 +219,7 @@ fun VaultChatCard(
             mainSize = 64.dp,
             modifier = Modifier
                 .align(Alignment.CenterStart),
-            backgroundColor = backgroundColor
+            backgroundColorState = backgroundColor
         )
         ContentChat(
             title = title,

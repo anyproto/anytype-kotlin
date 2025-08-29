@@ -81,7 +81,10 @@
     <color name="dashboard_card_background">#FFFFFF</color>
     <color name="dashboard_background">#99F5F5F5</color>
 
+    <color name="control_primary">#252525</color>
     <color name="control_secondary">#A7A7A7</color>
+    <color name="control_tertiary">#DCDCDC</color>
+
     <color name="control_transparent_secondary">#66000000</color>
     <color name="control_transparent_tetriary">#26000000</color>
 

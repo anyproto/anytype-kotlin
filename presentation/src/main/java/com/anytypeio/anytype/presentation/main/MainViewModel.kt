@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationActionDelega
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -87,15 +88,10 @@ class MainViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
-    val wallpaper: MutableStateFlow<Wallpaper?> = MutableStateFlow(null)
+    val wallpaper: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
 
     init {
         subscribeToActiveSpaceWallpaper()
-        viewModelScope.launch {
-            restoreWallpaper.flow().collect {
-                // Do nothing, just run pipeline.
-            }
-        }
         viewModelScope.launch {
             interceptAccountStatus.build().collect { status ->
                 when (status) {
@@ -156,7 +152,7 @@ class MainViewModel(
                         else -> spaceWallpaper
                     }
                     Timber.d("Space wallpaper updated: $finalWallpaper (original: $spaceWallpaper)")
-                    wallpaper.value = finalWallpaper
+                    //wallpaper.value = finalWallpaper
                 }
         }
     }

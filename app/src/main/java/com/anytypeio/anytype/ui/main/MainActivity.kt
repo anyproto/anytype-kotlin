@@ -18,7 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptions.*
+import androidx.navigation.NavOptions.Builder
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.anytypeio.anytype.BuildConfig
@@ -29,9 +29,9 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
@@ -53,11 +53,8 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
-import com.anytypeio.anytype.core_ui.wallpaper.WallpaperUtils
-import com.anytypeio.anytype.core_ui.wallpaper.getGradientDrawableResource
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
@@ -318,20 +315,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
-    private fun setWallpaper(wallpaper: Wallpaper?, spaceIcon: SpaceIconView? = null) {
-        if (wallpaper == null) return
-        
-        // Use WallpaperUtils to compute the wallpaper result with fallbacks
-        val result = WallpaperUtils.computeWallpaperResult(
-            icon = spaceIcon ?: SpaceIconView.Loading,
-            wallpaper = wallpaper
-        )
-        
+    private fun setWallpaper(result: WallpaperResult) {
         when (result) {
-            is WallpaperUtils.WallpaperResult.Gradient -> {
+            is WallpaperResult.Gradient -> {
                 container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
             }
-            is WallpaperUtils.WallpaperResult.SolidColor -> {
+            is WallpaperResult.SolidColor -> {
                 try {
                     container.setBackgroundColor(Color.parseColor(result.colorHex))
                 } catch (e: IllegalArgumentException) {
@@ -339,7 +328,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     container.setBackgroundResource(getDefaultDrawableResource())
                 }
             }
-            WallpaperUtils.WallpaperResult.None -> {
+            WallpaperResult.None -> {
                 container.setBackgroundResource(getDefaultDrawableResource())
             }
         }

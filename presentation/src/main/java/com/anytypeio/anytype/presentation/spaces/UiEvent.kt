@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 
 sealed class UiEvent {
     data object OnBackPressed : UiEvent()
@@ -26,6 +27,8 @@ sealed class UiEvent {
     data class OnQrCodeClicked(val link: String) : UiEvent()
     data object OnDebugClicked : UiEvent()
     data object OnSpaceInfoTitleClicked : UiEvent()
+
+    data class OnUpdateWallpaperClicked(val wallpaperView: WallpaperView) : UiEvent()
 
     data class OnAutoCreateWidgetSwitchChanged(
         val widget: Id,

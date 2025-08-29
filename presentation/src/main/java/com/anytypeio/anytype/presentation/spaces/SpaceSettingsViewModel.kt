@@ -544,6 +544,19 @@ class SpaceSettingsViewModel(
         }
     }
 
+    private fun proceedWithUpdateSpaceIconColor() {
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                SetSpaceDetails.Params(
+                    space = vmParams.space,
+                    details = mapOf(
+                        Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
+                    )
+                )
+            )
+        }
+    }
+
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
             analytics.sendEvent(

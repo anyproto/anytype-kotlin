@@ -8,7 +8,6 @@ sealed class UiEvent {
     data class OnSaveDescriptionClicked(val description: String) : UiEvent()
     data class OnSaveTitleClicked(val title: String) : UiEvent()
     data class OnSpaceImagePicked(val uri: String) : UiEvent()
-    data object OnSelectWallpaperClicked : UiEvent()
 
     data object OnSpaceMembersClicked : UiEvent()
     data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
@@ -35,6 +34,7 @@ sealed class UiEvent {
 
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()
+        data object OnChangeIconColorClicked : IconMenu()
     }
 
     sealed class OnNotificationsSetting : UiEvent() {

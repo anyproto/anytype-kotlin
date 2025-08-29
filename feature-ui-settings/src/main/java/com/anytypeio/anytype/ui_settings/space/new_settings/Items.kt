@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -66,6 +67,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.computeSpaceBackground
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiEvent
@@ -197,51 +200,34 @@ fun WallpaperItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
-        when(val wallpaper = item.current) {
-            is Wallpaper.Color -> {
+        val spaceBackground = computeSpaceBackground(
+            wallpaperResult = item.wallpaper,
+            icon = item.spaceIconView
+        )
+        val wallpaperModifier = Modifier
+            .size(20.dp)
+            //.padding(horizontal = 8.dp)
+
+        when (spaceBackground) {
+            is SpaceBackground.SolidColor ->
                 Box(
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = wallpaperModifier
                         .background(
-                            color = light(wallpaper.code),
-                            shape = RoundedCornerShape(4.dp)
+                            color = spaceBackground.color.copy(alpha = 0.3f),
+                            shape = RoundedCornerShape(20.dp)
                         )
-                        .padding(horizontal = 8.dp),
                 )
-            }
-            is Wallpaper.Gradient -> {
+            is SpaceBackground.Gradient ->
+
                 Box(
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = wallpaperModifier
                         .background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = wallpaper.code,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(4.dp)
+                            brush = spaceBackground.brush,
+                            shape = RoundedCornerShape(20.dp),
+                            alpha = 0.3f
                         )
-                        .padding(horizontal = 8.dp),
                 )
-            }
-            is Wallpaper.Default -> {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = CoverGradient.SKY,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 8.dp),
-                )
-            }
-            else -> {
+            SpaceBackground.None -> {
                 // Do nothing.
             }
         }

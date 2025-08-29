@@ -11,18 +11,16 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -87,123 +85,122 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
 
+    val onMuteSpace: (String) -> Unit = { spaceTargetId ->
+        vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
+    }
+    val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
+        vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            MaterialTheme(typography = typography) {
-                val onMuteSpace: (String) -> Unit = { spaceTargetId ->
-                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
-                }
-                val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
-                    vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)
-                }
+    ) = content {
+        MaterialTheme(typography = typography) {
 
-                VaultScreen(
-                    uiState = vm.uiState.collectAsStateWithLifecycle().value,
-                    showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
-                    onSpaceClicked = vm::onSpaceClicked,
-                    onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
-                    onSettingsClicked = vm::onSettingsClicked,
-                    profile = vm.profileView.collectAsStateWithLifecycle().value,
-                    onMuteSpace = onMuteSpace,
-                    onUnmuteSpace = onUnmuteSpace,
-                    onPinSpace = vm::onPinSpaceClicked,
-                    onUnpinSpace = vm::onUnpinSpaceClicked,
-                    onOrderChanged = vm::onOrderChanged,
-                    onDragEnd = vm::onDragEnd,
-                    onSpaceSettings = vm::onSpaceSettingsClicked
+            VaultScreen(
+                uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
+                onSpaceClicked = vm::onSpaceClicked,
+                onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
+                onSettingsClicked = vm::onSettingsClicked,
+                profile = vm.profileView.collectAsStateWithLifecycle().value,
+                onMuteSpace = onMuteSpace,
+                onUnmuteSpace = onUnmuteSpace,
+                onPinSpace = vm::onPinSpaceClicked,
+                onUnpinSpace = vm::onUnpinSpaceClicked,
+                onOrderChanged = vm::onOrderChanged,
+                onDragEnd = vm::onDragEnd,
+                onSpaceSettings = vm::onSpaceSettingsClicked
+            )
+
+            val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
+            if (notificationError != null) {
+                BaseAlertDialog(
+                    dialogText = notificationError,
+                    buttonText = getString(R.string.button_ok),
+                    onButtonClick = { vm.clearNotificationError() },
+                    onDismissRequest = { vm.clearNotificationError() }
                 )
-                val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
-                if (notificationError != null) {
+            }
+
+            val vaultErrors = vm.vaultErrors.collectAsStateWithLifecycle().value
+            when (vaultErrors) {
+                VaultErrors.MaxPinnedSpacesReached -> {
                     BaseAlertDialog(
-                        dialogText = notificationError,
+                        dialogText = stringResource(
+                            R.string.vault_max_pinned_limit_reached,
+                            MAX_PINNED_SPACES
+                        ),
                         buttonText = getString(R.string.button_ok),
-                        onButtonClick = { vm.clearNotificationError() },
-                        onDismissRequest = { vm.clearNotificationError() }
+                        onButtonClick = { vm.clearVaultError() },
+                        onDismissRequest = { vm.clearVaultError() }
                     )
                 }
 
-                val vaultErrors = vm.vaultErrors.collectAsStateWithLifecycle().value
-                when (vaultErrors) {
-                    VaultErrors.MaxPinnedSpacesReached -> {
-                        BaseAlertDialog(
-                            dialogText = stringResource(
-                                R.string.vault_max_pinned_limit_reached,
-                                MAX_PINNED_SPACES
-                            ),
-                            buttonText = getString(R.string.button_ok),
-                            onButtonClick = { vm.clearVaultError() },
-                            onDismissRequest = { vm.clearVaultError() }
-                        )
-                    }
-
-                    VaultErrors.Hidden -> {
-                        //do nothing
-                    }
-
-                    VaultErrors.QrCodeIsNotValid -> {
-                        AlertScreenModals(
-                            title = getString(R.string.vault_qr_invalid_title),
-                            description = getString(R.string.vault_qr_invalid_description),
-                            firstButtonText = getString(R.string.vault_qr_try_again),
-                            onAction = vm::onModalTryAgainClicked,
-                            onDismiss = vm::onModalCancelClicked
-                        )
-                    }
-
-                    VaultErrors.QrScannerError -> {
-                        AlertScreenModals(
-                            title = getString(R.string.vault_qr_scan_error_title),
-                            description = getString(R.string.vault_qr_scan_error_description),
-                            firstButtonText = getString(R.string.vault_qr_try_again),
-                            onAction = vm::onModalTryAgainClicked,
-                            onDismiss = vm::onModalCancelClicked
-                        )
-                    }
-                    
-                    VaultErrors.CameraPermissionDenied -> {
-                        AlertScreenModals(
-                            title = getString(R.string.camera_permission_required_title),
-                            description = getString(R.string.camera_permission_settings_message),
-                            firstButtonText = getString(R.string.open_settings),
-                            secondButtonText = getString(R.string.cancel),
-                            onAction = {
-                                requireContext().openAppSettings()
-                                vm.clearVaultError()
-                            },
-                            onDismiss = vm::clearVaultError
-                        )
-                    }
+                VaultErrors.Hidden -> {
+                    //do nothing
                 }
 
-                if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
-                    ChooseSpaceTypeScreen(
-                        onCreateChatClicked = {
-                            vm.onCreateChatClicked()
+                VaultErrors.QrCodeIsNotValid -> {
+                    AlertScreenModals(
+                        title = getString(R.string.vault_qr_invalid_title),
+                        description = getString(R.string.vault_qr_invalid_description),
+                        firstButtonText = getString(R.string.vault_qr_try_again),
+                        onAction = vm::onModalTryAgainClicked,
+                        onDismiss = vm::onModalCancelClicked
+                    )
+                }
+
+                VaultErrors.QrScannerError -> {
+                    AlertScreenModals(
+                        title = getString(R.string.vault_qr_scan_error_title),
+                        description = getString(R.string.vault_qr_scan_error_description),
+                        firstButtonText = getString(R.string.vault_qr_try_again),
+                        onAction = vm::onModalTryAgainClicked,
+                        onDismiss = vm::onModalCancelClicked
+                    )
+                }
+
+                VaultErrors.CameraPermissionDenied -> {
+                    AlertScreenModals(
+                        title = getString(R.string.camera_permission_required_title),
+                        description = getString(R.string.camera_permission_settings_message),
+                        firstButtonText = getString(R.string.open_settings),
+                        secondButtonText = getString(R.string.cancel),
+                        onAction = {
+                            requireContext().openAppSettings()
+                            vm.clearVaultError()
                         },
-                        onCreateSpaceClicked = {
-                            vm.onCreateSpaceClicked()
-                        },
-                        onJoinViaQrClicked = {
-                            vm.onJoinViaQrClicked()
-                        },
-                        onDismiss = {
-                            vm.onChooseSpaceTypeDismissed()
-                        }
+                        onDismiss = vm::clearVaultError
                     )
                 }
             }
-            LaunchedEffect(Unit) {
-                vm.commands.collect { command -> proceed(command) }
+
+            if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
+                ChooseSpaceTypeScreen(
+                    onCreateChatClicked = {
+                        vm.onCreateChatClicked()
+                    },
+                    onCreateSpaceClicked = {
+                        vm.onCreateSpaceClicked()
+                    },
+                    onJoinViaQrClicked = {
+                        vm.onJoinViaQrClicked()
+                    },
+                    onDismiss = {
+                        vm.onChooseSpaceTypeDismissed()
+                    }
+                )
             }
-            LaunchedEffect(Unit) {
-                vm.navigations.collect { command -> proceed(command) }
-            }
+        }
+        LaunchedEffect(Unit) {
+            vm.commands.collect { command -> proceed(command) }
+        }
+        LaunchedEffect(Unit) {
+            vm.navigations.collect { command -> proceed(command) }
         }
     }
 

@@ -1,10 +1,27 @@
 package com.anytypeio.anytype.presentation.wallpaper
 
+import com.anytypeio.anytype.core_models.SystemColor
+
 sealed class WallpaperView {
-    data class SolidColor(val code: String) : WallpaperView()
-    data class Gradient(val code: String) : WallpaperView()
+
+    abstract val isSelected: Boolean
+
+    data class SpaceColor(
+        override val isSelected: Boolean,
+        val systemColor: SystemColor?
+    ) : WallpaperView()
+
+    data class SolidColor(
+        override val isSelected: Boolean,
+        val code: String,
+    ) : WallpaperView()
+
+    data class Gradient(
+        override val isSelected: Boolean,
+        val code: String
+    ) : WallpaperView()
 
     companion object {
-        const val WALLPAPER_DEFAULT_ALPHA = 76
+        const val WALLPAPER_DEFAULT_ALPHA = 85
     }
 }

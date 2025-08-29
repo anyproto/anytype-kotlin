@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 
 sealed class UiSpaceSettingsState {
     data object Initial : UiSpaceSettingsState()
@@ -64,7 +65,7 @@ sealed class UiSpaceSettingsItem {
     data object ObjectTypes : UiSpaceSettingsItem()
     data object Fields : UiSpaceSettingsItem()
     data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
-    data class Wallpapers(val current: Wallpaper?) : UiSpaceSettingsItem()
+    data class Wallpapers(val wallpaper: WallpaperResult, val spaceIconView: SpaceIconView) : UiSpaceSettingsItem()
     data class AutoCreateWidgets(
         val widget: Id,
         val isAutoCreateEnabled: Boolean

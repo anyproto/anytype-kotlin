@@ -10,7 +10,6 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.NotificationManagerCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -19,7 +18,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
-import androidx.navigation.NavOptions.*
+import androidx.navigation.NavOptions.Builder
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.anytypeio.anytype.BuildConfig
@@ -30,9 +29,9 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
@@ -47,7 +46,6 @@ import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
@@ -55,7 +53,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
@@ -122,6 +120,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 launch {
                     vm.dispatcher.collect { command ->
                         proceedWithNotificationCommand(command)
+                    }
+                }
+                launch {
+                    vm.wallpaper.collect { wallpaper ->
+                        setWallpaper(wallpaper)
                     }
                 }
                 launch {
@@ -311,6 +314,33 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             Timber.d("onSaveInstanceStateNotNull")
         }
     }
+
+    private fun setWallpaper(result: WallpaperResult) {
+        when (result) {
+            is WallpaperResult.Gradient -> {
+                container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
+            }
+            is WallpaperResult.SolidColor -> {
+                try {
+                    container.setBackgroundColor(Color.parseColor(result.colorHex))
+                } catch (e: IllegalArgumentException) {
+                    Timber.w(e, "Invalid color format: ${result.colorHex}")
+                    container.setBackgroundResource(getDefaultDrawableResource())
+                }
+            }
+            WallpaperResult.None -> {
+                container.setBackgroundResource(getDefaultDrawableResource())
+            }
+        }
+        
+        container.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
+    }
+
+    /**
+     * Gets the default fallback drawable resource
+     */
+    @androidx.annotation.DrawableRes
+    private fun getDefaultDrawableResource(): Int = R.drawable.cover_gradient_default
 
     private fun setFragmentLifecycleCallbacks() {
         supportFragmentManager.registerFragmentLifecycleCallbacks(

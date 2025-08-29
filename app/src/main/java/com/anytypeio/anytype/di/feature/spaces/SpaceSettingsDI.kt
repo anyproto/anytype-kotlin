@@ -25,6 +25,10 @@ import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
+import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
+import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -81,6 +85,24 @@ object SpaceSettingsModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetWallpaper(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ) : SetWallpaper = SetWallpaper(
+        repo = repo,
+        store = WallpaperStore.Default,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetCoverGradientCollectionUseCase(
+    ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider)
 
     @Module
     interface Bindings {

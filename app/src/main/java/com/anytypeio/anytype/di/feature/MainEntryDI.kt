@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -76,7 +77,8 @@ object MainEntryModule {
         spaceInviteResolver: SpaceInviteResolver,
         spaceManager: SpaceManager,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        pendingIntentStore: PendingIntentStore
+        pendingIntentStore: PendingIntentStore,
+        observeSpaceWallpaper: ObserveSpaceWallpaper
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -96,7 +98,8 @@ object MainEntryModule {
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
         spaceViews = spaceViewSubscriptionContainer,
-        pendingIntentStore = pendingIntentStore
+        pendingIntentStore = pendingIntentStore,
+        observeSpaceWallpaper = observeSpaceWallpaper
     )
 
     @JvmStatic

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
@@ -158,4 +159,22 @@ fun CustomIconColor.colorRes() = when (this) {
     CustomIconColor.Teal -> R.color.palette_system_teal
     CustomIconColor.Green -> R.color.palette_system_green
     CustomIconColor.Transparent -> R.color.shape_transparent_primary
+}
+
+/**
+ * Gets the drawable resource ID for a gradient code
+ */
+@DrawableRes
+fun getGradientDrawableResource(gradientCode: String): Int {
+    return when (gradientCode) {
+        CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
+        CoverGradient.RED -> R.drawable.cover_gradient_red
+        CoverGradient.BLUE -> R.drawable.cover_gradient_blue
+        CoverGradient.TEAL -> R.drawable.cover_gradient_teal
+        CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
+        CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
+        CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
+        CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
+        else -> R.drawable.cover_gradient_default
+    }
 }

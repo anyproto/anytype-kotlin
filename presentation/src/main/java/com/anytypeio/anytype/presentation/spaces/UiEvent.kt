@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 
 sealed class UiEvent {
     data object OnBackPressed : UiEvent()
@@ -8,7 +9,6 @@ sealed class UiEvent {
     data class OnSaveDescriptionClicked(val description: String) : UiEvent()
     data class OnSaveTitleClicked(val title: String) : UiEvent()
     data class OnSpaceImagePicked(val uri: String) : UiEvent()
-    data object OnSelectWallpaperClicked : UiEvent()
 
     data object OnSpaceMembersClicked : UiEvent()
     data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
@@ -28,6 +28,8 @@ sealed class UiEvent {
     data object OnDebugClicked : UiEvent()
     data object OnSpaceInfoTitleClicked : UiEvent()
 
+    data class OnUpdateWallpaperClicked(val wallpaperView: WallpaperView) : UiEvent()
+
     data class OnAutoCreateWidgetSwitchChanged(
         val widget: Id,
         val isAutoCreateEnabled: Boolean
@@ -35,6 +37,7 @@ sealed class UiEvent {
 
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()
+        data object OnChangeIconColorClicked : IconMenu()
     }
 
     sealed class OnNotificationsSetting : UiEvent() {

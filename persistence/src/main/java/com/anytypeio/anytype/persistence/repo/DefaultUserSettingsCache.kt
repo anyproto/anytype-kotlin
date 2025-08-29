@@ -165,6 +165,24 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override fun observeWallpaper(space: Id): Flow<Wallpaper> {
+        return context.spacePrefsStore.data
+            .map { preferences ->
+                val spacePreference = preferences.preferences[space]
+                val wallpaperSetting = spacePreference?.wallpaperSetting
+
+                if (wallpaperSetting != null) {
+                    val setting = com.anytypeio.anytype.persistence.model.WallpaperSetting(
+                        type = wallpaperSetting.type,
+                        value = wallpaperSetting.value_
+                    )
+                    setting.asWallpaper()
+                } else {
+                    Wallpaper.Default
+                }
+            }
+    }
+
     override suspend fun getWallpaper(space: Id): Wallpaper {
         val spacePreferences = context.spacePrefsStore.data.first()
         val spacePref = spacePreferences.preferences[space]

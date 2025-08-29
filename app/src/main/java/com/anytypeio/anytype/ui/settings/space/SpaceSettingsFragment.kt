@@ -4,12 +4,10 @@ import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -21,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,32 +31,31 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment
 import com.anytypeio.anytype.ui.primitives.SpaceTypesFragment
+import com.anytypeio.anytype.ui.settings.DebugFragment
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
-import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
-import com.anytypeio.anytype.ui_settings.space.new_settings.SpaceSettingsContainer
-import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
-import com.anytypeio.anytype.ui.multiplayer.ShareSpaceQrCodeScreen
-import com.anytypeio.anytype.ui.settings.DebugFragment
+import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceSettingsScreen
 import java.io.File
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
+class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
 
     private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
@@ -69,11 +67,22 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
 
     private val vm by viewModels<SpaceSettingsViewModel> { factory }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        injectDependencies()
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroy() {
+        releaseDependencies()
+        super.onDestroy()
+    }
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ) = content {
         val showNotificationPermissionDialog = remember { mutableStateOf(false) }
+        val showWallpaperPicker = remember { mutableStateOf(false) }
         val notificationSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         val scope = rememberCoroutineScope()
 
@@ -88,65 +97,67 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
             }
         }
 
-        MaterialTheme(
-            typography = typography,
-            colors = MaterialTheme.colors.copy(
-                surface = colorResource(id = R.color.context_menu_background)
-            )
-        ) {
-            SpaceSettingsContainer(
-                uiState = vm.uiState.collectAsStateWithLifecycle().value,
-                uiEvent = vm::onUiEvent
-            )
-            LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
-            LaunchedEffect(Unit) {
-                vm.isDismissed.collect { isDismissed ->
-                    if (isDismissed) findNavController().popBackStack()
-                }
-            }
-            LaunchedEffect(Unit) {
-                observeCommands(showNotificationPermissionDialog)
-            }
+        NewSpaceSettingsScreen(
+            uiState = vm.uiState.collectAsStateWithLifecycle().value,
+            uiWallpaperState = vm.spaceWallpapers.collectAsStateWithLifecycle().value,
+            uiEvent = vm::onUiEvent
+        )
 
-            // Notification Permission Modal
-            if (showNotificationPermissionDialog.value) {
-                ModalBottomSheet(
-                    onDismissRequest = { 
-                        showNotificationPermissionDialog.value = false
-                        vm.onNotificationPermissionDismissed()
-                    },
-                    sheetState = notificationSheetState,
-                    containerColor = colorResource(id = R.color.background_secondary),
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                    dragHandle = null
-                ) {
-                    NotificationPermissionContent(
-                        onCancelClicked = { 
-                            scope.launch {
-                                notificationSheetState.hide()
-                            }.invokeOnCompletion {
-                                showNotificationPermissionDialog.value = false
-                                vm.onNotificationPermissionDismissed()
-                            }
-                        },
-                        onEnableNotifications = {
-                            vm.onNotificationPermissionRequested()
-                            launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            scope.launch {
-                                notificationSheetState.hide()
-                            }.invokeOnCompletion {
-                                showNotificationPermissionDialog.value = false
-                            }
-                        }
-                    )
-                }
-            }
-            
-            ShareSpaceQrCodeScreen(viewModel = vm)
+        LaunchedEffect(Unit) {
+            vm.toasts.collect { toast(it) }
         }
+
+        LaunchedEffect(Unit) {
+            vm.isDismissed.collect { isDismissed ->
+                if (isDismissed) findNavController().popBackStack()
+            }
+        }
+
+        LaunchedEffect(Unit) {
+            observeCommands(showNotificationPermissionDialog, showWallpaperPicker)
+        }
+
+        // Notification Permission Modal
+        if (showNotificationPermissionDialog.value) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    showNotificationPermissionDialog.value = false
+                    vm.onNotificationPermissionDismissed()
+                },
+                sheetState = notificationSheetState,
+                containerColor = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                dragHandle = null
+            ) {
+                NotificationPermissionContent(
+                    onCancelClicked = {
+                        scope.launch {
+                            notificationSheetState.hide()
+                        }.invokeOnCompletion {
+                            showNotificationPermissionDialog.value = false
+                            vm.onNotificationPermissionDismissed()
+                        }
+                    },
+                    onEnableNotifications = {
+                        vm.onNotificationPermissionRequested()
+                        launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        scope.launch {
+                            notificationSheetState.hide()
+                        }.invokeOnCompletion {
+                            showNotificationPermissionDialog.value = false
+                        }
+                    }
+                )
+            }
+        }
+
+        ShareSpaceQrCodeScreen(viewModel = vm)
     }
 
-    private suspend fun observeCommands(showNotificationPermissionDialog: MutableState<Boolean>) {
+    private suspend fun observeCommands(
+        showNotificationPermissionDialog: MutableState<Boolean>,
+        showWallpaperPicker: MutableState<Boolean>
+        ) {
         vm.commands.collect { command ->
             when (command) {
                 is Command.ShareSpaceDebug -> {
@@ -222,17 +233,14 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
                     }
                 }
                 is Command.OpenWallpaperPicker -> {
-                    runCatching {
-                        findNavController().navigate(R.id.wallpaperSetScreen)
-                    }.onFailure {
-                        Timber.e(it, "Error while opening space wallpaper picker")
-                    }
+                    showWallpaperPicker.value = true
                 }
                 is Command.SelectDefaultObjectType -> {
                    runCatching {
-                       AppDefaultObjectTypeFragment.newInstance(
+                       val fragment = AppDefaultObjectTypeFragment.newInstance(
                            excludeTypes = command.excludedTypeIds
-                       ).showChildFragment()
+                       )
+                       fragment.show(childFragmentManager, AppDefaultObjectTypeFragment::class.simpleName)
                    }.onFailure {
                        Timber.e(it, "Error while opening set-default-object-type screen")
                    }
@@ -311,21 +319,13 @@ class SpaceSettingsFragment : BaseComposeFragment(), ObjectTypeSelectionListener
         vm.onSelectObjectType(objType)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
-
-    override fun injectDependencies() {
+    fun injectDependencies() {
         val vmParams = SpaceSettingsViewModel.VmParams(space = SpaceId(space))
         componentManager().spaceSettingsComponent.get(params = vmParams).inject(this)
     }
 
-    override fun releaseDependencies() {
+    fun releaseDependencies() {
         componentManager().spaceSettingsComponent.release()
-    }
-
-    override fun onApplyWindowRootInsets(view: View) {
-        // Do nothing. Compose code will handle insets.
     }
 
     companion object {

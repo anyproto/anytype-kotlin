@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -42,7 +43,8 @@ class MainViewModelFactory @Inject constructor(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val pendingIntentStore: PendingIntentStore
+    private val pendingIntentStore: PendingIntentStore,
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -66,6 +68,7 @@ class MainViewModelFactory @Inject constructor(
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
         spaceViews = spaceViews,
-        pendingIntentStore = pendingIntentStore
+        pendingIntentStore = pendingIntentStore,
+        observeSpaceWallpaper = observeSpaceWallpaper
     ) as T
 }

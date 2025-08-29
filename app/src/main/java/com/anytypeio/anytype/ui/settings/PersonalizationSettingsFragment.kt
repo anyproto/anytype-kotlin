@@ -55,7 +55,7 @@ class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSett
                 ).showChildFragment()
             }
             is PersonalizationSettingsViewModel.Command.NavigateToWallpaperScreen -> {
-                findNavController().navigate(R.id.wallpaperSetScreen)
+
             }
             is PersonalizationSettingsViewModel.Command.Toast -> toast(command.msg)
             is PersonalizationSettingsViewModel.Command.ShowClearCacheAlert -> {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -48,34 +49,28 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_ui.widgets.computeSpaceBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 
-@Composable
-fun SpaceSettingsContainer(
-    uiState: UiSpaceSettingsState,
-    uiEvent: (UiEvent) -> Unit
-) {
-    if (uiState is UiSpaceSettingsState.SpaceSettings) {
-        NewSpaceSettingsScreen(
-            uiState = uiState,
-            uiEvent = uiEvent
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NewSpaceSettingsScreen(
-    uiState: UiSpaceSettingsState.SpaceSettings,
+    uiState: UiSpaceSettingsState,
+    uiWallpaperState: List<WallpaperView>,
     uiEvent: (UiEvent) -> Unit
 ) {
+
+    if (uiState !is UiSpaceSettingsState.SpaceSettings) return
+
     val initialName = uiState.name
     val initialDescription = uiState.description
 
@@ -83,15 +78,22 @@ fun NewSpaceSettingsScreen(
     var showEditTitle by remember { mutableStateOf(false) }
     var showTechInfo by remember { mutableStateOf(false) }
     var showNotificationsSettings by remember { mutableStateOf(false) }
+    val showWallpaperPicker = remember { mutableStateOf(false) }
+    val wallpaperSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
         topBar = {
-            Box(
-                modifier = Modifier
+            val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
+                Modifier
                     .windowInsetsPadding(WindowInsets.statusBars)
                     .fillMaxWidth()
+            } else {
+                Modifier.fillMaxWidth()
+            }
+            Box(
+                modifier = modifier
                     .height(48.dp)
             ) {
                 Box(
@@ -388,7 +390,7 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            uiEvent(UiEvent.OnSelectWallpaperClicked)
+                                            showWallpaperPicker.value = true
                                         },
                                     item = item
                                 )
@@ -437,6 +439,38 @@ fun NewSpaceSettingsScreen(
                         }
                     }
 
+                }
+            }
+
+            // Wallpaper Selection Modal
+            if (showWallpaperPicker.value) {
+                ModalBottomSheet(
+                    modifier = Modifier
+                        .windowInsetsPadding(WindowInsets.systemBars)
+                        .fillMaxSize(),
+                    onDismissRequest = {
+                        showWallpaperPicker.value = false
+                    },
+                    sheetState = wallpaperSheetState,
+                    containerColor = colorResource(id = R.color.background_secondary),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    dragHandle = {
+                        Dragger(
+                            modifier = Modifier.padding(vertical = 6.dp)
+                        )
+                    }
+                ) {
+                    WallpaperSelectBottomSheet(
+                        state = uiWallpaperState,
+                        onWallpaperSelected = { selectedWallpaper ->
+                            showWallpaperPicker.value = false
+                            uiEvent(
+                                UiEvent.OnUpdateWallpaperClicked(
+                                    wallpaperView = selectedWallpaper
+                                )
+                            )
+                        }
+                    )
                 }
             }
         }

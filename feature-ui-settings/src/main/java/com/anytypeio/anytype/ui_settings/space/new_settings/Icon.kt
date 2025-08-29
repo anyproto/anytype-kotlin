@@ -126,6 +126,22 @@ fun NewSpaceIcon(
                                 )
                             }
                         }
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                        DropdownMenuItem(
+                            onClick = {
+                                uiEvent(UiEvent.IconMenu.OnChangeIconColorClicked)
+                                isSpaceIconMenuExpanded.value = false
+                            },
+                        ) {
+                            Text(
+                                text = stringResource(R.string.space_settings_chage_space_icon_color),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        }
                     }
                 }
             }

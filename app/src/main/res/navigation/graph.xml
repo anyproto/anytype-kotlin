@@ -604,15 +604,9 @@
         android:label="fragment_user_settings"
         tools:layout="@layout/fragment_user_settings" />
     <dialog
-        android:id="@+id/wallpaperSetScreen"
-        android:name="com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment"
-        android:label="fragment_wallpaper_set"
-        tools:layout="@layout/fragment_wallpaper_select" />
-    <dialog
         android:id="@+id/appearanceScreen"
         android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
-        android:label="fragment_wallpaper_set"
-        tools:layout="@layout/fragment_wallpaper_select" />
+        android:label="fragment_wallpaper_set" />
     <dialog
         android:id="@+id/alertUpdateAppFragment"
         android:name="com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment"

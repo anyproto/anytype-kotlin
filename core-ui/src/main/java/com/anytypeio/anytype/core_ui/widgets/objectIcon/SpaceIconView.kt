@@ -12,7 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -23,15 +22,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.wallpaper.WallpaperUtils
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import timber.log.Timber
 
 @Composable
 fun SpaceIconView(
@@ -154,111 +149,6 @@ private fun SpacePlaceholder(
             textAlign = TextAlign.Center,
             color = colorResource(id = R.color.text_label_inversion)
         )
-    }
-}
-
-/**
- * Data class representing gradient colors for wallpaper backgrounds
- */
-data class GradientColors(
-    val startColor: Color,
-    val endColor: Color
-) {
-    fun toBrush(): Brush = Brush.linearGradient(
-        colors = listOf(startColor, endColor),
-        start = androidx.compose.ui.geometry.Offset(0f, 0f),
-        end = androidx.compose.ui.geometry.Offset(0f, Float.POSITIVE_INFINITY)
-    )
-}
-
-/**
- * Sealed class representing different background types for space icons
- */
-sealed class SpaceBackground {
-    data class SolidColor(val color: Color) : SpaceBackground()
-    data class Gradient(val brush: Brush) : SpaceBackground()
-    data object None : SpaceBackground()
-}
-
-/**
- * Computes the background for a SpaceIconView with priority:
- * 1. Wallpaper (gradient or color if available)
- * 2. Icon color for placeholders/images
- * 3. Default fallback
- *
- * @param icon The SpaceIconView to compute background for
- * @param wallpaper Optional wallpaper configuration
- */
-@Composable
-fun computeSpaceBackground(
-    icon: SpaceIconView,
-    wallpaper: Wallpaper? = null
-): SpaceBackground {
-    val result = WallpaperUtils.computeWallpaperResult(icon, wallpaper)
-    
-    return when (result) {
-        is WallpaperUtils.WallpaperResult.Gradient -> {
-            val gradient = getWallpaperGradientByCode(result.gradientCode)
-            if (gradient != null) {
-                SpaceBackground.Gradient(gradient.toBrush())
-            } else {
-                SpaceBackground.None
-            }
-        }
-        is WallpaperUtils.WallpaperResult.SolidColor -> {
-            try {
-                SpaceBackground.SolidColor(
-                    Color(android.graphics.Color.parseColor(result.colorHex))
-                )
-            } catch (e: IllegalArgumentException) {
-                Timber.w(e, "Invalid color format: ${result.colorHex}")
-                SpaceBackground.None
-            }
-        }
-        WallpaperUtils.WallpaperResult.None -> SpaceBackground.None
-    }
-}
-
-
-/**
- * Gets gradient colors for wallpaper gradients using actual start/end colors
- */
-@Composable
-private fun getWallpaperGradientByCode(gradientCode: String): GradientColors? {
-    return when (gradientCode) {
-        CoverGradient.YELLOW -> GradientColors(
-            startColor = colorResource(R.color.yellowStart),
-            endColor = colorResource(R.color.yellowEnd)
-        )
-        CoverGradient.RED -> GradientColors(
-            startColor = colorResource(R.color.redStart),
-            endColor = colorResource(R.color.redEnd)
-        )
-        CoverGradient.BLUE -> GradientColors(
-            startColor = colorResource(R.color.blueStart),
-            endColor = colorResource(R.color.blueEnd)
-        )
-        CoverGradient.TEAL -> GradientColors(
-            startColor = colorResource(R.color.tealStart),
-            endColor = colorResource(R.color.tealEnd)
-        )
-        CoverGradient.PINK_ORANGE -> GradientColors(
-            startColor = colorResource(R.color.pinkOrangeStart),
-            endColor = colorResource(R.color.pinkOrangeEnd)
-        )
-        CoverGradient.BLUE_PINK -> GradientColors(
-            startColor = colorResource(R.color.bluePinkStart),
-            endColor = colorResource(R.color.bluePinkEnd)
-        )
-        CoverGradient.GREEN_ORANGE -> GradientColors(
-            startColor = colorResource(R.color.greenOrangeStart),
-            endColor = colorResource(R.color.greenOrangeEnd)
-        )
-        CoverGradient.SKY -> GradientColors(
-            startColor = colorResource(R.color.skyStart),
-            endColor = colorResource(R.color.skyEnd)
-        )
-        else -> null
     }
 }
 

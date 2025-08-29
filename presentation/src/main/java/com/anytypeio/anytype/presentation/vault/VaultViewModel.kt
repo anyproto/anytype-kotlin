@@ -52,7 +52,6 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenChat
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenDateObject
@@ -61,6 +60,7 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
 import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
+import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -422,16 +422,22 @@ class VaultViewModel(
             emptyList()
         }
 
+        val icon = space.spaceIcon(urlBuilder)
+
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
         val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
 
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
+        val wallpaperResult = computeWallpaperResult(
+            icon = icon,
+            wallpaper = wallpaper
+        )
         
         return VaultSpaceView.Chat(
             space = space,
-            icon = space.spaceIcon(urlBuilder),
+            icon = icon,
             chatPreview = chatPreview,
             creatorName = creatorName,
             messageText = messageText,
@@ -441,7 +447,7 @@ class VaultViewModel(
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             isMuted = isMuted,
-            wallpaper = wallpaper
+            wallpaper = wallpaperResult
         )
     }
 
@@ -464,6 +470,10 @@ class VaultViewModel(
         val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
         
         val wallpaper = space.targetSpaceId?.let { wallpapers[it] } ?: Wallpaper.Default
+        val wallpaperResult = computeWallpaperResult(
+            icon = icon,
+            wallpaper = wallpaper
+        )
         
         return VaultSpaceView.Space(
             space = space,
@@ -471,7 +481,7 @@ class VaultViewModel(
             accessType = accessType,
             isOwner = isOwner,
             isMuted = isMuted,
-            wallpaper = wallpaper
+            wallpaper = wallpaperResult
         )
     }
 

@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -42,10 +41,10 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -53,8 +52,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceBackground
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
@@ -65,7 +63,8 @@ fun VaultSpaceCard(
     subtitle: String,
     icon: SpaceIconView,
     isPinned: Boolean = false,
-    spaceView: VaultSpaceView? = null,
+    spaceBackground: SpaceBackground,
+    spaceView: VaultSpaceView,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
@@ -75,11 +74,6 @@ fun VaultSpaceCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
-    val spaceBackground = computeSpaceBackground(
-        icon = icon,
-        wallpaper = spaceView?.wallpaper
-    )
-
     val updatedModifier = when (spaceBackground) {
         is SpaceBackground.SolidColor -> modifier
             .fillMaxSize()
@@ -127,28 +121,26 @@ fun VaultSpaceCard(
         )
 
         // Include dropdown menu inside the card
-        spaceView?.let { space ->
-            SpaceActionsDropdownMenu(
-                expanded = expandedSpaceId == space.space.id,
-                onDismiss = onDismissMenu,
-                isMuted = spaceView.isMuted,
-                isPinned = spaceView.isPinned,
-                currentPinnedCount = currentPinnedCount,
-                onMuteToggle = {
-                    spaceView.space.targetSpaceId?.let {
-                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-                    }
-                },
-                onPinToggle = {
-                    spaceView.space.id.let {
-                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
-                    }
-                },
-                onSpaceSettings = {
-                    spaceView.space.id.let { onSpaceSettings(it) }
+        SpaceActionsDropdownMenu(
+            expanded = expandedSpaceId == spaceView.space.id,
+            onDismiss = onDismissMenu,
+            isMuted = spaceView.isMuted,
+            isPinned = spaceView.isPinned,
+            currentPinnedCount = currentPinnedCount,
+            onMuteToggle = {
+                spaceView.space.targetSpaceId?.let {
+                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
                 }
-            )
-        }
+            },
+            onPinToggle = {
+                spaceView.space.id.let {
+                    if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                }
+            },
+            onSpaceSettings = {
+                spaceView.space.id.let { onSpaceSettings(it) }
+            }
+        )
     }
 }
 
@@ -195,6 +187,7 @@ fun VaultChatCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: SpaceIconView,
+    spaceBackground: SpaceBackground,
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
@@ -205,7 +198,7 @@ fun VaultChatCard(
     isMuted: Boolean? = null,
     isPinned: Boolean = false,
     maxPinnedSpaces: Int,
-    spaceView: VaultSpaceView? = null,
+    spaceView: VaultSpaceView,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
@@ -215,10 +208,6 @@ fun VaultChatCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
-    val spaceBackground = computeSpaceBackground(
-        icon = icon,
-        wallpaper = spaceView?.wallpaper
-    )
 
     val updatedModifier = when (spaceBackground) {
         is SpaceBackground.SolidColor -> modifier
@@ -274,28 +263,26 @@ fun VaultChatCard(
         )
 
         // Include dropdown menu inside the card
-        spaceView?.let { space ->
-            SpaceActionsDropdownMenu(
-                expanded = expandedSpaceId == space.space.id,
-                onDismiss = onDismissMenu,
-                isMuted = spaceView.isMuted,
-                isPinned = spaceView.isPinned,
-                currentPinnedCount = currentPinnedCount,
-                onMuteToggle = {
-                    spaceView.space.targetSpaceId?.let {
-                        if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-                    }
-                },
-                onPinToggle = {
-                    spaceView.space.id.let {
-                        if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
-                    }
-                },
-                onSpaceSettings = {
-                    spaceView.space.id.let { onSpaceSettings(it) }
+        SpaceActionsDropdownMenu(
+            expanded = expandedSpaceId == spaceView.space.id,
+            onDismiss = onDismissMenu,
+            isMuted = spaceView.isMuted,
+            isPinned = spaceView.isPinned,
+            currentPinnedCount = currentPinnedCount,
+            onMuteToggle = {
+                spaceView.space.targetSpaceId?.let {
+                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
                 }
-            )
-        }
+            },
+            onPinToggle = {
+                spaceView.space.id.let {
+                    if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
+                }
+            },
+            onSpaceSettings = {
+                spaceView.space.id.let { onSpaceSettings(it) }
+            }
+        )
     }
 }
 
@@ -714,7 +701,15 @@ fun VaultDataSpaceCardPreview() {
             subtitle = "Private space",
             icon = SpaceIconView.ChatSpace.Placeholder(),
             currentPinnedCount = 3,
-            isPinned = true
+            isPinned = true,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
         )
     }
 
@@ -759,7 +754,15 @@ fun ChatWithMentionAndMessage() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3
+            currentPinnedCount = 3,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
         )
     }
 }
@@ -802,7 +805,15 @@ fun ChatWithMention() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3
+            currentPinnedCount = 3,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
         )
     }
 }
@@ -845,7 +856,15 @@ fun ChatPreview() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3
+            currentPinnedCount = 3,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
         )
     }
 }

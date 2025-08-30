@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.publishing.Publishing
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -1178,6 +1179,18 @@ class BlockDataRepository(
 
     override suspend fun debugStats(): String {
         return remote.debugStats()
+    }
+
+    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
+        return remote.publishingGetStatus(command)
+    }
+
+    override suspend fun publishingCreate(command: Command.Publishing.Create): String {
+        return remote.publishingCreate(command)
+    }
+
+    override suspend fun publishingRemove(command: Command.Publishing.Remove) {
+        remote.publishingRemove(command)
     }
 
     override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {

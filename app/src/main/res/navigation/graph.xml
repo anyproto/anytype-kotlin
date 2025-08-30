@@ -83,6 +83,11 @@
             android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
             android:label="ObjectTypeFieldsScreen" />
 
+        <dialog
+            android:id="@+id/publishToWebScreen"
+            android:name="com.anytypeio.anytype.ui.publishtoweb.PublishToWebFragment"
+            android:label="PublishToWebScreen"/>
+
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />

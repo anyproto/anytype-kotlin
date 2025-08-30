@@ -2781,4 +2781,43 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun publishingGetStatus(request: Rpc.Publishing.GetStatus.Request): Rpc.Publishing.GetStatus.Response {
+        val encoded = Service.publishingGetStatus(
+            Rpc.Publishing.GetStatus.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Publishing.GetStatus.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Publishing.GetStatus.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun publishingCreate(request: Rpc.Publishing.Create.Request): Rpc.Publishing.Create.Response {
+        val encoded = Service.publishingCreate(
+            Rpc.Publishing.Create.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Publishing.Create.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Publishing.Create.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun publishingRemove(request: Rpc.Publishing.Remove.Request): Rpc.Publishing.Remove.Response {
+        val encoded = Service.publishingRemove(
+            Rpc.Publishing.Remove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Publishing.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Publishing.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

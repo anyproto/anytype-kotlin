@@ -40,7 +40,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
@@ -413,7 +413,7 @@ private fun SpaceCardItemPreview() {
         spaceName = "Architecture",
         spaceStatus = SpaceStatus.SPACE_ACTIVE,
         permissions = SpaceMemberPermissions.OWNER,
-        spaceIcon = SpaceIconView.Placeholder(),
+        spaceIcon = SpaceIconView.DataSpace.Placeholder(),
         onCancelJoinRequestClicked = {},
         onLeaveSpaceClicked = {},
         onDeleteSpaceClicked = {},

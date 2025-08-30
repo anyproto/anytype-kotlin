@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_models
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 
@@ -511,6 +512,11 @@ sealed class Command {
         val network: Id?,
         val inviteContentId: Id,
         val inviteFileKey: String
+    )
+
+    data class SpaceChangeInvite(
+        val space: SpaceId,
+        val permissions: SpaceMemberPermissions
     )
 
     data class ApproveSpaceLeaveRequest(

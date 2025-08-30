@@ -55,16 +55,20 @@ interface SpaceViewSubscriptionContainer {
         private val jobs = mutableListOf<Job>()
 
         init {
+            logger.logInfo("SpaceViewSubscriptionContainer initialized")
             scope.launch {
                 awaitAccountStart.state().collect { state ->
                     when(state) {
                         AwaitAccountStartManager.State.Init -> {
+                            logger.logInfo("AwaitAccountStartManager.State.Init - waiting for account start")
                             // Do nothing
                         }
                         AwaitAccountStartManager.State.Started -> {
+                            logger.logInfo("AwaitAccountStartManager.State.Started - starting subscription")
                             start()
                         }
                         AwaitAccountStartManager.State.Stopped -> {
+                            logger.logInfo("AwaitAccountStartManager.State.Stopped - stopping subscription")
                             stop()
                         }
                     }
@@ -91,6 +95,7 @@ interface SpaceViewSubscriptionContainer {
         }
 
         override fun start() {
+            logger.logInfo("Starting SpaceViewSubscriptionContainer")
             jobs += scope.launch(dispatchers.io) {
                 val techSpace = config.getOrNull()?.techSpace
                 if (techSpace != null) {
@@ -175,6 +180,7 @@ interface SpaceViewSubscriptionContainer {
         }
 
         override fun stop() {
+            logger.logInfo("Stopping SpaceViewSubscriptionContainer")
             jobs.forEach { it.cancel() }
             scope.launch(dispatchers.io) {
                 container.unsubscribe(listOf(GLOBAL_SUBSCRIPTION))

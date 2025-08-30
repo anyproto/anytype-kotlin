@@ -221,8 +221,6 @@ fun VaultScreenContent(
                             is VaultSpaceView.Chat -> {
                                 VaultChatCard(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(80.dp)
                                         .combinedClickable(
                                             onClick = {
                                                 onSpaceClicked(item)
@@ -231,7 +229,6 @@ fun VaultScreenContent(
                                                 expandedSpaceId = item.space.id
                                             }
                                         )
-                                        .padding(horizontal = 16.dp)
                                         .graphicsLayer(alpha = alpha.value)
                                         .animateItem()
                                         .longPressDraggableHandle(
@@ -332,14 +329,11 @@ fun VaultScreenContent(
                             VaultChatCard(
                                 modifier = Modifier
                                     .animateItem()
-                                    .fillMaxWidth()
-                                    .height(80.dp)
                                     .then(
                                         createCombinedClickableModifier(
                                             onClick = { onSpaceClicked(item) },
                                             onLongClick = { expandedSpaceId = item.space.id }
-                                        ))
-                                    .padding(horizontal = 16.dp),
+                                        )),
                                 title = item.space.name.orEmpty(),
                                 icon = item.icon,
                                 creatorName = item.creatorName,

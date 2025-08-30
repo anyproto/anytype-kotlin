@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -323,7 +324,7 @@ class HomeScreenViewModelTest {
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubSpaceView(),
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.DataSpace.Placeholder(),
         type = UNKNOWN_SPACE_TYPE,
         membersCount = 0
     )
@@ -2880,6 +2881,9 @@ class HomeScreenViewModelTest {
         }
     }
 
+    @Mock
+    private lateinit var copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2924,7 +2928,6 @@ class HomeScreenViewModelTest {
         createDataViewObject = createDataViewObject,
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
-        clearLastOpenedSpace = clearLastOpenedSpace,
         clearLastOpenedObject = clearLastOpenedObject,
         spaceBinWidgetContainer = SpaceBinWidgetContainer(
             container = storelessSubscriptionContainer,
@@ -2940,7 +2943,8 @@ class HomeScreenViewModelTest {
         deleteSpace = deleteSpace,
         setAsFavourite = setObjectListIsFavorite,
         chatPreviews = chacPreviewContainer,
-        notificationPermissionManager = notificationPermissionManager
+        notificationPermissionManager = notificationPermissionManager,
+        copyInviteLinkToClipboard = copyInviteLinkToClipboard
     )
 
     companion object {

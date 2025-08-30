@@ -4,6 +4,7 @@ plugins {
     id 'com.google.devtools.ksp'
     alias(libs.plugins.compose.compiler)
     id "com.google.firebase.appdistribution"
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 if (rootProject.ext.onCi) {
@@ -208,7 +209,7 @@ dependencies {
     implementation libs.timber
     implementation libs.gson
     implementation libs.pickT
-    implementation libs.emojiCompat
+    implementation libs.emoji2
     implementation libs.navigationCompose
     implementation libs.playBilling
     implementation libs.lifecycleProcess

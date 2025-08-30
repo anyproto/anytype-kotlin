@@ -6,7 +6,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -24,10 +23,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
-import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -78,18 +75,6 @@ fun NewSpaceIcon(
         )
         if (isEditEnabled) {
             Box {
-                Text(
-                    modifier = Modifier
-                        .padding(top = 8.dp)
-                        .noRippleThrottledClickable {
-                            if (isEditEnabled) {
-                                isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
-                            }
-                        },
-                    text = stringResource(R.string.space_settings_icon_title),
-                    style = Caption1Medium,
-                    color = colorResource(R.color.text_secondary)
-                )
                 MaterialTheme(
                     shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp))
                 ) {
@@ -123,7 +108,7 @@ fun NewSpaceIcon(
                                 )
                             }
                         }
-                        if (icon is SpaceIconView.Image) {
+                        if (icon is SpaceIconView.DataSpace.Image) {
                             Divider(
                                 thickness = 0.5.dp,
                                 color = colorResource(id = R.color.shape_primary)

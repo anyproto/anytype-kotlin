@@ -233,6 +233,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackground
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateLink
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
@@ -247,7 +248,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateE
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsSlashMenuEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
@@ -2095,7 +2096,7 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithAlignmentUpdate(targets: List<Id>, alignment: Block.Align) {
+    private fun proceedWithAlignmentUpdate(targets: List<Id>, alignment: Block.Align, route: String? = null) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.Align(
@@ -2107,7 +2108,8 @@ class EditorViewModel(
             sendAnalyticsBlockAlignEvent(
                 analytics = analytics,
                 count = targets.size,
-                align = alignment
+                align = alignment,
+                route = route
             )
         }
     }
@@ -2870,12 +2872,13 @@ class EditorViewModel(
 
     // ----------------- Turn Into -----------------------------------------
 
-    private fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock) {
+    private fun onTurnIntoBlockClicked(target: String, uiBlock: UiBlock, route: String? = null) {
         Timber.d("onTurnIntoBlockClicked, taget:[$target] uiBlock:[$uiBlock]")
         proceedUpdateBlockStyle(
             targets = listOf(target),
             uiBlock = uiBlock,
-            errorAction = { sendToast("Cannot convert block to $uiBlock") }
+            errorAction = { sendToast("Cannot convert block to $uiBlock") },
+            route = route
         )
     }
 
@@ -2916,7 +2919,8 @@ class EditorViewModel(
         targets: List<String>,
         uiBlock: UiBlock,
         action: (() -> Unit)? = null,
-        errorAction: (() -> Unit)? = null
+        errorAction: (() -> Unit)? = null,
+        route: String? = null
     ) {
         when (uiBlock) {
             UiBlock.TEXT, UiBlock.HEADER_ONE,
@@ -2926,7 +2930,7 @@ class EditorViewModel(
             UiBlock.TOGGLE, UiBlock.CODE,
             UiBlock.CALLOUT -> {
                 action?.invoke()
-                proceedWithTurnIntoStyle(targets, uiBlock.style())
+                proceedWithTurnIntoStyle(targets, uiBlock.style(), route)
             }
             UiBlock.PAGE -> {
                 action?.invoke()
@@ -2951,14 +2955,16 @@ class EditorViewModel(
 
     private fun proceedWithTurnIntoStyle(
         targets: List<String>,
-        style: Content.Text.Style
+        style: Content.Text.Style,
+        route: String? = null
     ) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Text.TurnInto(
                     context = context,
                     targets = targets,
-                    style = style
+                    style = style,
+                    route = route
                 )
             )
         }
@@ -3389,7 +3395,8 @@ class EditorViewModel(
     }
 
     private fun onAddNewObjectClicked(
-        objectTypeView: ObjectTypeView
+        objectTypeView: ObjectTypeView,
+        fromSlashMenu: Boolean = false
     ) {
         val position: Position
 
@@ -3445,7 +3452,11 @@ class EditorViewModel(
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
                     val spaceParams = provideParams(vmParams.space.id)
-                    sendAnalyticsCreateLink(analytics, spaceParams)
+                    sendAnalyticsCreateLink(
+                        analytics = analytics, 
+                        spaceParams = spaceParams,
+                        route = if (fromSlashMenu) EventsDictionary.Routes.slashMenu else null
+                    )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objPowerTool,
@@ -5017,7 +5028,10 @@ class EditorViewModel(
     //region SLASH WIDGET
     fun onStartSlashWidgetClicked() {
         dispatch(Command.AddSlashWidgetTriggerToFocusedBlock)
-        viewModelScope.sendAnalyticsSlashMenuEvent(analytics)
+        viewModelScope.sendAnalyticsScreenSlashMenuEvent(
+            analytics = analytics,
+            route = EventsDictionary.Routes.slash
+        )
     }
 
     fun onSlashItemClicked(item: SlashItem) {
@@ -5034,6 +5048,10 @@ class EditorViewModel(
         Timber.d("onSlashTextWatcherEvent, event:[$event]")
         when (event) {
             is SlashEvent.Start -> {
+                viewModelScope.sendAnalyticsScreenSlashMenuEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.keyboardBar
+                )
                 slashStartIndex = event.slashStart
                 filterSearchEmptyCount = 0
                 val panelEvent = ControlPanelMachine.Event.Slash.OnStart(
@@ -5122,6 +5140,10 @@ class EditorViewModel(
     private fun proceedWithSlashItem(item: SlashItem, targetId: Id) {
         when (item) {
             is SlashItem.Main.Style -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Style"
+                )
                 val items =
                     listOf(SlashItem.Subheader.StyleWithBack) + getSlashWidgetStyleItems(
                         slashViewType
@@ -5133,6 +5155,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Media -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Media"
+                )
                 val items =
                     listOf(SlashItem.Subheader.MediaWithBack) + SlashExtensions.getSlashWidgetMediaItems()
                 onSlashWidgetStateChanged(
@@ -5142,9 +5168,17 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Properties -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Properties"
+                )
                 getProperties { proceedWithProperties(it) }
             }
             is SlashItem.Main.Objects -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Objects"
+                )
                 proceedWithGettingObjectTypes(
                     sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
                 ) {
@@ -5152,6 +5186,10 @@ class EditorViewModel(
                 }
             }
             is SlashItem.Main.Other -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Other"
+                )
                 val items =
                     listOf(SlashItem.Subheader.OtherWithBack) + SlashExtensions.getSlashWidgetOtherItems()
                 onSlashWidgetStateChanged(
@@ -5161,6 +5199,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Actions -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Actions"
+                )
                 val items =
                     listOf(SlashItem.Subheader.ActionsWithBack) + SlashExtensions.getSlashWidgetActionItems()
                 onSlashWidgetStateChanged(
@@ -5170,6 +5212,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Alignment -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Alignment"
+                )
                 val items =
                     listOf(SlashItem.Subheader.AlignmentWithBack) + getSlashWidgetAlignmentItems(
                         slashViewType
@@ -5181,6 +5227,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Color -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Color"
+                )
                 val block = blocks.find { it.id == targetId }
                 if (block == null) {
                     Timber.d("Could not find target block for slash item action: color")
@@ -5201,6 +5251,10 @@ class EditorViewModel(
                 )
             }
             is SlashItem.Main.Background -> {
+                viewModelScope.sendAnalyticsClickSlashMenuEvent(
+                    analytics = analytics,
+                    type = "Background"
+                )
                 val block = blocks.find { it.id == targetId }
                 if (block == null) {
                     Timber.d("Could not find target block for slash item action: background")
@@ -5246,7 +5300,8 @@ class EditorViewModel(
                         )
                         analytics.sendAnalyticsUpdateTextMarkupEvent(
                             markupType = type,
-                            storeOfObjectTypes = storeOfObjectTypes
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            route = EventsDictionary.Routes.slashMenu
                         )
                     }
                 }
@@ -5265,7 +5320,7 @@ class EditorViewModel(
             is SlashItem.ObjectType -> {
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                onAddNewObjectClicked(objectTypeView = item.objectTypeView)
+                onAddNewObjectClicked(objectTypeView = item.objectTypeView, fromSlashMenu = true)
             }
             is SlashItem.Property -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
@@ -5537,13 +5592,15 @@ class EditorViewModel(
                 is SlashItem.Color.Background -> {
                     sendAnalyticsBlockBackgroundEvent(
                         analytics = analytics,
-                        color = item.themeColor.code
+                        color = item.themeColor.code,
+                        route = EventsDictionary.Routes.slashMenu
                     )
                 }
                 is SlashItem.Color.Text -> {
                     analytics.sendAnalyticsUpdateTextMarkupEvent(
                         markupType = Content.Text.Mark.Type.TEXT_COLOR,
-                        storeOfObjectTypes = storeOfObjectTypes
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.slashMenu
                     )
                 }
             }
@@ -5574,7 +5631,8 @@ class EditorViewModel(
         val uiBlock = item.convertToUiBlock()
         onTurnIntoBlockClicked(
             target = targetId,
-            uiBlock = uiBlock
+            uiBlock = uiBlock,
+            route = EventsDictionary.Routes.slashMenu
         )
     }
 
@@ -5661,7 +5719,8 @@ class EditorViewModel(
         }
         proceedWithAlignmentUpdate(
             targets = listOf(targetId),
-            alignment = alignment
+            alignment = alignment,
+            route = EventsDictionary.Routes.slashMenu
         )
     }
 
@@ -5709,7 +5768,8 @@ class EditorViewModel(
                 context = context,
                 target = targetId,
                 position = Position.BOTTOM,
-                prototype = Prototype.Relation(key = relationKey)
+                prototype = Prototype.Relation(key = relationKey),
+                route = EventsDictionary.Routes.slashMenu
             )
         }
         viewModelScope.launch {

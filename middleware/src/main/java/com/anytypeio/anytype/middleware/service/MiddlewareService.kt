@@ -555,6 +555,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun spaceStopSharing(request: Rpc.Space.StopSharing.Request): Rpc.Space.StopSharing.Response
 
+    @Throws(Exception::class)
+    fun spaceChangeInvite(request: Rpc.Space.InviteChange.Request): Rpc.Space.InviteChange.Response
+
     //endregion
 
     //region GALLERY EXPERIENCE

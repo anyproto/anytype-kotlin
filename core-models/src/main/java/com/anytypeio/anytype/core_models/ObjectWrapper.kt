@@ -369,6 +369,11 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus == SpaceStatus.UNKNOWN
             }
 
+        val isPossibleToShare : Boolean get() {
+            return spaceAccessType == SpaceAccessType.PRIVATE
+                    || spaceAccessType == SpaceAccessType.SHARED
+        }
+
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
                 ?.let { code ->

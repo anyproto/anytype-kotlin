@@ -893,8 +893,8 @@ class BlockMiddleware(
 
     override suspend fun generateSpaceInviteLink(
         space: SpaceId,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        inviteType: InviteType?,
+        permissions: SpaceMemberPermissions?
     ): SpaceInviteLink {
         return middleware.generateSpaceInviteLink(
             space = space,
@@ -1163,5 +1163,9 @@ class BlockMiddleware(
 
     override suspend fun publishingRemove(command: Command.Publishing.Remove) {
         middleware.publishingRemove(command)
+    }
+
+    override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
+        middleware.spaceChangeInvite(command)
     }
 }

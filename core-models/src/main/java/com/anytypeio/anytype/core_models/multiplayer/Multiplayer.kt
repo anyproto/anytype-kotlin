@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.core_models.multiplayer
 
+import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 data class SpaceInviteLink(
     val fileKey: String,
-    val contentId: String
+    val contentId: String,
+    val inviteType: InviteType,
+    val permissions: SpaceMemberPermissions
 ) {
     val scheme = "https://invite.any.coop/$contentId#$fileKey"
 }
@@ -66,6 +69,7 @@ sealed class SpaceInviteError : Exception() {
     class SpaceDeleted : SpaceInviteError()
     class InvalidInvite : SpaceInviteError()
     class InvalidNotFound : SpaceInviteError()
+    data object InviteNotActive : SpaceInviteError()
 }
 
 sealed class MultiplayerError : Exception() {
@@ -74,6 +78,8 @@ sealed class MultiplayerError : Exception() {
         class SpaceIsDeleted : Generic()
         class LimitReached : Generic()
         class RequestFailed : Generic()
+        class NoSuchSpace : Generic()
+        class IncorrectPermissions : Generic()
     }
 }
 

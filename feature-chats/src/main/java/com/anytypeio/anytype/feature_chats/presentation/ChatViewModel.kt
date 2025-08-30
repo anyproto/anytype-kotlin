@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.core_utils.tools.DEFAULT_URL_REGEX
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
@@ -57,6 +56,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
+import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
@@ -184,10 +184,7 @@ class ChatViewModel @Inject constructor(
                     val isMuted = NotificationStateCalculator.calculateMutedState(view, notificationPermissionManager)
                     HeaderView.Default(
                         title = view.name.orEmpty(),
-                        icon = view.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = SpaceGradientProvider.Default
-                        ),
+                        icon = view.spaceIcon(builder = urlBuilder),
                         showIcon = true,
                         isMuted = isMuted
                     )
@@ -350,7 +347,14 @@ class ChatViewModel @Inject constructor(
                             msg = content?.text.orEmpty(),
                             parts = content?.text
                                 .orEmpty()
-                                .splitByMarks(marks = content?.marks.orEmpty())
+                                .let { text ->
+                                    // Add detected links (URLs, emails, phones) to existing marks
+                                    val enhancedMarks = LinkDetector.addLinkMarksToText(
+                                        text = text,
+                                        existingMarks = content?.marks.orEmpty()
+                                    )
+                                    text.splitByMarks(marks = enhancedMarks)
+                                }
                                 .map { (part, styles) ->
                                     ChatView.Message.Content.Part(
                                         part = part,
@@ -595,28 +599,14 @@ class ChatViewModel @Inject constructor(
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
         viewModelScope.launch {
-            val urlRegex = Regex(DEFAULT_URL_REGEX)
-            val parsedUrls = buildList {
-                urlRegex.findAll(msg).forEach { match ->
-                    val range = match.range
-                    // Adjust the range to include the last character (inclusive end range)
-                    val adjustedRange = range.first..range.last + 1
-                    val url = match.value
-
-                    // Check if a LINK markup already exists in the same range
-                    if (markup.none { it.range == adjustedRange && it.type == Block.Content.Text.Mark.Type.LINK }) {
-                        add(
-                            Block.Content.Text.Mark(
-                                range = adjustedRange,
-                                type = Block.Content.Text.Mark.Type.LINK,
-                                param = url
-                            )
-                        )
-                    }
-                }
-            }
-
-            val normalizedMarkup = (markup + parsedUrls).sortedBy { it.range.first }
+            // Use LinkDetector to find all types of links (URLs, emails, phones)
+            val detectedLinkMarks = LinkDetector.addLinkMarksToText(
+                text = msg,
+                existingMarks = markup
+            )
+            
+            // The LinkDetector already handles deduplication, so we can use its result directly
+            val normalizedMarkup = detectedLinkMarks.sortedBy { it.range.first }
 
             var shouldClearChatTempFolder = false
 

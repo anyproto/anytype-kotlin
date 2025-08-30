@@ -21,8 +21,11 @@ import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.Layout
@@ -44,7 +47,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -52,6 +55,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.computeSpaceBackgroundColor
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
@@ -72,24 +76,37 @@ fun VaultSpaceCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
+    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
+    val computeSpaceBackgroundColor = computeSpaceBackgroundColor(
+        icon = icon,
+        wallpaper = spaceView?.wallpaper,
+        backgroundColor = backgroundColor
+    )
+
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                color = computeSpaceBackgroundColor.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
             .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 56.dp,
+            mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart)
+                .align(Alignment.CenterStart),
+            backgroundColor = backgroundColor
         )
         ContentSpace(
             title = title,
             subtitle = subtitle,
             isPinned = isPinned
         )
-        
+
         // Include dropdown menu inside the card
         spaceView?.let { space ->
             SpaceActionsDropdownMenu(
@@ -125,7 +142,7 @@ private fun ContentSpace(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 68.dp, top = 9.dp)
+            .padding(start = 80.dp, top = 12.1.dp)
     ) {
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
@@ -140,16 +157,14 @@ private fun ContentSpace(
             Text(
                 text = subtitle,
                 style = Title3,
-                color = colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.control_transparent_secondary),
                 modifier = Modifier.weight(1f),
             )
             if (isPinned) {
                 Image(
                     painter = painterResource(R.drawable.ic_pin_18),
                     contentDescription = stringResource(R.string.content_desc_pin),
-                    modifier = Modifier
-                        .size(18.dp),
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                    modifier = Modifier.size(18.dp)
                 )
             }
         }
@@ -181,14 +196,30 @@ fun VaultChatCard(
     onSpaceSettings: (Id) -> Unit = {},
     currentPinnedCount: Int
 ) {
+    val backgroundColor = remember { mutableStateOf(Color.Transparent) }
+    val computeSpaceBackgroundColor = computeSpaceBackgroundColor(
+        icon = icon,
+        wallpaper = spaceView?.wallpaper,
+        backgroundColor = backgroundColor
+    )
+
     Box(
         modifier = modifier
+            .fillMaxWidth()
+            .height(96.dp)
+            .padding(horizontal = 16.dp)
+            .background(
+                color = computeSpaceBackgroundColor.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp)
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 56.dp,
+            mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart)
+                .align(Alignment.CenterStart),
+            backgroundColor = backgroundColor
         )
         ContentChat(
             title = title,
@@ -202,7 +233,7 @@ fun VaultChatCard(
             isMuted = isMuted,
             isPinned = isPinned
         )
-        
+
         // Include dropdown menu inside the card
         spaceView?.let { space ->
             SpaceActionsDropdownMenu(
@@ -246,7 +277,7 @@ private fun BoxScope.ContentChat(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(start = 68.dp, top = 8.dp),
+            .padding(start = 80.dp, top = 12.1.dp),
         verticalArrangement = Arrangement.Top
     ) {
         TitleRow(
@@ -275,7 +306,7 @@ private fun BoxScope.ContentChat(
                 modifier = Modifier.weight(1f),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                color = colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.control_transparent_secondary),
             )
 
             Row(
@@ -286,8 +317,8 @@ private fun BoxScope.ContentChat(
                     Box(
                         modifier = Modifier
                             .background(
-                                color = if (isMuted == true) colorResource(R.color.glyph_active) else colorResource(
-                                    R.color.color_accent
+                                color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
+                                    R.color.control_accent
                                 ),
                                 shape = CircleShape
                             )
@@ -312,8 +343,8 @@ private fun BoxScope.ContentChat(
                         modifier = Modifier
                             .height(18.dp)
                             .background(
-                                color = if (isMuted == true) colorResource(R.color.glyph_active) else colorResource(
-                                    R.color.color_accent
+                                color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
+                                    R.color.control_accent
                                 ),
                                 shape = shape
                             )
@@ -332,9 +363,7 @@ private fun BoxScope.ContentChat(
                     Image(
                         painter = painterResource(R.drawable.ic_pin_18),
                         contentDescription = stringResource(R.string.content_desc_pin),
-                        modifier = Modifier
-                            .size(18.dp),
-                        colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                        modifier = Modifier.size(18.dp)
                     )
                 }
             }
@@ -372,7 +401,7 @@ fun TitleRow(
                         painter = mutedIcon,
                         contentDescription = stringResource(R.string.content_desc_muted),
                         modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(colorResource(R.color.glyph_active))
+                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                     )
                 }
                 // 2: optional time (only if messageTime != null)
@@ -380,7 +409,7 @@ fun TitleRow(
                     Text(
                         text = it,
                         style = Relations2,
-                        color = colorResource(id = R.color.transparent_active),
+                        color = colorResource(id = R.color.control_transparent_secondary),
                     )
                 }
             }
@@ -633,122 +662,153 @@ private fun buildChatContentWithInlineIcons(
 
 @Composable
 @DefaultPreviews
-fun VaultSpaceCardPreview() {
-    VaultSpaceCard(
-        modifier = Modifier.fillMaxWidth(),
-        title = "B&O Museum",
-        subtitle = "Private space",
-        icon = SpaceIconView.Placeholder(),
-        currentPinnedCount = 3
-    )
+fun VaultDataSpaceCardPreview() {
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultSpaceCard(
+            modifier = Modifier.fillMaxWidth(),
+            title = "B&O Museum",
+            subtitle = "Private space",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            currentPinnedCount = 3,
+            isPinned = true
+        )
+    }
+
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMentionAndMessage() {
-    VaultChatCard(
-        title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
-        creatorName = "John Doe",
-        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
-        messageTime = "18:32",
-        unreadMessageCount = 32,
-        unreadMentionCount = 1,
-        isMuted = false,
-        maxPinnedSpaces = 6,
-        chatPreview = Chat.Preview(
-            space = SpaceId("space-id"),
-            chat = "chat-id",
-            message = Chat.Message(
-                id = "message-id",
-                createdAt = System.currentTimeMillis(),
-                modifiedAt = 0L,
-                attachments = emptyList(),
-                reactions = emptyMap(),
-                creator = "creator-id",
-                replyToMessageId = "",
-                content = Chat.Message.Content(
-                    text = "Hello, this is a preview message.",
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                order = "order-id",
-                synced = false
-            )
-        ),
-        currentPinnedCount = 3
-    )
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultChatCard(
+            title = "B&O Museum",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            creatorName = "John Doe",
+            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+            messageTime = "18:32",
+            unreadMessageCount = 32,
+            unreadMentionCount = 1,
+            isMuted = false,
+            maxPinnedSpaces = 6,
+            chatPreview = Chat.Preview(
+                space = SpaceId("space-id"),
+                chat = "chat-id",
+                message = Chat.Message(
+                    id = "message-id",
+                    createdAt = System.currentTimeMillis(),
+                    modifiedAt = 0L,
+                    attachments = emptyList(),
+                    reactions = emptyMap(),
+                    creator = "creator-id",
+                    replyToMessageId = "",
+                    content = Chat.Message.Content(
+                        text = "Hello, this is a preview message.",
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    order = "order-id",
+                    synced = false
+                )
+            ),
+            currentPinnedCount = 3
+        )
+    }
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMention() {
-    VaultChatCard(
-        title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
-        creatorName = "John Doe",
-        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
-        messageTime = "18:32",
-        unreadMentionCount = 1,
-        isMuted = true,
-        maxPinnedSpaces = 6,
-        chatPreview = Chat.Preview(
-            space = SpaceId("space-id"),
-            chat = "chat-id",
-            message = Chat.Message(
-                id = "message-id",
-                createdAt = System.currentTimeMillis(),
-                modifiedAt = 0L,
-                attachments = emptyList(),
-                reactions = emptyMap(),
-                creator = "creator-id",
-                replyToMessageId = "",
-                content = Chat.Message.Content(
-                    text = "Hello, this is a preview message.",
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                order = "order-id",
-                synced = false
-            )
-        ),
-        currentPinnedCount = 3
-    )
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultChatCard(
+            title = "B&O Museum",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            creatorName = "John Doe",
+            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+            messageTime = "18:32",
+            unreadMentionCount = 1,
+            isMuted = true,
+            maxPinnedSpaces = 6,
+            chatPreview = Chat.Preview(
+                space = SpaceId("space-id"),
+                chat = "chat-id",
+                message = Chat.Message(
+                    id = "message-id",
+                    createdAt = System.currentTimeMillis(),
+                    modifiedAt = 0L,
+                    attachments = emptyList(),
+                    reactions = emptyMap(),
+                    creator = "creator-id",
+                    replyToMessageId = "",
+                    content = Chat.Message.Content(
+                        text = "Hello, this is a preview message.",
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    order = "order-id",
+                    synced = false
+                )
+            ),
+            currentPinnedCount = 3
+        )
+    }
 }
 
 @Composable
 @DefaultPreviews
 fun ChatPreview() {
-    VaultChatCard(
-        title = "B&O Museum",
-        icon = SpaceIconView.Placeholder(),
-        creatorName = "John Doe",
-        messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
-        messageTime = "18:32",
-        isMuted = false,
-        maxPinnedSpaces = 6,
-        chatPreview = Chat.Preview(
-            space = SpaceId("space-id"),
-            chat = "chat-id",
-            message = Chat.Message(
-                id = "message-id",
-                createdAt = System.currentTimeMillis(),
-                modifiedAt = 0L,
-                attachments = emptyList(),
-                reactions = emptyMap(),
-                creator = "creator-id",
-                replyToMessageId = "",
-                content = Chat.Message.Content(
-                    text = "Hello, this is a preview message.",
-                    marks = emptyList(),
-                    style = Block.Content.Text.Style.P
-                ),
-                order = "order-id",
-                synced = false
-            )
-        ),
-        currentPinnedCount = 3
-    )
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultChatCard(
+            title = "B&O Museum",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            creatorName = "John Doe",
+            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+            messageTime = "18:32",
+            isMuted = false,
+            isPinned = true,
+            maxPinnedSpaces = 6,
+            chatPreview = Chat.Preview(
+                space = SpaceId("space-id"),
+                chat = "chat-id",
+                message = Chat.Message(
+                    id = "message-id",
+                    createdAt = System.currentTimeMillis(),
+                    modifiedAt = 0L,
+                    attachments = emptyList(),
+                    reactions = emptyMap(),
+                    creator = "creator-id",
+                    replyToMessageId = "",
+                    content = Chat.Message.Content(
+                        text = "Hello, this is a preview message.",
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    order = "order-id",
+                    synced = false
+                )
+            ),
+            currentPinnedCount = 3
+        )
+    }
 }
 
 const val MENTION_COUNT_THRESHOLD = 9

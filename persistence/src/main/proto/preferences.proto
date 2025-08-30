@@ -27,6 +27,7 @@ message SpacePreference {
   optional string lastOpenedObject = 3;
   optional GlobalSearchHistoryProto globalSearchHistory = 5;
   optional AllContentSettings allContent = 6;
+  optional WallpaperSetting wallpaperSetting = 7;
 }
 
 message GlobalSearchHistoryProto {
@@ -37,4 +38,9 @@ message GlobalSearchHistoryProto {
 message AllContentSettings {
   optional string sortKey = 1;
   optional bool isAscending = 2;
+}
+
+message WallpaperSetting {
+  int32 type = 1;
+  string value = 2;
 }

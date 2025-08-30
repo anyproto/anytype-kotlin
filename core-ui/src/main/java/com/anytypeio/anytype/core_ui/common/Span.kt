@@ -14,6 +14,7 @@ import android.text.TextPaint
 import android.text.style.*
 import android.view.View
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.timber
@@ -28,6 +29,41 @@ interface Span {
     class Italic : StyleSpan(Typeface.ITALIC), Span
     class Strikethrough : StrikethroughSpan(), Span
     class TextColor(color: Int, val value: String) : ForegroundColorSpan(color), Span
+    
+    /**
+     * Emoji span that renders emojis at specified positions without modifying the underlying text.
+     * This span overlays the emoji character over the existing text in the specified range.
+     */
+    class Emoji(val emojiText: String) : ReplacementSpan(), Span {
+        
+        override fun getSize(
+            paint: android.graphics.Paint,
+            text: CharSequence?,
+            start: Int,
+            end: Int,
+            fm: android.graphics.Paint.FontMetricsInt?
+        ): Int {
+            // Process the emoji text through EmojiCompat to get proper rendering
+            val processedEmoji = EmojiUtils.processSafe(emojiText)
+            return paint.measureText(processedEmoji.toString()).toInt()
+        }
+        
+        override fun draw(
+            canvas: android.graphics.Canvas,
+            text: CharSequence?,
+            start: Int,
+            end: Int,
+            x: Float,
+            top: Int,
+            y: Int,
+            bottom: Int,
+            paint: android.graphics.Paint
+        ) {
+            // Process the emoji text through EmojiCompat to get proper rendering
+            val processedEmoji = EmojiUtils.processSafe(emojiText)
+            canvas.drawText(processedEmoji.toString(), x, y.toFloat(), paint)
+        }
+    }
 
     class Url(
         val url: String,

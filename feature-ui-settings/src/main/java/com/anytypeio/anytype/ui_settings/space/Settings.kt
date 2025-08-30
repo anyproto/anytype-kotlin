@@ -309,7 +309,7 @@ fun SpaceSettingsScreenPreview() {
                 createdBy = "1235",
                 network = "332311313131flsdklfksdlkfksdlkfksdlkflasd324213432432",
                 name = "Dream team",
-                icon = SpaceIconView.Placeholder(),
+                icon = SpaceIconView.DataSpace.Placeholder(),
                 isDeletable = true,
                 spaceType = DEFAULT_SPACE_TYPE,
                 permissions = SpaceMemberPermissions.OWNER,

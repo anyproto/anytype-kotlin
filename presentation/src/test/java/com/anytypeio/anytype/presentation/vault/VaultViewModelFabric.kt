@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -45,7 +46,8 @@ object VaultViewModelFabric {
         userPermissionProvider: UserPermissionProvider = mock(),
         notificationPermissionManager: NotificationPermissionManager = mock(),
         unpinSpace: UnpinSpace = mock(),
-        setSpaceOrder: SetSpaceOrder = mock()
+        setSpaceOrder: SetSpaceOrder = mock(),
+        getSpaceWallpaper: GetSpaceWallpapers = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -67,6 +69,7 @@ object VaultViewModelFabric {
         userPermissionProvider = userPermissionProvider,
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
-        setSpaceOrder = setSpaceOrder
+        setSpaceOrder = setSpaceOrder,
+        getSpaceWallpapers = getSpaceWallpaper
     )
 } 

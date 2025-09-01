@@ -20,7 +20,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,7 +37,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -45,14 +48,14 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun ChatTopToolbar(
+    modifier: Modifier,
     header: ChatViewModel.HeaderView,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onSpaceNameClicked: () -> Unit
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .height(52.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -131,9 +134,10 @@ fun ChatTopToolbar(
 @Composable
 fun ChatTopToolbarPreview() {
     ChatTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
-            icon = SpaceIconView.Placeholder(name = "Us"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
             showIcon = true,
             isMuted = false
         ),
@@ -147,9 +151,10 @@ fun ChatTopToolbarPreview() {
 @Composable
 fun ChatTopToolbarMutedPreview() {
     ChatTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
         header = ChatViewModel.HeaderView.Default(
             title = "My Chat Space",
-            icon = SpaceIconView.Placeholder(name = "MCS"),
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),
             showIcon = true,
             isMuted = true
         ),

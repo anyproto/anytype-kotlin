@@ -2,10 +2,13 @@ package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 
 sealed class VaultSpaceView {
 
@@ -13,6 +16,7 @@ sealed class VaultSpaceView {
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
     abstract val isMuted: Boolean?
+    abstract val wallpaper: WallpaperResult
     val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
 
     val lastMessageDate: Long?
@@ -26,7 +30,8 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val wallpaper: WallpaperResult = WallpaperResult.None
     ) : VaultSpaceView()
 
     data class Chat(
@@ -41,7 +46,8 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null
+        override val isMuted: Boolean? = null,
+        override val wallpaper: WallpaperResult = WallpaperResult.None
     ) : VaultSpaceView()
 
     data class AttachmentPreview(
@@ -70,8 +76,7 @@ sealed class VaultUiState {
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
     data class EnterSpaceLevelChat(val space: Space, val chat: Id) : VaultCommand()
-    data object CreateNewSpace : VaultCommand()
-    data object CreateChat : VaultCommand()
+    data class CreateNewSpace(val spaceUxType: SpaceUxType) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()

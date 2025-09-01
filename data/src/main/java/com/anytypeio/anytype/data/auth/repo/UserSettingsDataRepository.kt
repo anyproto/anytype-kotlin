@@ -24,6 +24,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getWallpapers()
     }
 
+    override fun observeWallpaper(space: Id): Flow<Wallpaper> {
+        return cache.observeWallpaper(space)
+    }
+
     override suspend fun setDefaultObjectType(
         space: SpaceId,
         type: TypeId

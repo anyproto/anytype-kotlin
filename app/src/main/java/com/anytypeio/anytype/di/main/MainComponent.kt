@@ -55,13 +55,11 @@ import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
-import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
-import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
@@ -112,7 +110,6 @@ interface MainComponent :
     AboutAppDependencies,
     TemplateBlankDependencies,
     TemplateSelectDependencies,
-    SelectSpaceDependencies,
     CreateSpaceDependencies,
     SpaceListDependencies,
     SpaceSettingsDependencies,
@@ -155,7 +152,6 @@ interface MainComponent :
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
-    fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
 
     //region Settings
@@ -251,11 +247,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(TemplateSelectDependencies::class)
     abstract fun provideTemplateSelectDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(SelectSpaceDependencies::class)
-    abstract fun provideSelectSpaceDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

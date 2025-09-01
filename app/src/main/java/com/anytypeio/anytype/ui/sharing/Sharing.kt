@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -17,11 +16,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
@@ -37,23 +34,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
-import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -80,7 +70,7 @@ fun AddToAnytypeScreenUrlPreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
                 isSelected = true,
-                icon = SpaceIconView.Placeholder()
+                icon = SpaceIconView.DataSpace.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -103,7 +93,7 @@ fun AddToAnytypeScreenNotePreview() {
             SpaceView(
                 obj = ObjectWrapper.SpaceView(map = mapOf()),
                 isSelected = false,
-                icon = SpaceIconView.Placeholder()
+                icon = SpaceIconView.DataSpace.Placeholder()
             )
         ),
         onSelectSpaceClicked = {},
@@ -531,7 +521,7 @@ private fun CurrentSpaceSection(
                 .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val hasIcon = icon is SpaceIconView.Placeholder || icon is SpaceIconView.Image
+            val hasIcon = icon is SpaceIconView.DataSpace || icon is SpaceIconView.ChatSpace
             if (icon != null && hasIcon) {
                 SpaceIconView(
                     icon = icon,
@@ -600,33 +590,6 @@ private fun Header() {
             modifier = Modifier.align(Alignment.Center),
             style = Title2
         )
-    }
-}
-
-
-@Composable
-private fun SmallSpaceIcon(
-    icon: SpaceIconView,
-    modifier: Modifier
-) {
-    val size = 20.dp
-    when (icon) {
-        is SpaceIconView.Image -> {
-            Image(
-                painter = rememberAsyncImagePainter(
-                    model = icon.url,
-                    error = painterResource(id = com.anytypeio.anytype.ui_settings.R.drawable.ic_home_widget_space)
-                ),
-                contentDescription = "Custom image space icon",
-                contentScale = ContentScale.Crop,
-                modifier = modifier
-                    .size(size)
-                    .clip(RoundedCornerShape(4.dp))
-            )
-        }
-        else -> {
-            // Draw nothing.
-        }
     }
 }
 

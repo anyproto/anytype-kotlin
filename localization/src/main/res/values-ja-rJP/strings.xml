@@ -991,7 +991,7 @@
     <string name="library_type_removed">タイプ「%1$s」が削除されました</string>
     <string name="library_relation_added">プロパティ「%1$s」が追加されました</string>
     <string name="library_relation_removed">プロパティ「%1$s」が削除されました</string>
-    <string name="library_something_went_wrong">問題が発生しました。もう一度お試しください。</string>
+    <string name="library_something_went_wrong">問題が発生しました。あとでもう一度お試しください。</string>
     <string name="type_creation_new_type">新しいタイプ</string>
     <string name="type_creation_done">完了</string>
     <string name="type_creation_placeholder">タイプ名</string>
@@ -1176,8 +1176,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">招待リンクを共有</string>
+    <string name="multiplayer_share_invite_link_menu">招待リンク</string>
+    <string name="multiplayer_qr_invite_link_menu">QRコードを表示</string>
     <string name="multiplayer_share_invite_link_description">招待リンクを共有して、あなたのスペースに招待しましょう。参加リクエストを受け取った後、アクセス権を付与することができます。</string>
     <string name="multiplayer_invite_link">招待リンク</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">招待リンクの無効化</string>
+    <string name="multiplayer_link_disabled_desc">すでに招待されたメンバー以外は参加できません</string>
+    <string name="multiplayer_editor_access">編集メンバー</string>
+    <string name="multiplayer_editor_access_desc">編集やチャットに参加することができます</string>
+    <string name="multiplayer_viewer_access">閲覧メンバー</string>
+    <string name="multiplayer_viewer_access_desc">スペースやチャットを閲覧することができます</string>
+    <string name="multiplayer_request_access">参加リクエスト</string>
+    <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
+    <string name="multiplayer_qr_code">QRコード</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">リンクをコピー</string>
     <string name="multiplayer_join_a_space">スペースへ参加</string>
     <string name="multiplayer_private_comment_for_a_space_owner">スペース所有者へのメッセージ</string>
     <string name="multiplayer_request_to_join_explanation">スペース所有者から承認されると、スペースに参加することができます。この際、アクセス権は所有者によって付与されます。</string>
@@ -1193,6 +1213,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">タップしてメッセージを書く</string>
     <string name="multiplayer_share_space">スペースを共有</string>
     <string name="multiplayer_members_and_requests">メンバー</string>
+    <string name="multiplayer_members_invite_links_section">招待リンク</string>
     <string name="multiplayer_cant_add_members">これ以上、閲覧権限のメンバーを追加できません。</string>
     <string name="multiplayer_cant_add_editors">これ以上、編集権限のメンバーを追加できません。</string>
     <string name="multiplayer_upgrade_button">✦ アップグレード</string>
@@ -1443,7 +1464,7 @@
     <string name="membership_email_membership_not_found">メンバーシップが見つかりませんでした</string>
     <string name="membership_email_membership_already_active">すでにメンバーシップに加入しています</string>
     <!-- Notifications -->
-    <string name="notifications_alert_error_unknown">不明なエラーが発生しました。しばらくしてから再度お試しください。</string>
+    <string name="notifications_alert_error_unknown">不明なエラーが発生しました。あとでもう一度お試しください。</string>
     <string name="notifications_alert_error_bad_input">無効な入力が検出されました。データを確認して、もう一度やり直してください。</string>
     <string name="notifications_alert_error_internal">内部エラーが発生しました。開発チームに報告されました。</string>
     <string name="notifications_alert_error_no_objects_to_import">インポートできる項目がありませんでした。正しいオブジェクトを選択してください。</string>
@@ -1739,6 +1760,8 @@
     <string name="space_settings_section_data_management">データ管理</string>
     <string name="space_settings_section_misc">その他</string>
     <string name="space_settings_invite">招待</string>
+    <string name="space_settings_share_link">招待リンク</string>
+    <string name="space_settings_copy_link">リンクをコピー</string>
     <string name="space_settings_invite_members">メンバーを招待</string>
     <string name="space_settings_qrcode">QRコード</string>
     <string name="space_settings_members_button_members">メンバー</string>
@@ -1750,6 +1773,7 @@
     <string name="space_settings_delete_space_button">スペースを削除</string>
     <string name="space_settings_icon_title">画像を編集</string>
     <string name="space_settings_save_button">保存</string>
+    <string name="space_settings_join_space_by_qr_title">参加</string>
     <string name="object_type_add_property_screen_title">プロパティを追加</string>
     <string name="object_type_add_property_screen_create">プロパティ「%1$s」を作成</string>
     <string name="object_type_add_property_screen_section_types">プロパティ種類</string>
@@ -1793,7 +1817,7 @@
     <string name="object_conflict_menu_item_title">タイプに合わせてリセット</string>
     <string name="widget_source_suggested">提案</string>
     <string name="widgets_empty_state_message">まだウィジェットがありません</string>
-    <string name="space_settings_auto_create_widgets">タイプウィジェットの自動作成</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">タイプ</string>
     <string name="space_types_screen_section_my_types">作成したタイプ</string>
     <string name="space_types_screen_section_system_types">標準タイプ</string>
@@ -1871,4 +1895,14 @@
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
+    <string name="share_space_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
+    <string name="share_space_error_request_failed">申し訳ありません。リクエストの送信に失敗しました。インターネット接続を確認し、もう一度お試しください。</string>
+    <string name="share_space_error_space_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

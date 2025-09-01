@@ -51,6 +51,7 @@ sealed class Intent {
             val target: Id,
             val prototype: Block.Prototype,
             val onSuccess: ((Id) -> Unit)? = null,
+            val route: String? = null
         ) : CRUD()
 
         class Create(
@@ -59,7 +60,8 @@ sealed class Intent {
             val position: Position,
             val prototype: Block.Prototype,
             val onSuccess: ((Id) -> Unit)? = null,
-            val isDate: Boolean = false
+            val isDate: Boolean = false,
+            val route: String? = null
         ) : CRUD()
 
         class Duplicate(
@@ -137,7 +139,8 @@ sealed class Intent {
         class TurnInto(
             val context: Id,
             val targets: List<Id>,
-            val style: Block.Content.Text.Style
+            val style: Block.Content.Text.Style,
+            val route: String? = null
         ) : Text()
 
         class UpdateCheckbox(

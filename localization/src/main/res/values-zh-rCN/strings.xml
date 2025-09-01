@@ -1176,8 +1176,28 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">分享邀请链接</string>
+    <string name="multiplayer_share_invite_link_menu">分享链接</string>
+    <string name="multiplayer_qr_invite_link_menu">显示二维码</string>
     <string name="multiplayer_share_invite_link_description">分享此邀请链接以便其他人可以加入您的空间。一旦他们点击您的链接并请求访问，您可以设置他们的访问权限。</string>
     <string name="multiplayer_invite_link">邀请链接</string>
+    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_link_disabled">Link disabled</string>
+    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
+    <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
+    <string name="multiplayer_request_access">Request access</string>
+    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_qr_code">二维码</string>
+    <string name="multiplayer_change_access_title">Change invite link access?</string>
+    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
+    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_copy_link">拷贝链接</string>
     <string name="multiplayer_join_a_space">加入空间</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="multiplayer_request_to_join_explanation">一旦空间所有者批准您的请求，您将与访问权所有者一起加入该空间。</string>
@@ -1193,6 +1213,7 @@
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
     <string name="multiplayer_members_and_requests">参与的人</string>
+    <string name="multiplayer_members_invite_links_section">邀请链接</string>
     <string name="multiplayer_cant_add_members">您无法添加更多成员</string>
     <string name="multiplayer_cant_add_editors">您无法添加更多编辑者</string>
     <string name="multiplayer_upgrade_button">✦ 升级</string>
@@ -1734,6 +1755,8 @@
     <string name="space_settings_section_data_management">数据管理</string>
     <string name="space_settings_section_misc">其他</string>
     <string name="space_settings_invite">邀请</string>
+    <string name="space_settings_share_link">分享链接</string>
+    <string name="space_settings_copy_link">拷贝链接</string>
     <string name="space_settings_invite_members">邀请成员</string>
     <string name="space_settings_qrcode">二维码</string>
     <string name="space_settings_members_button_members">参与的人</string>
@@ -1745,6 +1768,7 @@
     <string name="space_settings_delete_space_button">删除空间</string>
     <string name="space_settings_icon_title">编辑图片</string>
     <string name="space_settings_save_button">保存</string>
+    <string name="space_settings_join_space_by_qr_title">加入</string>
     <string name="object_type_add_property_screen_title">添加属性</string>
     <string name="object_type_add_property_screen_create">创建属性“%1$s”</string>
     <string name="object_type_add_property_screen_section_types">属性格式</string>
@@ -1788,7 +1812,7 @@
     <string name="object_conflict_menu_item_title">解决布局冲突</string>
     <string name="widget_source_suggested">建议</string>
     <string name="widgets_empty_state_message">还没有部件</string>
-    <string name="space_settings_auto_create_widgets">自动创建类型小部件</string>
+    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
     <string name="space_types_screen_title">对象类型</string>
     <string name="space_types_screen_section_my_types">我的类型</string>
     <string name="space_types_screen_section_system_types">系统类型</string>
@@ -1866,4 +1890,14 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">允许</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
+    <string name="share_space_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>
+    <string name="share_space_error_request_failed">哎呀！请求失败。请检查您的互联网连接，然后重试。</string>
+    <string name="share_space_error_space_deleted">看起来空间已被删除。请确保您的设备已同步。</string>
+    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
+    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="private_local_yours_forever">Private, local, yours forever</string>
 </resources>

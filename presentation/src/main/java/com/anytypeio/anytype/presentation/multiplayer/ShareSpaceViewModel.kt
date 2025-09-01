@@ -245,7 +245,7 @@ class ShareSpaceViewModel(
             uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
                 link = link,
                 spaceName = spaceView.name.orEmpty(),
-                icon = spaceView.spaceIcon(urlBuilder, gradientProvider)
+                icon = spaceView.spaceIcon(urlBuilder)
             )
             analytics.sendEvent(
                 eventName = clickSettingsSpaceShare,

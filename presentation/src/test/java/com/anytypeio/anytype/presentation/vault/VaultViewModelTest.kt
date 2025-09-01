@@ -3,7 +3,6 @@ package com.anytypeio.anytype.presentation.vault
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -18,14 +17,15 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.UnpinSpace
+import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -33,7 +33,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,6 +51,7 @@ class VaultViewModelTest {
     private lateinit var setSpaceOrder: SetSpaceOrder
     private lateinit var unpinSpace: UnpinSpace
     private lateinit var analytics: Analytics
+    private lateinit var getSpaceWallpapers: GetSpaceWallpapers
 
     @Before
     fun setup() {
@@ -62,6 +63,10 @@ class VaultViewModelTest {
         setSpaceOrder = mock()
         unpinSpace = mock()
         analytics = mock()
+        getSpaceWallpapers = mock()
+        getSpaceWallpapers.stub {
+            onBlocking { async(Unit) }.thenReturn(Resultat.Success(emptyMap()))
+        }
     }
 
     @Test
@@ -111,7 +116,8 @@ class VaultViewModelTest {
                 chatPreviewContainer = chatPreviewContainer,
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
             )
             
             // When
@@ -179,7 +185,8 @@ class VaultViewModelTest {
                 chatPreviewContainer = chatPreviewContainer,
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
             )
             
             // When
@@ -229,7 +236,8 @@ class VaultViewModelTest {
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             chatPreviewContainer = chatPreviewContainer,
             userPermissionProvider = userPermissionProvider,
-            notificationPermissionManager = notificationPermissionManager
+            notificationPermissionManager = notificationPermissionManager,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         // Then
@@ -348,7 +356,8 @@ class VaultViewModelTest {
                     chatPreviewContainer = chatPreviewContainer,
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    getSpaceWallpaper = getSpaceWallpapers
                 )
 
                 viewModel.uiState.test {
@@ -440,7 +449,8 @@ class VaultViewModelTest {
                 chatPreviewContainer = chatPreviewContainer,
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
             )
 
             viewModel.uiState.test {
@@ -516,7 +526,8 @@ class VaultViewModelTest {
             chatPreviewContainer = chatPreviewContainer,
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         viewModel.uiState.test {
@@ -592,7 +603,8 @@ class VaultViewModelTest {
             chatPreviewContainer = chatPreviewContainer,
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         viewModel.uiState.test {
@@ -687,7 +699,8 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = setSpaceOrder
+            setSpaceOrder = setSpaceOrder,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         turbineScope {
@@ -767,7 +780,8 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = setSpaceOrder
+            setSpaceOrder = setSpaceOrder,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         viewModel.uiState.test {
@@ -844,7 +858,8 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            setSpaceOrder = setSpaceOrder
+            setSpaceOrder = setSpaceOrder,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         turbineScope {
@@ -936,7 +951,8 @@ class VaultViewModelTest {
                     chatPreviewContainer = chatPreviewContainer,
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    getSpaceWallpaper = getSpaceWallpapers
                 )
 
                 viewModel.uiState.test {
@@ -1069,7 +1085,8 @@ class VaultViewModelTest {
                 chatPreviewContainer = chatPreviewContainer,
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
             )
 
             viewModel.uiState.test {
@@ -1141,7 +1158,8 @@ class VaultViewModelTest {
                     chatPreviewContainer = chatPreviewContainer,
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    getSpaceWallpaper = getSpaceWallpapers
                 )
 
                 viewModel.uiState.test {
@@ -1217,7 +1235,8 @@ class VaultViewModelTest {
             chatPreviewContainer = chatPreviewContainer,
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            getSpaceWallpaper = getSpaceWallpapers
         )
 
         viewModel.uiState.test {
@@ -1367,7 +1386,8 @@ class VaultViewModelTest {
                 chatPreviewContainer = chatPreviewContainer,
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
             )
 
             viewModel.uiState.test {

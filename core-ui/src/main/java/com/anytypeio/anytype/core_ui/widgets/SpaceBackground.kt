@@ -4,13 +4,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.anytypeio.anytype.core_ui.extensions.getWallpaperGradientByCode
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import timber.log.Timber
 
-
 /**
- * Sealed class representing different background types for space icons
+ * Sealed class representing different background types for Compose rendering
  */
 sealed class SpaceBackground {
     data class SolidColor(val color: Color) : SpaceBackground()
@@ -19,23 +17,13 @@ sealed class SpaceBackground {
 }
 
 /**
- * Computes the background for a SpaceIconView with priority:
- * 1. Wallpaper (gradient or color if available)
- * 2. Icon color for placeholders/images
- * 3. Default fallback
- *
- * @param icon The SpaceIconView to compute background for
- * @param wallpaperResult Wallpaper configuration
+ * Extension function to convert WallpaperResult to SpaceBackground for Compose rendering
  */
 @Composable
-fun computeSpaceBackground(
-    icon: SpaceIconView,
-    wallpaperResult: WallpaperResult
-): SpaceBackground {
-
-    return when (wallpaperResult) {
+fun WallpaperResult.toSpaceBackground(): SpaceBackground {
+    return when (this) {
         is WallpaperResult.Gradient -> {
-            val gradient = getWallpaperGradientByCode(wallpaperResult.gradientCode)
+            val gradient = getWallpaperGradientByCode(this.gradientCode)
             if (gradient != null) {
                 SpaceBackground.Gradient(brush = gradient.toBrush())
             } else {
@@ -45,13 +33,24 @@ fun computeSpaceBackground(
         is WallpaperResult.SolidColor -> {
             try {
                 SpaceBackground.SolidColor(
-                    Color(android.graphics.Color.parseColor(wallpaperResult.colorHex))
+                    Color(android.graphics.Color.parseColor(this.colorHex))
                 )
             } catch (e: IllegalArgumentException) {
-                Timber.w(e, "Invalid color format: ${wallpaperResult.colorHex}")
+                Timber.w(e, "Invalid color format: ${this.colorHex}")
                 SpaceBackground.None
             }
         }
         WallpaperResult.None -> SpaceBackground.None
     }
 }
+
+/**
+ * Legacy function for backwards compatibility - will be removed after migration
+ * @deprecated Use WallpaperResult.toSpaceBackground() instead
+ */
+@Deprecated("Use WallpaperResult.toSpaceBackground() instead")
+@Composable
+fun computeSpaceBackground(
+    icon: com.anytypeio.anytype.presentation.spaces.SpaceIconView,
+    wallpaperResult: WallpaperResult
+): SpaceBackground = wallpaperResult.toSpaceBackground()

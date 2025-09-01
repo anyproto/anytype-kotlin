@@ -51,7 +51,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
-import com.anytypeio.anytype.core_ui.widgets.computeSpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged

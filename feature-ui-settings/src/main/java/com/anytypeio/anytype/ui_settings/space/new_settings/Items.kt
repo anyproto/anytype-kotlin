@@ -62,7 +62,7 @@ import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
-import com.anytypeio.anytype.core_ui.widgets.computeSpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
@@ -193,10 +193,7 @@ fun WallpaperItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
-        val spaceBackground = computeSpaceBackground(
-            wallpaperResult = item.wallpaper,
-            icon = item.spaceIconView
-        )
+        val spaceBackground = item.wallpaper.toSpaceBackground()
         val wallpaperModifier = Modifier
             .size(20.dp)
             //.padding(horizontal = 8.dp)

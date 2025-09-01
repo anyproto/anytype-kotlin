@@ -11,11 +11,12 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
-import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
@@ -26,7 +27,6 @@ import javax.inject.Inject
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
     private val analytics: Analytics,
-    private val restoreWallpaper: RestoreWallpaper,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
@@ -42,7 +42,9 @@ class MainViewModelFactory @Inject constructor(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val spaceManager: SpaceManager,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val pendingIntentStore: PendingIntentStore
+    private val pendingIntentStore: PendingIntentStore,
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper,
+    private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -50,7 +52,6 @@ class MainViewModelFactory @Inject constructor(
     ): T = MainViewModel(
         resumeAccount = resumeAccount,
         analytics = analytics,
-        restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
@@ -66,6 +67,8 @@ class MainViewModelFactory @Inject constructor(
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
         spaceViews = spaceViews,
-        pendingIntentStore = pendingIntentStore
+        pendingIntentStore = pendingIntentStore,
+        observeSpaceWallpaper = observeSpaceWallpaper,
+        urlBuilder = urlBuilder
     ) as T
 }

@@ -12,6 +12,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
@@ -21,6 +23,7 @@ import com.anytypeio.anytype.core_models.RelativeDate
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 
 @Composable
 fun dark(
@@ -155,4 +158,60 @@ fun SystemColor.resInt(): Int {
         SystemColor.TEAL -> R.color.palette_system_teal
         SystemColor.GREEN -> R.color.palette_system_green
     }
+}
+
+/**
+ * Gets gradient colors for wallpaper gradients using actual start/end colors
+ */
+@Composable
+fun getWallpaperGradientByCode(gradientCode: String): GradientColors? {
+    return when (gradientCode) {
+        CoverGradient.YELLOW -> GradientColors(
+            startColor = colorResource(R.color.yellowStart),
+            endColor = colorResource(R.color.yellowEnd)
+        )
+        CoverGradient.RED -> GradientColors(
+            startColor = colorResource(R.color.redStart),
+            endColor = colorResource(R.color.redEnd)
+        )
+        CoverGradient.BLUE -> GradientColors(
+            startColor = colorResource(R.color.blueStart),
+            endColor = colorResource(R.color.blueEnd)
+        )
+        CoverGradient.TEAL -> GradientColors(
+            startColor = colorResource(R.color.tealStart),
+            endColor = colorResource(R.color.tealEnd)
+        )
+        CoverGradient.PINK_ORANGE -> GradientColors(
+            startColor = colorResource(R.color.pinkOrangeStart),
+            endColor = colorResource(R.color.pinkOrangeEnd)
+        )
+        CoverGradient.BLUE_PINK -> GradientColors(
+            startColor = colorResource(R.color.bluePinkStart),
+            endColor = colorResource(R.color.bluePinkEnd)
+        )
+        CoverGradient.GREEN_ORANGE -> GradientColors(
+            startColor = colorResource(R.color.greenOrangeStart),
+            endColor = colorResource(R.color.greenOrangeEnd)
+        )
+        CoverGradient.SKY -> GradientColors(
+            startColor = colorResource(R.color.skyStart),
+            endColor = colorResource(R.color.skyEnd)
+        )
+        else -> null
+    }
+}
+
+/**
+ * Data class representing gradient colors for wallpaper backgrounds
+ */
+data class GradientColors(
+    val startColor: Color,
+    val endColor: Color
+) {
+    fun toBrush(): Brush = Brush.linearGradient(
+        colors = listOf(startColor, endColor),
+        start = Offset(0f, 0f),
+        end = Offset(0f, Float.POSITIVE_INFINITY)
+    )
 }

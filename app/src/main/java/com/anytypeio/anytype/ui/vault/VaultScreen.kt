@@ -2,14 +2,13 @@ package com.anytypeio.anytype.ui.vault
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -17,7 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Scaffold
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +33,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
@@ -65,15 +65,9 @@ fun VaultScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(rememberNestedScrollInteropConnection())
-            .background(color = colorResource(id = R.color.background_primary))
-            .then(
-                if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
-                else
-                    Modifier
-            ),
-        backgroundColor = colorResource(id = R.color.background_primary),
+            .nestedScroll(rememberNestedScrollInteropConnection()),
+        contentWindowInsets = WindowInsets(0.dp),
+        containerColor = colorResource(id = R.color.background_primary),
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
@@ -194,7 +188,9 @@ fun VaultScreenContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddings),
+                .padding(paddings)
+                .navigationBarsPadding()
+            ,
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(top = 4.dp)
@@ -215,7 +211,12 @@ fun VaultScreenContent(
                         state = reorderableLazyListState,
                         key = item.space.id
                     ) { isItemDragging ->
+
                         val alpha = animateFloatAsState(if (isItemDragging) 0.8f else 1.0f)
+
+                        val spaceBackground = item.wallpaper.toSpaceBackground()
+
+                        val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                         when (item) {
                             is VaultSpaceView.Chat -> {
@@ -245,6 +246,7 @@ fun VaultScreenContent(
                                         ),
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
+                                    spaceBackground = spaceBackgroundValue.value,
                                     creatorName = item.creatorName,
                                     messageText = item.messageText,
                                     messageTime = item.messageTime,
@@ -304,7 +306,8 @@ fun VaultScreenContent(
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
-                                    currentPinnedCount = sections.pinnedSpaces.size
+                                    currentPinnedCount = sections.pinnedSpaces.size,
+                                    spaceBackground = spaceBackgroundValue.value
                                 )
                             }
                         }
@@ -324,6 +327,11 @@ fun VaultScreenContent(
                         }
                     }
                 ) { _, item ->
+
+                    val spaceBackground = item.wallpaper.toSpaceBackground()
+
+                    val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
+
                     when (item) {
                         is VaultSpaceView.Chat -> {
                             VaultChatCard(
@@ -336,6 +344,7 @@ fun VaultScreenContent(
                                         )),
                                 title = item.space.name.orEmpty(),
                                 icon = item.icon,
+                                spaceBackground = spaceBackgroundValue.value,
                                 creatorName = item.creatorName,
                                 messageText = item.messageText,
                                 messageTime = item.messageTime,
@@ -374,6 +383,7 @@ fun VaultScreenContent(
                                 isPinned = item.isPinned,
                                 icon = item.icon,
                                 spaceView = item,
+                                spaceBackground = spaceBackgroundValue.value,
                                 expandedSpaceId = expandedSpaceId,
                                 onDismissMenu = { expandedSpaceId = null },
                                 onMuteSpace = onMuteSpace,

@@ -60,7 +60,6 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
-import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
@@ -153,7 +152,6 @@ interface MainComponent :
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
     fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
-    fun wallpaperSelectComponent(): WallpaperSelectSubComponent.Builder
     fun createObjectComponent(): CreateObjectSubComponent.Builder
 
     //region Settings

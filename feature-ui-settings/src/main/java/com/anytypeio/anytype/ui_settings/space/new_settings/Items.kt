@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -53,23 +52,22 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.lists.objects.ObjectsListItem
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -197,51 +195,30 @@ fun WallpaperItem(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_primary),
         )
-        when(val wallpaper = item.current) {
-            is Wallpaper.Color -> {
+        val spaceBackground = item.wallpaper.toSpaceBackground()
+        val wallpaperModifier = Modifier
+            .size(20.dp)
+
+        when (spaceBackground) {
+            is SpaceBackground.SolidColor ->
                 Box(
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = wallpaperModifier
                         .background(
-                            color = light(wallpaper.code),
+                            color = spaceBackground.color.copy(alpha = 0.3f),
                             shape = RoundedCornerShape(4.dp)
                         )
-                        .padding(horizontal = 8.dp),
                 )
-            }
-            is Wallpaper.Gradient -> {
+            is SpaceBackground.Gradient ->
+
                 Box(
-                    modifier = Modifier
-                        .size(20.dp)
+                    modifier = wallpaperModifier
                         .background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = wallpaper.code,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(4.dp)
+                            brush = spaceBackground.brush,
+                            shape = RoundedCornerShape(4.dp),
+                            alpha = 0.3f
                         )
-                        .padding(horizontal = 8.dp),
                 )
-            }
-            is Wallpaper.Default -> {
-                Box(
-                    modifier = Modifier
-                        .size(20.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = gradient(
-                                    gradient = CoverGradient.SKY,
-                                    alpha = 0.3f
-                                )
-                            ),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .padding(horizontal = 8.dp),
-                )
-            }
-            else -> {
+            SpaceBackground.None -> {
                 // Do nothing.
             }
         }
@@ -251,6 +228,39 @@ fun WallpaperItem(
             modifier = Modifier.size(24.dp)
         )
     }
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemSolidColorPreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.SolidColor("#3B82F6"),
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemGradientPreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.Gradient("gradient-sunset"),
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemNonePreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.None,
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
 }
 
 @Composable
@@ -668,7 +678,7 @@ fun AutoCreateWidgetItem(
     isChecked: Boolean
 ) {
 
-    var checked = remember { mutableStateOf(isChecked) }
+    val checked = remember { mutableStateOf(isChecked) }
 
     Row(
         modifier = Modifier

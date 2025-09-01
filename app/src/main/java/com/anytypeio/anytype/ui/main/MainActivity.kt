@@ -111,12 +111,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         // 1) Enable edge-to-edge with automatic light/dark icons
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
-                 lightScrim = android.graphics.Color.TRANSPARENT,
-                 darkScrim  = android.graphics.Color.TRANSPARENT
+                 lightScrim = Color.TRANSPARENT,
+                 darkScrim  = Color.TRANSPARENT
             ),
             navigationBarStyle = SystemBarStyle.auto(
-                lightScrim = android.graphics.Color.TRANSPARENT,
-                darkScrim  = android.graphics.Color.TRANSPARENT
+                lightScrim = Color.TRANSPARENT,
+                darkScrim  = Color.TRANSPARENT
             )
         )
         inject()

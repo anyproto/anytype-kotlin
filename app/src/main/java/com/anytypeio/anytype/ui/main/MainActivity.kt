@@ -7,10 +7,14 @@ import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
@@ -104,7 +108,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupWindowInsets()
+        // 1) Enable edge-to-edge with automatic light/dark icons
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.auto(
+                 lightScrim = android.graphics.Color.TRANSPARENT,
+                 darkScrim  = android.graphics.Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.auto(
+                lightScrim = android.graphics.Color.TRANSPARENT,
+                darkScrim  = android.graphics.Color.TRANSPARENT
+            )
+        )
         inject()
         setupTheme()
 
@@ -457,15 +471,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     toast("Failed to open URL")
                 }
             }
-        }
-    }
-
-    private fun setupWindowInsets() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            window.setDecorFitsSystemWindows(false)
-        }
-        if (BuildConfig.USE_EDGE_TO_EDGE && Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            enableEdgeToEdge()
         }
     }
 

@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.chats
 
 import android.Manifest
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +13,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,7 +49,6 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
@@ -125,16 +122,12 @@ class ChatFragment : Fragment() {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 containerColor = Color.Transparent,
+                contentWindowInsets = WindowInsets(0.dp),
                 topBar = {
-                    val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                        Modifier
-                            .windowInsetsPadding(WindowInsets.statusBars)
-                            .fillMaxWidth()
-                    } else {
-                        Modifier.fillMaxWidth()
-                    }
                     ChatTopToolbar(
-                        modifier = modifier,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding(),
                         header = vm.header.collectAsStateWithLifecycle().value,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
@@ -142,18 +135,11 @@ class ChatFragment : Fragment() {
                     )
                 }
             ) { paddingValues ->
-                val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                } else {
-                    Modifier
+                ChatScreenWrapper(
+                    modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
-                }
-                ChatScreenWrapper(
-                    modifier = contentModifier,
+                        .navigationBarsPadding(),
                     vm = vm,
                     onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
                     onMarkupLinkClicked = { url ->

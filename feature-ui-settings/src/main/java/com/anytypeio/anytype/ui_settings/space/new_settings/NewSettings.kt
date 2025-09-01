@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -84,16 +86,12 @@ fun NewSpaceSettingsScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
-            val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                Modifier
-                    .windowInsetsPadding(WindowInsets.statusBars)
-                    .fillMaxWidth()
-            } else {
-                Modifier.fillMaxWidth()
-            }
             Box(
-                modifier = modifier
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
                     .height(48.dp)
             ) {
                 Box(
@@ -146,7 +144,10 @@ fun NewSpaceSettingsScreen(
             val lazyListState = rememberLazyListState()
 
             LazyColumn(
-                modifier = contentModifier
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .navigationBarsPadding()
                     .padding(horizontal = 16.dp),
                 state = lazyListState,
                 horizontalAlignment = Alignment.CenterHorizontally

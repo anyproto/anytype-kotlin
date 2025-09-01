@@ -6,7 +6,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -63,13 +65,8 @@ fun VaultScreen(
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(rememberNestedScrollInteropConnection())
-            .then(
-                if (SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier.windowInsetsPadding(WindowInsets.systemBars)
-                else
-                    Modifier
-            ),
+            .nestedScroll(rememberNestedScrollInteropConnection()),
+        contentWindowInsets = WindowInsets(0.dp),
         containerColor = colorResource(id = R.color.background_primary),
         topBar = {
             VaultScreenTopToolbar(
@@ -191,7 +188,9 @@ fun VaultScreenContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddings),
+                .padding(paddings)
+                .navigationBarsPadding()
+            ,
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(top = 4.dp)

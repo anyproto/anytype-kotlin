@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,10 +10,9 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -22,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -40,7 +39,6 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -72,7 +70,6 @@ import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
 import javax.inject.Inject
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -119,19 +116,14 @@ class HomeScreenFragment : Fragment(),
         } as? WidgetView.SpaceWidget.View)
 
         Scaffold(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
+            contentWindowInsets = WindowInsets(0.dp),
             topBar = {
-                val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .fillMaxWidth()
-                } else {
-                    Modifier.fillMaxWidth()
-                }
                 HomeScreenToolbar(
-                    modifier = modifier,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .statusBarsPadding(),
                     spaceIconView = view?.icon ?: SpaceIconView.Loading,
                     onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
                     membersCount = view?.membersCount ?: 0,
@@ -141,18 +133,11 @@ class HomeScreenFragment : Fragment(),
                 )
             }
         ) { paddingValues ->
-            val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-                Modifier
-                    .windowInsetsPadding(WindowInsets.navigationBars)
-                    .fillMaxSize()
-                    .padding(top = paddingValues.calculateTopPadding())
-            } else {
-                Modifier
+            PageWithWidgets(
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-            }
-            PageWithWidgets(
-                modifier = contentModifier,
+                    .navigationBarsPadding(),
                 showSpaceWidget = false
             )
         }

@@ -10,8 +10,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
-import com.anytypeio.anytype.core_models.SystemColor
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -28,6 +26,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -42,16 +41,20 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
+import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -60,7 +63,6 @@ import timber.log.Timber
 
 class MainViewModel(
     private val resumeAccount: ResumeAccount,
-    private val restoreWallpaper: RestoreWallpaper,
     private val analytics: Analytics,
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
@@ -78,7 +80,8 @@ class MainViewModel(
     private val spaceManager: SpaceManager,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
-    private val observeSpaceWallpaper: ObserveSpaceWallpaper
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper,
+    private val urlBuilder: UrlBuilder
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -88,7 +91,7 @@ class MainViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
-    val wallpaper: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
+    val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
 
     init {
         subscribeToActiveSpaceWallpaper()
@@ -102,9 +105,11 @@ class MainViewModel(
                             )
                         )
                     }
+
                     is AccountStatus.Deleted -> {
                         proceedWithLogoutDueToAccountDeletion()
                     }
+
                     else -> {
                         // Do nothing
                     }
@@ -133,72 +138,27 @@ class MainViewModel(
         viewModelScope.launch {
             spaceManager.observe()
                 .flatMapLatest { config ->
-                    observeSpaceWallpaper.flow(
-                        ObserveSpaceWallpaper.Params(space = config.space)
-                    )
-                }
-                .catch {
-                    Timber.w(it, "Error while observing wallpaper for space")
-                    emit(Wallpaper.Default)
-                }
-                .collect { spaceWallpaper ->
-                    val finalWallpaper = when (spaceWallpaper) {
-                        Wallpaper.Default -> {
-                            // Try to get color from space icon when wallpaper is default
-                            getCurrentSpaceIconColor()?.let { color ->
-                                Wallpaper.Color(color.code)
-                            } ?: spaceWallpaper
+                    combine(
+                        observeSpaceWallpaper.flow(
+                            ObserveSpaceWallpaper.Params(space = config.space)
+                        ),
+                        spaceViews.observe(space = SpaceId(config.space)).mapNotNull { spaceView ->
+                            spaceView.spaceIcon(urlBuilder)
                         }
-                        else -> spaceWallpaper
-                    }
-                    Timber.d("Space wallpaper updated: $finalWallpaper (original: $spaceWallpaper)")
-                    //wallpaper.value = finalWallpaper
-                }
-        }
-    }
+                    ) { wallpaper, spaceIcon ->
+                        val spaceBackgroundColor = computeWallpaperResult(
+                            icon = spaceIcon,
+                            wallpaper = wallpaper
+                        )
+                        wallpaperState.value = spaceBackgroundColor
 
-    /**
-     * Gets the SystemColor from the current space's icon option.
-     * Used as fallback when wallpaper is Wallpaper.Default.
-     */
-    private suspend fun getCurrentSpaceIconColor(): WallpaperColor? {
-        return try {
-            val currentSpaceId = spaceManager.get()
-            if (!currentSpaceId.isEmpty()) {
-                val spaceView = spaceViews.get(SpaceId(currentSpaceId))
-                val iconOption = spaceView?.iconOption
-                
-                if (iconOption != null) {
-                    val systemColor = SystemColor.color(idx = iconOption.toInt())
-                    // Find the closest WallpaperColor to the SystemColor
-                    findClosestWallpaperColorForSystemColor(systemColor)
-                } else {
-                    null
+                    }
                 }
-            } else {
-                null
-            }
-        } catch (e: Exception) {
-            Timber.w(e, "Failed to get current space icon color")
-            null
-        }
-    }
-    
-    /**
-     * Maps SystemColor to the closest WallpaperColor for consistent theming.
-     */
-    private fun findClosestWallpaperColorForSystemColor(systemColor: SystemColor): WallpaperColor {
-        // Map SystemColor to closest WallpaperColor based on visual similarity
-        return when (systemColor) {
-            SystemColor.AMBER -> WallpaperColor.ORANGE
-            SystemColor.BLUE -> WallpaperColor.BLUE
-            SystemColor.GREEN -> WallpaperColor.GREEN
-            SystemColor.PINK -> WallpaperColor.PINK
-            SystemColor.PURPLE -> WallpaperColor.PURPLE
-            SystemColor.RED -> WallpaperColor.RED
-            SystemColor.SKY -> WallpaperColor.ICE
-            SystemColor.TEAL -> WallpaperColor.TEAL
-            SystemColor.YELLOW -> WallpaperColor.YELLOW
+                .catch { e ->
+                    Timber.w(e, "Error while observing wallpaper for space")
+                    wallpaperState.value = WallpaperResult.None
+                }
+                .collect()
         }
     }
 
@@ -240,9 +200,11 @@ class MainViewModel(
                     is Interactor.Status.Error -> {
                         toasts.emit("Error while logging out due to account deletion")
                     }
+
                     is Interactor.Status.Started -> {
                         toasts.emit("Your account is deleted. Logging out...")
                     }
+
                     is Interactor.Status.Success -> {
                         unsubscribeFromGlobalSubscriptions()
                         commands.emit(Command.LogoutDueToAccountDeletion)
@@ -290,6 +252,7 @@ class MainViewModel(
                         is NeedToUpdateApplicationException -> {
                             commands.emit(Command.Error(SplashViewModel.ERROR_NEED_UPDATE))
                         }
+
                         else -> {
                             commands.emit(Command.Error(SplashViewModel.ERROR_MESSAGE))
                         }
@@ -433,9 +396,11 @@ class MainViewModel(
                     )
                 )
             }
+
             is DeepLinkResolver.Action.Invite -> {
                 commands.emit(Command.Deeplink.Invite(deeplink.link))
             }
+
             is DeepLinkResolver.Action.DeepLinkToObject -> {
                 val result = onDeepLinkToObject(
                     obj = deeplink.obj,
@@ -458,15 +423,17 @@ class MainViewModel(
                             commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
                         }
                     }
+
                     is DeepLinkToObjectDelegate.Result.Success -> {
                         val targetSpace = result.obj.spaceId
                         if (targetSpace != null) {
                             val currentState = spaceManager.getState()
                             Timber.d("Space manager state before processing deep link: $currentState")
-                            when(currentState) {
+                            when (currentState) {
                                 SpaceManager.State.Init -> {
                                     // Do nothing.
                                 }
+
                                 SpaceManager.State.NoSpace -> {
                                     proceedWithSpaceSwitchDueToDeepLinkToObject(
                                         targetSpace = targetSpace,
@@ -474,6 +441,7 @@ class MainViewModel(
                                         result = result
                                     )
                                 }
+
                                 is SpaceManager.State.Space.Idle -> {
                                     if (currentState.space.id != deeplink.space.id) {
                                         proceedWithSpaceSwitchDueToDeepLinkToObject(
@@ -492,6 +460,7 @@ class MainViewModel(
                                         )
                                     }
                                 }
+
                                 is SpaceManager.State.Space.Active -> {
                                     if (currentState.config.space != deeplink.space.id) {
                                         proceedWithSpaceSwitchDueToDeepLinkToObject(
@@ -515,11 +484,13 @@ class MainViewModel(
                     }
                 }
             }
+
             is DeepLinkResolver.Action.DeepLinkToMembership -> {
                 commands.emit(
                     Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
                 )
             }
+
             else -> {
                 Timber.d("No deep link")
             }
@@ -566,7 +537,10 @@ class MainViewModel(
                             )
                         )
                     }.onFailure {
-                        Timber.e(it, "Error while switching space when launching chat from push notification")
+                        Timber.e(
+                            it,
+                            "Error while switching space when launching chat from push notification"
+                        )
                     }
             } else {
                 commands.emit(
@@ -586,24 +560,25 @@ class MainViewModel(
         data class Error(val msg: String) : Command()
         sealed class Sharing : Command() {
             data class Text(val data: String) : Sharing()
-            data class Image(val uri: String): Sharing()
-            data class Images(val uris: List<String>): Sharing()
-            data class Videos(val uris: List<String>): Sharing()
-            data class File(val uri: String): Sharing()
-            data class Files(val uris: List<String>): Sharing()
+            data class Image(val uri: String) : Sharing()
+            data class Images(val uris: List<String>) : Sharing()
+            data class Videos(val uris: List<String>) : Sharing()
+            data class File(val uri: String) : Sharing()
+            data class Files(val uris: List<String>) : Sharing()
         }
-        data object Notifications: Command()
-        data object RequestNotificationPermission: Command()
+
+        data object Notifications : Command()
+        data object RequestNotificationPermission : Command()
 
         data class LaunchChat(
             val space: Id,
             val chat: Id
-        ): Command()
+        ) : Command()
 
-        data class Navigate(val destination: OpenObjectNavigation): Command()
+        data class Navigate(val destination: OpenObjectNavigation) : Command()
 
         sealed class Deeplink : Command() {
-            data object DeepLinkToObjectNotWorking: Deeplink()
+            data object DeepLinkToObjectNotWorking : Deeplink()
             data class DeepLinkToObject(
                 val obj: Id,
                 val space: Id,
@@ -615,14 +590,16 @@ class MainViewModel(
                         val home: Id,
                         val chat: Id? = null,
                         val spaceUxType: SpaceUxType? = null
-                    ): SideEffect()
+                    ) : SideEffect()
                 }
             }
+
             data class Invite(val link: String) : Deeplink()
             data class GalleryInstallation(
                 val deepLinkType: String,
                 val deepLinkSource: String
             ) : Deeplink()
+
             data class MembershipScreen(val tierId: String?) : Deeplink()
         }
     }

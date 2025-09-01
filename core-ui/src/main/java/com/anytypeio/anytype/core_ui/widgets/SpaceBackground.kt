@@ -43,14 +43,3 @@ fun WallpaperResult.toSpaceBackground(): SpaceBackground {
         WallpaperResult.None -> SpaceBackground.None
     }
 }
-
-/**
- * Legacy function for backwards compatibility - will be removed after migration
- * @deprecated Use WallpaperResult.toSpaceBackground() instead
- */
-@Deprecated("Use WallpaperResult.toSpaceBackground() instead")
-@Composable
-fun computeSpaceBackground(
-    icon: com.anytypeio.anytype.presentation.spaces.SpaceIconView,
-    wallpaperResult: WallpaperResult
-): SpaceBackground = wallpaperResult.toSpaceBackground()

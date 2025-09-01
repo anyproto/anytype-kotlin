@@ -198,7 +198,6 @@ fun WallpaperItem(
         val spaceBackground = item.wallpaper.toSpaceBackground()
         val wallpaperModifier = Modifier
             .size(20.dp)
-            //.padding(horizontal = 8.dp)
 
         when (spaceBackground) {
             is SpaceBackground.SolidColor ->

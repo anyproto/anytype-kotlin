@@ -101,7 +101,9 @@ fun SpaceIconView(
             )
         }
 
-        SpaceIconView.Loading -> { /* no-op */ }
+        SpaceIconView.Loading -> {
+            //do nothing
+        }
     }
 }
 

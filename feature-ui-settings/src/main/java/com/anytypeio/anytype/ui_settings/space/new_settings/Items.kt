@@ -64,8 +64,10 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
@@ -204,7 +206,7 @@ fun WallpaperItem(
                     modifier = wallpaperModifier
                         .background(
                             color = spaceBackground.color.copy(alpha = 0.3f),
-                            shape = RoundedCornerShape(20.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                 )
             is SpaceBackground.Gradient ->
@@ -213,7 +215,7 @@ fun WallpaperItem(
                     modifier = wallpaperModifier
                         .background(
                             brush = spaceBackground.brush,
-                            shape = RoundedCornerShape(20.dp),
+                            shape = RoundedCornerShape(4.dp),
                             alpha = 0.3f
                         )
                 )
@@ -227,6 +229,39 @@ fun WallpaperItem(
             modifier = Modifier.size(24.dp)
         )
     }
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemSolidColorPreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.SolidColor("#3B82F6"),
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemGradientPreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.Gradient("gradient-sunset"),
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
+}
+
+@Composable
+@DefaultPreviews
+private fun WallpaperItemNonePreview() {
+    WallpaperItem(
+        item = UiSpaceSettingsItem.Wallpapers(
+            wallpaper = WallpaperResult.None,
+            spaceIconView = SpaceIconView.DataSpace.Placeholder()
+        )
+    )
 }
 
 @Composable

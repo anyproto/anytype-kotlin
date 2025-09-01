@@ -52,9 +52,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -137,22 +140,21 @@ class MainViewModel(
         viewModelScope.launch {
             spaceManager.observe()
                 .flatMapLatest { config ->
-                    combine(
-                        observeSpaceWallpaper.flow(
-                            ObserveSpaceWallpaper.Params(space = config.space)
-                        ),
-                        spaceViews.observe(space = SpaceId(config.space)).mapNotNull { spaceView ->
-                            spaceView.spaceIcon(urlBuilder)
-                        }
-                    ) { wallpaper, spaceIcon ->
-                        val spaceBackgroundColor = computeWallpaperResult(
-                            icon = spaceIcon,
-                            wallpaper = wallpaper
-                        )
-                        wallpaperState.value = spaceBackgroundColor
 
-                    }
+                    val wallpaperFlow = observeSpaceWallpaper.flow(
+                        ObserveSpaceWallpaper.Params(space = config.space)
+                    ).distinctUntilChanged()
+
+                    val iconFlow = spaceViews
+                        .observe(space = SpaceId(config.space))
+                        .mapNotNull { it.spaceIcon(urlBuilder) }
+                        .distinctUntilChanged()
+
+                    combine(wallpaperFlow, iconFlow) { wallpaper, icon ->
+                        computeWallpaperResult(icon = icon, wallpaper = wallpaper)
+                    }.distinctUntilChanged()
                 }
+                .onEach { wallpaperState.value = it }
                 .catch { e ->
                     Timber.w(e, "Error while observing wallpaper for space")
                     wallpaperState.value = WallpaperResult.None

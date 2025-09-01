@@ -328,28 +328,28 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         when (result) {
             is WallpaperResult.Gradient -> {
                 container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
+                container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
             }
             is WallpaperResult.SolidColor -> {
                 try {
                     container.setBackgroundColor(Color.parseColor(result.colorHex))
+                    container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
                 } catch (e: IllegalArgumentException) {
                     Timber.w(e, "Invalid color format: ${result.colorHex}")
-                    container.setBackgroundResource(getDefaultDrawableResource())
+                    container.background = null
                 }
             }
             WallpaperResult.None -> {
-                container.setBackgroundResource(getDefaultDrawableResource())
+                container.background = null
             }
         }
-        
-        container.background.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
     }
 
     /**
      * Gets the default fallback drawable resource
      */
     @androidx.annotation.DrawableRes
-    private fun getDefaultDrawableResource(): Int = R.drawable.cover_gradient_default
+    private fun getDefaultDrawableResource(): Int = 0
 
     private fun setFragmentLifecycleCallbacks() {
         supportFragmentManager.registerFragmentLifecycleCallbacks(

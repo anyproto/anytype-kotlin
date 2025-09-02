@@ -230,7 +230,6 @@ fun OnboardingEmailScreen(
                         keyboardController?.hide()
                         onSkipClicked()
                     },
-                    textColor = colorResource(id = R.color.text_white),
                     size = ButtonSize.Large,
                     modifier = Modifier.fillMaxWidth(),
                 )

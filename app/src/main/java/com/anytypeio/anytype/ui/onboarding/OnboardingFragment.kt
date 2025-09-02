@@ -50,6 +50,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -189,7 +190,7 @@ class OnboardingFragment : Fragment() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(colorResource(R.color.background_primary))
             ) {
                 Box(
                     modifier = Modifier
@@ -732,7 +733,14 @@ class OnboardingFragment : Fragment() {
     private fun Auth(navController: NavHostController) {
         val component = componentManager().onboardingStartComponent
         val vm = daggerViewModel { component.get().getViewModel() }
-        AuthScreen(vm = vm)
+        AuthScreen(
+            isLoading = vm.isLoadingState.collectAsStateWithLifecycle().value,
+            onJoinClicked = vm::onJoinClicked,
+            onLoginClicked = vm::onLoginClicked,
+            onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
+            onTermsOfUseClicked = vm::onTermsOfUseClicked,
+            onSettingsClicked = vm::onSettingsClicked
+        )
         ErrorScreen(vm = vm)
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->

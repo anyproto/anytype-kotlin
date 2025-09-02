@@ -206,12 +206,10 @@ fun RecoveryScreen(
                             onScanQrClicked.invoke()
                         },
                         enabled = state !is SetupState.InProgress,
-                        disabledBackgroundColor = Color.Transparent,
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 18.dp, end = 18.dp, bottom = 24.dp),
-                        textColor = ColorButtonRegular
                     )
                 }
             }

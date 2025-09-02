@@ -3142,7 +3142,8 @@ class Middleware @Inject constructor(
         val request = Rpc.Publishing.Create.Request(
             objectId = command.objectId,
             spaceId = command.space.id,
-            uri = command.uri
+            uri = command.uri,
+            joinSpace = command.showJoinSpaceBanner
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.publishingCreate(request) }

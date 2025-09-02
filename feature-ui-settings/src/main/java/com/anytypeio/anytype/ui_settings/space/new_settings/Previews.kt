@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui_settings.space.new_settings
 
 import androidx.compose.runtime.Composable
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -9,6 +10,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 
 @Composable
 @DefaultPreviews
@@ -37,7 +40,7 @@ fun NewSpaceSettingsScreenPreview() {
                     icon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 ),
                 UiSpaceSettingsItem.Spacer(height = 8),
-                UiSpaceSettingsItem.Wallpapers(null),
+                //UiSpaceSettingsItem.Wallpapers(null),
                 UiSpaceSettingsItem.Spacer(height = 8),
                 UiSpaceSettingsItem.Section.DataManagement,
                 UiSpaceSettingsItem.Spacer(height = 8),
@@ -61,5 +64,13 @@ fun NewSpaceSettingsScreenPreview() {
             targetSpaceId = "space-view-id"
         ),
         uiEvent = {},
+        uiWallpaperState = listOf(
+            WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.BLUE.code),
+            WallpaperView.SolidColor(isSelected = true, code = WallpaperColor.GREEN.code),
+            WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.ORANGE.code),
+            WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.PINK.code),
+            WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.PURPLE.code),
+            WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.RED.code),
+        )
     )
 }

@@ -51,12 +51,13 @@ plugins {
     alias(libs.plugins.firebaseDistribution) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.ksp) apply false
+    id "app.cash.licensee" version "1.13.0" apply false
 }
 
 def testDebugAll = tasks.create("testDebugAll")
 
 //https://www.droidcon.com/2022/03/11/reducing-gradle-boilerplate-in-multi-module-android-projects/
-subprojects {
+subprojects { sub ->
     project.plugins.whenPluginAdded { plugin ->
         if (plugin instanceof LibraryPlugin) {
 
@@ -86,6 +87,48 @@ subprojects {
 
                 kotlin {
                     jvmToolchain(17)
+                }
+            }
+        }
+
+    }
+    
+    if (rootProject.ext.onCi) {
+        plugins.withId("com.android.application") {
+            // Apply the plugin after Android plugin is ready
+            sub.pluginManager.apply("app.cash.licensee")
+            sub.afterEvaluate {
+                // Configure licensee
+                sub.licensee {
+                    // Allow common SPDX identifiers
+                    allow("Apache-2.0")
+                    allow("MIT")
+                    allow("BSD-3-Clause")
+
+                    // Allow specific license URLs
+                    allowUrl("https://developer.android.com/studio/terms.html") {
+                        because("Google/Android SDK Terms - standard for Google Play Services and Android libraries")
+                    }
+                    allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") {
+                        because("Facebook Shimmer is BSD-licensed")
+                    }
+                    allowUrl("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING") {
+                        because("ZXing Android Embedded is Apache-2.0 licensed")
+                    }
+                    allowUrl("https://www.bouncycastle.org/licence.html") {
+                        because("BouncyCastle is MIT-licensed")
+                    }
+                    
+                    // Allow specific dependencies that declare no licenses
+                    allowDependency("com.github.anyproto", "any-crypto-kotlin", "1.0.2") {
+                        because("any-crypto-kotlin is MIT-licensed (verified in repository)")
+                    }
+                    allowDependency("com.github.komputing", "KBase58", "0.4") {
+                        because("KBase58 is MIT-licensed (verified in repository)")
+                    }
+                    allowDependency("io.anyproto", "anytype-heart-android", "v0.43.0-rc02") {
+                        because("Internal Anytype library")
+                    }
                 }
             }
         }

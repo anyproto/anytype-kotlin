@@ -100,7 +100,6 @@ import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
-import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
@@ -200,13 +199,6 @@ class ComponentManager(
         DaggerSelectWidgetTypeComponent.factory().create(
             findComponentDependencies()
         )
-    }
-
-    val wallpaperSelectComponent = Component {
-        main
-            .wallpaperSelectComponent()
-            .module(WallpaperSelectModule)
-            .build()
     }
 
     val createObjectComponent = Component {

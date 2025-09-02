@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -26,7 +27,12 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
+import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
+import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -37,31 +43,47 @@ import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
-import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.*
-import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.Params
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
+import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
-import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
-import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
-import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.*
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.*
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageRemoteStorage
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageSharedSpace
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.OpenDebugScreen
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.OpenPropertiesScreen
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.OpenTypesScreen
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.SelectDefaultObjectType
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowDeleteSpaceWarning
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowLeaveSpaceWarning
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.EntrySpace
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.InviteLink
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Members
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.MembersSmall
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
+import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
+import com.anytypeio.anytype.presentation.wallpaper.getSpaceIconColor
 import javax.inject.Inject
-import kotlin.collections.map
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -87,7 +109,7 @@ class SpaceSettingsViewModel(
     private val profileContainer: ProfileSubscriptionManager,
     private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,
-    private val observeWallpaper: ObserveWallpaper,
+    private val observeSpaceWallpaper: ObserveSpaceWallpaper,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val appActionManager: AppActionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
@@ -98,7 +120,9 @@ class SpaceSettingsViewModel(
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
     private val deviceTokenStoringService: DeviceTokenStoringService,
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
-    private val spaceInviteLinkStore: SpaceInviteLinkStore
+    private val spaceInviteLinkStore: SpaceInviteLinkStore,
+    private val getGradients: GetCoverGradientCollection,
+    private val setWallpaper: SetWallpaper
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -114,6 +138,8 @@ class SpaceSettingsViewModel(
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+
+    val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -144,7 +170,7 @@ class SpaceSettingsViewModel(
         val otherFlows = combine(
             spaceViewContainer.observe(vmParams.space),
             activeSpaceMemberSubscriptionContainer.observe(vmParams.space),
-            observeWallpaper.build()
+            observeSpaceWallpaper.flow(params = ObserveSpaceWallpaper.Params(vmParams.space.id))
         ) { spaceView, spaceMembers, wallpaper ->
             Triple(spaceView, spaceMembers, wallpaper)
         }
@@ -209,6 +235,37 @@ class SpaceSettingsViewModel(
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
+                val spaceIcon = spaceView.spaceIcon(urlBuilder)
+
+                val wallpaperResult = computeWallpaperResult(
+                    wallpaper = wallpaper,
+                    icon = spaceIcon
+                )
+
+                val gradients = getGradients.provide().map { code ->
+                    WallpaperView.Gradient(
+                        code = code,
+                        isSelected = code == (wallpaper as? Wallpaper.Gradient)?.code
+                    )
+                }
+                val colors = WallpaperColor.entries.map {
+                    WallpaperView.SolidColor(
+                        code = it.code,
+                        isSelected = it.code == (wallpaper as? Wallpaper.Color)?.code
+                    )
+                }
+                val wallpaperItems = buildList {
+                    add(
+                        WallpaperView.SpaceColor(
+                            systemColor = getSpaceIconColor(spaceIcon),
+                            isSelected = wallpaper is Wallpaper.Default
+                        )
+                    )
+                    addAll(gradients)
+                    addAll(colors)
+                }
+                spaceWallpapers.value = wallpaperItems
+
                 val targetSpaceId = spaceView.targetSpaceId
 
                 val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
@@ -261,7 +318,7 @@ class SpaceSettingsViewModel(
                 val items = buildList {
                     add(
                         UiSpaceSettingsItem.Icon(
-                            icon = spaceView.spaceIcon(urlBuilder)
+                            icon = spaceIcon
                         )
                     )
                     add(Spacer(height = 24))
@@ -322,7 +379,7 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Preferences)
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Wallpapers(current = wallpaper))
+                    add(UiSpaceSettingsItem.Wallpapers(wallpaper = wallpaperResult, spaceIconView = spaceIcon))
                     if (widgetAutoCreationPreference != null) {
                         add(Spacer(height = 8))
                         add(widgetAutoCreationPreference)
@@ -361,6 +418,9 @@ class SpaceSettingsViewModel(
         when(uiEvent) {
             UiEvent.IconMenu.OnRemoveIconClicked -> {
                 proceedWithRemovingSpaceIcon()
+            }
+            UiEvent.IconMenu.OnChangeIconColorClicked -> {
+                proceedWithUpdateSpaceIconColor()
             }
             UiEvent.OnBackPressed -> {
                 isDismissed.value = true
@@ -403,7 +463,7 @@ class SpaceSettingsViewModel(
                         }
                         else -> "" to null
                     }
-                    uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
+                    uiQrCodeState.value = SpaceInvite(
                         link = uiEvent.link,
                         spaceName = spaceName,
                         icon = spaceIcon
@@ -436,11 +496,6 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
-            }
-            is UiEvent.OnSelectWallpaperClicked -> {
-                viewModelScope.launch {
-                    commands.emit(OpenWallpaperPicker)
-                }
             }
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
@@ -527,6 +582,41 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+            is UiEvent.OnUpdateWallpaperClicked -> {
+                proceedWithWallpaperUpdate(uiEvent)
+            }
+        }
+    }
+
+    private fun proceedWithWallpaperUpdate(uiEvent: UiEvent.OnUpdateWallpaperClicked) {
+        viewModelScope.launch {
+            val params = when (val newWallpaper = uiEvent.wallpaperView) {
+                is WallpaperView.Gradient -> {
+                    SetWallpaper.Params.Gradient(
+                        space = vmParams.space.id,
+                        code = newWallpaper.code
+                    )
+                }
+                is WallpaperView.SolidColor -> {
+                    SetWallpaper.Params.SolidColor(
+                        space = vmParams.space.id,
+                        code = newWallpaper.code
+                    )
+                }
+                is WallpaperView.SpaceColor -> {
+                    SetWallpaper.Params.Clear(
+                        space = vmParams.space.id
+                    )
+                }
+            }
+            setWallpaper.async(params).fold(
+                onSuccess = {
+                    Timber.d("Wallpaper updated")
+                },
+                onFailure = {
+                    Timber.w(it, "Failed to update wallpaper")
+                }
+            )
         }
     }
 
@@ -536,8 +626,20 @@ class SpaceSettingsViewModel(
                 SetSpaceDetails.Params(
                     space = vmParams.space,
                     details = mapOf(
-                        Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                         Relations.ICON_IMAGE to "",
+                    )
+                )
+            )
+        }
+    }
+
+    private fun proceedWithUpdateSpaceIconColor() {
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                SetSpaceDetails.Params(
+                    space = vmParams.space,
+                    details = mapOf(
+                        Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                     )
                 )
             )
@@ -867,7 +969,7 @@ class SpaceSettingsViewModel(
         private val profileContainer: ProfileSubscriptionManager,
         private val getDefaultObjectType: GetDefaultObjectType,
         private val setDefaultObjectType: SetDefaultObjectType,
-        private val observeWallpaper: ObserveWallpaper,
+        private val observeSpaceWallpaper: ObserveSpaceWallpaper,
         private val appActionManager: AppActionManager,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
@@ -878,7 +980,9 @@ class SpaceSettingsViewModel(
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
         private val deviceTokenStoreService: DeviceTokenStoringService,
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
-        private val spaceInviteLinkStore: SpaceInviteLinkStore
+        private val spaceInviteLinkStore: SpaceInviteLinkStore,
+        private val getGradients: GetCoverGradientCollection,
+        private val setWallpaper: SetWallpaper
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -899,7 +1003,7 @@ class SpaceSettingsViewModel(
             profileContainer = profileContainer,
             getDefaultObjectType = getDefaultObjectType,
             setDefaultObjectType = setDefaultObjectType,
-            observeWallpaper = observeWallpaper,
+            observeSpaceWallpaper = observeSpaceWallpaper,
             appActionManager = appActionManager,
             storeOfObjectTypes = storeOfObjectTypes,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
@@ -910,7 +1014,9 @@ class SpaceSettingsViewModel(
             setSpaceNotificationMode = setSpaceNotificationMode,
             deviceTokenStoringService = deviceTokenStoreService,
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
-            spaceInviteLinkStore = spaceInviteLinkStore
+            spaceInviteLinkStore = spaceInviteLinkStore,
+            getGradients = getGradients,
+            setWallpaper = setWallpaper
         ) as T
     }
 

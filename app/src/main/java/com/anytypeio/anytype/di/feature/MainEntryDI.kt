@@ -15,14 +15,14 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
-import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
-import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
+import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
@@ -60,7 +60,6 @@ object MainEntryModule {
     fun provideMainViewModelFactory(
         resumeAccount: ResumeAccount,
         analytics: Analytics,
-        restoreWallpaper: RestoreWallpaper,
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
         checkAuthorizationStatus: CheckAuthorizationStatus,
@@ -76,11 +75,12 @@ object MainEntryModule {
         spaceInviteResolver: SpaceInviteResolver,
         spaceManager: SpaceManager,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-        pendingIntentStore: PendingIntentStore
+        pendingIntentStore: PendingIntentStore,
+        observeSpaceWallpaper: ObserveSpaceWallpaper,
+        urlBuilder: UrlBuilder
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
-        restoreWallpaper = restoreWallpaper,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
@@ -96,7 +96,9 @@ object MainEntryModule {
         spaceInviteResolver = spaceInviteResolver,
         spaceManager = spaceManager,
         spaceViews = spaceViewSubscriptionContainer,
-        pendingIntentStore = pendingIntentStore
+        pendingIntentStore = pendingIntentStore,
+        observeSpaceWallpaper = observeSpaceWallpaper,
+        urlBuilder = urlBuilder
     )
 
     @JvmStatic
@@ -118,20 +120,6 @@ object MainEntryModule {
         awaitAccountStartManager = awaitAccountStartManager,
         spaceManager = spaceManager,
         settings = settingsRepository
-    )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideRestoreWallpaperUseCase(
-        repo: UserSettingsRepository,
-        spaceManager: SpaceManager,
-        dispatchers: AppCoroutineDispatchers
-    ): RestoreWallpaper = RestoreWallpaper(
-        repo = repo,
-        spaceManager = spaceManager,
-        store = WallpaperStore.Default,
-        dispatchers = dispatchers
     )
 
     @JvmStatic

@@ -1919,4 +1919,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publish to Web</string>
+    <string name="preferences">Einstellungen</string>
+    <string name="web_publishing_customize_url">URL anpassen</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
+    <string name="web_publishing_unpublish">Unpublish</string>
+    <string name="web_publishing_update">Update</string>
+    <string name="web_publishing_publish">Publish</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

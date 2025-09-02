@@ -1919,4 +1919,12 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publiceer op het internet</string>
+    <string name="preferences">Voorkeuren</string>
+    <string name="web_publishing_customize_url">Pas URL aan</string>
+    <string name="web_publishing_join_space_button">Neem deel aan ruimte knop</string>
+    <string name="web_publishing_unpublish">Depubliceer</string>
+    <string name="web_publishing_update">Updaten</string>
+    <string name="web_publishing_publish">Publiceer</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

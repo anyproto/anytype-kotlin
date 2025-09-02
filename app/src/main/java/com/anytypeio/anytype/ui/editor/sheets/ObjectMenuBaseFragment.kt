@@ -41,6 +41,7 @@ import com.anytypeio.anytype.ui.linking.BacklinkAction
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
+import com.anytypeio.anytype.ui.publishtoweb.PublishToWebFragment
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
@@ -106,6 +107,7 @@ abstract class ObjectMenuBaseFragment :
         click(binding.optionIcon) { vm.onIconClicked(ctx = ctx, space = space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
+        click(binding.publishToWeb) { vm.onPublishToWebClicked(ctx = ctx, space = space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
         click(binding.objectLayoutConflict) { vm.onShowConflictScreen(objectId = ctx, space = space) }
 
@@ -209,6 +211,19 @@ abstract class ObjectMenuBaseFragment :
                     )
                 }.onFailure {
                     Timber.e(it, "Failed to open history screen")
+                }
+            }
+            is ObjectMenuViewModelBase.Command.PublishToWeb -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.publishToWebScreen,
+                        PublishToWebFragment.args(
+                            ctx = ctx,
+                            space = space
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Failed to open publish-to-web screen")
                 }
             }
         }

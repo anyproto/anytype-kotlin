@@ -1905,4 +1905,12 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
     <string name="private_local_yours_forever">Pribadi, lokal, milikmu selamanya</string>
     <string name="wallpaper_item_space_icon_color">Warna ikon \nruang</string>
+    <string name="publish_to_web">Publish to Web</string>
+    <string name="preferences">Preferensi</string>
+    <string name="web_publishing_customize_url">Customize URL</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
+    <string name="web_publishing_unpublish">Batal publikasi</string>
+    <string name="web_publishing_update">Perbarui</string>
+    <string name="web_publishing_publish">Publish</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

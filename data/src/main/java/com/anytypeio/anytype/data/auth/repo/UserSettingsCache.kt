@@ -36,6 +36,7 @@ interface UserSettingsCache {
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id) : Wallpaper
     suspend fun getWallpapers(): Map<Id, Wallpaper>
+    fun observeWallpaper(space: Id): Flow<Wallpaper>
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode
     suspend fun getWidgetSession() : WidgetSession

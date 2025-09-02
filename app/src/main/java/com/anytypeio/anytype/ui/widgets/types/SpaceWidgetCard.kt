@@ -24,7 +24,7 @@ import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -37,7 +37,7 @@ import timber.log.Timber
 fun SpaceWidgetCardPreview() {
     SpaceWidgetCard(
         onClick = {},
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.DataSpace.Placeholder(),
         name = "Research",
         spaceType = PRIVATE_SPACE_TYPE,
         onSpaceShareIconClicked = {},
@@ -51,7 +51,7 @@ fun SpaceWidgetCardPreview() {
 fun SharedSpaceWidgetCardPreview() {
     SpaceWidgetCard(
         onClick = {},
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.DataSpace.Placeholder(),
         name = "Research",
         spaceType = SHARED_SPACE_TYPE,
         onSpaceShareIconClicked = {},

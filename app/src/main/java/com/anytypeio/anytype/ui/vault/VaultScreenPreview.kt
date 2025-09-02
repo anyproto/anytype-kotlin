@@ -13,7 +13,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
@@ -27,7 +29,7 @@ fun ChatWithManyAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "File Archive",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:30",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -54,7 +56,15 @@ fun ChatWithManyAttachmentsNoText() {
                 type = VaultSpaceView.AttachmentType.IMAGE,
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -67,7 +77,7 @@ fun ChatWithManyMixedAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Mixed Files",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "14:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -99,7 +109,15 @@ fun ChatWithManyMixedAttachmentsNoText() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Web Resource"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -112,7 +130,7 @@ fun ChatWithImageAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Design Team",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Alice",
         messageText = "Check out these designs",
         messageTime = "10:45",
@@ -131,7 +149,15 @@ fun ChatWithImageAttachments() {
                 type = VaultSpaceView.AttachmentType.IMAGE,
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -144,7 +170,7 @@ fun ChatWithFileAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Project Discussion",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Bob",
         messageText = "Here are the documents",
         messageTime = "14:22",
@@ -159,7 +185,15 @@ fun ChatWithFileAttachments() {
                 type = VaultSpaceView.AttachmentType.FILE,
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -172,7 +206,7 @@ fun ChatWithLinkAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Resource Sharing",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Charlie",
         messageText = "Found some useful links",
         messageTime = "11:30",
@@ -197,7 +231,15 @@ fun ChatWithLinkAttachments() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Project Board"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -210,7 +252,7 @@ fun ChatWithMixedAttachments() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Development Updates",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Dana",
         messageText = "Latest progress and resources",
         messageTime = "16:30",
@@ -230,7 +272,15 @@ fun ChatWithMixedAttachments() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "External Link"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -243,7 +293,7 @@ fun ChatWithAttachmentsNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Media Sharing",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "12:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -257,7 +307,15 @@ fun ChatWithAttachmentsNoText() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Shared Resource"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -270,7 +328,7 @@ fun ChatWithManyLinksNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Reference Links",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "15:45",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -301,7 +359,15 @@ fun ChatWithManyLinksNoText() {
                 type = VaultSpaceView.AttachmentType.FILE,
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -314,7 +380,7 @@ fun ChatWithSingleLinkNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Link",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:15",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -325,7 +391,15 @@ fun ChatWithSingleLinkNoText() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "API Documentation"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -338,7 +412,7 @@ fun ChatWithMultipleLinksOnlyNoText() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Links Only",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "10:30",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
@@ -359,7 +433,15 @@ fun ChatWithMultipleLinksOnlyNoText() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Analytics"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -372,7 +454,7 @@ fun ChatWithSingleImageNoMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Image Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Alice",
         messageTime = "09:00",
         maxPinnedSpaces = 6,
@@ -383,7 +465,15 @@ fun ChatWithSingleImageNoMessage() {
                 type = VaultSpaceView.AttachmentType.IMAGE,
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -396,7 +486,7 @@ fun ChatWithSingleLinkWithMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Single Link With Text",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Bob",
         messageText = "Check this out",
         messageTime = "10:00",
@@ -409,7 +499,15 @@ fun ChatWithSingleLinkWithMessage() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "API Documentation"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -422,11 +520,19 @@ fun ChatWithMultipleImagesNoMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Images Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Charlie",
         messageTime = "11:00",
         maxPinnedSpaces = 6,
         currentPinnedCount = 2,
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
         // Multiple images, no message: "Charlie: [][][] 3 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -454,7 +560,7 @@ fun ChatWithMultipleObjectsWithMessage() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Multiple Objects Demo",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Dana",
         messageText = "Here are some resources",
         messageTime = "12:00",
@@ -477,7 +583,15 @@ fun ChatWithMultipleObjectsWithMessage() {
                 objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 title = "Analytics"
             )
-        )
+        ),
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 
@@ -490,10 +604,18 @@ fun ChatEmpty() {
             .height(80.dp)
             .padding(horizontal = 16.dp),
         title = "Empty Chat",
-        icon = SpaceIconView.Placeholder(),
+        icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "08:00",
         currentPinnedCount = 2,
-        maxPinnedSpaces = 6
+        maxPinnedSpaces = 6,
+        spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+        spaceView = VaultSpaceView.Space(
+            space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+            isMuted = false,
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            isOwner = true,
+            accessType = "Owner"
+        ),
     )
 }
 

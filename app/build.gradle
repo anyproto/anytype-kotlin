@@ -4,6 +4,7 @@ plugins {
     id 'com.google.devtools.ksp'
     alias(libs.plugins.compose.compiler)
     id "com.google.firebase.appdistribution"
+    id 'androidx.navigation.safeargs.kotlin'
 }
 
 if (rootProject.ext.onCi) {

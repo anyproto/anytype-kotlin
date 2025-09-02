@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -113,13 +114,11 @@ import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -2457,10 +2456,7 @@ class HomeScreenViewModel(
                     viewerSpaceSettingsState.value = ViewerSpaceSettingsState.Visible(
                         name = targetSpaceView.name.orEmpty(),
                         description = targetSpaceView.description.orEmpty(),
-                        icon = targetSpaceView.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = SpaceGradientProvider.Default
-                        ),
+                        icon = targetSpaceView.spaceIcon(urlBuilder),
                         techInfo = SpaceTechInfo(
                             spaceId = space,
                             networkId = config?.network.orEmpty(),
@@ -2702,7 +2698,6 @@ class HomeScreenViewModel(
         data class OpenChat(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
-        data object OpenSpaceSwitcher: Navigation()
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()

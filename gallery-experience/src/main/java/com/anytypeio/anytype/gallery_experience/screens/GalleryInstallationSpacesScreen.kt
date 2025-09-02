@@ -3,7 +3,6 @@ package com.anytypeio.anytype.gallery_experience.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -22,21 +20,15 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
-import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.features.SpaceIconView
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title3
@@ -180,51 +172,51 @@ private fun GallerySpacesScreenPreview() {
             listOf(
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 2")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 3")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 4")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 5")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 6")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 7")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 8")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 9")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 10")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 11")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 ),
                 GallerySpaceView(
                     obj = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 12")),
-                    icon = SpaceIconView.Placeholder()
+                    icon = SpaceIconView.DataSpace.Placeholder()
                 )
             ),
             isNewButtonVisible = true

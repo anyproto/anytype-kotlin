@@ -1920,4 +1920,12 @@ Please provide specific details of your needs here.</string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Pubblica sul Web</string>
+    <string name="preferences">Preferenze</string>
+    <string name="web_publishing_customize_url">Personalizza URL</string>
+    <string name="web_publishing_join_space_button">Pulsante Unisciti allo Spazio</string>
+    <string name="web_publishing_unpublish">Annulla pubblicazione</string>
+    <string name="web_publishing_update">Aggiorna</string>
+    <string name="web_publishing_publish">Pubblica</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

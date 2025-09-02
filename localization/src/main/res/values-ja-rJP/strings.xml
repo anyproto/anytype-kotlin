@@ -1907,4 +1907,12 @@
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Web公開</string>
+    <string name="preferences">環境設定</string>
+    <string name="web_publishing_customize_url">URLをカスタマイズ</string>
+    <string name="web_publishing_join_space_button">スペースへの参加リンク</string>
+    <string name="web_publishing_unpublish">公開停止</string>
+    <string name="web_publishing_update">更新</string>
+    <string name="web_publishing_publish">公開</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

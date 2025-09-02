@@ -86,7 +86,7 @@ class PublishToWebViewModel(
                             showJoinSpaceButton = state.showJoinSpaceButton
                         )
                     } else {
-                        // TODO
+                        Timber.w("DROID-3786 Failed to get publishing domain")
                     }
                 }
             }

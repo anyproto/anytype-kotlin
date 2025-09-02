@@ -50,6 +50,7 @@
     <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="space_settings_chage_space_icon_color">Change icon color</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
@@ -1918,4 +1919,5 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
 </resources>

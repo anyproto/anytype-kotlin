@@ -50,6 +50,7 @@
     <string name="default_space">Standaard ruimte</string>
     <string name="space_settings_apply_random_gradient">Pas willekeurige effen kleur toe</string>
     <string name="space_settings_apply_upload_image">Upload afbeelding</string>
+    <string name="space_settings_chage_space_icon_color">Change icon color</string>
     <string name="profile_settings_apply_upload_image">Upload afbeelding</string>
     <string name="remove_image">Verwijder afbeelding</string>
     <string name="delete_space">Verwijder ruimte</string>
@@ -1917,4 +1918,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
 </resources>

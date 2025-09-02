@@ -1919,4 +1919,12 @@ En concreto,
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publicar en la web</string>
+    <string name="preferences">Preferencias</string>
+    <string name="web_publishing_customize_url">Personalizar URL</string>
+    <string name="web_publishing_join_space_button">Botón para unirse al espacio</string>
+    <string name="web_publishing_unpublish">No publicar</string>
+    <string name="web_publishing_update">Actualizar</string>
+    <string name="web_publishing_publish">Publicar</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
 </resources>

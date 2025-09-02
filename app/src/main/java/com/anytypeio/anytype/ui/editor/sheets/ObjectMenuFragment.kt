@@ -31,11 +31,11 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
             }
             subscribe(vm.canBePublished) { canBePublished ->
                 if (canBePublished) {
-                    binding.publishToWeb.gone()
-                    binding.publishToWebDivider.gone()
-                } else {
                     binding.publishToWeb.visible()
                     binding.publishToWebDivider.visible()
+                } else {
+                    binding.publishToWeb.gone()
+                    binding.publishToWebDivider.gone()
                 }
             }
         }

@@ -50,6 +50,7 @@
     <string name="default_space">Birincil alan</string>
     <string name="space_settings_apply_random_gradient">Rastgele düz renk uygula</string>
     <string name="space_settings_apply_upload_image">Resim yükle</string>
+    <string name="space_settings_chage_space_icon_color">Simge rengini değiştir</string>
     <string name="profile_settings_apply_upload_image">Resim yükle</string>
     <string name="remove_image">Görseli kaldır</string>
     <string name="delete_space">Alanı sil</string>
@@ -1917,4 +1918,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
     <string name="private_local_yours_forever">Gizli, yerel, sonsuza kadar sizin</string>
+    <string name="wallpaper_item_space_icon_color">Alan simgesi \nrengi</string>
 </resources>

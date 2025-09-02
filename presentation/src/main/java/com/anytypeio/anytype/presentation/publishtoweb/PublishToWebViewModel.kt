@@ -267,7 +267,7 @@ sealed class PublishToWebViewState {
     abstract val spaceName: String
     abstract val showJoinSpaceButton: Boolean
 
-    data  object Init : PublishToWebViewState() {
+    data object Init : PublishToWebViewState() {
         override val uri: String
             get() = ""
         override val domain: String

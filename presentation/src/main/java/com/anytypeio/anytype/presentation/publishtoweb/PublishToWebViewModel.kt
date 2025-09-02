@@ -164,9 +164,8 @@ class PublishToWebViewModel(
                     spaceName = viewState.value.spaceName
                 )
             }.onSuccess { url ->
-                proceedWithResolvingInitialState().also {
-                    commands.emit(Command.Browse(url))
-                }
+                proceedWithResolvingInitialState()
+                commands.emit(Command.Browse(url))
             }
         }
     }
@@ -190,9 +189,8 @@ class PublishToWebViewModel(
                     spaceName = viewState.value.spaceName
                 )
             }.onSuccess { url ->
-                proceedWithResolvingInitialState().also {
-                    commands.emit(Command.Browse(url))
-                }
+                proceedWithResolvingInitialState()
+                commands.emit(Command.Browse(url))
             }
         }
     }

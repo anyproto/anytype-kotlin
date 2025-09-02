@@ -1926,5 +1926,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_unpublish">Yayından kaldır</string>
     <string name="web_publishing_update">Güncelle</string>
     <string name="web_publishing_publish">Yayınla</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_failed_to_update">Güncelleme başarısız oldu: %1$s</string>
 </resources>

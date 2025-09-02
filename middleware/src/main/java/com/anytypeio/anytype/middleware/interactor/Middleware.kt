@@ -2595,7 +2595,9 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return SpaceInviteLink(
             fileKey = response.inviteFileKey,
-            contentId = response.inviteCid
+            contentId = response.inviteCid,
+            permissions = response.permissions.toCore(),
+            inviteType = response.inviteType.toCoreModel()
         )
     }
 

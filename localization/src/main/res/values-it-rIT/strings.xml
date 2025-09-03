@@ -1831,7 +1831,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Risolvi il conflitto di layout</string>
     <string name="widget_source_suggested">Suggerito</string>
     <string name="widgets_empty_state_message">Non ci sono ancora widget</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
+    <string name="space_settings_auto_create_widgets">Creazione Automatica Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">I miei Tipi</string>
     <string name="space_types_screen_section_system_types">Tipi Di Sistema</string>

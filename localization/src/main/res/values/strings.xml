@@ -1073,6 +1073,7 @@
     <string name="onboarding_selection_researcher">Researcher / Academic</string>
     <string name="onboarding_selection_student">Student</string>
     <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Other</string>
 
     <!-- Use case options -->
     <string name="onboarding_usecase_habit_tracking">Habit tracking</string>

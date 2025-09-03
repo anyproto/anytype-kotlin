@@ -9,19 +9,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,24 +27,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 
 data class ProfessionItem(
     val emoji: String,
@@ -126,8 +120,8 @@ fun OnboardingSelectionScreen(
             Spacer(modifier = Modifier.height(24.dp))
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
                 content = {
                     professionItems.forEach { profession ->
                         ProfessionSelectionItem(
@@ -186,33 +180,53 @@ private fun ProfessionSelectionItem(
     } else {
         R.color.text_secondary to R.color.shape_transparent_secondary
     }
-    Row(
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
-            .background(color = colorResource(backgroundColor))
-            .clickable { onSelected() }
-            .padding(start = 12.dp, end = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+
+    // Outer Box with padding to accommodate the floating checkmark
+    Box(
+        modifier = Modifier.padding(top = 8.dp, end = 8.dp)
     ) {
+        // Inner Box with the main content
         Box(
             modifier = Modifier
-            .size(24.dp),
-            contentAlignment = Alignment.Center
+                .clip(RoundedCornerShape(16.dp))
+                .background(color = colorResource(backgroundColor))
+                .clickable { onSelected() }
         ) {
-            Text(
-                text = profession.emoji,
-                style = BodyCalloutRegular,
+            Row(
+                modifier = Modifier.padding(start = 12.dp, end = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier.size(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = profession.emoji,
+                        style = BodyCalloutRegular,
+                    )
+                }
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    modifier = Modifier.padding(vertical = 15.dp),
+                    text = stringResource(id = profession.titleResId),
+                    style = BodyCalloutRegular,
+                    color = colorResource(textColor),
+                    maxLines = 1
+                )
+            }
+        }
+
+        // Checkmark icon positioned outside the inner box
+        if (isSelected) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_onboarding_section_selected),
+                contentDescription = "Selected",
                 modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.TopEnd)
+                    .offset(x = 8.dp, y = (-8).dp), // Offset to position outside the box
             )
         }
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            modifier = Modifier.padding(vertical = 15.dp),
-            text = stringResource(id = profession.titleResId),
-            style = BodyCalloutRegular,
-            color = colorResource(textColor),
-            maxLines = 1
-        )
     }
 }
 

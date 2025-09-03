@@ -15,9 +15,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,24 +74,35 @@ fun OnboardingSelectionScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         // Top toolbar with back button - same pattern as SetEmailWrapper
-        Image(
+        Box(
             modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 16.dp, start = 9.dp)
-                .noRippleClickable {
-                    onBackClicked()
-                },
-            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-            contentDescription = stringResource(R.string.content_description_back_button_icon)
-        )
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Image(
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable {
+                        onBackClicked()
+                    },
+                painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+                contentDescription = "Back button"
+            )
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
+        }
 
         Column(
             modifier = Modifier
-                .fillMaxSize()
+                .align(Alignment.Center)
                 .padding(horizontal = 20.dp)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
         ) {
-            // Title and Description (Fixed at top)
-            Spacer(modifier = Modifier.height(72.dp)) // Space for back button
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.onboarding_selection_title),
@@ -107,9 +118,7 @@ fun OnboardingSelectionScreen(
                 color = colorResource(id = R.color.text_secondary),
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // Profession items in staggered grid
+            Spacer(modifier = Modifier.height(24.dp))
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -124,6 +133,8 @@ fun OnboardingSelectionScreen(
                     }
                 }
             )
+            // Bottom padding to ensure items aren't hidden behind buttons
+            Spacer(modifier = Modifier.height(160.dp))
         }
 
         Column(
@@ -175,16 +186,23 @@ private fun ProfessionSelectionItem(
             .clip(RoundedCornerShape(16.dp))
             .background(color = colorResource(backgroundColor))
             .clickable { onSelected() }
-            .padding(horizontal = 16.dp, vertical = 15.dp),
+            .padding(start = 12.dp, end = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = profession.emoji,
-            style = BodyCalloutRegular,
-            modifier = Modifier.size(24.dp)
-        )
+        Box(
+            modifier = Modifier
+            .size(24.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = profession.emoji,
+                style = BodyCalloutRegular,
+                modifier = Modifier
+            )
+        }
         Spacer(modifier = Modifier.width(6.dp))
         Text(
+            modifier = Modifier.padding(vertical = 15.dp),
             text = stringResource(id = profession.titleResId),
             style = BodyCalloutRegular,
             color = colorResource(textColor),
@@ -196,26 +214,11 @@ private fun ProfessionSelectionItem(
 @DefaultPreviews
 @Composable
 private fun OnboardingSelectionScreenPreview() {
-    OnboardingSelectionScreen(
-        isLoading = false,
-        onBackClicked = {}
-    )
-}
-
-@DefaultPreviews
-@Composable
-private fun ProfessionSelectionItemPreview() {
     Column {
-        ProfessionSelectionItem(
-            profession = ProfessionItem("💻", R.string.onboarding_selection_developer),
-            isSelected = false,
-            onSelected = {}
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        ProfessionSelectionItem(
-            profession = ProfessionItem("🎨", R.string.onboarding_selection_artist),
-            isSelected = true,
-            onSelected = {}
+        Spacer(modifier = Modifier.height(40.dp))
+        OnboardingSelectionScreen(
+            isLoading = false,
+            onBackClicked = {}
         )
     }
 }

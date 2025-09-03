@@ -23,6 +23,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -76,6 +78,7 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
@@ -95,6 +98,7 @@ import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingSelectionScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
@@ -389,6 +393,18 @@ class OnboardingFragment : Fragment() {
                     }
                 }
                 BackHandler { onBackClicked() }
+            }
+            composable(
+                route = OnboardingNavigation.selection,
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                currentPage.value = OnboardingPage.SELECTION
+                Selection(navController)
             }
         }
     }
@@ -696,6 +712,13 @@ class OnboardingFragment : Fragment() {
         } catch (e: Exception) {
             toast("Could not copy your mnemonic phrase. Please try again later, or copy it manually.")
         }
+    }
+
+    @Composable
+    private fun Selection(navController: NavHostController) {
+        OnboardingSelectionScreen(
+            onBackClicked = { navController.popBackStack() }
+        )
     }
 
     @Composable

@@ -65,7 +65,9 @@ private val professionItems = listOf(
 @Composable
 fun OnboardingSelectionScreen(
     isLoading: Boolean,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onContinueClicked: (ProfessionItem) -> Unit = {},
+    onSkipClicked: () -> Unit = {}
 ) {
     var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
     
@@ -154,7 +156,9 @@ fun OnboardingSelectionScreen(
             ButtonOnboardingPrimaryLarge(
                 text = stringResource(id = R.string.onboarding_button_continue),
                 onClick = {
-                    //validateAndSubmit()
+                    selectedProfession?.let { profession ->
+                        onContinueClicked(profession)
+                    }
                 },
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),
@@ -165,7 +169,7 @@ fun OnboardingSelectionScreen(
             ButtonOnboardingLinkLarge(
                 text = stringResource(id = R.string.onboarding_button_skip),
                 onClick = {
-
+                    onSkipClicked()
                 },
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),

@@ -731,7 +731,14 @@ class OnboardingFragment : Fragment() {
     private fun Selection(navController: NavHostController) {
         OnboardingSelectionScreen(
             isLoading = false,
-            onBackClicked = { navController.popBackStack() }
+            onBackClicked = { navController.popBackStack() },
+            onContinueClicked = { selectedProfession ->
+                // TODO: Save selectedProfession to ViewModel
+                navController.navigate(OnboardingNavigation.usecase)
+            },
+            onSkipClicked = {
+                navController.navigate(OnboardingNavigation.usecase)
+            }
         )
     }
 
@@ -739,7 +746,15 @@ class OnboardingFragment : Fragment() {
     private fun Usecase(navController: NavHostController) {
         OnboardingUsecaseScreen(
             isLoading = false,
-            onBackClicked = { navController.popBackStack() }
+            onBackClicked = { navController.popBackStack() },
+            onContinueClicked = { selectedUsecase ->
+                // TODO: Save selectedUsecase to ViewModel and complete onboarding
+                // For now, navigate back to auth or complete onboarding
+            },
+            onSkipClicked = {
+                // TODO: Complete onboarding without saving usecase
+                // For now, navigate back to auth or complete onboarding
+            }
         )
     }
 

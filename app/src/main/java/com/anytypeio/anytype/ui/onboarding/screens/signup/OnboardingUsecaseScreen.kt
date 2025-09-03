@@ -62,7 +62,9 @@ private val usecaseItems = listOf(
 @Composable
 fun OnboardingUsecaseScreen(
     isLoading: Boolean,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onContinueClicked: (UsecaseItem) -> Unit = {},
+    onSkipClicked: () -> Unit = {}
 ) {
     var selectedUsecase by remember { mutableStateOf<UsecaseItem?>(null) }
     
@@ -151,7 +153,9 @@ fun OnboardingUsecaseScreen(
             ButtonOnboardingPrimaryLarge(
                 text = stringResource(id = R.string.onboarding_button_continue),
                 onClick = {
-                    //validateAndSubmit()
+                    selectedUsecase?.let { usecase ->
+                        onContinueClicked(usecase)
+                    }
                 },
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),
@@ -162,7 +166,7 @@ fun OnboardingUsecaseScreen(
             ButtonOnboardingLinkLarge(
                 text = stringResource(id = R.string.onboarding_button_skip),
                 onClick = {
-
+                    onSkipClicked()
                 },
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),

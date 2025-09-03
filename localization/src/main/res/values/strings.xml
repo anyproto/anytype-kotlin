@@ -1127,7 +1127,7 @@
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
-    <string name="onboarding_enter_my_vault">Next</string>
+    <string name="onboarding_enter_my_vault">Enter</string>
     <string name="onboarding_have_key_button_text">I already have a key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -1143,8 +1143,9 @@
     <string name="onboarding_key_copy">Copy to clipboard</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
-    <string name="onboarding_login_or">OR</string>
+    <string name="onboarding_type_your_key">Enter your key</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR Code</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_your_name">Type your name</string>

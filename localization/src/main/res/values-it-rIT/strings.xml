@@ -1196,13 +1196,13 @@
     <string name="multiplayer_request_access">Richiesta di accesso</string>
     <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
     <string name="multiplayer_qr_code">Codice QR</string>
-    <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
-    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
-    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
-    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
-    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
-    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_change_access_title">Modificare l\'accesso al link di invito?</string>
+    <string name="multiplayer_link_will_be_invalidated">Il link attuale smetterà di funzionare.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">Se si disattiva la condivisione o si passa all\'approvazione manuale, il link esistente viene disattivato. Se lo si riattiva, ne verrà creato uno nuovo.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Chiunque abbia il link potrà modificare il contenuto dello spazio.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Chiunque abbia il link potrà solo visualizzare il contenuto dello spazio.</string>
+    <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
+    <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
@@ -1914,9 +1914,9 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_not_shareable">Sembra che lo spazio non sia più condiviso. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
     <string name="share_space_error_request_failed">Ops! La richiesta è fallita. Controlla la tua connessione Internet e prova di nuovo.</string>
     <string name="share_space_error_space_deleted">Sembra che lo spazio sia stato eliminato. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
-    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
-    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_generic">Si è verificato un errore inatteso: %1$s. Riprovare più tardi.</string>
+    <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
+    <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>

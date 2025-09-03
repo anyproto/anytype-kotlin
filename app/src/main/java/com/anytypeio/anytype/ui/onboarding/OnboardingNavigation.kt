@@ -8,4 +8,5 @@ object OnboardingNavigation {
     const val setProfileName = "createSoul"
     const val setEmail = "setEmail"
     const val selection = "selection"
+    const val usecase = "usecase"
 }

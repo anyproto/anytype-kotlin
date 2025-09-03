@@ -99,6 +99,7 @@ import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingSelectionScreen
+import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingUsecaseScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
@@ -405,6 +406,18 @@ class OnboardingFragment : Fragment() {
             ) {
                 currentPage.value = OnboardingPage.SELECTION
                 Selection(navController)
+            }
+            composable(
+                route = OnboardingNavigation.usecase,
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                currentPage.value = OnboardingPage.USECASE
+                Usecase(navController)
             }
         }
     }
@@ -717,6 +730,15 @@ class OnboardingFragment : Fragment() {
     @Composable
     private fun Selection(navController: NavHostController) {
         OnboardingSelectionScreen(
+            isLoading = false,
+            onBackClicked = { navController.popBackStack() }
+        )
+    }
+
+    @Composable
+    private fun Usecase(navController: NavHostController) {
+        OnboardingUsecaseScreen(
+            isLoading = false,
             onBackClicked = { navController.popBackStack() }
         )
     }

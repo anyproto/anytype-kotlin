@@ -43,31 +43,28 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.UXBody
 
-data class ProfessionItem(
+data class UsecaseItem(
     val emoji: String,
     val titleResId: Int
 )
 
-private val professionItems = listOf(
-    ProfessionItem("✍️", R.string.onboarding_selection_writer),
-    ProfessionItem("💻", R.string.onboarding_selection_developer),
-    ProfessionItem("🎓", R.string.onboarding_selection_student),
-    ProfessionItem("📈", R.string.onboarding_selection_marketer),
-    ProfessionItem("👔", R.string.onboarding_selection_manager),
-    ProfessionItem("🔬", R.string.onboarding_selection_researcher),
-    ProfessionItem("🎯", R.string.onboarding_selection_designer),
-    ProfessionItem("🎨", R.string.onboarding_selection_artist),
-    ProfessionItem("🚀", R.string.onboarding_selection_entrepreneur),
-    ProfessionItem("💼", R.string.onboarding_selection_consultant),
-    ProfessionItem("💼", R.string.onboarding_selection_other),
+private val usecaseItems = listOf(
+    UsecaseItem("📋", R.string.onboarding_usecase_habit_tracking),
+    UsecaseItem("📚", R.string.onboarding_usecase_knowledge),
+    UsecaseItem("🗓️", R.string.onboarding_usecase_life_planning),
+    UsecaseItem("💬", R.string.onboarding_usecase_messaging),
+    UsecaseItem("📝", R.string.onboarding_usecase_notes),
+    UsecaseItem("✅", R.string.onboarding_usecase_projects),
+    UsecaseItem("👥", R.string.onboarding_usecase_team_work),
+    UsecaseItem("\uD83D\uDC7B", R.string.onboarding_usecase_other),
 )
 
 @Composable
-fun OnboardingSelectionScreen(
+fun OnboardingUsecaseScreen(
     isLoading: Boolean,
     onBackClicked: () -> Unit
 ) {
-    var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
+    var selectedUsecase by remember { mutableStateOf<UsecaseItem?>(null) }
     
     Box(
         modifier = Modifier.fillMaxSize()
@@ -103,7 +100,7 @@ fun OnboardingSelectionScreen(
         ) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.onboarding_selection_title),
+                text = stringResource(R.string.onboarding_usecase_title),
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitleSemibold,
                 textAlign = TextAlign.Center
@@ -111,7 +108,7 @@ fun OnboardingSelectionScreen(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.onboarding_selection_description),
+                text = stringResource(R.string.onboarding_usecase_description),
                 style = UXBody,
                 color = colorResource(id = R.color.text_secondary),
                 textAlign = TextAlign.Center
@@ -122,15 +119,15 @@ fun OnboardingSelectionScreen(
                 verticalArrangement = Arrangement.spacedBy(0.dp),
                 horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
                 content = {
-                    professionItems.forEach { profession ->
-                        ProfessionSelectionItem(
-                            profession = profession,
-                            isSelected = selectedProfession == profession,
+                    usecaseItems.forEach { usecase ->
+                        UsecaseSelectionItem(
+                            usecase = usecase,
+                            isSelected = selectedUsecase == usecase,
                             onSelected = { 
-                                selectedProfession = if (selectedProfession == profession) {
+                                selectedUsecase = if (selectedUsecase == usecase) {
                                     null // Deselect if already selected
                                 } else {
-                                    profession // Select if not selected
+                                    usecase // Select if not selected
                                 }
                             }
                         )
@@ -159,7 +156,7 @@ fun OnboardingSelectionScreen(
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),
                 loading = isLoading,
-                enabled = selectedProfession != null
+                enabled = selectedUsecase != null
             )
             Spacer(modifier = Modifier.height(8.dp))
             ButtonOnboardingLinkLarge(
@@ -175,8 +172,8 @@ fun OnboardingSelectionScreen(
 }
 
 @Composable
-private fun ProfessionSelectionItem(
-    profession: ProfessionItem,
+private fun UsecaseSelectionItem(
+    usecase: UsecaseItem,
     isSelected: Boolean,
     onSelected: () -> Unit
 ) {
@@ -206,14 +203,14 @@ private fun ProfessionSelectionItem(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = profession.emoji,
+                        text = usecase.emoji,
                         style = BodyCalloutRegular,
                     )
                 }
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     modifier = Modifier.padding(vertical = 15.dp),
-                    text = stringResource(id = profession.titleResId),
+                    text = stringResource(id = usecase.titleResId),
                     style = BodyCalloutRegular,
                     color = colorResource(textColor),
                     maxLines = 1
@@ -237,10 +234,9 @@ private fun ProfessionSelectionItem(
 
 @DefaultPreviews
 @Composable
-private fun OnboardingSelectionScreenPreview() {
+private fun OnboardingUsecaseScreenPreview() {
     Column {
-        //Spacer(modifier = Modifier.height(38.dp))
-        OnboardingSelectionScreen(
+        OnboardingUsecaseScreen(
             isLoading = false,
             onBackClicked = {}
         )

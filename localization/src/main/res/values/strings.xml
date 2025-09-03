@@ -1076,6 +1076,8 @@
     <string name="onboarding_selection_other">Other</string>
 
     <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
     <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
     <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
     <string name="onboarding_usecase_life_planning">Life planning</string>
@@ -1083,6 +1085,7 @@
     <string name="onboarding_usecase_notes">Personal note-taking</string>
     <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
     <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Other</string>
     <!--endregion-->
 
     <!--region WIDGETS -->
